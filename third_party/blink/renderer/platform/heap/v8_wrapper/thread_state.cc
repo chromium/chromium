@@ -115,7 +115,24 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
 }
 
 void ThreadState::CollectAllGarbageForTesting(BlinkGC::StackState stack_state) {
-  // TODO(1056170): Implement.
+  // Should only be used when attached to V8.
+  CHECK(isolate_);
+  size_t previous_live_bytes = 0;
+  for (size_t i = 0; i < 5; i++) {
+    // CppHeap registers itself as EmbedderHeapTracer internally.
+    isolate_->GetEmbedderHeapTracer()->GarbageCollectionForTesting(
+        stack_state == BlinkGC::kHeapPointersOnStack
+            ? cppgc::EmbedderStackState::kMayContainHeapPointers
+            : cppgc::EmbedderStackState::kNoHeapPointers);
+    const size_t live_bytes =
+        cpp_heap()
+            .CollectStatistics(cppgc::HeapStatistics::kBrief)
+            .used_size_bytes;
+    if (previous_live_bytes == live_bytes) {
+      break;
+    }
+    previous_live_bytes = live_bytes;
+  }
 }
 
 }  // namespace blink
