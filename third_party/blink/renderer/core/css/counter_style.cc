@@ -430,7 +430,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   if (const CSSValue* suffix = rule.GetSuffix())
     suffix_ = SymbolToString(*suffix);
 
-  // TODO(crbug.com/687225): Implement 'speak-as'.
+  // TODO(crbug.com/1166766): Implement 'speak-as'.
 }
 
 void CounterStyle::ResolveExtends(CounterStyle& extended) {
@@ -469,7 +469,7 @@ void CounterStyle::ResolveExtends(CounterStyle& extended) {
   if (!style_rule_->GetSuffix())
     suffix_ = extended.suffix_;
 
-  // TODO(crbug.com/687225): Implement 'speak-as'.
+  // TODO(crbug.com/1166766): Implement 'speak-as'.
 }
 
 bool CounterStyle::RangeContains(int value) const {
