@@ -26,6 +26,9 @@ function assert_ratio(img, expected, description) {
 
 function test_computed_style(width, height, expected) {
   test_computed_style_aspect_ratio("img", {width: width, height: height}, expected);
+  test_computed_style_aspect_ratio("input", {type: "image", width: width, height: height}, expected);
+  // input type=submit should not do this mapping.
+  test_computed_style_aspect_ratio("input", {type: "submit", width: width, height: height}, "auto");
 }
 
 // Create and append a new image and immediately check the ratio.

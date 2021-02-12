@@ -758,11 +758,19 @@ void HTMLInputElement::CollectStyleForPresentationAttribute(
     if (input_type_->ShouldRespectAlignAttribute())
       ApplyAlignmentAttributeToStyle(value, style);
   } else if (name == html_names::kWidthAttr) {
-    if (input_type_->ShouldRespectHeightAndWidthAttributes())
+    if (input_type_->ShouldRespectHeightAndWidthAttributes()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+      const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
+      if (height)
+        ApplyAspectRatioToStyle(value, height, style);
+    }
   } else if (name == html_names::kHeightAttr) {
-    if (input_type_->ShouldRespectHeightAndWidthAttributes())
+    if (input_type_->ShouldRespectHeightAndWidthAttributes()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
+      const AtomicString& width = FastGetAttribute(html_names::kWidthAttr);
+      if (width)
+        ApplyAspectRatioToStyle(width, value, style);
+    }
   } else if (name == html_names::kBorderAttr &&
              type() == input_type_names::kImage) {  // FIXME: Remove type check.
     ApplyBorderAttributeToStyle(value, style);
