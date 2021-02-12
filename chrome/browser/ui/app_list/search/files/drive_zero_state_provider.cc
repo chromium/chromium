@@ -63,7 +63,7 @@ bool IsSuggestedContentEnabled(Profile* profile) {
 base::FilePath ReparentToDriveMount(
     const base::FilePath& path,
     const drive::DriveIntegrationService* drive_service) {
-  DCHECK(path.IsAbsolute());
+  DCHECK(!path.IsAbsolute());
   return drive_service->GetMountPointPath().Append(path.value());
 }
 
