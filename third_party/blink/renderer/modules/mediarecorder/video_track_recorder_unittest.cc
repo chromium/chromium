@@ -359,6 +359,38 @@ TEST_P(VideoTrackRecorderTest, EncodeFrameWithPaddedCodedSize) {
   Mock::VerifyAndClearExpectations(this);
 }
 
+TEST_P(VideoTrackRecorderTest, EncodeFrameRGB) {
+  InitializeRecorder(testing::get<0>(GetParam()));
+
+  const gfx::Size& frame_size = testing::get<1>(GetParam());
+  const media::VideoFrame::StorageType storage_type =
+      testing::get<3>(GetParam());
+  scoped_refptr<media::VideoFrame> video_frame;
+  switch (storage_type) {
+    case media::VideoFrame::STORAGE_OWNED_MEMORY:
+      video_frame = media::VideoFrame::CreateZeroInitializedFrame(
+          media::PIXEL_FORMAT_XRGB, frame_size, gfx::Rect(frame_size),
+          frame_size, base::TimeDelta());
+      break;
+    case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      video_frame =
+          CreateTestFrame(frame_size, gfx::Rect(frame_size), frame_size,
+                          storage_type, media::PIXEL_FORMAT_XRGB);
+      break;
+    default:
+      NOTREACHED() << "Unexpected storage type";
+  }
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))
+      .Times(1)
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  Encode(video_frame, base::TimeTicks::Now());
+  run_loop.Run();
+
+  Mock::VerifyAndClearExpectations(this);
+}
+
 // Inserts an opaque frame followed by two transparent frames and expects the
 // newly introduced transparent frame to force keyframe output.
 TEST_F(VideoTrackRecorderTest, ForceKeyframeOnAlphaSwitch) {

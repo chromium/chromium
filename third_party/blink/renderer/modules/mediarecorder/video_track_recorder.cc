@@ -285,24 +285,19 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   if (paused_)
     return;
 
-  // The recorder currently does not consider scaled versions of the frame.
-  const bool is_format_supported =
-      video_frame->format() == media::PIXEL_FORMAT_I420 ||
-      video_frame->format() == media::PIXEL_FORMAT_ARGB ||
-      video_frame->format() == media::PIXEL_FORMAT_ABGR ||
-      video_frame->format() == media::PIXEL_FORMAT_I420A ||
-      video_frame->format() == media::PIXEL_FORMAT_NV12 ||
-      video_frame->format() == media::PIXEL_FORMAT_XRGB;
-
   if (num_frames_in_encode_->count() > kMaxNumberOfFramesInEncode) {
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
     return;
   }
 
-  if (!is_format_supported ||
-      (video_frame->HasTextures() &&
-       video_frame->storage_type() !=
-           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
+  // The recorder currently does not consider scaled versions of the frame.
+  const bool is_format_supported =
+      (video_frame->format() == media::PIXEL_FORMAT_NV12 &&
+       video_frame->HasGpuMemoryBuffer()) ||
+      (video_frame->IsMappable() &&
+       (video_frame->format() == media::PIXEL_FORMAT_I420 ||
+        video_frame->format() == media::PIXEL_FORMAT_I420A));
+  if (!is_format_supported) {
     PostCrossThreadTask(
         *encoding_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(&Encoder::RetrieveFrameOnEncodingTaskRunner,
@@ -313,7 +308,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
 
   scoped_refptr<media::VideoFrame> frame = video_frame;
-  if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (!video_frame->HasGpuMemoryBuffer()) {
     // Drop alpha channel if the encoder does not support it yet.
     if (!CanEncodeAlphaChannel() &&
         video_frame->format() == media::PIXEL_FORMAT_I420A) {
