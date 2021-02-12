@@ -1487,7 +1487,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
   input_method_manager_mock_->set_mod3_used(false);
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeys) {
+TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   TestNonAppleKeyboardVariants({
       // Alt+Backspace -> Delete
@@ -1537,6 +1537,8 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys) {
         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
 
+      // NOTE: The following are workarounds to avoid rewriting the
+      // Alt variants by additionally pressing Search.
       // Search+Ctrl+Alt+Up -> Ctrl+Alt+Up
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_UP, ui::DomCode::ARROW_UP,
@@ -1551,14 +1553,36 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys) {
         ui::DomKey::ARROW_DOWN},
        {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN}},
+  });
+}
 
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  TestNonAppleKeyboardVariants({
       // Period -> Period
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_NONE,
         ui::DomKey::Constant<'.'>::Character},
        {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_NONE,
         ui::DomKey::Constant<'.'>::Character}},
+      // Search+Period -> Insert
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'.'>::Character},
+       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_NONE, ui::DomKey::INSERT}},
+      // Control+Search+Period -> Control+Insert
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+        ui::DomKey::Constant<'.'>::Character},
+       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_CONTROL_DOWN,
+        ui::DomKey::INSERT}},
+  });
+}
 
+TEST_F(EventRewriterTest, TestRewriteExtendedKeys_SearchVariants) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  TestNonAppleKeyboardVariants({
       // Search+Backspace -> Delete
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_COMMAND_DOWN,
@@ -1581,7 +1605,7 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys) {
        {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT, ui::EF_COMMAND_DOWN,
         ui::DomKey::ARROW_LEFT},
        {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_NONE, ui::DomKey::HOME}},
-      // Control+Search+Left -> Home
+      // Control+Search+Left -> Control+Home
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_LEFT, ui::DomCode::ARROW_LEFT,
         ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_LEFT},
@@ -1592,27 +1616,15 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys) {
        {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT, ui::EF_COMMAND_DOWN,
         ui::DomKey::ARROW_RIGHT},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
-      // Control+Search+Right -> End
+      // Control+Search+Right -> Control+End
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_RIGHT, ui::DomCode::ARROW_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_RIGHT},
        {ui::VKEY_END, ui::DomCode::END, ui::EF_CONTROL_DOWN, ui::DomKey::END}},
-      // Search+Period -> Insert
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'.'>::Character},
-       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_NONE, ui::DomKey::INSERT}},
-      // Control+Search+Period -> Control+Insert
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD,
-        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'.'>::Character},
-       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::INSERT}},
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteFunctionKeysCommon) {
+TEST_F(EventRewriterTest, TestNumberRowIsNotRewritten) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
 
   TestNonAppleNonCustomLayoutKeyboardVariants({
@@ -1677,7 +1689,13 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysCommon) {
         ui::DomKey::Constant<'='>::Character},
        {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_NONE,
         ui::DomKey::Constant<'='>::Character}},
+  });
+}
 
+TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKey) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+
+  TestNonAppleNonCustomLayoutKeyboardVariants({
       // The number row should be rewritten as the F<number> row with Search
       // key.
       {ui::ET_KEY_PRESSED,
@@ -1728,7 +1746,13 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysCommon) {
        {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
         ui::DomKey::Constant<'='>::Character},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+}
 
+TEST_F(EventRewriterTest, TestFunctionKeysNotRewrittenBySearch) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+
+  TestNonAppleNonCustomLayoutKeyboardVariants({
       // The function keys should not be rewritten with Search key pressed.
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
