@@ -185,7 +185,6 @@ class CONTENT_EXPORT RenderThreadImpl
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
-  bool IsOnline() override;
   void SetRendererProcessType(
       blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
@@ -583,7 +582,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   RendererMemoryMetrics purge_and_suspend_memory_metrics_;
   int process_foregrounded_count_;
-  bool online_status_ = true;
 
   int32_t client_id_;
 

@@ -1235,10 +1235,6 @@ int32_t RenderThreadImpl::GetClientId() {
   return client_id_;
 }
 
-bool RenderThreadImpl::IsOnline() {
-  return online_status_;
-}
-
 void RenderThreadImpl::SetRendererProcessType(
     blink::scheduler::WebRendererProcessType type) {
   main_thread_scheduler_->SetRendererProcessType(type);
@@ -1624,14 +1620,12 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
 void RenderThreadImpl::OnNetworkConnectionChanged(
     net::NetworkChangeNotifier::ConnectionType type,
     double max_bandwidth_mbps) {
-  online_status_ = type != net::NetworkChangeNotifier::CONNECTION_NONE;
-  WebNetworkStateNotifier::SetOnLine(online_status_);
-  if (url_loader_throttle_provider_)
-    url_loader_throttle_provider_->SetOnline(online_status_);
-  for (auto& observer : observers_)
-    observer.NetworkStateChanged(online_status_);
+  bool online_status = type != net::NetworkChangeNotifier::CONNECTION_NONE;
+  WebNetworkStateNotifier::SetOnLine(online_status);
   WebNetworkStateNotifier::SetWebConnection(
       NetConnectionTypeToWebConnectionType(type), max_bandwidth_mbps);
+  if (url_loader_throttle_provider_)
+    url_loader_throttle_provider_->SetOnline(online_status);
 }
 
 void RenderThreadImpl::OnNetworkQualityChanged(
