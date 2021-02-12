@@ -37,15 +37,17 @@ class DragDownloadFile::DragDownloadFileUI
   DragDownloadFileUI(const GURL& url,
                      const Referrer& referrer,
                      const std::string& referrer_encoding,
-                     WebContents* web_contents,
+                     int render_process_id,
+                     int render_frame_id,
                      OnCompleted on_completed)
       : on_completed_(std::move(on_completed)),
         url_(url),
         referrer_(referrer),
         referrer_encoding_(referrer_encoding),
-        web_contents_(web_contents) {
+        render_process_id_(render_process_id),
+        render_frame_id_(render_frame_id) {
     DCHECK(on_completed_);
-    DCHECK(web_contents_);
+    DCHECK_GE(render_frame_id_, 0);
     // May be called on any thread.
     // Do not call weak_ptr_factory_.GetWeakPtr() outside the UI thread.
   }
@@ -54,6 +56,10 @@ class DragDownloadFile::DragDownloadFileUI
                         const base::FilePath& file_path) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+    RenderFrameHost* host =
+        RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+    if (!host)
+      return;
     // TODO(https://crbug.com/614134) This should use the frame actually
     // containing the link being dragged rather than the main frame of the tab.
     net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -79,9 +85,8 @@ class DragDownloadFile::DragDownloadFileUI
             }
           }
         })");
-    std::unique_ptr<download::DownloadUrlParameters> params(
-        DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
-            web_contents_, url_, traffic_annotation));
+    auto params = std::make_unique<download::DownloadUrlParameters>(
+        url_, render_process_id_, render_frame_id_, traffic_annotation);
     params->set_referrer(referrer_.url);
     params->set_referrer_policy(
         Referrer::ReferrerPolicyForUrlRequest(referrer_.policy));
@@ -91,7 +96,7 @@ class DragDownloadFile::DragDownloadFileUI
     params->set_file_path(file_path);
     params->set_file(std::move(file));  // Nulls file.
     params->set_download_source(download::DownloadSource::DRAG_AND_DROP);
-    BrowserContext::GetDownloadManager(web_contents_->GetBrowserContext())
+    BrowserContext::GetDownloadManager(host->GetBrowserContext())
         ->DownloadUrl(std::move(params));
   }
 
@@ -165,7 +170,8 @@ class DragDownloadFile::DragDownloadFileUI
   GURL url_;
   Referrer referrer_;
   std::string referrer_encoding_;
-  WebContents* web_contents_;
+  int render_process_id_;
+  int render_frame_id_;
   download::DownloadItem* download_item_ = nullptr;
 
   // Only used in the callback from DownloadManager::DownloadUrl().
@@ -182,8 +188,10 @@ DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
                                    WebContents* web_contents)
     : file_path_(file_path), file_(std::move(file)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHost* host = web_contents->GetMainFrame();
   drag_ui_ = new DragDownloadFileUI(
-      url, referrer, referrer_encoding, web_contents,
+      url, referrer, referrer_encoding, host->GetProcess()->GetID(),
+      host->GetRoutingID(),
       base::BindOnce(&DragDownloadFile::DownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   DCHECK(!file_path_.empty());
