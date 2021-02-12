@@ -54,6 +54,7 @@ TabSearchPageHandler::TabSearchPageHandler(
           kTabsChangeDelay,
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))) {
+  Observe(web_ui_->GetWebContents());
   DCHECK(browser_);
   browser_tab_strip_tracker_.Init();
 }
@@ -217,8 +218,10 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (browser_tab_strip_tracker_.is_processing_initial_browsers())
+  if (webui_hidden_ ||
+      browser_tab_strip_tracker_.is_processing_initial_browsers()) {
     return;
+  }
   if (change.type() == TabStripModelChange::kRemoved) {
     std::vector<int> tab_ids;
     for (auto& content_with_index : change.GetRemove()->contents) {
@@ -234,6 +237,8 @@ void TabSearchPageHandler::OnTabStripModelChanged(
 void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
                                         int index,
                                         TabChangeType change_type) {
+  if (webui_hidden_)
+    return;
   // TODO(crbug.com/1112496): Support more values for TabChangeType and filter
   // out the changes we are not interested in.
   if (change_type != TabChangeType::kAll)
@@ -258,6 +263,10 @@ void TabSearchPageHandler::NotifyTabsChanged() {
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
   return browser->profile() == browser_->profile() &&
          browser->type() == Browser::Type::TYPE_NORMAL;
+}
+
+void TabSearchPageHandler::OnVisibilityChanged(content::Visibility visibility) {
+  webui_hidden_ = visibility == content::Visibility::HIDDEN;
 }
 
 void TabSearchPageHandler::SetTimerForTesting(

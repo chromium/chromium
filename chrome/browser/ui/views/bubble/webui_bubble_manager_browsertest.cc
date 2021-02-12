@@ -23,9 +23,6 @@ class TestWebUIBubbleManager : public WebUIBubbleManagerBase {
       delete;
   ~TestWebUIBubbleManager() override = default;
 
-  // WebUIBubbleManagerBase:
-  void WebViewHidden() override {}
-
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
     return std::make_unique<WebUIBubbleView>(

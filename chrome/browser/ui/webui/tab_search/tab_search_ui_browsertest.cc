@@ -62,14 +62,6 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
-                       EmbedderHiddenDestroysPageHandler) {
-  EXPECT_NE(nullptr, GetWebUIController());
-  EXPECT_NE(nullptr, GetWebUIController()->page_handler_for_testing());
-  GetWebUIController()->EmbedderHidden();
-  EXPECT_EQ(nullptr, GetWebUIController()->page_handler_for_testing());
-}
-
 // TODO(romanarora): Investigate a way to call WebUI custom methods and refactor
 // JS code below.
 

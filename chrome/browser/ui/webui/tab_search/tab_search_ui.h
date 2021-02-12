@@ -25,9 +25,6 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
   TabSearchUI& operator=(const TabSearchUI&) = delete;
   ~TabSearchUI() override;
 
-  // ui::MojoBubbleWebUIController:
-  void EmbedderHidden() override;
-
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(

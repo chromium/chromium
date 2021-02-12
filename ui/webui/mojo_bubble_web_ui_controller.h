@@ -35,9 +35,6 @@ class MojoBubbleWebUIController : public MojoWebUIController {
   void set_embedder(base::WeakPtr<Embedder> embedder) { embedder_ = embedder; }
   base::WeakPtr<Embedder> embedder() { return embedder_; }
 
-  // Called when the embedder is hidden and is no longer visible on screen.
-  virtual void EmbedderHidden() {}
-
  private:
   base::WeakPtr<Embedder> embedder_;
 };

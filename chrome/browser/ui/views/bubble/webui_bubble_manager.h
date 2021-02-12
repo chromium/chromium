@@ -56,7 +56,6 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
 
  private:
   virtual std::unique_ptr<WebUIBubbleView> CreateWebView() = 0;
-  virtual void WebViewHidden() = 0;
   void ResetWebView();
 
   views::View* anchor_view_;
@@ -114,13 +113,6 @@ class WebUIBubbleManager : public WebUIBubbleManagerBase {
         web_contents, task_manager_string_id_);
     web_view->template LoadURL<T>(webui_url_);
     return web_view;
-  }
-
-  void WebViewHidden() override {
-    DCHECK(cached_web_view());
-    return cached_web_view()
-        ->template GetWebUIController<T>()
-        ->EmbedderHidden();
   }
 
   // Used for tagging the web contents so that a distinctive name shows up in
