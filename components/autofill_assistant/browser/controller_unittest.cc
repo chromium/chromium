@@ -2706,7 +2706,11 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
 
   EXPECT_TRUE(
       controller_->Start(initialUrl, TriggerContext::Create(parameters, "")));
+  // Initial navigation.
+  SimulateNavigateToUrl(GURL("http://b.example.com"));
   EXPECT_EQ(GetUserData()->selected_login_->username, username);
+  EXPECT_EQ(GetUserData()->selected_login_->origin, initialUrl.GetOrigin());
+  EXPECT_EQ(controller_->GetCurrentURL().host(), "b.example.com");
 }
 
 TEST_F(ControllerTest, EndPromptWithOnEndNavigation) {
