@@ -80,7 +80,7 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   }
 
   bool HasFailedOrCanceledSubresources() const {
-    // TODO(crbug.com/687225): Implement.
+    // TODO(crbug.com/1176323): Handle image symbols when we implement it.
     return false;
   }
 

@@ -520,7 +520,8 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
       break;
 
     case CSSRule::kCounterStyleRule:
-      // TODO(crbug.com/687225): Implement
+      // TODO(crbug.com/1176323): Handle image symbols in @counter-style rules
+      // when we implement it.
       break;
 
     // Rules in which no external resources can be referenced
