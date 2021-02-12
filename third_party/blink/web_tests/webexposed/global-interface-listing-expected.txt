@@ -1138,6 +1138,10 @@ interface CloseEvent : Event
     getter reason
     getter wasClean
     method constructor
+interface ColorSelectEvent : PointerEvent
+    attribute @@toStringTag
+    getter value
+    method constructor
 interface Comment : CharacterData
     attribute @@toStringTag
     method constructor
@@ -2457,6 +2461,16 @@ interface External
     method AddSearchProvider
     method IsSearchProviderInstalled
     method constructor
+interface EyeDropper : EventTarget
+    attribute @@toStringTag
+    getter onclose
+    getter oncolorselect
+    getter opened
+    method close
+    method constructor
+    method open
+    setter onclose
+    setter oncolorselect
 interface FaceDetector
     attribute @@toStringTag
     method constructor

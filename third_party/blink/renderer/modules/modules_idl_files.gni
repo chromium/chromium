@@ -76,6 +76,7 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/encoding/idls.gni",
   "//third_party/blink/renderer/modules/encryptedmedia/idls.gni",
   "//third_party/blink/renderer/modules/eventsource/idls.gni",
+  "//third_party/blink/renderer/modules/eyedropper/idls.gni",
   "//third_party/blink/renderer/modules/filesystem/idls.gni",
   "//third_party/blink/renderer/modules/file_system_access/idls.gni",
   "//third_party/blink/renderer/modules/font_access/idls.gni",

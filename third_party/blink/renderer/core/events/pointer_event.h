@@ -13,7 +13,7 @@ namespace blink {
 
 class PointerEventInit;
 
-class CORE_EXPORT PointerEvent final : public MouseEvent {
+class CORE_EXPORT PointerEvent : public MouseEvent {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

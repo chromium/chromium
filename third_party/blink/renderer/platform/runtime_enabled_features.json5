@@ -891,6 +891,10 @@
       name: "ExtraWebGLVideoTextureMetadata",
     },
     {
+      name: "EyeDropperAPI",
+      status: "test",
+    },
+    {
       name: "FaceDetector",
       status: "experimental",
     },
