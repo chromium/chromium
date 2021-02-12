@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 
 namespace chrome_pdf {
 
-namespace {
-
 bool IsCharWithinTextRun(const AccessibilityTextRunInfo& text_run,
                          uint32_t text_run_start_char_index,
                          uint32_t char_index) {
@@ -23,20 +21,19 @@ bool IsCharWithinTextRun(const AccessibilityTextRunInfo& text_run,
          char_index - text_run_start_char_index < text_run.len;
 }
 
-}  // namespace
-
+// If a valid text run range is not found for the char range then return the
+// fallback value.
 AccessibilityTextRunRangeInfo GetEnclosingTextRunRangeForCharRange(
     const std::vector<AccessibilityTextRunInfo>& text_runs,
     int start_char_index,
     int char_count) {
   // Initialize with fallback value.
-  AccessibilityTextRunRangeInfo text_range = {
-      static_cast<uint32_t>(text_runs.size()), 0};
+  AccessibilityTextRunRangeInfo text_range = {text_runs.size(), 0};
   if (start_char_index < 0 || char_count <= 0)
     return text_range;
 
-  const base::CheckedNumeric<uint32_t> checked_end_char_index =
-      base::MakeCheckedNum(char_count) - 1 + start_char_index;
+  base::CheckedNumeric<uint32_t> checked_end_char_index = char_count - 1;
+  checked_end_char_index += start_char_index;
   if (!checked_end_char_index.IsValid())
     return text_range;
   uint32_t end_char_index = checked_end_char_index.ValueOrDie();

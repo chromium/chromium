@@ -23,30 +23,6 @@ bool CompareTextRuns(const T& a, const T& b) {
   return a.text_range.index < b.text_range.index;
 }
 
-std::vector<AccessibilityLinkInfo> GetAccessibilityLinkInfo(
-    PDFEngine* engine,
-    int32_t page_index,
-    const std::vector<AccessibilityTextRunInfo>& text_runs) {
-  std::vector<PDFEngine::AccessibilityLinkInfo> engine_link_infos =
-      engine->GetLinkInfo(page_index);
-  std::vector<AccessibilityLinkInfo> link_infos;
-  link_infos.reserve(engine_link_infos.size());
-  for (size_t i = 0; i < engine_link_infos.size(); ++i) {
-    auto& cur_engine_info = engine_link_infos[i];
-    AccessibilityLinkInfo link_info;
-    link_info.url = std::move(cur_engine_info.url);
-    link_info.index_in_page = i;
-    link_info.bounds = cur_engine_info.bounds;
-    link_info.text_range = GetEnclosingTextRunRangeForCharRange(
-        text_runs, cur_engine_info.start_char_index,
-        cur_engine_info.char_count);
-    link_infos.push_back(std::move(link_info));
-  }
-  std::sort(link_infos.begin(), link_infos.end(),
-            CompareTextRuns<AccessibilityLinkInfo>);
-  return link_infos;
-}
-
 std::vector<AccessibilityImageInfo> GetAccessibilityImageInfo(
     PDFEngine* engine,
     int32_t page_index,
@@ -209,7 +185,7 @@ bool GetAccessibilityInfo(PDFEngine* engine,
   }
 
   page_info.text_run_count = text_runs.size();
-  page_objects.links = GetAccessibilityLinkInfo(engine, page_index, text_runs);
+  page_objects.links = engine->GetLinkInfo(page_index, text_runs);
   page_objects.images =
       GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count);
   page_objects.highlights =

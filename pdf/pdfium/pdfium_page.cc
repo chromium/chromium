@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/accessibility_helper.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -254,6 +255,11 @@ uint32_t CountInternalTextOverlaps(const std::vector<T>& text_objects) {
 bool IsRadioButtonOrCheckBox(int button_type) {
   return button_type == FPDF_FORMFIELD_CHECKBOX ||
          button_type == FPDF_FORMFIELD_RADIOBUTTON;
+}
+
+template <typename T>
+bool CompareTextRuns(const T& a, const T& b) {
+  return a.text_range.index < b.text_range.index;
 }
 
 }  // namespace
@@ -611,19 +617,22 @@ gfx::RectF PDFiumPage::GetCharBounds(int char_index) {
   return GetFloatCharRectInPixels(page, text_page, char_index);
 }
 
-std::vector<PDFEngine::AccessibilityLinkInfo> PDFiumPage::GetLinkInfo() {
-  std::vector<PDFEngine::AccessibilityLinkInfo> link_info;
+std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
+    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+  std::vector<AccessibilityLinkInfo> link_info;
   if (!available_)
     return link_info;
 
   CalculateLinks();
 
   link_info.reserve(links_.size());
-  for (const Link& link : links_) {
-    PDFEngine::AccessibilityLinkInfo cur_info;
+  for (size_t i = 0; i < links_.size(); ++i) {
+    const Link& link = links_[i];
+    AccessibilityLinkInfo cur_info;
     cur_info.url = link.target.url;
-    cur_info.start_char_index = link.start_char_index;
-    cur_info.char_count = link.char_count;
+    cur_info.index_in_page = i;
+    cur_info.text_range = GetEnclosingTextRunRangeForCharRange(
+        text_runs, link.start_char_index, link.char_count);
 
     gfx::Rect link_rect;
     for (const auto& rect : link.bounding_rects)
@@ -633,6 +642,9 @@ std::vector<PDFEngine::AccessibilityLinkInfo> PDFiumPage::GetLinkInfo() {
 
     link_info.push_back(std::move(cur_info));
   }
+
+  std::sort(link_info.begin(), link_info.end(),
+            CompareTextRuns<AccessibilityLinkInfo>);
   return link_info;
 }
 
