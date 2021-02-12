@@ -341,9 +341,9 @@
     "META": {"align": 100},
     "messages": [2500],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/camera_app_ui/chromeos_camera_app_resources.grd": {
-    "META": {"sizes": {"includes": [300],}},
+  "chromeos/components/camera_app_ui/resources/camera_app_resources.grd": {
     "includes": [2505],
+    "structures": [2510],
   },
   "chromeos/components/camera_app_ui/resources/strings/camera_strings.grd": {
     "messages": [2515],

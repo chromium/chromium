@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chromeos/components/camera_app_ui/resources/images/images.gni")
-import("//chromeos/components/camera_app_ui/resources/js/js.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
@@ -30,8 +29,8 @@ js_type_check("closure_compile") {
 action("gen_preload_images_js") {
   script = "../utils/gen_preload_images_js.py"
   inputs = []
-  foreach(image, in_app_images) {
-    inputs += [ "../images/$image" ]
+  foreach(asset, in_app_assets) {
+    inputs += [ "../images/$asset" ]
   }
 
   outputs = [ "$target_gen_dir/preload_images.js" ]
@@ -50,8 +49,91 @@ js_library("preload_images") {
 }
 
 js_library("compile_resources") {
-  sources = compile_js_files
-
+  sources = [
+    "animation.js",
+    "app_window.js",
+    "async_job_queue.js",
+    "background.js",
+    "background_ops.js",
+    "barcode_chip.js",
+    "browser_proxy/browser_proxy.js",
+    "browser_proxy/browser_proxy_interface.js",
+    "browser_proxy/webui_browser_proxy.js",
+    "chrome_util.js",
+    "device/camera3_device_info.js",
+    "device/constraints_preferrer.js",
+    "device/device_info_updater.js",
+    "dom.js",
+    "error.js",
+    "face.js",
+    "gallerybutton.js",
+    "h264.js",
+    "init.js",
+    "intent.js",
+    "lib/comlink.js",
+    "lib/ffmpeg.js",
+    "main.js",
+    "metrics.js",
+    "models/async_interval.js",
+    "models/async_writer.js",
+    "models/barcode.js",
+    "models/barcode_worker.js",
+    "models/barcode_worker_interface.js",
+    "models/chrome_file_system_entry.js",
+    "models/file_namer.js",
+    "models/file_system.js",
+    "models/file_system_entry.js",
+    "models/file_util.js",
+    "models/idb.js",
+    "models/lazy_directory_entry.js",
+    "models/mp4_video_processor.js",
+    "models/native_file_system_entry.js",
+    "models/result_saver.js",
+    "models/video_processor_interface.js",
+    "models/video_saver.js",
+    "mojo/chrome_helper.js",
+    "mojo/device_operator.js",
+    "mojo/image_capture.js",
+    "nav.js",
+    "perf.js",
+    "snackbar.js",
+    "sound.js",
+    "state.js",
+    "test_bridge.js",
+    "thumbnailer.js",
+    "timer.js",
+    "toast.js",
+    "tooltip.js",
+    "type.js",
+    "untrusted_ga_helper.js",
+    "untrusted_helper_interfaces.js",
+    "untrusted_script_loader.js",
+    "untrusted_video_processor_helper.js",
+    "util.js",
+    "views/camera.js",
+    "views/camera/layout.js",
+    "views/camera/mode/index.js",
+    "views/camera/mode/mode_base.js",
+    "views/camera/mode/photo.js",
+    "views/camera/mode/portrait.js",
+    "views/camera/mode/record_time.js",
+    "views/camera/mode/square.js",
+    "views/camera/mode/video.js",
+    "views/camera/options.js",
+    "views/camera/preview.js",
+    "views/camera/review_result.js",
+    "views/camera/timertick.js",
+    "views/camera/video_encoder_options.js",
+    "views/camera_intent.js",
+    "views/dialog.js",
+    "views/settings.js",
+    "views/view.js",
+    "views/warning.js",
+    "waitable_event.js",
+    "window_controller/mojo_window_controller.js",
+    "window_controller/window_controller.js",
+    "window_controller/window_controller_interface.js",
+  ]
   deps = [
     ":preload_images",
     "//chromeos/components/camera_app_ui:mojo_bindings_js_library_for_compile",
@@ -61,6 +143,11 @@ js_library("compile_resources") {
     "//third_party/blink/public/mojom:mojom_platform_js_library_for_compile",
   ]
   externs_list = [
+    "externs/chrome.js",
+    "externs/swa.js",
+    "externs/typescript.js",
+    "externs/universal_analytics_api.js",
+    "externs/w3c_api.js",
     "$externs_path/chrome_extensions.js",
     "$externs_path/file_manager_private.js",
     "$externs_path/file_system_provider.js",
@@ -70,5 +157,4 @@ js_library("compile_resources") {
     # compiler.
     "//chromeos/components/web_applications/externs/file_handling.externs.js",
   ]
-  externs_list += externs_files
 }
