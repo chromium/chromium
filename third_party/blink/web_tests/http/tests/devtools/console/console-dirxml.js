@@ -21,6 +21,7 @@
         console.dirxml([document, fragment, document.createElement("span")]);
     }
   `);
+  await TestRunner.showPanel('elements');
 
   runtime.loadModulePromise('elements').then(function() {
     TestRunner.evaluateInPage('logToConsole()', onLoggedToConsole);

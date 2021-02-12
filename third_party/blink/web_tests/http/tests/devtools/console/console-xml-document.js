@@ -12,6 +12,7 @@
     var danglingNode = document.implementation.createDocument("", "books");
     console.dirxml(danglingNode.createElement("Book"));
   `);
+  await TestRunner.showPanel('elements');
 
   // Warm up elements renderer.
   runtime.loadModulePromise('elements').then(function() {
