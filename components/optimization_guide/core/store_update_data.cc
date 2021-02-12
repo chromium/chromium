@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/store_update_data.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -17,28 +18,24 @@ namespace optimization_guide {
 std::unique_ptr<StoreUpdateData>
 StoreUpdateData::CreateComponentStoreUpdateData(
     const base::Version& component_version) {
-  std::unique_ptr<StoreUpdateData> update_data(new StoreUpdateData(
+  return base::WrapUnique<StoreUpdateData>(new StoreUpdateData(
       base::Optional<base::Version>(component_version),
       base::Optional<base::Time>(), base::Optional<base::Time>()));
-  return update_data;
 }
 
 // static
 std::unique_ptr<StoreUpdateData> StoreUpdateData::CreateFetchedStoreUpdateData(
     base::Time fetch_update_time) {
-  std::unique_ptr<StoreUpdateData> update_data(
+  return base::WrapUnique<StoreUpdateData>(
       new StoreUpdateData(base::Optional<base::Version>(),
                           base::Optional<base::Time>(fetch_update_time),
                           base::Optional<base::Time>()));
-  return update_data;
 }
 
 // static
 std::unique_ptr<StoreUpdateData>
-StoreUpdateData::CreatePredictionModelStoreUpdateData() {
-  std::unique_ptr<StoreUpdateData> prediction_model_update_data(
-      new StoreUpdateData());
-  return prediction_model_update_data;
+StoreUpdateData::CreatePredictionModelStoreUpdateData(base::Time expiry_time) {
+  return base::WrapUnique<StoreUpdateData>(new StoreUpdateData(expiry_time));
 }
 
 // static
@@ -75,8 +72,9 @@ StoreUpdateData::StoreUpdateData(base::Time host_model_features_update_time,
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-StoreUpdateData::StoreUpdateData()
-    : entries_to_save_(std::make_unique<EntryVector>()) {
+StoreUpdateData::StoreUpdateData(base::Time expiry_time)
+    : expiry_time_(expiry_time),
+      entries_to_save_(std::make_unique<EntryVector>()) {
   entry_key_prefix_ =
       OptimizationGuideStore::GetPredictionModelEntryKeyPrefix();
 
@@ -130,7 +128,7 @@ StoreUpdateData::StoreUpdateData(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-StoreUpdateData::~StoreUpdateData() {}
+StoreUpdateData::~StoreUpdateData() = default;
 
 void StoreUpdateData::MoveHintIntoUpdateData(proto::Hint&& hint) {
   // All future modifications must be made by the same thread. Note, |this| may
@@ -170,7 +168,7 @@ void StoreUpdateData::CopyHostModelFeaturesIntoUpdateData(
   // have been constructed on another thread.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!entry_key_prefix_.empty());
-  DCHECK(expiry_time());
+  DCHECK(expiry_time_);
 
   // To avoid any unnecessary copying, the host model feature data is moved into
   // proto::StoreEntry.
@@ -192,6 +190,7 @@ void StoreUpdateData::CopyPredictionModelIntoUpdateData(
   // have been constructed on another thread.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!entry_key_prefix_.empty());
+  DCHECK(expiry_time_);
 
   // To avoid any unnecessary copying, the prediction model is moved into
   // proto::StoreEntry.
@@ -202,6 +201,8 @@ void StoreUpdateData::CopyPredictionModelIntoUpdateData(
   proto::StoreEntry entry_proto;
   entry_proto.set_entry_type(static_cast<proto::StoreEntryType>(
       OptimizationGuideStore::StoreEntryType::kPredictionModel));
+  entry_proto.set_expiry_time_secs(
+      expiry_time_->ToDeltaSinceWindowsEpoch().InSeconds());
   entry_proto.mutable_prediction_model()->CopyFrom(prediction_model);
   entries_to_save_->emplace_back(std::move(prediction_model_entry_key),
                                  std::move(entry_proto));

@@ -17,7 +17,6 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/optimization_guide/core/memory_hint.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 
@@ -291,6 +290,23 @@ void OptimizationGuideStore::PurgeExpiredHostModelFeatures() {
                           GetHostModelFeaturesEntryKeyPrefix()),
       base::BindOnce(&OptimizationGuideStore::OnLoadEntriesToPurgeExpired,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OptimizationGuideStore::PurgeInactiveModels() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsAvailable())
+    return;
+
+  // Load all models to check their expiry times.
+  database_->LoadKeysAndEntriesWithFilter(
+      base::BindRepeating(&DatabasePrefixFilter,
+                          GetPredictionModelEntryKeyPrefix()),
+      base::BindOnce(&OptimizationGuideStore::OnLoadModelsToBeUpdated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::make_unique<EntryVector>(),
+                     std::make_unique<leveldb_proto::KeyVector>(),
+                     base::DoNothing::Once()));
 }
 
 void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
@@ -815,12 +831,13 @@ void OptimizationGuideStore::OnLoadHint(
 }
 
 std::unique_ptr<StoreUpdateData>
-OptimizationGuideStore::CreateUpdateDataForPredictionModels() const {
+OptimizationGuideStore::CreateUpdateDataForPredictionModels(
+    base::Time expiry_time) const {
   // Create and returns a StoreUpdateData object. This object has prediction
   // models from the GetModelsResponse moved into and organizes them in a format
   // usable by the store. The object will be stored with
   // UpdatePredictionModels().
-  return StoreUpdateData::CreatePredictionModelStoreUpdateData();
+  return StoreUpdateData::CreatePredictionModelStoreUpdateData(expiry_time);
 }
 
 void OptimizationGuideStore::UpdatePredictionModels(
@@ -862,9 +879,22 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
     return;
   }
 
+  int64_t now_since_epoch =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds();
+  bool had_entries_to_update_or_remove =
+      !update_vector->empty() || !remove_vector->empty();
   for (const auto& entry : *entries) {
+    bool should_delete_download_file = had_entries_to_update_or_remove;
+    if (entry.second.has_expiry_time_secs() &&
+        entry.second.expiry_time_secs() <= now_since_epoch) {
+      remove_vector->push_back(entry.first);
+      should_delete_download_file = true;
+      base::UmaHistogramBoolean("OptimizationGuide.PredictionModelExpired",
+                                true);
+    }
+
     // Delete models that are provided via file.
-    if (entry.second.has_prediction_model() &&
+    if (should_delete_download_file && entry.second.has_prediction_model() &&
         entry.second.prediction_model().model().has_download_url()) {
       store_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),

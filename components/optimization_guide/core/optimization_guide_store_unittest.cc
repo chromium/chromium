@@ -346,6 +346,17 @@ class OptimizationGuideStoreTest : public testing::Test {
     db()->LoadCallback(true);
   }
 
+  void PurgeInactiveModels() {
+    guide_store()->PurgeInactiveModels();
+
+    // OnLoadModelsToBeUpdated
+    db()->LoadCallback(true);
+    // OnUpdateStore
+    db()->UpdateCallback(true);
+    // OnLoadEntryKeys
+    db()->LoadCallback(true);
+  }
+
   bool IsMetadataSchemaEntryKeyPresent() const {
     return IsKeyPresent(OptimizationGuideStore::GetMetadataTypeEntryKey(
         OptimizationGuideStore::MetadataType::kSchema));
@@ -1814,8 +1825,11 @@ TEST_F(OptimizationGuideStoreTest, FindPredictionModelEntryKey) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1837,8 +1851,11 @@ TEST_F(OptimizationGuideStoreTest,
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1857,8 +1874,11 @@ TEST_F(OptimizationGuideStoreTest, FindAndRemovePredictionModelEntryKey) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1894,8 +1914,11 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModel) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
@@ -1944,8 +1967,11 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
@@ -1971,8 +1997,11 @@ TEST_F(OptimizationGuideStoreTest,
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
@@ -2014,8 +2043,11 @@ TEST_F(OptimizationGuideStoreTest,
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
@@ -2049,8 +2081,11 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = temp_dir().AppendASCII("oldfile");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
@@ -2065,7 +2100,9 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   EXPECT_TRUE(success);
 
   std::unique_ptr<StoreUpdateData> update_data2 =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = temp_dir().AppendASCII("newfile");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
@@ -2085,8 +2122,11 @@ TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
   CreateDatabase();
   InitializeStore(schema_state);
 
+  base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForPredictionModels();
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
@@ -2311,6 +2351,56 @@ TEST_F(OptimizationGuideStoreTest, PurgeExpiredHostModelFeatures) {
     EXPECT_FALSE(
         guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
   }
+}
+
+TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
+  base::HistogramTester histogram_tester;
+
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  // Add an update with models that are "inactive".
+  base::Time update_time = base::Time().Now();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time -
+          optimization_guide::features::StoredModelsInactiveDuration());
+  ASSERT_TRUE(update_data);
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  UpdatePredictionModels(std::move(update_data));
+
+  // Add an update with models that are "active".
+  std::unique_ptr<StoreUpdateData> update_data2 =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
+  ASSERT_TRUE(update_data2);
+  SeedPredictionModelUpdateData(update_data2.get(),
+                                proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION);
+  UpdatePredictionModels(std::move(update_data2));
+
+  // Make sure both models are in the store.
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  ASSERT_TRUE(success);
+  success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key);
+  ASSERT_TRUE(success);
+
+  PurgeInactiveModels();
+
+  EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+  // Should not purge models that are still active.
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelExpired", true, 1);
 }
 
 }  // namespace optimization_guide

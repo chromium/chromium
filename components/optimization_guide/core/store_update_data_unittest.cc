@@ -128,13 +128,30 @@ TEST(StoreUpdateDataTest, BuildPredictionModelUpdateData) {
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
 
+  base::Time expected_expiry_time =
+      base::Time::Now() + features::StoredModelsInactiveDuration();
   std::unique_ptr<StoreUpdateData> prediction_model_update =
-      StoreUpdateData::CreatePredictionModelStoreUpdateData();
+      StoreUpdateData::CreatePredictionModelStoreUpdateData(
+          expected_expiry_time);
   prediction_model_update->CopyPredictionModelIntoUpdateData(prediction_model);
   EXPECT_FALSE(prediction_model_update->component_version().has_value());
   EXPECT_FALSE(prediction_model_update->update_time().has_value());
   // Verify there is 1 store entry.
-  EXPECT_EQ(1ul, prediction_model_update->TakeUpdateEntries()->size());
+  const auto update_entries = prediction_model_update->TakeUpdateEntries();
+  EXPECT_EQ(1ul, update_entries->size());
+  // Verify expiry time taken from hint rather than the default expiry time of
+  // the store update data.
+  bool found_prediction_model_entry = false;
+  for (const auto& entry : *update_entries) {
+    proto::StoreEntry store_entry = entry.second;
+    if (store_entry.entry_type() == proto::PREDICTION_MODEL) {
+      found_prediction_model_entry = true;
+      EXPECT_EQ(expected_expiry_time.ToDeltaSinceWindowsEpoch().InSeconds(),
+                store_entry.expiry_time_secs());
+      break;
+    }
+  }
+  EXPECT_TRUE(found_prediction_model_entry);
 }
 
 TEST(StoreUpdateDataTest, BuildHostModelFeaturesUpdateData) {

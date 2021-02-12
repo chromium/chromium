@@ -40,8 +40,8 @@ class StoreUpdateData {
       base::Time fetch_update_time);
 
   // Creates an update data object for a prediction model update.
-  static std::unique_ptr<StoreUpdateData>
-  CreatePredictionModelStoreUpdateData();
+  static std::unique_ptr<StoreUpdateData> CreatePredictionModelStoreUpdateData(
+      base::Time expiry_time);
 
   // Creates an update data object for a host model features update.
   static std::unique_ptr<StoreUpdateData>
@@ -81,7 +81,7 @@ class StoreUpdateData {
                   base::Optional<base::Time> expiry_time);
   StoreUpdateData(base::Time host_model_features_update_time,
                   base::Time expiry_time);
-  StoreUpdateData();
+  explicit StoreUpdateData(base::Time expiry_time);
 
   // The component version of the update data for a component update.
   base::Optional<base::Version> component_version_;

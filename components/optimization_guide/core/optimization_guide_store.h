@@ -174,12 +174,17 @@ class OptimizationGuideStore {
   // removed.
   void PurgeExpiredHostModelFeatures();
 
+  // Removes all models that have not been loaded in the max inactive duration
+  // configured. |entry_keys| is updated after the inactive models are removed.
+  void PurgeInactiveModels();
+
   // Creates and returns a StoreUpdateData object for Prediction Models. This
   // object is used to collect a batch of prediction models in a format that is
   // usable to update the store on a background thread. This is always created
   // when prediction models have been successfully fetched from the remote
   // Optimization Guide Service so the store can update old prediction models.
-  std::unique_ptr<StoreUpdateData> CreateUpdateDataForPredictionModels() const;
+  std::unique_ptr<StoreUpdateData> CreateUpdateDataForPredictionModels(
+      base::Time expiry_time) const;
 
   // Updates the prediction models contained in the store. The callback is run
   // asynchronously after the database stores the prediction models. Virtualized

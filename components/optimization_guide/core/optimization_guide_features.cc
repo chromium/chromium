@@ -229,6 +229,12 @@ base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
       "max_store_duration_for_host_model_features_in_days", 7));
 }
 
+base::TimeDelta StoredModelsInactiveDuration() {
+  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+      kOptimizationTargetPrediction, "inactive_duration_for_models_in_days",
+      30));
+}
+
 base::TimeDelta URLKeyedHintValidCacheDuration() {
   return base::TimeDelta::FromSeconds(GetFieldTrialParamByFeatureAsInt(
       kOptimizationHints, "max_url_keyed_hint_valid_cache_duration_in_seconds",

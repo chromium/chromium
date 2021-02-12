@@ -780,7 +780,8 @@ void PredictionManager::UpdatePredictionModels(
         prediction_models) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
-      StoreUpdateData::CreatePredictionModelStoreUpdateData();
+      StoreUpdateData::CreatePredictionModelStoreUpdateData(
+          clock_->Now() + features::StoredModelsInactiveDuration());
   bool has_models_to_update = false;
   for (const auto& model : prediction_models) {
     if (model.has_model() && !model.model().download_url().empty()) {
@@ -823,7 +824,8 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
 
   // Store the received model in the store.
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
-      StoreUpdateData::CreatePredictionModelStoreUpdateData();
+      StoreUpdateData::CreatePredictionModelStoreUpdateData(
+          clock_->Now() + features::StoredModelsInactiveDuration());
   prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
   model_and_features_store_->UpdatePredictionModels(
       std::move(prediction_model_update_data),
@@ -867,8 +869,9 @@ void PredictionManager::OnHostModelFeaturesStored() {
   // Clear any data remaining in the stored get models response.
   get_models_response_data_to_store_.reset();
 
-  // Purge any expired host model features from the store.
+  // Purge any expired host model features and inactive models from the store.
   model_and_features_store_->PurgeExpiredHostModelFeatures();
+  model_and_features_store_->PurgeInactiveModels();
 
   fetch_timer_.Stop();
   ScheduleModelsAndHostModelFeaturesFetch();

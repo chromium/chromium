@@ -113,6 +113,10 @@ size_t MaxConcurrentPageNavigationFetches();
 // to be used and remain in the OptimizationGuideStore.
 base::TimeDelta StoredHostModelFeaturesFreshnessDuration();
 
+// The maximum duration for which models can remain in the
+// OptimizationGuideStore without being loaded.
+base::TimeDelta StoredModelsInactiveDuration();
+
 // The amount of time URL-keyed hints within the hint cache will be
 // allowed to be used and not be purged.
 base::TimeDelta URLKeyedHintValidCacheDuration();
