@@ -55,7 +55,7 @@ AssistantOptInFlowScreenHandler::AssistantOptInFlowScreenHandler(
 }
 
 AssistantOptInFlowScreenHandler::~AssistantOptInFlowScreenHandler() {
-  if (voice_match_enrollment_started_)
+  if (assistant::AssistantSettings::Get() && voice_match_enrollment_started_)
     StopSpeakerIdEnrollment();
   if (ash::AssistantState::Get())
     ash::AssistantState::Get()->RemoveObserver(this);
