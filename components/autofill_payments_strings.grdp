@@ -508,16 +508,23 @@
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
     Cashback linked
   </message>
-  <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the infobar shown on the merchant website when an offer is available to use.">
-    Don't forget your Google Pay offer
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when an offer is available to use.">
+    Google Pay offer available
   </message>
-  <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the infobar shown on the merchant website when an offer is available to use.">
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
     Got it
   </message>
-  <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Label for the positive button for the infobar shown on the merchant website when an offer is available to use." formatter_data="android_java">
-    Check out with
-  </message>
-  <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
-    See details.
-  </message>
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the Desktop bubble shown on the merchant website when an offer is available to use.">
+      Pay with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> at checkout
+    </message>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the Clank infobar shown on the merchant website when an offer is available to use." formatter_data="android_java">
+      Pay with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> at checkout.
+    </message>
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
+      See details
+    </message>
+  </if>
 </grit-part>
