@@ -32,7 +32,7 @@ function UNTRUSTED_TEST(testName, testCase) {
 }
 
 function registerTestHandlers() {
-  chromeos.test_support.messagePipe().registerHandler(
+  chromeos.internal.messagePipe.registerHandler(
       'run-test-case', (message) => {
         const {testName} = /** @type {{testName: !string}} */ (message);
         return runTestCase(testName);
