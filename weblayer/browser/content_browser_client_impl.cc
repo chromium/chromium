@@ -20,6 +20,8 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/error_page/common/error.h"
@@ -79,6 +81,7 @@
 #include "url/url_constants.h"
 #include "weblayer/browser/browser_main_parts_impl.h"
 #include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/cookie_settings_factory.h"
 #include "weblayer/browser/download_manager_delegate_impl.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
@@ -299,6 +302,75 @@ std::string ContentBrowserClientImpl::GetApplicationLocale() {
 std::string ContentBrowserClientImpl::GetAcceptLangs(
     content::BrowserContext* context) {
   return i18n::GetAcceptLangs();
+}
+
+bool ContentBrowserClientImpl::AllowAppCache(
+    const GURL& manifest_url,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin,
+    content::BrowserContext* context) {
+  return embedder_support::AllowAppCache(
+      manifest_url, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForBrowserContext(context).get());
+}
+
+content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
+    const GURL& scope,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin,
+    const GURL& script_url,
+    content::BrowserContext* context) {
+  return embedder_support::AllowServiceWorker(
+      scope, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForBrowserContext(context).get(),
+      HostContentSettingsMapFactory::GetForBrowserContext(context));
+}
+
+bool ContentBrowserClientImpl::AllowSharedWorker(
+    const GURL& worker_url,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin,
+    const std::string& name,
+    const url::Origin& constructor_origin,
+    content::BrowserContext* context,
+    int render_process_id,
+    int render_frame_id) {
+  return embedder_support::AllowSharedWorker(
+      worker_url, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForBrowserContext(context).get());
+}
+
+void ContentBrowserClientImpl::AllowWorkerFileSystem(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(embedder_support::AllowWorkerFileSystem(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get()));
+}
+
+bool ContentBrowserClientImpl::AllowWorkerIndexedDB(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+  return embedder_support::AllowWorkerIndexedDB(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+}
+
+bool ContentBrowserClientImpl::AllowWorkerCacheStorage(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+  return embedder_support::AllowWorkerCacheStorage(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+}
+
+bool ContentBrowserClientImpl::AllowWorkerWebLocks(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+  return embedder_support::AllowWorkerWebLocks(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
 }
 
 content::WebContentsViewDelegate*
@@ -827,7 +899,7 @@ void ContentBrowserClientImpl::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
 #if defined(OS_ANDROID)
   host->AddFilter(new cdm::CdmMessageFilterAndroid(
-      /*can_persist_data*/ true,
+      !host->GetBrowserContext()->IsOffTheRecord(),
       /*force_to_support_secure_codecs*/ false));
 #endif
   PageSpecificContentSettingsDelegate::UpdateRendererContentSettingRules(host);

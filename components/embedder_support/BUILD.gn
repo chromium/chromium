@@ -14,6 +14,8 @@ static_library("embedder_support") {
 # Target for general utilities that are only used in the browser process.
 static_library("browser_util") {
   sources = [
+    "content_settings_utils.cc",
+    "content_settings_utils.h",
     "user_agent_utils.cc",
     "user_agent_utils.h",
   ]
@@ -21,6 +23,7 @@ static_library("browser_util") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
+    "//components/content_settings/core/browser:browser",
     "//components/version_info",
     "//content/public/browser",
   ]

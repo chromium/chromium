@@ -220,6 +220,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
+#include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/error_page/common/error.h"
@@ -2479,9 +2480,10 @@ bool ChromeContentBrowserClient::AllowAppCache(
     const base::Optional<url::Origin>& top_frame_origin,
     content::BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return CookieSettingsFactory::GetForProfile(
-             Profile::FromBrowserContext(context))
-      ->IsCookieAccessAllowed(manifest_url, site_for_cookies, top_frame_origin);
+  return embedder_support::AllowAppCache(
+      manifest_url, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForProfile(Profile::FromBrowserContext(context))
+          .get());
 }
 
 content::AllowServiceWorkerResult
@@ -2508,23 +2510,10 @@ ChromeContentBrowserClient::AllowServiceWorker(
 #endif
 
   Profile* profile = Profile::FromBrowserContext(context);
-
-  // Check if JavaScript is allowed.
-  content_settings::SettingInfo info;
-  std::unique_ptr<base::Value> value =
-      HostContentSettingsMapFactory::GetForProfile(profile)->GetWebsiteSetting(
-          first_party_url, first_party_url, ContentSettingsType::JAVASCRIPT,
-          &info);
-  ContentSetting setting = content_settings::ValueToContentSetting(value.get());
-  bool allow_javascript = (setting == CONTENT_SETTING_ALLOW);
-
-  // Check if cookies are allowed.
-  bool allow_cookies =
-      CookieSettingsFactory::GetForProfile(profile)->IsCookieAccessAllowed(
-          scope, site_for_cookies, top_frame_origin);
-
-  return content::AllowServiceWorkerResult::FromPolicy(!allow_javascript,
-                                                       !allow_cookies);
+  return embedder_support::AllowServiceWorker(
+      scope, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForProfile(profile).get(),
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 bool ChromeContentBrowserClient::AllowSharedWorker(
@@ -2539,10 +2528,10 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check if cookies are allowed.
-  bool allow =
+  bool allow = embedder_support::AllowSharedWorker(
+      worker_url, site_for_cookies, top_frame_origin,
       CookieSettingsFactory::GetForProfile(Profile::FromBrowserContext(context))
-          ->IsCookieAccessAllowed(worker_url, site_for_cookies,
-                                  top_frame_origin);
+          .get());
 
   content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
       render_process_id, render_frame_id, worker_url, name, constructor_origin,
@@ -2573,10 +2562,10 @@ void ChromeContentBrowserClient::AllowWorkerFileSystem(
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames,
     base::OnceCallback<void(bool)> callback) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-  bool allow = cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
-
+  bool allow = embedder_support::AllowWorkerFileSystem(
+      url, CookieSettingsFactory::GetForProfile(
+               Profile::FromBrowserContext(browser_context))
+               .get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   GuestPermissionRequestHelper(url, render_frames, std::move(callback), allow);
 #else
@@ -2638,10 +2627,10 @@ bool ChromeContentBrowserClient::AllowWorkerIndexedDB(
     const GURL& url,
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-
-  bool allow = cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  bool allow = embedder_support::AllowWorkerIndexedDB(
+      url, CookieSettingsFactory::GetForProfile(
+               Profile::FromBrowserContext(browser_context))
+               .get());
 
   // Record access to IndexedDB for potential display in UI.
   for (const auto& it : render_frames) {
@@ -2656,9 +2645,10 @@ bool ChromeContentBrowserClient::AllowWorkerCacheStorage(
     const GURL& url,
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-  bool allow = cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  bool allow = embedder_support::AllowWorkerCacheStorage(
+      url, CookieSettingsFactory::GetForProfile(
+               Profile::FromBrowserContext(browser_context))
+               .get());
 
   // Record access to CacheStorage for potential display in UI.
   for (const auto& it : render_frames) {
@@ -2673,9 +2663,10 @@ bool ChromeContentBrowserClient::AllowWorkerWebLocks(
     const GURL& url,
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-  return cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  return embedder_support::AllowWorkerWebLocks(
+      url, CookieSettingsFactory::GetForProfile(
+               Profile::FromBrowserContext(browser_context))
+               .get());
 }
 
 ChromeContentBrowserClient::AllowWebBluetoothResult

@@ -34,6 +34,41 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       const content::MainFunctionParams& parameters) override;
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
+  bool AllowAppCache(const GURL& manifest_url,
+                     const GURL& site_for_cookies,
+                     const base::Optional<url::Origin>& top_frame_origin,
+                     content::BrowserContext* context) override;
+  content::AllowServiceWorkerResult AllowServiceWorker(
+      const GURL& scope,
+      const GURL& site_for_cookies,
+      const base::Optional<url::Origin>& top_frame_origin,
+      const GURL& script_url,
+      content::BrowserContext* context) override;
+  bool AllowSharedWorker(const GURL& worker_url,
+                         const GURL& site_for_cookies,
+                         const base::Optional<url::Origin>& top_frame_origin,
+                         const std::string& name,
+                         const url::Origin& constructor_origin,
+                         content::BrowserContext* context,
+                         int render_process_id,
+                         int render_frame_id) override;
+  void AllowWorkerFileSystem(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames,
+      base::OnceCallback<void(bool)> callback) override;
+  bool AllowWorkerIndexedDB(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames) override;
+  bool AllowWorkerCacheStorage(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames) override;
+  bool AllowWorkerWebLocks(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames) override;
   content::WebContentsViewDelegate* GetWebContentsViewDelegate(
       content::WebContents* web_contents) override;
   bool CanShutdownGpuProcessNowOnIOThread() override;
