@@ -19,7 +19,7 @@ import "perf_stat.proto";
 // Protocol buffer for collected sample-based profiling data.
 // Contains the parameters and data from a single profile collection event.
 
-// Next tag: 16
+// Next tag: 18
 message SampledProfile {
   // Indicates the event that triggered this collection.
   enum TriggerEvent {
@@ -114,4 +114,14 @@ message SampledProfile {
   // that can use the max frequency to compute a CPU utilization metric, e.g.
   // when measuring CPU cycles.
   repeated uint32 cpu_max_frequency_mhz = 15;
+
+  // The pressure-stall information that describes the state of CPU utilization
+  // of the system.
+  // The percent of the time that runnable processes are delayed because the CPU
+  // is unavailable, accumulated over 10 seconds.
+  optional float psi_cpu_last_10s_pct = 16;
+
+  // The percent of the time that runnable processes are delayed because the CPU
+  // is unavailable, accumulated over 60 seconds.
+  optional float psi_cpu_last_60s_pct = 17;
 }
