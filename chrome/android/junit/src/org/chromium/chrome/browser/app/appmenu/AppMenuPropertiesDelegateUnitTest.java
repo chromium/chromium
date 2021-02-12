@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -121,6 +122,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     private PrefService mPrefService;
     @Mock
     private ModalDialogManager mModalDialogManager;
+    @Mock
+    private WebFeedBridge mWebFeedBridge;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -144,6 +147,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn((mIncognitoTabModel));
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+        when(mWebFeedBridge.isFollowed(any())).thenReturn(false);
 
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
         mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
@@ -155,10 +159,11 @@ public class AppMenuPropertiesDelegateUnitTest {
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         FeatureList.setTestCanUseDefaultsForTesting();
 
-        mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
-                ContextUtils.getApplicationContext(), mActivityTabProvider,
-                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mOverviewModeSupplier, mBookmarkBridgeSupplier, mModalDialogManager));
+        mAppMenuPropertiesDelegate =
+                Mockito.spy(new AppMenuPropertiesDelegateImpl(ContextUtils.getApplicationContext(),
+                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
+                        mToolbarManager, mDecorView, mOverviewModeSupplier, mBookmarkBridgeSupplier,
+                        mModalDialogManager, mWebFeedBridge));
     }
 
     @After
@@ -725,6 +730,42 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
         Assert.assertEquals(
                 "Get image descriptions", menu.findItem(R.id.get_image_descriptions_id).getTitle());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testWebFeedFollow_isNotFollowed_showsFollow() {
+        when(mWebFeedBridge.isFollowed(any())).thenReturn(false);
+        setUpMocksForPageMenu();
+        setMenuOptions(false /*isNativePage*/, true /*showTranslate*/, false /*showUpdate*/,
+                false /*showMoveToOtherWindow*/, false /*showReaderModePrefs*/,
+                true /*showAddToHomeScreen*/, false /*showPaintPreview*/);
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Context context = ContextUtils.getApplicationContext();
+        MenuItem feedItem = menu.findItem(R.id.feed_follow_id);
+        Assert.assertEquals("Follow title does not match", context.getString(R.string.menu_follow),
+                feedItem.getTitle());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testWebFeedFollow_isFollowed_showsFollowing() {
+        when(mWebFeedBridge.isFollowed(any())).thenReturn(true);
+        setUpMocksForPageMenu();
+        setMenuOptions(false /*isNativePage*/, true /*showTranslate*/, false /*showUpdate*/,
+                false /*showMoveToOtherWindow*/, false /*showReaderModePrefs*/,
+                true /*showAddToHomeScreen*/, false /*showPaintPreview*/);
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Context context = ContextUtils.getApplicationContext();
+        MenuItem feedItem = menu.findItem(R.id.feed_follow_id);
+        Assert.assertEquals("Following title does not match",
+                context.getString(R.string.menu_following), feedItem.getTitle());
     }
 
     @Test

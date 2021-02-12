@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -60,7 +61,6 @@ import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
-import org.chromium.chrome.browser.webfeed.WebFeedBridge;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -111,6 +111,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
     private final ModalDialogManager mModalDialogManager;
+    private final WebFeedBridge mWebFeedBridge;
 
     // The keys of the Map are menuitem ids, the first elements in the Pair are menuitem ids,
     // and the second elements in the Pair are AppMenuSimilarSelectionType. If users first
@@ -183,13 +184,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      *         associated with the containing activity.
      * @param modalDialogManager The {@link ModalDialogManager} that should be used to show "Add To"
      *         dialog.
+     * @param webFeedBridge The {@link WebFeedBridge} used to show the Web Feed follow option.
      */
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager, WebFeedBridge webFeedBridge) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -198,6 +200,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
         mModalDialogManager = modalDialogManager;
+        mWebFeedBridge = webFeedBridge;
 
         if (overviewModeBehaviorSupplier != null) {
             overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
@@ -506,8 +509,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         MenuItem followMenuItem = menu.findItem(R.id.feed_follow_id);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             followMenuItem.setVisible(true);
-            WebFeedBridge webFeedBridge = new WebFeedBridge();
-            if (webFeedBridge.isFollowed(currentTab.getUrl())) {
+            if (mWebFeedBridge.isFollowed(currentTab.getUrl())) {
                 followMenuItem.setIcon(R.drawable.ic_checkmark_24dp);
                 followMenuItem.setTitle(R.string.menu_following);
             }
