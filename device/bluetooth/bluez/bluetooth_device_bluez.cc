@@ -205,6 +205,9 @@ device::BluetoothTransport BluetoothDeviceBlueZ::GetType() const {
 
 void BluetoothDeviceBlueZ::CreateGattConnectionImpl(
     base::Optional<BluetoothUUID> service_uuid) {
+// Once ConnectLE is supported on Linux, this buildflag will not be necessary
+// (this bluez code is only run on Chrome OS and Linux).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (num_connecting_calls_++ == 0)
     adapter()->NotifyDeviceChanged(this);
 
@@ -223,6 +226,13 @@ void BluetoothDeviceBlueZ::CreateGattConnectionImpl(
   // GATT service), simply perform a regular LE connect.
   bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->ConnectLE(
       object_path_, std::move(success_callback), std::move(error_callback));
+#else
+  Connect(/*pairing_delegate=*/nullptr,
+          base::BindOnce(&BluetoothDeviceBlueZ::DidConnectGatt,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&BluetoothDeviceBlueZ::DidFailToConnectGatt,
+                         weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void BluetoothDeviceBlueZ::SetGattServicesDiscoveryComplete(bool complete) {
@@ -262,18 +272,28 @@ void BluetoothDeviceBlueZ::DisconnectGatt() {
     return;
   }
 
+// Once DisconnectLE is supported on Linux, this buildflag will not be necessary
+// (this bluez code is only run on Chrome OS and Linux).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->DisconnectLE(
       object_path_, base::DoNothing(),
       base::BindOnce(&BluetoothDeviceBlueZ::OnDisconnectLEError,
                      weak_ptr_factory_.GetWeakPtr()));
+#else
+  Disconnect(base::DoNothing(), base::DoNothing());
+#endif
 }
 
+// Once DisconnectLE is supported on Linux, this buildflag will not be necessary
+// (this bluez code is only run on Chrome OS and Linux).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothDeviceBlueZ::OnDisconnectLEError(
     const std::string& error_name,
     const std::string& error_message) {
   BLUETOOTH_LOG(ERROR) << "DisconnectLE() failed with error name: "
                        << error_name << " and error message: " << error_message;
 }
+#endif
 
 std::string BluetoothDeviceBlueZ::GetAddress() const {
   bluez::BluetoothDeviceClient::Properties* properties =
@@ -374,12 +394,20 @@ bool BluetoothDeviceBlueZ::IsConnected() const {
 }
 
 bool BluetoothDeviceBlueZ::IsGattConnected() const {
+// Once the |connected_le| property is supported on Linux, this buildflag will
+// not be necessary (this bluez code is only run on Chrome OS and Linux).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluetoothDeviceClient::Properties* properties =
       bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
           object_path_);
   DCHECK(properties);
 
   return properties->connected_le.value();
+#else
+  // BlueZ uses the same attribute for GATT Connections and Classic BT
+  // Connections.
+  return IsConnected();
+#endif
 }
 
 bool BluetoothDeviceBlueZ::IsConnectable() const {
