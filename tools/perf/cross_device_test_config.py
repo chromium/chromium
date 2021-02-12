@@ -41,6 +41,12 @@ TARGET_DEVICES = {
             'intent:coldish:bbc': 10,
             'intent:warm:bbc': 10,
             'cct:coldish:bbc': 10
+        },
+        'system_health.common_mobile': {
+            # timeToFirstContentfulPaint
+            'browse:media:googleplaystore:2019': 10,
+            'load:social:pinterest:2019': 10,
+            'browse:media:facebook_photos:2019': 10
         }
     },
     'Android Nexus5 Perf': {
@@ -55,6 +61,12 @@ TARGET_DEVICES = {
             'intent:coldish:bbc': 10,
             'intent:warm:bbc': 10,
             'cct:coldish:bbc': 10
+        },
+        'system_health.common_mobile': {
+            # timeToFirstContentfulPaint
+            'background:social:facebook:2019': 10,
+            # cputimeToFirstContentfulPaint
+            'load:search:google:2018': 10
         }
     },
     'android-pixel4-perf': {
@@ -69,6 +81,22 @@ TARGET_DEVICES = {
             'intent:coldish:bbc': 4,
             'intent:warm:bbc': 4,
             'cct:coldish:bbc': 4
+        }
+    },
+    'linux-perf': {
+        'system_health.common_desktop': {
+            # cputimeToFirstContentfulPaint
+            'browse:social:tumblr_infinite_scroll:2018': 10,
+            'long_running:tools:gmail-background': 10,
+            'browse:media:youtubetv:2019': 10
+        }
+    },
+    'win-10-perf': {
+        'system_health.common_desktop': {
+            # cputimeToFirstContentfulPaint
+            'browse:media:tumblr:2018': 10,
+            'browse:social:tumblr_infinite_scroll:2018': 10,
+            'load:search:google:2018': 10,
         }
     },
 }

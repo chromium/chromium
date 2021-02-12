@@ -11,7 +11,16 @@
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 6,
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 6
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
                 "abridged": false
             }
         }
@@ -19,8 +28,20 @@
     "1": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 6,
-                "end": 14,
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 6,
+                        "end": 14
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
                 "abridged": false
             },
             "startup.mobile": {
@@ -32,8 +53,20 @@
     "2": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 14,
-                "end": 31,
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 14,
+                        "end": 30
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
                 "abridged": false
             },
             "startup.mobile": {
@@ -45,8 +78,16 @@
     "3": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 31,
-                "end": 57,
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 30,
+                        "end": 57
+                    }
+                ],
                 "abridged": false
             },
             "startup.mobile": {
@@ -58,8 +99,20 @@
     "4": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 57,
-                "end": 70,
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    },
+                    {
+                        "begin": 57,
+                        "end": 70
+                    }
+                ],
                 "abridged": false
             },
             "startup.mobile": {
@@ -71,7 +124,20 @@
     "5": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 70,
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    },
+                    {
+                        "begin": 70,
+                        "end": 73
+                    }
+                ],
                 "abridged": false
             },
             "system_health.memory_mobile": {
@@ -91,6 +157,19 @@
                 "end": 8,
                 "abridged": false
             },
+            "system_health.common_mobile": {
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
+                "abridged": false
+            },
             "startup.mobile": {
                 "end": 3,
                 "abridged": false
@@ -102,6 +181,19 @@
             "system_health.memory_mobile": {
                 "begin": 8,
                 "end": 12,
+                "abridged": false
+            },
+            "system_health.common_mobile": {
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
                 "abridged": false
             },
             "startup.mobile": {
@@ -117,6 +209,19 @@
                 "end": 17,
                 "abridged": false
             },
+            "system_health.common_mobile": {
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
+                "abridged": false
+            },
             "startup.mobile": {
                 "end": 3,
                 "abridged": false
@@ -128,6 +233,19 @@
             "system_health.memory_mobile": {
                 "begin": 17,
                 "end": 22,
+                "abridged": false
+            },
+            "system_health.common_mobile": {
+                "sections": [
+                    {
+                        "begin": 0,
+                        "end": 1
+                    },
+                    {
+                        "begin": 41,
+                        "end": 42
+                    }
+                ],
                 "abridged": false
             },
             "startup.mobile": {
@@ -224,28 +342,28 @@
     },
     "extra_infos": {
         "num_stories": 182,
-        "predicted_min_shard_time": 1035.0,
+        "predicted_min_shard_time": 1017.0,
         "predicted_min_shard_index": 13,
-        "predicted_max_shard_time": 1359.0,
+        "predicted_max_shard_time": 1356.0,
         "predicted_max_shard_index": 15,
-        "shard #0": 1180.0,
-        "shard #1": 1149.0,
-        "shard #2": 1193.0,
-        "shard #3": 1182.0,
-        "shard #4": 1169.0,
+        "shard #0": 1131.0,
+        "shard #1": 1145.0,
+        "shard #2": 1163.0,
+        "shard #3": 1176.0,
+        "shard #4": 1168.0,
         "shard #5": 1149.0,
-        "shard #6": 1265.0,
-        "shard #7": 1190.0,
-        "shard #8": 1064.0,
-        "shard #9": 1253.0,
-        "shard #10": 1182.0,
+        "shard #6": 1268.0,
+        "shard #7": 1193.0,
+        "shard #8": 1070.0,
+        "shard #9": 1256.0,
+        "shard #10": 1176.0,
         "shard #11": 1203.0,
         "shard #12": 1119.0,
-        "shard #13": 1035.0,
+        "shard #13": 1017.0,
         "shard #14": 1176.0,
-        "shard #15": 1359.0,
-        "shard #16": 1229.0,
-        "shard #17": 1161.0,
-        "shard #18": 1135.0
+        "shard #15": 1356.0,
+        "shard #16": 1219.0,
+        "shard #17": 1139.0,
+        "shard #18": 1133.0
     }
 }
