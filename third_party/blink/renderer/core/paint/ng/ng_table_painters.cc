@@ -40,13 +40,14 @@ class NGTableCollapsedEdge {
   NGTableCollapsedEdge(const NGTableCollapsedEdge& source, int offset)
       : borders_(source.borders_) {
     // If edge index would have been negative.
-    if (offset < 0 && edge_index_ < static_cast<wtf_size_t>(abs(offset))) {
+    if (offset < 0 &&
+        source.edge_index_ < static_cast<wtf_size_t>(std::abs(offset))) {
       edge_index_ = UINT_MAX;
-      return;
+    } else {
+      edge_index_ = source.edge_index_ + offset;
+      if (edge_index_ >= borders_.EdgeCount())
+        edge_index_ = UINT_MAX;
     }
-    edge_index_ = source.edge_index_ + offset;
-    if (edge_index_ >= borders_.EdgeCount())
-      edge_index_ = UINT_MAX;
     InitCachedProps();
   }
 
