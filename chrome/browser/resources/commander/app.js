@@ -92,8 +92,6 @@ export class CommanderAppElement extends PolymerElement {
       this.browserProxy_.promptCancelled();
       this.promptText_ = null;
       this.$.input.value = this.savedInput_;
-      e.preventDefault();
-      this.onInput_();
     }
   }
 
@@ -121,7 +119,6 @@ export class CommanderAppElement extends PolymerElement {
       this.promptText_ = viewModel.promptText || null;
       this.savedInput_ = this.$.input.value;
       this.$.input.value = '';
-      this.onInput_();
     }
   }
 
