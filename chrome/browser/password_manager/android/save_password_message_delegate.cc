@@ -19,7 +19,10 @@
 #include "url/origin.h"
 
 SavePasswordMessageDelegate::SavePasswordMessageDelegate() = default;
-SavePasswordMessageDelegate::~SavePasswordMessageDelegate() = default;
+
+SavePasswordMessageDelegate::~SavePasswordMessageDelegate() {
+  DismissSavePasswordPrompt();
+}
 
 void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
     content::WebContents* web_contents,
