@@ -45770,6 +45770,7 @@ from previous Chrome versions.
   <int value="503245473" label="disable-translate-new-ux"/>
   <int value="504549229" label="WebViewDisplayCutout:disabled"/>
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
+  <int value="504946061" label="WebAppEnableUrlHandlers:disabled"/>
   <int value="504994663" label="GenericSensor:disabled"/>
   <int value="505561325" label="OpenXR:disabled"/>
   <int value="506680761" label="WebNFC:disabled"/>
@@ -45991,6 +45992,7 @@ from previous Chrome versions.
   <int value="699149897" label="ContentSuggestionsDebugLog:disabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="701766325" label="PerNavigationMojoInterface:enabled"/>
+  <int value="701795774" label="WebAppEnableUrlHandlers:enabled"/>
   <int value="702060507" label="SafetyCheckWeakPasswords:disabled"/>
   <int value="703469777" label="AndroidNightModeTabReparenting:enabled"/>
   <int value="705407202" label="AutofillSaveCardImprovedUserConsent:disabled"/>

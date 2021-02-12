@@ -1587,6 +1587,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "enable-desktop-pwas-url-handling",
+    "owners": [ "luhua@microsoft.com", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-encryption-migration",
     "owners": [ "fukino" ],
     "expiry_milestone": 76
