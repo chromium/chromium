@@ -41,6 +41,8 @@ class OptimizationGuideTopHostProviderTest
         data_reduction_proxy::DataReductionProxyTestContext::Builder()
             .WithMockConfig()
             .Build();
+    // Make sure the param values are in a well known state.
+    site_engagement::SiteEngagementScore::SetParamValuesForTesting();
   }
 
   void TearDown() override {
@@ -65,10 +67,16 @@ class OptimizationGuideTopHostProviderTest
 
   void AddEngagedHosts(size_t num_hosts) {
     for (size_t i = 1; i <= num_hosts; i++) {
-      AddEngagedHost(
-          GURL(base::StringPrintf("https://domain%zu.com", i)),
-          static_cast<double>(i + site_engagement::SiteEngagementScore::
-                                      GetFirstDailyEngagementPoints()));
+      // Add 1 to GetFirstDailyEngagementPoints because it is 0
+      // in tests (it's 1.5 in Chrome). Otherwise,
+      // OptimizationGuideTopHostProvider::GetTopHosts() may filter out
+      // the first host we add, because
+      // MinTopHostEngagementScoreThreshold defaults to 2.
+      AddEngagedHost(GURL(base::StringPrintf("https://domain%zu.com", i)),
+                     static_cast<double>(i +
+                                         site_engagement::SiteEngagementScore::
+                                             GetFirstDailyEngagementPoints() +
+                                         1));
     }
   }
 
