@@ -242,9 +242,14 @@ void PermissionRequestManager::AddRequest(
   }
 }
 
-void PermissionRequestManager::UpdateAnchorPosition() {
-  if (view_)
-    view_->UpdateAnchorPosition();
+void PermissionRequestManager::UpdateAnchor() {
+  if (view_) {
+    // When the prompt's anchor is being updated, the prompt view can be
+    // recreated for the new browser. Because of that, ignore prompt callbacks
+    // while doing that.
+    base::AutoReset<bool> ignore(&ignore_callbacks_from_prompt_, true);
+    view_->UpdateAnchor();
+  }
 }
 
 void PermissionRequestManager::DidStartNavigation(
@@ -379,7 +384,7 @@ GURL PermissionRequestManager::GetEmbeddingOrigin() const {
 }
 
 void PermissionRequestManager::Accept() {
-  if (deleting_bubble_)
+  if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
   std::vector<PermissionRequest*>::iterator requests_iter;
@@ -391,7 +396,7 @@ void PermissionRequestManager::Accept() {
 }
 
 void PermissionRequestManager::AcceptThisTime() {
-  if (deleting_bubble_)
+  if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
   std::vector<PermissionRequest*>::iterator requests_iter;
@@ -403,7 +408,7 @@ void PermissionRequestManager::AcceptThisTime() {
 }
 
 void PermissionRequestManager::Deny() {
-  if (deleting_bubble_)
+  if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
 
@@ -429,7 +434,7 @@ void PermissionRequestManager::Deny() {
 }
 
 void PermissionRequestManager::Closing() {
-  if (deleting_bubble_)
+  if (ignore_callbacks_from_prompt_)
     return;
   DCHECK(view_);
   std::vector<PermissionRequest*>::iterator requests_iter;
@@ -588,7 +593,7 @@ void PermissionRequestManager::ShowBubble() {
 void PermissionRequestManager::DeleteBubble() {
   DCHECK(view_);
   {
-    base::AutoReset<bool> deleting(&deleting_bubble_, true);
+    base::AutoReset<bool> deleting(&ignore_callbacks_from_prompt_, true);
     view_.reset();
   }
   NotifyBubbleRemoved();

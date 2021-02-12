@@ -30,7 +30,7 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   ~PermissionPromptImpl() override;
 
   // permissions::PermissionPrompt:
-  void UpdateAnchorPosition() override;
+  void UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
@@ -67,7 +67,9 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
 
   permissions::PermissionPrompt::Delegate* const delegate_;
 
-  Browser* const browser_;
+  Browser* browser_;
+
+  base::TimeTicks permission_requested_time_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
 };

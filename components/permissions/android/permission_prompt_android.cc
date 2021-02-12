@@ -56,8 +56,8 @@ PermissionPromptAndroid::~PermissionPromptAndroid() {
   }
 }
 
-void PermissionPromptAndroid::UpdateAnchorPosition() {
-  NOTREACHED() << "UpdateAnchorPosition is not implemented";
+void PermissionPromptAndroid::UpdateAnchor() {
+  NOTIMPLEMENTED();
 }
 
 permissions::PermissionPrompt::TabSwitchingBehavior

@@ -97,7 +97,7 @@ class PermissionRequestManager
                   PermissionRequest* request);
 
   // Will reposition the bubble (may change parent if necessary).
-  void UpdateAnchorPosition();
+  void UpdateAnchor();
 
   // For observing the status of the permission bubble manager.
   void AddObserver(Observer* observer);
@@ -321,10 +321,10 @@ class PermissionRequestManager
   base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
       prediction_grant_likelihood_;
 
-  // Whether the bubble is being destroyed by this class, rather than in
-  // response to a UI event. In this case, callbacks from the bubble itself
-  // should be ignored.
-  bool deleting_bubble_ = false;
+  // True when the prompt is being temporary destroyed to be recreated for the
+  // correct browser or when the tab is hidden. In those cases, callbacks from
+  // the bubble itself should be ignored.
+  bool ignore_callbacks_from_prompt_ = false;
 
   // Whether the web contents associated with this request manager supports
   // permission prompts.

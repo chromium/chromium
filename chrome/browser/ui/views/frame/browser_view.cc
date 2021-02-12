@@ -2851,7 +2851,7 @@ void BrowserView::Layout() {
   if (contents &&
       permissions::PermissionRequestManager::FromWebContents(contents)) {
     permissions::PermissionRequestManager::FromWebContents(contents)
-        ->UpdateAnchorPosition();
+        ->UpdateAnchor();
   }
 
   feature_promo_controller_->UpdateBubbleForAnchorBoundsChange();

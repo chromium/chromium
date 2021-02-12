@@ -23,7 +23,7 @@ MockPermissionPrompt::~MockPermissionPrompt() {
     factory_->HideView(this);
 }
 
-void MockPermissionPrompt::UpdateAnchorPosition() {}
+void MockPermissionPrompt::UpdateAnchor() {}
 
 PermissionPrompt::TabSwitchingBehavior
 MockPermissionPrompt::GetTabSwitchingBehavior() {
