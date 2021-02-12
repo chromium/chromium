@@ -274,10 +274,11 @@ bool IsRootEditableElementWithCounting(const Element& element) {
 }
 
 // Return true if we're absolutely sure that this node is going to establish a
-// new formatting context. Whether or not it establishes a new formatting
-// context cannot be accurately determined until we have actually created the
-// object (see LayoutBlockFlow::CreatesNewFormattingContext()), so this function
-// may (and is allowed to) return false negatives, but NEVER false positives.
+// new formatting context that can serve as a layout engine boundary (NG
+// vs. legacy). Whether or not it establishes a new formatting context cannot be
+// accurately determined until we have actually created the object (see
+// LayoutBlockFlow::CreatesNewFormattingContext()), so this function may (and is
+// allowed to) return false negatives, but NEVER false positives.
 bool DefinitelyNewFormattingContext(const Node& node,
                                     const ComputedStyle& style) {
   auto display = style.Display();
@@ -289,6 +290,13 @@ bool DefinitelyNewFormattingContext(const Node& node,
       display == EDisplay::kTableColumnGroup ||
       display == EDisplay::kTableColumn)
     return false;
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+    // TableNG requires that table parts be either all NG, or all Legacy. In
+    // other words, cells and captions aren't suitable engine boundaries.
+    if (display == EDisplay::kTableCell || display == EDisplay::kTableCaption)
+      return false;
+  }
+
   // ::marker may establish a formatting context but still have some dependency
   // on the originating list item, so return false.
   if (node.IsMarkerPseudoElement())
@@ -4246,12 +4254,6 @@ void Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
 void Element::ForceLegacyLayoutInFormattingContext(
     const ComputedStyle& new_style) {
   bool found_fc = DefinitelyNewFormattingContext(*this, new_style);
-  if (found_fc && RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    // TableNG requires that table elements are either all NG, or all Legacy. We
-    // need to mark all the way up to the containing table.
-    found_fc = new_style.Display() != EDisplay::kTableCell &&
-               new_style.Display() != EDisplay::kTableCaption;
-  }
 
   for (Element* ancestor = this; !found_fc;) {
     ancestor =
