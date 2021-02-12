@@ -223,6 +223,7 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1172610")
     public void testTabsAreShown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         checkItemsDisplayed(true, true, true, true);
