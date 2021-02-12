@@ -526,6 +526,13 @@
       ]
      ],
      "crashtests": {
+      "caption-with-multicol-table-cell.html": [
+       "2228ad69366f2a364a229a3cb178e5bf8414da56",
+       [
+        null,
+        {}
+       ]
+      ],
       "dialog-table-crash.html": [
        "decc3eb1fbe1937e693a5401c64f58a3411d792b",
        [
@@ -195279,7 +195286,7 @@
        []
       ],
       "percentage-descendant-of-anonymous-flex-item-ref.html": [
-       "5f72540799a1b52c5205d709f1f44465e54f6725",
+       "78dac9724f71ee739dd030f5e8034200f25ed063",
        []
       ],
       "percentage-size-subitems-001-ref.html": [
@@ -233700,7 +233707,7 @@
       },
       "navigation-reporting": {
        "report-only-four-reports.https.html.sub.headers": [
-        "5c886ad05386ec21dcc3722649a40653962d8519",
+        "50372c17fa26144715fc845e7acd53b5ac7ece87",
         []
        ],
        "report-only-from-unsafe-none.https.html.headers": [
@@ -233708,7 +233715,7 @@
         []
        ],
        "report-only-same-origin-report-to.https.html.sub.headers": [
-        "74690a7186fba809e1631ef6de21a17a59996e68",
+        "3811aeabbe7da7960ac923614d93ae409f02b423",
         []
        ],
        "report-only-same-origin-with-coep-report-only.https.html.headers": [
@@ -233724,19 +233731,19 @@
         []
        ],
        "reporting-coop-navigated-popup.https.html.sub.headers": [
-        "e28474a4df8f255c041e85752479994fb7e5bb9b",
+        "af9f1e77f21229eb6106fedd0566afd96f55e848",
         []
        ],
        "reporting-popup-same-origin-allow-popups-report-to.https.html.sub.headers": [
-        "7e9bb7afcdcb8a6aed0b96d6fcb70304bc2a4a9f",
+        "a72aeef0bb472404c83ccc50a6fcb313fa2d4664",
         []
        ],
        "reporting-popup-same-origin-coep-report-to.https.html.sub.headers": [
-        "ebc3da0baa16f485278b36c571fa6a35c7390dc9",
+        "c3ac29e137d7236dda2f41e5763844eb6a28d2c3",
         []
        ],
        "reporting-popup-same-origin-report-to.https.html.sub.headers": [
-        "13df6680817a6380c9ba5dca8848b8f101ae46c0",
+        "d11c8477904c4a9e32d4f18613d057b2939db1c6",
         []
        ],
        "reporting-popup-same-origin.https.html.headers": [
@@ -233744,7 +233751,7 @@
         []
        ],
        "reporting-popup-unsafe-none-report-to.https.html.sub.headers": [
-        "a0d12c549fac7d4e7b06d2741085b4ef712bae13",
+        "23213766b307ae0c45a6f0dd2d20647769be3c3f",
         []
        ]
       },
@@ -233765,12 +233772,8 @@
         "88dbd60fae7a41e245a0b822f8336ddeff56f410",
         []
        ],
-       "report.py": [
-        "8e5ec6d1b9b14168c92eedd6e9098e51a61f31c8",
-        []
-       ],
        "reporting-common.js": [
-        "01f835e12ad5f24c07c50ae7376183628fff80bc",
+        "8c62147a57aafa3e5888b99aa2377558748798c1",
         []
        ],
        "test-access-property.js": [
@@ -247842,7 +247845,7 @@
       []
      ],
      "nel.sub.js": [
-      "1cafcc1beacb6d1423733cde71b74a130215f87c",
+      "856af10cf7f15ebc218d513fb93de4b187829476",
       []
      ],
      "no-policy-pass.png": [
@@ -251328,7 +251331,7 @@
     ],
     "resources": {
      "README.md": [
-      "d816ed0899767e34e0b70409f32bbeb90745d885",
+      "f3ee06c14a44799fe7cced086302f5d0e2ad677c",
       []
      ],
      "fail.png": [
@@ -251340,7 +251343,7 @@
       []
      ],
      "report.py": [
-      "796a1cb885816f619e4d6c7561b290fe324e3663",
+      "3adbf3668e52632d19f1c04c9208fc53ecb15c1d",
       []
      ]
     }
@@ -395829,7 +395832,7 @@
      ]
     ],
     "sends-report-on-redirect.https.html": [
-     "c9ba405f6faa638701af43cde94c270382fffb9d",
+     "da6ae72c5a254fb429b6e538c8a847e70e2a0ac4",
      [
       null,
       {}
