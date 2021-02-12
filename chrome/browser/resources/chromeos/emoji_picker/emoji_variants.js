@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {createCustomEvent, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {Emoji} from './types.js';
 
 const GENDER_FEMALE = 9792;       // U+2640 FEMALE_SIGN
@@ -94,6 +95,15 @@ export class EmojiVariants extends PolymerElement {
     const gridEmoji = this.baseEmoji ? this.variants.slice(1) : this.variants;
     const rowLengths = this.computeVariantRowLengths(gridEmoji);
     this.variantRows = partitionArray(gridEmoji, rowLengths);
+
+    this.addEventListener(
+        'keydown', (ev) => this.onKeyDown(/** @type {!KeyboardEvent} */ (ev)));
+  }
+
+  connectedCallback() {
+    beforeNextRender(
+        this,
+        () => this.shadowRoot.querySelector('emoji-button').focusButton());
   }
 
   computeVariantRowLengths(variants) {
@@ -114,6 +124,23 @@ export class EmojiVariants extends PolymerElement {
 
     console.error('unimplemented variation: ', variants);
     return [];
+  }
+
+  /**
+   * @param {!KeyboardEvent} ev
+   */
+  onKeyDown(ev) {
+    if (ev.key !== 'Escape')
+      return;
+
+    // hide visible variants when escape is pressed.
+    // TODO(crbug.com/1177020): does not work (whole dialog is closed instead).
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
+      button: null,
+      variants: null,
+    }));
   }
 }
 

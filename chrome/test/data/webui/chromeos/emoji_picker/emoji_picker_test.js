@@ -11,7 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
-import {deepQuerySelector, dispatchMouseEvent, waitForCondition, waitForEvent} from './emoji_picker_test_util.js';
+import {deepQuerySelector, dispatchMouseEvent, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
 const ACTIVE_CLASS = 'emoji-group-active';
 
@@ -134,7 +134,8 @@ suite('<emoji-picker>', () => {
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
       dispatchMouseEvent(firstEmojiButton.querySelector('button'), 2);
 
-      await variantsPromise;
+      await waitWithTimeout(
+          variantsPromise, 1000, 'did not receive emoji variants event.');
       await waitForCondition(
           () => findEmojiVariants(firstEmojiButton),
           'emoji-variants failed to appear.');
@@ -197,7 +198,8 @@ suite('<emoji-picker>', () => {
           await waitForCondition(() => findEmojiVariants(coupleEmojiButton));
 
       // ensure variants are positioned before we get bounding rectangle.
-      await variantsPromise;
+      await waitWithTimeout(
+          variantsPromise, 1000, 'did not receive emoji variants event.');
       const variantsRect = variants.getBoundingClientRect();
       const pickerRect = emojiPicker.getBoundingClientRect();
 

@@ -46,11 +46,12 @@
 
 
 <button
+    id="button"
     class$="[[_className(variants)]]"
     on-click="onClick"
     on-contextmenu="onContextMenu"
-    on-mouseup="onMouseUp"
-    disabled="[[disabled]]">
+    disabled="[[disabled]]"
+    aria-label="[[_label(emoji, variants)]]">
   [[emoji]]
 </button>
 <template is="dom-if" if="[[variantsVisible]]">

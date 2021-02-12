@@ -22,7 +22,7 @@ export class EmojiButton extends PolymerElement {
     return {
       /** @type {!string} */
       emoji: {type: String, readonly: true},
-      /** @type {Array<Emoji>} */
+      /** @type {?Array<Emoji>} */
       variants: {type: Array, readonly: true},
       /** @type {!boolean} */
       variantsVisible: {type: Boolean, value: false},
@@ -35,6 +35,10 @@ export class EmojiButton extends PolymerElement {
     super();
   }
 
+  focusButton(options) {
+    this.$.button.focus(options);
+  }
+
   onClick(ev) {
     if (this.disabled)
       return;
@@ -43,16 +47,11 @@ export class EmojiButton extends PolymerElement {
   }
 
   onContextMenu(ev) {
-    ev.preventDefault();  // disable standard context menu
-  }
+    ev.preventDefault();
 
-  /**
-   * @param {!MouseEvent} ev
-   */
-  onMouseUp(ev) {
-    // only handle right mouse button clicks.
-    if (this.disabled || ev.button !== 2)
+    if (this.disabled)
       return;
+
     if (this.variants && this.variants.length) {
       this.variantsVisible = !this.variantsVisible;
       if (this.variantsVisible) {
@@ -66,11 +65,14 @@ export class EmojiButton extends PolymerElement {
         });
       }
     }
-    ev.preventDefault();
   }
 
   _className(variants) {
     return variants && variants.length > 0 ? 'has-variants' : '';
+  }
+
+  _label(emoji, variants) {
+    return variants && variants.length ? emoji + ' with variants.' : emoji;
   }
 }
 

@@ -17,7 +17,7 @@ export let EmojiButtonClickEvent;
 export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
 
 /**
- * @typedef {!CustomEvent<{button: Element, variants: Element}>}
+ * @typedef {!CustomEvent<{button: ?Element, variants: ?Element}>}
  */
 export let EmojiVariantsShownEvent;
 

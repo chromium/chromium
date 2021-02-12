@@ -34,20 +34,39 @@
     overflow-y: scroll;
     /* scroll-behavior: smooth; */
   }
+
+  .sr-only {
+    color: transparent;
+    position: absolute;
+    z-index: -2;
+  }
 </style>
+
+<div class="sr-only" aria-live="polite">
+  Insert emoji by activating them. Close with escape.
+  Some emoji have variants which can be opened with context menu.
+  Use the emoji group buttons or headings to jump to emoji groups.
+</div>
+
+<div id="message" class="sr-only" aria-live="polite"></div>
 
 <input id="search" class="w-100"
         type="text" value="{{search::input}}">
 </input>
 
+<div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
+
 <div id="tabs">
   <template is="dom-repeat" items="[[emojiGroupTabs]]">
     <emoji-group-button
         data-group$="[[item.groupId]]" group-id="[[item.groupId]]"
-        active="[[item.active]]" icon="[[item.icon]]">
+        active="[[item.active]]" icon="[[item.icon]]"
+        name="[[item.name]]">
     </emoji-group-button>
   </template>
 </div>
+
+<div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
 
 <div id="groups" on-scroll="onEmojiScroll">
   <!--

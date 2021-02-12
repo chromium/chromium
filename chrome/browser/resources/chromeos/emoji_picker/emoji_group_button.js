@@ -21,6 +21,8 @@ export class EmojiGroupButton extends PolymerElement {
   static get properties() {
     return {
       /** @type {!string} */
+      name: {type: String, readonly: true},
+      /** @type {!string} */
       icon: {type: String, readonly: true},
       /** @type {!string} */
       groupId: {type: String, readonly: true},

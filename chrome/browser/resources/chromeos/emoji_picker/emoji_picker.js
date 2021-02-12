@@ -18,17 +18,64 @@ import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
+// the name attributes below are used to label the group buttons.
+// the ordering group names are used for the group headings in the emoji picker.
 const GROUP_TABS = [
-  {icon: 'emoji_picker:schedule', groupId: 'history', active: true},
-  {icon: 'emoji_picker:insert_emoticon', groupId: '0', active: false},
-  {icon: 'emoji_picker:emoji_people', groupId: '1', active: false},
-  {icon: 'emoji_picker:emoji_nature', groupId: '2', active: false},
-  {icon: 'emoji_picker:emoji_food_beverage', groupId: '3', active: false},
-  {icon: 'emoji_picker:emoji_transportation', groupId: '4', active: false},
-  {icon: 'emoji_picker:emoji_events', groupId: '5', active: false},
-  {icon: 'emoji_picker:emoji_objects', groupId: '6', active: false},
-  {icon: 'emoji_picker:emoji_symbols', groupId: '7', active: false},
-  {icon: 'emoji_picker:flag', groupId: '8', active: false},
+  {
+    name: 'Recently Used',
+    icon: 'emoji_picker:schedule',
+    groupId: 'history',
+    active: true
+  },
+  {
+    name: 'Smileys & Emotion',
+    icon: 'emoji_picker:insert_emoticon',
+    groupId: '0',
+    active: false
+  },
+  {
+    name: 'People',
+    icon: 'emoji_picker:emoji_people',
+    groupId: '1',
+    active: false
+  },
+  {
+    name: 'Animals & Nature',
+    icon: 'emoji_picker:emoji_nature',
+    groupId: '2',
+    active: false
+  },
+  {
+    name: 'Food & Drink',
+    icon: 'emoji_picker:emoji_food_beverage',
+    groupId: '3',
+    active: false
+  },
+  {
+    name: 'Travel & Places',
+    icon: 'emoji_picker:emoji_transportation',
+    groupId: '4',
+    active: false
+  },
+  {
+    name: 'Activities',
+    icon: 'emoji_picker:emoji_events',
+    groupId: '5',
+    active: false
+  },
+  {
+    name: 'Objects',
+    icon: 'emoji_picker:emoji_objects',
+    groupId: '6',
+    active: false
+  },
+  {
+    name: 'Symbols',
+    icon: 'emoji_picker:emoji_symbols',
+    groupId: '7',
+    active: false
+  },
+  {name: 'Flags', icon: 'emoji_picker:flag', groupId: '8', active: false},
 ];
 
 /**
@@ -125,15 +172,20 @@ export class EmojiPicker extends PolymerElement {
     this.recentEmojiStore.bumpEmoji(emoji);
     this.set(
         ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));
+
+    this.$.message.textContent = emoji + ' inserted.';
   }
 
   /**
    * @param {string} newGroup
    */
   selectGroup(newGroup) {
-    // scroll to selected group's element.
+    // focus and scroll to selected group's first emoji.
     const group =
         this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`);
+    group.querySelector('emoji-group')
+        .shadowRoot.querySelector('emoji-button')
+        .focusButton({preventScroll: true});
     group.scrollIntoView();
   }
 
@@ -189,7 +241,10 @@ export class EmojiPicker extends PolymerElement {
   onShowEmojiVariants(ev) {
     this.hideEmojiVariants();
     this.activeVariant = /** @type {EmojiButton} */ (ev.detail.button);
-    this.positionEmojiVariants(ev.detail.variants);
+    if (this.activeVariant) {
+      this.$.message.textContent = this.activeVariant + ' variants shown.';
+      this.positionEmojiVariants(ev.detail.variants);
+    }
   }
 
   positionEmojiVariants(variants) {

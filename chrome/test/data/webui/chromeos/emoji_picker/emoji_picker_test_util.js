@@ -68,6 +68,21 @@ export function timeout(ms) {
 }
 
 /**
+ * Constructs a promise which resolves when the given promise resolves,
+ * or fails after the given timeout - whichever occurs first.
+ * @param {!Promise<T>} promise promise to wait for.
+ * @param {!number} ms max timeout in milliseconds
+ * @param {message=} message message on timeout.
+ * @return {!Promise<T>} promise with timeout.
+ * @template T resolve type of promise.
+ */
+export function waitWithTimeout(promise, ms, message) {
+  message = message || 'waiting for promise timed out after ' + ms + ' ms.';
+  return Promise.race(
+      [promise, timeout(ms).then((resolve, reject) => reject(message))]);
+}
+
+/**
  * Constructs a promise which resolves when the given element receives
  * an event of the given type.
  * Note: this function should be called *before* event is expected to set up
@@ -88,7 +103,7 @@ export function waitForEvent(element, eventType) {
  * @param {!number} button button number for event.
  * @param {!string=} eventType event type to dispatch.
  */
-export function dispatchMouseEvent(element, button, eventType = 'mouseup') {
+export function dispatchMouseEvent(element, button, eventType = 'contextmenu') {
   element.dispatchEvent(new MouseEvent(eventType, {
     bubbles: true,
     cancelable: true,
