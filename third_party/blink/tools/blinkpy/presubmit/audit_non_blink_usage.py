@@ -89,6 +89,12 @@ _CONFIG = [
             'logging::GetVlogLevel',
             'base::PassKey',
 
+            # //base/allocator/partition_allocator/partition_alloc_constants.h
+            'base::kAlignment',
+
+            # //base/bits.h
+            'base::bits::.+',
+
             # //base/observer_list.h.
             'base::ObserverList',
             'base::CheckedObserver',
