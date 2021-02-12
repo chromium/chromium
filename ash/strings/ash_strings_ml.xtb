@@ -21,6 +21,7 @@
 <translation id="1119348796022671382">ഇന്റർഫേസിന് നേരിയ തോതിൽ നിറം നൽകാൻ, തീമുള്ള വർണ്ണ മോഡ് നിങ്ങളുടെ വാൾപേപ്പറിൽ നിന്ന് എക്‌സ്ട്രാക്‌റ്റ് ചെയ്‌ത നിറങ്ങൾ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="112308213915226829">ഷെൽഫ് സ്വയമേവ മറയ്‌ക്കുക</translation>
 <translation id="1153356358378277386">ജോടിയാക്കിയ ഉപകരണങ്ങൾ</translation>
+<translation id="1165712434476988950">അപ്‌ഡേറ്റ് ബാധകമാക്കാൻ ഉപകരണം റീസ്‌റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="1175572348579024023">സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
 <translation id="118532027333893379">പൂർണ്ണ സ്ക്രീൻ ചിത്രമെടുക്കാൻ എവിടെയെങ്കിലും ടാപ്പ് ചെയ്യുക</translation>
@@ -125,6 +126,7 @@
 <translation id="1989113344093894667">ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
 <translation id="1993072747612765854">ഏറ്റവും പുതിയ <ph name="SYSTEM_APP_NAME" /> അപ്‌ഡേറ്റിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="1995660704900986789">പവർ ഓഫാക്കുക</translation>
+<translation id="1998100899771863792">നിലവിലെ ഡെസ്‌ക്</translation>
 <translation id="2012624427112548395">Ctrl+തിരയൽ+H</translation>
 <translation id="2016340657076538683">ഒരു സന്ദേശം ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2018630726571919839">എന്നോട് ഒരു തമാശ പറയൂ</translation>
@@ -943,6 +945,7 @@
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ഡിസ്‌പ്ലേ നീക്കംചെയ്‌തു</translation>
 <translation id="9098969848082897657">ഫോൺ നിശബ്ദമാക്കുക</translation>
+<translation id="9099154003160514616">Lacros അപ്ഡേറ്റ് ലഭ്യമാണ്</translation>
 <translation id="9151726767154816831">അപ്‌ഡേറ്റ് ചെയ്യാൻ, റീസ്റ്റാർട്ട് ചെയ്ത് powerwash ചെയ്യുക</translation>
 <translation id="9166331175924255663">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക.</translation>
 <translation id="9168436347345867845">ഇത് പിന്നീട് ചെയ്യുക</translation>
@@ -953,6 +956,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />റെസല്യൂഷൻ <ph name="RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="9210037371811586452">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
+<translation id="9211490828691860325">എല്ലാ ഡെസ്കുകളും</translation>
 <translation id="9211681782751733685">ബാറ്ററി പൂർണ്ണമായി ചാർജ് ആകാൻ <ph name="TIME_REMAINING" /> ശേഷിക്കുന്നു.</translation>
 <translation id="9215934040295798075">വാൾപേപ്പർ സജ്ജമാക്കുക</translation>
 <translation id="921989828232331238">നിങ്ങളുടെ രക്ഷിതാവ് ഇന്നത്തേക്ക് ഉപകരണം ലോക്ക് ചെയ്‌തു</translation>

@@ -2701,7 +2701,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3984431586879874039">Bu saytın təhlüksizlik açarınıza baxmasına icazə verilsin?</translation>
 <translation id="3986705137476756801">Canlı Subtitri hələlik deaktiv edin</translation>
 <translation id="3987544746655539083">Bu saytın məkanınıza girişini bloklamağa davam edin</translation>
-<translation id="3987938432087324095">Bağışlayın, başa düşmədim.</translation>
+<translation id="3987938432087324095">Eşidilmir.</translation>
 <translation id="3988996860813292272">Vaxt zonası seçin</translation>
 <translation id="399179161741278232">İmport edilmiş</translation>
 <translation id="3994374631886003300">Telefonu kiliddən çıxarın və <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün onu yaxın tutun.</translation>
@@ -4016,6 +4016,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5582839680698949063">Əsas menyu</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
 <translation id="5584088138253955452">İstifadəçi adı yadda saxlansın?</translation>
+<translation id="5584091888252706332">Başlanğıcda</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Bu, cihaz və ondan istifadə (məs., batareya səviyyəsi, sistem və tətbiq fəaliyyəti və xətalar) haqqında ümumi məlumatlardır. Bu datadan Android'in təkmilləşdirilməsi üçün istifadə ediləcək və bəzi toplu məlumatlar da Google tətbiqləri və Android tərtibatçıları kimi partnyotlara tətbiq və məhsullarını təkmilləşdirməkdə kömək edəcək.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bu funksiyanın deaktiv edilməsi cihazın sistem güncəlləmələri və güvənlik kimi vacib xidmətlər üçün tələb edilən məlumatları göndərməsinə təsir etməyəcək.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Sahibi bu funksiyanı Ayarlar &gt; Qabaqcıl  &gt; Diaqnostikanı və istifadə datasını avtomatik olaraq Google'a göndərin bölməsindən idarə edə bilər.<ph name="END_PARAGRAPH3" />

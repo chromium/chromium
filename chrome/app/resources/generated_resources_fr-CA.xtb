@@ -4024,6 +4024,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
 <translation id="5584088138253955452">Enregistrer le nom d'utilisateur?</translation>
+<translation id="5584091888252706332">Au démarrage</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Il s'agit de données générales concernant votre appareil et l'usage que vous en faites (comme le niveau de la pile, l'activité système, l'activité des applications et les erreurs) qui seront utilisées pour améliorer Android. De plus, certaines données collectées contribueront également à améliorer les applications de Google et aideront nos partenaires, comme les concepteurs d'Android, à améliorer leurs applications et leurs produits.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />La désactivation de cette fonctionnalité n'empêche pas votre appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />L'utilisateur peut contrôler cette fonctionnalité en accédant à Paramètres &gt; Paramètres avancés… &gt; Envoyer automatiquement un diagnostic et des données d'utilisation à Google.<ph name="END_PARAGRAPH3" />

@@ -7,7 +7,7 @@
 <translation id="1071587090247825784">फ़ायरवॉल पहचाना गया</translation>
 <translation id="1075811647922107217">पेज का साइज़</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
-<translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है.</translation>
+<translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
@@ -268,7 +268,7 @@
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8364946094152050673">ये नाम सर्वर खाली हैं</translation>
 <translation id="8372477600026034341">कुछ और होस्ट</translation>
-<translation id="8395584934117017006">इस <ph name="DEVICE_TYPE" /> को एंटरप्राइज़ प्रबंधित करता है</translation>
+<translation id="8395584934117017006">इस <ph name="DEVICE_TYPE" /> को एंटरप्राइज़ मैनेज करता है</translation>
 <translation id="8398927464629426868">वह दर जिस पर डिवाइस अभी चार्ज या डिस्चार्ज हो रहा है</translation>
 <translation id="8475690821716466388">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP PSK से सुरक्षित है</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
