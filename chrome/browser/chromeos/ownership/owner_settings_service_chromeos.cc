@@ -650,6 +650,16 @@ void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
     } else {
       NOTREACHED();
     }
+  } else if (path == kDevicePeripheralDataAccessEnabled) {
+    em::DevicePciPeripheralDataAccessEnabledProto*
+        peripheral_data_access_proto =
+            settings.mutable_device_pci_peripheral_data_access_enabled();
+    bool enabled;
+    if (value.GetAsBoolean(&enabled)) {
+      peripheral_data_access_proto->set_enabled(enabled);
+    } else {
+      NOTREACHED();
+    }
   } else {
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:

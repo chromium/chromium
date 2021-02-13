@@ -16896,6 +16896,38 @@
       If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.''',
     },
     {
+      'name': 'DevicePciPeripheralDataAccessEnabled',
+      'owners': ['jimmyxgong@chromium.org', 'cros-peripheral@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:90-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enables PCIe tunneling for Thunderbolt/USB4 peripheral devices, limiting the device capabilities',
+        },
+        {
+          'value': False,
+          'caption': 'Disables PCIe tunneling. Supported Thunderbolt/USB4 peripheral devices will function at their full capabilities',
+        },
+      ],
+      'example_value': False,
+      'default': False,
+      'device_only': True,
+      'id': 825,
+      'caption': '''Enable Thunderbolt/USB4 peripheral data access''',
+      'tags': [],
+      'desc': ''' If this policy is disabled user will not be able to fully connect their Thunderbolt/USB4 peripheral device through PCIe tunneling.
+
+      If this policy is enabled, user will be able to fully connect their Thunderbolt/USB4 peripheral device through PCIe tunneling.
+
+      This policy is disabled by default.''',
+    },
+    {
       'name': 'BrowserNetworkTimeQueriesEnabled',
       'owners': ['estark@chromium.org', 'mab@chromium.org'],
       'type': 'main',
@@ -25100,6 +25132,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceFamilyLinkAccountsAllowed': 'family_link_accounts_allowed.family_link_accounts_allowed',
     'DeviceArcDataSnapshotHours': 'arc_data_snapshot_hours.arc_data_snapshot_hours',
     'DeviceSystemWideTracingEnabled': 'device_system_wide_tracing_enabled.enabled',
+    'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled.enabled',
   },
   'policy_atomic_group_definitions': [
     {
@@ -25587,6 +25620,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 824,
+  'highest_id_currently_used': 825,
   'highest_atomic_group_id_currently_used': 40
 }

@@ -284,6 +284,9 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kUsbDetachableAllowlistKeyVid[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kUsbDetachableAllowlistKeyPid[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kDevicePeripheralDataAccessEnabled[];
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when migrated to ash/components/.

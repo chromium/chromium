@@ -86,6 +86,7 @@ const char* const kKnownSettings[] = {
     kDeviceLoginScreenSystemInfoEnforced,
     kDeviceMinimumVersion,
     kDeviceMinimumVersionAueMessage,
+    kDevicePeripheralDataAccessEnabled,
     kDeviceShowLowDiskSpaceNotification,
     kDeviceShowNumericKeyboardForPassword,
     kDeviceOffHours,
@@ -781,6 +782,10 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     new_values_cache->SetValue(kDeviceDisplayResolution,
                                base::Value(base::Value::Type::DICTIONARY));
   }
+
+  new_values_cache->SetBoolean(
+      kDevicePeripheralDataAccessEnabled,
+      policy.device_pci_peripheral_data_access_enabled().enabled());
 
   if (policy.has_allow_bluetooth() &&
       policy.allow_bluetooth().has_allow_bluetooth()) {

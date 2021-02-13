@@ -23566,6 +23566,7 @@ Called by update_document_policy_enum.py.-->
   <int value="822" label="FileSystemEnterpriseConnector"/>
   <int value="823" label="DeviceSystemWideTracingEnabled"/>
   <int value="824" label="WebAppSettings"/>
+  <int value="825" label="DevicePciPeripheralDataAccessEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

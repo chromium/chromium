@@ -1906,6 +1906,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_device_pci_peripheral_data_access_enabled()) {
+    const em::DevicePciPeripheralDataAccessEnabledProto& container(
+        policy.device_pci_peripheral_data_access_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDevicePciPeripheralDataAccessEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace

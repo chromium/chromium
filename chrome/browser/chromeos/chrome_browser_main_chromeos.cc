@@ -177,6 +177,7 @@
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "chromeos/tpm/tpm_token_loader.h"
@@ -1106,9 +1107,10 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
   // External PCI devices are only allowed in non-guest, primary users.
   if (!user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       ProfileHelper::IsPrimaryProfile(profile())) {
-    PciguardClient::Get()->SendExternalPciDevicesPermissionState(
-        base::FeatureList::IsEnabled(
-            features::kDisablePeripheralDataAccessProtection));
+    bool enabled = false;
+    CrosSettings::Get()->GetBoolean(
+        chromeos::kDevicePeripheralDataAccessEnabled, &enabled);
+    PciguardClient::Get()->SendExternalPciDevicesPermissionState(enabled);
   }
 
   crostini_unsupported_action_notifier_ =

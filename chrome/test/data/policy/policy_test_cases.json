@@ -5642,6 +5642,8 @@
 
   "DeviceDataRoamingEnabled": {},
 
+  "DevicePciPeripheralDataAccessEnabled": {},
+
   "DeviceMetricsReportingEnabled": {
     "os": ["chromeos"],
     "official_only": true,

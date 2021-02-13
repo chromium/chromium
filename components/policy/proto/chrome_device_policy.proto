@@ -1756,6 +1756,12 @@ message DeviceSystemWideTracingEnabledProto {
   optional bool enabled = 1 [default = true];
 }
 
+// Setting that controls whether data access is enabled for Thunderbolt/USB4
+// peripherals.
+message DevicePciPeripheralDataAccessEnabledProto {
+  optional bool enabled = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1906,4 +1912,6 @@ message ChromeDeviceSettingsProto {
       116;
   optional DeviceSystemWideTracingEnabledProto
       device_system_wide_tracing_enabled = 117;
+  optional DevicePciPeripheralDataAccessEnabledProto
+      device_pci_peripheral_data_access_enabled = 118;
 }
