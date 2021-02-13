@@ -491,7 +491,17 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (target_it != window_view_map_.end())
       target_it->second->UpdateBorderState(/*show=*/true);
 
-    if (target_window_) {
+    // Focus the target window if the user is not currently switching the mode.
+    // During the mode switch, we want more informative a11y string than that
+    // automatically announced from the focus event, so we prevent the focus
+    // to avoid such auto announcement and send our own string in
+    // `WindowCycleController::OnModeChanged`.
+    auto* shell = Shell::Get();
+    const bool chromevox_enabled =
+        shell->accessibility_controller()->spoken_feedback().enabled();
+    const bool is_switching_mode =
+        shell->window_cycle_controller()->IsSwitchingMode();
+    if (target_window_ && (!chromevox_enabled || !is_switching_mode)) {
       if (GetWidget())
         window_view_map_[target_window_]->RequestFocus();
       else
@@ -603,13 +613,11 @@ class WindowCycleView : public views::WidgetDelegateView,
 
       // Unlike the bounds of scrollable mirror container, the bounds of label
       // should not overflow out of the screen.
-      if (no_previews_set_.empty()) {
-        const gfx::Rect no_recent_item_bounds_(
-            std::max(0, container_bounds.x()), container_bounds.y(),
-            std::min(width(), container_bounds.width()),
-            container_bounds.height());
-        no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
-      }
+      const gfx::Rect no_recent_item_bounds_(
+          std::max(0, container_bounds.x()), container_bounds.y(),
+          std::min(width(), container_bounds.width()),
+          container_bounds.height());
+      no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
     }
 
     // Enable animations only after the first Layout() pass. If |this| is
@@ -654,8 +662,11 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   aura::Window* GetTargetWindow() { return target_window_; }
 
-  void SetFocusTabSlider(bool focus) {
-    tab_slider_container_->SetHighlightVisibility(focus);
+  void SetFocusTabSlider(bool focus) { tab_slider_container_->SetFocus(focus); }
+
+  bool IsTabSliderFocused() {
+    DCHECK(tab_slider_container_);
+    return tab_slider_container_->is_focused();
   }
 
   const views::View::Views& GetPreviewViewsForTesting() const {
@@ -673,10 +684,9 @@ class WindowCycleView : public views::WidgetDelegateView,
     return target_window_;
   }
 
-  void OnModeChanged(bool per_desk,
-                     WindowCycleTabSlider::ModeSwitchSource source) {
+  void OnModePrefsChanged() {
     if (tab_slider_container_)
-      tab_slider_container_->OnModeChanged(per_desk, source);
+      tab_slider_container_->OnModePrefsChanged();
   }
 
   // ui::ImplicitAnimationObserver:
@@ -728,6 +738,8 @@ WindowCycleList::WindowCycleList(const WindowList& windows)
     : windows_(windows) {
   if (!ShouldShowUi())
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(true);
+
+  active_window_before_window_cycle_ = window_util::GetActiveWindow();
 
   for (auto* window : windows_)
     window->AddObserver(this);
@@ -783,6 +795,10 @@ WindowCycleList::~WindowCycleList() {
   Shell::Get()->frame_throttling_controller()->EndThrottling();
 }
 
+aura::Window* WindowCycleList::GetTargetWindow() {
+  return cycle_view_->GetTargetWindow();
+}
+
 void WindowCycleList::ReplaceWindows(const WindowList& windows) {
   RemoveAllWindows();
   windows_ = windows;
@@ -806,13 +822,20 @@ void WindowCycleList::Step(
     Scroll(GetIndexOfWindow(selected_window) - current_index_);
   }
 
-  const int offset = direction == WindowCycleController::FORWARD ? 1 : -1;
-  if (offset == 1 && !wm::IsActiveWindow(windows_[0]) &&
+  const int offset =
+      direction == WindowCycleController::WindowCyclingDirection::kForward ? 1
+                                                                           : -1;
+  if (offset == 1 && active_window_before_window_cycle_ != windows_[0] &&
       Shell::Get()->window_cycle_controller()->IsSwitchingMode()) {
     // Similar to `WindowCycleList::Scroll()`, when switching to alt-tab mode,
-    // if all windows are minimized, the starting window should be the first
-    // one rather than the second. Note that during entering alt-tab mode,
-    // `SetFocusedWindow()` does nothing, so we don't need to prevent it here.
+    // if the first window in the MRU cycle list is not the latest active one
+    // before entering alt-tab, highlight it instead of the second window.
+    // This occurs when the user is in overview mode, all windows are
+    // minimized, or all windows are in other desks.
+    //
+    // Note: Simply checking the active status of the first window won't work
+    // because when the ChromeVox is enabled, the widget is activatable, so the
+    // first window in MRU becomes inactive.
     SetFocusedWindow(windows_[0]);
   } else {
     SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
@@ -825,7 +848,9 @@ void WindowCycleList::ScrollInDirection(
   if (windows_.empty())
     return;
 
-  const int offset = direction == WindowCycleController::FORWARD ? 1 : -1;
+  const int offset =
+      direction == WindowCycleController::WindowCyclingDirection::kForward ? 1
+                                                                           : -1;
   Scroll(offset);
 }
 
@@ -835,6 +860,16 @@ void WindowCycleList::SetFocusedWindow(aura::Window* window) {
 
   if (ShouldShowUi() && cycle_view_)
     cycle_view_->SetTargetWindow(windows_[GetIndexOfWindow(window)]);
+}
+
+void WindowCycleList::SetFocusTabSlider(bool focus) {
+  DCHECK(cycle_view_);
+  cycle_view_->SetFocusTabSlider(focus);
+}
+
+bool WindowCycleList::IsTabSliderFocused() {
+  DCHECK(cycle_view_);
+  return cycle_view_->IsTabSliderFocused();
 }
 
 bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
@@ -852,11 +887,9 @@ bool WindowCycleList::ShouldShowUi() {
   return windows_.size() > 1u;
 }
 
-void WindowCycleList::OnModeChanged(
-    bool per_desk,
-    WindowCycleTabSlider::ModeSwitchSource source) {
+void WindowCycleList::OnModePrefsChanged() {
   if (cycle_view_)
-    cycle_view_->OnModeChanged(per_desk, source);
+    cycle_view_->OnModePrefsChanged();
 }
 
 // static
@@ -876,6 +909,10 @@ void WindowCycleList::OnWindowDestroying(aura::Window* window) {
       current_index_ == static_cast<int>(windows_.size())) {
     current_index_--;
   }
+
+  // Reset |active_window_before_window_cycle_| to avoid a dangling pointer.
+  if (window == active_window_before_window_cycle_)
+    active_window_before_window_cycle_ = nullptr;
 
   if (cycle_view_) {
     auto* new_target_window =
@@ -1001,12 +1038,13 @@ void WindowCycleList::Scroll(int offset) {
   DCHECK(static_cast<size_t>(current_index_) < windows_.size());
 
   // If alt-tab is entered or switched to the other mode, check the following
-  // special case: user is cycling forward but the MRU window is not active.
-  // This occurs when all windows are minimized. The starting window should be
-  // the first one rather than the second.
+  // special case: user is cycling forward but the MRU window in cycle list is
+  // not the latest active one before starting the alt-tab. The starting window
+  // should then be the first one rather than the second.
   if ((!cycle_view_ ||
        Shell::Get()->window_cycle_controller()->IsSwitchingMode()) &&
-      current_index_ == 0 && offset == 1 && !wm::IsActiveWindow(windows_[0])) {
+      current_index_ == 0 && offset == 1 &&
+      active_window_before_window_cycle_ != windows_[0]) {
     current_index_ = -1;
   }
 
@@ -1034,14 +1072,6 @@ int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
   DCHECK(windows_[offsetted_index]);
 
   return offsetted_index;
-}
-
-void WindowCycleList::SetFocusTabSlider(bool focus) {
-  if (is_tab_slider_focused_ == focus)
-    return;
-
-  is_tab_slider_focused_ = focus;
-  cycle_view_->SetFocusTabSlider(focus);
 }
 
 const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()

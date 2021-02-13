@@ -288,8 +288,8 @@ bool WindowCycleEventFilter::CycleWindowCycleList(int finger_count,
   }
 
   window_cycle_controller->HandleCycleWindow(
-      scroll_x > 0 ? WindowCycleController::FORWARD
-                   : WindowCycleController::BACKWARD);
+      scroll_x > 0 ? WindowCycleController::WindowCyclingDirection::kForward
+                   : WindowCycleController::WindowCyclingDirection::kBackward);
   return true;
 }
 
@@ -302,8 +302,9 @@ WindowCycleEventFilter::GetWindowCyclingDirection(ui::KeyEvent* event) const {
   const bool left = event->key_code() == ui::VKEY_LEFT;
   const bool shift = event->IsShiftDown();
 
-  return (left ^ shift) ? WindowCycleController::BACKWARD
-                        : WindowCycleController::FORWARD;
+  return (left ^ shift)
+             ? WindowCycleController::WindowCyclingDirection::kBackward
+             : WindowCycleController::WindowCyclingDirection::kForward;
 }
 
 WindowCycleController::KeyboardNavDirection
@@ -311,16 +312,16 @@ WindowCycleEventFilter::GetKeyboardNavDirection(ui::KeyEvent* event) const {
   DCHECK(IsTriggerKey(event));
   switch (event->key_code()) {
     case ui::VKEY_UP:
-      return WindowCycleController::UP;
+      return WindowCycleController::KeyboardNavDirection::kUp;
     case ui::VKEY_DOWN:
-      return WindowCycleController::DOWN;
+      return WindowCycleController::KeyboardNavDirection::kDown;
     case ui::VKEY_LEFT:
-      return WindowCycleController::LEFT;
+      return WindowCycleController::KeyboardNavDirection::kLeft;
     case ui::VKEY_RIGHT:
-      return WindowCycleController::RIGHT;
+      return WindowCycleController::KeyboardNavDirection::kRight;
     default:
       NOTREACHED();
-      return WindowCycleController::INVALID;
+      return WindowCycleController::KeyboardNavDirection::kInvalid;
   }
 }
 

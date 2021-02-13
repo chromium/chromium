@@ -37,24 +37,27 @@ constexpr int kTabSliderButtonFocusInsets = 4;
 
 }  // namespace
 
+//////////////////////////////////////////////////////////////////////////////
+// WindowCycleTabSlider, public:
+
 WindowCycleTabSlider::WindowCycleTabSlider()
     : active_button_selector_(AddChildView(std::make_unique<views::View>())),
       buttons_container_(AddChildView(std::make_unique<views::View>())),
       all_desks_tab_slider_button_(buttons_container_->AddChildView(
           std::make_unique<WindowCycleTabSliderButton>(
               base::BindRepeating(
-                  &WindowCycleTabSlider::OnModeChanged,
-                  base::Unretained(this),
+                  &WindowCycleController::OnModeChanged,
+                  base::Unretained(Shell::Get()->window_cycle_controller()),
                   /*per_desk=*/false,
-                  WindowCycleTabSlider::ModeSwitchSource::BUTTON),
+                  WindowCycleController::ModeSwitchSource::kClick),
               l10n_util::GetStringUTF16(IDS_ASH_ALT_TAB_ALL_DESKS_MODE)))),
       current_desk_tab_slider_button_(buttons_container_->AddChildView(
           std::make_unique<WindowCycleTabSliderButton>(
               base::BindRepeating(
-                  &WindowCycleTabSlider::OnModeChanged,
-                  base::Unretained(this),
+                  &WindowCycleController::OnModeChanged,
+                  base::Unretained(Shell::Get()->window_cycle_controller()),
                   /*per_desk=*/true,
-                  WindowCycleTabSlider::ModeSwitchSource::BUTTON),
+                  WindowCycleController::ModeSwitchSource::kClick),
               l10n_util::GetStringUTF16(IDS_ASH_ALT_TAB_CURRENT_DESK_MODE)))) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -119,6 +122,23 @@ WindowCycleTabSlider::WindowCycleTabSlider()
   current_desk_tab_slider_button_->SetToggled(per_desk);
 }
 
+void WindowCycleTabSlider::SetFocus(bool focus) {
+  if (is_focused_ == focus)
+    return;
+  is_focused_ = focus;
+  highlight_border_->SetFocused(is_focused_);
+  active_button_selector_->SchedulePaint();
+}
+
+void WindowCycleTabSlider::OnModePrefsChanged() {
+  const bool per_desk =
+      Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
+  // Refresh tab slider UI to reflect the new mode.
+  all_desks_tab_slider_button_->SetToggled(!per_desk);
+  current_desk_tab_slider_button_->SetToggled(per_desk);
+  UpdateActiveButtonSelector(per_desk);
+}
+
 void WindowCycleTabSlider::Layout() {
   const gfx::Size button_size = GetPreferredSizeForButtons();
   buttons_container_->SetBounds(kTabSliderButtonFocusInsets,
@@ -142,44 +162,14 @@ const views::View::Views& WindowCycleTabSlider::GetTabSliderButtonsForTesting()
   return buttons_container_->children();
 }
 
-void WindowCycleTabSlider::OnModeChanged(
-    bool per_desk,
-    WindowCycleTabSlider::ModeSwitchSource source) {
-  if (source != WindowCycleTabSlider::ModeSwitchSource::USER_PREFS) {
-    // Save to the active user prefs.
-    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    if (!prefs) {
-      // Can be null in tests.
-      return;
-    }
-    // Avoid an unnecessary update if any.
-    if (per_desk == prefs->GetBoolean(prefs::kAltTabPerDesk))
-      return;
-    prefs->SetBoolean(prefs::kAltTabPerDesk, per_desk);
-
-    // After saving the new mode to user prefs, set focus on this tab slider
-    // if the mode is switched via keyboard navigation, and remove focus
-    // if the mode is switched via button clicking.
-    SetHighlightVisibility(source ==
-                           WindowCycleTabSlider::ModeSwitchSource::KEYBOARD);
-  }
-
-  // Refresh tab slider UI to reflect the new mode.
-  all_desks_tab_slider_button_->SetToggled(!per_desk);
-  current_desk_tab_slider_button_->SetToggled(per_desk);
-  UpdateActiveButtonSelector(per_desk);
-}
-
-void WindowCycleTabSlider::SetHighlightVisibility(bool focus) {
-  highlight_border_->SetFocused(focus);
-  active_button_selector_->SchedulePaint();
-}
+//////////////////////////////////////////////////////////////////////////////
+// WindowCycleTabSlider, private:
 
 void WindowCycleTabSlider::UpdateActiveButtonSelector(bool per_desk) {
   auto active_button_selector_bounds = active_button_selector_->bounds();
   if (active_button_selector_bounds.IsEmpty()) {
-    // OnModeChanged() is called in the ctor so the |active_button_selector_|
-    // has not been laid out yet so exit early.
+    // OnModePrefsChanged() is called in the ctor so the
+    // |active_button_selector_| has not been laid out yet so exit early.
     return;
   }
 

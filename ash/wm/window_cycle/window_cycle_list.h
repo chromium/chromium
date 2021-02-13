@@ -44,6 +44,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
 
+  // Returns the |target_window_| from |cycle_view_|.
+  aura::Window* GetTargetWindow();
+
   // Removes the existing windows and replaces them with |windows|. If
   // |windows| is empty, cancels cycling.
   void ReplaceWindows(const WindowList& windows);
@@ -64,6 +67,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |focus| value during keyboard navigation.
   void SetFocusTabSlider(bool focus);
 
+  // Returns true if during keyboard navigation, alt-tab focuses the tab slider
+  // instead of cycle window.
+  bool IsTabSliderFocused();
+
   // Checks whether |event| occurs within the cycle view. Returns false if
   // |cycle_view_| does not exist.
   bool IsEventInCycleView(ui::LocatedEvent* event);
@@ -71,18 +78,14 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
 
-  // Updates the tab slider mode UI and saved the new |per_desk| mode in the
-  // user prefs if the |source| of mode change is not from
-  // |ModeSwitchSource::USER_PREFS|
-  void OnModeChanged(bool per_desk,
-                     WindowCycleTabSlider::ModeSwitchSource source);
+  // Updates the tab slider mode UI when alt-tab mode in user prefs changes.
+  void OnModePrefsChanged();
 
   void set_user_did_accept(bool user_did_accept) {
     user_did_accept_ = user_did_accept;
   }
 
   bool HasWindowTargeter() { return !!window_targeter_; }
-  bool is_tab_slider_focused() { return is_tab_slider_focused_; }
 
  private:
   friend class WindowCycleControllerTest;
@@ -180,9 +183,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // not activatable.
   std::unique_ptr<aura::ScopedWindowTargeter> window_targeter_;
 
-  // True if during keyboard navigation, alt-tab focuses the tab slider instead
-  // of cycle window.
-  bool is_tab_slider_focused_ = false;
+  // Tracks what window was active when starting to cycle and used to determine
+  // if alt-tab should highlight the first or the second window in the list.
+  aura::Window* active_window_before_window_cycle_ = nullptr;
 };
 
 }  // namespace ash
