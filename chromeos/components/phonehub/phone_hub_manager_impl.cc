@@ -38,8 +38,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     chromeos::secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
     const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
-    : user_action_recorder_(std::make_unique<UserActionRecorderImpl>()),
-      connection_manager_(
+    : connection_manager_(
           std::make_unique<ConnectionManagerImpl>(multidevice_setup_client,
                                                   device_sync_client,
                                                   secure_channel_client)),
@@ -49,6 +48,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           connection_manager_.get(),
           session_manager::SessionManager::Get(),
           chromeos::PowerManagerClient::Get())),
+      user_action_recorder_(std::make_unique<UserActionRecorderImpl>(
+          feature_status_provider_.get())),
       message_receiver_(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(
@@ -177,9 +178,9 @@ void PhoneHubManagerImpl::Shutdown() {
   phone_model_.reset();
   message_sender_.reset();
   message_receiver_.reset();
+  user_action_recorder_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
-  user_action_recorder_.reset();
 }
 
 }  // namespace phonehub

@@ -59248,7 +59248,7 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PhoneHubUserAction">
-  <int value="0" label="UI opened"/>
+  <int value="0" label="UI opened while connected"/>
   <int value="1" label="Tether connection attempted"/>
   <int value="2" label="Do Not Disturb toggled"/>
   <int value="3" label="Find My Device toggled"/>
