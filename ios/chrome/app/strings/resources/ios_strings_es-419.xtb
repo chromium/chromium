@@ -197,6 +197,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
 <translation id="2969979262385602596">Error al iniciar la sesión. Inténtalo más tarde.</translation>
 <translation id="2975121486251958312">Solo está disponible el modo Incógnito</translation>
+<translation id="2982481275546140226">Borrar datos</translation>
 <translation id="298306318844797842">Agregar forma de pago…</translation>
 <translation id="2989805286512600854">Abrir en una nueva pestaña</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
@@ -410,7 +411,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5339316356165661760">Activar la sincronización</translation>
-<translation id="5351284593342054342">Borrar de este dispositivo</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5409365236829784218">No se instalaron aplicaciones que puedan abrir este archivo.</translation>
@@ -466,7 +466,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5948291296578561264">Esta acción te permite guardar fotos en tu biblioteca de fotos.</translation>
 <translation id="5955891643922670672">Vista de la versión sin conexión</translation>
 <translation id="5957613098218939406">Más opciones</translation>
-<translation id="5961521066940389233">Guardar en el dispositivo</translation>
 <translation id="5964480694698977962">Crea una nueva pestaña de incógnito.</translation>
 <translation id="5965679971710331625">Accediste</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>
@@ -481,7 +480,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y actividad aquí</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
-<translation id="6085282545406522838">Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6119050551270742952">Pág. incógnito</translation>
 <translation id="6122191549521593678">En línea</translation>
@@ -605,7 +603,6 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
 <translation id="7207383424303353046">Nueva función: Para que los sitios se abran de forma automática en Chrome, elígelo como App de navegador predeterminada. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">El sobrenombre de la tarjeta no es válido</translation>
-<translation id="722989956228261714">Salir…</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
 <translation id="7291368939935408496">Preparando las contraseñas…</translation>
@@ -635,7 +632,6 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
-<translation id="7558943807639707687">¿Qué deseas hacer con tus favoritos, historial y otros datos que se encuentran en este dispositivo?</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7583004045319035904">Desbloquea tus pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>

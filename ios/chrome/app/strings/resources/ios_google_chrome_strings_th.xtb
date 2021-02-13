@@ -17,7 +17,6 @@
 <translation id="257708665678654955">คุณต้องการให้ Google Chrome เสนอการแปลหน้าภาษา<ph name="LANGUAGE_NAME" />จากเว็บไซต์นี้ในครั้งถัดไปไหม</translation>
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2732745070297234559">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
-<translation id="2786324948676799004">เนื่องจากบัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะลบข้อมูล Chrome ในอุปกรณ์นี้เมื่อออกจากระบบ ข้อมูลที่ซิงค์ไว้จะยังอยู่ในบัญชี Google</translation>
 <translation id="2919738076569633423">การใช้ Chrome หมายความว่าคุณยอมรับ<ph name="BEGIN_LINK_TOS" />ข้อกำหนดในการให้บริการ<ph name="END_LINK_TOS" /></translation>
 <translation id="3030414234702425231">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chrome ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
 <translation id="3148688391461398285">รับประสบการณ์ที่ดีขึ้นใน Chrome ตามสถานที่ที่คุณอยู่</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3345341804167540816">ใช้ Chrome ในทุกที่</translation>
 <translation id="3522659714780527202">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
-<translation id="3523473570015918798">การออกจากระบบจะทำให้บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และข้อมูลอื่นๆ ใน Chrome ไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
 <translation id="3533694711092285624">ไม่มีรหัสผ่านที่บันทึกไว้ Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="3706101708757577809">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="384394811301901750">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปได้ในขณะนี้</translation>

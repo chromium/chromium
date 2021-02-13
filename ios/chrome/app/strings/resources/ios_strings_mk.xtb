@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">Блокирај колачиња од трети страни</translation>
 <translation id="2969979262385602596">Најавувањето не успеа. Обидете се повторно подоцна.</translation>
 <translation id="2975121486251958312">Достапен е само режимот „Инкогнито“</translation>
+<translation id="2982481275546140226">Избриши податоци</translation>
 <translation id="298306318844797842">Додајте начин на плаќање…</translation>
 <translation id="2989805286512600854">Отвори во нова картичка</translation>
 <translation id="3037605927509011580">По ѓаволите!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
-<translation id="5351284593342054342">Избриши од уредов</translation>
 <translation id="5388358297987318779">Отвори слика</translation>
 <translation id="5407969256130905701">Отфрли ги промените</translation>
 <translation id="5409365236829784218">Нема инсталирани апликации кои може да ја отворат датотеката.</translation>
@@ -466,7 +466,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5948291296578561264">Ова ви овозможува да ги зачувате фотографиите во збирката со фотографии.</translation>
 <translation id="5955891643922670672">Се прегледува офлајн верзија</translation>
 <translation id="5957613098218939406">Повеќе опции</translation>
-<translation id="5961521066940389233">Задржи на уредов</translation>
 <translation id="5964480694698977962">Создај нова инкогнито картичка.</translation>
 <translation id="5965679971710331625">Најавени сте</translation>
 <translation id="5979837087407522202">Пребарајте лозинки</translation>
@@ -481,7 +480,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
 <translation id="6066301408025741299">Допри за откажување.</translation>
-<translation id="6085282545406522838">Синхронизираните податоци ќе останат во вашата сметка на Google.</translation>
 <translation id="6108923351542677676">Поставувањето е во тек…</translation>
 <translation id="6119050551270742952">Веб-страницата е во режим инкогнито</translation>
 <translation id="6122191549521593678">Онлајн</translation>
@@ -605,7 +603,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7203585745079012652">Изговарај ги одговорите</translation>
 <translation id="7207383424303353046">Ново: автоматски отворајте сајтови во Chrome така што ќе го направите ваша стандардна апликација за прелистувач. <ph name="BEGIN_LINK" />Отворете „Поставки“<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Неважечки прекар на картичка</translation>
-<translation id="722989956228261714">Одјавете се…</translation>
 <translation id="7265758999917665941">Никогаш за овој сајт</translation>
 <translation id="7272437679830969316">Не може да се потврди вашиот идентитет. Лозинката не е копирана.</translation>
 <translation id="7291368939935408496">Се подготвуваат лозинките…</translation>
@@ -635,7 +632,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7537586195939242955">Pass не може да се инсталира во Passbook во моментов.</translation>
 <translation id="7554791636758816595">Нова картичка</translation>
-<translation id="7558943807639707687">Што би сакале да направите со обележувачите, историјата и другите податоци на уредов?</translation>
 <translation id="7561196759112975576">Секогаш</translation>
 <translation id="7583004045319035904">Користете <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за да ги отклучите картичките „Инкогнито“.</translation>
 <translation id="7600965453749440009">Никогаш не преведувај <ph name="LANGUAGE" /></translation>

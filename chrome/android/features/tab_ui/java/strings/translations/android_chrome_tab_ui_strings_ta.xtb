@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவை விரிவாக்கும்.</translation>
 <translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
+<translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="3940195383040445971">தாவல்களில் விலையைக் கண்காணித்தல்</translation>

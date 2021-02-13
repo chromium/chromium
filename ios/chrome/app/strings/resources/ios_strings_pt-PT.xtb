@@ -197,6 +197,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
 <translation id="2975121486251958312">Só está disponível o Modo de navegação anónima</translation>
+<translation id="2982481275546140226">Limpar dados</translation>
 <translation id="298306318844797842">Adicionar método de pagamento…</translation>
 <translation id="2989805286512600854">Abrir num Novo Separador</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
@@ -410,7 +411,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Ativar sincronização</translation>
-<translation id="5351284593342054342">Limpar neste dispositivo</translation>
 <translation id="5388358297987318779">Abrir Imagem</translation>
 <translation id="5407969256130905701">Rejeitar alterações</translation>
 <translation id="5409365236829784218">Não existem aplicações instaladas que possam abrir este ficheiro.</translation>
@@ -466,7 +466,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5948291296578561264">Isto permite-lhe guardar fotos na sua biblioteca de fotos.</translation>
 <translation id="5955891643922670672">Ver a versão offline</translation>
 <translation id="5957613098218939406">Mais opções</translation>
-<translation id="5961521066940389233">Manter neste dispositivo</translation>
 <translation id="5964480694698977962">Criar novo separador de navegação anónima</translation>
 <translation id="5965679971710331625">Tem sessão iniciada</translation>
 <translation id="5979837087407522202">Pesquisar palavras-passe</translation>
@@ -481,7 +480,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle as suas notícias e atividade aqui.</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
-<translation id="6085282545406522838">Os seus dados sincronizados permanecem na sua Conta Google.</translation>
 <translation id="6108923351542677676">Configuração em curso…</translation>
 <translation id="6119050551270742952">Página Web atual – Nav. anónima</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="7203585745079012652">Ouvir Respostas</translation>
 <translation id="7207383424303353046">Novidade: abra automaticamente os sites no Chrome ao torná-lo a sua app de navegador predefinida. <ph name="BEGIN_LINK" />Abra as Definições<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudónimo do cartão inválido</translation>
-<translation id="722989956228261714">Terminar sessão…</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
 <translation id="7291368939935408496">A preparar palavras-passe…</translation>
@@ -635,7 +632,6 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7537586195939242955">De momento não é possível instalar a sua Palavra-passe no Passbook.</translation>
 <translation id="7554791636758816595">Novo separador</translation>
-<translation id="7558943807639707687">O que pretende fazer com os seus marcadores, histórico e outros dados neste dispositivo?</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7583004045319035904">Utilize <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear os seus separadores de navegação anónima.</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>

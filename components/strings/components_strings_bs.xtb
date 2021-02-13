@@ -80,7 +80,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
     &lt;li&gt;Kontaktirajte vlasnika stranice.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Unijeli ste lozinku na web lokaciji kojom ne upravlja vaša organizacija. Da zaštitite račun, lozinku nemojte ponovo koristiti na drugim aplikacijama i web lokacijama.</translation>
-<translation id="1259144770381827039">Pogledajte detalje.</translation>
 <translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivnosti koje neće ostati sačuvane na ovom uređaju:
@@ -1374,7 +1373,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6290238015253830360">Predloženi članci će se pojaviti ovdje</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Zaustavljanje Google Asistenta u Chromeu</translation>
-<translation id="6304463939629872728">Nastavite na plaćanje koristeći</translation>
 <translation id="6305205051461490394"><ph name="URL" /> je nedostupan.</translation>
 <translation id="6312113039770857350">Web stranica nije dostupna</translation>
 <translation id="6321917430147971392">Provjerite postavke DNS-a</translation>
@@ -1404,7 +1402,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6406765186087300643">C0 (koverta)</translation>
 <translation id="6409754798200046165">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chrome preporučuje da odmah promijenite lozinku.</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Ne zaboravite svoju Google Pay ponudu</translation>
 <translation id="6415778972515849510">Chromium vam može pomoći da zaštitite svoj Google račun i promijenite lozinku.</translation>
 <translation id="6423385022588644828">Od sada brže potvrđujte kartice korištenjem funkcije Touch ID</translation>
 <translation id="6425092077175753609">Materijal</translation>
@@ -1843,6 +1840,7 @@ Dodatni detalji:
 <translation id="8202370299023114387">Neslaganje</translation>
 <translation id="8206978196348664717">Prc4 (koverta)</translation>
 <translation id="8211406090763984747">Veza je sigurna</translation>
+<translation id="8213464188712611711">Uspomene</translation>
 <translation id="8218327578424803826">Dodijeljena lokacija:</translation>
 <translation id="8220146938470311105">C7/C6 (koverta)</translation>
 <translation id="8221250263817408492">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chromium preporučuje da odete na <ph name="WEBSITE_1" /> i druge web lokacije na kojima ste koristili ovu lozinku i odmah je promijenite.</translation>

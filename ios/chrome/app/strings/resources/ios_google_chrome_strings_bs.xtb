@@ -17,7 +17,6 @@
 <translation id="257708665678654955">Želite li da Google Chrome sljedeći put ponudi da se stranice s ove web lokacije prevedu na <ph name="LANGUAGE_NAME" /> jezik?</translation>
 <translation id="2695886661449553974">Chrome nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
-<translation id="2786324948676799004">S obzirom na to da vašim računom upravlja domena <ph name="HOSTED_DOMAIN" />, vaši Chrome podaci će se izbrisati s ovog uređaja kada se odjavite. Vaši sinhronizirani podaci će ostati na vašem Google računu.</translation>
 <translation id="2919738076569633423">Korištenjem Chromea prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korištenja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
 <translation id="3148688391461398285">Ostvarite bolje iskustvo u Chromeu prema vašoj lokaciji.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Prijava na Chrome</translation>
 <translation id="3345341804167540816">Koristite Chrome svugdje</translation>
 <translation id="3522659714780527202">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, uključite sinhronizaciju</translation>
-<translation id="3523473570015918798">Ako se odjavite, vaše oznake, historija, lozinke i drugi Chrome podaci više se neće sinhronizirati s vašim Google računom.</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="3706101708757577809">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može koristiti vašu kameru</translation>

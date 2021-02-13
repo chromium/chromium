@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
-<translation id="3515615323037921860">Druckaufträge</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3595596368722241419">Akku voll</translation>
@@ -148,6 +147,7 @@
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
+<translation id="4652335678334611408">Sitzungsprotokoll speichern</translation>
 <translation id="4665014895760275686">Hersteller</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
 <translation id="467715984478005772">Verdacht auf Firewall</translation>
@@ -296,7 +296,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" />-Test</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA oder RSN)</translation>

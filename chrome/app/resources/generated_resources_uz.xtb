@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Sozlashni telefonda yakunlang</translation>
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida yangilang}other{<ph name="DEVICE_TYPE" /> qurilmasini {NUM_WEEKS} hafta ichida yangilang}}</translation>
-<translation id="1055806300943943258">Bluetooth va USB qurilmalar qidirilmoqda...</translation>
 <translation id="1056466516655540509"><ph name="MINUTES" /> daq oldin yangilandi</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
@@ -1980,7 +1979,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3201422919974259695">Mavjud USB qurilmalar bu yerda chiqadi.</translation>
 <translation id="3202131003361292969">Fayl yo‘lagi</translation>
 <translation id="3202173864863109533">Bu ichki oyna ovozi o‘chirib qo‘yilgan</translation>
-<translation id="3202218848974251205">Maxfiylik xavfsiz muhiti</translation>
 <translation id="3208321278970793882">Ilova</translation>
 <translation id="3208584281581115441">Hozir tekshirish</translation>
 <translation id="3208703785962634733">Tasdiqlanmagan</translation>
@@ -3141,6 +3139,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4538417792467843292">So‘zni o‘chirish</translation>
 <translation id="4538684596480161368"><ph name="HOST" /> saytidagi sinov muhitida bo‘lmagan plaginlar doim bloklansin.</translation>
 <translation id="4538792345715658285">Korporativ siyosatga ko‘ra o‘rnatilgan.</translation>
+<translation id="4541123282641193691">Hisobingizni tekshirib bo‘lmadi. Qayta urinib ko‘ring yoki Chromebook qurilmangizni o‘chirib yoqing.</translation>
 <translation id="4541662893742891060">Bu profilga ulana olmadi. Texnik yordam uchun mobil aloqa operatoringizga murojaat qiling.</translation>
 <translation id="4541810033354695636">boyitilgan reallik</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> va <ph name="WEBSITE_2" /> saytlaridagi ma’lumotlarni ko‘rish</translation>
@@ -4167,6 +4166,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="574209121243317957">Ovoz balandligi</translation>
 <translation id="5742505912938664543">Bu yerda qoʻshimcha hisobni kiritsangiz, uning yordamida internetni kezish, ilovalarni yuklab olish, Gmail va boshqa Google xizmatlaridan foydalanishingiz mumkin.</translation>
 <translation id="5746169159649715125">PDF sifatida saqlash</translation>
+<translation id="5746261205461426123">Sozlash qoʻllanmasini ochish</translation>
 <translation id="5747552184818312860">Amal qilish muddati</translation>
 <translation id="5747785204778348146">Dasturchilar kanali (barqaror emas)</translation>
 <translation id="5747809636523347288">Joyla&amp;sh va ochish: <ph name="URL" /></translation>
@@ -5327,6 +5327,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="708278670402572152">Tekshirish uchun tarmoqdan uzing</translation>
 <translation id="7084321615353200053">Saytlar kameradan foydalanishga ruxsat soʻrashi mumkin (tavsiya etiladi)</translation>
 <translation id="7085389578340536476">Chrome audio yozib olishiga ruxsat berilsinmi?</translation>
+<translation id="7085805695634549980">Google xizmatlari aloqada emas. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Arxivga Chrome jurnal fayllari ham kiritilsin.</translation>
 <translation id="7088434364990739311">Yangilanish mavjudligini tekshirib bo‘lmadi (xatolik kodi: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip arxivlash vositasi – Fayllar dasturida ZIP fayllarni ochish va arxivlash.</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="102360288709523007">Допоможіть покращити Chromium, надсилаючи в Google статистику використання та звіти про аварійне завершення роботи.</translation>
-<translation id="1130979953299110755">Якщо ви вийдете, дані Chromium (зокрема закладки, історія, паролі тощо) більше не синхронізуватимуться з вашим обліковим записом Google.</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1257458525759135959">Щоб зберегти зображення, натисніть "Налаштування" та дозвольте Chromium додавати фотографії</translation>
 <translation id="1361748954329991663">Версія Chromium застаріла. Якщо оновлень в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> немає, можливо, ваш пристрій більше не підтримує нові версії Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Використовуйте сканер у Chromium</translation>
 <translation id="8013573822802650211">Щоб переглядати свої вкладки Chromium на будь-якому пристрої, увійдіть на ньому в обліковий запис</translation>
 <translation id="8073677936375100957">Видалити дані Chromium із цього пристрою?</translation>
-<translation id="8097322092271030751">Оскільки ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, коли ви вийдете з нього, ваші дані Chromium буде видалено з цього пристрою. Синхронізовані дані залишаться у вашому обліковому записі Google.</translation>
 <translation id="8175055321229419309">Порада. <ph name="BEGIN_LINK" />Перемістіть значок Chromium на панель Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Щоб установити Chromium веб-переглядачем за умовчанням, відкрийте налаштування, натисніть "Веб-переглядач за умовчанням" і виберіть Chromium.</translation>
 <translation id="8240981428553046115">Веб-переглядачу Chromium не вдалося перевірити наявність оновлень. Повторіть спробу пізніше.</translation>

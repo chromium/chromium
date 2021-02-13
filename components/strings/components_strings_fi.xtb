@@ -80,7 +80,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     &lt;li&gt;Ota yhteyttä verkkosivuston omistajaan.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Kirjoitit salasanan sivustolle, joka ei ole organisaatiosi hallinnoima. Älä käytä samaa salasanaa muissa sovelluksissa tai muilla sivustoilla tilisi turvallisuuden vuoksi.</translation>
-<translation id="1259144770381827039">Katso tiedot.</translation>
 <translation id="1263231323834454256">Lukulista</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Tämä toiminta ei säily laitteella:
@@ -1375,7 +1374,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6290238015253830360">Suositellut artikkelit näkyvät tässä.</translation>
 <translation id="6293309776179964942">JIS B5 (182 mm x 257 mm)</translation>
 <translation id="6302269476990306341">Chromen Google Assistant suljetaan</translation>
-<translation id="6304463939629872728">Maksa:</translation>
 <translation id="6305205051461490394">Sivustoon <ph name="URL" /> ei saada yhteyttä.</translation>
 <translation id="6312113039770857350">Verkkosivu ei ole saatavilla</translation>
 <translation id="6321917430147971392">Tarkista DNS-asetukset</translation>
@@ -1405,7 +1403,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6406765186087300643">C0 (kirjekuori)</translation>
 <translation id="6409754798200046165">Lisäsit juuri salasanasi harhaanjohtavalle sivustolle. Chrome suosittelee salasanan vaihtamista välittömästi.</translation>
 <translation id="6410264514553301377">Anna kortin <ph name="CREDIT_CARD" /> vanhentumispäivä ja CVC</translation>
-<translation id="6410774864568266108">Muista Google Pay ‑tarjouksesi</translation>
 <translation id="6415778972515849510">Chromium voi auttaa suojaamaan Google-tiliäsi ja vaihtamaan salasanasi.</translation>
 <translation id="6423385022588644828">Vahvista kortit jatkossa nopeammin Touch ID:llä</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1844,6 +1841,7 @@ Lisätietoja:
 <translation id="8202370299023114387">Ristiriita</translation>
 <translation id="8206978196348664717">Prc4 (kirjekuori)</translation>
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
+<translation id="8213464188712611711">Muistot</translation>
 <translation id="8218327578424803826">Määrätty sijainti:</translation>
 <translation id="8220146938470311105">C7/C6 (kirjekuori)</translation>
 <translation id="8221250263817408492">Lisäsit juuri salasanasi petolliselle sivustolle. Chromium suosittelee vaihtamaan salasanan heti kaikilla sivustoilla, joilla käytät sitä (esim. <ph name="WEBSITE_1" />).</translation>

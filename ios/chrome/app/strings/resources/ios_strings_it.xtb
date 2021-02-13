@@ -197,6 +197,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2964349545761222050">Blocca cookie di terze parti</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
 <translation id="2975121486251958312">Disponibile solo la modalità in incognito</translation>
+<translation id="2982481275546140226">Cancella dati</translation>
 <translation id="298306318844797842">Aggiungi il metodo di pagamento…</translation>
 <translation id="2989805286512600854">Apri in un'altra scheda</translation>
 <translation id="3037605927509011580">Uffa!</translation>
@@ -410,7 +411,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Attiva la sincronizzazione</translation>
-<translation id="5351284593342054342">Cancella da questo dispositivo</translation>
 <translation id="5388358297987318779">Apri immagine</translation>
 <translation id="5407969256130905701">Annulla modifiche</translation>
 <translation id="5409365236829784218">Non ci sono applicazioni installate in grado di aprire questo file.</translation>
@@ -466,7 +466,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5948291296578561264">In questo modo puoi salvare le foto nella raccolta di foto.</translation>
 <translation id="5955891643922670672">È visualizzata la versione offline</translation>
 <translation id="5957613098218939406">Altre opzioni</translation>
-<translation id="5961521066940389233">Conserva sul dispositivo</translation>
 <translation id="5964480694698977962">Crea nuova scheda in incognito.</translation>
 <translation id="5965679971710331625">Hai eseguito l'accesso</translation>
 <translation id="5979837087407522202">Cerca password</translation>
@@ -481,7 +480,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
-<translation id="6085282545406522838">I tuoi dati sincronizzati rimarranno nel tuo Account Google.</translation>
 <translation id="6108923351542677676">Configurazione in corso…</translation>
 <translation id="6119050551270742952">Pagina web corrente in incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="7203585745079012652">Pronuncia le risposte</translation>
 <translation id="7207383424303353046">Novità: apri automaticamente siti in Chrome impostandolo come App browser predefinita. <ph name="BEGIN_LINK" />Apri le Impostazioni<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
-<translation id="722989956228261714">Esci…</translation>
 <translation id="7265758999917665941">Mai per questo sito</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
 <translation id="7291368939935408496">Preparazione delle password...</translation>
@@ -635,7 +632,6 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
-<translation id="7558943807639707687">Cosa vorresti fare con i tuoi preferiti, la tua cronologia e gli altri dati memorizzati su questo dispositivo?</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>

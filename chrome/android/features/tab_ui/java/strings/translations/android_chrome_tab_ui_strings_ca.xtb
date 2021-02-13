@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2759453070259087442">Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> amb <ph name="NUMBER_OF_TABS" /> pestanyes.</translation>
 <translation id="2977480621796371840">Suprimeix del grup</translation>
+<translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>

@@ -197,6 +197,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2964349545761222050">Blokiraj kolačiće trećih strana</translation>
 <translation id="2969979262385602596">Prijava nije uspjela. Pokušajte ponovo kasnije.</translation>
 <translation id="2975121486251958312">Dostupan je samo anonimni način</translation>
+<translation id="2982481275546140226">Izbriši podatke</translation>
 <translation id="298306318844797842">Dodajte način plaćanja...</translation>
 <translation id="2989805286512600854">Otvori u novoj kartici</translation>
 <translation id="3037605927509011580">O, ne!</translation>
@@ -410,7 +411,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5339316356165661760">Uključi sinkronizaciju</translation>
-<translation id="5351284593342054342">Brisanje s uređaja</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5407969256130905701">Odbaci promjene</translation>
 <translation id="5409365236829784218">Nema instalirane aplikacije za otvaranje ove datoteke.</translation>
@@ -466,7 +466,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5948291296578561264">To vam omogućuje da spremite fotografije u zbirku fotografija.</translation>
 <translation id="5955891643922670672">Prikaz offline verzije</translation>
 <translation id="5957613098218939406">Više opcija</translation>
-<translation id="5961521066940389233">Pohrani na ovom uređaju</translation>
 <translation id="5964480694698977962">Otvori novu anonimnu karticu.</translation>
 <translation id="5965679971710331625">Prijavili ste se</translation>
 <translation id="5979837087407522202">Pretraživanje zaporki</translation>
@@ -481,7 +480,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Svojim pričama i aktivnostima upravljajte ovdje</translation>
 <translation id="6066301408025741299">Dotaknite da biste otkazali.</translation>
-<translation id="6085282545406522838">Sinkronizirani podaci ostat će na vašem Google računu.</translation>
 <translation id="6108923351542677676">Postavljanje je u tijeku…</translation>
 <translation id="6119050551270742952">Stranica u anonimnom načinu</translation>
 <translation id="6122191549521593678">Na mreži</translation>
@@ -605,7 +603,6 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="7203585745079012652">Izgovaranje odgovora</translation>
 <translation id="7207383424303353046">Novo: automatski otvorite web-lokacije u Chromeu tako što ćete ga postaviti kao zadanu aplikaciju preglednika. <ph name="BEGIN_LINK" />Otvorite Postavke<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nadimak kartice nije važeći</translation>
-<translation id="722989956228261714">Odjava…</translation>
 <translation id="7265758999917665941">Nikad za ovu web lokaciju</translation>
 <translation id="7272437679830969316">Potvrda identiteta nije moguća. Zaporka nije kopirana.</translation>
 <translation id="7291368939935408496">Priprema zaporki...</translation>
@@ -635,7 +632,6 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7537586195939242955">Žao nam je, pristupna riječ trenutačno se ne može instalirati u Passbook.</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
-<translation id="7558943807639707687">Što želite učiniti s oznakama, povijesti i drugim podacima na uređaju?</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7583004045319035904">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje anonimnih kartica.</translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>

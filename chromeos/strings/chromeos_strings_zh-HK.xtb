@@ -90,6 +90,7 @@
 <translation id="315738237743207937">已偵測到強制網絡入口</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
+<translation id="3226405216343213872">正在尋找掃瞄器</translation>
 <translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="3268178239013324452">失敗 - 機蓋未關</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">掃瞄緊第 <ph name="PAGE_NUM" /> 頁。完成咗 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
 <translation id="3488065109653206955">部分已啟用</translation>
-<translation id="3515615323037921860">列印工作</translation>
 <translation id="3527036260304016759">失敗 - 不明錯誤</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
 <translation id="3595596368722241419">電池已滿</translation>
@@ -296,7 +296,6 @@
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">週期數</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" />測試</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>

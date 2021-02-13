@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">Αποκλεισμός cookie τρίτου μέρους</translation>
 <translation id="2969979262385602596">Αποτυχία σύνδεσης. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="2975121486251958312">Μόνο η Κατάσταση ανώνυμης περιήγησης είναι διαθέσιμη</translation>
+<translation id="2982481275546140226">Διαγραφή δεδομένων</translation>
 <translation id="298306318844797842">Προσθήκη τρόπου πληρωμής…</translation>
 <translation id="2989805286512600854">Άνοιγμα σε Νέα Καρτέλα</translation>
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5327248766486351172">Όνομα</translation>
 <translation id="5339316356165661760">Ενεργοποίηση συγχρονισμού</translation>
-<translation id="5351284593342054342">Διαγραφή από αυτήν τη συσκευή</translation>
 <translation id="5388358297987318779">Άνοιγμα εικόνας</translation>
 <translation id="5407969256130905701">Απόρριψη αλλαγών</translation>
 <translation id="5409365236829784218">Δεν υπάρχουν εγκατεστ. εφαρμογές για το άνοιγμα του αρχείου</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">Σας επιτρέπει να αποθηκεύετε φωτογραφίες στη βιβλιοθήκη φωτογραφιών σας.</translation>
 <translation id="5955891643922670672">Προβολή έκδοσης εκτός σύνδεσης</translation>
 <translation id="5957613098218939406">Περισσότερες επιλογές</translation>
-<translation id="5961521066940389233">Διατήρηση σε αυτήν τη συσκευή</translation>
 <translation id="5964480694698977962">Δημιουργία νέας καρτέλας ανώνυμης περιήγησης.</translation>
 <translation id="5965679971710331625">Είστε συνδεδεμένοι</translation>
 <translation id="5979837087407522202">Αναζήτηση κωδικών πρόσβασης</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">ΕΕ</translation>
 <translation id="6059830886158432458">Ελέγξτε τις ειδήσεις και τη δραστηριότητά σας εδώ</translation>
 <translation id="6066301408025741299">Πατήστε για ακύρωση.</translation>
-<translation id="6085282545406522838">Τα συγχρονισμένα δεδομένα θα διατηρηθούν στον Λογαριασμό σας Google.</translation>
 <translation id="6108923351542677676">Ρύθμιση σε εξέλιξη…</translation>
 <translation id="6119050551270742952">Ιστοσελίδα σε ανώνυμη περιήγηση</translation>
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
@@ -606,7 +604,6 @@
 <translation id="7203585745079012652">Εκφώνηση απαντήσεων</translation>
 <translation id="7207383424303353046">Νέο: Ανοίξτε ιστοτόπους αυτόματα στο Chrome, ορίζοντάς το ως προεπιλεγμένη εφαρμογή προγράμματος περιήγησης. <ph name="BEGIN_LINK" />Άνοιγμα Ρυθμίσεων<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Μη έγκυρο ψευδώνυμο κάρτας</translation>
-<translation id="722989956228261714">Αποσύνδεση…</translation>
 <translation id="7265758999917665941">Ποτέ για αυτόν τον ιστότοπο</translation>
 <translation id="7272437679830969316">Δεν είναι δυνατή η επαλήθευση της ταυτότητας σας. Ο κωδικός πρόσβασης δεν αντιγράφηκε.</translation>
 <translation id="7291368939935408496">Προετοιμασία κωδικών πρόσβασης…</translation>
@@ -636,7 +633,6 @@
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση του πάσου σας στο Passbook.</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
-<translation id="7558943807639707687">Τι θέλετε να κάνετε με τους σελιδοδείκτες, το ιστορικό και άλλα δεδομένα σε αυτήν τη συσκευή;</translation>
 <translation id="7561196759112975576">Πάντα</translation>
 <translation id="7583004045319035904">Χρήση <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> για ξεκλείδωμα των καρτελών ανώνυμης περιήγησης.</translation>
 <translation id="7600965453749440009">Να μην γίνεται ποτέ μετάφραση από <ph name="LANGUAGE" /></translation>

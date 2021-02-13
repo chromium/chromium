@@ -17,7 +17,6 @@
 <translation id="257708665678654955">次回から Google Chrome でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
-<translation id="2786324948676799004">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、ログアウトすると、Chrome データはこのデバイスから削除されます。同期データは Google アカウントに残ります。</translation>
 <translation id="2919738076569633423">Chrome を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="3148688391461398285">Chromeの機能がユーザーの所在地に応じて便利に変化します。</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3345341804167540816">Chromeをどこでも使用</translation>
 <translation id="3522659714780527202">どのデバイスからでも Chrome で自分のタブにアクセスするには、同期をオンにしてください</translation>
-<translation id="3523473570015918798">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります。</translation>
 <translation id="3533694711092285624">保存されているパスワードがありません。パスワードを保存すると Chrome で確認できるようになります。</translation>
 <translation id="3706101708757577809">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>

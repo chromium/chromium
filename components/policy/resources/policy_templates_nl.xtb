@@ -463,6 +463,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als je het beleid instelt op False, kunnen gebruikers geen eigen printers toevoegen, configureren en ermee afdrukken. In dat geval kunnen ze ook niet afdrukken met eerder geconfigureerde printers.
       </translation>
 <translation id="1615221548356595305">Toestaan dat HTTP/2-verbindingen voor deze hosts kunnen worden samengevoegd, zelfs als client certificates worden gebruikt</translation>
+<translation id="1616280227447957376">Doorgaan vanaf de SSL-waarschuwingspagina toestaan voor specifieke herkomsten</translation>
 <translation id="1617235075406854669">Verwijderen van browser- en downloadgeschiedenis inschakelen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1626379196197114720">Toestaan dat de Back-Forward Cache wordt gebruikt</translation>
@@ -824,6 +825,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="2170233653554726857">WPAD-optimalisatie inschakelen</translation>
 <translation id="2171952274731262470">Vertragingen en acties die moeten worden ondernomen als het apparaat inactief is en op de batterij werkt</translation>
 <translation id="2175353308236295184">App-specifiek json-configuratieobject met een reeks sleutel-waardeparen, bijvoorbeeld '"managedConfiguration": { "key1": value1, "key2": value2 }'. De sleutels worden gedefinieerd in het app-manifest.</translation>
+<translation id="2176115444876446233">Voorkomen dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="2178899310296064282">Minimaal de gemiddelde 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden ingeschakeld</translation>
 <translation id="219297066914002620">Geeft <ph name="PRODUCT_OS_NAME" /> de instructie om consoletools voor het beheer van virtuele machines in te schakelen.
@@ -1014,6 +1016,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Een URL-patroon moet worden ingedeeld volgens https://www.chromium.org/administrators/url-blocklist-filter-format.</translation>
 <translation id="2433516903565257847">Het percentage van de apparaten dat na het opgegeven aantal dagen moet worden geüpdatet.</translation>
 <translation id="2435052056904485763">Toelatingslijst voor Kerberos-delegatieserver</translation>
+<translation id="2435232509335686514">Configuratiebeleid voor de verwerking van gedownloade bestanden door de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /></translation>
 <translation id="2448315169529769573">Als je het beleid inschakelt, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid uitschakelt, worden er geen statistieken en diagnostische gegevens gerapporteerd.
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
@@ -1249,9 +1252,19 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
       Als je het beleid uitschakelt, kan <ph name="PRODUCT_NAME" /> deze hosts alleen gebruiken als ze zijn geïnstalleerd op systeemniveau.</translation>
 <translation id="2753637905605932878">Het bereik beperken van lokale UDP-poorten die door WebRTC worden gebruikt</translation>
+<translation id="2755847332939882873">Verzameling van prestatietracering voor het hele systeem toestaan</translation>
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
+<translation id="2764165704281937018">Lijst met instellingen die moeten worden toegepast op de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand moet sturen naar de serviceprovider als het wordt gedownload van een webpagina. De URL van de webpagina moet een 'enable'-patroon hebben, geen 'disable'-patroon.  Ook het MIME-type van het bestand moet een 'enable'-patroon hebben, geen 'disable'-patroon.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> geeft aan welke organisatie bij de serviceprovider hoort.  Als de gebruiker inlogt tijdens de installatie van de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, kan dat alleen met een gebruikersaccount dat is gekoppeld aan de organisatie.
+
+      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
 <translation id="2772955711376920612">Als je dit beleid inschakelt en <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, blijft stroom voor piekuren aan (als het apparaat hiervoor geschikt is). Het beleid voor stroombeheer voor piekuren is een energiebesparingsbeleid waarmee het gebruik van wisselstroom op piekuren wordt geminimaliseerd. Voor elke dag van de week kun je een begin- en eindtijd instellen voor stroom voor piekuren. Zolang de batterij op deze momenten boven de ingestelde drempelwaarde blijft, blijft het apparaat op de batterij draaien (zelfs als het is aangesloten op wisselstroom). Na de ingestelde eindtijd gebruikt het apparaat wisselstroom (als het daarop is aangesloten) maar wordt de batterij niet opgeladen. Het apparaat keert terug naar de normale werking waarbij wisselstroom wordt gebruikt en de batterij wordt opgeladen na de opgegeven begintijd voor opladen.
 
@@ -1334,6 +1347,23 @@ Als je het beleid niet instelt, is stroom voor piekuren aanvankelijk uitgeschake
       Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten geen Android-statusinformatie.</translation>
 <translation id="288923520817177650">Toestaan dat <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-sessies van <ph name="WEBXR_API_NAME_SHORT" /> worden gemaakt</translation>
 <translation id="2890645751406497668">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
+<translation id="2892041629748346178">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload in Chrome.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het wordt gedownload vanaf een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
+
+      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de gebruiker toegang tot het gedownloade bestand geeft. Elke andere waarde met een geheel getal betekent dat Chrome de gebruiker onmiddellijk toegang tot het bestand geeft.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of Chrome bestanden die zijn beveiligd met een wachtwoord blokkeert of toestaat.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of Chrome bestanden die te groot zijn om te worden geanalyseerd (meer dan 50 MB) blokkeert of toestaat.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
+
+      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2893546967669465276">Systeemlogboeken naar de beheerserver verzenden</translation>
 <translation id="2899002520262095963">Android-apps kunnen de netwerkconfiguraties en CA-certificaten gebruiken die via dit beleid zijn ingesteld, maar hebben geen toegang tot bepaalde configuratieopties.</translation>
 <translation id="2899213072616346687">Beperkt de modus voor afdrukken met achtergrondbeelden. Als er geen beleid is ingesteld, gelden er geen beperkingen.</translation>
@@ -1359,6 +1389,12 @@ Als je het beleid niet instelt, is stroom voor piekuren aanvankelijk uitgeschake
 
       Als dit beleid niet is geconfigureerd, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.
       Als <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> niet is ingesteld, zijn extra Family Link-gebruikers toegestaan voor de accounts die in dit beleid zijn gedefinieerd.</translation>
+<translation id="2920795918401557243">Deze instelling staat toe dat een prestatietracering voor het hele systeem wordt verzameld via de service voor systeemtracering.
+
+      Als dit beleid niet wordt toegepast, kan de gebruiker geen tracering voor het hele systeem verzamelen via de service voor systeemtracering.
+      Als dit beleid wordt toegepast, kan de gebruiker een tracering voor het hele systeem verzamelen via de service voor systeemtracering.
+      Als dit beleid niet is ingesteld, wordt het niet toegepast voor beheerde apparaten en wel toegepast voor apparaten van consumenten.
+      Als dit beleid niet wordt toegepast, wordt alleen de verzameling van een tracering voor het hele systeem uitgezet. Dit beleid is niet van invloed op de verzameling van een browsertracering.</translation>
 <translation id="2921222258441684334">Als je het beleid instelt op 1, kunnen sites de fysieke locatie van gebruikers standaard bijhouden. Als je het beleid instelt op 2, wordt het bijhouden van de fysieke locatie van gebruikers standaard geblokkeerd. Je kunt het beleid zo instellen dat om goedkeuring wordt gevraagd als een site de fysieke locatie van gebruikers wil bijhouden.
 
       Als je het beleid niet instelt, is het beleid <ph name="ASK_GEOLOCATION_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
@@ -1732,6 +1768,21 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="3412937883532015092">Als je het beleid instelt op een getal, toont <ph name="PRODUCT_NAME" /> gedurende dat aantal milliseconden een melding en wordt vervolgens de alternatieve browser geopend.
 
       Als je dit beleid niet instelt of instelt op '0', wordt de URL onmiddellijk in een alternatieve browser geopend als je naar de URL navigeert.</translation>
+<translation id="3413215487296688603">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als gegevens in Chrome worden ingevoerd vanaf het klembord of door slepen en neerzetten van webcontent.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector gegevens voor analyse moet sturen als ze worden ingevoerd op een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor die gegevens. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
+
+      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de pagina toegang tot de gegevens geeft. Elke andere waarde met een geheel getal betekent dat Chrome de pagina onmiddellijk toegang tot de gegevens geeft.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimum grootte (in bytes) aan die in Chrome ingevoerde gegevens ten minste moeten hebben om te worden gescand. De standaardwaarde is 100 bytes als het veld niet is ingesteld.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
+
+      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="3415954062311826850">Dit beleid wordt niet ondersteund binnen ARC.</translation>
 <translation id="34160070798637152">Beheert apparaatbrede netwerkconfiguratie.</translation>
 <translation id="3417130629744653218">Websites toestaan beschikbare betaalmethoden op te vragen</translation>
@@ -2130,6 +2181,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Met deze instelling worden sneltoetsen en menu- en contextmenu-opties uitgeschakeld waarmee tools voor ontwikkelaars of de JavaScript-console kunnen worden geopend.</translation>
 <translation id="3950110092991281616">Ambient-verificatie alleen inschakelen in normale sessies.</translation>
 <translation id="3950239119790560549">Tijdsbeperkingen voor updates</translation>
+<translation id="3956573780915784996">Toestaan dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="3956686688560604829">Gebruik het SiteList-beleid van Internet Explorer voor ondersteuning voor oudere browsers.</translation>
 <translation id="3958586912393694012">Toestaan dat Smart Lock wordt gebruikt</translation>
 <translation id="3962445567482559878">De EDU-modus voor introductie van de Assistent gebruiken</translation>
@@ -2365,6 +2417,11 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="4377599627073874279">Alle sites toestaan afbeeldingen weer te geven</translation>
 <translation id="437791893267799639">Beleid niet ingesteld, gegevensmigratie en ARC niet toestaan</translation>
 <translation id="4382413175336720282">Realtime URL-check is uitgeschakeld.</translation>
+<translation id="4387741272680827493">Als je het beleid instelt, geef je een lijst op met hostnamen die de vooraf geladen HSTS-upgrades van http naar https omzeilen.
+
+      In dit beleid zijn alleen hostnamen met 1 label toegestaan. Dit beleid is alleen van toepassing op 'statische' vooraf geladen HSTS-items (bijvoorbeeld <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Dit beleid verhindert geen HSTS-upgrades voor servers met 'dynamisch' aangevraagde HSTS-upgrades met een <ph name="HSTS_HEADER_NAME" />-reactiekop.
+
+      De opgegeven hostnamen moeten een canonieke URL hebben. Eventuele IDN's moeten worden omgezet naar de A-labelindeling en alle ASCII-letters moeten kleine letters zijn. Dit beleid is alleen van toepassing op de specifiek vermelde hostnamen met 1 label en niet op de subdomeinen van die namen.</translation>
 <translation id="4387922553629365459">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die geen pop-ups mogen openen.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -2993,6 +3050,11 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
 
       Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="5266173014392157048">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
+
+      Als je het beleid instelt, worden servers toegewezen waaraan <ph name="PRODUCT_NAME" /> kan delegeren. Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+      Als je het beleid niet instelt, delegeert <ph name="PRODUCT_NAME" /> geen inloggegevens van gebruikers, zelfs niet als een server wordt herkend als intranet.</translation>
 <translation id="5273744932022326215">De toegankelijkheidsfunctie voor cursormarkering op het inlogscherm inschakelen.
 
           Als dit beleid is ingesteld op True, is cursormarkering altijd ingeschakeld op het inlogscherm.
@@ -3541,6 +3603,11 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Als je het beleid uitschakelt, kunnen gebruikers deze aanbiedingen niet inwisselen.</translation>
 <translation id="6048199181629830227">Stroombeheer voor piekuren inschakelen</translation>
 <translation id="6053681087509103368">Toestaan dat WebRTC verouderde versies van het TLD-/DTLS-protocol gebruikt</translation>
+<translation id="605543517695935623">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een beveiligingsgebeurtenis plaatsvindt in Chrome. Dit omvat onder meer negatieve analyseresultaten van Enterprise Connectors, hergebruik van wachtwoorden, navigatie naar onveilige pagina's en andere beveiligingsgevoelige gebruikersacties.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke rapportageserviceprovider de instellingen horen en het veld <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> geeft aan welke gebeurtenissen zijn aangezet voor deze provider.
+
+      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="6058879286588763839">Als je <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> instelt, geef je het stroombeheerbeleid voor de batterijoplaadmodus op (als dit wordt ondersteund op het apparaat), tenzij <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> is opgegeven (dat voorrang krijgt op <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />). Dit beleid beheert het opladen van de batterij op dynamische wijze door spanning en belasting te minimaliseren. Zo wordt de batterijduur verlengd.
 
       Als je het beleid niet instelt (als dit wordt ondersteund op het apparaat), is de standaard batterijoplaadmodus van toepassing en kunnen gebruikers dit niet wijzigen.
@@ -4434,6 +4501,23 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als dit beleid niet wordt ingesteld of leeg is, kan de gebruiker elk willekeurig Google-account instellen als primair browseraccount in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">De minimumlengte van de pincode voor het vergrendelscherm instellen</translation>
 <translation id="7234280155140786597">Namen van de verboden hosts voor systeemeigen berichten (of * voor alle)</translation>
+<translation id="72369543045636739">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt bijgevoegd in Chrome.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het is bijgevoegd bij een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
+
+      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de pagina toegang tot het bestand geeft. Elke andere waarde met een geheel getal betekent dat Chrome de pagina onmiddellijk toegang tot het bestand geeft.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of Chrome bestanden die zijn beveiligd met een wachtwoord blokkeert of toestaat.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of Chrome bestanden die te groot zijn om te worden geanalyseerd (meer dan 50 MB) blokkeert of toestaat.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
+
+      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Toestaan dat Phone Hub-meldingen worden aangezet.</translation>
 <translation id="7249828445670652637">CA-certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps inschakelen</translation>
 <translation id="7252681704926980614">Gebruikersnaam en bestandsnaam bij elke afdruktaak naar systeemeigen printerserver verzenden. De standaardinstelling is om deze gegevens niet te verzenden.
@@ -4482,6 +4566,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="7295019613773647480">Gebruikers met beperkte rechten inschakelen</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
+<translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>
@@ -4806,6 +4891,13 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="780629758750905699">Toevoegen van Family Link-accounts aan het apparaat toestaan</translation>
 <translation id="7807139251387225825">Lijst met typen die moeten worden uitgesloten van synchronisatie</translation>
 <translation id="781268256210530471">Instellingen voor plug-ins</translation>
+<translation id="7814528532170362496">Dit beleid beheert realtime checks om niet-beveiligde URL's te identificeren.
+
+Als dit beleid niet is ingesteld of niet wordt toegepast, worden de Safe Browsing-checks van de consument toegepast. Safe Browsing-checks van de consument kunnen nog steeds realtime lookups bevatten, afhankelijk van de waarde van de instelling 'Zoekopdrachten en browsefunctionaliteit verbeteren' en de waarde van het beleid UrlKeyedAnonymizedDataCollectionEnabled.
+
+      Als dit beleid wordt toegepast, worden URL's verstuurd om in realtime te worden gescand op basis van de servicevoorwaarden van het bedrijf. Dit leidt ertoe dat Chrome URL's stuurt naar Google Cloud of derden die je zelf kiest om ze in realtime te checken. De consumentenversie van realtime lookups met Safe Browsing wordt uitgezet.
+
+Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Geheim gedeeld tussen het apparaat van het kind en het apparaat van de ouder.</translation>
 <translation id="7818131573217430250">De standaardstatus van de modus voor hoog contrast op het inlogscherm instellen</translation>
 <translation id="7823902813460802031">Als je dit beleid inschakelt, voorkomt <ph name="PRODUCT_OS_NAME" /> dat het apparaat in de ontwikkelaarsmodus gaat.
@@ -5193,6 +5285,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, is het ingeschakeld maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="8300992833374611099">Bepalen wanneer de hulpprogramma's voor ontwikkelaars kunnen worden gebruikt</translation>
+<translation id="8301065459352777588">Gebruikers van beheerde gastsessies kunnen weergave-eigenschappen voor het hele apparaat opslaan</translation>
 <translation id="8306117673860983372">Inloginstellingen</translation>
 <translation id="8312129124898414409">Hiermee kun je instellen of websites sleutels mogen genereren. Het genereren van sleutels kan ofwel worden toegestaan voor alle websites ofwel worden geweigerd voor alle websites.
 
@@ -5664,6 +5757,13 @@ Dit beleid wordt verwijderd in M75.</translation>
        Als het beleid is ingesteld op False, worden automatische upgrades voor audio en video uitgeschakeld en wordt er geen waarschuwing weergegeven voor afbeeldingen.
        Dit beleid heeft geen effect op andere typen content dan audio, video en afbeeldingen.
        Dit beleid is niet meer van kracht vanaf <ph name="PRODUCT_NAME" /> 84.</translation>
+<translation id="9009505213521705952">Als <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> niet wordt toegepast, kun je met dit beleid een lijst met herkomstpatronen instellen voor sites waar gebruikers door de waarschuwingspagina's van <ph name="PRODUCT_NAME" /> kunnen klikken als ze naar sites met SSL-fouten navigeren. Gebruikers kunnen niet doorklikken op SSL-waarschuwingspagina's voor herkomsten die niet op deze lijst staan.
+
+      Als <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> wordt toegepast of niet wordt ingesteld, doet dit beleid niets.
+
+      Als je het beleid niet instelt, wordt <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> toegepast op alle sites.
+
+      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor meer informatie over geldige invoerpatronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
 <translation id="9010080992450148617">Het sturen van downloads naar Google voor uitgebreide scans inschakelen voor gebruikers die zijn ingeschreven voor 'Geavanceerde beveiliging'</translation>
 <translation id="9013875414788074110">Tijdens het inloggen kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren met behulp van een server (online) of door gebruik te maken van een wachtwoord in het cachegeheugen (offline).
 

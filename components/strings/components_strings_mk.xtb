@@ -80,7 +80,6 @@
     &lt;li&gt;Контактирајте со сопственикот на веб-сајтот.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ја внесовте лозинката на сајт што не е управуван од организацијата. За да ја заштитите сметката, не користете ја лозинката повторно на други апликации и сајтови.</translation>
-<translation id="1259144770381827039">Прикажи детали.</translation>
 <translation id="1263231323834454256">Список за читање</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Активност што нема да остане на уредов:
@@ -1374,7 +1373,6 @@
 <translation id="6290238015253830360">Предложените статии ќе се појавуваат тука</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Се запира „Помошникот на Google“ во Chrome</translation>
-<translation id="6304463939629872728">Платете со</translation>
 <translation id="6305205051461490394"><ph name="URL" /> е недостапна.</translation>
 <translation id="6312113039770857350">Веб-страницата не е достапна</translation>
 <translation id="6321917430147971392">Проверете ги вашите DNS-поставки</translation>
@@ -1404,7 +1402,6 @@
 <translation id="6406765186087300643">C0 (плик)</translation>
 <translation id="6409754798200046165">Тукушто ја внесовте лозинката на сајт што може да ве измами. Chrome ви препорачува да ја промените лозинката веднаш.</translation>
 <translation id="6410264514553301377">Внесете ги датумот на истекување и CVC за <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Не заборавајте ја понудата на Google Pay</translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да ја заштитите сметката на Google и да ја промените лозинката.</translation>
 <translation id="6423385022588644828">Отсега, потврдувајте ги картичките побрзо со Touch ID</translation>
 <translation id="6425092077175753609">Материјален</translation>
@@ -1843,6 +1840,7 @@
 <translation id="8202370299023114387">Конфликт</translation>
 <translation id="8206978196348664717">Prc4 (плик)</translation>
 <translation id="8211406090763984747">Врската е безбедна</translation>
+<translation id="8213464188712611711">Спомени</translation>
 <translation id="8218327578424803826">Доделена локација:</translation>
 <translation id="8220146938470311105">C7/C6 (плик)</translation>
 <translation id="8221250263817408492">Тукушто ја внесовте својата лозинка на измамнички сајт. Chromium препорачува да одите на <ph name="WEBSITE_1" /> и на други сајтови каде што ја користите лозинката и да ја промените веднаш.</translation>

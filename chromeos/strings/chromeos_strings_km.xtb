@@ -103,7 +103,6 @@
 <translation id="345898999683440380">កំពុង​ស្កេនទំព័រទី <ph name="PAGE_NUM" />។ បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />%។</translation>
 <translation id="3459509316159669723">កំពុងបោះពុម្ព</translation>
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
-<translation id="3515615323037921860">ការងារ​បោះពុម្ព</translation>
 <translation id="3527036260304016759">មិនបានសម្រេច - មានបញ្ហា​ដែលមិនស្គាល់</translation>
 <translation id="357889014807611375">Wi-Fi តាមកម្រិត</translation>
 <translation id="3595596368722241419">ថ្មពេញ</translation>
@@ -296,7 +295,6 @@
 <translation id="7701040980221191251">គ្មាន</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ចំនួនវដ្ដ</translation>
-<translation id="7732651821766520760">តេស្ត <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">លេខសម្គាល់ម៉ូដែល</translation>
 <translation id="7805768142964895445">ស្ថានភាព</translation>
 <translation id="7819857487979277519">PSK (WPA ឬ RSN)</translation>

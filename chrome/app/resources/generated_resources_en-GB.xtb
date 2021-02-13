@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Complete setup on your phone</translation>
 <translation id="1054153489933238809">Open original image in new tab</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
-<translation id="1055806300943943258">Searching for Bluetooth and USB devices...</translation>
 <translation id="1056466516655540509">Updated <ph name="MINUTES" /> min ago</translation>
 <translation id="1056775291175587022">No networks</translation>
 <translation id="1056898198331236512">Warning</translation>
@@ -127,6 +126,9 @@
 <translation id="1140351953533677694">Access your Bluetooth and Serial devices</translation>
 <translation id="114036956334641753">Audio and captions</translation>
 <translation id="1140746652461896221">Block content on any page that you visit</translation>
+<translation id="1141953877381847186">Allow Assistant to use information on the screen to provide quick answers such as translation, definition, unit conversion and more.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Bear in mind:<ph name="END_BOLD" /> You can always change this later in Google Assistant settings &gt; Related info.</translation>
 <translation id="1143142264369994168">Certificate Signer</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome didn't find harmful software on your computer • Checked 1 minute ago}other{Chrome didn't find harmful software on your computer • Checked {NUM_MINS} minutes ago}}</translation>
 <translation id="1145593918056169051">Printer has stopped</translation>
@@ -1436,7 +1438,9 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2594999711683503743">Search Google or type URL</translation>
 <translation id="2602501489742255173">Swipe up to get started</translation>
 <translation id="2603115962224169880">Clean up computer</translation>
+<translation id="2603355571917519942">Voice Match is ready</translation>
 <translation id="2603463522847370204">Open in &amp;Incognito window</translation>
+<translation id="2604138917550693049">Search image with Google Lens</translation>
 <translation id="2604255671529671813">Network connection error</translation>
 <translation id="2606246518223360146">Link Data</translation>
 <translation id="2606454609872547359">No, continue without ChromeVox</translation>
@@ -1780,6 +1784,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2963151496262057773">The following plug-in is unresponsive: <ph name="PLUGIN_NAME" />Would you like to stop it?</translation>
 <translation id="2964193600955408481">Disable Wi-Fi</translation>
 <translation id="2964245677645334031">Nearby Share visibility</translation>
+<translation id="2966216232069818096">Let your Assistant use information on your screen to help</translation>
 <translation id="2966937470348689686">Manage Android preferences</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2973324205039581528">Mute site</translation>
@@ -1876,6 +1881,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">This tab is using your camera or microphone.</translation>
 <translation id="3083193146044397360">Temporarily blocked to protect your security</translation>
+<translation id="3083899879156272923">Move screen, keeping mouse in the centre of the screen</translation>
 <translation id="3084548735795614657">Drop to install</translation>
 <translation id="3084771660770137092">Either Chrome ran out of memory or the process for the web page was terminated for some other reason. To continue, reload or go to another page.</translation>
 <translation id="3084958266922136097">Disable screensaver</translation>
@@ -1975,7 +1981,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
-<translation id="3202218848974251205">The privacy sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
@@ -2371,6 +2376,9 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3654045516529121250">Read your accessibility settings</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{It has permanent access to one file.}other{It has permanent access to # files.}}</translation>
 <translation id="3658871634334445293">TrackPoint acceleration</translation>
+<translation id="3659830472545192450">Voice Match helps your Google Assistant identify your voice on your Chromebook and tell you apart from others.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Bear in mind:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
 <translation id="3660234220361471169">Untrusted</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
@@ -3133,6 +3141,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4538417792467843292">Delete word</translation>
 <translation id="4538684596480161368">Always block unsandboxed plug-ins on <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Installed by enterprise policy.</translation>
+<translation id="4541123282641193691">Couldn't verify your account. Please try again or restart your Chromebook.</translation>
 <translation id="4541662893742891060">Unable to connect to this profile. For technical support, please contact your operator.</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542520061254486227">Read your data on <ph name="WEBSITE_1" /> and <ph name="WEBSITE_2" /></translation>
@@ -3558,6 +3567,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Spellcheck isn’t supported for the languages that you have selected</translation>
 <translation id="5052499409147950210">Edit site</translation>
+<translation id="5053962746715621840">Search Image with Google Lens</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="5057403786441168405">Manage your signed-in accounts. Websites, apps and extensions in Chrome and Google Play may use these accounts to customise your experience, depending on permissions. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restrict sign-in</translation>
@@ -4042,6 +4052,9 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5610038042047936818">Switch to camera mode</translation>
 <translation id="561030196642865721">Third-party cookies are allowed on this site</translation>
 <translation id="5612734644261457353">Sorry, your password still could not be verified. Note: if you changed your password recently, your new password will be applied once you sign out, please use the old password here.</translation>
+<translation id="561308544008485315">Voice Match helps your Google Assistant identify your voice on your Chromebook and tell you apart from others. To save battery, 'Hey Google' is only on when your device is connected to a power source. To make changes, go to Settings.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Bear in mind:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5616726534702877126">Reserve size</translation>
@@ -4155,6 +4168,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="574209121243317957">Pitch</translation>
 <translation id="5742505912938664543">When you add a secondary account here, you may browse the web, download apps, and check your Gmail and other Google services using that account.</translation>
 <translation id="5746169159649715125">Save as PDF</translation>
+<translation id="5746261205461426123">Open setup guide</translation>
 <translation id="5747552184818312860">Expires</translation>
 <translation id="5747785204778348146">Developer - unstable</translation>
 <translation id="5747809636523347288">Paste and go to <ph name="URL" /></translation>
@@ -5074,6 +5088,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
 <translation id="6825184156888454064">Sort by name</translation>
 <translation id="6826872289184051766">Verify via USB</translation>
+<translation id="6827604573767207488">It looks as though you've already set up personalised Assistant on a different device. Get even more out of your Assistant by turning on the following setting.</translation>
 <translation id="6828153365543658583">Restrict sign-in to the following users:</translation>
 <translation id="6828182567531805778">Enter your passphrase to sync your data</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5314,6 +5329,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="708278670402572152">Disconnect to enable scanning</translation>
 <translation id="7084321615353200053">Sites can ask to use your camera (recommended)</translation>
 <translation id="7085389578340536476">Allow Chrome to record audio?</translation>
+<translation id="7085805695634549980">Couldn't connect with Google services. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Include Chrome log files in the archive.</translation>
 <translation id="7088434364990739311">Update check failed to start (error code <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Open and pack ZIP files in Files app.</translation>
@@ -5509,6 +5525,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7327989755579928735"><ph name="MANAGER" /> has disabled ADB debugging. Once you restart your <ph name="DEVICE_TYPE" />, you won't be able to sideload apps.</translation>
 <translation id="7328867076235380839">Invalid combination</translation>
 <translation id="7329154610228416156">Sign-in failed because it was configured to use a non-secure URL (<ph name="BLOCKED_URL" />). Please contact your administrator.</translation>
+<translation id="7329932885428707942">This may cause a brief mobile network disconnection.</translation>
 <translation id="7332053360324989309">Dedicated worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Enable docked magnifier</translation>
 <translation id="7335974957018254119">Use spell check for</translation>
@@ -5552,6 +5569,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7374376573160927383">Manage USB devices</translation>
 <translation id="7375235221357833624">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
+<translation id="737728204345822099">A record of your visit to this site may be kept on your security key.</translation>
 <translation id="7377451353532943397">Continue blocking sensor access</translation>
 <translation id="7378611153938412599">Weak passwords are easy to guess. Make sure that you’re creating strong passwords. <ph name="BEGIN_LINK" />See more security tips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Open Chrome Web Store</translation>
@@ -6180,6 +6198,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8059417245945632445">&amp;Inspect devices</translation>
 <translation id="8059456211585183827">There are no printers available to save.</translation>
 <translation id="8061091456562007989">Change it back</translation>
+<translation id="8061991877177392872">It looks as though you've already set up Voice Match with your Assistant on another device. These previous recordings were used to make a voice model on this device.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 sheet of paper}other{{COUNT} sheets of paper}}</translation>
 <translation id="8062879968880283306">Scan QR code using device camera or enter activation code provided by your operator.</translation>
 <translation id="8063235345342641131">Default green avatar</translation>
@@ -6451,6 +6470,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>
 <translation id="8386091599636877289">Policy not found.</translation>
+<translation id="8386819192691131213">Allow Assistant to use information on the screen to provide quick answers such as translation, definition, unit conversion and more</translation>
 <translation id="8386903983509584791">Scan completed</translation>
 <translation id="8387361103813440603">Not allowed to see your location</translation>
 <translation id="8389264703141926739">Block notifications</translation>
@@ -6933,6 +6953,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8915370057835397490">Loading suggestion</translation>
 <translation id="8916476537757519021">Incognito Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
+<translation id="8922624386829239660">Move screen when mouse touches edges of screen</translation>
 <translation id="8923880975836399332">Dark teal</translation>
 <translation id="8925458182817574960">&amp;Settings</translation>
 <translation id="8926389886865778422">Don't ask again</translation>
@@ -7011,6 +7032,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9009708085379296446">Did you mean to change this page?</translation>
 <translation id="9011163749350026987">Always show icon</translation>
 <translation id="9011393886518328654">Release notes</translation>
+<translation id="9012122671773859802">Move screen continuously as mouse moves</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> of free space is required to install Linux. To increase free space, delete files from your device.</translation>
 <translation id="9013707997379828817">Your administrator rolled back this device. Please save important files, then restart. All data on the device will be deleted.</translation>
 <translation id="901668144954885282">Back up to Google Drive</translation>
@@ -7055,6 +7077,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9052404922357793350">Continue blocking</translation>
 <translation id="9053563360605707198">Print on both sides</translation>
 <translation id="9053893665344928494">Remember my choice</translation>
+<translation id="9055278955535611574">Access your Assistant with 'Hey Google'</translation>
 <translation id="9055636786322918818">Enforce RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>
 <translation id="9057354806206861646">Update schedule</translation>

@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Skanuję stronę <ph name="PAGE_NUM" />. Ukończono <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
-<translation id="3515615323037921860">Zadania drukowania</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
@@ -266,6 +265,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Ładuję (pełne naładowanie za <ph name="TIME_VALUE" />)</translation>
 <translation id="708426984172631313">ZATRZYMANO</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -288,6 +288,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
 <translation id="7658239707568436148">Anuluj</translation>
@@ -295,7 +296,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Liczba cykli</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> – test</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>

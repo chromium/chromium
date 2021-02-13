@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
 <translation id="3188257591659621405">Fail saya</translation>
 <translation id="3199982728237701504">Penyuap Dokumen (Dwisisi)</translation>
+<translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
-<translation id="3515615323037921860">Tugas Cetak</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
@@ -296,7 +296,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Kiraan kitaran</translation>
-<translation id="7732651821766520760">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID Model</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA atau RSN)</translation>

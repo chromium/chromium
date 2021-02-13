@@ -80,7 +80,6 @@
     &lt;li&gt;اتصل بمالك الموقع الإلكتروني.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">لقد أدخلتَ كلمة المرور في موقع إلكتروني لا تديره مؤسستك. ينصح بعدم استخدام كلمة المرور مجددًا في التطبيقات ومواقع الويب الأخرى لحماية حسابك.</translation>
-<translation id="1259144770381827039">الاطّلاع على التفاصيل</translation>
 <translation id="1263231323834454256">قائمة القراءة</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         النشاطات التي لن يتم حفظها على هذا الجهاز:
@@ -1374,7 +1373,6 @@
 <translation id="6290238015253830360">ستظهر المقالات المقترحة هنا</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">‏جارٍ إيقاف "مساعد Google" على Chrome</translation>
-<translation id="6304463939629872728">إتمام الدفع باستخدام</translation>
 <translation id="6305205051461490394">يتعذر الوصول إلى <ph name="URL" />.</translation>
 <translation id="6312113039770857350">صفحة الويب غير متاحة</translation>
 <translation id="6321917430147971392">التحقق من إعدادات نظام أسماء النطاقات</translation>
@@ -1404,7 +1402,6 @@
 <translation id="6406765186087300643">‏C0 (مغلف)</translation>
 <translation id="6409754798200046165">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. لذا يُوصي Chrome بتغيير كلمة مرورك الآن.</translation>
 <translation id="6410264514553301377">‏أدخِل تاريخ انتهاء الصلاحية ورمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">‏لا تنسَ عرض Google Pay</translation>
 <translation id="6415778972515849510">‏يمكن أن يساعدك Chromium على حماية حسابك على Google وتغيير كلمة المرور.</translation>
 <translation id="6423385022588644828">التأكد من بطاقاتك بشكلٍ أسرع باستخدام رقم التعريف باللمس من الآن فصاعدًا</translation>
 <translation id="6425092077175753609">متعدد الأبعاد</translation>
@@ -1843,6 +1840,7 @@
 <translation id="8202370299023114387">تعارض</translation>
 <translation id="8206978196348664717">‏Prc4 (مغلف)</translation>
 <translation id="8211406090763984747">الاتصال بموقع الويب هذا آمن</translation>
+<translation id="8213464188712611711">الذكريات</translation>
 <translation id="8218327578424803826">الموقع الذي تم تعيينه:</translation>
 <translation id="8220146938470311105">‏C7/C6 (مغلف)</translation>
 <translation id="8221250263817408492">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. لذا ينصح Chromium بالانتقال إلى <ph name="WEBSITE_1" />، وأيّ مواقع إلكترونية أخرى تستخدم فيها كلمة المرور هذه، وبتغيير الكلمة الآن.</translation>

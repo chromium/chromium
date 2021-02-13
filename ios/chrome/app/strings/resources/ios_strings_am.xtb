@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">የሶስተኛ ወገን ኩኪዎችን ያግዱ</translation>
 <translation id="2969979262385602596">በመለያ መግባት አልተሳካም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2975121486251958312">ማንነት የማያሳውቅ ሁነታ ብቻ ይገኛል</translation>
+<translation id="2982481275546140226">ውሂብን አጽዳ</translation>
 <translation id="298306318844797842">የመክፈያ ዘዴን ያክሉ...</translation>
 <translation id="2989805286512600854">በአዲስ ትር ክፈት</translation>
 <translation id="3037605927509011580">ውይ፣ ተሰናከለ!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5339316356165661760">አስምርን ያብሩ</translation>
-<translation id="5351284593342054342">ከዚህ መሣሪያ ላይ ያጽዱ</translation>
 <translation id="5388358297987318779">ምስል ክፈት</translation>
 <translation id="5407969256130905701">ለውጦችን አስወግድ</translation>
 <translation id="5409365236829784218">ይህን ፋይል መክፈት የሚችሉ መተግበሪያዎች አልተጫኑም።</translation>
@@ -466,7 +466,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5948291296578561264">ይህ ፎቶዎችን ወደ የፎቶ ቤተ-መጽሔፍትዎ እንዲያስቀምጡ ያስችልዎታል።</translation>
 <translation id="5955891643922670672">የመስመር ውጭ ስሪቱን በመመልከት ላይ</translation>
 <translation id="5957613098218939406">ተጨማሪ አማራጮች</translation>
-<translation id="5961521066940389233">በዚህ መሣሪያ ላይ አቆይ</translation>
 <translation id="5964480694698977962">አዲስ ማንነት የማያሳውቅ ትር ፍጠር።</translation>
 <translation id="5965679971710331625">ወደ መለያ ገብተዋል</translation>
 <translation id="5979837087407522202">የይለፍ ቃላትን ይፈልጉ</translation>
@@ -481,7 +480,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="605721222689873409">ዓዓ</translation>
 <translation id="6059830886158432458">የእርስዎን ታሪክ እና እንቅስቃሴ እዚህ ይቆጣጠሩ</translation>
 <translation id="6066301408025741299">ይቅር ለማለት መታ ያድርጉ።</translation>
-<translation id="6085282545406522838">የእርስዎ የሰመረ ውሂብ በእርስዎ የGoogle መለያ ውስጥ ይቆያል።</translation>
 <translation id="6108923351542677676">ማዋቀር በሂደት ላይ…</translation>
 <translation id="6119050551270742952">የአሁኑ ድረ-ገጽ ማንነት በማያሳውቅ ላይ ነው</translation>
 <translation id="6122191549521593678">መስመር ላይ</translation>
@@ -605,7 +603,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7203585745079012652">መልሶችን ተመልሰህ ተናገር</translation>
 <translation id="7207383424303353046">አዲስ፦ Chrome የእርስዎን ነባሪ የአሳሽ መተግበሪያ በማድረግ ጣቢያዎችን በራስ-ሰር በChrome ውስጥ ይክፈቱ። <ph name="BEGIN_LINK" />ቅንብሮችን ይክፈቱ<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">ልክ ያልሆነ ቅጽል ስም</translation>
-<translation id="722989956228261714">ዘግተህ ውጣ…</translation>
 <translation id="7265758999917665941">ለዚህ ጣቢያ በጭራሽ</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="7291368939935408496">የይለፍ ቃላትን በማዘጋጀት ላይ...</translation>
@@ -635,7 +632,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7537586195939242955">ይቅርታ፣ በአሁኑ ጊዜ የእርስዎ ማለፊያ ወደ Passbook ሊጫን አይችልም።</translation>
 <translation id="7554791636758816595">አዲስ ትር</translation>
-<translation id="7558943807639707687">በዚህ መሣሪያ ላይ ባሉ በእርስዎ ዕልባቶች፣ ታሪክ እና ሌላ ውሂብ ምን ማድረግ ይፈልጋሉ?</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>

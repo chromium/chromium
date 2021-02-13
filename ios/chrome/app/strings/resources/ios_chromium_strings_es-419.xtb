@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="102360288709523007">Envía estadísticas de uso e informes de fallos a Google para mejorar Chromium.</translation>
-<translation id="1130979953299110755">Si sales de tu Cuenta de Google, ya no se sincronizarán con ella los favoritos, el historial, las contraseñas ni otros datos de Chromium.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chromium agregue tus fotos</translation>
 <translation id="1361748954329991663">Chromium no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Usar el escáner de Chromium</translation>
 <translation id="8013573822802650211">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium de este dispositivo?</translation>
-<translation id="8097322092271030751">Como <ph name="HOSTED_DOMAIN" /> administra tu cuenta, cuando salgas de ella, los datos de Chromium se borrarán de este dispositivo. Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="8175055321229419309">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chromium a tu Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Para establecer Chromium como navegador predeterminado, abre Settings y Default Browser App; luego, selecciona Chromium.</translation>
 <translation id="8240981428553046115">Chromium no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>

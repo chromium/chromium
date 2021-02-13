@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Completa la configurazione sul telefono</translation>
 <translation id="1054153489933238809">Apri &amp;originale in nuova scheda</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Aggiorna questo <ph name="DEVICE_TYPE" /> entro 1 settimana}other{Aggiorna questo <ph name="DEVICE_TYPE" /> entro {NUM_WEEKS} settimane}}</translation>
-<translation id="1055806300943943258">Ricerca di dispositivi Bluetooth e USB...</translation>
 <translation id="1056466516655540509">Ultimo aggiornamento: <ph name="MINUTES" /> min fa</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1056898198331236512">Avviso</translation>
@@ -1981,7 +1980,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3201422919974259695">I dispositivi USB disponibili vengono indicati qui.</translation>
 <translation id="3202131003361292969">Percorso</translation>
 <translation id="3202173864863109533">L'audio di questa scheda sta per essere disattivato.</translation>
-<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
@@ -3142,6 +3140,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4538417792467843292">Elimina parola</translation>
 <translation id="4538684596480161368">Blocca sempre i plug-in senza sandbox su <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Installata per norma aziendale.</translation>
+<translation id="4541123282641193691">Impossibile verificare l'account. Riprova o riavvia il tuo Chromebook.</translation>
 <translation id="4541662893742891060">Impossibile connettersi a questo profilo. Per assistenza tecnica, contatta il tuo operatore.</translation>
 <translation id="4541810033354695636">realtà aumentata</translation>
 <translation id="4542520061254486227">Lettura dei dati su <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
@@ -4168,6 +4167,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="574209121243317957">Tono</translation>
 <translation id="5742505912938664543">Se aggiungi qui un account secondario, puoi navigare sul Web, scaricare app, controllare la tua posta in Gmail e utilizzare altri servizi Google con quell'account.</translation>
 <translation id="5746169159649715125">Salva come PDF</translation>
+<translation id="5746261205461426123">Apri la guida alla configurazione</translation>
 <translation id="5747552184818312860">Scadenza</translation>
 <translation id="5747785204778348146">Sviluppatore - non stabile</translation>
 <translation id="5747809636523347288">I&amp;ncolla e vai all'indirizzo <ph name="URL" /></translation>
@@ -5328,6 +5328,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="708278670402572152">Scollega per consentire la scansione</translation>
 <translation id="7084321615353200053">I siti possono richiedere l'autorizzazione per utilizzare la videocamera (opzione consigliata)</translation>
 <translation id="7085389578340536476">Vuoi consentire la registrazione dell'audio in Chrome?</translation>
+<translation id="7085805695634549980">Impossibile connettersi ai servizi Google. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Includi i file di log di Chrome nell'archivio.</translation>
 <translation id="7088434364990739311">Impossibile iniziare controllo disponibilità aggiornamenti (codice di errore <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver: apri i file ZIP e crea pacchetti nell'app File.</translation>

@@ -80,7 +80,6 @@
     &lt;li&gt;დაუკავშირდით ვებსაიტის მფლობელს.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">თქვენ შეიყვანეთ პაროლი საიტზე, რომელსაც არ მართავს თქვენი ორგანიზაცია. თქვენი ანგარიშის დასაცავად არ გამოიყენოთ იგივე პაროლი სხვა აპებსა და საიტებზე.</translation>
-<translation id="1259144770381827039">დეტალების ნახვა.</translation>
 <translation id="1263231323834454256">საკითხავი სია</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         აქტივობა, რომელიც არ დარჩება ამ მოწყობილობაზე:
@@ -718,6 +717,7 @@
 <translation id="3761718714832595332">სტატუსის დამალვა</translation>
 <translation id="3765032636089507299">Safe Browsing-ის გვერდი მზადების პროცესშია.</translation>
 <translation id="3765588406864124894">საფოსტო ყუთი 9</translation>
+<translation id="3767485424735936570">ამ კონტენტის კოპირება და <ph name="VM_NAME" />-ში ჩასმა არ არის რეკომენდებული ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="3778403066972421603">გსურთ, შეინახოთ ეს ბარათი თქვენს Google ანგარიშში და ამ მოწყობილობაზე?</translation>
 <translation id="3780694243617746492">გამოსასვლელი</translation>
 <translation id="3781428340399460090">მკვეთრი ვარდისფერი</translation>
@@ -1116,6 +1116,7 @@
 <translation id="5299298092464848405">შეცდომის ანალიზის წესი</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5306593769196050043">ორივე ფურცელი</translation>
+<translation id="5307166000025436103">კარგი</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5308689395849655368">შეცდომების შესახებ მოხსენებების გაგზავნა გამორთულია.</translation>
 <translation id="5314967030527622926">ბუკლეტის შემქმნელი</translation>
@@ -1361,7 +1362,6 @@
 <translation id="6290238015253830360">აქ გამოჩნდება თქვენთვის შემოთავაზებული სტატიები</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google ასისტენტი Chrome-ში წყვეტს მუშაობას</translation>
-<translation id="6304463939629872728">ანგარიშსწორება შემდეგი მეთოდით:</translation>
 <translation id="6305205051461490394"><ph name="URL" /> მიუწვდომელია.</translation>
 <translation id="6312113039770857350">ვებგვერდი მიუწვდომელია</translation>
 <translation id="6321917430147971392">შეამოწმეთ თქვენი DNS პარამეტრები</translation>
@@ -1391,7 +1391,6 @@
 <translation id="6406765186087300643">C0 (კონვერტი)</translation>
 <translation id="6409754798200046165">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. Chrome გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="6410264514553301377">შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC</translation>
-<translation id="6410774864568266108">არ დაგავიწყდეთ Google Pay შემოთავაზების შესახებ</translation>
 <translation id="6415778972515849510">Chromium-ს შეუძლია დაგეხმაროთ თქვენი Google ანგარიშის დაცვასა და პაროლის შეცვლაში.</translation>
 <translation id="6423385022588644828">დაადასტურეთ ბარათები უფრო სწრაფად ამიერიდან Touch ID-ს გამოყენების მეშვეობით</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1446,6 +1445,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან (თქვენ არ გამოხვალთ Google ანგარიშიდან)}other{# საიტიდან (თქვენ არ გამოხვალთ Google ანგარიშიდან)}}</translation>
 <translation id="6648459603387803038">თქვენს ადმინისტრატორს დისტანციურად შეუძლია ბრაუზერში დაყენებული პარამეტრების შეცვლა. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც.</translation>
 <translation id="6648524591329069940">Serif შრიფტი</translation>
+<translation id="6651270836885078973">მმართველი:</translation>
 <translation id="6652101503459149953">Windows Hello-ის გამოყენება</translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="666259744093848177">(x86_64 ნათარგმნი)</translation>
@@ -1829,6 +1829,7 @@
 <translation id="8202370299023114387">კონფლიქტი</translation>
 <translation id="8206978196348664717">Prc4 (კონვერტი)</translation>
 <translation id="8211406090763984747">კავშირი დაცულია</translation>
+<translation id="8213464188712611711">მოგონებები</translation>
 <translation id="8218327578424803826">მიმაგრებული მდებარეობა:</translation>
 <translation id="8220146938470311105">C7/C6 (კონვერტი)</translation>
 <translation id="8221250263817408492">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. Chromium გირჩევთ, ახლავე გადახვიდეთ <ph name="WEBSITE_1" />-ზე და სხვა საიტებზე, სადაც ამ პაროლს იყენებთ, შემდეგ კი შეცვალოთ ის.</translation>

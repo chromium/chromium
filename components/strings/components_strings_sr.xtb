@@ -80,7 +80,6 @@
     &lt;li&gt;Контактирајте власника веб-сајта.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Унели сте лозинку на сајту којим не управља ваша организација. Да бисте заштитили налог, не користите лозинку поново у другим апликацијама ни на другим сајтовима.</translation>
-<translation id="1259144770381827039">Прикажи детаље.</translation>
 <translation id="1263231323834454256">Листа за читање</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Активности које не остају на овом уређају:
@@ -1373,7 +1372,6 @@
 <translation id="6290238015253830360">Предложени чланци се приказују овде</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google помоћник у Chrome-у се зауставља</translation>
-<translation id="6304463939629872728">Платите користећи</translation>
 <translation id="6305205051461490394">URL <ph name="URL" /> није доступан.</translation>
 <translation id="6312113039770857350">Веб-страница није доступна</translation>
 <translation id="6321917430147971392">Проверите DNS подешавања</translation>
@@ -1403,7 +1401,6 @@
 <translation id="6406765186087300643">C0 (коверат)</translation>
 <translation id="6409754798200046165">Управо сте унели лозинку на обмањујућем сајту. Chrome препоручује да одмах промените лозинку.</translation>
 <translation id="6410264514553301377">Унесите датум истека и CVC за картицу <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Не заборавите Google Pay понуду</translation>
 <translation id="6415778972515849510">Chromium може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="6423385022588644828">Од сада брже потврђујте картице уз Touch ID</translation>
 <translation id="6425092077175753609">Material</translation>

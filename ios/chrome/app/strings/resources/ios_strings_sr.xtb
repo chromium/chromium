@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">Блокирај колачиће треће стране</translation>
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
 <translation id="2975121486251958312">Доступан је само режим без архивирања</translation>
+<translation id="2982481275546140226">Обриши податке</translation>
 <translation id="298306318844797842">Додајте начин плаћања...</translation>
 <translation id="2989805286512600854">Отвори на новој картици</translation>
 <translation id="3037605927509011580">О, не!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5327248766486351172">Назив</translation>
 <translation id="5339316356165661760">Укључи синхронизацију</translation>
-<translation id="5351284593342054342">Обриши са овог уређаја</translation>
 <translation id="5388358297987318779">Отвори слику</translation>
 <translation id="5407969256130905701">Одбаци промене</translation>
 <translation id="5409365236829784218">Није инсталирана ниједна апликација за отварање ове датотеке.</translation>
@@ -466,7 +466,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5948291296578561264">Ово вам омогућава да чувате слике у фототеци.</translation>
 <translation id="5955891643922670672">Прегледате офлајн верзију</translation>
 <translation id="5957613098218939406">Још опција</translation>
-<translation id="5961521066940389233">Сачувај на овом уређају</translation>
 <translation id="5964480694698977962">Направи нову картицу без архивирања.</translation>
 <translation id="5965679971710331625">Пријављени сте</translation>
 <translation id="5979837087407522202">Претражите лозинке</translation>
@@ -481,7 +480,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Овде контролишите приче и активности</translation>
 <translation id="6066301408025741299">Додирните да бисте отказали.</translation>
-<translation id="6085282545406522838">Синхронизовани подаци ће остати на Google налогу.</translation>
 <translation id="6108923351542677676">Подешавање је у току...</translation>
 <translation id="6119050551270742952">Актуелна веб-страница је у режиму без архивирања</translation>
 <translation id="6122191549521593678">Онлајн</translation>
@@ -605,7 +603,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7203585745079012652">Изговарај одговоре</translation>
 <translation id="7207383424303353046">Ново: Отварајте сајтове у Chrome-у аутоматски тако што ћете га подесити као подразумевану апликацију за прегледач. <ph name="BEGIN_LINK" />Отворите Подешавања<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Неважећи надимак картице</translation>
-<translation id="722989956228261714">Одјави ме…</translation>
 <translation id="7265758999917665941">Никада за овај сајт</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
 <translation id="7291368939935408496">Припремају се лозинке...</translation>
@@ -635,7 +632,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="7554791636758816595">Нова картица</translation>
-<translation id="7558943807639707687">Шта желите да урадите са обележивачима, историјом и другим подацима на овом уређају?</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>

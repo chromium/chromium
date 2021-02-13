@@ -17,7 +17,6 @@
 <translation id="257708665678654955">Vil du at Google Chrome skal tilby å oversette sider på <ph name="LANGUAGE_NAME" /> på dette nettstedet neste gang?</translation>
 <translation id="2695886661449553974">Chrome kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
-<translation id="2786324948676799004">Fordi kontoen din administreres av <ph name="HOSTED_DOMAIN" />, slettes Chrome-dataene dine fra denne enheten når du logger av. Du beholder de synkroniserte dataene i Google-kontoen din.</translation>
 <translation id="2919738076569633423">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK_TOS" />vilkårene for bruk<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chrome-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
 <translation id="3148688391461398285">Optimaliser Chrome-opplevelsen i henhold til hvor du befinner deg.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3345341804167540816">Bruk Chrome overalt</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
-<translation id="3523473570015918798">Når du logger av, blir ikke bokmerker, loggen, passord og andre Chrome-data synkronisert med Google-kontoen din lenger.</translation>
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="3706101708757577809">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>

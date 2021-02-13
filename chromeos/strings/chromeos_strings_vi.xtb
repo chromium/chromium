@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Đang quét trang <ph name="PAGE_NUM" />. Ðã quét được <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">In</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
-<translation id="3515615323037921860">Lệnh in</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
@@ -148,6 +147,7 @@
 <translation id="4593212453765072419">Yêu cầu xác thực proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
 <translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
+<translation id="4652335678334611408">Lưu nhật ký phiên</translation>
 <translation id="4665014895760275686">Nhà sản xuất</translation>
 <translation id="467510802200863975">Mật khẩu không khớp</translation>
 <translation id="467715984478005772">Tin là có tường lửa</translation>
@@ -279,6 +279,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
+<translation id="7449585358422953039">Do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="7469648432129124067">Đã phát hiện thấy cổng</translation>
 <translation id="7487067081878637334">Công nghệ</translation>
 <translation id="7490813197707563893">Địa chỉ MAC</translation>
@@ -295,7 +296,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Số chu kỳ</translation>
-<translation id="7732651821766520760">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID kiểu máy</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7819857487979277519">PSK (WPA hoặc RSN)</translation>

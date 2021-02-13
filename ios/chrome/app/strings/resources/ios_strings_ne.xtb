@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="2969979262385602596">भित्र जान असफल भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2975121486251958312">इन्कोग्निटो मोड मात्र उपलब्ध छ</translation>
+<translation id="2982481275546140226">डेटा खाली गर्नुहोस्</translation>
 <translation id="298306318844797842">भुक्तानी विधि थप्नुहोस्...</translation>
 <translation id="2989805286512600854">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="3037605927509011580">हरे, स्न्याप!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5327248766486351172">नाम</translation>
 <translation id="5339316356165661760">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
-<translation id="5351284593342054342">यो यन्त्रबाट हटाउनुहोस्</translation>
 <translation id="5388358297987318779">छवि खोल्नुहोस्</translation>
 <translation id="5407969256130905701">परिवर्तनहरू खारेज गर्नुहोस्</translation>
 <translation id="5409365236829784218">यस फाइल खोल्न सक्ने कुनै पनि एपहरू स्थापना गरिएको छैन्।</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">यो अनुप्रयोगले तपाईंलाई आफ्नो तस्बिरको लाइब्रेरीमा तस्बिरहरू सुरक्षित गर्न दिन्छ।</translation>
 <translation id="5955891643922670672">अफलाइन संस्करण हेरिँदै</translation>
 <translation id="5957613098218939406">थप विकल्पहरू</translation>
-<translation id="5961521066940389233">यो यन्त्रमा राख्नुहोस्</translation>
 <translation id="5964480694698977962">नयाँ इन्कोग्निटो ट्याब सिर्जना गर्नुहोस्</translation>
 <translation id="5965679971710331625">तपाईं साइन इन हुनुभएको छ</translation>
 <translation id="5979837087407522202">पासवर्डहरू खोज्नुहोस्</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
-<translation id="6085282545406522838">सिंक भएको तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6119050551270742952">हालको वेबपृष्ठ इन्कोग्निटो मोडमा छ</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">जवाफहरू पुन: भन्नुहोस्</translation>
 <translation id="7207383424303353046">नयाँ: Chrome लाई आफ्नो पूर्वनिर्धारित ब्राउजर एप बनाएर साइटहरू स्वतः Chrome मा खोल्नुहोस्। <ph name="BEGIN_LINK" />सेटिङ खोल्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">कार्डको उपनाम अवैध छ</translation>
-<translation id="722989956228261714">साइन आउट गर्नुहोस्…</translation>
 <translation id="7265758999917665941">यो साइटका हकमा कहिल्यै पनि नसम्झनुहोस्</translation>
 <translation id="7272437679830969316">तपाईंको पहिचान पुष्टि गर्न सकिएन। पासवर्डको प्रतिलिपि गरिएको छैन।</translation>
 <translation id="7291368939935408496">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7537586195939242955">माफ गर्नुहोस्, यस समयमा तपाईंको पासलाई पासबुकमा स्थापना गर्न सकिदैन।</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
-<translation id="7558943807639707687">तपाईं यस यन्त्रमा भएका आफ्ना बुकमार्क, इतिहास र अन्य डेटाका सम्बन्धमा के गर्न चाहनुहुन्छ?</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>

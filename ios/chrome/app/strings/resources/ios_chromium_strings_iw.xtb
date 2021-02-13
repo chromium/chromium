@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="102360288709523007">‏עזרה בשיפור Chromium על-ידי שליחה של סטטיסטיקת שימוש ודוחות קריסה אל Google.</translation>
-<translation id="1130979953299110755">‏יציאה תפסיק את הסנכרון של הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chromium עם חשבון Google שלך.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
 <translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">‏התחלת השימוש בסורק של Chromium</translation>
 <translation id="8013573822802650211">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון בכל המכשירים</translation>
 <translation id="8073677936375100957">‏למחוק את נתוני Chromium שלך מהמכשיר הזה?</translation>
-<translation id="8097322092271030751">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים מ-Chromium יימחקו מהמכשיר הזה עם היציאה מהחשבון. הנתונים המסונכרנים יישארו בחשבון Google שלך.</translation>
 <translation id="8175055321229419309">‏טיפ: <ph name="BEGIN_LINK" />העבר את Chromium לשורת המשימות<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">‏כדי להגדיר את Chromium כדפדפן ברירת המחדל, יש להיכנס אל 'הגדרות', להקיש על 'אפליקציית ברירת מחדל לדפדפן' ואז לבחור ב-Chromium.</translation>
 <translation id="8240981428553046115">‏Chromium לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>

@@ -84,7 +84,6 @@
 <translation id="1571304935088121812">Gebruikersnaam kopiëren</translation>
 <translation id="1592864538817356322">Standaardbeveiliging:</translation>
 <translation id="1612196535745283361">Chrome heeft locatietoegang nodig om naar apparaten te scannen. Locatietoegang is <ph name="BEGIN_LINK" />uitgeschakeld voor dit apparaat<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Als dit aanstaat, kunnen websites informatie die jou persoonlijk identificeert niet gebruiken om de sites relevanter te maken. Net als bij een groep mensen tijdens een concert mogen sites alleen weten dat duizenden gebruikers een vergelijkbare interesse delen.\n\nJe groep is gebaseerd op sites die je hebt bezocht. Adverteerders kunnen alleen zien welke sites de hele groep bezoekt, niet welke sites jij persoonlijk bezoekt.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Je bekijkt een offline exemplaar van deze pagina van <ph name="CREATION_TIME" /></translation>
@@ -467,7 +466,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4440958355523780886">Lite-pagina weergegeven door Google. Tik om het origineel te laden.</translation>
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
-<translation id="4465314970046116177">De privacy-sandbox bestaat uit een reeks nieuwe technologieën waardoor mensen uiteindelijk worden beschermd tegen mechanismen voor tracking op verschillende sites, terwijl de webcontent en services worden behouden die momenteel afhankelijk zijn van die mechanismen. Chrome werkt samen met website-ontwikkelaars, uitgevers, adverteerders en andere browsers om deze nieuwe technologie te ontwikkelen.</translation>
 <translation id="4472118726404937099">Log in en schakel synchronisatie in om verschillende apparaten te synchroniseren en te personaliseren</translation>
 <translation id="447252321002412580">Help de functies en prestaties van Chrome verbeteren</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeren voor Chrome…</translation>
@@ -500,7 +498,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4662373422909645029">Cijfers niet toegestaan</translation>
 <translation id="4663499661119906179">Bekijk populaire sites en artikelen voor jou</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bookmarks verwijderd</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> is toegevoegd aan je startscherm</translation>
 <translation id="4668347365065281350">Alle gegevens die zijn opgeslagen door sites, waaronder cookies en andere lokaal opgeslagen gegevens</translation>
 <translation id="4684427112815847243">Alles synchroniseren</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}}</translation>
@@ -590,6 +587,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
+<translation id="5250483651202458397">Screenshot. Tik om te sluiten.</translation>
 <translation id="526421993248218238">Kan deze pagina niet laden</translation>
 <translation id="5271967389191913893">Het apparaat kan de content niet openen die moet worden gedownload.</translation>
 <translation id="5292796745632149097">Verzenden naar</translation>
@@ -745,7 +743,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te geven die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
 <translation id="624789221780392884">Update klaar</translation>
 <translation id="6255999984061454636">Contentsuggesties</translation>
-<translation id="6266591733731644292">De privacy-sandbox is nog niet algemeen vrijgegeven. Tijdens deze proefperiode:\n<ph name="BEGIN_LIST_ITEM1" />Website- en app-ontwikkelaars kunnen de mogelijkheid uitproberen om relevante functionaliteit te maken zonder toegang tot uniek identificeerbare informatie over jou.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Gebruikers kunnen zich afmelden voor de proef via de opties op deze pagina.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6292420053234093573">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />.</translation>
@@ -835,9 +832,9 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te gev
 <translation id="6767294960381293877">De lijst met apparaten om een tabblad mee te delen, is op halve hoogte geopend.</translation>
 <translation id="6783942555455976443">Deze pagina voor later opslaan en een herinnering ontvangen</translation>
 <translation id="6811034713472274749">Pagina kan nu worden bekeken</translation>
+<translation id="6813446258015311409">Inloggen bij Chrome, geopend.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tabblad, geselecteerd</translation>
-<translation id="6833996806551876956">Proef voor privacy-sandbox</translation>
 <translation id="6845325883481699275">Help de beveiliging van Chrome te verbeteren</translation>
 <translation id="6846298663435243399">Laden…</translation>
 <translation id="6850409657436465440">Je download wordt nog uitgevoerd</translation>
@@ -1034,6 +1031,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8156139159503939589">Welke talen lees je?</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> bestanden over</translation>
+<translation id="8189750580333936930">Privacy-sandbox</translation>
 <translation id="8190358571722158785">1 dag resterend</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8209050860603202033">Afbeelding openen</translation>
@@ -1069,7 +1067,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8442258441309440798">Geen artikelen beschikbaar</translation>
 <translation id="8443209985646068659">Chrome kan niet updaten</translation>
 <translation id="8445448999790540984">Wachtwoorden kunnen niet worden geëxporteerd</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Gesynchroniseerde gegevens versleutelen met een eigen wachtwoordzin</translation>
 <translation id="8466613982764129868">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1095,6 +1092,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8583805026567836021">Accountgegevens wissen</translation>
 <translation id="8587585930972369234">Tik en houd vast voor zoeken</translation>
 <translation id="860043288473659153">Naam kaarthouder</translation>
+<translation id="8602358303461588329">Inloggen bij Chrome, gesloten.</translation>
 <translation id="860282621117673749">Meldingen over prijsdalingen</translation>
 <translation id="8616006591992756292">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">De voorgestelde URL in de gedownloade content openen?</translation>
@@ -1114,7 +1112,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8748850008226585750">Content verborgen</translation>
 <translation id="8788265440806329501">Navigatiegeschiedenis is gesloten</translation>
 <translation id="8788968922598763114">Het laatst gesloten tabblad opnieuw openen</translation>
-<translation id="8795672590390389447">Privacy-sandbox</translation>
 <translation id="8798449543960971550">Gelezen</translation>
 <translation id="8812260976093120287">Op sommige websites kun je betalen met de bovenstaande ondersteunde betaal-apps op je apparaat.</translation>
 <translation id="881688628773363275">Content van voorbeeldtabblad is niet zichtbaar.</translation>

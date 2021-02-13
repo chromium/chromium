@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Ljúka uppsetningu í símanum</translation>
 <translation id="1054153489933238809">Opna upprunalega &amp;mynd á nýjum flipa</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan 1 viku}one{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_WEEKS} viku}other{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_WEEKS} vikna}}</translation>
-<translation id="1055806300943943258">Leitar að Bluetooth- og USB-tækjum...</translation>
 <translation id="1056466516655540509">Uppfært fyrir <ph name="MINUTES" /> mín.</translation>
 <translation id="1056775291175587022">Engin net</translation>
 <translation id="1056898198331236512">Viðvörun</translation>
@@ -1983,7 +1982,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3201422919974259695">USB-tæki í boði birtast hér.</translation>
 <translation id="3202131003361292969">Slóð</translation>
 <translation id="3202173864863109533">Slökkt er á hljóði þessa flipa.</translation>
-<translation id="3202218848974251205">Persónuverndarsandkassinn</translation>
 <translation id="3208321278970793882">Forrit</translation>
 <translation id="3208584281581115441">Athuga núna</translation>
 <translation id="3208703785962634733">Óstaðfest</translation>
@@ -3144,6 +3142,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4538417792467843292">Eyða orði</translation>
 <translation id="4538684596480161368">Loka alltaf á óafmarkaðar viðbætur á <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Sett upp vegna fyrirtækjastefnu.</translation>
+<translation id="4541123282641193691">Ekki tókst að staðfesta reikninginn. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="4541662893742891060">Ekki er hægt að tengjast þessum prófíl. Hafðu samband við símafyrirtækið þitt til að fá tæknilega aðstoð.</translation>
 <translation id="4541810033354695636">aukinn veruleika</translation>
 <translation id="4542520061254486227">Lesa gögnin þín á <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -4170,6 +4169,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="574209121243317957">Tónhæð</translation>
 <translation id="5742505912938664543">Þegar þú bætir aukareikningi við hér geturðu flett á vefnum, sótt forrit, skoðað Gmail og aðrar Google þjónustur með þeim reikningi.</translation>
 <translation id="5746169159649715125">Vista sem PDF</translation>
+<translation id="5746261205461426123">Opna uppsetningarleiðsögn</translation>
 <translation id="5747552184818312860">Rennur út</translation>
 <translation id="5747785204778348146">Forritari – óstöðugt</translation>
 <translation id="5747809636523347288">Lí&amp;ma og fara á <ph name="URL" /></translation>
@@ -5330,6 +5330,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="708278670402572152">Aftengdu net til að leita</translation>
 <translation id="7084321615353200053">Vefsvæði geta beðið um að nota myndavélina þína (ráðlagt)</translation>
 <translation id="7085389578340536476">Viltu leyfa Chrome að taka upp hljóð?</translation>
+<translation id="7085805695634549980">Ekki tókst að tengjast Google þjónustum. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Hafa Chrome-annálaskrár með í geymslunni.</translation>
 <translation id="7088434364990739311">Ekki tókst að ræsa leit að uppfærslum (villukóði <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – opnar og pakkar ZIP-skrám í skráaforritinu.</translation>

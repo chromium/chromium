@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="102360288709523007">Googleକୁ ବ୍ୟବହାରର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍‌ ରିପୋର୍ଟ ପଠାଇ, Chromiumକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
-<translation id="1130979953299110755">ସାଇନ୍ ଆଉଟ୍ କରିବା ଦ୍ୱାରା, ଆପଣଙ୍କ ବୁକମାର୍କ, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ Chromium ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆଉ ସିଙ୍କ୍ ହେବ ନାହିଁ।</translation>
 <translation id="1185134272377778587">Chromium ବିଷୟରେ</translation>
 <translation id="1257458525759135959">ଛବିଗୁଡ଼ିକୁ ସେଭ୍ କରିବା ପାଇଁ, Chromiumକୁ ଆପଣଙ୍କ ଫଟୋଗୁଡ଼ିକରେ ଯୋଗ କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ ସେଟିଂସରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1361748954329991663">Chromiumର ସଂସ୍କରଣ ପୁରୁଣା ଅଟେ। ଯଦି <ph name="BEGIN_LINK" />ଆପ୍ ଷ୍ଟୋର<ph name="END_LINK" />ରେ କୌଣସି ଅପଡେଟ୍ ଉପଲବ୍ଧ ନାହିଁ, ତେବେ ଏହା ହୋଇପାରେ ଯେ ଆପଣଙ୍କ ଡିଭାଇସ୍ Chromiumର ନୂଆ ସଂସ୍କରଣକୁ ଆଉ ସମର୍ଥନ କରୁନାହିଁ।</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Chromium ସ୍କାନର୍ ବ୍ୟବହାର କରିବାକୁ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="8013573822802650211">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="8073677936375100957">ଏହି ଡିଭାଇସ୍‍ରୁ ଆପଣଙ୍କର Chromium ଡାଟା ଖାଲି କରିବେ କି?</translation>
-<translation id="8097322092271030751">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="HOSTED_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଥିବା ଯୋଗୁଁ, ସାଇନ୍ ଆଉଟ୍ କରିବା ବେଳେ ଆପଣଙ୍କ Chromium ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ ଡିଲିଟ୍ କରିଦିଆଯିବ। ଆପଣଙ୍କର ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ରହିବ।</translation>
 <translation id="8175055321229419309">ପରାମର୍ଶ: <ph name="BEGIN_LINK" />ଆପଣଙ୍କର ଡକ୍‍କୁ Chromium ଘୁଞ୍ଚାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ କରିବାକୁ, ସେଟିଂସ୍ ଖୋଲି ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଆପରେ ଟାପ୍ କରନ୍ତୁ ଏବଂ Chromium ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8240981428553046115">ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>

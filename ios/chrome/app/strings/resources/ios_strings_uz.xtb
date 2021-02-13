@@ -197,6 +197,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2964349545761222050">Tashqi cookie fayllarni bloklash</translation>
 <translation id="2969979262385602596">Hisobga kirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="2975121486251958312">Faqat Inkognito rejimida ochiladi</translation>
+<translation id="2982481275546140226">Axborotlarni tozalash</translation>
 <translation id="298306318844797842">Toʻlov usulini kiriting</translation>
 <translation id="2989805286512600854">Yangi varaqda ochish</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
@@ -410,7 +411,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5327248766486351172">Nomi</translation>
 <translation id="5339316356165661760">Sinxronizatsiyani yoqish</translation>
-<translation id="5351284593342054342">Qurilmadan tozalash</translation>
 <translation id="5388358297987318779">Tasvirni ochish</translation>
 <translation id="5407969256130905701">Bekor qilish</translation>
 <translation id="5409365236829784218">Bu faylni ocha oladigan hech qanday ilova yo‘q.</translation>
@@ -466,7 +466,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5948291296578561264">Rasmlarni fotosuratlar kutubxonasiga saqlaydi.</translation>
 <translation id="5955891643922670672">Oflayn versiyasini ko‘ryapsiz</translation>
 <translation id="5957613098218939406">Boshqa parametrlar</translation>
-<translation id="5961521066940389233">Shu qurilmada qolsin</translation>
 <translation id="5964480694698977962">Yangi inkognito sahifa ochish</translation>
 <translation id="5965679971710331625">Siz o‘z hisobingizga kirgansiz</translation>
 <translation id="5979837087407522202">Parollar ichidan qidirish</translation>
@@ -481,7 +480,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Yangiliklar va faoliyatni shu yerdan boshqaring</translation>
 <translation id="6066301408025741299">Bekor qilish uchun bu yerga bosing.</translation>
-<translation id="6085282545406522838">Google hisobingizga sinxronlangan maʼlumotlaringiz joyida qoladi.</translation>
 <translation id="6108923351542677676">Sozlanmoqda...</translation>
 <translation id="6119050551270742952">Bu sahifa inkognito rejimida</translation>
 <translation id="6122191549521593678">Onlayn</translation>
@@ -605,7 +603,6 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="7203585745079012652">Qidiruv natijalari o‘qilsin</translation>
 <translation id="7207383424303353046">Yangi: Saytlar Chrome brauzerida avtomatik ochilishi uchun uni birlamchi brauzer etib tayinlash kifoya. <ph name="BEGIN_LINK" />Sozlamalarni ochish<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Karta nomi yaroqsiz</translation>
-<translation id="722989956228261714">Chiqish…</translation>
 <translation id="7265758999917665941">Bu saytda hech qachon</translation>
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
 <translation id="7291368939935408496">Parollar tayyorlanmoqda...</translation>
@@ -635,7 +632,6 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7537586195939242955">Passbook ilovasiga ma’lumotlarni yozib bo‘lmadi.</translation>
 <translation id="7554791636758816595">Yangi varaq</translation>
-<translation id="7558943807639707687">Qurilmadagi bukmarklar, tarix va boshqa maʼlumotlarni nima qilasiz?</translation>
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="7583004045319035904">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan oching.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> tili hech qachon tarjima qilinmasin</translation>

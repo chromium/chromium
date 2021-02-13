@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2975121486251958312">അദൃശ്യ മോഡ് മാത്രമേ ലഭ്യമാകൂ</translation>
+<translation id="2982481275546140226">ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="298306318844797842">പേയ്‌മെന്റ് രീതി ചേർക്കുക...</translation>
 <translation id="2989805286512600854">പുതിയ ടാബില്‍ തുറക്കുക</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5327248766486351172">പേര്</translation>
 <translation id="5339316356165661760">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
-<translation id="5351284593342054342">ഈ ഉപകരണത്തിൽ നിന്ന് മായ്‌ക്കുക</translation>
 <translation id="5388358297987318779">ചിത്രം തുറക്കുക</translation>
 <translation id="5407969256130905701">മാറ്റങ്ങൾ നിരസിക്കുക</translation>
 <translation id="5409365236829784218">ഈ ഫയലിൽ തുറക്കാൻ കഴിയുന്ന അപ്ലിക്കേഷനുകളൊന്നും ഇൻസ്റ്റാൾ ചെയ്‌തില്ല.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">നിങ്ങളുടെ ഫോട്ടോ ലൈബ്രറിയിലേക്ക് ഫോട്ടോകൾ സംരക്ഷിക്കാൻ അനുവദിക്കുന്നു.</translation>
 <translation id="5955891643922670672">ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
 <translation id="5957613098218939406">കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
-<translation id="5961521066940389233">ഈ ഉപകരണത്തിൽ നിലനിർത്തുക</translation>
 <translation id="5964480694698977962">പുതിയ അദൃശ്യ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="5965679971710331625">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="5979837087407522202">പാസ്‌വേഡുകൾ തിരയുക</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
 <translation id="6066301408025741299">റദ്ദാക്കുന്നതിന് ടാപ്പ് ചെയ്യുക.</translation>
-<translation id="6085282545406522838">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ Google അക്കൗണ്ടിൽ നിലനിൽക്കും.</translation>
 <translation id="6108923351542677676">സജ്ജീകരണം പുരോഗതിയിലാണ്...</translation>
 <translation id="6119050551270742952">നിലവിലെ വെബ്‌പേജ് അദൃശ്യ മോഡിലാണ്</translation>
 <translation id="6122191549521593678">ഓൺലൈൻ</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">മറുപടിയായി ഉത്തരങ്ങൾ പറയുക</translation>
 <translation id="7207383424303353046">പുതിയത്: Chrome നിങ്ങളുടെ ഡിഫോൾഡ് ബ്രൗസർ ആപ്പ് ആയി സജ്ജീകരിച്ച് അതിൽ സൈറ്റുകൾ സ്വയമേവ തുറക്കൂ. <ph name="BEGIN_LINK" />ക്രമീകരണം തുറക്കുക<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">കാർഡിന്റെ വിളിപ്പേര് അസാധുവാണ്</translation>
-<translation id="722989956228261714">സൈൻ ഔട്ട് ചെയ്യുക…</translation>
 <translation id="7265758999917665941">ഈ സൈറ്റിൻ്റെ പാസ്‌വേഡ് ഓർക്കേണ്ടതില്ല</translation>
 <translation id="7272437679830969316">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കാനാകില്ല. പാസ്‍വേഡ് പകർത്തിയില്ല.</translation>
 <translation id="7291368939935408496">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7537586195939242955">ക്ഷമിക്കണം, നിങ്ങളുടെ പാസ് ഈ സമയം പാസ്‌ബുക്കിൽ ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിയില്ല.</translation>
 <translation id="7554791636758816595">പുതിയ ടാബ്</translation>
-<translation id="7558943807639707687">ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, മറ്റ് ഡാറ്റ എന്നിവ എന്താണ് ചെയ്യേണ്ടത്?</translation>
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="7583004045319035904">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യാൻ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിക്കുക.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>

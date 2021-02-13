@@ -17,7 +17,6 @@
 <translation id="257708665678654955">您希望 Google Chrome 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼。請明天再試。</translation>
-<translation id="2786324948676799004">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，當您登出帳戶時，Chrome 資料亦會從此裝置上刪除，已同步處理的資料會繼續保留在 Google 帳戶中。</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="3030414234702425231">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chrome 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="3148688391461398285">讓應用程式根據您的位置資訊在 Chrome 中為您提供更優質的服務。</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
-<translation id="3523473570015918798">登出帳戶後，您的書籤、記錄、密碼和其他 Chrome 資料將不會再同步至您的 Google 帳戶。</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3706101708757577809">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用您的相機</translation>

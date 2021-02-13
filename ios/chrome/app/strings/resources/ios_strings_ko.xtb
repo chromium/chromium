@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">타사 쿠키 차단</translation>
 <translation id="2969979262385602596">로그인하지 못했습니다. 나중에 다시 시도하세요.</translation>
 <translation id="2975121486251958312">시크릿 모드만 사용 가능</translation>
+<translation id="2982481275546140226">데이터 삭제</translation>
 <translation id="298306318844797842">결제 수단 추가...</translation>
 <translation id="2989805286512600854">새 탭에서 열기</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5339316356165661760">동기화 사용</translation>
-<translation id="5351284593342054342">기기에서 삭제</translation>
 <translation id="5388358297987318779">이미지 열기</translation>
 <translation id="5407969256130905701">변경사항 취소</translation>
 <translation id="5409365236829784218">이 파일을 열 수 있는 애플리케이션이 설치되어 있지 않습니다.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">이렇게 하면 사진 라이브러리에 사진을 저장할 수 있습니다.</translation>
 <translation id="5955891643922670672">오프라인 버전 보는 중</translation>
 <translation id="5957613098218939406">옵션 더보기</translation>
-<translation id="5961521066940389233">기기에 보관</translation>
 <translation id="5964480694698977962">새 시크릿 탭 만들기</translation>
 <translation id="5965679971710331625">로그인됨</translation>
 <translation id="5979837087407522202">비밀번호 검색</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
 <translation id="6066301408025741299">취소하려면 탭하세요.</translation>
-<translation id="6085282545406522838">동기화된 데이터는 Google 계정에 그대로 유지됩니다.</translation>
 <translation id="6108923351542677676">설정 진행 중...</translation>
 <translation id="6119050551270742952">현재 시크릿 모드에서 웹페이지 사용 중</translation>
 <translation id="6122191549521593678">온라인</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">음성 응답</translation>
 <translation id="7207383424303353046">새로운 기능: 사이트가 자동으로 Chrome에서 열리도록 Chrome을 기본 브라우저 앱으로 설정하세요. <ph name="BEGIN_LINK" />설정 열기<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">잘못된 카드 닉네임</translation>
-<translation id="722989956228261714">로그아웃…</translation>
 <translation id="7265758999917665941">이 사이트 제외</translation>
 <translation id="7272437679830969316">신원을 인증할 수 없습니다. 비밀번호가 복사되지 않았습니다.</translation>
 <translation id="7291368939935408496">비밀번호 준비 중...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7537586195939242955">현재 패스를 패스북에 설치할 수 없습니다.</translation>
 <translation id="7554791636758816595">새 탭</translation>
-<translation id="7558943807639707687">기기의 북마크, 방문 기록, 기타 데이터를 어떻게 처리하시겠습니까?</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7583004045319035904">시크릿 탭을 잠금 해제하려면 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증을 사용하세요.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>

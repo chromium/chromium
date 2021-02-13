@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Captive portal havaittu</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
+<translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Skannataan sivu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % valmis.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
-<translation id="3515615323037921860">Tulostustyöt</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
@@ -279,6 +279,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
+<translation id="7449585358422953039">Ylläpitäjä on <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7487067081878637334">Tekniikka</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
@@ -295,7 +296,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Syklien määrä</translation>
-<translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>

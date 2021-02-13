@@ -17,7 +17,6 @@
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
-<translation id="2786324948676799004">Como <ph name="HOSTED_DOMAIN" /> administra tu cuenta, cuando salgas de ella, los datos de Chrome se borrarán de este dispositivo. Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="2919738076569633423">Si usas Chrome, aceptas las <ph name="BEGIN_LINK_TOS" />Condiciones del Servicio<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chrome se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
 <translation id="3148688391461398285">Obtén una mejor experiencia en Chrome según tu ubicación.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3522659714780527202">Para ver tus pestañas donde sea que uses Chrome, activa la sincronización</translation>
-<translation id="3523473570015918798">Si sales de tu Cuenta de Google, ya no se sincronizarán allí los favoritos, el historial, las contraseñas ni otros datos de Chrome.</translation>
 <translation id="3533694711092285624">No hay contraseñas guardadas. Chrome puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="3706101708757577809">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>

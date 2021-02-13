@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="102360288709523007">將使用情況統計資料及當機報告傳送給 Google，協助我們改善 Chromium 的功能。</translation>
-<translation id="1130979953299110755">登出帳戶後，您的書籤、記錄、密碼和其他 Chromium 資料將不會再同步至您的 Google 帳戶。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chromium。</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">開始使用 Chromium 掃瞄器</translation>
 <translation id="8013573822802650211">如要在任何使用 Chromium 的裝置上查看分頁，請在所有裝置上登入</translation>
 <translation id="8073677936375100957">要清除此裝置上的 Chromium 資料嗎？</translation>
-<translation id="8097322092271030751">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，當您登出帳戶時，Chromium 資料亦會從此裝置上刪除，已同步處理的資料會繼續保留在 Google 帳戶中。</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />請將 Chromium 移至工具列<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">如要將 Chromium 設定為預設瀏覽器，請開啟「設定」，然後輕按 [預設的瀏覽器應用程式] 並選取 Chromium。</translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>

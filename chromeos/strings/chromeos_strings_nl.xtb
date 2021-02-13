@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Captive portal waargenomen</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
+<translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Pagina <ph name="PAGE_NUM" /> scannen. <ph name="PERCENTAGE_VALUE" />% voltooid.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
-<translation id="3515615323037921860">Afdruktaken</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
@@ -279,6 +279,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scannen voltooid. 1 pagina gescand.}other{Scannen voltooid. {NUMBER_OF_PAGES} pagina's gescand.}}</translation>
+<translation id="7449585358422953039">Beheerd door <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>
@@ -295,7 +296,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Aantal oplaadbeurten</translation>
-<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Model-ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>

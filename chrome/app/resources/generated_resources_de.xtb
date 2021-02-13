@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
-<translation id="1055806300943943258">Suche nach Bluetooth- und USB-Geräten...</translation>
 <translation id="1056466516655540509">Vor <ph name="MINUTES" /> min aktualisiert</translation>
 <translation id="1056775291175587022">Keine Netzw.</translation>
 <translation id="1056898198331236512">Warnung</translation>
@@ -1978,7 +1977,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Verfügbare USB-Geräte werden hier angezeigt.</translation>
 <translation id="3202131003361292969">Pfad</translation>
 <translation id="3202173864863109533">Der Ton dieses Tabs ist stummgeschaltet.</translation>
-<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
 <translation id="3208703785962634733">Nicht bestätigt</translation>
@@ -4211,6 +4209,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5798301976526354562">Textgröße (gilt auch für "Automatische Untertitel")</translation>
 <translation id="579907812742603813">Geschützte Inhalte</translation>
 <translation id="579915268381781820">Ihr Sicherheitsschlüssel wurde entfernt.</translation>
+<translation id="5799478978078236781">Sie erhalten Tipps, Angebote und Neuigkeiten rund um Ihr <ph name="DEVICE_TYPE" />. Außerdem haben Sie dann die Möglichkeit, uns Feedback zu geben.</translation>
 <translation id="5799508265798272974">Virtuelle Maschine für Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Die Zieldatei wurde seit dem letzen Download gekürzt oder entfernt.</translation>
 <translation id="5801568494490449797">Einstellungen</translation>
@@ -6028,6 +6027,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7880823633812189969">Lokale Daten werden beim nächsten Neustart gelöscht</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Konto anzeigen</translation>
+<translation id="7883792253546618164">Sie können sich jederzeit wieder abmelden.</translation>
 <translation id="7885253890047913815">Letzte Ziele</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Duplizieren</translation>

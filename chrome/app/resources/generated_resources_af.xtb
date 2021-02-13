@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Voltooi die opstelling op jou foon</translation>
 <translation id="1054153489933238809">Maak oorspronklike prent in nuwe oortjie oop</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Dateer <ph name="DEVICE_TYPE" /> binne 1 week op}other{Dateer <ph name="DEVICE_TYPE" /> binne {NUM_WEEKS} weke op}}</translation>
-<translation id="1055806300943943258">Soek tans Bluetooth- en USB-toestelle …</translation>
 <translation id="1056466516655540509"><ph name="MINUTES" /> min. gelede opgedateer</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
 <translation id="1056898198331236512">Waarskuwing</translation>
@@ -1982,7 +1981,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3201422919974259695">Beskikbare USB-toestelle sal hier verskyn.</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3202173864863109533">Hierdie oortjie se klank word gedemp.</translation>
-<translation id="3202218848974251205">Die Privaatheidsandput</translation>
 <translation id="3208321278970793882">Program</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
 <translation id="3208703785962634733">Onbevestigde</translation>
@@ -3143,6 +3141,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4538417792467843292">Vee woord uit</translation>
 <translation id="4538684596480161368">Blokkeer altyd inproppe wat nie gesandput is nie, op <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Geïnstalleer deur ondernemingbeleid.</translation>
+<translation id="4541123282641193691">Kon nie jou rekening verifieer nie. Probeer asseblief weer of herbegin jou Chromebook.</translation>
 <translation id="4541662893742891060">Kan nie aan hierdie profiel koppel nie. Kontak asseblief jou diensverskaffer vir tegniese steun.</translation>
 <translation id="4541810033354695636">aangevulde realiteit</translation>
 <translation id="4542520061254486227">Lees jou data op <ph name="WEBSITE_1" /> en <ph name="WEBSITE_2" /></translation>
@@ -4170,6 +4169,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="574209121243317957">Toonhoogte</translation>
 <translation id="5742505912938664543">As jy 'n sekondêre rekening hier byvoeg, kan jy deur die web blaai, programme aflaai, en jou Gmail en ander Google-dienste wat daardie rekening gebruik, nagaan.</translation>
 <translation id="5746169159649715125">Stoor as PDF</translation>
+<translation id="5746261205461426123">Maak opstellinggids oop</translation>
 <translation id="5747552184818312860">Verval</translation>
 <translation id="5747785204778348146">Ontwikkelaar – onstabiel</translation>
 <translation id="5747809636523347288">Plak en gaan na <ph name="URL" /></translation>
@@ -5330,6 +5330,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="708278670402572152">Ontkoppel om skandering te aktiveer</translation>
 <translation id="7084321615353200053">Werwe kan vra om jou kamera te gebruik (aanbeveel)</translation>
 <translation id="7085389578340536476">Laat Chrome toe om oudio op te neem?</translation>
+<translation id="7085805695634549980">Kon nie aan Google-dienste koppel nie. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Sluit Chrome-loglêers in die argief in.</translation>
 <translation id="7088434364990739311">Opdateringkontrolering kon nie begin nie (foutkode <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – maak ZIP-lêers oop en pak dit in Lêers-program.</translation>

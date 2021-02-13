@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Iphothali yabathunjiweyo itholiwe</translation>
 <translation id="3188257591659621405">Amafayela ami</translation>
 <translation id="3199982728237701504">Isiphakeli Sedokhumenti (Amahlangothi amabili)</translation>
+<translation id="3226405216343213872">Ifuna izikena</translation>
 <translation id="3246869037381808805">Imisebenzi yokuphrinta emidala kunosuku olu-1 izosuswa</translation>
 <translation id="3268178239013324452">Yehlulekile - Umnyango uvuliwe</translation>
 <translation id="3310640316857623290">Ukubambezeleka kwe-DNS kungaphezulu kakhulu komkhawulo ovumelekile</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Iskena ikhasi <ph name="PAGE_NUM" />. Kuqedwe <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Iyaphrinta</translation>
 <translation id="3488065109653206955">Yenziwe yasebenza ngokungaphelele</translation>
-<translation id="3515615323037921860">Imisebenzi yokuphrinta</translation>
 <translation id="3527036260304016759">Yehlukile - Iphutha elingaziwa</translation>
 <translation id="357889014807611375">I-Wi-Fi enemitha</translation>
 <translation id="3595596368722241419">Ibhethri ligcwele</translation>
@@ -296,7 +296,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7701040980221191251">Lutho</translation>
 <translation id="7705524343798198388">I-VPN</translation>
 <translation id="773153675489693198">Isibalo somjikelezo</translation>
-<translation id="7732651821766520760">Ukuhlolwa kwe-<ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">I-ID yemodeli</translation>
 <translation id="7805768142964895445">Isimo</translation>
 <translation id="7819857487979277519">I-PSK (i-WPA noma i-RSN)</translation>

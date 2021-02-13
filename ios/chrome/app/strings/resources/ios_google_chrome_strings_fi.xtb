@@ -17,7 +17,6 @@
 <translation id="257708665678654955">Haluatko Google Chromen ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
 <translation id="2695886661449553974">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
 <translation id="2732745070297234559">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
-<translation id="2786324948676799004">Koska <ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, Chrome-datasi poistetaan tältä laitteelta uloskirjautumisen yhteydessä. Synkronoitu datasi pysyy Google-tililläsi.</translation>
 <translation id="2919738076569633423">Käyttämällä Chromea hyväksyt <ph name="BEGIN_LINK_TOS" />käyttöehdot<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chrome-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
 <translation id="3148688391461398285">Parannamme Chrome-käyttökokemustasi sijaintisi perusteella.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3345341804167540816">Käytä Chromea missä tahansa</translation>
 <translation id="3522659714780527202">Laita synkronointi päälle, niin voit nähdä Chrome-välilehtesi missä tahansa</translation>
-<translation id="3523473570015918798">Jos kirjaudut ulos, kirjanmerkkejä, historiaa, salasanoja tai muuta Chrome-dataasi ei enää synkronoida Google-tilillesi.</translation>
 <translation id="3533694711092285624">Ei tallennettuja salasanoja. Chrome voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="3706101708757577809">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="384394811301901750">Google Chrome ei voi käyttää kameraa tällä hetkellä.</translation>

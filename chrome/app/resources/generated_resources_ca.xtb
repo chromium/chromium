@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Completa la configuració al telèfon</translation>
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini d'1 setmana}other{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_WEEKS} setmanes}}</translation>
-<translation id="1055806300943943258">S'estan cercant dispositius Bluetooth i USB...</translation>
 <translation id="1056466516655540509">S'ha actualitzat fa <ph name="MINUTES" /> min</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1056898198331236512">Advertiment</translation>
@@ -1981,7 +1980,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3201422919974259695">Els dispositius USB disponibles es mostraran aquí.</translation>
 <translation id="3202131003361292969">Camí</translation>
 <translation id="3202173864863109533">S'està silenciant l'àudio d'aquesta pestanya.</translation>
-<translation id="3202218848974251205">Zona de proves de privadesa</translation>
 <translation id="3208321278970793882">Aplicació</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
 <translation id="3208703785962634733">No confirmat</translation>
@@ -3141,6 +3139,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4538417792467843292">Suprimeix la paraula</translation>
 <translation id="4538684596480161368">Bloqueja sempre els connectors fora de la zona de proves a <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Instal·lat per una política empresarial</translation>
+<translation id="4541123282641193691">No s'ha pogut verificar el teu compte. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="4541662893742891060">No es pot connectar a aquest perfil. Per obtenir assistència tècnica, contacta amb el teu operador.</translation>
 <translation id="4541810033354695636">realitat augmentada</translation>
 <translation id="4542520061254486227">Llegir les dades dels llocs <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
@@ -4169,6 +4168,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="574209121243317957">To</translation>
 <translation id="5742505912938664543">Si afegeixes un compte secundari aquí, podràs utilitzar-lo per navegar pel web, baixar aplicacions i consultar Gmail i altres serveis de Google.</translation>
 <translation id="5746169159649715125">Desa com a PDF</translation>
+<translation id="5746261205461426123">Obre la guia de configuració</translation>
 <translation id="5747552184818312860">Caduca el dia</translation>
 <translation id="5747785204778348146">Desenvolupador: inestable</translation>
 <translation id="5747809636523347288">Engan&amp;xa i ves a <ph name="URL" /></translation>
@@ -5329,6 +5329,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="708278670402572152">Desconnecta de la xarxa per activar la cerca</translation>
 <translation id="7084321615353200053">Els llocs web poden demanar permís per utilitzar la càmera (opció recomanada)</translation>
 <translation id="7085389578340536476">Vols permetre que Chrome gravi àudio?</translation>
+<translation id="7085805695634549980">No s'ha pogut connectar amb els serveis de Google. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Inclou els fitxers de registre de Chrome a l'arxiu.</translation>
 <translation id="7088434364990739311">La comprovació d'actualització no s'ha pogut iniciar (codi d'error <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">ZIP Archiver: obre i empaqueta fitxers ZIP a l'aplicació Fitxers.</translation>

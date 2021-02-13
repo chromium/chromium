@@ -17,7 +17,6 @@
 <translation id="257708665678654955">‏هل تريد أن يعرض Google Chrome ترجمة صفحات <ph name="LANGUAGE_NAME" /> من الموقع الإلكتروني هذا في المرة القادمة؟</translation>
 <translation id="2695886661449553974">‏تعذّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
-<translation id="2786324948676799004">‏سيتم حذف بيانات Chrome من هذا الجهاز عند تسجيل الخروج، وذلك لأن حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" />. ستظل البيانات التي تمت مزامنتها متوفّرة في حسابك على Google.</translation>
 <translation id="2919738076569633423">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK_TOS" />بنود الخدمة<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
 <translation id="3148688391461398285">‏احصل على تجربة أفضل في Chrome حسب موقعك.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3345341804167540816">‏استخدم Chrome في كل مكان</translation>
 <translation id="3522659714780527202">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، فعِّل المزامنة.</translation>
-<translation id="3523473570015918798">‏سيؤدي تسجيل الخروج إلى إيقاف مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وبيانات Chrome الأخرى مع حسابك على Google.</translation>
 <translation id="3533694711092285624">‏ما مِن كلمات مرور محفوظة. لا يستطيع متصفّح Chrome التحقّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="3706101708757577809">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على روابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="384394811301901750">‏يتعذر على Google Chrome استخدام الكاميرا في الوقت الحالي</translation>

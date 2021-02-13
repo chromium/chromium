@@ -197,6 +197,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="2964349545761222050">Vimba Amakhukhi Enkampani Yangaphandle</translation>
 <translation id="2969979262385602596">Yehlulekile ukungena ngemvume. Sicela uzame futhi emuva kwesikhathi.</translation>
 <translation id="2975121486251958312">Imodi ye-Incognito kuphela Etholakalayo</translation>
+<translation id="2982481275546140226">Sula idatha</translation>
 <translation id="298306318844797842">Engeza indlela yokukhokha...</translation>
 <translation id="2989805286512600854">Vula kuthebhu entsha</translation>
 <translation id="3037605927509011580">Hawu, iphutha!</translation>
@@ -410,7 +411,6 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5327248766486351172">Igama</translation>
 <translation id="5339316356165661760">Vula ukuvumelanisa</translation>
-<translation id="5351284593342054342">Yisule kule Divayisi</translation>
 <translation id="5388358297987318779">Vula isithombe</translation>
 <translation id="5407969256130905701">Lahla izinguquko</translation>
 <translation id="5409365236829784218">Azikho izinhlelo zokusebenza ezingafakwa ezingavula leli fayela.</translation>
@@ -466,7 +466,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5948291296578561264">Lokhu kukuvumela ukuthi ulondoloze izithombe kulabhulali yakho yezithombe.</translation>
 <translation id="5955891643922670672">Ukubuka inguqulo engaxhunyiwe ku-inthanethi</translation>
 <translation id="5957613098218939406">Izinketho eziningi</translation>
-<translation id="5961521066940389233">Gcina kule Divayisi</translation>
 <translation id="5964480694698977962">Dala ithebhu ye-incognito entsha</translation>
 <translation id="5965679971710331625">Ungene ngemvume</translation>
 <translation id="5979837087407522202">Sesha amaphasiwedi</translation>
@@ -481,7 +480,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Lawula izindaba nomsebenzi wakho lapha</translation>
 <translation id="6066301408025741299">Thepha ukuze ukhansele.</translation>
-<translation id="6085282545406522838">Idatha yakho evunyelanisiwe izohlala ku-Akhawunti yakho ye-Google.</translation>
 <translation id="6108923351542677676">Ukusetha kuyaqhubeka…</translation>
 <translation id="6119050551270742952">Ikhasi lewebhu lamanje liku-Incognito</translation>
 <translation id="6122191549521593678">Ku-inthanethi</translation>
@@ -605,7 +603,6 @@ Zama ukusebenzisa iphasiwedi eyingqayizivele kusayithi ngayinye.</translation>
 <translation id="7203585745079012652">Khulumela emuva izimpendulo</translation>
 <translation id="7207383424303353046">Okusha: Vula amasayithi ku-Chrome ngokuzenzekelayo ngokwenza kube Uhlelo Lwakho Lokusebenza Lwesiphequluli Oluzenzakalelayo. <ph name="BEGIN_LINK" />Vula Amasethingi<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Isiteketiso Sekhadi Esingavumelekile</translation>
-<translation id="722989956228261714">Phuma ngemvume…</translation>
 <translation id="7265758999917665941">Ungalokothi kuleli sayithi</translation>
 <translation id="7272437679830969316">Ayikwazi ukuqinisekisa ubunikazi bakho. Iphasiwedi ayikopishiwe.</translation>
 <translation id="7291368939935408496">Ilungiselela amaphasiwedi...</translation>
@@ -635,7 +632,6 @@ Zama ukusebenzisa iphasiwedi eyingqayizivele kusayithi ngayinye.</translation>
 <translation id="7514365320538308">Landa</translation>
 <translation id="7537586195939242955">Uxolo, ukudlula kwakho akukwazi ukufakwa ku-Passbook ngalesi sikhathi.</translation>
 <translation id="7554791636758816595">Ithebhu entsha</translation>
-<translation id="7558943807639707687">Yini ongathanda ukuyenza ngamabhukhimakhi akho, umlando kanye nenye idatha ekule divayisi?</translation>
 <translation id="7561196759112975576">Njalo</translation>
 <translation id="7583004045319035904">Sebenzisa i-<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ukuvula amathebhu wakho we-Incognito.</translation>
 <translation id="7600965453749440009">Ungalokothi uhumushe isi-<ph name="LANGUAGE" /></translation>

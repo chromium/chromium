@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Qedelela ukusetha kufoni yakho</translation>
 <translation id="1054153489933238809">Vula &amp;isithombe sangempela kuthebhu entsha</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Buyekeza i-<ph name="DEVICE_TYPE" /> phakathi neviki eli-1}one{Buyekeza i-<ph name="DEVICE_TYPE" /> phakathi namaviki angu-{NUM_WEEKS}}other{Buyekeza i-<ph name="DEVICE_TYPE" /> phakathi namaviki angu-{NUM_WEEKS}}}</translation>
-<translation id="1055806300943943258">Isesha amadivayisi we-Bluetooth ne-USB...</translation>
 <translation id="1056466516655540509">Kubuyekezwe emaminithini angu-<ph name="MINUTES" /> adlule</translation>
 <translation id="1056775291175587022">Akuna-network</translation>
 <translation id="1056898198331236512">Isexwayiso</translation>
@@ -1981,7 +1980,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3201422919974259695">Amadivayisi atholakalayo e-USB azovela lapha.</translation>
 <translation id="3202131003361292969">Indlela</translation>
 <translation id="3202173864863109533">Le thebhu yomsindo iyathuliswa.</translation>
-<translation id="3202218848974251205">I-sandbox yobumfihlo</translation>
 <translation id="3208321278970793882">Uhlelo lokusebenza</translation>
 <translation id="3208584281581115441">Hlola manje</translation>
 <translation id="3208703785962634733">Akuqinisekisiwe</translation>
@@ -3141,6 +3139,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4538417792467843292">Susa igama</translation>
 <translation id="4538684596480161368">Hlala uvimbela ama-unsandboxed plugins ku-<ph name="HOST" /></translation>
 <translation id="4538792345715658285">Kufakwe ngenqubomgomo yebhizinisi.</translation>
+<translation id="4541123282641193691">Ayikwazanga ukuqinisekisa i-akhawunti yakho. Sicela uzame futhi noma uqalise kabusha i-Chromebook yakho.</translation>
 <translation id="4541662893742891060">Ayikwazi ukuxhuma kule phrofayela. Ngosekelo lwezobuchwepheshe, sicela uxhumane nenkampani yakho yenethiwekhi.</translation>
 <translation id="4541810033354695636">i-augmented reality</translation>
 <translation id="4542520061254486227">Funda idatha yakho ku-<ph name="WEBSITE_1" /> naku-<ph name="WEBSITE_2" /></translation>
@@ -4170,6 +4169,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="574209121243317957">Ukuphakama</translation>
 <translation id="5742505912938664543">Uma ungeza i-akhawunti yesibili lapha, ungaphequlula iwebhu, ulande izinhlelo zokusebenza, uhlole i-Gmail yakho namanye amasevisi e-Google usebenzisa leyo akhawunti.</translation>
 <translation id="5746169159649715125">Londoloza njenge-PDF</translation>
+<translation id="5746261205461426123">Vula umhlahlandlela wokusetha</translation>
 <translation id="5747552184818312860">Iphelelwa yisikhathi</translation>
 <translation id="5747785204778348146">Unjiniyela - akuzinzile</translation>
 <translation id="5747809636523347288">Nama&amp;thisela bese uye ku-<ph name="URL" /></translation>
@@ -5330,6 +5330,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="708278670402572152">Nqamula ukuze unike amandla ukuskena</translation>
 <translation id="7084321615353200053">Amasayithi angacela ukusebenzisa ikhamera yakho (kunconyiwe)</translation>
 <translation id="7085389578340536476">Vumela i-Chrome ukurekhoda umsindo?</translation>
+<translation id="7085805695634549980">Ayikwazanga ukuxhumana namasevisi e-Google. Ikhodi yephutha: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Faka amafayela welogu ye-Chrome kwingobo yomlando.</translation>
 <translation id="7088434364990739311">Ukuholwa ukubuyekezwa kuhlulekile ukuqala (ikhodi yephutha engu-<ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Isifaki kungobo yomlando - Vula uphinde upakishe amafayela e-ZIP kuhlelo lokusebenza lamafayela.</translation>

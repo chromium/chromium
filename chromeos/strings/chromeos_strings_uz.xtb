@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Kirish portali aniqlandi</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
+<translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ta sahifa skanerlandi. <ph name="PERCENTAGE_VALUE" />% tugallandi.</translation>
 <translation id="3459509316159669723">Chop etish</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
-<translation id="3515615323037921860">Chop etish vazifalari</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
@@ -296,7 +296,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Davrlar soni</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> sinovi</translation>
 <translation id="7769672763586021400">Model identifikatori</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>

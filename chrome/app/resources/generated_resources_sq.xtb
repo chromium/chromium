@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Përfundo konfigurimin në telefon</translation>
 <translation id="1054153489933238809">Hap imazhin &amp;origjinal në skedë të re</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Pëditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda 1 jave}other{Përditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_WEEKS} javësh}}</translation>
-<translation id="1055806300943943258">Po kërkon pajisjet me Bluetooth dhe USB...</translation>
 <translation id="1056466516655540509">Përditësuar <ph name="MINUTES" /> min. më parë</translation>
 <translation id="1056775291175587022">Nuk ka rrjete</translation>
 <translation id="1056898198331236512">Paralajmërim</translation>
@@ -1979,7 +1978,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3201422919974259695">Pajisjet USB të ofruara do të shfaqen këtu.</translation>
 <translation id="3202131003361292969">Shtegu</translation>
 <translation id="3202173864863109533">Audioja e kësaj skede është vendosur në heshtje.</translation>
-<translation id="3202218848974251205">Kufizuesi i privatësisë</translation>
 <translation id="3208321278970793882">Aplikacioni</translation>
 <translation id="3208584281581115441">Kontrollo tani</translation>
 <translation id="3208703785962634733">I pakonfirmuar</translation>
@@ -3140,6 +3138,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4538417792467843292">Fshi fjalën</translation>
 <translation id="4538684596480161368">Blloko gjithmonë përbërësit shtesë të pakufizuar në <ph name="HOST" /></translation>
 <translation id="4538792345715658285">U instalua nga politika e ndërmarrjes.</translation>
+<translation id="4541123282641193691">Llogaria jote nuk mund të verifikohej. Provo sërish ose rinise pajisjen Chromebook.</translation>
 <translation id="4541662893742891060">Nuk mund të lidhet me këtë profil. Për mbështetje teknike, kontakto me operatorin tënd celular.</translation>
 <translation id="4541810033354695636">realiteti i zgjeruar</translation>
 <translation id="4542520061254486227">Lexo të dhënat e tua në <ph name="WEBSITE_1" /> dhe <ph name="WEBSITE_2" /></translation>
@@ -4166,6 +4165,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="574209121243317957">Tonaliteti</translation>
 <translation id="5742505912938664543">Kur shton një llogari dytësore këtu, mund të shfletosh në ueb, të shkarkosh aplikacione, të kontrollosh Gmail dhe shërbimet e tjera të Google duke përdorur atë llogari.</translation>
 <translation id="5746169159649715125">Ruaj si PDF</translation>
+<translation id="5746261205461426123">Hap udhëzuesin e konfigurimit</translation>
 <translation id="5747552184818312860">Skadon</translation>
 <translation id="5747785204778348146">Programimi - i paqëndrueshëm</translation>
 <translation id="5747809636523347288">Ngj&amp;it dhe shko te <ph name="URL" /></translation>
@@ -5326,6 +5326,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="708278670402572152">Shkëputu për të aktivizuar skanimin</translation>
 <translation id="7084321615353200053">Sajtet mund të kërkojnë të përdorin kamerën tënde (rekomandohet)</translation>
 <translation id="7085389578340536476">Të lejohet Chrome të regjistrojë audion?</translation>
+<translation id="7085805695634549980">Nuk mund të lidhej me shërbimet e Google. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Përfshi skedarët e evidencave të Chrome në arkiv.</translation>
 <translation id="7088434364990739311">Kontrolli i përditësimit dështoi të niset (kodi i gabimit: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - Hap dhe paketo skedarët ZIP në aplikacionin "Skedarët".</translation>

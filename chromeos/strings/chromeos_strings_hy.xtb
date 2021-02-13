@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
+<translation id="3226405216343213872">Սկաներների որոնում</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Սկանավորվում է էջ <ph name="PAGE_NUM" />-ը։ Կատարված է <ph name="PERCENTAGE_VALUE" />%-ը։</translation>
 <translation id="3459509316159669723">Տպում</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
-<translation id="3515615323037921860">Տպման աշխատանքներ</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
@@ -147,6 +147,7 @@
 <translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
+<translation id="4652335678334611408">Պահել աշխատաշրջանի տվյալները</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="467715984478005772">Հնարավոր է, որ հրապատ կա</translation>
@@ -295,7 +296,6 @@
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> փորձարկում</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>

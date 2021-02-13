@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
+<translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Optično branje <ph name="PAGE_NUM" />. strani. Dokončano: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tiskanje</translation>
 <translation id="3488065109653206955">Delno aktivirano</translation>
-<translation id="3515615323037921860">Tiskalni posli</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
@@ -279,6 +279,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
+<translation id="7449585358422953039">Upravitelj: <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>
@@ -295,7 +296,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Število ciklov</translation>
-<translation id="7732651821766520760">Preizkus: <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7819857487979277519">PSK (WPA ali RSN)</translation>

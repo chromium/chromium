@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Файл <ph name="FILE_NAME" /> не завантажено через проблеми із сервером.</translation>
-<translation id="1497470209855416291">Пробну версію вимкнено</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
 <translation id="1513352483775369820">Закладки й історія веб-пошуку</translation>
 <translation id="1513858653616922153">Видалити пароль</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Копіювати ім’я користувача</translation>
 <translation id="1592864538817356322">Стандартний захист:</translation>
 <translation id="1612196535745283361">Щоб шукати пристрої, Chrome потрібен доступ до геоданих. Доступ до геоданих <ph name="BEGIN_LINK" />вимкнено на цьому пристрої<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Коли перемикач увімкнено, веб-сайти не можуть використовувати вашу особисту інформацію для покращення релевантності контенту. Глянувши на людей, які прийшли на музичний концерт, ми можемо припустити лише те, що в них схожі музичні смаки. Аналогічно веб-сайти знають про тисячі своїх користувачів тільки те, що вони мають подібні інтереси.\n\nВаша приналежність до певної категорії користувачів визначається на основі даних про те, які сайти ви відвідуєте. Водночас рекламодавці бачать лише те, на які сторінки переходить певна категорія людей загалом, а не ресурси, які відкриваєте конкретно ви.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Вилучити 1 вибраний елемент}one{Вилучити # вибраний елемент}few{Вилучити # вибрані елементи}many{Вилучити # вибраних елементів}other{Вилучити # вибраного елемента}}</translation>
 <translation id="1641113438599504367">Безпечний перегляд</translation>
 <translation id="164269334534774161">Ви переглядаєте офлайн-копію цієї сторінки, створену <ph name="CREATION_TIME" /></translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Дивитися наступне відео</translation>
 <translation id="2074143993849053708">Інтерфейс надання згоди на голосовий пошук через Асистента закрито</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2083113399121613785">Пробну версію ввімкнено</translation>
 <translation id="2096012225669085171">Синхронізація та персоналізація на всіх пристроях</translation>
 <translation id="2100273922101894616">Автоматичний вхід</translation>
 <translation id="2100314319871056947">Спробуйте надіслати текст меншими частинами</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Спрощену сторінку надає Google. Натисніть, щоб завантажити оригінал.</translation>
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
-<translation id="4465314970046116177">Privacy Sandbox – набір нових технологій, які захищають від механізмів збору даних про дії користувачів на різних сайтах, наприклад сторонніх файлів cookie. Проте веб-контент і сервіси, робота яких залежить від цих механізмів, не блокуватимуться. Команда Chrome створює цю технологію разом із розробниками веб-сайтів та інших веб-переглядачів, а також видавцями й рекламодавцями.</translation>
 <translation id="4472118726404937099">Щоб синхронізувати й персоналізувати дані на пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="447252321002412580">Допоможіть покращити функції й ефективність Chrome</translation>
 <translation id="4479972344484327217">Встановлення модуля <ph name="MODULE" /> для Chrome…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">Не можна додавати цифри</translation>
 <translation id="4663499661119906179">Переглядайте підібрані для вас сайти й новини</translation>
 <translation id="4663756553811254707">Видалено закладок: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
-<translation id="4665282149850138822">Веб-сайт <ph name="NAME" /> додано на головний екран</translation>
 <translation id="4668347365065281350">Усі дані сайтів, зокрема файли cookie й інша збережена на пристрої інформація</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -592,6 +587,7 @@
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5230560987958996918">Сайт <ph name="SITE" /> хоче шукати пристрої Bluetooth поруч. Виявлено такі пристрої:</translation>
 <translation id="5233638681132016545">Нова вкладка</translation>
+<translation id="5250483651202458397">Знімок екрана. Торкніться, щоб закрити.</translation>
 <translation id="526421993248218238">Не вдається завантажити цю сторінку</translation>
 <translation id="5271967389191913893">Вміст, який ви хочете завантажити, не можна відкрити на цьому пристрої.</translation>
 <translation id="5292796745632149097">Кому надіслати:</translation>
@@ -747,7 +743,6 @@
 Наприклад, деякі веб-сайти можуть реагувати на такий запит, показуючи вам рекламу, не пов’язану з іншими веб-сайтами, які ви відвідали. Багато веб-сайтів і надалі збиратимуть та використовуватимуть ваші дані веб-перегляду, наприклад, щоб покращувати систему безпеки, пропонувати вміст, рекламу й рекомендації, а також генерувати статистику для звітів.</translation>
 <translation id="624789221780392884">Оновлення завершено</translation>
 <translation id="6255999984061454636">Пропозиції вмісту</translation>
-<translation id="6266591733731644292">Наразі технологія Privacy Sandbox доступна не всюди. Під час пробного періоду:\n<ph name="BEGIN_LIST_ITEM1" />розробники веб-сайтів і додатків можуть випробувати функцію, яка створює релевантний контент, не використовуючи вашу особисту інформацію;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />користувачі можуть скасувати підписку на пробну версію за допомогою елементів керування на цій сторінці.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6292420053234093573">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
@@ -837,9 +832,9 @@
 <translation id="6767294960381293877">Список пристроїв, з якими можна ділитися вкладкою, відкрито на половину висоти.</translation>
 <translation id="6783942555455976443">Зберегти цю сторінку на пізніше й отримати нагадування</translation>
 <translation id="6811034713472274749">Сторінка готова для перегляду</translation>
+<translation id="6813446258015311409">Вікно "Увійти в Chrome" відкрите.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Вибрано вкладку "<ph name="TAB_TITLE" />"</translation>
-<translation id="6833996806551876956">Пробна версія Privacy Sandbox</translation>
 <translation id="6845325883481699275">Допоможіть покращити безпеку Chrome</translation>
 <translation id="6846298663435243399">Завантаження…</translation>
 <translation id="6850409657436465440">Завантаження ще триває</translation>
@@ -1036,6 +1031,7 @@
 <translation id="8156139159503939589">Якими мовами ви читаєте?</translation>
 <translation id="8168435359814927499">Вміст</translation>
 <translation id="8186512483418048923">Залишилося файлів: <ph name="FILES" /></translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Залишився 1 день</translation>
 <translation id="8200772114523450471">Поновити</translation>
 <translation id="8209050860603202033">Відкрити зображення</translation>
@@ -1071,7 +1067,6 @@
 <translation id="8442258441309440798">Немає доступних новин</translation>
 <translation id="8443209985646068659">Неможливо оновити Chrome</translation>
 <translation id="8445448999790540984">Не вдається експортувати паролі</translation>
-<translation id="8447219758310755868">Не надавати особисту інформацію</translation>
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
 <translation id="8466613982764129868">Переконайтеся, що пристрій <ph name="TARGET_DEVICE_NAME" /> підключено до Інтернету</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1097,6 +1092,7 @@
 <translation id="8583805026567836021">Очищення даних облікового запису</translation>
 <translation id="8587585930972369234">Натисніть і втримуйте, щоб шукати</translation>
 <translation id="860043288473659153">Ім’я та прізвище власника картки</translation>
+<translation id="8602358303461588329">Вікно "Увійти в Chrome" закрите.</translation>
 <translation id="860282621117673749">Сповіщення про зниження цін</translation>
 <translation id="8616006591992756292">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Перейти за URL-адресою, указаною в завантаженому вмісті?</translation>
@@ -1116,7 +1112,6 @@
 <translation id="8748850008226585750">Вміст сховано</translation>
 <translation id="8788265440806329501">Історію навігації закрито</translation>
 <translation id="8788968922598763114">Відкрити останню закриту вкладку</translation>
-<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Прочитані</translation>
 <translation id="8812260976093120287">На деяких веб-сайтах ви можна оплачувати за допомогою перелічених вище підтримуваних додатків для платежів на вашому пристрої.</translation>
 <translation id="881688628773363275">Попередній перегляд вмісту вкладки не видно.</translation>

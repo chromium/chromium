@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="102360288709523007">Дапамажыце палепшыць Chromium, адпраўляючы ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
-<translation id="1130979953299110755">Калі выканаць выхад, закладкі, гісторыя, паролі і іншыя даныя Chromium перастануць сінхранізавацца з Уліковым запісам Google.</translation>
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1257458525759135959">Каб магчы захоўваць відарысы, націсніце "Налады" і дазвольце Chromium дадаваць вашы фота</translation>
 <translation id="1361748954329991663">Ваша версія Chromium састарэла. Калі ў <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> абнаўленняў няма, магчыма, прылада больш не падтрымлівае новыя версіі Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Пачніце карыстацца сканерам Chromium</translation>
 <translation id="8013573822802650211">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chromium, увайдзіце на іх ва ўліковы запіс</translation>
 <translation id="8073677936375100957">Выдаліць даныя Chromium з гэтай прылады?</translation>
-<translation id="8097322092271030751">Вашым уліковым запісам кіруе дамен <ph name="HOSTED_DOMAIN" />, таму пры выхадзе даныя Chromium будуць выдалены з гэтай прылады. Сінхранізаваныя даныя застануцца ва Уліковым запісе Google.</translation>
 <translation id="8175055321229419309">Парада. <ph name="BEGIN_LINK" />Перамясціце Chromium на паліцу праграм<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Каб зрабіць Chromium стандартным браўзерам, адкрыйце "Налады", націсніце ўкладку "Стандартны браўзер" і выберыце Chromium.</translation>
 <translation id="8240981428553046115">Браўзеру Chromium не ўдалося праверыць наяўнасць абнаўленняў. Паўтарыце спробу пазней.</translation>

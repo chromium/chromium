@@ -80,7 +80,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     &lt;li&gt;Kontakto me pronarin e sajtit të uebit.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ke futur fjalëkalimin tënd në një sajt që nuk menaxhohet nga organizata jote. Për të mbrojtur llogarinë tënde, mos e ripërdor fjalëkalimin në aplikacione dhe sajte të tjera.</translation>
-<translation id="1259144770381827039">Shiko detajet.</translation>
 <translation id="1263231323834454256">Lista e leximit</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktiviteti që nuk do të ruhet në këtë pajisje:
@@ -1368,7 +1367,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6290238015253830360">Artikujt e tu të sugjeruar shfaqen këtu</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">"Asistenti i Google" në Chrome po ndalon</translation>
-<translation id="6304463939629872728">Përfundo blerjen me</translation>
 <translation id="6305205051461490394"><ph name="URL" /> është i paarritshëm.</translation>
 <translation id="6312113039770857350">Faqja e uebit nuk është e disponueshme</translation>
 <translation id="6321917430147971392">Kontrollo cilësimet e tua të DNS-së</translation>
@@ -1398,7 +1396,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6406765186087300643">C0 (Zarf)</translation>
 <translation id="6409754798200046165">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="6410264514553301377">Fut datën e skadimit dhe kodin CVC për <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Mos harro ofertën tënde të Google Pay</translation>
 <translation id="6415778972515849510">Chromium mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
 <translation id="6423385022588644828">Konfirmo kartat e tua më shpejt duke përdorur Touch ID nga tani e tutje</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1837,6 +1834,7 @@ Detaje shtesë:
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (Zarf)</translation>
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
+<translation id="8213464188712611711">Kujtimet</translation>
 <translation id="8218327578424803826">Vendndodhja e caktuar:</translation>
 <translation id="8220146938470311105">C7/C6 (Zarf)</translation>
 <translation id="8221250263817408492">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që të shkosh te <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë.</translation>

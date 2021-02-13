@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Səhifə <ph name="PAGE_NUM" /> skanlanır. <ph name="PERCENTAGE_VALUE" />% tamamlanıb.</translation>
 <translation id="3459509316159669723">Çap edilir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
-<translation id="3515615323037921860">Çap İşləri</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
@@ -279,6 +278,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanlama tamamlanıb. 1 səhifə skanlanıb}other{Skanlama tamamlanıb. {NUMBER_OF_PAGES} səhifə skanlanıb}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> tərəfindən idarə edilir.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC ünvanı</translation>
@@ -295,7 +295,6 @@
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Dövrə sayı</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> Test</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA və ya RSN)</translation>

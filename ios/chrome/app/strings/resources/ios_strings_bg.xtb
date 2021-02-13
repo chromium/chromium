@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
 <translation id="2975121486251958312">Налице е само режим „инкогнито“</translation>
+<translation id="2982481275546140226">Изчистване на данните</translation>
 <translation id="298306318844797842">Добавяне на начин на плащане…</translation>
 <translation id="2989805286512600854">Отваряне в нов раздел</translation>
 <translation id="3037605927509011580">Ужас!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5339316356165661760">Включване на синхронизирането</translation>
-<translation id="5351284593342054342">Изчистване от това устройство</translation>
 <translation id="5388358297987318779">Отваряне на изображението</translation>
 <translation id="5407969256130905701">Отхвърляне на промените</translation>
 <translation id="5409365236829784218">Няма инсталирани приложения, които могат да отворят файла.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">Това ви позволява да запазвате снимки във фотобиблиотеката си.</translation>
 <translation id="5955891643922670672">Гледате офлайн версията</translation>
 <translation id="5957613098218939406">Още опции</translation>
-<translation id="5961521066940389233">Съхраняване на това устройство</translation>
 <translation id="5964480694698977962">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="5965679971710331625">Влезли сте в профил</translation>
 <translation id="5979837087407522202">Търсене в паролите</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
-<translation id="6085282545406522838">Синхронизираната информация ще остане в профила ви в Google.</translation>
 <translation id="6108923351542677676">Извършва се настройване…</translation>
 <translation id="6119050551270742952">Страницата е в режим „инкогнито“</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">Изговаряне на отговорите</translation>
 <translation id="7207383424303353046">Ново: Отваряйте сайтовете автоматично в Chrome, като го направите стандартното си приложение за браузър. <ph name="BEGIN_LINK" />Отворете настройките<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Псевдонимът на картата е невалиден</translation>
-<translation id="722989956228261714">Изход…</translation>
 <translation id="7265758999917665941">Никога за този сайт</translation>
 <translation id="7272437679830969316">Паролата не бе копирана поради неуспешно удостоверяване.</translation>
 <translation id="7291368939935408496">Паролите се подготвят...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
-<translation id="7558943807639707687">Какво искате да направите с отметките, историята и другите си данни на това устройство?</translation>
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="7583004045319035904">Използвайте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за отключване на разделите в режим „инкогнито“.</translation>
 <translation id="7600965453749440009">Никога да не се превежда от <ph name="LANGUAGE" /></translation>

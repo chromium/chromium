@@ -197,6 +197,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2964349545761222050">Bloker cookies fra tredjeparter</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
 <translation id="2975121486251958312">Kun inkognitotilstand er tilgængelig</translation>
+<translation id="2982481275546140226">Ryd data</translation>
 <translation id="298306318844797842">Tilføj betalingsmetode...</translation>
 <translation id="2989805286512600854">Åbn på ny fane</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
@@ -410,7 +411,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
-<translation id="5351284593342054342">Ryd på denne enhed</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
 <translation id="5407969256130905701">Kassér ændringer</translation>
 <translation id="5409365236829784218">Der er ingen installerede apps, der kan åbne denne fil.</translation>
@@ -466,7 +466,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5948291296578561264">Dermed kan du gemme fotos i din fotosamling.</translation>
 <translation id="5955891643922670672">Viser offlineversion</translation>
 <translation id="5957613098218939406">Flere valgmuligheder</translation>
-<translation id="5961521066940389233">Gem på denne enhed</translation>
 <translation id="5964480694698977962">Opret ny inkognitofane.</translation>
 <translation id="5965679971710331625">Du er logget ind</translation>
 <translation id="5979837087407522202">Søg i adgangskoder</translation>
@@ -481,7 +480,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
 <translation id="6066301408025741299">Tryk for at annullere.</translation>
-<translation id="6085282545406522838">Alle synkroniserede data vil stadig være på din Google-konto.</translation>
 <translation id="6108923351542677676">Konfigurationen er i gang...</translation>
 <translation id="6119050551270742952">Den aktuelle webside er i inkognitotilstand</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="7203585745079012652">Giv talte svar</translation>
 <translation id="7207383424303353046">Nyt! Åbn automatisk websites i Chrome ved at gøre den til din standardbrowser. <ph name="BEGIN_LINK" />Åbn indstillinger<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kortets kaldenavn er ugyldigt</translation>
-<translation id="722989956228261714">Log ud…</translation>
 <translation id="7265758999917665941">Aldrig for dette website</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke bekræftes. Adgangskoden blev ikke kopieret.</translation>
 <translation id="7291368939935408496">Forbereder adgangskoder...</translation>
@@ -635,7 +632,6 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
 <translation id="7554791636758816595">Ny fane</translation>
-<translation id="7558943807639707687">Hvad skal der ske med dine bogmærker, din historik og andre data på denne enhed?</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7583004045319035904">Brug <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til at låse dine inkognitofaner op.</translation>
 <translation id="7600965453749440009">Oversæt aldrig <ph name="LANGUAGE" /></translation>

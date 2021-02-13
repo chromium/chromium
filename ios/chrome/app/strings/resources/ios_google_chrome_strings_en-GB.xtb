@@ -17,7 +17,6 @@
 <translation id="257708665678654955">Would you like Google Chrome to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2732745070297234559">Chrome couldn't check all passwords. Try again tomorrow.</translation>
-<translation id="2786324948676799004">Because your account is managed by <ph name="HOSTED_DOMAIN" />, your Chrome data will be deleted from this device when signing out. Your synced data will remain in your Google Account.</translation>
 <translation id="2919738076569633423">By using Chrome, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="3148688391461398285">Get a better experience in Chrome based on your location.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
-<translation id="3523473570015918798">By signing out, your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google Account.</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
 <translation id="3706101708757577809">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="384394811301901750">Google Chrome can't use your camera at the moment.</translation>

@@ -80,7 +80,6 @@
     &lt;li&gt;Зв’яжіться з власником веб-сайту.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ви ввели пароль на сайті, яким не керує ваша організація. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
-<translation id="1259144770381827039">Докладніше.</translation>
 <translation id="1263231323834454256">Список читання</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Дії, інформація про які не залишиться на пристрої:
@@ -722,7 +721,7 @@
 <translation id="3761718714832595332">Сховати статус</translation>
 <translation id="3765032636089507299">Сторінка "Безпечний перегляд" розробляється.</translation>
 <translation id="3765588406864124894">Поштова скринька 9</translation>
-<translation id="3767485424735936570">Адміністратор не радить копіювати й вставляти цей контент у віртуальну машину <ph name="VM_NAME" /></translation>
+<translation id="3767485424735936570">Адміністратор не радить копіювати й вставляти цей контент на віртуальну машину <ph name="VM_NAME" /></translation>
 <translation id="3778403066972421603">Зберегти дані картки у вашому обліковому записі Google і на цьому пристрої?</translation>
 <translation id="3780694243617746492">Вихідний контейнер</translation>
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
@@ -1372,7 +1371,6 @@
 <translation id="6290238015253830360">Тут відображатимуться рекомендовані статті</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Припинення роботи Google Асистента в Chrome</translation>
-<translation id="6304463939629872728">Оплатити карткою</translation>
 <translation id="6305205051461490394">Сторінка <ph name="URL" /> недоступна.</translation>
 <translation id="6312113039770857350">Веб-сторінка недоступна</translation>
 <translation id="6321917430147971392">Перевірте налаштування DNS</translation>
@@ -1402,7 +1400,6 @@
 <translation id="6406765186087300643">C0 (конверт)</translation>
 <translation id="6409754798200046165">Щойно ви ввели пароль на оманливому сайті. Chrome радить змінити пароль.</translation>
 <translation id="6410264514553301377">Введіть дату закінчення терміну дії та код CVC картки <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Не забудьте про пропозицію Google Pay</translation>
 <translation id="6415778972515849510">Chromium допоможе захистити обліковий запис Google і змінити пароль.</translation>
 <translation id="6423385022588644828">Відтепер ви можете підтверджувати картки швидше за допомогою Touch ID</translation>
 <translation id="6425092077175753609">Матеріальний</translation>
@@ -1457,7 +1454,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Немає}=1{З 1 сайту (ви не вийдете з облікового запису Google)}one{З # сайту (ви не вийдете з облікового запису Google)}few{З # сайтів (ви не вийдете з облікового запису Google)}many{З # сайтів (ви не вийдете з облікового запису Google)}other{З # сайту (ви не вийдете з облікового запису Google)}}</translation>
 <translation id="6648459603387803038">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chrome.</translation>
 <translation id="6648524591329069940">Шрифт Serif</translation>
-<translation id="6651270836885078973">Пристроєм керує:</translation>
+<translation id="6651270836885078973">Керує:</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666259744093848177">(x86_64 перекладено)</translation>
@@ -1841,6 +1838,7 @@
 <translation id="8202370299023114387">Конфлікт</translation>
 <translation id="8206978196348664717">Prc4 (конверт)</translation>
 <translation id="8211406090763984747">З’єднання безпечне</translation>
+<translation id="8213464188712611711">Спогади</translation>
 <translation id="8218327578424803826">Указане місцезнаходження:</translation>
 <translation id="8220146938470311105">C7/C6 (конверт)</translation>
 <translation id="8221250263817408492">Щойно ви ввели пароль на оманливому сайті. Chromium радить негайно перейти на <ph name="WEBSITE_1" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>

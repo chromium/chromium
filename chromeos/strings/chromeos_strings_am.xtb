@@ -90,6 +90,7 @@
 <translation id="315738237743207937">ተያዥ መግቢያ ተገኝቷል</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
 <translation id="3199982728237701504">ሰነድ መጋቢ (ባለሁለት ጎን)</translation>
+<translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="3268178239013324452">አልተሳካም - በር ክፍት ነው</translation>
 <translation id="3310640316857623290">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በጉልህ ይበልጣል</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">ገጽ <ph name="PAGE_NUM" />ን በመቃኘት ላይ። <ph name="PERCENTAGE_VALUE" />% ተጠናቅቋል።</translation>
 <translation id="3459509316159669723">ማተም</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
-<translation id="3515615323037921860">የህትመት ስራዎች</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
@@ -279,6 +279,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገጽ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
+<translation id="7449585358422953039">በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
 <translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7487067081878637334">ቴክኖሎጂ</translation>
 <translation id="7490813197707563893">የማክ አድራሻ</translation>
@@ -295,7 +296,6 @@
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
 <translation id="773153675489693198">የዑደት ብዛት</translation>
-<translation id="7732651821766520760">የ<ph name="TEST_NAME" /> ሙከራ</translation>
 <translation id="7769672763586021400">የሞዴል መታወቂያ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7819857487979277519">PSK (WPA ወይም RSN)</translation>

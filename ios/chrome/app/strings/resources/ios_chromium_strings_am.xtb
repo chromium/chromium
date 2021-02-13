@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="102360288709523007">የአጠቃቀም ስታቲክሶችን እና የብልሽት ሪፖርቶችን ወደ Google በመላክ Chromiumን የተሻለ ለማድረግ ያግዙ።</translation>
-<translation id="1130979953299110755">ዘግተው በመውጣት የእርስዎ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌላ የChromium ውሂብ ከእንግዲህ ወደ የእርስዎ Google መለያ አይሰምሩም።</translation>
 <translation id="1185134272377778587">ስለChromium</translation>
 <translation id="1257458525759135959">ምስሎችን ለማስቀመጥ፣ Chromium ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
 <translation id="1361748954329991663">Chromium ጊዜው አልፎበታል። በ<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ውስጥ ምንም ዝማኔ ከሌለ የእርስዎ መሣሪያ አዲስ የChromium ስሪቶችን ከእንግዲህ ላይደግፍ ይችላል።</translation>
@@ -71,7 +70,6 @@
 <translation id="7890287942691234100">የChromium ቃኚውን መጠቀም ይጀምሩ</translation>
 <translation id="8013573822802650211">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="8073677936375100957">የChromium ውሂብዎ ከዚህ መሣሪያ ላይ ይጽዳ?</translation>
-<translation id="8097322092271030751">የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ስለሆነ ዘግተው ሲወጡ የChromium ውሂብዎ ከዚህ መሣሪያ ይሰረዛል። የእርስዎ የሰመረ ውሂብ በእርስዎ የGoogle መለያ ውስጥ ይቆያል።</translation>
 <translation id="8175055321229419309">ጠቃሚ ምክር፦ <ph name="BEGIN_LINK" />Chromiumን ወደ የእርስዎ መትከያ ይውሰዱት<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromiumን የእርስዎ ነባሪ ለማድረግ ቅንብሮችን ይክፈቱ፣ ነባሪውን የአሳሽ መተግበሪያ መታ ያድርጉ እና Chromiumን ይምረጡ።</translation>
 <translation id="8240981428553046115">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>

@@ -90,6 +90,7 @@
 <translation id="315738237743207937">કૅપ્ટિવ પોર્ટલની જાણકારી મળી</translation>
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
+<translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
 <translation id="3310640316857623290">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં ઘણી વધુ છે</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ. <ph name="PERCENTAGE_VALUE" />% પૂર્ણ થયું.</translation>
 <translation id="3459509316159669723">છાપવું</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
-<translation id="3515615323037921860">પ્રિન્ટ જોબ</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
@@ -147,6 +147,7 @@
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />માંથી <ph name="PRINTED_PAGE_NUMBER" />. પ્રિન્ટ કરવાનું અટકાવવા માટે, Enter કી દબાવો.</translation>
 <translation id="4646949265910132906">સુરક્ષિત વાઇ-ફાઇ કનેક્શન</translation>
+<translation id="4652335678334611408">સત્રનો લૉગ સાચવો</translation>
 <translation id="4665014895760275686">નિર્માતા</translation>
 <translation id="467510802200863975">પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="467715984478005772">ફાયરવૉલ હોવાની શક્યતા છે</translation>
@@ -277,6 +278,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{સ્કૅન કરવાનું પૂર્ણ થયું. 1 પેજ સ્કૅન કર્યું}one{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યું}other{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યા}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="7469648432129124067">પોર્ટલની જાણકારી મળી</translation>
 <translation id="7487067081878637334">તકનીક</translation>
 <translation id="7490813197707563893">MAC ઍડ્રેસ</translation>
@@ -293,7 +295,6 @@
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ચક્રની સંખ્યા</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" />નું પરીક્ષણ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7819857487979277519">PSK (WPA અથવા RSN)</translation>

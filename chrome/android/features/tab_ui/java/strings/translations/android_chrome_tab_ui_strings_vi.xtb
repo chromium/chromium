@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2759453070259087442">Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
 <translation id="2977480621796371840">Xóa khỏi nhóm</translation>
+<translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>

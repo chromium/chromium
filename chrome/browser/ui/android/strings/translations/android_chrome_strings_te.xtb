@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
-<translation id="1497470209855416291">ట్రయల్ డిజేబుల్ చేయబడింది</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ చరిత్ర</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించు</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1592864538817356322">ప్రామాణిక రక్షణ:</translation>
 <translation id="1612196535745283361">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. స్థాన యాక్సెస్ <ph name="BEGIN_LINK" />ఈ పరికరానికి ఆఫ్ చేయబడింది<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">ఆన్ చేసి ఉన్నప్పుడు, వెబ్‌సైట్‌లు, వారి సైట్‌లను మరింత సందర్భోచితంగా చేయడానికి మిమ్మల్ని వ్యక్తిగతంగా గుర్తించే సమాచారాన్ని ఉపయోగించలేవు. ఒక సంగీత కచేరీలో పాల్గొనే క్రౌడ్ మాదిరిగానే, వేలాది మంది యూజర్‌లు ఒకే విధమైన ఆసక్తిని పంచుకుంటారని మాత్రమే సైట్‌లకు తెలుస్తుంది.\n\nమీ “క్రౌడ్” మీరు సందర్శించిన సైట్‌ల మీద ఆధారపడి ఉంటారు. అడ్వర్టయిజర్‌లు మొత్తం క్రౌడ్ సందర్శించే సైట్‌లను మాత్రమే చూడగలరు, కానీ మీరు వ్యక్తిగతంగా సందర్శించే సైట్‌లను చూడలేరు.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ఎంచుకోబడిన 1 అంశాన్ని తీసివేస్తుంది}other{ఎంచుకోబడిన # అంశాలను తీసివేస్తుంది}}</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
 <translation id="164269334534774161">మీరు <ph name="CREATION_TIME" /> నుండి ఈ పేజీ యొక్క ఆఫ్‌లైన్ కాపీని వీక్షిస్తున్నారు</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">తర్వాతి వీడియోను చూడండి</translation>
 <translation id="2074143993849053708">Assistant వాయిస్ సెర్చ్ సమ్మతి UI మూసివేయబడింది</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
-<translation id="2083113399121613785">ట్రయల్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="2096012225669085171">అన్ని పరికరాలలో సింక్ చేయండి మరియు వ్యక్తిగతీకరించండి</translation>
 <translation id="2100273922101894616">ఆటోమేటిక్ సైన్-ఇన్</translation>
 <translation id="2100314319871056947">వచనాన్ని చిన్న భాగాలుగా చేసి షేర్ చేయడానికి ప్రయత్నించండి</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Google నుండి లైట్ పేజీ అందించబడింది. అసలు పేజీని లోడ్ చేయడానికి నొక్కండి.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />కి బుక్‌మార్క్ చేసారు</translation>
-<translation id="4465314970046116177">గోప్యతా శాండ్‌బాక్స్ అనేది కొత్త టెక్నాలజీల కలయిక, అది థర్డ్-పార్టీ కుక్కీల వంటి క్రాస్-సైట్ ట్రాకింగ్ విధానాల నుండి క్రమంగా ప్రజలను రక్షిస్తూనే, నేడు ఆ విధానాలపై ఆధారపడి ఉన్న వెబ్ కంటెంట్, సర్వీస్‌లను సంరక్షిస్తుంది. ఈ కొత్త టెక్నాలజీని రూపొందించడానికి, వెబ్‌సైట్ డెవలపర్‌లు, పబ్లిషర్‌లు, అడ్వర్టయిజర్‌లు, ఇతర బ్రౌజర్‌లతో Chrome పని చేస్తోంది.</translation>
 <translation id="4472118726404937099">మీ అన్ని పరికరాలలో సమకాలీకరణ చేయాలన్నా లేదా మీ అభిరుచికి అనుగుణంగా సెట్ చేయాలన్నా, సైన్ ఇన్ చేసి సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="447252321002412580">Chrome ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="4479972344484327217">Chromeలో <ph name="MODULE" /> ఇన్‌స్టాల్ చేయబడుతోంది…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">మారుపేరులో అంకెలు ఉండరాదు</translation>
 <translation id="4663499661119906179">మీ కోసం ఉన్న టాప్ సైట్‍లు అలాగే కథనాలను చూడండి</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> బుక్‌మార్క్‌లు తొలగించబడ్డాయి</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> మీ హోమ్ స్క్రీన్‌కు జోడించబడింది</translation>
 <translation id="4668347365065281350">కుక్కీలు, స్థానికంగా నిల్వ చేసిన ఇతర డేటాతో సహా సైట్‌లలో నిల్వ చేసిన మొత్తం డేటా</translation>
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -748,7 +743,6 @@
 ఉదాహరణకు, కొన్ని వెబ్‌సైట్‌లు ఈ అభ్యర్థనకు ప్రతిస్పందనగా మీరు సందర్శించిన ఇతర వెబ్‌సైట్‌ల ఆధారితం కాని ప్రకటనలను మీకు చూపుతాయి. అనేక వెబ్‌సైట్‌లు భద్రతను మెరుగుపరచడం, కంటెంట్, ప్రకటనలు మరియు సిఫార్సులను అందించడం మరియు నివేదన గణాంకాలను రూపొందించడం మొదలైనవాటి కోసం ఇప్పటికీ మీ బ్రౌజింగ్ డేటాను సేకరించి, ఉపయోగిస్తాయి.</translation>
 <translation id="624789221780392884">అప్‌డేట్‌ సిద్ధంగా ఉంది</translation>
 <translation id="6255999984061454636">కంటెంట్ సూచనలు</translation>
-<translation id="6266591733731644292">గోప్యతా శాండ్‌బాక్స్ ఇంకా విస్తృతంగా రిలీజ్ అవ్వలేదు. ఈ ట్రయల్ పీరియడ్‌లో:\n<ph name="BEGIN_LIST_ITEM1" />వెబ్‌సైట్, యాప్ డెవలపర్‌లు ప్రత్యేకంగా మిమ్మల్ని గుర్తించే సమాచారాన్ని యాక్సెస్ చేయకుండా సందర్భోచితమైన అనుభవాలను క్రియేట్ చేయడానికి ట్రై చేయవచ్చు<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />యూజర్‌లు ఈ పేజీలోని కంట్రోల్స్‌ను ఉపయోగించి ట్రయల్‌ను నిలిపివేయవచ్చు.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">పేజీని ముద్రిస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6292420053234093573">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు.</translation>
@@ -841,7 +835,6 @@
 <translation id="6813446258015311409">Chromeకు సైన్ ఇన్ చేయండి, తెరవబడింది.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ట్యాబ్‌ను ఎంచుకున్నారు</translation>
-<translation id="6833996806551876956">గోప్యతా శాండ్‌బాక్స్ ట్రయల్</translation>
 <translation id="6845325883481699275">Chrome భద్రతను మెరుగుపరచడంలో సహాయం చేయండి</translation>
 <translation id="6846298663435243399">లోడ్ చేస్తున్నాము…</translation>
 <translation id="6850409657436465440">మీ డౌన్‌లోడ్‌‌ ఇప్పటికీ జరుగుతోంది</translation>
@@ -1013,6 +1006,7 @@
 <translation id="8015452622527143194">పేజీలో ఉన్నవ‌న్నీ, తిరిగి డిఫాల్ట్ సైజ్‌కు తీసుకురండి</translation>
 <translation id="8026334261755873520">బ్రౌజింగ్ డేటా క్లియర్ చేయండి</translation>
 <translation id="8027863900915310177">ఎక్కడ డౌన్‌లోడ్ చేయాలో ఎంచుకోండి</translation>
+<translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
 <translation id="8035133914807600019">కొత్త ఫోల్డర్…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> రోజులు మిగిలి ఉంది</translation>
 <translation id="8037801708772278989">ఇప్పుడే తనిఖీ చేసింది</translation>
@@ -1037,6 +1031,7 @@
 <translation id="8156139159503939589">మీరు ఏ భాషలను చదవగలరు?</translation>
 <translation id="8168435359814927499">కంటెంట్</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ఫైల్‌లు మిగిలి ఉన్నాయి</translation>
+<translation id="8189750580333936930">గోప్యతా శాండ్‌బాక్స్</translation>
 <translation id="8190358571722158785">1 రోజు మిగిలి ఉంది</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
@@ -1072,7 +1067,6 @@
 <translation id="8442258441309440798">కథనాలు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="8443209985646068659">Chrome అప్‌డేట్ అవదు</translation>
 <translation id="8445448999790540984">పాస్‌వర్డ్‌లను ఎగుమతి చేయడం సాధ్యం కాదు</translation>
-<translation id="8447219758310755868">క్రౌడ్‌మాస్కింగ్</translation>
 <translation id="8461694314515752532">మీ స్వంత సమకాలీకరణ రహస్య పదబంధంతో సమకాలీకరించబడిన డేటాని ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ఇంటర్నెట్‌కు కనెక్ట్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1118,7 +1112,6 @@
 <translation id="8748850008226585750">కంటెంట్‌లు దాచబడ్డాయి</translation>
 <translation id="8788265440806329501">నావిగేషన్ చరిత్ర మూసివేయబడింది</translation>
 <translation id="8788968922598763114">చివరగా మూసివేసిన ట్యాబ్‌ను మళ్లీ తెరవండి</translation>
-<translation id="8795672590390389447">గోప్యతా శాండ్‌బాక్స్</translation>
 <translation id="8798449543960971550">చదవండి</translation>
 <translation id="8812260976093120287">కొన్ని వెబ్‌సైట్‌ల‌లో, మీరు మీ పరికరంలో ఎగువ పేర్కొన్న మద్దతు గల చెల్లింపు యాప్‌లతోచెల్లించవచ్చు.</translation>
 <translation id="881688628773363275">ప్రివ్యూ ట్యాబ్‌లో ఉన్న కంటెంట్‌ను చూడటం సాధ్యం కాదు.</translation>

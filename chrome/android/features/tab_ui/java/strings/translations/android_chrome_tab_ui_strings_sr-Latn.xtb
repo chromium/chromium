@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Deli grupu</translation>
 <translation id="2759453070259087442">Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> dodatnim karticama (<ph name="NUMBER_OF_TABS" />).</translation>
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
+<translation id="3291470810748040983">Dobićete obaveštenje kada postoji niža cena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3940195383040445971">Prati cene na karticama</translation>

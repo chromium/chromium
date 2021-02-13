@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
 <translation id="2364498172489649528">पास झाले</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
+<translation id="2418150275289244458">सेटिंग्जमध्ये उघडा</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">सद्य</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
-<translation id="3515615323037921860">प्रिंट कार्ये</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
@@ -147,6 +147,7 @@
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर दाबा.</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
+<translation id="4652335678334611408">सेशन लॉग सेव्ह करा</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
 <translation id="467715984478005772">फायरवॉल असू शकते</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7359657277149375382">फाइल प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -283,6 +285,7 @@
 <translation id="7490813197707563893">MAC पत्ता</translation>
 <translation id="7497215489070763236">सर्व्हर CA सर्टिफिकेट</translation>
 <translation id="7502658306369382406">IPv6 पत्ता</translation>
+<translation id="7550715992156305117">निदानाशी संबंधित रूटीन</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
@@ -293,7 +296,6 @@
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">सायकलची संख्या</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="7769672763586021400">मॉडेल आयडी</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7819857487979277519">PSK (WPA किंवा RSN)</translation>

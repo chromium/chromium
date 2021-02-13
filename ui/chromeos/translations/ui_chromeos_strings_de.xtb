@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
 <translation id="1363028406613469049">Titel</translation>
 <translation id="1378727793141957596">Willkommen bei Google Drive!</translation>
+<translation id="1379911846207762492">Sie können den Dateizugriff offline verfügbar machen, wenn Sie keine Internetverbindung haben.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
 <translation id="1404323374378969387">Norwegisch</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, kopieren Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
 <translation id="357479282490346887">Litauisch</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> konnte nicht offline verfügbar gemacht werden</translation>
 <translation id="3603385196401704894">Kanadisches Französisch</translation>
 <translation id="3606220979431771195">Türkisch-F</translation>
 <translation id="3616113530831147358">Audio</translation>

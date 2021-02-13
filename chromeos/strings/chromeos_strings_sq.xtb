@@ -90,6 +90,7 @@
 <translation id="315738237743207937">U zbulua portal izolues</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
+<translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Po skanon faqen <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% e përfunduar.</translation>
 <translation id="3459509316159669723">Po printon</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
-<translation id="3515615323037921860">Printimet</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
@@ -295,7 +295,6 @@
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Numri i cikleve</translation>
-<translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7819857487979277519">PSK (WPA ose RSN)</translation>

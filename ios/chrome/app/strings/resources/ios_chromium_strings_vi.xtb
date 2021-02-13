@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="102360288709523007">Cải thiện Chromium bằng cách gửi thống kê sử dụng và báo cáo sự cố cho Google.</translation>
-<translation id="1130979953299110755">Khi bạn đăng xuất, dấu trang, các trang web đã truy cập, mật khẩu và các dữ liệu khác của bạn trên Chromium sẽ không được đồng bộ hóa với Tài khoản Google nữa.</translation>
 <translation id="1185134272377778587">Giới thiệu về Chromium</translation>
 <translation id="1257458525759135959">Để lưu hình ảnh, hãy nhấn vào Cài đặt để cho phép Chromium thêm vào ảnh của bạn</translation>
 <translation id="1361748954329991663">Chromium đã lỗi thời. Nếu không có bản cập nhật nào trong <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, thì có khả năng thiết bị của bạn không hỗ trợ các phiên bản Chromium mới nữa.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Bắt đầu dùng trình quét của Chromium</translation>
 <translation id="8013573822802650211">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị</translation>
 <translation id="8073677936375100957">Xóa dữ liệu Chromium của bạn khỏi thiết bị này?</translation>
-<translation id="8097322092271030751">Vì tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý, nên dữ liệu trên Chromium sẽ bị xóa khỏi thiết bị này khi bạn đăng xuất. Dữ liệu đã đồng bộ hóa của bạn sẽ vẫn ở trong Tài khoản Google của bạn.</translation>
 <translation id="8175055321229419309">Mẹo: <ph name="BEGIN_LINK" />Di chuyển Chromium sang thanh dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Để đặt Chromium làm trình duyệt mặc định, hãy mở phần Cài đặt, nhấn vào Ứng dụng trình duyệt mặc định rồi chọn Chromium.</translation>
 <translation id="8240981428553046115">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>

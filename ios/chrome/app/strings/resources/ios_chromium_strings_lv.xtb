@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="102360288709523007">Uzlabojiet Chromium, sūtot lietojuma statistiku un avāriju pārskatus Google serveriem.</translation>
-<translation id="1130979953299110755">Izrakstoties jūsu grāmatzīmes, vēsture, paroles un citi Chromium dati vairs netiks sinhronizēti ar jūsu Google kontu.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Darba sākšana ar Chromium skeneri</translation>
 <translation id="8013573822802650211">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chromium, pierakstieties visās savās ierīcēs.</translation>
 <translation id="8073677936375100957">Vai dzēst jūsu Chromium datus no šīs ierīces?</translation>
-<translation id="8097322092271030751">Tā kā kontu pārvalda <ph name="HOSTED_DOMAIN" />, jūsu Chromium dati tiks dzēsti no šīs ierīces, kad izrakstīsieties. Sinhronizētie dati joprojām būs pieejami jūsu Google kontā.</translation>
 <translation id="8175055321229419309">Padoms. <ph name="BEGIN_LINK" />Pārvietojiet pārlūku Chromium uz savu doku<ph name="END_LINK" />.</translation>
 <translation id="8235785158661376110">Lai iestatītu Chromium kā noklusējuma pārlūkprogrammu, atlasiet pogu Open Settings (Atvērt iestatījumus), pieskarieties vienumam Default Browser App (Noklusējuma pārlūka lietotne) un atlasiet Chromium.</translation>
 <translation id="8240981428553046115">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>

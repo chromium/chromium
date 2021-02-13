@@ -80,7 +80,6 @@
     &lt;li&gt;contactează proprietarul site-ului.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ai introdus parola pe un site care nu este gestionat de organizația ta. Pentru a proteja contul, nu folosi aceeași parolă pentru alte aplicații și site-uri.</translation>
-<translation id="1259144770381827039">Vezi detaliile.</translation>
 <translation id="1263231323834454256">Lista de lectură</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Activități care nu vor fi păstrate pe acest dispozitiv:
@@ -1372,7 +1371,6 @@
 <translation id="6290238015253830360">Articolele sugerate apar aici</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Asistentul Google în Chrome se oprește</translation>
-<translation id="6304463939629872728">Finalizează achiziția cu</translation>
 <translation id="6305205051461490394">Adresa URL <ph name="URL" /> nu poate fi accesată.</translation>
 <translation id="6312113039770857350">Pagina web nu este disponibilă</translation>
 <translation id="6321917430147971392">Verificați setările DNS</translation>
@@ -1402,7 +1400,6 @@
 <translation id="6406765186087300643">C0 (Plic)</translation>
 <translation id="6409754798200046165">Ai introdus parola pe un site înșelător. Chrome recomandă să-ți schimbi acum parola.</translation>
 <translation id="6410264514553301377">Introdu data de expirare și codul CVC pentru <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Nu uita de oferta Google Pay</translation>
 <translation id="6415778972515849510">Chromium te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>
 <translation id="6423385022588644828">Confirmă-ți cardurile mai rapid, folosind Touch ID</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1841,6 +1838,7 @@ Detalii suplimentare:
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (Plic)</translation>
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
+<translation id="8213464188712611711">Amintiri</translation>
 <translation id="8218327578424803826">Locație atribuită:</translation>
 <translation id="8220146938470311105">C7/C6 (Plic)</translation>
 <translation id="8221250263817408492">Ai introdus parola pe un site înșelător. Chromium recomandă să accesezi <ph name="WEBSITE_1" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>

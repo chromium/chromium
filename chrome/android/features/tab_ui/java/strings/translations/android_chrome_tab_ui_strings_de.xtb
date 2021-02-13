@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2759453070259087442">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren.</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
+<translation id="3291470810748040983">Sie erhalten eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>

@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
-<translation id="1497470209855416291">Пробная версія выключана</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Капіраваць імя карыстальніка</translation>
 <translation id="1592864538817356322">Стандартная абарона:</translation>
 <translation id="1612196535745283361">Для пошуку прылад Chrome патрабуе доступу да месцазнаходжання. Доступ да месцазнаходжання <ph name="BEGIN_LINK" />для гэтай прылады выключаны<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Калі ўключыць гэту функцыю, вэб-сайты не змогуць персаналізаваць сваё змесціва, выкарыстоўваючы інфармацыю, якая дазваляе ідэнтыфікаваць вас. Вэб-сайты атрымліваюць толькі агульнае ўяўленне пра тое, якія супольныя інтарэсы маюць тысячы карыстальнікаў. (Такую інфармацыю можна параўнаць, напрыклад, з веданнем супольных інтарэсаў людзей, якія прыйшлі на нейкі канцэрт.)\n\nСегмент карыстальнікаў, да якога вы адносіцеся, вызначаецца на падставе таго, якія сайты вы наведваеце. Рэкламадаўцы бачаць толькі тое, якія сайты наведвае ўвесь сегмент, а не тое, якія сайты наведваеце асабіста вы.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Выдаліць 1 выбраны элемент}one{Выдаліць # выбраны элемент}few{Выдаліць # выбраныя элементы}many{Выдаліць # выбраных элементаў}other{Выдаліць # выбранага элемента}}</translation>
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
 <translation id="164269334534774161">Вы праглядаеце пазасеткавую копію гэтай старонкі ад <ph name="CREATION_TIME" /></translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Глядзець наступнае відэа</translation>
 <translation id="2074143993849053708">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку закрыта</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2083113399121613785">Пробная версія ўключана</translation>
 <translation id="2096012225669085171">Сінхранізацыя і персаналізацыя на ўсіх прыладах</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
 <translation id="2100314319871056947">Паспрабуйце абагуліць тэкст меншымі кавалкамі</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Старонка, спрошчаная алгарытмамі Google. Каб загрузіць арыгінал, націсніце тут.</translation>
 <translation id="4452411734226507615">Закрыць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка дададзена ў папку "<ph name="FOLDER_NAME" />"</translation>
-<translation id="4465314970046116177">Privacy Sandbox – гэта набор новых тэхналогій, канчатковая мэта якіх – абараніць карыстальнікаў ад механізмаў адсочвання паводзін на розных сайтах (напрыклад, старонніх файлаў cookie), не наносячы пры гэтым шкоды функцыянальнасці вэб-змесціва і сэрвісаў, якія сёння выкарыстоўваюць гэтыя механізмы. Для рэалізацыі гэтай тэхналогіі каманда Chrome супрацоўнічае з выдаўцамі, рэкламадаўцамі, распрацоўшчыкамі вэб-сайтаў і іншых браўзераў.</translation>
 <translation id="4472118726404937099">Каб сінхранізаваць і персаналізаваць прылады, увайдзіце і ўключыце сінхранізацыю</translation>
 <translation id="447252321002412580">Дапамажыце палепшыць функцыі і прадукцыйнасць Chrome</translation>
 <translation id="4479972344484327217">Усталёўваецца <ph name="MODULE" /> для Chrome…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">Псеўданім не можа ўключаць лічбы</translation>
 <translation id="4663499661119906179">Прагледзьце папулярныя сайты і падабраныя для вас артыкулы</translation>
 <translation id="4663756553811254707">Закладкі (<ph name="NUMBER_OF_BOOKMARKS" />) выдалены</translation>
-<translation id="4665282149850138822">Карыстальнік <ph name="NAME" /> дададзены на галоўны экран</translation>
 <translation id="4668347365065281350">Усе даныя, захаваныя сайтамі, у тым ліку файлы cookie і іншыя лакальна захаваныя даныя</translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -748,7 +743,6 @@
 Напрыклад, некаторыя вэб-сайты могуць пачаць паказ неперсаналізаванай рэкламы. Многія сайты працягнуць збіраць і выкарыстоўваць даныя аб вашых дзеяннях у браўзеры, напрыклад для павышэння бяспекі, паказу змесціва, рэкламы і рэкамендацый або генерацыі статыстыкі для справаздач.</translation>
 <translation id="624789221780392884">Абнаўленне гатовае</translation>
 <translation id="6255999984061454636">Рэкамендацыі па змесціве</translation>
-<translation id="6266591733731644292">Функцыя Privacy Sandbox пакуль што не выйшла ў агульны доступ. Асаблівасці пробнага перыяду:\n<ph name="BEGIN_LIST_ITEM1" />Распрацоўшчыкі вэб-сайтаў і праграм могуць паспрабаваць наладзіць адпаведную функцыянальнасць, не атрымліваючы доступ да інфармацыі, якая вас адназначна ідэнтыфікуе.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Карыстальнікі могуць адмовіцца ад пробнай версіі на гэтай старонцы.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Узнікла праблема з друкам старонкі. Паўтарыце спробу.</translation>
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6292420053234093573">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
@@ -841,7 +835,6 @@
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, укладка, выбрана</translation>
-<translation id="6833996806551876956">Пробны перыяд Privacy Sandbox</translation>
 <translation id="6845325883481699275">Дапамагаць павысіць бяспеку Chrome</translation>
 <translation id="6846298663435243399">Ідзе загрузка…</translation>
 <translation id="6850409657436465440">Спампоўка ўсё яшчэ працягваецца</translation>
@@ -1038,6 +1031,7 @@
 <translation id="8156139159503939589">На якіх мовах вы можаце чытаць?</translation>
 <translation id="8168435359814927499">Змесціва</translation>
 <translation id="8186512483418048923">Засталося файлаў: <ph name="FILES" /></translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8209050860603202033">Адкрыць відарыс</translation>
@@ -1073,7 +1067,6 @@
 <translation id="8442258441309440798">Няма новых артыкулаў</translation>
 <translation id="8443209985646068659">Немагчыма абнавіць Chrome</translation>
 <translation id="8445448999790540984">Не ўдалося экспартаваць паролі</translation>
-<translation id="8447219758310755868">Маскіроўка асобы</translation>
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8466613982764129868">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1119,7 +1112,6 @@
 <translation id="8748850008226585750">Змесціва схавана</translation>
 <translation id="8788265440806329501">Гісторыя навігацыі закрыта</translation>
 <translation id="8788968922598763114">Адкрыць апошнюю закрытую ўкладку</translation>
-<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Прачытана</translation>
 <translation id="8812260976093120287">На некаторых вэб-сайтах можна плаціць з дапамогай указаных вышэй плацежных праграм, усталяваных на прыладзе.</translation>
 <translation id="881688628773363275">Не ўдаецца паказаць змесціва ўкладкі перадпрагляду.</translation>

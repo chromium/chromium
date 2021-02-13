@@ -197,6 +197,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2964349545761222050">Bloqueja les galetes de tercers</translation>
 <translation id="2969979262385602596">No s'ha pogut iniciar la sessió. Torneu-ho a provar més tard.</translation>
 <translation id="2975121486251958312">Només està disponible el mode d'incògnit</translation>
+<translation id="2982481275546140226">Esborra les dades</translation>
 <translation id="298306318844797842">Afegeix una forma de pagament...</translation>
 <translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="3037605927509011580">Vaja!</translation>
@@ -410,7 +411,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
-<translation id="5351284593342054342">Esborra d'aquest dispositiu</translation>
 <translation id="5388358297987318779">Obre una imatge</translation>
 <translation id="5407969256130905701">Descarta els canvis</translation>
 <translation id="5409365236829784218">Cap aplicació instal·lada no pot obrir el fitxer.</translation>
@@ -466,7 +466,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5948291296578561264">Et permet desar fotos a la biblioteca de fotos.</translation>
 <translation id="5955891643922670672">Se n'està mostrant la versió sense connexió</translation>
 <translation id="5957613098218939406">Més opcions</translation>
-<translation id="5961521066940389233">Conserva en aquest dispositiu</translation>
 <translation id="5964480694698977962">Crea una pestanya d'incògnit nova.</translation>
 <translation id="5965679971710331625">Tens la sessió iniciada</translation>
 <translation id="5979837087407522202">Cerca contrasenyes</translation>
@@ -481,7 +480,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
 <translation id="6066301408025741299">Toca per cancel·lar.</translation>
-<translation id="6085282545406522838">Les dades sincronitzades es conservaran al teu Compte de Google.</translation>
 <translation id="6108923351542677676">Configuració en curs...</translation>
 <translation id="6119050551270742952">La pàgina web actual està en mode d'incògnit</translation>
 <translation id="6122191549521593678">En línia</translation>
@@ -605,7 +603,6 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="7203585745079012652">Pronuncia les respostes</translation>
 <translation id="7207383424303353046">Novetat: obre llocs web a Chrome automàticament establint-lo com a aplicació de navegador predeterminada. <ph name="BEGIN_LINK" />Obre Configuració<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">L'àlies de la targeta no és vàlid</translation>
-<translation id="722989956228261714">Tanca la sessió…</translation>
 <translation id="7265758999917665941">Mai per a aquest lloc web</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="7291368939935408496">S'estan preparant les contrasenyes...</translation>
@@ -635,7 +632,6 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7537586195939242955">No es pot instal·lar el passi a Passbook en aquest moment.</translation>
 <translation id="7554791636758816595">Pestanya nova</translation>
-<translation id="7558943807639707687">Què vols fer amb les adreces d'interès, l'historial i les altres dades d'aquest dispositiu?</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7583004045319035904">Utilitza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per desbloquejar les pestanyes d'incògnit.</translation>
 <translation id="7600965453749440009">No tradueixis mai de: <ph name="LANGUAGE" /></translation>

@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> менен бөлүшүү мүмкүн эмес</translation>
 <translation id="1477626028522505441">Сервердеги маселелерден улам <ph name="FILE_NAME" /> жүктөлүп алынган жок.</translation>
-<translation id="1497470209855416291">Сыноо өчүрүлдү</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
 <translation id="1513352483775369820">Кыстармалар жана издөө таржымалы</translation>
 <translation id="1513858653616922153">Сырсөздү жок кылуу</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Колдонуучунун атын көчүрүү</translation>
 <translation id="1592864538817356322">Стандарттуу коргоо:</translation>
 <translation id="1612196535745283361">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. Жайгашкан жерди колдонуу функциясы <ph name="BEGIN_LINK" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Күйгүзүлсө, вебсайттар тийиштүү мазмунду көрсөтүү үчүн сизди аныктаган жеке маалыматты колдонбойт. Концерттеги эл сыяктуу эле, сайттар миңдеген колдонуучуларга жаккан мазмунду гана аныктай алышат.\n\nСиздин "эл" сиз баш баккан сайттар болуп эсептелет. Жарнамачылар жеке сиз эмес, жалпы эл кирген сайттарды гана билишет.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Тандалган 1 нерсени алып салуу}other{Тандалган # нерсени алып салуу}}</translation>
 <translation id="1641113438599504367">Коопсуз серептөө</translation>
 <translation id="164269334534774161">Бул барактын оффлайн көчүрмөсү <ph name="CREATION_TIME" /> түзүлгөн</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Кийинки видеону көрүү</translation>
 <translation id="2074143993849053708">Жардамчыга айтып издөөгө уруксат берүү интерфейси жабылды</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
-<translation id="2083113399121613785">Сыноо иштетилди</translation>
 <translation id="2096012225669085171">Бардык түзмөктөрдө шайкештирүү жана жекечелештирүү</translation>
 <translation id="2100273922101894616">Авто кирүү</translation>
 <translation id="2100314319871056947">Текстти бир нече бөлүккө бөлүп анан бөлүшүп көрүңүз</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Барактын lite-версиясы Google аркылуу алынган. Түпнускасын жүктөө үчүн таптап коюңуз.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> өтмөгүн жабуу</translation>
 <translation id="4452548195519783679">Кыстарма <ph name="FOLDER_NAME" /> куржунуна кошулду</translation>
-<translation id="4465314970046116177">Купуя сыноо чөйрөсү – бул сайттарга кайчылаш көз салуу үчүн бүгүнкү күндө колдонулган үчүнчү тараптын cookie файлдарына көз каранды болгон механизмдерден колдонуучуларды коргоо технологияларынын топтому. Бул жаңы технологияны өнүктүрүү үчүн Chrome вебсайттарды иштеп чыгуучулар, жарыялоочулар, жарнамачылар жана башка серепчилер менен иштешүүдө.</translation>
 <translation id="4472118726404937099">Бардык түзмөктөрүңүздө шайкештирүү жана жекечелештирүү үчүн аккаунтуңузга кирип, шайкештирүүнү иштетиңиз</translation>
 <translation id="447252321002412580">Chrome'дун функцияларын жана өндүрүмдүүлүгүн өркүндөтүүгө жардам бериңиз</translation>
 <translation id="4479972344484327217">Chrome үчүн <ph name="MODULE" /> орнотулууда…</translation>
@@ -502,7 +498,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4662373422909645029">Ылакап атта сан болбошу керек</translation>
 <translation id="4663499661119906179">Мыкты сайттарды жана окуяларды көрүңүз</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> кыстарма өчүрүлдү</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> Башкы экраныңызга кошулду</translation>
 <translation id="4668347365065281350">Бардык сайттардын дайын-даректери, анын ичинде cookie файлдары жана башка жергиликтүү сакталган маалымат</translation>
 <translation id="4684427112815847243">Баарын шайкештештирүү</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -748,7 +743,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 Мисалы, айрым веб-сайттар бул сурамга жооп кайтарып, сиз көрүп чыккан вебсайттарга негизделбеген каалаган жарнамаларды көрсөтө берет. Ал эми көпчүлүк вебсайттар коопсуздукту бекемдөө, керектүү мазмундар, жарнамалар жана сунуштар менен камсыз кылуу жана статистикалык маалыматтар жөнүндө кабар берүү максатында серептөө дайын-даректериңизди топтоп, колдонгонун уланта берет.</translation>
 <translation id="624789221780392884">Жаңыртуу даяр</translation>
 <translation id="6255999984061454636">Мазмун сунуштары</translation>
-<translation id="6266591733731644292">Купуя сыноо чөйрөсү азырынча жарыкка ачык чыга элек. Бул сыноо мөөнөтүндө:\n<ph name="BEGIN_LIST_ITEM1" />Вебсайттар менен колдонмолорду иштеп чыгуучулар сизди аныктоочу маалыматты колдонбостон, тийиштүү мазмунду көрсөтө аларын байкап көрүшөт<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Колдонуучулар ушул барактагы башкаруу элементтери аркылуу сыноодон чыгып кете алышат.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Баракты басып чыгарууда көйгөй келип чыкты. Дагы аракет кылып көрүңүз.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6292420053234093573">Chrome'ду колдонуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен Chrome OS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз.</translation>
@@ -841,7 +835,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6813446258015311409">Chrome'го кириңиз. Ачылды.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> өтмөгү тандалды</translation>
-<translation id="6833996806551876956">Купуя сыноо чөйрөсү</translation>
 <translation id="6845325883481699275">Chrome'догу коопсуздукту коргоону жакшыртууга жардам берүү</translation>
 <translation id="6846298663435243399">Жүктөлүүдө…</translation>
 <translation id="6850409657436465440">Файлыңыз дагы эле жүктөлүп алынууда</translation>
@@ -1038,6 +1031,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8156139159503939589">Кайсы тилдерде окуй аласыз?</translation>
 <translation id="8168435359814927499">Мазмун</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл калды</translation>
+<translation id="8189750580333936930">Купуя сыноо чөйрөсү</translation>
 <translation id="8190358571722158785">1 күн калды</translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8209050860603202033">Сүрөттү ачуу</translation>
@@ -1073,7 +1067,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8442258441309440798">Окуялар жеткиликсиз</translation>
 <translation id="8443209985646068659">Chrome жаңырбай жатат</translation>
 <translation id="8445448999790540984">Сырсөздөр экспорттолбой жатат</translation>
-<translation id="8447219758310755868">Жеке маалыматты жашыруу</translation>
 <translation id="8461694314515752532">Шайкештирилген дайындарды өзүңүздүн шайкештирүүчү купуя сөз айкашыңыз менен шифрлеңиз</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> интернетке туташып турганын текшериңиз</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1119,7 +1112,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8748850008226585750">Жашырылган мазмундар</translation>
 <translation id="8788265440806329501">Чабыттоо таржымалы жабылды</translation>
 <translation id="8788968922598763114">Акыркы жабылган өтмөктү кайра ачуу</translation>
-<translation id="8795672590390389447">Privacy sandbox</translation>
 <translation id="8798449543960971550">Окуу</translation>
 <translation id="8812260976093120287">Айрым вебсайттарда, товарлардын акысын жогоруда көрсөтүлгөн төлөм колдонмолору аркылуу түзмөгүңүздөн төлөй аласыз.</translation>
 <translation id="881688628773363275">Алдын ала көрүү өтмөгүнүн мазмуну жеткиликсиз.</translation>

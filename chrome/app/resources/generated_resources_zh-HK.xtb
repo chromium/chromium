@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 星期內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 星期內更新 <ph name="DEVICE_TYPE" />}}</translation>
-<translation id="1055806300943943258">搜尋藍牙裝置和 USB 裝置…</translation>
 <translation id="1056466516655540509">上次更新時間：<ph name="MINUTES" /> 分鐘前</translation>
 <translation id="1056775291175587022">沒有網絡</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -1981,7 +1980,6 @@
 <translation id="3201422919974259695">可用的 USB 裝置將會在這裡顯示。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">此分頁的音效已設為靜音。</translation>
-<translation id="3202218848974251205">私隱沙箱</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -3142,6 +3140,7 @@
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538684596480161368">永遠在 <ph name="HOST" /> 上封鎖無沙箱防護的外掛程式</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
+<translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="4541810033354695636">擴張實境</translation>
 <translation id="4542520061254486227">讀取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的資料</translation>
@@ -4168,6 +4167,7 @@
 <translation id="574209121243317957">音調</translation>
 <translation id="5742505912938664543">在這裡新增次要帳戶後，您便可透過該帳戶瀏覽網絡、下載應用程式，以及查看 Gmail 和其他 Google 服務。</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
+<translation id="5746261205461426123">開啟設定指南</translation>
 <translation id="5747552184818312860">到期日</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
 <translation id="5747809636523347288">貼上並前往 <ph name="URL" /> (&amp;S)</translation>
@@ -4212,7 +4212,7 @@
 <translation id="5798301976526354562">文字大小 (亦適用於即時字幕)</translation>
 <translation id="579907812742603813">受保護的內容</translation>
 <translation id="579915268381781820">您的安全密鑰已被移除。</translation>
-<translation id="5799478978078236781">現在可以取得 <ph name="DEVICE_TYPE" /> 的實用提示、優惠資訊與最新消息，並提供意見回饋。</translation>
+<translation id="5799478978078236781">取得 <ph name="DEVICE_TYPE" /> 提示、優惠和最新資訊，並分享意見。</translation>
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已被截斷或移除。</translation>
 <translation id="5801568494490449797">偏好設定</translation>
@@ -5328,6 +5328,7 @@
 <translation id="708278670402572152">中斷連線即可啟用掃瞄功能</translation>
 <translation id="7084321615353200053">網站可要求使用攝錄機 (建議)</translation>
 <translation id="7085389578340536476">允許 Chrome 錄音嗎？</translation>
+<translation id="7085805695634549980">無法連線至 Google 服務。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7086672505018440886">在封存中包含 Chrome 記錄檔案。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
 <translation id="7088561041432335295">Zip Archiver - 在「檔案」應用程式開啟及封裝 ZIP 檔案。</translation>
@@ -6029,7 +6030,7 @@
 <translation id="7880823633812189969">系統會在您重新啟動時刪除本機資料</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">查看帳戶</translation>
-<translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
+<translation id="7883792253546618164">您可隨時取消訂閱。</translation>
 <translation id="7885253890047913815">最近的目的地</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
 <translation id="7887334752153342268">複製</translation>

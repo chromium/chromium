@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
 <translation id="2969979262385602596">உள்நுழைவு தோல்வி. பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="2975121486251958312">மறைநிலைப் பயன்முறையை மட்டுமே பயன்படுத்த முடியும்</translation>
+<translation id="2982481275546140226">தரவை அழி</translation>
 <translation id="298306318844797842">கட்டண முறையைச் சேர்...</translation>
 <translation id="2989805286512600854">புதிய தாவலில் திற</translation>
 <translation id="3037605927509011580">அச்சச்சோ!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5327248766486351172">பெயர்</translation>
 <translation id="5339316356165661760">ஒத்திசைவை இயக்கு</translation>
-<translation id="5351284593342054342">இந்தச் சாதனத்திலிருந்து அழி</translation>
 <translation id="5388358297987318779">படத்தைத் திற</translation>
 <translation id="5407969256130905701">மாற்றங்களை நிராகரி</translation>
 <translation id="5409365236829784218">இந்தக் கோப்பைத் திறக்கக்கூடிய ஆப்ஸ் எதுவும் நிறுவப்படவில்லை.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">உங்கள் பட நூலகத்தில் படங்களைச் சேமிக்க இது அனுமதிக்கும்.</translation>
 <translation id="5955891643922670672">ஆஃப்லைன் பதிப்பைப் பார்க்கிறீர்கள்</translation>
 <translation id="5957613098218939406">கூடுதல் விருப்பங்கள்</translation>
-<translation id="5961521066940389233">இந்தச் சாதனத்தில் வைத்திரு</translation>
 <translation id="5964480694698977962">புதிய மறைநிலைத் தாவலை உருவாக்கு</translation>
 <translation id="5965679971710331625">உள்நுழைந்துள்ளீர்கள்</translation>
 <translation id="5979837087407522202">கடவுச்சொற்களைத் தேடு</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">உங்கள் செய்திகளையும் செயல்பாட்டையும் இங்கே கட்டுப்படுத்தலாம்</translation>
 <translation id="6066301408025741299">ரத்துசெய்ய தட்டவும்.</translation>
-<translation id="6085282545406522838">ஏற்கெனவே ஒத்திசைக்கப்பட்ட தரவு தொடர்ந்து உங்கள் Google கணக்கிலேயே இருக்கும்.</translation>
 <translation id="6108923351542677676">அமைவு செயலிலுள்ளது...</translation>
 <translation id="6119050551270742952">இந்த இணையப் பக்கம் மறைநிலையில் உள்ளது</translation>
 <translation id="6122191549521593678">ஆன்லைன்</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">பதில்களை மீண்டும் படி</translation>
 <translation id="7207383424303353046">புதிது: Chromeமை உங்கள் இயல்பு உலாவி ஆப்ஸாக அமைப்பதன் மூலம் தளங்கள் தானாகவே அதில் திறக்கப்படும். <ph name="BEGIN_LINK" />அமைப்புகளைத் திற<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">கார்டின் புனைப்பெயர் தவறானது</translation>
-<translation id="722989956228261714">வெளியேறு…</translation>
 <translation id="7265758999917665941">இந்தத் தளத்திற்கு எப்போதும் வேண்டாம்</translation>
 <translation id="7272437679830969316">அடையாளத்தைச் சரிபார்க்க முடியவில்லை. கடவுச்சொல் நகலெடுக்கப்படவில்லை.</translation>
 <translation id="7291368939935408496">கடவுச்சொற்கள் தயாராகின்றன...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7537586195939242955">வருந்துகிறோம், இந்த நேரத்தில் உங்கள் பாஸை பாஸ்புக்கில் நிறுவ முடியாது.</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>
-<translation id="7558943807639707687">இந்தச் சாதனத்தில் இருக்கும் புக்மார்க்குகள், வரலாறு மற்றும் பிற தரவை என்ன செய்ய விரும்புகிறீர்கள்?</translation>
 <translation id="7561196759112975576">எப்போதும்</translation>
 <translation id="7583004045319035904">மறைநிலைத் தாவல்களைத் திறக்க <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ஐ எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>

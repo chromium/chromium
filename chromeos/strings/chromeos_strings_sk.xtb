@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Bol rozpoznaný prihlasovací portál</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
+<translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
-<translation id="3515615323037921860">Tlačové úlohy</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
@@ -296,7 +296,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Počet cyklov</translation>
-<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7819857487979277519">PSK (WPA alebo RSN)</translation>

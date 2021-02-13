@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Notiek <ph name="PAGE_NUM" />. lapas skenēšana. Pabeigti: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukāšana</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
-<translation id="3515615323037921860">Drukas uzdevumi</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
@@ -280,6 +279,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pārbaude pabeigta. Pārbaudīta 1 lapa.}zero{Pārbaude pabeigta. Pārbaudītas {NUMBER_OF_PAGES} lapas.}one{Pārbaude pabeigta. Pārbaudīta {NUMBER_OF_PAGES} lapa.}other{Pārbaude pabeigta. Pārbaudītas {NUMBER_OF_PAGES} lapas.}}</translation>
+<translation id="7449585358422953039">Pārvalda <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Konstatēts portāls</translation>
 <translation id="7487067081878637334">Tehnoloģijas</translation>
 <translation id="7490813197707563893">MAC adrese</translation>
@@ -296,7 +296,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Ciklu laiks</translation>
-<translation id="7732651821766520760">Pārbaude: <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7819857487979277519">PSK (WPA vai RSN)</translation>

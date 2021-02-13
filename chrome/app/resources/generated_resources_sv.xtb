@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Slutför konfigurationen på telefonen</translation>
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppdatera <ph name="DEVICE_TYPE" /> inom 1 vecka}other{Uppdatera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} veckor}}</translation>
-<translation id="1055806300943943258">Söker efter Bluetooth- och USB-enheter …</translation>
 <translation id="1056466516655540509">Uppdaterades för <ph name="MINUTES" /> minuter sedan</translation>
 <translation id="1056775291175587022">Inga nätverk</translation>
 <translation id="1056898198331236512">Varning</translation>
@@ -127,6 +126,9 @@
 <translation id="1140351953533677694">Få åtkomst till dina Bluetooth-enheter och seriella enheter</translation>
 <translation id="114036956334641753">Ljud och textning</translation>
 <translation id="1140746652461896221">Blockera innehåll på alla sidor du besöker</translation>
+<translation id="1141953877381847186">Tillåt att assistenten använder information på skärmen för att ge snabba svar som översättningar, definitioner, enhetskonverteringar med mera.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tänk på följande:<ph name="END_BOLD" /> Du kan ändra detta när du vill i Inställningar för Google Assistent &gt; Relaterad information.</translation>
 <translation id="1143142264369994168">Certifikatsignerare</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes för 1 minut sedan}other{Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes för {NUM_MINS} minuter sedan}}</translation>
 <translation id="1145593918056169051">Skrivaren har stannat</translation>
@@ -1436,7 +1438,9 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2594999711683503743">Sök på Google eller skriv webbadressen</translation>
 <translation id="2602501489742255173">Kom igång genom att svepa uppåt</translation>
 <translation id="2603115962224169880">Rensa upp på datorn</translation>
+<translation id="2603355571917519942">Voice Match har konfigurerats</translation>
 <translation id="2603463522847370204">Öppna i &amp;inkognitofönster</translation>
+<translation id="2604138917550693049">Sök på bilden med Google Lens</translation>
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
 <translation id="2606246518223360146">Länka Data</translation>
 <translation id="2606454609872547359">Nej, fortsätt utan ChromeVox</translation>
@@ -1780,6 +1784,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2963151496262057773">Följande pluginprogram svarar inte: <ph name="PLUGIN_NAME" />. Vill du stoppa det?</translation>
 <translation id="2964193600955408481">Inaktivera Wi-Fi</translation>
 <translation id="2964245677645334031">Synlighet för Närdelning</translation>
+<translation id="2966216232069818096">Tillåt att assistenten använder informationen på skärmen för att hjälpa till</translation>
 <translation id="2966937470348689686">Hantera Android-inställningar</translation>
 <translation id="2972581237482394796">&amp;Upprepa</translation>
 <translation id="2973324205039581528">Stäng av webbplatsens ljud</translation>
@@ -1876,6 +1881,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Den här fliken använder kameran eller mikrofonen.</translation>
 <translation id="3083193146044397360">Blockerades tillfälligt av säkerhetsskäl</translation>
+<translation id="3083899879156272923">Flytta skärmen med muspekaren centrerad</translation>
 <translation id="3084548735795614657">Släpp för att installera</translation>
 <translation id="3084771660770137092">Antingen tog minnet slut i Chrome eller så avslutades processen för webbsidan av någon annan anledning. Om du vill fortsätta läser du in sidan på nytt eller öppnar en annan sida.</translation>
 <translation id="3084958266922136097">Inaktivera skärmsläckare</translation>
@@ -1975,7 +1981,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3201422919974259695">Tillgängliga USB-enheter visas här.</translation>
 <translation id="3202131003361292969">Sökväg</translation>
 <translation id="3202173864863109533">Ljudet är avstängt på den här fliken.</translation>
-<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3208703785962634733">Obekräftade</translation>
@@ -2371,6 +2376,9 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3654045516529121250">Läsa tillgänglighetsinställningarna</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent åtkomst till en fil.}other{Den har permanent åtkomst till # filer.}}</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
+<translation id="3659830472545192450">Med hjälp av Voice Match kan Google-assistenten identifiera din röst på Chromebook och skilja mellan dig och andra.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tänk på följande:<ph name="END_BOLD" /> Det kan hända att dina personliga resultat även går att komma åt med en liknande röst eller en inspelning. Du kan ta bort behörigheten för Voice Match senare genom att inaktivera dem i inställningarna för Google Assistent.</translation>
 <translation id="3660234220361471169">Opålitliga</translation>
 <translation id="3664511988987167893">Tilläggsikon</translation>
 <translation id="3665589677786828986">Chrome har upptäckt att visa av inställningarna har skadats av ett annat program och återställer dem till standardinställningarna.</translation>
@@ -3133,6 +3141,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4538417792467843292">Ta bort ord</translation>
 <translation id="4538684596480161368">Blockera alltid plugin-program som inte är i sandlådeläge på <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Installerad på grund av företagets principer.</translation>
+<translation id="4541123282641193691">Det gick inte att verifiera kontot. Försök igen eller starta om Chromebook.</translation>
 <translation id="4541662893742891060">Det gick inte att ansluta till profilen. Kontakta operatören för teknisk support.</translation>
 <translation id="4541810033354695636">förstärkt verklighet</translation>
 <translation id="4542520061254486227">Läsa din data på <ph name="WEBSITE_1" /> och <ph name="WEBSITE_2" /></translation>
@@ -3558,6 +3567,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5050330054928994520">Text till tal</translation>
 <translation id="5051836348807686060">Stavningskontroll stöds inte för de språk du valt</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
+<translation id="5053962746715621840">Sök på bilden med Google Lens</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
 <translation id="5057403786441168405">Hantera konton där du är inloggad. Webbplatser, appar och tillägg i Chrome och på Google Play kan anpassa din upplevelse utifrån dessa konton beroende på behörighet. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begränsa inloggning</translation>
@@ -4042,6 +4052,9 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5610038042047936818">Byt till kameraläget</translation>
 <translation id="561030196642865721">Cookies från tredje part tillåts på den här webbplatsen</translation>
 <translation id="5612734644261457353">Det gick inte att verifiera lösenordet nu heller. Obs! Om du nyligen har bytt lösenord börjar det nya lösenordet gälla när du loggar ut. Använd det gamla lösenordet här.</translation>
+<translation id="561308544008485315">Med hjälp av Voice Match kan Google-assistenten identifiera din röst på Chromebook och skilja mellan dig och andra. För att spara batteri är ”Hey Google” bara aktiverat när enheten är ansluten till en strömkälla. Öppna Inställningar om du vill ändra något.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tänk på följande:<ph name="END_BOLD" /> Det kan hända att dina personliga resultat även går att komma åt med en liknande röst eller en inspelning. Du kan ta bort behörigheten för Voice Match senare genom att inaktivera dem i inställningarna för Google Assistent.</translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5616726534702877126">Reservera storlek</translation>
@@ -4155,6 +4168,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="574209121243317957">Ton</translation>
 <translation id="5742505912938664543">Om du lägger till ett sekundärt konto här kan du surfa på webben, ladda ned appar, kolla e-posten på Gmail och använda andra tjänster från Google med det kontot.</translation>
 <translation id="5746169159649715125">Spara som PDF</translation>
+<translation id="5746261205461426123">Öppna konfigurationsguiden</translation>
 <translation id="5747552184818312860">Upphör att gälla</translation>
 <translation id="5747785204778348146">Utvecklare – instabil</translation>
 <translation id="5747809636523347288">Kli&amp;stra in och besök <ph name="URL" /></translation>
@@ -5074,6 +5088,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6824584962142919697">&amp;Inspektera element</translation>
 <translation id="6825184156888454064">Sortera efter namn</translation>
 <translation id="6826872289184051766">Verifiera via USB</translation>
+<translation id="6827604573767207488">Du verkar redan ha konfigurerat anpassade Google Assistent på en annan enhet. Få ut ännu mer av assistenten genom att aktivera följande inställning.</translation>
 <translation id="6828153365543658583">Begränsa inloggning till följande användare:</translation>
 <translation id="6828182567531805778">Ange lösenfrasen för att synkronisera data</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5314,6 +5329,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="708278670402572152">Koppla från om du vill aktivera sökning</translation>
 <translation id="7084321615353200053">Webbplatser får begära åtkomst till kameran (rekommenderas)</translation>
 <translation id="7085389578340536476">Tillåter du ljudinspelning i Chrome?</translation>
+<translation id="7085805695634549980">Det gick inte att ansluta till Googles tjänster. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Ta med loggfiler från Chrome i arkivet.</translation>
 <translation id="7088434364990739311">Det gick inte att starta uppdateringskontrollen (felkod <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – öppna och komprimera ZIP-filer i appen Filer.</translation>
@@ -5509,6 +5525,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7327989755579928735"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Du kan inte sidladda appar när <ph name="DEVICE_TYPE" /> har startats om.</translation>
 <translation id="7328867076235380839">Ogiltig kombination</translation>
 <translation id="7329154610228416156">Inloggningen misslyckades eftersom den har konfigurerats att använda en webbadress som inte är säker (<ph name="BLOCKED_URL" />). Kontakta administratören.</translation>
+<translation id="7329932885428707942">Mobilnätverket kan kopplas från tillfälligt.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Aktivera dockad skärmförstoring</translation>
 <translation id="7335974957018254119">Använd stavningskontroll för</translation>
@@ -6181,6 +6198,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8059417245945632445">&amp;Inspektera enheter</translation>
 <translation id="8059456211585183827">Det finns inga skrivare att spara.</translation>
 <translation id="8061091456562007989">Ändra tillbaka</translation>
+<translation id="8061991877177392872">Du verkar redan ha konfigurerat Voice Match med assistenten på en annan enhet. En röstmodell har skapats på den här enheten utifrån de tidigare inspelningarna.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 pappersark}other{{COUNT} pappersark}}</translation>
 <translation id="8062879968880283306">Skanna QR-koden med enhetens kamera eller ange aktiveringskoden du fick från operatören.</translation>
 <translation id="8063235345342641131">Grön standardavatar</translation>
@@ -6452,6 +6470,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8379991678458444070">Bokmärk fliken om du snabbt vill hitta tillbaka</translation>
 <translation id="8382913212082956454">Kopiera &amp;e-postadress</translation>
 <translation id="8386091599636877289">Policyn hittades inte.</translation>
+<translation id="8386819192691131213">Tillåt att assistenten använder information på skärmen för att ge snabba svar som översättningar, definitioner, enhetskonverteringar med mera</translation>
 <translation id="8386903983509584791">Sökningen har slutförts</translation>
 <translation id="8387361103813440603">Får inte se var du befinner dig</translation>
 <translation id="8389264703141926739">Blockera aviseringar</translation>
@@ -6934,6 +6953,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8915370057835397490">Läser in förslag</translation>
 <translation id="8916476537757519021">Underram i inkognitoläge: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Flytta skärmen när muspekaren når skärmens kanter</translation>
 <translation id="8923880975836399332">Mörkt blågrön</translation>
 <translation id="8925458182817574960">&amp;Inställningar</translation>
 <translation id="8926389886865778422">Fråga inte igen.</translation>
@@ -7012,6 +7032,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9009708085379296446">Hade du tänkt ändra den här sidan?</translation>
 <translation id="9011163749350026987">Visa alltid ikonen</translation>
 <translation id="9011393886518328654">Viktig information</translation>
+<translation id="9012122671773859802">Flytta skärmen kontinuerligt när muspekaren rör sig</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> ledigt utrymme krävs för att installera Linux. Frigör utrymme genom att radera filer på enheten.</translation>
 <translation id="9013707997379828817">Administratören har återställt enheten. Spara viktiga filer och starta sedan om. All data på enheten raderas.</translation>
 <translation id="901668144954885282">Säkerhetskopiera på Google Drive</translation>
@@ -7056,6 +7077,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9052404922357793350">Fortsätt blockera</translation>
 <translation id="9053563360605707198">Dubbelsidig utskrift</translation>
 <translation id="9053893665344928494">Kom ihåg mitt val</translation>
+<translation id="9055278955535611574">Kom åt assistenten med ”Hey Google”</translation>
 <translation id="9055636786322918818">Tillämpa RC4-kryptering. Det här alternativet är mer riskabelt eftersom RC4-chiffer är osäkra.</translation>
 <translation id="9056810968620647706">Inga träffar hittades.</translation>
 <translation id="9057354806206861646">Uppdatera schema</translation>

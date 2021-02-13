@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
+<translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Сканира се страница <ph name="PAGE_NUM" />. Завършена: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Отпечатване</translation>
 <translation id="3488065109653206955">Частично активиран</translation>
-<translation id="3515615323037921860">Задания за отпечатване</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
@@ -296,7 +296,6 @@
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Брой цикли</translation>
-<translation id="7732651821766520760">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Идент. № на модела</translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>

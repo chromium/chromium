@@ -197,6 +197,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2964349545761222050">Sekat Kuki Pihak Ketiga</translation>
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
 <translation id="2975121486251958312">Hanya Mod Inkognito Tersedia</translation>
+<translation id="2982481275546140226">Kosongkan Data</translation>
 <translation id="298306318844797842">Tambahkan Kaedah Pembayaran...</translation>
 <translation id="2989805286512600854">Buka dalam Tab Baharu</translation>
 <translation id="3037605927509011580">Oh, Tidak!</translation>
@@ -410,7 +411,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5339316356165661760">Hidupkan Penyegerakan</translation>
-<translation id="5351284593342054342">Kosongkan data daripada Peranti ini</translation>
 <translation id="5388358297987318779">Buka Imej</translation>
 <translation id="5407969256130905701">Buang Perubahan</translation>
 <translation id="5409365236829784218">Tiada aplikasi dipasang yang boleh membuka fail ini.</translation>
@@ -466,7 +466,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5948291296578561264">Tindakan ini membolehkan anda menyimpan foto pada pustaka foto anda.</translation>
 <translation id="5955891643922670672">Melihat Versi Luar Talian</translation>
 <translation id="5957613098218939406">Lebih Banyak Pilihan</translation>
-<translation id="5961521066940389233">Kekalkan data pada Peranti ini</translation>
 <translation id="5964480694698977962">Buat tab inkognito baharu.</translation>
 <translation id="5965679971710331625">Anda sudah log masuk</translation>
 <translation id="5979837087407522202">Cari Kata Laluan</translation>
@@ -481,7 +480,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kawal cerita dan aktiviti anda di sini</translation>
 <translation id="6066301408025741299">Ketik untuk membatalkan.</translation>
-<translation id="6085282545406522838">Data anda yang disegerakkan akan kekal disimpan dalam Akaun Google anda.</translation>
 <translation id="6108923351542677676">Persediaan sedang berjalan...</translation>
 <translation id="6119050551270742952">Halaman web semasa dalam mod Inkognito</translation>
 <translation id="6122191549521593678">Dalam talian</translation>
@@ -605,7 +603,6 @@ Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="7203585745079012652">Sebut Kembali Jawapan</translation>
 <translation id="7207383424303353046">Baharu: Buka tapak dalam Chrome secara automatik dengan menjadikan Chrome Apl Penyemak Imbas Lalai anda. <ph name="BEGIN_LINK" />Buka Tetapan<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nama Panggilan Kad Tidak Sah</translation>
-<translation id="722989956228261714">Log Keluar…</translation>
 <translation id="7265758999917665941">Jangan Sekali-kali untuk Tapak Ini</translation>
 <translation id="7272437679830969316">Tidak dapat mengesahkan identiti anda. Kata laluan tidak disalin.</translation>
 <translation id="7291368939935408496">Menyediakan Kata Laluan…</translation>
@@ -635,7 +632,6 @@ Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7537586195939242955">Maaf, Pas anda tidak boleh dipasang pd Passbook pd masa ini.</translation>
 <translation id="7554791636758816595">Tab Baharu</translation>
-<translation id="7558943807639707687">Apakah yang ingin anda lakukan dengan penanda halaman, sejarah dan data anda yang lain pada peranti ini?</translation>
 <translation id="7561196759112975576">Sentiasa</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Inkognito anda.</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>

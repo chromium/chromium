@@ -90,6 +90,7 @@
 <translation id="315738237743207937">S-a detectat un portal captiv</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
+<translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
-<translation id="3515615323037921860">Sarcini de printare</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
@@ -279,6 +279,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
+<translation id="7449585358422953039">Gestionat de <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
 <translation id="7487067081878637334">Tehnologie</translation>
 <translation id="7490813197707563893">Adresă MAC</translation>
@@ -295,7 +296,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Numărul de cicluri</translation>
-<translation id="7732651821766520760">Testul <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7819857487979277519">PSK (WPA sau RSN)</translation>

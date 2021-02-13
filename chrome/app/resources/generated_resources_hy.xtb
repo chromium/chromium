@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Ավարտեք կարգավորումը ձեր հեռախոսում</translation>
 <translation id="1054153489933238809">Բացել &amp;պատկերի բնօրինակը նոր ներդիրով</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը 1 շաբաթվա ընթացքում}one{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}other{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}}</translation>
-<translation id="1055806300943943258">Որոնվում են Bluetooth և USB սարքեր…</translation>
 <translation id="1056466516655540509">Թարմացվել է <ph name="MINUTES" /> րոպե առաջ</translation>
 <translation id="1056775291175587022">Ցանց չկա</translation>
 <translation id="1056898198331236512">Զգուշացում</translation>
@@ -1984,7 +1983,6 @@
 <translation id="3201422919974259695">Հասանելի USB սարքերը կցուցադրվեն այստեղ:</translation>
 <translation id="3202131003361292969">Ուղի</translation>
 <translation id="3202173864863109533">Այս ներդիրի ձայնն անջատված է:</translation>
-<translation id="3202218848974251205">Գաղտնիության պաշտպանված միջավայր</translation>
 <translation id="3208321278970793882">Հավելված</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3208703785962634733">Չհաստատված</translation>
@@ -3145,6 +3143,7 @@
 <translation id="4538417792467843292">Ջնջել բառը</translation>
 <translation id="4538684596480161368">Միշտ արգելափակել չմեկուսացված փլագինները <ph name="HOST" />-ում</translation>
 <translation id="4538792345715658285">Տեղադրված է ձեռնարկության կանոնի համաձայն:</translation>
+<translation id="4541123282641193691">Չհաջողվեց մուտք գործել։ Փորձեք նորից կամ վերաբեռնեք Chromebook-ը։</translation>
 <translation id="4541662893742891060">Չհաջողվեց միանալ այս պրոֆիլին։ Տեխնիկական աջակցության համար կապվեք օպերատորի հետ։</translation>
 <translation id="4541810033354695636">լրացված իրականություն</translation>
 <translation id="4542520061254486227">Կարդալ ձեր տվյալները <ph name="WEBSITE_1" /> և <ph name="WEBSITE_2" /> կայքերում</translation>
@@ -4174,6 +4173,7 @@
 <translation id="574209121243317957">Ձայնի մակարդակը</translation>
 <translation id="5742505912938664543">Եթե դուք երկրորդական հաշիվ ավելացնեք այստեղ, կկարողանաք այն օգտագործել կայքեր այցելելու, հավելվածներ ներբեռնելու, ինչպես նաև Gmail-ի և Google-ի այլ ծառայությունների հետ աշխատելու համար։</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>
+<translation id="5746261205461426123">Բացել կարգավորման ուղեցույցը</translation>
 <translation id="5747552184818312860">Սպառվում է</translation>
 <translation id="5747785204778348146">Մշակողների վարկած - անկայուն</translation>
 <translation id="5747809636523347288">Տեղադրել և անցնել <ph name="URL" /> կայք</translation>
@@ -4218,6 +4218,7 @@
 <translation id="5798301976526354562">Տեքստի չափսը (կիրառվում է նաև Կենդանի ենթագրերի համար)</translation>
 <translation id="579907812742603813">պաշտպանված բովանդակություն</translation>
 <translation id="579915268381781820">Անվտանգության բանալին հեռացվել է:</translation>
+<translation id="5799478978078236781">Ստացեք <ph name="DEVICE_TYPE" /> սարքի հետ կապված խորհուրդներ, առաջարկներ և նորություններ, ինչպես նաև կիսվեք ձեր դիտողություններով։</translation>
 <translation id="5799508265798272974">Linux վիրտուալ մեքենա՝ <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Վերջին ներբեռնումից հետո ընտրված ֆայլը վնասվել կամ հեռացվել է:</translation>
 <translation id="5801568494490449797">Նախընտրանքներ</translation>
@@ -5333,6 +5334,7 @@
 <translation id="708278670402572152">Անջատվեք ցանցից՝ որոնումը միացնելու համար</translation>
 <translation id="7084321615353200053">Կայքերը կարող են տեսախցիկն օգտագործելու թույլտվություն հայցել (խորհուրդ է տրվում)</translation>
 <translation id="7085389578340536476">Թույլատրե՞լ Chrome-ին աուդիո ձայնագրել։</translation>
+<translation id="7085805695634549980">Չհաջողվեց միանալ Google-ի ծառայություններին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="7086672505018440886">Ներառել Chrome-ի մատյանների ֆայլերը արխիվում։</translation>
 <translation id="7088434364990739311">Չհաջողվեց սկսել թարմացումների ստուգումը (սխալի կոդ <ph name="ERROR" />):</translation>
 <translation id="7088561041432335295">Zip Archiver – «Ֆայլեր» հավելվածում բացեք և ստեղծեք ZIP ֆայլեր։</translation>
@@ -6033,6 +6035,7 @@
 <translation id="7880823633812189969">Սարքը վերագործարկելիս լոկալ տվյալները կհեռացվեն</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Դիտել հաշիվը</translation>
+<translation id="7883792253546618164">Դուք ցանկացած պահի կարող եք չեղարկել բաժանորդագրությունը։</translation>
 <translation id="7885253890047913815">Վերջին նպատակակետերը</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Կրկնօրինակել</translation>

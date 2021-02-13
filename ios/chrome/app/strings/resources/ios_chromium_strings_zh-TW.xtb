@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="102360288709523007">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chromium 更臻完美。</translation>
-<translation id="1130979953299110755">登出帳戶之後，你的書籤、歷史記錄、密碼和其他 Chromium 資料將停止同步到你的 Google 帳戶。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chromium。</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">開始使用 Chromium 掃描器</translation>
 <translation id="8013573822802650211">在你所有的裝置上登入帳戶後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
-<translation id="8097322092271030751">由於你的帳戶是由 <ph name="HOSTED_DOMAIN" /> 管理，因此當你登出帳戶時，系統會將你的 Chromium 資料從這部裝置上刪除，但是已同步處理的資料會繼續保留在你的 Google 帳戶中。</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />將 Chromium 移至 Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">如要將 Chromium 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 Chromium。</translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>

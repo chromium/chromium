@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Captive portal detected</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3199982728237701504">Document feeder (two-sided)</translation>
+<translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Scanning page <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completed.</translation>
 <translation id="3459509316159669723">Printing</translation>
 <translation id="3488065109653206955">Partially activated</translation>
-<translation id="3515615323037921860">Print jobs</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="357889014807611375">metered Wi-Fi</translation>
 <translation id="3595596368722241419">Battery full</translation>
@@ -279,6 +279,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanning completed. 1 page scanned}other{Scanning completed. {NUMBER_OF_PAGES} pages scanned}}</translation>
+<translation id="7449585358422953039">Managed by <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portal detected</translation>
 <translation id="7487067081878637334">Technology</translation>
 <translation id="7490813197707563893">MAC address</translation>
@@ -295,7 +296,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Cycle count</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> test</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>

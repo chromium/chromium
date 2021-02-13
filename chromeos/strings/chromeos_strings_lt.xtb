@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
 <translation id="3188257591659621405">Mano failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
+<translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Nuskaitomas <ph name="PAGE_NUM" /> psl. Atlikta: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
-<translation id="3515615323037921860">Spausdinimo užduotys</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
 <translation id="357889014807611375">matuojamas „Wi-Fi“ tinklas</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
@@ -296,7 +296,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7701040980221191251">Nėra</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Ciklų skaičius</translation>
-<translation id="7732651821766520760">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="7769672763586021400">Modelio ID</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7819857487979277519">PSK (WPA ar RSN)</translation>

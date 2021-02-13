@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="102360288709523007">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chromium an Google senden.</translation>
-<translation id="1130979953299110755">Wenn Sie sich abmelden, werden Ihre Lesezeichen, Ihr Verlauf, Ihre Passwörter und andere Chromium-Daten nicht mehr mit Ihrem Google-Konto synchronisiert.</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, geben Sie Chromium unter "Einstellungen" die Berechtigung zum Hinzufügen von Fotos</translation>
 <translation id="1361748954329991663">Chromium ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt Ihr Gerät neuere Versionen von Chromium möglicherweise nicht mehr.</translation>
@@ -71,7 +70,6 @@
 <translation id="7890287942691234100">Jetzt Chromium-Scanner verwenden</translation>
 <translation id="8013573822802650211">Melden Sie sich auf allen Ihren Geräten an, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="8073677936375100957">Ihre Chromium-Daten von diesem Gerät löschen?</translation>
-<translation id="8097322092271030751">Da Ihr Konto von <ph name="HOSTED_DOMAIN" /> verwaltet wird, werden Ihre Chromium-Daten beim Abmelden von diesem Gerät gelöscht. Ihre synchronisierten Daten verbleiben in Ihrem Google-Konto.</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chromium in Ihr Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Wenn Sie Chromium als Standardbrowser festlegen möchten, öffnen Sie die Einstellungen, tippen Sie auf "Standard-Webbrowser" und wählen Sie dann "Chromium" aus.</translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuchen Sie es später noch einmal.</translation>

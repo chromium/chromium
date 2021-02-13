@@ -80,7 +80,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     &lt;li&gt;Kontakt eieren av nettstedet.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av organisasjonen din. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
-<translation id="1259144770381827039">Se detaljer.</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivitet som ikke blir værende på denne enheten:
@@ -1374,7 +1373,6 @@ brukere av denne nettleseren.</translation>
 <translation id="6290238015253830360">De foreslåtte artiklene dine vises her</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Stopper Google-assistenten i Chrome</translation>
-<translation id="6304463939629872728">Betal med</translation>
 <translation id="6305205051461490394"><ph name="URL" /> er ikke tilgjengelig.</translation>
 <translation id="6312113039770857350">Nettsiden er ikke tilgjengelig</translation>
 <translation id="6321917430147971392">Kontrollér DNS-innstillingene dine</translation>
@@ -1404,7 +1402,6 @@ brukere av denne nettleseren.</translation>
 <translation id="6406765186087300643">C0 (konvolutt)</translation>
 <translation id="6409754798200046165">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler deg å bytte passord nå.</translation>
 <translation id="6410264514553301377">Skriv inn utløpsdatoen og verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Ikke glem Google Pay-tilbudet ditt</translation>
 <translation id="6415778972515849510">Chromium kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
 <translation id="6423385022588644828">Bekreft kortene dine raskere ved å bruke Touch ID fra nå av</translation>
 <translation id="6425092077175753609">Materiale</translation>
@@ -1842,6 +1839,7 @@ brukere av denne nettleseren.</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (konvolutt)</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
+<translation id="8213464188712611711">Minner</translation>
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
 <translation id="8220146938470311105">C7/C6 (konvolutt)</translation>
 <translation id="8221250263817408492">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du går til <ph name="WEBSITE_1" />, samt andre nettsteder der du bruker dette passordet, og bytter det nå.</translation>

@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
 <translation id="1477626028522505441">सर्वर संबधी समस्‍याओं के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
-<translation id="1497470209855416291">ट्रायल बंद है</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">उपयोगकर्ता नाम की कॉपी करें</translation>
 <translation id="1592864538817356322">सामान्य सुरक्षा मोड:</translation>
 <translation id="1612196535745283361">डिवाइस स्कैन करने के लिए Chrome को जगह की जानकारी का एक्सेस की ज़रूरत होती है. जगह की जानकारी का एक्सेस <ph name="BEGIN_LINK" />इस डिवाइस के लिए बंद<ph name="END_LINK" /> है.</translation>
-<translation id="1613577519914241527">चालू होने पर, वेबसाइटें उस जानकारी का इस्तेमाल नहीं कर पाएंगी जिससे वे व्यक्तिगत तौर पर आपकी पहचान करके, अपनी साइटों को ज़्यादा काम का बनाती हैं. किसी कंसर्ट में मौजूद लोगों की तरह, साइटें सिर्फ़ यह जान सकती हैं कि हज़ारों उपयोगकर्ताओं की पसंद एक जैसी है.\n\nआपके “उपयोगकर्ताओं की पसंद” इस बात से तय होती है कि वे किन साइटों पर गए हैं. विज्ञापन देने वाले सिर्फ़ यह देख सकते हैं कि सभी उपयोगकर्ता किन साइटों पर जाते हैं. वे यह नहीं देखते कि आप व्यक्तिगत तौर पर किन साइटों पर जाते हैं.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 चयनित आइटम निकालें}one{# चयनित आइटम निकालें}other{# चयनित आइटम निकालें}}</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
 <translation id="164269334534774161">आप <ph name="CREATION_TIME" /> से इस पेज की ऑफ़लाइन कॉपी देख रहे हैं</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">अगला वीडियो देखें</translation>
 <translation id="2074143993849053708">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति अब नहीं है</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
-<translation id="2083113399121613785">ट्रायल चालू है</translation>
 <translation id="2096012225669085171">सभी डिवाइस में सिंक करना और मनमुताबिक बनाना</translation>
 <translation id="2100273922101894616">अपने आप साइन इन करने की सुविधा</translation>
 <translation id="2100314319871056947">टेक्स्ट को छोटे-छोटे हिस्सों में शेयर करने की कोशिश करें</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Google की ओर से 'लाइट पेज' दिया गया. 'मूल पेज' लोड करने के लिए टैप करें.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
-<translation id="4465314970046116177">निजता सैंडबॉक्स, नई टेक्नोलॉजी का एक सेट है. यह तीसरे पक्ष की कुकी की तरह, लोगों को कई साइटों के डेटा को ट्रैक करने वाले मैकेनिज़्म से बचाता है. ऐसा करते हुए, यह वेब कॉन्टेंट और वेब सेवाओं की भी सुरक्षा करता है, जो आज के दौर में उसी मैकेनिज़्म पर निर्भर हैं. Chrome, इस नई टेक्नोलॉजी को डेवलप करने के लिए, वेबसाइट डेवलपर, प्रकाशकों, विज्ञापन देने वालों, और अन्य ब्राउज़र के साथ काम कर रहा है.</translation>
 <translation id="4472118726404937099">सभी डिवाइस पर सिंक करने और मनमुताबिक बनाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
 <translation id="447252321002412580">Chrome के फ़ीचर और परफ़ॉर्मेंस को बेहतर बनाने में सहायता करें</translation>
 <translation id="4479972344484327217">Chrome के लिए <ph name="MODULE" /> इंस्टॉल किया जा रहा है…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">प्रचलित नाम में अंक शामिल नहीं कर सकते</translation>
 <translation id="4663499661119906179">अपने हिसाब से खास साइटें और खबरें देखें</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> बुकमार्क का पता लगा</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> को आपकी होम स्क्रीन में जोड़ा गया था</translation>
 <translation id="4668347365065281350">सभी तरह के डेटा को साइटों के हिसाब से सेव किया गया है. इसमें कुकी और स्थानीय रूप से सेव किया गया दूसरा डेटा भी शामिल है</translation>
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
@@ -748,7 +743,6 @@
 उदाहरण के लिए, कुछ वेबसाइटें इस अनुरोध का जवाब आपको ऐसे विज्ञापन दिखाकर दे सकती हैं, जो उन दूसरी वेबसाइटों पर आधारित नहीं हैं जिन्हें आपने देखा है. कई वेबसाइटें अब भी आपके ब्राउज़िंग डेटा को जमा और उनका उपयोग करेंगी - उदाहरण के तौर पर, सुरक्षा को बेहतर बनाने के लिए, अपनी वेबसाइट पर सामग्री, सेवाएं, विज्ञापन और सुझाव देने के लिए और रिपोर्टिंग के आकंड़े जनरेट करने के लिए.</translation>
 <translation id="624789221780392884">अपडेट तैयार है</translation>
 <translation id="6255999984061454636">सामग्री के सुझाव</translation>
-<translation id="6266591733731644292">निजता सैंडबॉक्स को अभी तक कई जगहों पर रिलीज़ नहीं किया गया है. ट्रायल पीरियड के दौरान:\n<ph name="BEGIN_LIST_ITEM1" />वेबसाइट और ऐप्लिकेशन डेवलपर, आपकी पहचान करने वाली जानकारी को ऐक्सेस किए बिना, काम के अनुभव उपलब्ध कराने वाली सुविधा को आज़मा सकते हैं<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />इस पेज पर दिए कंट्रोल का इस्तेमाल करके, उपयोगकर्ता इस ट्रायल से ऑप्ट आउट कर सकते हैं.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">पेज को प्रिंट करने में समस्या थी. कृपया फिर से प्रयास करें.</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6292420053234093573">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
@@ -841,7 +835,6 @@
 <translation id="6813446258015311409">'Chrome में साइन इन करें' पेज खोला गया.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, टैब, चुना गया</translation>
-<translation id="6833996806551876956">निजता सैंडबॉक्स ट्रायल</translation>
 <translation id="6845325883481699275">'Chrome सुरक्षा' को बेहतर बनाने में मदद करें</translation>
 <translation id="6846298663435243399">लोड हो रहा है…</translation>
 <translation id="6850409657436465440">आपका डाउनलोड अब भी जारी है</translation>
@@ -1038,6 +1031,7 @@
 <translation id="8156139159503939589">आप किन भाषाओं में पढ़ सकते हैं?</translation>
 <translation id="8168435359814927499">सामग्री</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फ़ाइलें बची हैं</translation>
+<translation id="8189750580333936930">निजता सैंडबॉक्स</translation>
 <translation id="8190358571722158785">1 दिन शेष</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8209050860603202033">इमेज खोलें</translation>
@@ -1073,7 +1067,6 @@
 <translation id="8442258441309440798">कोई भी कहानी उपलब्ध नहीं है</translation>
 <translation id="8443209985646068659">Chrome अपडेट संभव नहीं</translation>
 <translation id="8445448999790540984">पासवर्ड निर्यात नहीं कर सकते</translation>
-<translation id="8447219758310755868">क्राउडमास्किंग</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने खुद के सिंक लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466613982764129868">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1119,7 +1112,6 @@
 <translation id="8748850008226585750">छिपी हुई सामग्री</translation>
 <translation id="8788265440806329501">नेविगेशन का इतिहास बंद है</translation>
 <translation id="8788968922598763114">अभी बंद किया हुआ टैब खोलें</translation>
-<translation id="8795672590390389447">निजता सैंडबॉक्स</translation>
 <translation id="8798449543960971550">पढ़ा गया</translation>
 <translation id="8812260976093120287">कुछ वेबसाइटों पर, आप ऊपर समर्थित भुगतान ऐप्लिकेशन के ज़रिए अपने डिवाइस पर भुगतान कर सकते हैं.</translation>
 <translation id="881688628773363275">टैब कॉन्टेंट की झलक देखी नहीं जा सकती.</translation>

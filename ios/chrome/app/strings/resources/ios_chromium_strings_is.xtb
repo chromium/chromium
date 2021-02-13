@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="102360288709523007">Hjálpaðu til við að bæta Chromium með því að senda talnagögn um notkun og hrunskýrslur til Google.</translation>
-<translation id="1130979953299110755">Ef þú skráir þig út verða bókamerkin þín, ferillinn, aðgangsorðin og önnur gögn úr Chromium ekki lengur samstillt við Google reikninginn þinn.</translation>
 <translation id="1185134272377778587">Um Chromium</translation>
 <translation id="1257458525759135959">Til að vista myndir og láta Chromium bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Byrjaðu að nota Chromium skanna</translation>
 <translation id="8013573822802650211">Skráðu þig inn í öllum tækjunum þínum til að sjá flipana þína hvar sem þú notar Chromium</translation>
 <translation id="8073677936375100957">Viltu hreinsa Chromium gögnin þín úr þessu tæki?</translation>
-<translation id="8097322092271030751">Þar sem <ph name="HOSTED_DOMAIN" /> hefur umsjón með reikningnum þínum verður Chromium gögnunum þínum eytt úr þessu tæki þegar þú skráir þig út. Samstillt gögn verða áfram á Google reikningnum.</translation>
 <translation id="8175055321229419309">Ábending: <ph name="BEGIN_LINK" />Færðu Chromium í forritastikuna<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Til að gera Chromium að sjálfgefnum vafra skaltu opna stillingarnar, ýta á „Sjálfgefið vafraforrit“ og velja Chromium.</translation>
 <translation id="8240981428553046115">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>

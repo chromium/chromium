@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="2975121486251958312">শুধুমাত্র 'ছদ্মবেশী মোড' উপলভ্য রয়েছে</translation>
+<translation id="2982481275546140226">ডেটা মুছুন</translation>
 <translation id="298306318844797842">পেমেন্টের পদ্ধতি যোগ করুন...</translation>
 <translation id="2989805286512600854">নতুন ট্যাবে খুলুন</translation>
 <translation id="3037605927509011580">ইস!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5339316356165661760">সিঙ্ক চালু করুন</translation>
-<translation id="5351284593342054342">এই ডিভাইস থেকে মুছে দিন</translation>
 <translation id="5388358297987318779">ছবি খুলুন</translation>
 <translation id="5407969256130905701">পরিবর্তনগুলি বাতিল করুন</translation>
 <translation id="5409365236829784218">এই ফাউলটি খুলতে পারে এমন কোনো অ্যাপ্লিকেশন এখানে ডাউনলোড করা নেই৷</translation>
@@ -467,7 +467,6 @@
 <translation id="5948291296578561264">এর ফলে আপনি ফটো লাইব্রেরিতে ফটো সেভ করতে পারবেন।</translation>
 <translation id="5955891643922670672">অফলাইন ভার্সন দেখছেন</translation>
 <translation id="5957613098218939406">আরও বিকল্পগুলি</translation>
-<translation id="5961521066940389233">এই ডিভাইসে রাখুন</translation>
 <translation id="5964480694698977962">নতুন ছদ্মবেশী ট্যাব তৈরি করুন।</translation>
 <translation id="5965679971710331625">আপনি প্রবেশ করেছেন</translation>
 <translation id="5979837087407522202">পাসওয়ার্ড খুঁজুন</translation>
@@ -482,7 +481,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
-<translation id="6085282545406522838">সিঙ্ক করা ডেটা আপনার Google অ্যাকাউন্টেই থেকে যাবে।</translation>
 <translation id="6108923351542677676">সেটআপ চলছে...</translation>
 <translation id="6119050551270742952">বর্তমান ওয়েবপেজটি ছদ্মবেশী মোডে আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -606,7 +604,6 @@
 <translation id="7203585745079012652">আবার উত্তরগুলি বলে</translation>
 <translation id="7207383424303353046">নতুন: Chrome-কে আপনার ডিফল্ট ব্রাউজার অ্যাপ হিসেবে সেট করে এতে অটোমেটিক সাইট খুলুন। <ph name="BEGIN_LINK" />সেটিংস খুলুন<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">কার্ডের বিশেষ নামটি সঠিক নয়</translation>
-<translation id="722989956228261714">সাইন-আউট করুন…</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
 <translation id="7291368939935408496">পাসওয়ার্ড তৈরি করা হচ্ছে...</translation>
@@ -636,7 +633,6 @@
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
-<translation id="7558943807639707687">এই ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও অন্যান্য ডেটা নিয়ে কী করতে চান?</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>

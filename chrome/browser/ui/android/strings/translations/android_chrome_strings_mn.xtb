@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />-г хуваалцах боломжгүй байна</translation>
 <translation id="1477626028522505441">Серверийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
-<translation id="1497470209855416291">Туршилтыг идэвхгүй болгосон</translation>
 <translation id="1506061864768559482">Хайлтын хэрэгсэл</translation>
 <translation id="1513352483775369820">Хавчуурга болон веб түүх</translation>
 <translation id="1513858653616922153">Нууц үг устгах</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Хэрэглэгчийн нэрийг хуулах</translation>
 <translation id="1592864538817356322">Стандарт хамгаалалт:</translation>
 <translation id="1612196535745283361">Төхөөрөмжүүд хайхын тулд Chrome-д байршлын хандалт хэрэгтэй. <ph name="BEGIN_LINK" />Энэ төхөөрөмжид<ph name="END_LINK" /> байршлын хандалт унтраалттай байна.</translation>
-<translation id="1613577519914241527">Асаалттай үед вебсайтууд өөрсдийн сайтыг илүү хамааралтай болгохын тулд таныг тодорхойлдог хувийн мэдээллийг ашиглах боломжгүй болно. Тоглолтод цугларсан хүмүүсийн нэгэн адилаар сайтууд зөвхөн мянга мянган хэрэглэгч ижил сонирхолтой болохыг мэдэх боломжтой.\n\nТаны “цугларсан хүмүүс” нь таны зочилсон сайтуудад тулгуурладаг. Сурталчлагчид зөвхөн цугларсан хүмүүсийн бүхэлдээ зочилсон сайтуудыг харж болох хэдий ч таны хувиараа зочилсон сайтуудыг харахгүй.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Сонгосон 1 зүйлийг устгах}other{Сонгосон # зүйлийг устгах}}</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
 <translation id="164269334534774161">Та энэ хуудасны офлайн хуулбарыг <ph name="CREATION_TIME" />-с харж байна</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Дараагийн видеог үзэх</translation>
 <translation id="2074143993849053708">Туслахын дуут хайлтын зөвшөөрлийн ui-г хаасан</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />-ын <ph name="RESULT_NUMBER" /> илэрц байна</translation>
-<translation id="2083113399121613785">Tуршилтыг идэвхжүүлсэн</translation>
 <translation id="2096012225669085171">Төхөөрөмжүүдийг синк хийж хувийн болгох</translation>
 <translation id="2100273922101894616">Автоматаар нэвтэх</translation>
 <translation id="2100314319871056947">Текстийг жижиг хэсгээр хуваалцахыг оролдоно уу</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Google-с хүргэж буй Энгийн хуудас. Эх хуудсыг ачаалахын тулд товшино уу.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> чихтэй хуудсыг хаах</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />-д хавчуулсан</translation>
-<translation id="4465314970046116177">Нууцлалын sandbox нь хүмүүсийг гуравдагч талын күүки гэх мэт сайт хоорондын хяналтын механизмаас яваандаа хамгаалахын зэрэгцээ орчин үед эдгээр механизмаас хамааралтай веб контент, үйлчилгээг хадгалах шинэ технологийн багц юм. Chrome нь энэ шинэ технологийг хөгжүүлэхийн тулд вебсайт хөгжүүлэгчид, нийтлэгчид, сурталчлагчид болон бусад хөтөчтэй хамтран ажиллаж байна.</translation>
 <translation id="4472118726404937099">Төхөөрөмжүүдийг синк хийж хувийн болгохын тулд нэвтрээд синкийг асаана уу</translation>
 <translation id="447252321002412580">Chrome-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="4479972344484327217"><ph name="MODULE" />-г Chrome-д суулгаж байна…</translation>
@@ -502,7 +498,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4662373422909645029">Хоч тоо агуулж болохгүй</translation>
 <translation id="4663499661119906179">Танд зориулсан шилдэг сайт болон мэдээ нийтлэлүүдийг үзээрэй</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> хавчуурга устгасан</translation>
-<translation id="4665282149850138822"><ph name="NAME" />-г таны үндсэн дэлгэцэд нэмсэн</translation>
 <translation id="4668347365065281350">Күүки болон дотоодод хадгалсан бусад өгөгдлийг багтаасан сайтуудын хадгалсан бүх өгөгдөл</translation>
 <translation id="4684427112815847243">Бүгдийг sync хийх</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -591,6 +586,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> ойролцоох Bluetooth төхөөрөмжүүдийг скан хийх хүсэлтэй байна. Дараах төхөөрөмжүүд олдлоо:</translation>
 <translation id="5233638681132016545">Шинэ таб</translation>
+<translation id="5250483651202458397">Дэлгэцийн агшин. Хаахын тулд товшино уу.</translation>
 <translation id="526421993248218238">Энэ хуудсыг ачаалах боломжгүй байна</translation>
 <translation id="5271967389191913893">Татах гэж буй агуулгыг төхөөрөмж нээж чадахгүй байна.</translation>
 <translation id="5292796745632149097">Илгээх</translation>
@@ -746,7 +742,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 Жишээ нь: зарим веб хуудас тухайн хүсэлтэд таны өмнө нь зочилж байсан бусад веб хуудаснаас хамаарахгүйгээр зар сурталчилгаа үзүүлэх замаар хариу өгч болно. Ихэнх веб хуудас нь аюулгүй байдлыг сайжруулах, веб хуудасны мэдээлэл, зар, зөвлөгөөг харуулах, мөн тайлагнах статистик мэдээлэл гаргах зорилгоор таны хөтчийн мэдээллийг цуглуулан ашиглаж магадгүй.</translation>
 <translation id="624789221780392884">Шинэчлэлт хийхэд бэлэн</translation>
 <translation id="6255999984061454636">Агуулгын зөвлөмж</translation>
-<translation id="6266591733731644292">Нууцлалын sandbox-г олон газарт хараахан гаргаагүй байна. Энэ туршилтын хугацааны үеэр:\n<ph name="BEGIN_LIST_ITEM1" />Вебсайт болон апп хөгжүүлэгчид таны талаар тодорхойлох боломжтой өвөрмөц мэдээлэлд хандалгүйгээр хамааралтай туршлагыг үүсгэх чадамжийг турших боломжтой<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Хэрэглэгчид энэ хуудсан дээрх хяналтыг ашиглан туршилтаас татгалзах боломжтой.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Энэ хуудсыг хэвлэхэд алдаа гарсан байна. Та дахин ачаална уу.</translation>
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6292420053234093573">Chrome-г ашигласнаар та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна.</translation>
@@ -836,9 +831,9 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6767294960381293877">Таб хуваалцах төхөөрөмжийн жагсаалтыг хагас өндрөөр нээлээ.</translation>
 <translation id="6783942555455976443">Энэ хуудсыг дараа зочлохоор хадгалж, сануулагч аваарай</translation>
 <translation id="6811034713472274749">Хуудсыг харахад бэлэн байна</translation>
+<translation id="6813446258015311409">Chrome-д нэвтэрнэ үү, нээсэн.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, таб, сонгосон</translation>
-<translation id="6833996806551876956">Нууцлалын sandbox-н туршилт</translation>
 <translation id="6845325883481699275">Chrome-н аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="6846298663435243399">Ачаалж байна...</translation>
 <translation id="6850409657436465440">Таны таталт үргэлжилж байна</translation>
@@ -1035,6 +1030,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8156139159503939589">Та ямар хэлээр уншдаг вэ?</translation>
 <translation id="8168435359814927499">Агуулга</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл үлдсэн</translation>
+<translation id="8189750580333936930">Нууцлалын sandbox</translation>
 <translation id="8190358571722158785">1 өдөр үлдсэн</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8209050860603202033">Зургийг нээх</translation>
@@ -1070,7 +1066,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8442258441309440798">Түүх алга байна</translation>
 <translation id="8443209985646068659">Chrome-г шинэчлэх боломжгүй</translation>
 <translation id="8445448999790540984">Нууц үгийг экспорт хийх боломжгүй</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Синк хийсэн өгөгдлийг синкийн нэвтрэх үгээрээ шифрлэх</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> интернэтэд холбогдсон эсэхийг шалгана уу</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1096,6 +1091,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8583805026567836021">Бүртгэлийн өгөгдлийг цэвэрлэж байна</translation>
 <translation id="8587585930972369234">Хайхын тулд удаан дарна уу</translation>
 <translation id="860043288473659153">Карт эзэмшигчийн нэр</translation>
+<translation id="8602358303461588329">Chrome-д нэвтэрнэ үү, хаасан.</translation>
 <translation id="860282621117673749">Үнэ бууралтын сэрэмжлүүлэг</translation>
 <translation id="8616006591992756292">Таны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="8617240290563765734">Татаж авсан контент дахь санал болгож буй URL-г нээх үү?</translation>
@@ -1115,7 +1111,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8748850008226585750">Агуулгыг нуусан</translation>
 <translation id="8788265440806329501">Навигацын түүх хаалттай байна</translation>
 <translation id="8788968922598763114">Сүүлд хаасан чихтэй хуудсыг дахин нээх</translation>
-<translation id="8795672590390389447">Нууцлалын sandbox</translation>
 <translation id="8798449543960971550">Унших</translation>
 <translation id="8812260976093120287">Зарим веб хуудаст та төлбөр хийхдээ таны төхөөрөмжид дэмжсэн дээрх төлбөрийн аппыг ашиглах боломжтой.</translation>
 <translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>

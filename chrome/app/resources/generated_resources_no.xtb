@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Fullfør konfigureringen på telefonen din</translation>
 <translation id="1054153489933238809">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Oppdater <ph name="DEVICE_TYPE" /> innen én uke}other{Oppdater <ph name="DEVICE_TYPE" /> innen {NUM_WEEKS} uker}}</translation>
-<translation id="1055806300943943258">Søker etter Bluetooth og USB-enheter …</translation>
 <translation id="1056466516655540509">Oppdatert for <ph name="MINUTES" /> min. siden</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
 <translation id="1056898198331236512">Advarsel</translation>
@@ -1979,7 +1978,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3201422919974259695">Tilgjengelige USB-enheter vises her.</translation>
 <translation id="3202131003361292969">Bane</translation>
 <translation id="3202173864863109533">Lyden er slått av for denne fanen.</translation>
-<translation id="3202218848974251205">The Privacy Sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Sjekk nå</translation>
 <translation id="3208703785962634733">Ikke bekreftet</translation>
@@ -3138,6 +3136,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4538417792467843292">Slett ord</translation>
 <translation id="4538684596480161368">Blokkér alltid programtillegg som ikke er prosessisolert, på <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Installert av bedriftsinnstillingen.</translation>
+<translation id="4541123282641193691">Kunne ikke bekrefte kontoen din. Prøv igjen, eller start Chromebooken på nytt.</translation>
 <translation id="4541662893742891060">Kan ikke koble til denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
 <translation id="4541810033354695636">utvidet virkelighet</translation>
 <translation id="4542520061254486227">Les dataene dine på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -4164,6 +4163,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="574209121243317957">Stemmeleie</translation>
 <translation id="5742505912938664543">Når du legger til en sekundærkonto her, kan du bruke den til å surfe på nettet, laste ned apper og sjekke Gmail og andre Google-tjenester.</translation>
 <translation id="5746169159649715125">Lagre som PDF</translation>
+<translation id="5746261205461426123">Åpne veiledning for konfigurering</translation>
 <translation id="5747552184818312860">Utløper</translation>
 <translation id="5747785204778348146">Utvikler – ustabil</translation>
 <translation id="5747809636523347288">&amp;Lim inn og gå til <ph name="URL" /></translation>
@@ -5324,6 +5324,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="708278670402572152">Koble fra for å slå på skanning</translation>
 <translation id="7084321615353200053">Nettsteder kan be om å få bruke kameraet ditt (anbefales)</translation>
 <translation id="7085389578340536476">Vil du gi Chrome tillatelse til å spille inn lyd?</translation>
+<translation id="7085805695634549980">Kunne ikke koble til Google-tjenester. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Inkluder Chrome-loggfiler i arkivet.</translation>
 <translation id="7088434364990739311">Kunne ikke starte søk etter oppdateringer (feilkode <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Åpne og pakk ZIP-filer i Filer-appen.</translation>

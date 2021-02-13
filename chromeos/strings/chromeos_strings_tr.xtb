@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
+<translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. sayfa taranıyor %<ph name="PERCENTAGE_VALUE" /> tamamlandı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
-<translation id="3515615323037921860">Yazdırma İşleri</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
@@ -296,7 +296,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> Test</translation>
 <translation id="7769672763586021400">Model kimliği</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7819857487979277519">PSK (WPA veya RSN)</translation>

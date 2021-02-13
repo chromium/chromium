@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a problemas co servidor.</translation>
-<translation id="1497470209855416291">A proba está desactivada</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1513352483775369820">Marcadores e historial web</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
 <translation id="1612196535745283361">Chrome necesita acceder á localización para buscar dispositivos. O acceso á localización deste dispositivo está <ph name="BEGIN_LINK" />desactivado<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Cando teñas este servizo activado, os sitios web non poderán utilizar ningún dato que te identifique persoalmente para conseguir resultarche máis relevantes. Como acontece cunha multitude de asistentes a un concerto, os sitios só poden saber que hai milleiros de usuarios cun interese similar.\n\nA túa “multitude” será unha ou outra en función dos sitios que visites. Os anunciantes só poden ver que sitios visita esa multitude no seu conxunto, pero non cales visitas ti de maneira individual.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Ver vídeo seguinte</translation>
 <translation id="2074143993849053708">A interface de consentimento para a busca por voz a través do Asistente está pechada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2083113399121613785">A proba está activada</translation>
 <translation id="2096012225669085171">Sincroniza e personaliza o contido en todos os dispositivos</translation>
 <translation id="2100273922101894616">Inicio de sesión automático</translation>
 <translation id="2100314319871056947">Proba a compartir o texto dividíndoo en fragmentos máis pequenos</translation>
@@ -469,7 +466,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4440958355523780886">Páxina en modo básico ofrecida por Google. Toca para cargar a orixinal.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
-<translation id="4465314970046116177">O illamento de procesos de privacidade é un conxunto de novas tecnoloxías que servirá para protexer os usuarios dos mecanismos de seguimento en múltiples sitios, como as cookies de terceiros, ao tempo que salvagardará os servizos e o contido web que dependen deses mecanismos na actualidade. Para desenvolver esta nova tecnoloxía, Chrome colabora con programadores de sitios web, editores, anunciantes e outros navegadores.</translation>
 <translation id="4472118726404937099">Inicia sesión e activa a sincronización para personalizar todos os teus dispositivos e sincronizalos</translation>
 <translation id="447252321002412580">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para Chrome…</translation>
@@ -502,7 +498,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4662373422909645029">O alcume non pode ter números</translation>
 <translation id="4663499661119906179">Ver os principais sitios e historias recomendados para ti</translation>
 <translation id="4663756553811254707">Elimináronse <ph name="NUMBER_OF_BOOKMARKS" /> marcadores</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> engadiuse á túa pantalla de inicio</translation>
 <translation id="4668347365065281350">Todos os datos que almacenasen os sitios, como as cookies e outros datos gardados localmente</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}}</translation>
@@ -592,6 +587,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
+<translation id="5250483651202458397">Captura de pantalla. Toca para pechala.</translation>
 <translation id="526421993248218238">Non se puido cargar esta páxina</translation>
 <translation id="5271967389191913893">O dispositivo non pode abrir o contido que se debe descargar.</translation>
 <translation id="5292796745632149097">Enviar a</translation>
@@ -747,7 +743,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>
 <translation id="624789221780392884">Actualización lista</translation>
 <translation id="6255999984061454636">Suxestións de contido</translation>
-<translation id="6266591733731644292">O illamento de procesos de privacidade aínda está en fase de proba. Durante este período de proba:\n<ph name="BEGIN_LIST_ITEM1" />Os programadores de aplicacións e sitios web poden probar a crear experiencias relevantes sen acceder a información que te identifique de maneira única.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Os usuarios poden darse de baixa da proba cos controis desta páxina.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
@@ -837,9 +832,9 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6767294960381293877">A lista de dispositivos cos que compartir unha pestana está aberta a media pantalla.</translation>
 <translation id="6783942555455976443">Garda esta páxina para acceder a ela máis tarde e recibe un recordatorio</translation>
 <translation id="6811034713472274749">A páxina está lista para vela</translation>
+<translation id="6813446258015311409">Panel Iniciar sesión en Chrome (aberto).</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, pestana, seleccionada</translation>
-<translation id="6833996806551876956">Proba de illamento de procesos de privacidade</translation>
 <translation id="6845325883481699275">Axudar a mellorar a seguranza de Chrome</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">A descarga aínda está en curso</translation>
@@ -1036,6 +1031,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8156139159503939589">Que idiomas sabes ler?</translation>
 <translation id="8168435359814927499">Contido</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
+<translation id="8189750580333936930">Illamento de procesos de privacidade</translation>
 <translation id="8190358571722158785">Queda 1 día</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8209050860603202033">Abrir imaxe</translation>
@@ -1071,7 +1067,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8442258441309440798">Non hai ningunha historia dispoñible</translation>
 <translation id="8443209985646068659">Non se actualiza Chrome</translation>
 <translation id="8445448999790540984">Non se puideron exportar os contrasinais</translation>
-<translation id="8447219758310755868">Camuflaxe no medio da multitude</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8466613982764129868">Asegúrate de que o dispositivo <ph name="TARGET_DEVICE_NAME" /> estea conectado a Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1097,6 +1092,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8583805026567836021">Borrando datos da conta</translation>
 <translation id="8587585930972369234">Mantén premido para buscar</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
+<translation id="8602358303461588329">Panel Iniciar sesión en Chrome (pechado).</translation>
 <translation id="860282621117673749">Alertas de baixada de prezos</translation>
 <translation id="8616006591992756292">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Queres abrir o URL específico suxerido no contido descargado?</translation>
@@ -1116,7 +1112,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8788265440806329501">O historial de navegación está pechado</translation>
 <translation id="8788968922598763114">Volver abrir a última pestana que se pechou</translation>
-<translation id="8795672590390389447">Illamento de procesos de privacidade</translation>
 <translation id="8798449543960971550">Lido</translation>
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>

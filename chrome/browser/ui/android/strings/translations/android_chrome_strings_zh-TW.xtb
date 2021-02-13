@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
-<translation id="1497470209855416291">試用功能已停用</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤與網頁記錄</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1592864538817356322">標準防護：</translation>
 <translation id="1612196535745283361">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK" />這個裝置的位置資訊存取權已關閉<ph name="END_LINK" />。</translation>
-<translation id="1613577519914241527">開啟這項功能後，網站將無法使用你的個人識別資訊為你提供更貼近需求的內容。對網站來說，你就像參加演唱會的群眾，因為網站只能知道有上千位使用者擁有類似興趣。\n\n至於你屬於哪一類「群眾」，則取決於你所造訪的網站。廣告客戶只能得知某一類群眾會造訪哪些網站，並不能掌握你所造訪的網站。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個選取的項目}other{移除 # 個選取的項目}}</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">觀看下一部影片</translation>
 <translation id="2074143993849053708">Google 助理語音搜尋的同意使用者介面已關閉</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
-<translation id="2083113399121613785">試用功能已啟用</translation>
 <translation id="2096012225669085171">讓多部裝置保持同步，並提供人化體驗</translation>
 <translation id="2100273922101894616">自動登入</translation>
 <translation id="2100314319871056947">請嘗試將要分享的文字分成多個片段</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">由 Google 提供的精簡版網頁。輕觸即可載入原始網頁。</translation>
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入「<ph name="FOLDER_NAME" />」</translation>
-<translation id="4465314970046116177">Privacy Sandbox 是一套防止跨網站追蹤的新技術，除了讓使用者不再受到第三方 Cookie 等跨網站追蹤機制影響，也讓目前仍須仰賴相關機制運作的網頁內容和服務得以持續提供。Chrome 正在與網站開發人員、發布商、廣告客戶和其他瀏覽器公司一起開發這項新技術。</translation>
 <translation id="4472118726404937099">如要進行同步處理並在所有裝置上享有個人化的體驗，請登入並開啟同步處理功能</translation>
 <translation id="447252321002412580">協助改善 Chrome 的功能與效能</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
 <translation id="4663499661119906179">查看你常用的網站和精選報導</translation>
 <translation id="4663756553811254707">已刪除 <ph name="NUMBER_OF_BOOKMARKS" /> 個書籤</translation>
-<translation id="4665282149850138822">「<ph name="NAME" />」已加入您的主畫面</translation>
 <translation id="4668347365065281350">網站儲存的所有資料，包括 Cookie 和其他儲存在本機上的資料</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
@@ -592,6 +587,7 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> 要求掃描附近的藍牙裝置。已找到下列裝置：</translation>
 <translation id="5233638681132016545">新增分頁</translation>
+<translation id="5250483651202458397">螢幕截圖。輕觸即可關閉。</translation>
 <translation id="526421993248218238">無法載入這個網頁</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
 <translation id="5292796745632149097">傳送到</translation>
@@ -747,7 +743,6 @@
 舉例來說，部分網站可能會以顯示廣告的方式回應這類要求，而這些廣告並非根據您所造訪的其他網站記錄而產生。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供更相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
 <translation id="624789221780392884">可進行更新</translation>
 <translation id="6255999984061454636">內容建議</translation>
-<translation id="6266591733731644292">Privacy Sandbox 尚未全面推出，以下是試用期注意事項：\n<ph name="BEGIN_LIST_ITEM1" />網站和應用程式開發人員可以嘗試在未取得使用者專屬識別資訊的情況下提供貼近個人需求的體驗。<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />使用者可以利用本頁面的控制項停止試用。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
@@ -837,9 +832,9 @@
 <translation id="6767294960381293877">要共用分頁的裝置清單已開啟，顯示在畫面下半部。</translation>
 <translation id="6783942555455976443">儲存這個頁面以便稍後閱讀並設定提醒</translation>
 <translation id="6811034713472274749">你可以瀏覽這個網頁了</translation>
+<translation id="6813446258015311409">登入 Chrome，帳戶挑選器已開啟。</translation>
 <translation id="6820686453637990663">信用卡驗證碼</translation>
 <translation id="6824899148643461612">「<ph name="TAB_TITLE" />」，分頁，已選取</translation>
-<translation id="6833996806551876956">Privacy Sandbox 試用期</translation>
 <translation id="6845325883481699275">協助改善 Chrome 安全性</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">下載作業仍在進行中</translation>
@@ -1036,6 +1031,7 @@
 <translation id="8156139159503939589">你看得懂哪些語言？</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8186512483418048923">還剩 <ph name="FILES" /> 個檔案</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">還剩 1 天</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
@@ -1071,7 +1067,6 @@
 <translation id="8442258441309440798">沒有任何報導</translation>
 <translation id="8443209985646068659">無法更新 Chrome</translation>
 <translation id="8445448999790540984">無法匯出密碼</translation>
-<translation id="8447219758310755868">群眾遮罩</translation>
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466613982764129868">請確認「<ph name="TARGET_DEVICE_NAME" />」已連上網際網路</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1097,6 +1092,7 @@
 <translation id="8583805026567836021">正在清除帳戶資料</translation>
 <translation id="8587585930972369234">按住即可搜尋</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
+<translation id="8602358303461588329">登入 Chrome，帳戶挑選器已關閉。</translation>
 <translation id="860282621117673749">降價快訊</translation>
 <translation id="8616006591992756292">你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="8617240290563765734">開啟這項下載內容中指定的建議網址？</translation>
@@ -1116,7 +1112,6 @@
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8788265440806329501">瀏覽記錄已關閉</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
-<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">讀取</translation>
 <translation id="8812260976093120287">在部分網站上，你可以在你的裝置上使用上述支援的付款應用程式付款。</translation>
 <translation id="881688628773363275">無法檢視分頁的預覽內容。</translation>

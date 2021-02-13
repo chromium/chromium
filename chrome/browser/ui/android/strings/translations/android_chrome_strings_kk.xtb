@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> бөлісу мүмкін емес</translation>
 <translation id="1477626028522505441">Сервердегі ақаулықтар себебінен <ph name="FILE_NAME" /> жүктелмеді.</translation>
-<translation id="1497470209855416291">Сынақ мерзімі өшірілген.</translation>
 <translation id="1506061864768559482">Іздеу жүйесі</translation>
 <translation id="1513352483775369820">Бетбелгілер мен веб-журнал</translation>
 <translation id="1513858653616922153">Құпия сөзді жою</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Пайдаланушы атын көшіру</translation>
 <translation id="1592864538817356322">Стандартты қорғау:</translation>
 <translation id="1612196535745283361">Құрылғыларды іздеу үшін Chrome жүйесіне орналасу орны деректеріне кіру рұқсаты қажет. Мұндай рұқсат <ph name="BEGIN_LINK" />бұл құрылғы үшін өшірілген<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Қосулы болса, веб-сайттар сіз туралы жеке ақпаратты өздерінің сайттарын жақсартуда пайдалана алмайды. Концерттегі көрермендер сияқты сайттар мыңдаған пайдаланушылардың ортақ қызығушылығы бар екенін ғана біле алады.\n\nСіздің "көрермендеріңіз" сіз кірген сайттарға негізделген. Жарнама берушілер жеке сіз кірген емес, көрермендер кірген сайттарды ғана көре алады.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Таңдалған 1 элементті өшіру}other{Таңдалған # элементті өшіру}}</translation>
 <translation id="1641113438599504367">Қауіпсіз шолу</translation>
 <translation id="164269334534774161">Осы беттің <ph name="CREATION_TIME" /> күнгі офлайн көшірмесі шығарылды</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Келесі бейнені көру</translation>
 <translation id="2074143993849053708">Assistant-ті дауыспен іздеуге пайдалану туралы келісім терезесі жабылған.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ішінен <ph name="RESULT_NUMBER" /> нәтиже</translation>
-<translation id="2083113399121613785">Сынақ мерзімі қосылған.</translation>
 <translation id="2096012225669085171">Барлық құрылғыларда синхрондау және жекелендіру</translation>
 <translation id="2100273922101894616">Автоматты кіру</translation>
 <translation id="2100314319871056947">Мәтін тым үлкен, аз-аздан бөлісіп көріңіз.</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Google бетті Lite нұсқасында ұсынды. Бастапқы нұсқасын жүктеу үшін түртіңіз.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> қойындысын жабу</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> бетбелгісі жасалды</translation>
-<translation id="4465314970046116177">Privacy Sandbox – адамдарды қолданушылардың әртүрлі сайттардағы әрекетін бақылайтын механизмдерден (мысалы, үшінші тарап cookie файлдары) қорғайтын жаңа технологиялар жиынтығы. Алайда бұл механизмдерге тәуелді веб мазмұн мен қызметтер сақталады. Осы технологияны дамыту үшін Chrome веб-сайт әзірлеушілерімен, жариялаушылармен, жарнама берушілермен және басқа браузерлермен бірге жұмыс істеуде.</translation>
 <translation id="4472118726404937099">Барлық құрылғыларда синхрондау және жекелендіру үшін синхрондау функциясын қосыңыз</translation>
 <translation id="447252321002412580">Chrome мүмкіндіктері мен жұмысын жақсартуға көмектесу</translation>
 <translation id="4479972344484327217">Chrome браузері үшін <ph name="MODULE" /> орнатылуда…</translation>
@@ -502,7 +498,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="4662373422909645029">Лақап атта сан болмауы керек</translation>
 <translation id="4663499661119906179">Көп қолданылатын сайттар мен қызықты жаңалықтарды көріңіз.</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> бетбелгі жойылды</translation>
-<translation id="4665282149850138822">Негізгі экранға <ph name="NAME" /> қосылды</translation>
 <translation id="4668347365065281350">Сайттар сақтаған барлық деректер, соның ішінде cookie файлдары және жергілікті сақталған басқа деректер</translation>
 <translation id="4684427112815847243">Барлығын синхрондау</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -592,6 +587,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> маңайдағы Bluetooth құрылғыларын іздеуде. Мына құрылғылар табылды:</translation>
 <translation id="5233638681132016545">Жаңа қойынды</translation>
+<translation id="5250483651202458397">Скриншот. Жабу үшін түртіңіз.</translation>
 <translation id="526421993248218238">Бұл бет жүктелмеді</translation>
 <translation id="5271967389191913893">Құрылғы жүктелетін мазмұнды аша алмайды.</translation>
 <translation id="5292796745632149097">Қойынды жіберілетін құрылғы:</translation>
@@ -747,7 +743,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 Мысалы, кейбір веб-сайттар бұл сұрауға сіз кірген басқа веб-сайттарға негізделмеген жарнамаларды көрсету арқылы жауап беруі мүмкін. Көптеген веб-сайттар әлі де шолу деректеріңізді жинап, пайдаланатын болады (мысалы, қауіпсіздікті жақсарту, мазмұн, жарнама және ұсыныстарды қамтамасыз ету және статистикалық есептерді құру мақсатында).</translation>
 <translation id="624789221780392884">Жаңарту дайын</translation>
 <translation id="6255999984061454636">Мазмұн ұсыныстары</translation>
-<translation id="6266591733731644292">Privacy Sandbox әлі көпшілікке арналып шыға қойған жоқ. Осы сынақ мерзімі кезінде:\n<ph name="BEGIN_LIST_ITEM1" />Веб-сайттар мен қолданба әзірлеушілері жеке тұлғаңызды анықтайтын ақпаратты пайдаланбай-ақ сәйкес келетін мазмұн ұсынуды сынап көре алады.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Пайдаланушылар осы беттегі басқару құралдары арқылы сынақ мерзімінен бас тарта алады.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Бетті басып шығаруда қиындық туындады. Тағы да қайталап көріңіз.</translation>
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6292420053234093573">Chrome браузерін пайдалану арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" /> және <ph name="BEGIN_LINK2" />Google Chrome және Chrome OS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісім бересіз.</translation>
@@ -837,9 +832,9 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6767294960381293877">Қойынды жіберілетін құрылғылар тізімі жарты экранға ашылған.</translation>
 <translation id="6783942555455976443">Бұл бетті кейінірек көруге сақтап, еске салғыш алыңыз.</translation>
 <translation id="6811034713472274749">Бетті көре беруге болады.</translation>
+<translation id="6813446258015311409">Chrome-ға кіру, ашық.</translation>
 <translation id="6820686453637990663">CVC коды</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, қойынды, таңдалды</translation>
-<translation id="6833996806551876956">Privacy Sandbox сынақ мерзімі</translation>
 <translation id="6845325883481699275">Chrome қауіпсіздігін жетілдіруге көмектесу</translation>
 <translation id="6846298663435243399">Жүктелуде…</translation>
 <translation id="6850409657436465440">Жүктеп алу әлі аяқталған жоқ</translation>
@@ -1036,6 +1031,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8156139159503939589">Қай тілде оқисыз?</translation>
 <translation id="8168435359814927499">Мазмұн</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл қалды</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 күн қалды</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="8209050860603202033">Кескінді ашу</translation>
@@ -1071,7 +1067,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8442258441309440798">Жаңалықтар жоқ</translation>
 <translation id="8443209985646068659">Chrome жаңартылмайды</translation>
 <translation id="8445448999790540984">Құпия сөздерді экспорттау мүмкін емес</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Синхрондалған деректерді өзіңіздің синхрондау құпия фразаңызбен шифрлау</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> құрылғысы интернетке қосулы екенін тексеріңіз.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1097,6 +1092,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8583805026567836021">Есептік жазба деректерін өшіру</translation>
 <translation id="8587585930972369234">Іздеу үшін түртіп ұстап тұрыңыз</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
+<translation id="8602358303461588329">Chrome-ға кіру, жабық.</translation>
 <translation id="860282621117673749">Бағаның төмендеуі туралы хабарландырулар</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> мекенжайында Google есептік жазбасымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
 <translation id="8617240290563765734">Жүктелген мазмұндағы ұсынылған URL мекенжайын ашу қажет пе?</translation>
@@ -1116,7 +1112,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8748850008226585750">Мазмұны жасырылған</translation>
 <translation id="8788265440806329501">Навигация тарихы жабық.</translation>
 <translation id="8788968922598763114">Соңғы жабылған қойындыны қайта ашу</translation>
-<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Оқу</translation>
 <translation id="8812260976093120287">Кейбір вебсайттарда құрылғыдан жоғарыдағы қолдауға ие төлем қолданбаларымен төлей аласыз.</translation>
 <translation id="881688628773363275">"Алдын ала қарау" қойындысының мазмұнын көру мүмкін емес.</translation>

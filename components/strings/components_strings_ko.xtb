@@ -80,7 +80,6 @@
     &lt;li&gt;웹사이트 소유자에게 문의합니다.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">조직에서 관리하지 않는 사이트에 내 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
-<translation id="1259144770381827039">세부정보 보기</translation>
 <translation id="1263231323834454256">읽기 목록</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         기기에 저장되지 않는 활동 내역:
@@ -1361,7 +1360,6 @@
 <translation id="6290238015253830360">추천 콘텐츠가 여기에 표시됩니다.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome의 Google 어시스턴트 중지하는 중</translation>
-<translation id="6304463939629872728">결제 수단:</translation>
 <translation id="6305205051461490394"><ph name="URL" />에 연결할 수 없습니다.</translation>
 <translation id="6312113039770857350">웹페이지를 사용할 수 없음</translation>
 <translation id="6321917430147971392">DNS 설정 확인</translation>
@@ -1391,7 +1389,6 @@
 <translation id="6406765186087300643">C0(봉투)</translation>
 <translation id="6409754798200046165">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />의 만료일과 CVC를 입력하세요.</translation>
-<translation id="6410774864568266108">Google Pay 쿠폰을 잊지 마세요</translation>
 <translation id="6415778972515849510">Chromium을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
 <translation id="6423385022588644828">지금부터 Touch ID를 사용하여 빠르게 카드를 확인합니다.</translation>
 <translation id="6425092077175753609">머티리얼</translation>
@@ -1828,6 +1825,7 @@
 <translation id="8202370299023114387">충돌</translation>
 <translation id="8206978196348664717">Prc4(봉투)</translation>
 <translation id="8211406090763984747">이 사이트는 보안 연결(HTTPS)이 사용되었습니다.</translation>
+<translation id="8213464188712611711">메모리</translation>
 <translation id="8218327578424803826">지정된 위치:</translation>
 <translation id="8220146938470311105">C7/C6(봉투)</translation>
 <translation id="8221250263817408492">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>

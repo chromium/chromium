@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Dokončete nastavení na telefonu</translation>
 <translation id="1054153489933238809">Otevřít původní &amp;obrázek na nové kartě</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Do 1 týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}few{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_WEEKS} týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
-<translation id="1055806300943943258">Vyhledávání zařízení připojených pomocí rozhraní Bluetooth a USB...</translation>
 <translation id="1056466516655540509">Aktualizováno před <ph name="MINUTES" /> min</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1056898198331236512">Upozornění</translation>
@@ -1983,7 +1982,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Zde se budou zobrazovat dostupná zařízení USB.</translation>
 <translation id="3202131003361292969">Cesta</translation>
 <translation id="3202173864863109533">Zvuk této karty je vypnut.</translation>
-<translation id="3202218848974251205">Izolovaný prostor ochrany soukromí</translation>
 <translation id="3208321278970793882">Aplikace</translation>
 <translation id="3208584281581115441">Zkontrolovat</translation>
 <translation id="3208703785962634733">Nepotvrzeno</translation>
@@ -3143,6 +3141,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4538417792467843292">Smazat slovo</translation>
 <translation id="4538684596480161368">Vždy blokovat rozbalené pluginy u hostitele <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Nainstalováno podnikovými zásadami.</translation>
+<translation id="4541123282641193691">Účet se nepodařilo ověřit. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="4541662893742891060">Propojení s tímto profilem se nezdařilo. Se žádostmi o technickou podporu se obracejte na svého operátora.</translation>
 <translation id="4541810033354695636">rozšířená realita</translation>
 <translation id="4542520061254486227">Čtení vašich dat na webech <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
@@ -4169,6 +4168,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="574209121243317957">Výška</translation>
 <translation id="5742505912938664543">Když sem přidáte sekundární účet, můžete pomocí něj procházet web, stahovat aplikace, kontrolovat svůj Gmail a další služby Google.</translation>
 <translation id="5746169159649715125">Uložit jako PDF</translation>
+<translation id="5746261205461426123">Otevřít průvodce nastavením</translation>
 <translation id="5747552184818312860">Konec platnosti</translation>
 <translation id="5747785204778348146">Pro vývojáře – nestabilní</translation>
 <translation id="5747809636523347288">Vl&amp;ožit a přejít na adresu <ph name="URL" /></translation>
@@ -5329,6 +5329,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="708278670402572152">Chcete-li povolit vyhledávání, odpojte zařízení od sítě</translation>
 <translation id="7084321615353200053">Weby mohou žádat o použití fotoaparátu (doporučeno)</translation>
 <translation id="7085389578340536476">Povolit Chromu zaznamenávat zvuk?</translation>
+<translation id="7085805695634549980">Ke službám Google se nelze připojit. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Zahrnout do archivu soubory protokolů Chromu.</translation>
 <translation id="7088434364990739311">Kontrolu aktualizace se nepodařilo spustit (kód chyby <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – otevírejte a vytvářejte soubory ZIP v aplikaci Soubory.</translation>

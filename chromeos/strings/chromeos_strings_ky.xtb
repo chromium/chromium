@@ -103,7 +103,6 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет скандалууда. <ph name="PERCENTAGE_VALUE" />% бүттү.</translation>
 <translation id="3459509316159669723">Басып чыгаруу</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
-<translation id="3515615323037921860">Басып чыгаруу тапшырмалары</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
@@ -280,6 +279,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> тарабынан башкарылат.</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC дареги</translation>
@@ -296,7 +296,6 @@
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Циклдердин саны</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> сыноосу</translation>
 <translation id="7769672763586021400">Үлгү ID'си</translation>
 <translation id="7805768142964895445">Статусу</translation>
 <translation id="7819857487979277519">PSK (WPA же RSN)</translation>

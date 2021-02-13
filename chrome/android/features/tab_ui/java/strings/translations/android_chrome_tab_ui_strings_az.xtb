@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> tab qrupunu <ph name="NUMBER_OF_TABS" /> tab ilə genişləndirin.</translation>
 <translation id="2977480621796371840">Qrupdan çıxarın</translation>
+<translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="3940195383040445971">Tablarda qiymətləri izləyin</translation>

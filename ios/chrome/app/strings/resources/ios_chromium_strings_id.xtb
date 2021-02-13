@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="102360288709523007">Bantu penyempurnaan Chromium dengan mengirimkan statistik penggunaan dan laporan kerusakan ke Google.</translation>
-<translation id="1130979953299110755">Jika Anda logout, bookmark, histori, sandi, dan data Chromium lainnya tidak akan lagi disinkronkan dengan Akun Google Anda.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chromium menambahkannya ke galeri foto Anda</translation>
 <translation id="1361748954329991663">Versi Chromium sudah usang. Jika tidak tersedia update di <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mungkin saja perangkat Anda tidak lagi mendukung versi baru Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Mulai menggunakan pemindai Chromium</translation>
 <translation id="8013573822802650211">Untuk melihat tab Chromium Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="8073677936375100957">Hapus data Chromium Anda dari perangkat ini?</translation>
-<translation id="8097322092271030751">Karena akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, data Chromium Anda akan dihapus dari perangkat ini jika Anda logout. Data yang disinkronkan akan tetap berada di Akun Google Anda.</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Pindahkan Chromium ke dok<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Agar Chromium menjadi browser default Anda, Buka Setelan, ketuk Aplikasi Browser Default, lalu pilih Chromium.</translation>
 <translation id="8240981428553046115">Chromium tidak dapat memeriksa update. Coba lagi nanti.</translation>

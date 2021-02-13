@@ -197,6 +197,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv igjen senere.</translation>
 <translation id="2975121486251958312">Kun inkognitomodus er tilgjengelig</translation>
+<translation id="2982481275546140226">Slett data</translation>
 <translation id="298306318844797842">Legg til betalingsmåte …</translation>
 <translation id="2989805286512600854">Åpne i ny fane</translation>
 <translation id="3037605927509011580">Æsj!</translation>
@@ -410,7 +411,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5339316356165661760">Slå på synkronisering</translation>
-<translation id="5351284593342054342">Fjern fra denne enheten</translation>
 <translation id="5388358297987318779">Åpne bildet</translation>
 <translation id="5407969256130905701">Forkast endringer</translation>
 <translation id="5409365236829784218">Ingen av de installerte appene kan åpne denne filen.</translation>
@@ -466,7 +466,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5948291296578561264">Da kan du lagre bilder i bildebiblioteket ditt.</translation>
 <translation id="5955891643922670672">Du ser en versjon uten nett</translation>
 <translation id="5957613098218939406">Flere alternativer</translation>
-<translation id="5961521066940389233">Behold på denne enheten</translation>
 <translation id="5964480694698977962">Åpne en ny inkognitofane.</translation>
 <translation id="5965679971710331625">Du er pålogget</translation>
 <translation id="5979837087407522202">Søk etter passord</translation>
@@ -481,7 +480,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
 <translation id="6066301408025741299">Trykk for å avbryte.</translation>
-<translation id="6085282545406522838">Du beholder de synkroniserte dataene i Google-kontoen din.</translation>
 <translation id="6108923351542677676">Konfigurasjon pågår …</translation>
 <translation id="6119050551270742952">Den gjeldende nettsiden er på inkognito</translation>
 <translation id="6122191549521593678">Pålogget</translation>
@@ -605,7 +603,6 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="7203585745079012652">Svar med tale</translation>
 <translation id="7207383424303353046">Nyhet: Åpne nettsteder i Chrome automatisk ved å angi den som standard nettleserapp. <ph name="BEGIN_LINK" />Åpne Innstillinger<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ugyldig kallenavn på kortet</translation>
-<translation id="722989956228261714">Logg av…</translation>
 <translation id="7265758999917665941">Aldri for dette nettstedet</translation>
 <translation id="7272437679830969316">Kan ikke bekrefte identiteten din. Passordet er ikke kopiert.</translation>
 <translation id="7291368939935408496">Klargjør passordene …</translation>
@@ -635,7 +632,6 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="7554791636758816595">Ny fane</translation>
-<translation id="7558943807639707687">Hva vil du gjøre med bokmerkene, loggen og andre data på denne enheten?</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7583004045319035904">Bruk <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> for å låse opp inkognitofanene dine.</translation>
 <translation id="7600965453749440009">Oversett aldri <ph name="LANGUAGE" /></translation>

@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1450753235335490080">แชร์<ph name="CONTENT_TYPE" />ไม่สำเร็จ</translation>
 <translation id="1477626028522505441">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเซิร์ฟเวอร์มีปัญหา</translation>
-<translation id="1497470209855416291">ปิดช่วงทดลองใช้อยู่</translation>
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
 <translation id="1513352483775369820">บุ๊กมาร์กและประวัติเว็บ</translation>
 <translation id="1513858653616922153">ลบรหัสผ่าน</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">คัดลอกชื่อผู้ใช้</translation>
 <translation id="1592864538817356322">การปกป้องแบบมาตรฐาน:</translation>
 <translation id="1612196535745283361">Chrome ต้องมีสิทธิ์เข้าถึงตำแหน่งเพื่อสแกนหาอุปกรณ์ ตัวเลือกสิทธิ์เข้าถึงตำแหน่ง<ph name="BEGIN_LINK" />สำหรับอุปกรณ์เครื่องนี้ปิดอยู่<ph name="END_LINK" /></translation>
-<translation id="1613577519914241527">เมื่อเปิด เว็บไซต์จะไม่สามารถนำข้อมูลที่ระบุตัวตนของคุณได้มาใช้ในการปรับเนื้อหาให้เกี่ยวข้องมากขึ้น เว็บไซต์จะทราบแต่เพียงว่าผู้ใช้หลายพันคนมีความสนใจที่คล้ายกัน เช่นเดียวกับผู้คนจำนวนมากในคอนเสิร์ต\n\n"ผู้คนจำนวนมาก" นี้ระบุได้จากเว็บไซต์ที่คุณเคยเข้าชม ผู้ลงโฆษณาจะเห็นเพียงเว็บไซต์ที่ผู้คนจำนวนมากเข้าชม ไม่ใช่เว็บไซต์ที่คุณเป็นผู้เข้าชม</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{นำ 1 รายการที่เลือกออก}other{นำ # รายการที่เลือกออก}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">คุณกำลังดูสำเนาออฟไลน์ของหน้านี้จากวันที่ <ph name="CREATION_TIME" /></translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">ดูวิดีโอถัดไป</translation>
 <translation id="2074143993849053708">UI คำยินยอมให้ค้นหาด้วยเสียงของ Assistant ที่ปิดอยู่</translation>
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
-<translation id="2083113399121613785">เปิดช่วงทดลองใช้อยู่</translation>
 <translation id="2096012225669085171">ซิงค์และปรับแต่งในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="2100273922101894616">ลงชื่อเข้าใช้อัตโนมัติ</translation>
 <translation id="2100314319871056947">ลองแชร์ข้อความโดยแบ่งเป็นส่วนเล็กๆ หลายส่วน</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">หน้าเวอร์ชัน Lite จัดเตรียมโดย Google แตะเพื่อโหลดต้นฉบับ</translation>
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
-<translation id="4465314970046116177">แซนด์บ็อกซ์ความเป็นส่วนตัวเป็นเทคโนโลยีชุดใหม่ซึ่งในที่สุดจะปกป้องผู้ใช้จากกลไกการติดตามข้ามเว็บไซต์ เช่น คุกกี้ของบุคคลที่สาม ในขณะที่คงเนื้อหาเว็บและบริการต่างๆ ที่อาศัยกลไกเหล่านั้นในปัจจุบัน Chrome กำลังทำงานร่วมกับนักพัฒนาเว็บไซต์ ผู้เผยแพร่โฆษณา ผู้ลงโฆษณา และเบราว์เซอร์อื่นๆ เพื่อพัฒนาเทคโนโลยีใหม่นี้</translation>
 <translation id="4472118726404937099">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="447252321002412580">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="4479972344484327217">กำลังติดตั้ง <ph name="MODULE" /> สำหรับ Chrome…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">ชื่อเล่นต้องไม่มีตัวเลข</translation>
 <translation id="4663499661119906179">ดูเว็บไซต์ยอดนิยมและเรื่องราวสำหรับคุณ</translation>
 <translation id="4663756553811254707">ลบบุ๊กมาร์ก <ph name="NUMBER_OF_BOOKMARKS" /> รายการแล้ว</translation>
-<translation id="4665282149850138822">เพิ่ม <ph name="NAME" /> ลงในหน้าแรกแล้ว</translation>
 <translation id="4668347365065281350">ข้อมูลทั้งหมดที่เว็บไซต์จัดเก็บไว้ ซึ่งรวมถึงคุกกี้และข้อมูลอื่นๆ ที่จัดเก็บไว้ในเครื่อง</translation>
 <translation id="4684427112815847243">ซิงค์ทุกอย่าง</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}}</translation>
@@ -748,7 +743,6 @@
 ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณเพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา โฆษณา และคำแนะนำ และเพื่อสร้างสถิติในการรายงาน เป็นต้น</translation>
 <translation id="624789221780392884">พร้อมอัปเดต</translation>
 <translation id="6255999984061454636">การแนะนำเนื้อหา</translation>
-<translation id="6266591733731644292">แซนด์บ็อกซ์ความเป็นส่วนตัวยังไม่ได้เปิดตัวในวงกว้าง ในระยะทดลองนี้\n<ph name="BEGIN_LIST_ITEM1" />นักพัฒนาเว็บไซต์และแอปจะลองใช้ความสามารถนี้เพื่อสร้างประสบการณ์การใช้งานที่เกี่ยวข้องโดยไม่เข้าถึงข้อมูลที่ระบุตัวตนของคุณได้<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />ผู้ใช้สามารถเลือกไม่เข้าร่วมช่วงทดลองใช้นี้ได้จากส่วนควบคุมในหน้านี้<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6292420053234093573">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
@@ -841,7 +835,6 @@
 <translation id="6813446258015311409">ลงชื่อเข้าใช้ Chrome เปิดอยู่</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">เลือกแท็บ <ph name="TAB_TITLE" /> แล้ว</translation>
-<translation id="6833996806551876956">ช่วงทดลองใช้แซนด์บ็อกซ์ความเป็นส่วนตัว</translation>
 <translation id="6845325883481699275">ช่วยปรับปรุงความปลอดภัยของ Chrome</translation>
 <translation id="6846298663435243399">กำลังโหลด…</translation>
 <translation id="6850409657436465440">ระบบยังดาวน์โหลดอยู่</translation>
@@ -1038,6 +1031,7 @@
 <translation id="8156139159503939589">คุณอ่านภาษาใดได้บ้าง</translation>
 <translation id="8168435359814927499">เนื้อหา</translation>
 <translation id="8186512483418048923">เหลืออีก <ph name="FILES" /> ไฟล์</translation>
+<translation id="8189750580333936930">แซนด์บ็อกซ์ความเป็นส่วนตัว</translation>
 <translation id="8190358571722158785">เหลือ 1 วัน</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8209050860603202033">เปิดรูปภาพ</translation>
@@ -1073,7 +1067,6 @@
 <translation id="8442258441309440798">ไม่มีเรื่องราว</translation>
 <translation id="8443209985646068659">อัปเดต Chrome ไม่ได้</translation>
 <translation id="8445448999790540984">ส่งออกรหัสผ่านไม่ได้</translation>
-<translation id="8447219758310755868">คราวด์มาสกิง</translation>
 <translation id="8461694314515752532">เข้ารหัสลับข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466613982764129868">ตรวจสอบว่า <ph name="TARGET_DEVICE_NAME" /> เชื่อมต่ออินเทอร์เน็ตอยู่</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1119,7 +1112,6 @@
 <translation id="8748850008226585750">เนื้อหาถูกซ่อนไว้</translation>
 <translation id="8788265440806329501">ประวัติการนำทางปิดอยู่</translation>
 <translation id="8788968922598763114">เปิดแท็บที่เพิ่งปิดอีกครั้ง</translation>
-<translation id="8795672590390389447">แซนด์บ็อกซ์ความเป็นส่วนตัว</translation>
 <translation id="8798449543960971550">อ่านแล้ว</translation>
 <translation id="8812260976093120287">ในบางเว็บไซต์ คุณสามารถชำระเงินด้วยแอปชำระเงินที่รองรับด้านบนในอุปกรณ์ของคุณ</translation>
 <translation id="881688628773363275">ดูเนื้อหาในแท็บตัวอย่างไม่ได้</translation>

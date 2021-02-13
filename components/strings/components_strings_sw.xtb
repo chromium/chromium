@@ -80,7 +80,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
     &lt;li&gt;Wasiliana na mmiliki wa tovuti.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Umeweka nenosiri kwenye tovuti ambayo haidhibitiwi na shirika lako. Ili ulinde akaunti yako, usitumie tena nenosiri lako kwenye tovuti na programu zingine.</translation>
-<translation id="1259144770381827039">Angalia maelezo.</translation>
 <translation id="1263231323834454256">Orodha ya kusoma</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Shughuli ambazo hazitahifadhiwa kwenye kifaa hiki:
@@ -1373,7 +1372,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6290238015253830360">Makala unayopendekezewa yataonekana hapa</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Programu ya Mratibu wa Google katika Chrome inaacha kufanya kazi</translation>
-<translation id="6304463939629872728">Nunua kwa kutumia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> haiwezi kufikiwa.</translation>
 <translation id="6312113039770857350">Ukurasa wa wavuti haupatikani</translation>
 <translation id="6321917430147971392">Angalia mipangilio yako ya DNS</translation>
@@ -1403,7 +1401,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6406765186087300643">C0 (Bahasha)</translation>
 <translation id="6409754798200046165">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chrome inapendekeza ubadilishe nenosiri lako sasa.</translation>
 <translation id="6410264514553301377">Weka tarehe ya mwisho wa matumizi na CVC ya <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Usisahau ofa yako ya Google Pay</translation>
 <translation id="6415778972515849510">Chromium inaweza kukusaidia kulinda Akaunti yako ya Google na kubadilisha nenosiri lako.</translation>
 <translation id="6423385022588644828">Thibitisha kadi zako kwa haraka zaidi ukitumia Touch ID kuanzia sasa</translation>
 <translation id="6425092077175753609">Usanifu bora</translation>
@@ -1840,6 +1837,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8202370299023114387">Mgogoro</translation>
 <translation id="8206978196348664717">Prc4 (Bahasha)</translation>
 <translation id="8211406090763984747">Muunganisho ni salama</translation>
+<translation id="8213464188712611711">Hifadhi</translation>
 <translation id="8218327578424803826">Mahali Palipohawilishwa:</translation>
 <translation id="8220146938470311105">C7/C6 (Bahasha)</translation>
 <translation id="8221250263817408492">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chromium inapendekeza uende kwenye <ph name="WEBSITE_1" /> na tovuti zingine unakotumia nenosiri hili na ulibadilishe sasa.</translation>

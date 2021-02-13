@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="2969979262385602596">ورود به سیستم انجام نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="2975121486251958312">فقط «حالت ناشناس» دردسترس است</translation>
+<translation id="2982481275546140226">پاک کردن داده‌ها</translation>
 <translation id="298306318844797842">افزودن روش پرداخت…</translation>
 <translation id="2989805286512600854">باز کردن در برگهٔ جدید</translation>
 <translation id="3037605927509011580">اوه، نه!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5339316356165661760">روشن کردن همگام‌سازی</translation>
-<translation id="5351284593342054342">حذف از این دستگاه</translation>
 <translation id="5388358297987318779">بازکردن تصویر</translation>
 <translation id="5407969256130905701">صرف‌نظر کردن از تغییرات</translation>
 <translation id="5409365236829784218">برنامه‌ای که بتواند این فایل را باز کند در سیستم نصب نشده است.</translation>
@@ -466,7 +466,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5948291296578561264">با این کار می‌توانید عکس‌ها را در کتابخانه عکستان ذخیره کنید.</translation>
 <translation id="5955891643922670672">درحال مشاهده نسخه آفلاین</translation>
 <translation id="5957613098218939406">گزینه‌های بیشتر</translation>
-<translation id="5961521066940389233">در این دستگاه حفظ شود</translation>
 <translation id="5964480694698977962">ایجاد برگه ناشناس جدید</translation>
 <translation id="5965679971710331625">در سیستم هستید</translation>
 <translation id="5979837087407522202">جستجوی گذرواژه‌ها</translation>
@@ -481,7 +480,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
 <translation id="6066301408025741299">برای لغو ضربه بزنید.</translation>
-<translation id="6085282545406522838">‏داده‌های همگام‌سازی‌شده در «حساب Google» شما باقی خواهد ماند.</translation>
 <translation id="6108923351542677676">تنظیم در حال انجام است...</translation>
 <translation id="6119050551270742952">صفحه وب کنونی در حالت ناشناس است</translation>
 <translation id="6122191549521593678">آنلاین</translation>
@@ -605,7 +603,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7203585745079012652">پاسخ گفتاری</translation>
 <translation id="7207383424303353046">‏جدید: Chrome را به‌عنوان برنامه مرورگر پیش‌فرض تنظیم کنید تا سایت‌ها به‌طور خودکار در آن باز شوند. <ph name="BEGIN_LINK" />باز کردن تنظیمات<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">نام مستعار کارت نامعتبر است</translation>
-<translation id="722989956228261714">خروج از سیستم…</translation>
 <translation id="7265758999917665941">هرگز برای این سایت</translation>
 <translation id="7272437679830969316">نمی‌توانیم هویتتان را به تأیید برسانیم. گذرواژه کپی نشد.</translation>
 <translation id="7291368939935408496">درحال آماده‌سازی گذرواژه‌ها…</translation>
@@ -635,7 +632,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
 <translation id="7554791636758816595">برگهٔ جدید</translation>
-<translation id="7558943807639707687">می‌خواهید با نشانک‌ها، سابقه، و داده‌های دیگر در این دستگاه چه کار کنید؟</translation>
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="7583004045319035904">برای باز کردن قفل «برگه‌های ناشناس» از <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> استفاده کنید.</translation>
 <translation id="7600965453749440009">هرگز <ph name="LANGUAGE" /> ترجمه نشود</translation>

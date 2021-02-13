@@ -80,7 +80,6 @@
     &lt;li&gt;با مالک وب‌سایت تماس بگیرید.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">گذرواژه‌تان را در سایتی که توسط سازمانتان مدیریت نمی‌شود وارد کردید. برای محافظت از حسابتان، از گذرواژه‌تان در سایر برنامه‌ها و سایت‌ها مجدداً استفاده نکنید.</translation>
-<translation id="1259144770381827039">جزئیات را ببینید.</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         فعالیتی که در این دستگاه نمی‌ماند:
@@ -1372,7 +1371,6 @@
 <translation id="6290238015253830360">مقاله‌های پیشنهادی شما در اینجا نشان داده می‌شوند</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">‏توقف «دستیار Google» در Chrome</translation>
-<translation id="6304463939629872728">تسویه‌حساب با</translation>
 <translation id="6305205051461490394">دسترسی به <ph name="URL" /> امکان‌پذیر نیست.</translation>
 <translation id="6312113039770857350">صفحه وب در دسترس نیست</translation>
 <translation id="6321917430147971392">‏تنظیمات DNS خودتان را بررسی کنید</translation>
@@ -1402,7 +1400,6 @@
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="6410264514553301377">‏CVC‏ و تاریخ انقضای <ph name="CREDIT_CARD" /> را وارد کنید</translation>
-<translation id="6410774864568266108">‏پیشنهاد Google Pay خودتان را فراموش نکنید</translation>
 <translation id="6415778972515849510">‏Chromium می‌تواند کمک کند از حساب Google خود محافظت کنید و گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="6423385022588644828">ازاین‌پس، برای به‌تأیید رساندن سریع‌تر کارت‌ها، از «شناسه لمسی» استفاده شود</translation>
 <translation id="6425092077175753609">سه‌بعدی</translation>
@@ -1841,6 +1838,7 @@
 <translation id="8202370299023114387">اختلال</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">اتصال امن است</translation>
+<translation id="8213464188712611711">خاطرات</translation>
 <translation id="8218327578424803826">مکان اختصاص یافته:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8221250263817408492">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chromium توصیه می‌کند همین حالا به <ph name="WEBSITE_1" /> و سایت‌های دیگری که در آن‌ها از این گذرواژه استفاده کرده‌اید، بروید و گذرواژه را تغییر دهید.</translation>

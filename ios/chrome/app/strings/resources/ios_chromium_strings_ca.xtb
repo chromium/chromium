@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="102360288709523007">Ajuda a millorar Chromium enviant estadístiques d'ús i informes d'error a Google.</translation>
-<translation id="1130979953299110755">En tancar la sessió, les adreces d'interès, l'historial, les contrasenyes i altres dades de Chromium es deixaran de sincronitzar amb el teu Compte de Google.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1257458525759135959">Si vols desar imatges, toca Configuració per permetre que Chromium les afegeixi a les teves fotos</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Comença a utilitzar l'escàner de Chromium</translation>
 <translation id="8013573822802650211">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió en tots els dispositius</translation>
 <translation id="8073677936375100957">Vols esborrar les dades de Chromium del dispositiu?</translation>
-<translation id="8097322092271030751">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium se suprimiran d'aquest dispositiu en tancar la sessió. Les dades sincronitzades es conservaran al teu Compte de Google.</translation>
 <translation id="8175055321229419309">Consell: <ph name="BEGIN_LINK" />mou Chromium al Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Per establir Chromium com a navegador predeterminat, obre Configuració, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
 <translation id="8240981428553046115">Chromium no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>

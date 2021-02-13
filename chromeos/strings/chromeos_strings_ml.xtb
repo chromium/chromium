@@ -103,7 +103,6 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു. <ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി.</translation>
 <translation id="3459509316159669723">പ്രിന്റിംഗ്</translation>
 <translation id="3488065109653206955">ഭാഗികമായി പ്രവര്‍ത്തനക്ഷമമാക്കി</translation>
-<translation id="3515615323037921860">പ്രിന്റ് ജോലികൾ</translation>
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="357889014807611375">മീറ്റർ ചെയ്‌ത വൈഫൈ</translation>
 <translation id="3595596368722241419">ബാറ്ററി നിറഞ്ഞു</translation>
@@ -148,6 +147,7 @@
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
+<translation id="4652335678334611408">സെഷൻ ലോഗ് സംരക്ഷിക്കുക</translation>
 <translation id="4665014895760275686">നിര്‍മ്മാതാവ്</translation>
 <translation id="467510802200863975">പാസ്‌വേഡുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="467715984478005772">ഫയർവാൾ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
@@ -295,7 +295,6 @@
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">സൈക്കിളിന്റെ എണ്ണം</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> ടെസ്‌റ്റ്</translation>
 <translation id="7769672763586021400">മോഡൽ ഐഡി</translation>
 <translation id="7805768142964895445">നില</translation>
 <translation id="7819857487979277519">PSK (WPA അല്ലെങ്കിൽ RSN)</translation>

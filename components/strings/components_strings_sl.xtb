@@ -80,7 +80,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;li&gt;Obrnite se na lastnika spletnega mesta.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vnesli ste geslo na spletnem mestu, ki ga ne upravlja vaša organizacija. Zaradi zaščite računa gesla ne uporabljajte za druge aplikacije in spletna mesta.</translation>
-<translation id="1259144770381827039">Oglejte si podrobnosti.</translation>
 <translation id="1263231323834454256">Bralni seznam</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Dejavnost, ki se ne shrani v tej napravi:
@@ -1374,7 +1373,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6290238015253830360">Tu so prikazani predlagani članki</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Pomočnik Google v Chromu se ustavlja</translation>
-<translation id="6304463939629872728">Dokončanje nakupa z</translation>
 <translation id="6305205051461490394">Naslov <ph name="URL" /> je nedosegljiv.</translation>
 <translation id="6312113039770857350">Spletna stran ni na voljo</translation>
 <translation id="6321917430147971392">Preverite nastavitve za DNS</translation>
@@ -1404,7 +1402,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da takoj spremenite geslo.</translation>
 <translation id="6410264514553301377">Vnesite datum poteka veljavnosti in kodo CVC za kartico <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Ne pozabite na ponudbo Googla Pay</translation>
 <translation id="6415778972515849510">Chromium vam lahko pomaga zaščititi račun za Google in spremeniti geslo.</translation>
 <translation id="6423385022588644828">Od zdaj naprej lahko uporabljate Touch ID in kartice potrjujete hitreje</translation>
 <translation id="6425092077175753609">Materialno</translation>
@@ -1843,6 +1840,7 @@ Dodatne podrobnosti:
 <translation id="8202370299023114387">Spor</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">Povezava je varna</translation>
+<translation id="8213464188712611711">Spomini</translation>
 <translation id="8218327578424803826">Dodeljena lokacija:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8221250263817408492">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium priporoča, da obiščete <ph name="WEBSITE_1" /> ter druga spletna mesta, na katerih uporabljate to geslo, in ga takoj spremenite.</translation>

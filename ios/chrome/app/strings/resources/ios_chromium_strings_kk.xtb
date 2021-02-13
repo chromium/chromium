@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="102360288709523007">Пайдалану статистикасы мен жаңылыс туралы есептерді Google-ға жіберіп, Chromium қызметін жақсартыңыз.</translation>
-<translation id="1130979953299110755">Есептік жазбадан шықсаңыз, бетбелгілер, тарих, құпия сөздер және басқа Chromium деректері бұдан кейін Google есептік жазбасымен синхрондалмайтын болады.</translation>
 <translation id="1185134272377778587">Chromium туралы ақпарат</translation>
 <translation id="1257458525759135959">Суреттерді сақтау үшін "Параметрлер" бөлімін түртіп, Chromium браузеріне суреттер қосуға рұқсат етіңіз.</translation>
 <translation id="1361748954329991663">Chromium ескірген. Егер <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> дүкенінде жаңа нұсқа болмаса, құрылғыңыз Chromium-ның жаңа нұсқаларын бұдан былай қолдамайтын болуы мүмкін.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Chromium сканерін пайдалана бастау</translation>
 <translation id="8013573822802650211">Chromium браузерін кез келген жерде пайдаланғанда, қойындыларды көру үшін барлық құрылғыларда есептік жазбаға кіріңіз.</translation>
 <translation id="8073677936375100957">Chromium деректері осы құрылғыдан жойылсын ба?</translation>
-<translation id="8097322092271030751">Есептік жазбаңызды <ph name="HOSTED_DOMAIN" /> басқаратындықтан, одан шыққан кезде, Chromium деректері осы құрылғыдан жойылады. Синхрондалған деректер Google есептік жазбасында сақталады.</translation>
 <translation id="8175055321229419309">Кеңес: <ph name="BEGIN_LINK" />Chromium браузерін Dock тақтасына көшіріңіз<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromium-ді әдепкі браузер жасағыңыз келсе, "Параметрлер" бөлімін ашып, "Әдепкі браузер қолданбасы" опциясын түртіңіз де, Chromium-ді таңдаңыз.</translation>
 <translation id="8240981428553046115">Chromium жаңа нұсқалардың бар-жоғын тексере алмады. Кейінірек қайталап көріңіз.</translation>

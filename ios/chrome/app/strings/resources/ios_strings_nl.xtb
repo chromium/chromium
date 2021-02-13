@@ -197,6 +197,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2964349545761222050">Cookies van derden blokkeren</translation>
 <translation id="2969979262385602596">Kan niet inloggen. Probeer het later opnieuw.</translation>
 <translation id="2975121486251958312">Alleen de incognitomodus is beschikbaar</translation>
+<translation id="2982481275546140226">Gegevens wissen</translation>
 <translation id="298306318844797842">Betaalmethode toevoegen…</translation>
 <translation id="2989805286512600854">Openen op nieuw tabblad</translation>
 <translation id="3037605927509011580">Asjemenou!</translation>
@@ -410,7 +411,6 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5339316356165661760">Synchroniseren inschakelen</translation>
-<translation id="5351284593342054342">Wissen op dit apparaat</translation>
 <translation id="5388358297987318779">Afbeelding openen</translation>
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
 <translation id="5409365236829784218">Er zijn geen applicaties geïnstalleerd waarmee dit bestand kan worden geopend.</translation>
@@ -466,7 +466,6 @@ Handoff moet ook zijn ingeschakeld in het gedeelte 'Algemeen' van 'Instellingen'
 <translation id="5948291296578561264">Hiermee kun je foto's opslaan in je fotobibliotheek.</translation>
 <translation id="5955891643922670672">Offline versie bekijken</translation>
 <translation id="5957613098218939406">Meer opties</translation>
-<translation id="5961521066940389233">Op dit apparaat bewaren</translation>
 <translation id="5964480694698977962">Nieuw incognitotabblad maken.</translation>
 <translation id="5965679971710331625">Je bent ingelogd</translation>
 <translation id="5979837087407522202">Wachtwoorden zoeken</translation>
@@ -481,7 +480,6 @@ Handoff moet ook zijn ingeschakeld in het gedeelte 'Algemeen' van 'Instellingen'
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Beheer hier je artikelen en activiteiten</translation>
 <translation id="6066301408025741299">Tik om te annuleren.</translation>
-<translation id="6085282545406522838">Je gesynchroniseerde gegevens blijven in je Google-account staan.</translation>
 <translation id="6108923351542677676">Instellen wordt uitgevoerd...</translation>
 <translation id="6119050551270742952">De huidige webpagina is in de incognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7203585745079012652">Antwoorden uitspreken</translation>
 <translation id="7207383424303353046">Nieuw: Open sites automatisch in Chrome door het als je standaard browser-app in te stellen. <ph name="BEGIN_LINK" />Instellingen openen<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ongeldige bijnaam kaart</translation>
-<translation id="722989956228261714">Uitloggen…</translation>
 <translation id="7265758999917665941">Nooit voor deze site</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
 <translation id="7291368939935408496">Wachtwoorden voorbereiden...</translation>
@@ -635,7 +632,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7537586195939242955">Je pas kan momenteel niet worden geïnstalleerd in Passbook.</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
-<translation id="7558943807639707687">Wat wil je doen met je bookmarks, geschiedenis en andere gegevens op dit apparaat?</translation>
 <translation id="7561196759112975576">Altijd</translation>
 <translation id="7583004045319035904">Gebruik <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> om je incognitotabbladen te ontgrendelen.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nooit vertalen</translation>

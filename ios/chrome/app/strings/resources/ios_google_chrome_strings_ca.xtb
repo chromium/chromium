@@ -17,7 +17,6 @@
 <translation id="257708665678654955">La propera vegada, voleu que Google Chrome s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
-<translation id="2786324948676799004">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome se suprimiran d'aquest dispositiu en tancar la sessió. Les dades sincronitzades es conservaran al teu Compte de Google.</translation>
 <translation id="2919738076569633423">En utilitzar Chrome, acceptes les <ph name="BEGIN_LINK_TOS" />condicions del servei<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="3148688391461398285">Si compartiu la vostra ubicació, millorareu l'experiència a Chrome.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3345341804167540816">Utilitzeu Chrome a tot arreu</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>
-<translation id="3523473570015918798">En tancar la sessió, les adreces d'interès, l'historial, les contrasenyes i altres dades de Chrome es deixaran de sincronitzar amb el teu Compte de Google</translation>
 <translation id="3533694711092285624">No hi ha cap contrasenya desada. Chrome pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="3706101708757577809">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="384394811301901750">Google Chrome no pot utilitzar la càmera en aquest moment</translation>

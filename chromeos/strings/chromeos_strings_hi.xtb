@@ -103,7 +103,6 @@
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> को स्कैन किया जा रहा है. <ph name="PERCENTAGE_VALUE" />% पूरा हो गया.</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
-<translation id="3515615323037921860">प्रिंट जॉब</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
@@ -297,7 +296,6 @@
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="773153675489693198">साइकल काउंट</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA या RSN)</translation>

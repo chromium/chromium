@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">ଆପଣଙ୍କ ଫୋନରେ ସେଟଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
 <translation id="1054153489933238809">ନୂଆ ଟାବ୍‍‍ରେ ମୂଳ &amp;ଛବି ଖୋଲନ୍ତୁ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 ସପ୍ତାହ ଭିତରେ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ୍ କରନ୍ତୁ}other{{NUM_WEEKS} ସପ୍ତାହ ଭିତରେ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ୍ କରନ୍ତୁ}}</translation>
-<translation id="1055806300943943258">ବ୍ଲୁଟୁଥ୍ ଓ USB ଡିଭାଇସ୍‍ଗୁଡ଼ିକ ପାଇଁ ସନ୍ଧାନ କରାଯାଉଛି...</translation>
 <translation id="1056466516655540509"><ph name="MINUTES" /> ମିନିଟ୍ ପୂର୍ବେ ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି</translation>
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
@@ -1975,7 +1974,6 @@
 <translation id="3201422919974259695">ଏଠାରେ ଉପଲବ୍ଧ ଥିବା USB ଡିଭାଇସ୍‍ଗୁଡ଼ିକ ଦେଖାଯିବ।</translation>
 <translation id="3202131003361292969">ପାଥ୍</translation>
 <translation id="3202173864863109533">ଏହି ଟାବ୍‌ର ଅଡିଓ ମ୍ୟୁଟ୍‌ କରାଯାଉଛି।</translation>
-<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">ଆପ୍</translation>
 <translation id="3208584281581115441">ଏବେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3208703785962634733">ସୁନିଶ୍ଚିତ କରାଯାଇନାହିଁ</translation>

@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">Блокировать сторонние файлы cookie</translation>
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
 <translation id="2975121486251958312">Доступен только режим инкогнито</translation>
+<translation id="2982481275546140226">Удалить данные</translation>
 <translation id="298306318844797842">Добавить способ оплаты</translation>
 <translation id="2989805286512600854">Открыть в новой вкладке</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5327248766486351172">Имя</translation>
 <translation id="5339316356165661760">Включить синхронизацию</translation>
-<translation id="5351284593342054342">Удалить с устройства</translation>
 <translation id="5388358297987318779">Открыть изображение</translation>
 <translation id="5407969256130905701">Сбросить изменения</translation>
 <translation id="5409365236829784218">Нет приложений, поддерживающих файлы этого типа.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">Это позволяет вам сохранять фотографии в галерее.</translation>
 <translation id="5955891643922670672">Просматривается в офлайн-режиме</translation>
 <translation id="5957613098218939406">Другое</translation>
-<translation id="5961521066940389233">Сохранить на устройстве</translation>
 <translation id="5964480694698977962">Создать вкладку инкогнито.</translation>
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
 <translation id="6066301408025741299">Нажмите, чтобы отменить загрузку</translation>
-<translation id="6085282545406522838">Синхронизированные данные останутся в аккаунте Google.</translation>
 <translation id="6108923351542677676">Настройка…</translation>
 <translation id="6119050551270742952">Открыто в режиме инкогнито</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">Озвучивать результаты поиска</translation>
 <translation id="7207383424303353046">Новинка! Чтобы автоматически открывать сайты в Chrome, сделайте его браузером по умолчанию. <ph name="BEGIN_LINK" />Перейти в настройки<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Недопустимое название карты</translation>
-<translation id="722989956228261714">Выход из аккаунта</translation>
 <translation id="7265758999917665941">Никогда для этого сайта</translation>
 <translation id="7272437679830969316">Не удалось пройти проверку. Пароль не скопирован.</translation>
 <translation id="7291368939935408496">Подготовка паролей…</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
-<translation id="7558943807639707687">Что делать с закладками, историей и другими данными на этом устройстве?</translation>
 <translation id="7561196759112975576">Всегда</translation>
 <translation id="7583004045319035904">Используйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблокировки вкладок инкогнито.</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>

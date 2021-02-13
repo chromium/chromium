@@ -80,7 +80,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     &lt;li&gt;Web sitesinin sahibiyle iletişim kurun.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Şifrenizi kuruluşunuz tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
-<translation id="1259144770381827039">Ayrıntılara bakın.</translation>
 <translation id="1263231323834454256">Okuma listesi</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Bu cihazda kalmayacak etkinlikler:
@@ -1365,7 +1364,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6290238015253830360">Önerilen makaleler burada görünür</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome'da Google Asistan durduruluyor</translation>
-<translation id="6304463939629872728">Ödeme yöntemi</translation>
 <translation id="6305205051461490394"><ph name="URL" /> adresine ulaşılamıyor.</translation>
 <translation id="6312113039770857350">Web sayfası mevcut değil</translation>
 <translation id="6321917430147971392">DNS ayarlarınızı kontrol edin</translation>
@@ -1395,7 +1393,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6406765186087300643">C0 (Zarf)</translation>
 <translation id="6409754798200046165">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> numaralı kartın son kullanma tarihini ve CVC kodunu girin</translation>
-<translation id="6410774864568266108">Google Pay teklifinizi unutmayın</translation>
 <translation id="6415778972515849510">Chromium, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
 <translation id="6423385022588644828">Bundan böyle Touch ID'yi kullanarak kartlarınızı daha hızlı onaylayın</translation>
 <translation id="6425092077175753609">Malzeme</translation>
@@ -1834,6 +1831,7 @@ Ek ayrıntılar:
 <translation id="8202370299023114387">Çakışma</translation>
 <translation id="8206978196348664717">Prc4 (Zarf)</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
+<translation id="8213464188712611711">Bellek</translation>
 <translation id="8218327578424803826">Atanan Konum:</translation>
 <translation id="8220146938470311105">C7/C6 (Zarf)</translation>
 <translation id="8221250263817408492">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, bu şifreyi kullandığınız <ph name="WEBSITE_1" /> ve diğer sitelere giderek şifrenizi hemen değiştirmenizi öneriyor.</translation>

@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Топты бөлісу</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> қойындылар тобына <ph name="NUMBER_OF_TABS" /> қойынды қосыңыз.</translation>
 <translation id="2977480621796371840">Топтан өшіру</translation>
+<translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}}</translation>
 <translation id="3940195383040445971">Бағаны қойындыларда бақылау</translation>

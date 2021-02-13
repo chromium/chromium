@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="2969979262385602596">පුරනය අසාර්ථක විය, කරුණාකර පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="2975121486251958312">අප්‍රසිද්ධ ප්‍රකාරය පමණක් ලබා ගත හැකිය</translation>
+<translation id="2982481275546140226">දත්ත හිස් කිරීම</translation>
 <translation id="298306318844797842">ගෙවීමේ ක්‍රමය එක් කරන්න...</translation>
 <translation id="2989805286512600854">නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5327248766486351172">නම</translation>
 <translation id="5339316356165661760">සමමුහුර්ත කිරීම ක්‍රියාත්ම කරන්න</translation>
-<translation id="5351284593342054342">මෙම උපාංගයෙන් හිස් කරන්න</translation>
 <translation id="5388358297987318779">රූපය විවෘත කරන්න</translation>
 <translation id="5407969256130905701">වෙනස්කම් ඉවත ලන්න</translation>
 <translation id="5409365236829784218">මෙම ගොනුව විවෘත කළ හැකි යෙදුම් ස්ථාපනය කර නැත.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">මෙය ඔබට ඔබේ ඡායාරූප පුස්තකාලයට ඡායාරූප සුරැකීමට ඉඩ සලසයි.</translation>
 <translation id="5955891643922670672">නොබැඳි අනුවාදය බලමින්</translation>
 <translation id="5957613098218939406">තවත් විකල්ප</translation>
-<translation id="5961521066940389233">මෙම උපාංගයෙහි තබා ගන්න</translation>
 <translation id="5964480694698977962">නව අප්‍රසිද්ධ පටිත්තක් තනන්න.</translation>
 <translation id="5965679971710331625">ඔබ පුරා ඇත</translation>
 <translation id="5979837087407522202">මුරපද සොයන්න</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">මෙහි ඔබේ කතා සහ ක්‍රියාකාරකම් පාලන කරන්න</translation>
 <translation id="6066301408025741299">අවලංගු කිරීමට තට්ටු කරන්න.</translation>
-<translation id="6085282545406522838">ඔබගේ සමමුහුර්ත කළ දත්ත ඔබගේ Google ගිණුමේ පවතිනු ඇත.</translation>
 <translation id="6108923351542677676">පිහිටුවීම දැනට සිදුවෙමින් පවතී...</translation>
 <translation id="6119050551270742952">වත්මන් වෙබ් පිටු අප්‍රසිද්ධ මත තිබේ</translation>
 <translation id="6122191549521593678">සබැඳි</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">පිළිතුරු ආපසු දෙන්න</translation>
 <translation id="7207383424303353046">නව: ඔබගේ පෙරනිමි බ්‍රව්සර යෙදුම බවට Chrome පත් කිරීමෙන් එහි අඩවි ස්වයංක්‍රියව විවෘත කරන්න. <ph name="BEGIN_LINK" />සැකසීම් විවෘත කරන්න<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">වලංගු නොවන කාඩ්පත් අපනාමය</translation>
-<translation id="722989956228261714">වරන්න…</translation>
 <translation id="7265758999917665941">කිසි විටෙක මෙම වෙබ් අඩවිය සඳහා නැත</translation>
 <translation id="7272437679830969316">ඔබගේ අනන්‍යතාව තහවුරු කළ නොහැකිය. මුරපදය පිටපත් නොකරන ලදී.</translation>
 <translation id="7291368939935408496">මුරපද සූදානම් කරමින්...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">බාගන්න</translation>
 <translation id="7537586195939242955">කනගාටුයි, ඔබේ අවසර පත මේ අවස්ථාවේදී අවසර පොත වෙතට ස්ථාපනය කළ නොහැකිය.</translation>
 <translation id="7554791636758816595">නව ටැබය</translation>
-<translation id="7558943807639707687">මෙම උපාංගයේ ඔබගේ පිටුසන්, ඉතිහාසය සහ වෙනත් දත්ත සමඟ ඔබ කුමක් කිරීමට කැමතිද?</translation>
 <translation id="7561196759112975576">සැමවිටම</translation>
 <translation id="7583004045319035904">ඔබගේ අප්‍රකට ටැබ අගුලු හැරීමට <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> භාවිත කරන්න.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>

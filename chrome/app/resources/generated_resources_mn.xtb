@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Тохируулгыг утсан дээрээ дуусгана уу</translation>
 <translation id="1054153489933238809">Эх зургийг шинэ цонхонд нээх</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />-г 1 долоо хоногийн дотор шинэчлэх}other{<ph name="DEVICE_TYPE" />-г {NUM_WEEKS} долоо хоногийн дотор шинэчлэх}}</translation>
-<translation id="1055806300943943258">Bluetooth болон USB төхөөрөмжүүдийг хайж байна...</translation>
 <translation id="1056466516655540509"><ph name="MINUTES" /> минутын өмнө шинэчилсэн</translation>
 <translation id="1056775291175587022">Сүлжээ алга</translation>
 <translation id="1056898198331236512">Анхааруулга</translation>
@@ -1977,7 +1976,6 @@
 <translation id="3201422919974259695">Боломжтой USB төхөөрөмжүүд энд харагдана.</translation>
 <translation id="3202131003361292969">Зам</translation>
 <translation id="3202173864863109533">Энэ табны дууг хаасан байна.</translation>
-<translation id="3202218848974251205">Нууцлалын sandbox</translation>
 <translation id="3208321278970793882">Апп</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
 <translation id="3208703785962634733">Баталгаажуулаагүй</translation>
@@ -3137,6 +3135,7 @@
 <translation id="4538417792467843292">Үгийг устгах</translation>
 <translation id="4538684596480161368"><ph name="HOST" /> дэх unsandboxed залгаасыг үргэлж блоклох</translation>
 <translation id="4538792345715658285">Байгууллагын бодлогоор суулгасан.</translation>
+<translation id="4541123282641193691">Таны бүртгэлийг баталгаажуулж чадсангүй. Дахин оролдох эсвэл Chromebook-г дахин эхлүүлнэ үү.</translation>
 <translation id="4541662893742891060">Энэ профайлд холбогдож чадсангүй. Техникийн тусламж авах бол оператор компанитайгаа холбоо барина уу.</translation>
 <translation id="4541810033354695636">өргөтгөсөн бодит орчин</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> болон <ph name="WEBSITE_2" /> дээрх өөрийнхөө мэдээллийг уншина уу</translation>
@@ -4164,6 +4163,7 @@
 <translation id="574209121243317957">Авиа</translation>
 <translation id="5742505912938664543">Та энд хоёрдогч бүртгэл нэмснээр тухайн бүртгэлийг ашиглан веб үзэх, апп татах, өөрийн Gmail болон Google-н бусад үйлчилгээг шалгаж болно.</translation>
 <translation id="5746169159649715125">PDF хэлбэрээр хадгалах</translation>
+<translation id="5746261205461426123">Тохируулгын хөтчийг нээх</translation>
 <translation id="5747552184818312860">Дуусах хугацаа</translation>
 <translation id="5747785204778348146">Хөгжүүлэгч - тогтворгүй</translation>
 <translation id="5747809636523347288"><ph name="URL" /> г буулгаад, очих</translation>
@@ -5323,6 +5323,7 @@
 <translation id="708278670402572152">Шалгалтыг идэвхжүүлэхийн тулд салгах</translation>
 <translation id="7084321615353200053">Сайтууд таны камерыг ашиглахыг хүсэх боломжтой (санал болгосон)</translation>
 <translation id="7085389578340536476">Chrome-д аудио бичихийг зөвшөөрөх үү?</translation>
+<translation id="7085805695634549980">Google-н үйлчилгээнүүдэд холбогдож чадсангүй. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Архивт Chrome лог файлуудыг багтаана.</translation>
 <translation id="7088434364990739311">Шинэчлэлтийг шалгах ажиллагааг эхлүүлж чадсангүй (алдааны код <ph name="ERROR" /> ).</translation>
 <translation id="7088561041432335295">Зип архивлагч - ZIP файлыг нээж Файлс аппад багцалдаг.</translation>

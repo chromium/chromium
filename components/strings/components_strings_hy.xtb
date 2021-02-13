@@ -80,7 +80,6 @@
     &lt;li&gt;Կապվեք կայքի սեփականատիրոջ հետ։&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Դուք մուտքագրել եք գաղտնաբառը մի կայքում, որը չի կառավարվում ձեր կազմակերպության կողմից: Ձեր հաշիվը պաշտպանելու համար խորհուրդ ենք տալիս չօգտագործել այդ գաղտնաբառը այլ հավելվածներում և կայքերում:</translation>
-<translation id="1259144770381827039">Դիտել մանրամասները</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Այս սարքում չեն պահվի՝
@@ -724,6 +723,7 @@
 <translation id="3761718714832595332">Թաքցնել կարգավիճակը</translation>
 <translation id="3765032636089507299">Ապահով դիտարկման էջը կառուցման փուլում է</translation>
 <translation id="3765588406864124894">Փոստարկղ 9</translation>
+<translation id="3767485424735936570">Ադմինիստրատորը խորհուրդ չի տալիս պատճենել և տեղադրել այս բովանդակությունը <ph name="VM_NAME" /> վիրտուալ մեքենայում։</translation>
 <translation id="3778403066972421603">Ուզո՞ւմ եք պահել այս քարտի տվյալները ձեր Google հաշվում և այս սարքում</translation>
 <translation id="3780694243617746492">Արտածման արկղ</translation>
 <translation id="3781428340399460090">Վառ վարդագույն</translation>
@@ -1127,6 +1127,7 @@
 <translation id="5299298092464848405">Կանոնը վերլուծելիս սխալ տեղի ունեցավ</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5306593769196050043">Երկու թերթերը</translation>
+<translation id="5307166000025436103">Եղավ</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5308689395849655368">Խափանումների մասին հաշվետվությունների ուղարկումն անջատված է:</translation>
 <translation id="5314967030527622926">Բուկլետ պատրաստելու գործիք</translation>
@@ -1372,7 +1373,6 @@
 <translation id="6290238015253830360">Այստեղ կցուցադրվեն առաջարկվող հոդվածները</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google Օգնականը Chrome-ում կանջատվի</translation>
-<translation id="6304463939629872728">Վճարել քարտով՝</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
 <translation id="6312113039770857350">Կայքէջն անհասանելի է</translation>
 <translation id="6321917430147971392">Ստուգեք ձեր DNS կարգավորումները</translation>
@@ -1402,7 +1402,6 @@
 <translation id="6406765186087300643">C0 (ծրար)</translation>
 <translation id="6409754798200046165">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում: Խորհուրդ ենք տալիս փոխել գաղտնաբառը։</translation>
 <translation id="6410264514553301377">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի սպառման ամսաթիվը և CVC կոդը</translation>
-<translation id="6410774864568266108">Չմոռանաք Google Pay-ի առաջարկի մասին</translation>
 <translation id="6415778972515849510">Chromium-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>
 <translation id="6423385022588644828">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը Touch ID-ի միջոցով</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1457,6 +1456,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից (դուք դուրս չեք գա ձեր Google հաշվից)}one{# կայքից (դուք դուրս չեք գա ձեր Google հաշվից)}other{# կայքից (դուք դուրս չեք գա ձեր Google հաշվից)}}</translation>
 <translation id="6648459603387803038">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։</translation>
 <translation id="6648524591329069940">Serif տառատեսակ</translation>
+<translation id="6651270836885078973">Կառավարիչ՝</translation>
 <translation id="6652101503459149953">Օգտագործել Windows Hello</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="666259744093848177">(x86_64 թարգմանված)</translation>
@@ -1840,6 +1840,7 @@
 <translation id="8202370299023114387">Հակասություն</translation>
 <translation id="8206978196348664717">Prc4 (ծրար)</translation>
 <translation id="8211406090763984747">Կապն անվտանգ է</translation>
+<translation id="8213464188712611711">Հիշողություններ</translation>
 <translation id="8218327578424803826">Նշանակված տեղադրություն՝</translation>
 <translation id="8220146938470311105">C7/C6 (ծրար)</translation>
 <translation id="8221250263817408492">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Խորհուրդ ենք տալիս փոխել ձեր գաղտնաբառը, որն օգտագործում եք <ph name="WEBSITE_1" /> և այլ կայքերում։</translation>

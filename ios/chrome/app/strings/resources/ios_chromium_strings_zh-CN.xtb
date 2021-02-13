@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="102360288709523007">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chromium。</translation>
-<translation id="1130979953299110755">当您退出帐号后，您的书签、历史记录、密码及其他 Chromium 数据将不再同步到您的 Google 帐号中。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">开始使用 Chromium 扫描器</translation>
 <translation id="8013573822802650211">要查看您在其他设备上用 Chromium 打开的标签页，请在所有设备上登录</translation>
 <translation id="8073677936375100957">从这部设备中清除您的 Chromium 数据？</translation>
-<translation id="8097322092271030751">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，因此当您退出帐号后，您的 Chromium 数据将会从此设备中删除，但已同步的数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />将 Chromium 移到 Dock 中<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">若要将 Chromium 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chromium”。</translation>
 <translation id="8240981428553046115">Chromium 无法检查是否有更新。请稍后再试。</translation>

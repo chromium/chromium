@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
-<translation id="1497470209855416291">Փորձնական տարբերակն անջատված է</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Պատճենել օգտանունը</translation>
 <translation id="1592864538817356322">Սովորական պաշտպանություն՝</translation>
 <translation id="1612196535745283361">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: Տեղադրության հասանելիությունն <ph name="BEGIN_LINK" />այս սարքում անջատված է<ph name="END_LINK" />։</translation>
-<translation id="1613577519914241527">Երբ միացված է, ձեզ ավելի համապատասխան բովանդակություն ցուցադրելու համար կայքերը չեն կարողանա օգտագործել այնպիսի տեղեկություններ, որոնք կնույնականացնեն ձեզ։ Օրինակ, եթե դիտարկենք մարդկանց, որոնք եկել են համերգի, կարող ենք ընդամենը ենթադրություն անել նրանց երաժշտական նախասիրությունների մասին։ Նույն կերպ, կայքերը կարող են միայն պարզել, որ հազարավոր օգտատերեր նույն հետաքրքրությունն ունեն։\n\n«Մարդկանց բազմությունը», որին դուք պատկանում եք, ձևավորվում է ձեր այցելած կայքերի հիման վրա։ Գովազդատուները կարող են միայն տեսնել, թե ինչ կայքեր է այցելում ամբողջ բազմությունը, այլ ոչ թե տեսնել, թե ինչ կայքեր եք դուք անձամբ այցելում։</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Remove # selected items}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Դիտել հաջորդ տեսանյութը</translation>
 <translation id="2074143993849053708">Օգնականի միջոցով ձայնային որոնման միջերեսը փակվել է</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
-<translation id="2083113399121613785">Փորձնական տարբերակը միացված է</translation>
 <translation id="2096012225669085171">Համաժամացում և անհատականացում բոլոր սարքերում</translation>
 <translation id="2100273922101894616">Ավտոմատ մուտք</translation>
 <translation id="2100314319871056947">Փորձեք ուղարկել տեքստը մաս-մաս</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Էջի Lite տարբերակը տրամադրվել է Google-ի կողմից։ Հպեք՝ բնօրինակը բեռնելու համար։</translation>
 <translation id="4452411734226507615">Փակել <ph name="TAB_TITLE" /> ներդիրը</translation>
 <translation id="4452548195519783679">Էջանիշը պահվել է <ph name="FOLDER_NAME" />-ում</translation>
-<translation id="4465314970046116177">Գաղտնիության պաշտպանված միջավայրը նոր տեխնոլոգիաների մի հավաքածու է, որը կպաշտպանի ձեզ գործողությունների միջկայքային հետագծման մեխանիզմներից (օր․՝ երրորդ կողմի քուքիներից), երբ պահեք այնպիսի վեբ բովանդակություն ու ծառայություններ, որոնք այսօր կախված են այդ մեխանիզմներից։ Այս նոր տեխնոլոգիայի մշակման շրջանակներում Chrome-ը համագործակցում է կայքերի ու դիտարկիչների մշակողների, հրատարակիչների և գովազդատուների հետ։</translation>
 <translation id="4472118726404937099">Սարքերը համաժամացնելու և անհատականացնելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="447252321002412580">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="4479972344484327217">«<ph name="MODULE" />» բաղադրիչը տեղադրվում է Chrome-ի համար…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">Չի կարող թվեր պարունակել</translation>
 <translation id="4663499661119906179">Դիտեք ձեր թոփ կայքերն ու հոդվածները</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> էջանիշ ջնջվեց</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> կայքն ավելացվեց ձեր հիմնական էկրանին</translation>
 <translation id="4668347365065281350">Կայքերի կողմից պահված բոլոր տվյալները, ներառյալ քուքիներն ու սարքում պահված մյուս տվյալները</translation>
 <translation id="4684427112815847243">Համաժամացնել բոլորը</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
@@ -592,6 +587,7 @@
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5230560987958996918">Թույլ տվեք <ph name="SITE" /> կայքին որոնել մոտակա Bluetooth սարքեր: Գտնվել են հետևյալ սարքերը՝</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
+<translation id="5250483651202458397">Սքրինշոթ։ Հպեք՝ փակելու համար։</translation>
 <translation id="526421993248218238">Չհաջողվեց բեռնել էջը</translation>
 <translation id="5271967389191913893">Սարքը չի կարող բացել ներբեռնվող բովանդակությունը:</translation>
 <translation id="5292796745632149097">Ուղարկել</translation>
@@ -747,7 +743,6 @@
 Օրինակ, որոշ վեբկայքեր կարող են այս հարցմանը պատասխանել՝ ներկայացնելով գովազդ, որը հիմնված չէ ձեր այցելությունների վրա: Շատ վեբկայքեր կշարունակեն հավաքել և օգտագործել ձեր այցելությունների պատմությունը: Այն կարող է օգտագործվել, օրինակ, անվտանգությունը բարելավելու, բովանդակություն, գովազդ և խորհուրդներ տրամադրելու և վիճակագրական տվյալներ հավաքելու նպատակով:</translation>
 <translation id="624789221780392884">Թարմացումը պատրաստ է</translation>
 <translation id="6255999984061454636">Բովանդակության առաջարկներ</translation>
-<translation id="6266591733731644292">Առայժմ Գաղտնիության պաշտպանված միջավայրի փորձնական տարբերակն է թողարկվել։ Այս փորձաշրջանի ընթացքում՝\n<ph name="BEGIN_LIST_ITEM1" />Կայքերի և հավելվածների մշակողները կարող են փորձարկել համապատասխան բովանդակության ստեղծման գործառույթը՝ առանց ձեզ նույնականացնող տեղեկություններն օգտագործելու։<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Օգտատերերը կարող են դադարեցնել փորձաշրջանը այս էջում ներկայացված կարգավորումների օգնությամբ։<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Այս էջը տպելիս խնդիր առաջացավ: Նորից փորձեք:</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6292420053234093573">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
@@ -837,9 +832,9 @@
 <translation id="6767294960381293877">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված են էկրանի կեսով:</translation>
 <translation id="6783942555455976443">Պահել այս էջը հետագայի համար և ստանալ հիշեցում</translation>
 <translation id="6811034713472274749">Էջը պատրաստ է</translation>
+<translation id="6813446258015311409">Մուտք գործել Chrome, բացված է։</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">«<ph name="TAB_TITLE" />» ներդիրն ընտրված է</translation>
-<translation id="6833996806551876956">Գաղտնիության պաշտպանված միջավայրի փորձաշրջան</translation>
 <translation id="6845325883481699275">Օգնել ավելի անվտանգ դարձնել Chrome-ը</translation>
 <translation id="6846298663435243399">Բեռնում…</translation>
 <translation id="6850409657436465440">Ներբեռնումն ընթացքում է</translation>
@@ -1011,6 +1006,7 @@
 <translation id="8015452622527143194">Էջում ամեն ինչ վերադարձնել կանխադրված չափին</translation>
 <translation id="8026334261755873520">Դիտարկումների տվյալների մաքրում</translation>
 <translation id="8027863900915310177">Ընտրեք, թե որտեղ է պետք ներբեռնել</translation>
+<translation id="8032569120109842252">Հետևում եք</translation>
 <translation id="8035133914807600019">Նոր պանակ...</translation>
 <translation id="8037750541064988519">Մնացել է <ph name="DAYS" /> օր</translation>
 <translation id="8037801708772278989">Ստուգվել է հենց նոր</translation>
@@ -1035,6 +1031,7 @@
 <translation id="8156139159503939589">Ի՞նչ լեզուներով եք կարդում</translation>
 <translation id="8168435359814927499">Բովանդակություն</translation>
 <translation id="8186512483418048923">Մնաց <ph name="FILES" /> ֆայլ</translation>
+<translation id="8189750580333936930">Գաղտնիության պաշտպանված միջավայր</translation>
 <translation id="8190358571722158785">Մնացել է 1 օր</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
@@ -1070,7 +1067,6 @@
 <translation id="8442258441309440798">Պատմություններ չկան</translation>
 <translation id="8443209985646068659">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="8445448999790540984">Չհաջողվեց արտահանել գաղտնաբառերը</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Գաղտնագրել համաժամացված տվյալները սեփական համաժամացման անցաբառով</translation>
 <translation id="8466613982764129868">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքը միացված է ինտերնետին</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1096,6 +1092,7 @@
 <translation id="8583805026567836021">Հաշվի տվյալների մաքրում</translation>
 <translation id="8587585930972369234">Որոնելու համար հպեք և պահեք</translation>
 <translation id="860043288473659153">Քարտապանի անունը</translation>
+<translation id="8602358303461588329">Մուտք գործել Chrome, փակված է։</translation>
 <translation id="860282621117673749">Գների իջեցման մասին ծանուցումներ</translation>
 <translation id="8616006591992756292">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="8617240290563765734">Բացե՞լ ներբեռնված բովանդակությունում հատկորոշված URL-ը:</translation>
@@ -1115,7 +1112,6 @@
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>
 <translation id="8788265440806329501">Նավարկման պատմության թերթը փակված է</translation>
 <translation id="8788968922598763114">Վերաբացել վերջին փակված ներդիրը</translation>
-<translation id="8795672590390389447">Գաղտնիության պաշտպանված միջավայր</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>

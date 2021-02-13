@@ -80,7 +80,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     &lt;li&gt;Vegye fel a kapcsolatot a webhely tulajdonosával.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Olyan webhelyen adta meg a jelszavát, amelyet nem az Ön szervezete kezel. Fiókja védelme érdekében ne használja fel újra a jelszót más alkalmazásokban és webhelyeken.</translation>
-<translation id="1259144770381827039">Részletek megtekintése.</translation>
 <translation id="1263231323834454256">Olvasási lista</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Ami nem marad meg ezen az eszközön:
@@ -1370,7 +1369,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6290238015253830360">A javasolt cikkek helye</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">A Google Segéd a Chrome-ban szolgáltatás leáll</translation>
-<translation id="6304463939629872728">Fizetési mód:</translation>
 <translation id="6305205051461490394">A(z) <ph name="URL" /> nem érhető el.</translation>
 <translation id="6312113039770857350">A weboldal nem érhető el</translation>
 <translation id="6321917430147971392">Ellenőrizze a DNS-beállításokat</translation>
@@ -1400,7 +1398,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6406765186087300643">C0 (boríték)</translation>
 <translation id="6409754798200046165">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="6410264514553301377">Írja be a(z) <ph name="CREDIT_CARD" /> kártyán szereplő lejárati dátumot és CVC-t</translation>
-<translation id="6410774864568266108">Ne feledkezzen meg a Google Pay-ajánlatról</translation>
 <translation id="6415778972515849510">A Chromium segíthet a Google-fiók védelmében és a jelszó módosításában.</translation>
 <translation id="6423385022588644828">Mostantól gyorsabban igazolhatja kártyáit a Touch ID használatával</translation>
 <translation id="6425092077175753609">Anyag</translation>

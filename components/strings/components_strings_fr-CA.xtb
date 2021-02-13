@@ -80,7 +80,6 @@
     &lt;li&gt;Communiquez avec le propriétaire du site Web.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vous avez entré votre mot de passe sur un site qui n'est pas géré par votre organisation. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
-<translation id="1259144770381827039">Afficher les renseignements.</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Les activités qui ne seront pas enregistrées sur cet appareil :
@@ -718,6 +717,7 @@
 <translation id="3761718714832595332">Masquer l'état</translation>
 <translation id="3765032636089507299">La page de navigation sécurisée est en construction.</translation>
 <translation id="3765588406864124894">Boîte aux lettres 9</translation>
+<translation id="3767485424735936570">La politique de l'administrateur ne recommande pas de copier-coller ce contenu dans <ph name="VM_NAME" /></translation>
 <translation id="3778403066972421603">Voulez-vous enregistrer cette carte dans votre compte Google et sur cet appareil?</translation>
 <translation id="3780694243617746492">Bac de sortie</translation>
 <translation id="3781428340399460090">Rose indien</translation>
@@ -1116,6 +1116,7 @@
 <translation id="5299298092464848405">Erreur d'analyse de politique</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5306593769196050043">Les deux feuilles</translation>
+<translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5308689395849655368">L'envoi de rapports d'erreur est désactivé.</translation>
 <translation id="5314967030527622926">Créateur de brochures</translation>
@@ -1361,7 +1362,6 @@
 <translation id="6290238015253830360">Les articles que vous avez suggérés s'afficheront ici</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Arrêt de l'Assistant Google dans Chrome en cours…</translation>
-<translation id="6304463939629872728">Payer avec</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="6312113039770857350">La page Web n'est pas disponible</translation>
 <translation id="6321917430147971392">Vérifier vos paramètres DNS</translation>
@@ -1391,7 +1391,6 @@
 <translation id="6406765186087300643">Enveloppe C0</translation>
 <translation id="6409754798200046165">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">N'oubliez pas votre offre Google Pay</translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
 <translation id="6423385022588644828">Vérifiez vos cartes plus rapidement en vous servant de Touch ID à partir de maintenant</translation>
 <translation id="6425092077175753609">Matériel</translation>
@@ -1446,6 +1445,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
 <translation id="6648524591329069940">Police avec empattement</translation>
+<translation id="6651270836885078973">Géré par :</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="666259744093848177">(x86_64, traduction)</translation>

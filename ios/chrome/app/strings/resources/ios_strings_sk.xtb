@@ -197,6 +197,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2964349545761222050">Blokovať súbory cookie tretích strán</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
 <translation id="2975121486251958312">K dispozícii je iba režim inkognito</translation>
+<translation id="2982481275546140226">Vymazať dáta</translation>
 <translation id="298306318844797842">Pridať spôsob platby…</translation>
 <translation id="2989805286512600854">Otvoriť na novej karte</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
@@ -410,7 +411,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
-<translation id="5351284593342054342">Vymazať z tohto zariadenia</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
 <translation id="5407969256130905701">Zahodiť zmeny</translation>
 <translation id="5409365236829784218">Nie sú nainštalované žiadne aplikácie, ktoré dokážu otvoriť tento súbor.</translation>
@@ -466,7 +466,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5948291296578561264">Umožňuje ukladať fotky do knižnice fotiek.</translation>
 <translation id="5955891643922670672">Zobrazuje sa offline verzia</translation>
 <translation id="5957613098218939406">Ďalšie možnosti</translation>
-<translation id="5961521066940389233">Uchovať v tomto zariadení</translation>
 <translation id="5964480694698977962">Vytvoriť novú kartu inkognito.</translation>
 <translation id="5965679971710331625">Ste prihlásený/-á</translation>
 <translation id="5979837087407522202">Vyhľadajte heslá</translation>
@@ -481,7 +480,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tu ovládajte svoje príbehy aj aktivitu</translation>
 <translation id="6066301408025741299">Sťahovanie zrušíte klepnutím.</translation>
-<translation id="6085282545406522838">Synchronizované údaje zostanú vo vašom účte Google.</translation>
 <translation id="6108923351542677676">Inštaluje sa...</translation>
 <translation id="6119050551270742952">Aktuálna webová stránka je v anonymnom režime</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="7203585745079012652">Vysloviť odpovede</translation>
 <translation id="7207383424303353046">Novinka: Nastavte si Chrome ako predvolenú aplikáciu prehliadača a otvárajte v ňom weby automaticky. <ph name="BEGIN_LINK" />Otvoriť nastavenia<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Neplatná prezývka karty</translation>
-<translation id="722989956228261714">Odhlásiť satt…</translation>
 <translation id="7265758999917665941">Nikdy pre tento web</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="7291368939935408496">Pripravujú sa heslá...</translation>
@@ -635,7 +632,6 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7537586195939242955">Kupón Pass sa momentálne nedá do aplikácie Passbook nainštalovať.</translation>
 <translation id="7554791636758816595">Nová karta</translation>
-<translation id="7558943807639707687">Čo chcete robiť so svojimi záložkami, históriou a ďalšími údajmi v tomto zariadení?</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7583004045319035904">Odomknite karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>

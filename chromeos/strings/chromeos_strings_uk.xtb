@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Виявлено адаптивний портал</translation>
 <translation id="3188257591659621405">Мої файли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
+<translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
-<translation id="3515615323037921860">Завдання друку</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
@@ -296,7 +296,6 @@
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Кількість циклів</translation>
-<translation id="7732651821766520760">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>

@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを展開します。</translation>
 <translation id="2977480621796371840">グループから削除</translation>
+<translation id="3291470810748040983">開いているタブの商品が値下げされた場合にアラートを受け取ることができます</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>

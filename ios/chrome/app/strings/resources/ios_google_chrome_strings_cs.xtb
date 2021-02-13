@@ -17,7 +17,6 @@
 <translation id="257708665678654955">Chcete, aby Google Chrome příště pro stránky v jazyce <ph name="LANGUAGE_NAME" /> z tohoto webu nabízel překlad?</translation>
 <translation id="2695886661449553974">Chrome nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="2732745070297234559">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
-<translation id="2786324948676799004">Protože váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, při odhlášení z tohoto zařízení se smažou vaše data v prohlížeči Chrome. Synchronizovaná data vám v účtu Google zůstanou.</translation>
 <translation id="2919738076569633423">Používáním Chromu vyjadřujete souhlas se <ph name="BEGIN_LINK_TOS" />smluvními podmínkami<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chrome z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
 <translation id="3148688391461398285">Získejte v Chromu lepší funkce založené na poloze.</translation>
@@ -27,7 +26,6 @@
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3345341804167540816">Používejte Chrome všude</translation>
 <translation id="3522659714780527202">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, zapněte synchronizaci</translation>
-<translation id="3523473570015918798">Pokud se odhlásíte, vaše záložky, historie, hesla a další data v Chromu se již nebudou synchronizovat do vašeho účtu Google.</translation>
 <translation id="3533694711092285624">Nemáte žádná uložená hesla. Chrome může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="3706101708757577809">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="384394811301901750">Google Chrome teď nemůže použít fotoaparát</translation>

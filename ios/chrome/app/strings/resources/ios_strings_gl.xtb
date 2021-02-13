@@ -197,6 +197,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
 <translation id="2975121486251958312">Só está dispoñible o modo de incógnito</translation>
+<translation id="2982481275546140226">Borrar datos</translation>
 <translation id="298306318844797842">Engadir método de pago…</translation>
 <translation id="2989805286512600854">Abrir nunha pestana nova</translation>
 <translation id="3037605927509011580">Vaia!</translation>
@@ -410,7 +411,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
-<translation id="5351284593342054342">Borrar todos os datos deste dispositivo</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5409365236829784218">Ningunha aplicación instalada que poida abrir este ficheiro.</translation>
@@ -466,7 +466,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5948291296578561264">Permíteche gardar fotos na túa fototeca.</translation>
 <translation id="5955891643922670672">Visualizando a versión sen conexión</translation>
 <translation id="5957613098218939406">Máis opcións</translation>
-<translation id="5961521066940389233">Conservar todos os datos neste dispositivo</translation>
 <translation id="5964480694698977962">Crear pestana nova do modo de incógnito</translation>
 <translation id="5965679971710331625">Iniciaches sesión</translation>
 <translation id="5979837087407522202">Buscar contrasinais</translation>
@@ -481,7 +480,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
-<translation id="6085282545406522838">Os datos sincronizados conservaranse na túa Conta de Google.</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6119050551270742952">O sitio web actual está no modo de incógnito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="7203585745079012652">Dicir as respostas</translation>
 <translation id="7207383424303353046">Novidade: Abre sitios en Chrome automaticamente configurándoo como o teu navegador predeterminado. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">O alcume da tarxeta non é válido</translation>
-<translation id="722989956228261714">Pechar sesión…</translation>
 <translation id="7265758999917665941">Nunca neste sitio</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
 <translation id="7291368939935408496">Preparando contrasinais…</translation>
@@ -635,7 +632,6 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="7554791636758816595">Nova pestana</translation>
-<translation id="7558943807639707687">Que queres facer cos marcadores, co historial e cos outros datos que están almacenados neste dispositivo?</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7583004045319035904">Utiliza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear as pestanas do modo de incógnito.</translation>
 <translation id="7600965453749440009">Non traducir nunca do <ph name="LANGUAGE" /></translation>

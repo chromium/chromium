@@ -197,6 +197,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2964349545761222050">Blokir Cookie Pihak Ketiga</translation>
 <translation id="2969979262385602596">Gagal masuk. Coba lagi nanti.</translation>
 <translation id="2975121486251958312">Hanya Mode Samaran yang Tersedia</translation>
+<translation id="2982481275546140226">Hapus Data</translation>
 <translation id="298306318844797842">Tambahkan Metode Pembayaran...</translation>
 <translation id="2989805286512600854">Buka di Tab Baru</translation>
 <translation id="3037605927509011580">Yah!</translation>
@@ -410,7 +411,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5339316356165661760">Aktifkan Sinkronisasi</translation>
-<translation id="5351284593342054342">Hapus dari Perangkat ini</translation>
 <translation id="5388358297987318779">Buka Gambar</translation>
 <translation id="5407969256130905701">Hapus Perubahan</translation>
 <translation id="5409365236829784218">Tidak ada aplikasi terpasang yang dapat membuka file ini.</translation>
@@ -466,7 +466,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5948291296578561264">Tindakan ini memungkinkan Anda menyimpan foto ke koleksi foto.</translation>
 <translation id="5955891643922670672">Melihat Versi Offline</translation>
 <translation id="5957613098218939406">Opsi Lainnya</translation>
-<translation id="5961521066940389233">Simpan di Perangkat ini</translation>
 <translation id="5964480694698977962">Buat tab samaran baru</translation>
 <translation id="5965679971710331625">Anda sudah masuk</translation>
 <translation id="5979837087407522202">Telusuri Sandi</translation>
@@ -481,7 +480,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
-<translation id="6085282545406522838">Data yang disinkronkan akan tetap berada di Akun Google Anda.</translation>
 <translation id="6108923351542677676">Penyiapan sedang berlangsung...</translation>
 <translation id="6119050551270742952">Halaman Web saat ini sedang dalam Mode Samaran</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="7203585745079012652">Ucapkan Jawabannya</translation>
 <translation id="7207383424303353046">Baru: Buka situs di Chrome secara otomatis dengan menjadikan Chrome sebagai Aplikasi Browser Default Anda. <ph name="BEGIN_LINK" />Buka Setelan<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nama Panggilan Kartu Tidak Valid</translation>
-<translation id="722989956228261714">Logout …</translation>
 <translation id="7265758999917665941">Jangan Pernah Untuk Situs Ini</translation>
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
 <translation id="7291368939935408496">Mempersiapkan Sandi…</translation>
@@ -635,7 +632,6 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7537586195939242955">Maaf, Pass Anda tidak dapat dipasang ke Passbook saat ini.</translation>
 <translation id="7554791636758816595">Tab Baru</translation>
-<translation id="7558943807639707687">Apa yang ingin Anda lakukan dengan bookmark, histori, dan data lainnya di perangkat ini?</translation>
 <translation id="7561196759112975576">Selalu</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Samaran.</translation>
 <translation id="7600965453749440009">Jangan pernah terjemahkan bahasa <ph name="LANGUAGE" /></translation>

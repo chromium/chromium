@@ -80,7 +80,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     &lt;li&gt;Kontaktirajte vlasnika veb-sajta.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Uneli ste lozinku na sajtu kojim ne upravlja vaša organizacija. Da biste zaštitili nalog, ne koristite lozinku ponovo u drugim aplikacijama ni na drugim sajtovima.</translation>
-<translation id="1259144770381827039">Prikaži detalje.</translation>
 <translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Aktivnosti koje ne ostaju na ovom uređaju:
@@ -1373,7 +1372,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6290238015253830360">Predloženi članci se prikazuju ovde</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google pomoćnik u Chrome-u se zaustavlja</translation>
-<translation id="6304463939629872728">Platite koristeći</translation>
 <translation id="6305205051461490394">URL <ph name="URL" /> nije dostupan.</translation>
 <translation id="6312113039770857350">Veb-stranica nije dostupna</translation>
 <translation id="6321917430147971392">Proverite DNS podešavanja</translation>
@@ -1403,7 +1401,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6406765186087300643">C0 (koverat)</translation>
 <translation id="6409754798200046165">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome preporučuje da odmah promenite lozinku.</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Ne zaboravite Google Pay ponudu</translation>
 <translation id="6415778972515849510">Chromium može da vam pomogne da zaštitite Google nalog i promenite lozinku.</translation>
 <translation id="6423385022588644828">Od sada brže potvrđujte kartice uz Touch ID</translation>
 <translation id="6425092077175753609">Material</translation>

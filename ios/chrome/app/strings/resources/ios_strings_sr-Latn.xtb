@@ -197,6 +197,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2964349545761222050">Blokiraj kolačiće treće strane</translation>
 <translation id="2969979262385602596">Prijavljivanje nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="2975121486251958312">Dostupan je samo režim bez arhiviranja</translation>
+<translation id="2982481275546140226">Obriši podatke</translation>
 <translation id="298306318844797842">Dodajte način plaćanja...</translation>
 <translation id="2989805286512600854">Otvori na novoj kartici</translation>
 <translation id="3037605927509011580">O, ne!</translation>
@@ -410,7 +411,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5339316356165661760">Uključi sinhronizaciju</translation>
-<translation id="5351284593342054342">Obriši sa ovog uređaja</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5407969256130905701">Odbaci promene</translation>
 <translation id="5409365236829784218">Nije instalirana nijedna aplikacija za otvaranje ove datoteke.</translation>
@@ -466,7 +466,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5948291296578561264">Ovo vam omogućava da čuvate slike u fototeci.</translation>
 <translation id="5955891643922670672">Pregledate oflajn verziju</translation>
 <translation id="5957613098218939406">Još opcija</translation>
-<translation id="5961521066940389233">Sačuvaj na ovom uređaju</translation>
 <translation id="5964480694698977962">Napravi novu karticu bez arhiviranja.</translation>
 <translation id="5965679971710331625">Prijavljeni ste</translation>
 <translation id="5979837087407522202">Pretražite lozinke</translation>
@@ -481,7 +480,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Ovde kontrolišite priče i aktivnosti</translation>
 <translation id="6066301408025741299">Dodirnite da biste otkazali.</translation>
-<translation id="6085282545406522838">Sinhronizovani podaci će ostati na Google nalogu.</translation>
 <translation id="6108923351542677676">Podešavanje je u toku...</translation>
 <translation id="6119050551270742952">Aktuelna veb-stranica je u režimu bez arhiviranja</translation>
 <translation id="6122191549521593678">Onlajn</translation>
@@ -605,7 +603,6 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="7203585745079012652">Izgovaraj odgovore</translation>
 <translation id="7207383424303353046">Novo: Otvarajte sajtove u Chrome-u automatski tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledač. <ph name="BEGIN_LINK" />Otvorite Podešavanja<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nevažeći nadimak kartice</translation>
-<translation id="722989956228261714">Odjavi me…</translation>
 <translation id="7265758999917665941">Nikada za ovaj sajt</translation>
 <translation id="7272437679830969316">Verifikacija identiteta nije uspela. Lozinka nije kopirana.</translation>
 <translation id="7291368939935408496">Pripremaju se lozinke...</translation>
@@ -635,7 +632,6 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7537586195939242955">Žao nam je, pristupna reč sada ne može da se instalira u Passbook.</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
-<translation id="7558943807639707687">Šta želite da uradite sa obeleživačima, istorijom i drugim podacima na ovom uređaju?</translation>
 <translation id="7561196759112975576">Uvek</translation>
 <translation id="7583004045319035904">Otključajte kartice bez arhiviranja pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>

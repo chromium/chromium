@@ -197,6 +197,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2964349545761222050">Üçüncü Taraf Çerezlerini Engelle</translation>
 <translation id="2969979262385602596">Oturum açılamadı. Daha sonra tekrar deneyin.</translation>
 <translation id="2975121486251958312">Sadece Gizli Mod Kullanılabilir</translation>
+<translation id="2982481275546140226">Verileri Temizle</translation>
 <translation id="298306318844797842">Ödeme Yöntemi Ekle...</translation>
 <translation id="2989805286512600854">Yeni Sekmede Aç</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
@@ -410,7 +411,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5339316356165661760">Senkronizasyonu Aç</translation>
-<translation id="5351284593342054342">Bu Cihazdan sil</translation>
 <translation id="5388358297987318779">Resmi Aç</translation>
 <translation id="5407969256130905701">Değişiklikleri Sil</translation>
 <translation id="5409365236829784218">Bu dosyayı açabilecek yüklü uygulama yok.</translation>
@@ -466,7 +466,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5948291296578561264">Böylece, fotoğrafları fotoğraf kitaplığınıza kaydedebilirsiniz.</translation>
 <translation id="5955891643922670672">Çevrimdışı Sürüm Gösteriliyor</translation>
 <translation id="5957613098218939406">Diğer Seçenekler</translation>
-<translation id="5961521066940389233">Bu Cihazda sakla</translation>
 <translation id="5964480694698977962">Yeni gizli sekme oluştur.</translation>
 <translation id="5965679971710331625">Oturum açtınız</translation>
 <translation id="5979837087407522202">Şifrelerde Ara</translation>
@@ -481,7 +480,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Haberlerinizi ve aktivitenizi buradan yönetin</translation>
 <translation id="6066301408025741299">İptal etmek için hafifçe vurun.</translation>
-<translation id="6085282545406522838">Senkronize edilmiş verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="6108923351542677676">Kurulum devam ediyor…</translation>
 <translation id="6119050551270742952">Geçerli Web sayfası Gizli modda</translation>
 <translation id="6122191549521593678">Çevrimiçi</translation>
@@ -605,7 +603,6 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="7203585745079012652">Yanıtı Sesli Söyle</translation>
 <translation id="7207383424303353046">Yeni: Varsayılan Tarayıcı Uygulamanız yaparak siteleri Chrome'da otomatik bir şekilde açın. <ph name="BEGIN_LINK" />Ayarları Aç<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kart İçin Geçersiz Takma Ad</translation>
-<translation id="722989956228261714">Oturumu Kapat…</translation>
 <translation id="7265758999917665941">Bu Site İçin Hiçbir Zaman</translation>
 <translation id="7272437679830969316">Kimliğiniz doğrulanamıyor. Şifre kopyalanmadı.</translation>
 <translation id="7291368939935408496">Şifreler Hazırlanıyor...</translation>
@@ -635,7 +632,6 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="7514365320538308">İndir</translation>
 <translation id="7537586195939242955">Maalesef Pass'iniz şu anda Passbook'a yüklenemiyor.</translation>
 <translation id="7554791636758816595">Yeni Sekme</translation>
-<translation id="7558943807639707687">Bu cihazdaki yer işaretleriniz, geçmişiniz ve diğer verilerinizle ne yapmak istersiniz?</translation>
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7583004045319035904">Gizli sekmelerinizin kilidini açmak için <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> kullanın.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> dilini asla çevirme</translation>

@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Εντοπίστηκε πύλη υποδοχής</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
+<translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Σάρωση σελίδας <ph name="PAGE_NUM" />. Ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
-<translation id="3515615323037921860">Εργασίες εκτύπωσης</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
@@ -296,7 +296,6 @@
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
-<translation id="7732651821766520760">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Αναγνωριστικό μοντέλου</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7819857487979277519">PSK (WPA ή RSN)</translation>

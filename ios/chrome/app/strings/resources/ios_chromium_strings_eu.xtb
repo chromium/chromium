@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="102360288709523007">Hobetu Chromium Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
-<translation id="1130979953299110755">Saioa amaitzen baduzu, aurrerantzean ez dira sinkronizatuko laster-markak, historia, pasahitzak eta Chromium-eko beste datu batzuk Google-ko kontuarekin.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1257458525759135959">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chromium-i</translation>
 <translation id="1361748954329991663">Chromium zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chromium-en bertsio berriekin bateragarria ez izatea.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Hasi Chromium-en eskanerra erabiltzen</translation>
 <translation id="8013573822802650211">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="8073677936375100957">Gailu honetan dituzun Chromium-eko datuak garbitu nahi dituzu?</translation>
-<translation id="8097322092271030751">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, saioa amaitzen duzunean Chromium-eko datuak ezabatu egingo dira gailu honetatik. Sinkronizatutako datuek Google-ko kontuan jarraituko dute.</translation>
 <translation id="8175055321229419309">Aholkua: <ph name="BEGIN_LINK" />ainguratu Chromium dock-ean<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromium arakatzaile lehenetsi bihurtzeko, ireki Ezarpenak, sakatu Arakatzaile lehenetsia eta hautatu Chromium.</translation>
 <translation id="8240981428553046115">Chromium-ek ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>

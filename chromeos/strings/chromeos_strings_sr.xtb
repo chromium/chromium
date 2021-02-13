@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Скенира се <ph name="PAGE_NUM" />. страница. Довршено је <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Штампање</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
-<translation id="3515615323037921860">Задаци штампања</translation>
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
@@ -297,7 +296,6 @@
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Број циклуса</translation>
-<translation id="7732651821766520760">Тест <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ИД модела</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>

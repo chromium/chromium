@@ -80,7 +80,6 @@
     &lt;li&gt;聯絡網站擁有者。&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">您輸入密碼的網站並非由您的機構管理。為保護您的帳戶，請勿在其他應用程式和網站上重用密碼。</translation>
-<translation id="1259144770381827039">查看詳情。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         裝置將不會儲存以下活動：
@@ -717,7 +716,7 @@
 <translation id="3761718714832595332">隱藏狀態</translation>
 <translation id="3765032636089507299">安全瀏覽網頁正在建構中。</translation>
 <translation id="3765588406864124894">出紙槽 9</translation>
-<translation id="3767485424735936570">系統管理員政策不建議複製這項內容並貼到「<ph name="VM_NAME" />」</translation>
+<translation id="3767485424735936570">管理員政策不建議將此內容複製並貼到 <ph name="VM_NAME" /></translation>
 <translation id="3778403066972421603">您要將這張信用卡儲存至 Google 帳戶及此裝置上嗎？</translation>
 <translation id="3780694243617746492">出紙槽</translation>
 <translation id="3781428340399460090">豔粉紅色</translation>
@@ -1362,7 +1361,6 @@
 <translation id="6290238015253830360">為您推薦的文章會在這裡顯示</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">正在停止 Chrome 的「Google 助理」</translation>
-<translation id="6304463939629872728">使用下列信用卡結帳：</translation>
 <translation id="6305205051461490394">無法存取 <ph name="URL" />。</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
@@ -1392,7 +1390,6 @@
 <translation id="6406765186087300643">C0 (信封)</translation>
 <translation id="6409754798200046165">您剛才在欺詐網站上輸入了密碼。Chrome 建議您立即變更密碼。</translation>
 <translation id="6410264514553301377">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)</translation>
-<translation id="6410774864568266108">別錯過 Google Pay 優惠</translation>
 <translation id="6415778972515849510">Chromium 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="6423385022588644828">使用 Touch ID 即可加快確認您的付款卡</translation>
 <translation id="6425092077175753609">質感</translation>
@@ -1831,6 +1828,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8206978196348664717">Prc4 (信封)</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
+<translation id="8213464188712611711">記憶體</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (信封)</translation>
 <translation id="8221250263817408492">您剛才在欺詐網站上輸入了密碼。Chromium 建議前往 <ph name="WEBSITE_1" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>

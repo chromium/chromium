@@ -80,7 +80,6 @@
     &lt;li&gt;Вебсайтыг эзэмшигчтэй холбогдоно уу.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Та нууц үгээ танай байгууллагын удирддаггүй сайтад оруулсан байна. Бүртгэлээ хамгаалахын тулд бусад апп болон сайтад нууц үгээ дахин бүү ашиглана уу.</translation>
-<translation id="1259144770381827039">Дэлгэрэнгүйг харна уу.</translation>
 <translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Энэ төхөөрөмж дээр үлдэхгүй үйл ажиллагаа:
@@ -1374,7 +1373,6 @@
 <translation id="6290238015253830360">Таны санал болгосон нийтлэл энд харагдана</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome-н Google Туслахыг зогсоож байна</translation>
-<translation id="6304463939629872728">Дараахаар тооцоо хийх</translation>
 <translation id="6305205051461490394"><ph name="URL" />-г ашиглах боломжгүй байна.</translation>
 <translation id="6312113039770857350">Веб хуудас боломжгүй байна</translation>
 <translation id="6321917430147971392">DNS тохиргоогоо шалгана уу</translation>
@@ -1404,7 +1402,6 @@
 <translation id="6406765186087300643">C0 (Дугтуй)</translation>
 <translation id="6409754798200046165">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Нууц үгээ одоо өөрчлөхийг Chrome зөвлөж байна.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-н дуусах огноо, карт баталгаажуулалтын кодыг оруулна уу</translation>
-<translation id="6410774864568266108">Google Pay-н саналаа бүү мартаарай</translation>
 <translation id="6415778972515849510">Chromium танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>
 <translation id="6423385022588644828">Одооноос Touch ID ашиглан картуудаа илүү хурдан баталгаажуулаарай</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1843,6 +1840,7 @@
 <translation id="8202370299023114387">Зөрчил</translation>
 <translation id="8206978196348664717">Prc4 (Дугтуй)</translation>
 <translation id="8211406090763984747">Холболт аюулгүй байна</translation>
+<translation id="8213464188712611711">Санах ой</translation>
 <translation id="8218327578424803826">Заасан байршил:</translation>
 <translation id="8220146938470311105">C7/C6 (Дугтуй)</translation>
 <translation id="8221250263817408492">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Таны энэ нууц үгийг ашигладаг <ph name="WEBSITE_1" /> болон бусад сайт руу очиж, түүнийг одоо өөрчлөхийг Chromium зөвлөж байна.</translation>

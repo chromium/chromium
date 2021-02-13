@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="102360288709523007">Googleకు వినియోగ గణాంకాలు, క్రాష్ నివేదికలు పంపి Chromiumను మెరుగుపరచడంలో సహాయపడండి.</translation>
-<translation id="1130979953299110755">సైన్ అవుట్ చేయడం ద్వారా, మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర Chromium డేటా ఇకపై మీ Google ఖాతాకు సింక్ చేయబడదు.</translation>
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1257458525759135959">ఇమేజ్‌లను సేవ్ చేయడానికి, మీ ఫోటోలకు యాడ్ చేయడం కోసం Chromiumను అనుమతించడానికి సెట్టింగ్‌లపై ట్యాప్ చేయండి</translation>
 <translation id="1361748954329991663">Chromium వెర్షన్ కాలం చెల్లింది. <ph name="BEGIN_LINK" />యాప్ స్టోర్<ph name="END_LINK" />లో ఎలాంటి అప్‌డేట్ అందుబాటులో లేకపోతే, మీ పరికరం ఇకపై కొత్త Chromium వెర్షన్‌లను సపోర్ట్ చేయకపోవచ్చు.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Chromium స్కానర్‌ను ఉపయోగించడం ప్రారంభించండి</translation>
 <translation id="8013573822802650211">మీరు Chromiumను ఎక్కడ ఉపయోగించినా, అక్కడినుండి మీ ట్యాబ్‌లను చూసేందుకు, మీ పరికరాలన్నింటిలో సైన్ ఇన్ చేయండి</translation>
 <translation id="8073677936375100957">ఈ పరికరం నుండి మీ Chromium డేటాని తీసివేయాలా?</translation>
-<translation id="8097322092271030751">మీ ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతోంది కాబట్టి, సైన్ అవుట్ చేసినప్పుడు, ఈ పరికరం నుండి మీ Chromium డేటా తొలగించబడుతుంది. మీ సింక్ చేయబడిన డేటా మీ Google ఖాతాలోనే ఉండిపోతుంది.</translation>
 <translation id="8175055321229419309">చిట్కా: <ph name="BEGIN_LINK" />Chromiumను మీ డాక్‌కు తరలించండి<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromiumను మీ ఆటోమేటిక్ బ్రౌజర్ యాప్‌గా ఉంచడానికి, సెట్టింగ్‌లు తెరిచి, సెట్టింగ్ ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేసి, Chromiumను ఎంచుకోండి.</translation>
 <translation id="8240981428553046115">Chromium అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>

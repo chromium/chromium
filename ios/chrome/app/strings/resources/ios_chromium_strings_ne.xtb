@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="102360288709523007">Google मा प्रयोग सम्बन्धी तथ्याङ्क र क्रयास रिपोर्टहरू पठाएर Chromium लाई राम्रो बनाउन सहयोग गर्नुहोस्।</translation>
-<translation id="1130979953299110755">तपाईंले साइन आउट गर्नुभयो भने तपाईंका बुकमार्क, इतिहास, पासवर्ड र Chromium मा भएका अन्य डेटा तपाईंको Google खातामा सिंक हुने छैनन्।</translation>
 <translation id="1185134272377778587">Chromium का बारेमा</translation>
 <translation id="1257458525759135959">फोटोहरू सुरक्षित गर्न सेटिङमा ट्याप गर्नुहोस् र Chromium लाई आफ्ना फोटोहरूको फोल्डरमा फोटो हाल्न दिनुहोस्</translation>
 <translation id="1361748954329991663">Chromium पुरानो भइसकेको छ। <ph name="BEGIN_LINK" />एप स्टोर<ph name="END_LINK" />मा कुनै पनि अपडेट उपलब्ध छैन भने तपाईंको यन्त्रमा अब उप्रान्त Chromium का नयाँ संस्करण प्रयोग गर्न नमिल्न सक्छ।</translation>
@@ -71,7 +70,6 @@
 <translation id="7890287942691234100">Chromium को स्क्यानर प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="8013573822802650211">आफूले Chromium प्रयोग गर्ने सबै यन्त्रमा खोलिएका ट्याबहरू हेर्न ती सबै यन्त्रमा साइन इन गर्नुहोस्</translation>
 <translation id="8073677936375100957">यस यन्त्रबाट तपाईंको Chromium को डेटा मेटाउने हो?</translation>
-<translation id="8097322092271030751">तपाईंको खाता <ph name="HOSTED_DOMAIN" /> ले व्यवस्थापन गर्ने हुनाले साइन आउट गर्दा Chromium मा रहेको तपाईंको डेटा यो यन्त्रबाट मेटाइने छ। सिंक भएको तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
 <translation id="8175055321229419309">सुझाव: <ph name="BEGIN_LINK" />Chromium लाई आफ्नो डकमा सार्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromium लाई आफ्नो पूर्वनिर्धारित ब्राउजर बनाउन सेटिङ खोल्नुहोस्, 'पूर्वनिर्धारित ब्राउजर एप' मा ट्याप गर्नुहोस् र Chromium चयन गर्नुहोस्।</translation>
 <translation id="8240981428553046115">Chromium ले अपडेटहरू उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन। पछि फेरि प्रयास गर्नुहोस्।</translation>

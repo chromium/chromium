@@ -103,7 +103,6 @@
 <translation id="345898999683440380">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUM" />। <ph name="PERCENTAGE_VALUE" />% হয়ে গেছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
-<translation id="3515615323037921860">প্রিন্ট করা কাজ</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
 <translation id="357889014807611375">মিটার্ড ওয়াই-ফাই</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
@@ -148,6 +147,7 @@
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />টির মধ্যে <ph name="PRINTED_PAGE_NUMBER" /> নম্বর পৃষ্ঠা। প্রিন্ট করা বাতিল করতে এন্টার প্রেস করুন।</translation>
 <translation id="4646949265910132906">নিরাপদ ওয়াই-ফাই কানেকশন</translation>
+<translation id="4652335678334611408">সেশন লগ সেভ করুন</translation>
 <translation id="4665014895760275686">প্রস্তুতকর্তা</translation>
 <translation id="467510802200863975">পাসওয়ার্ড মিলছে না</translation>
 <translation id="467715984478005772">ফায়ারওয়াল রয়েছে বলে মনে হচ্ছে</translation>
@@ -278,6 +278,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা সম্পূর্ণ হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> ম্যানেজ করেন।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7487067081878637334">প্রযুক্তি</translation>
 <translation id="7490813197707563893">MAC ঠিকানা</translation>
@@ -294,7 +295,6 @@
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">সাইকেল কাউন্ট</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>

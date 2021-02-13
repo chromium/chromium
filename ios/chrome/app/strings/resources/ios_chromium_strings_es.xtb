@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="102360288709523007">Ayudar a mejorar Chromium enviando informes sobre fallos y estadísticas de uso a Google.</translation>
-<translation id="1130979953299110755">Si cierras sesión, tus marcadores, tu historial, tus contraseñas y otros datos de Chromium dejarán de sincronizarse con tu cuenta de Google.</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, toca Ajustes y permite que Chromium añada fotos.</translation>
 <translation id="1361748954329991663">Chromium no está actualizado. Si no hay ninguna actualización disponible en el <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que el dispositivo ya no sea compatible con las nuevas versiones de Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Empezar a usar el escáner de Chromium</translation>
 <translation id="8013573822802650211">Inicia sesión en todos tus dispositivos para ver tus pestañas dondequiera que uses Chromium</translation>
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium en este dispositivo?</translation>
-<translation id="8097322092271030751">Tu cuenta está gestionada por <ph name="HOSTED_DOMAIN" />, por lo que tus datos de Chromium se eliminarán de este dispositivo cuando cierres sesión. Los datos que hayas sincronizado permanecerán en tu cuenta de Google.</translation>
 <translation id="8175055321229419309">Consejo: <ph name="BEGIN_LINK" />Mueve Chromium a tu Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Para que Chromium sea tu navegador predeterminado, abre Ajustes, toca Aplicación de navegador predeterminada y selecciona Chromium.</translation>
 <translation id="8240981428553046115">Chromium no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>

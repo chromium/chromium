@@ -197,6 +197,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2964349545761222050">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975121486251958312">Na voljo je samo način brez beleženja dejavnosti</translation>
+<translation id="2982481275546140226">Izbriši podatke</translation>
 <translation id="298306318844797842">Dodajanje plačilnega sredstva …</translation>
 <translation id="2989805286512600854">Odpri v novem zavihku</translation>
 <translation id="3037605927509011580">Ti šment!</translation>
@@ -410,7 +411,6 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5339316356165661760">Vklopi sinhronizacijo</translation>
-<translation id="5351284593342054342">Izbriši iz te naprave</translation>
 <translation id="5388358297987318779">Odpri sliko</translation>
 <translation id="5407969256130905701">Zavrzi spremembe</translation>
 <translation id="5409365236829784218">Nameščena ni nobena apl. za odpiranje te datoteke.</translation>
@@ -466,7 +466,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5948291296578561264">S tem je mogoče shranjevati fotografije v knjižnico fotografij.</translation>
 <translation id="5955891643922670672">Ogled različice brez povezave</translation>
 <translation id="5957613098218939406">Več možnosti</translation>
-<translation id="5961521066940389233">Ohrani v napravi</translation>
 <translation id="5964480694698977962">Create new incognito tab.</translation>
 <translation id="5965679971710331625">Prijavljeni ste</translation>
 <translation id="5979837087407522202">Iskanje gesel</translation>
@@ -481,7 +480,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="605721222689873409">LL</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
-<translation id="6085282545406522838">Sinhronizirani podatki bodo ostali v računu Google.</translation>
 <translation id="6108923351542677676">Poteka nastavitev …</translation>
 <translation id="6119050551270742952">Trenutna spletna stran je v načinu brez beleženja dejavnosti</translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
@@ -605,7 +603,6 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="7203585745079012652">Izgovorjava odgovorov</translation>
 <translation id="7207383424303353046">Novo: Samodejno odpiranje spletnih mest v Chromu tako, da ga nastavite kot privzeti brskalnik. <ph name="BEGIN_LINK" />Odpiranje nastavitev<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Neveljaven vzdevek za kartico</translation>
-<translation id="722989956228261714">Odjava …</translation>
 <translation id="7265758999917665941">Nikoli za to spletno mesto</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
 <translation id="7291368939935408496">Pripravljanje gesel ...</translation>
@@ -635,7 +632,6 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7537586195939242955">Elementa trenutno ni mogoče namesiti v Passbook.</translation>
 <translation id="7554791636758816595">Nov zavihek</translation>
-<translation id="7558943807639707687">Kaj želite narediti z zaznamki, zgodovino in drugimi podatki v tej napravi?</translation>
 <translation id="7561196759112975576">Vedno</translation>
 <translation id="7583004045319035904">Za odklepanje zavihkov brez beleženja dejavnosti uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>

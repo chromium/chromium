@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2975121486251958312">仅无痕模式可用</translation>
+<translation id="2982481275546140226">清除数据</translation>
 <translation id="298306318844797842">添加付款方式…</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
-<translation id="5351284593342054342">从此设备中清除</translation>
 <translation id="5388358297987318779">打开图片</translation>
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5409365236829784218">没有安装可打开此文件的应用。</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
-<translation id="5961521066940389233">保留在此设备上</translation>
 <translation id="5964480694698977962">创建新的无痕式标签页。</translation>
 <translation id="5965679971710331625">您已登录</translation>
 <translation id="5979837087407522202">搜索密码</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
-<translation id="6085282545406522838">已同步的数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="6108923351542677676">正在设置…</translation>
 <translation id="6119050551270742952">当前网页处于无痕模式</translation>
 <translation id="6122191549521593678">在线</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">说出答案</translation>
 <translation id="7207383424303353046">新功能：将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开网站。<ph name="BEGIN_LINK" />打开“设置”<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡的昵称无效</translation>
-<translation id="722989956228261714">退出帐号…</translation>
 <translation id="7265758999917665941">此网站一律不保存密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="7554791636758816595">新标签页</translation>
-<translation id="7558943807639707687">您想如何处理您在此设备上的书签、历史记录和其他数据？</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>

@@ -90,6 +90,7 @@
 <translation id="315738237743207937">S'ha detectat un portal captiu</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
+<translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">S'està escanejant la pàgina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completat.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
-<translation id="3515615323037921860">Tasques d'impressió</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
@@ -296,7 +296,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
-<translation id="7732651821766520760">Prova <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Identificador del model</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>

@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="2969979262385602596">ছাইন ইন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2975121486251958312">কেৱল ইনক’গনিট’টো ম’ড উপলব্ধ</translation>
+<translation id="2982481275546140226">ডেটা মচক</translation>
 <translation id="298306318844797842">পৰিশোধৰ পদ্ধতি যোগ কৰক...</translation>
 <translation id="2989805286512600854">নতুন টেবত খোলক</translation>
 <translation id="3037605927509011580">আমি দুঃখিত!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5339316356165661760">ছিংক অন কৰক</translation>
-<translation id="5351284593342054342">এই ডিভাইচটোৰ পৰা পৰিষ্কাৰ কৰক</translation>
 <translation id="5388358297987318779">প্ৰতিচ্ছবি খোলক</translation>
 <translation id="5407969256130905701">সালসলনিবোৰ অগ্ৰাহ্য কৰক</translation>
 <translation id="5409365236829784218">এই ফাইলটো খুলিব পৰা কোনো এপ্লিকেশ্বন ইনষ্টল কৰা নাই।</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">ইয়াৰ জৰিয়তে আপুনি ফট’ লাইব্ৰেৰীত ফট’ ছেভ কৰিব পাৰে।</translation>
 <translation id="5955891643922670672">অফলাইন সংস্কৰণ চোৱাৰ সুবিধা</translation>
 <translation id="5957613098218939406">অধিক বিকল্প</translation>
-<translation id="5961521066940389233">এই ডিভাইচটোত ৰাখক</translation>
 <translation id="5964480694698977962">নতুন ইনক'গনিট' টেব সৃষ্টি কৰক</translation>
 <translation id="5965679971710331625">আপুনি ছাইন ইন কৰিলে</translation>
 <translation id="5979837087407522202">পাছৱর্ডসমূহ সন্ধান কৰক</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপোনাৰ কাহিনীসমূহ আৰু কাৰ্যকলাপ ইয়াত নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="6066301408025741299">বাতিল কৰিবলৈ টিপক।</translation>
-<translation id="6085282545406522838">আপোনাৰ ছিংক কৰা ডেটা আপোনাৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="6108923351542677676">ছেট আপ প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="6119050551270742952">বৰ্তমানৰ ৱেবপৃষ্ঠাটো ইনক’গনিট’ত আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -604,7 +602,6 @@
 <translation id="7203585745079012652">সঁহাৰিটো কৈ দিয়ক</translation>
 <translation id="7207383424303353046">নতুন: Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌ বনাই ছাইটসমূহ স্বয়ংক্ৰিয়ভাৱে তাত খোলক। <ph name="BEGIN_LINK" />ছেটিংসমূহ খোলক<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">কার্ডৰ উপনাম অমান্য</translation>
-<translation id="722989956228261714">ছাইন আউট কৰক…</translation>
 <translation id="7265758999917665941">এই ছাইটটোৰ বাবে কেতিয়াও নহয়</translation>
 <translation id="7272437679830969316">আপোনাৰ পৰিচয় সত্যাপন কৰিব পৰা নগ’ল। পাছৱৰ্ড প্ৰতিলিপি কৰা নহ’ল।</translation>
 <translation id="7291368939935408496">পাছৱর্ড সাজু কৰি থকা হৈছে...</translation>
@@ -634,7 +631,6 @@
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ত আপোনাৰ পাছ Passbookত ইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="7554791636758816595">নতুন টেব</translation>
-<translation id="7558943807639707687">আপুনি এই ডিভাইচটোত আপোনাৰ বুকমাৰ্ক, ইতিহাস আৰু অন্য ডেটাৰ জৰিয়তে কি কৰিবলৈ বিচাৰে?</translation>
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="7607521702806708809">পাছৱৰ্ড মচক</translation>

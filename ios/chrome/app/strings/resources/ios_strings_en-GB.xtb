@@ -197,6 +197,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2964349545761222050">Block third-party cookies</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975121486251958312">Only Incognito mode is available</translation>
+<translation id="2982481275546140226">Clear Data</translation>
 <translation id="298306318844797842">Add Payment Method...</translation>
 <translation id="2989805286512600854">Open in New Tab</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -410,7 +411,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5317780077021120954">Save</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
-<translation id="5351284593342054342">Clear from this device</translation>
 <translation id="5388358297987318779">Open image</translation>
 <translation id="5407969256130905701">Discard changes</translation>
 <translation id="5409365236829784218">There are no applications installed that can open this file.</translation>
@@ -466,7 +466,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5948291296578561264">This lets you save photos to your photo library.</translation>
 <translation id="5955891643922670672">Viewing Offline Version</translation>
 <translation id="5957613098218939406">More Options</translation>
-<translation id="5961521066940389233">Keep on this device</translation>
 <translation id="5964480694698977962">Create new incognito tab.</translation>
 <translation id="5965679971710331625">You're signed in</translation>
 <translation id="5979837087407522202">Search passwords</translation>
@@ -481,7 +480,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
-<translation id="6085282545406522838">Your synced data will remain in your Google Account.</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6119050551270742952">Current web page is on Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Try to use a unique password for every site.</translation>
 <translation id="7203585745079012652">Speak Answers Back</translation>
 <translation id="7207383424303353046">New: Open sites in Chrome automatically by making it your default browser app. <ph name="BEGIN_LINK" />Open settings<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Invalid card nickname</translation>
-<translation id="722989956228261714">Sign out…</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7291368939935408496">Preparing Passwords…</translation>
@@ -635,7 +632,6 @@ Try to use a unique password for every site.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="7554791636758816595">New Tab</translation>
-<translation id="7558943807639707687">What would you like to do with your bookmarks, history and other data on this device?</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>

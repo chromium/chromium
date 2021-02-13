@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">Dokončite nastavenie v telefóne</translation>
 <translation id="1054153489933238809">Otvoriť pôvodný &amp;obrázok na novej karte</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Aktualizujte zariadenie <ph name="DEVICE_TYPE" /> do 1 týždňa}few{Aktualizujte zariadenie <ph name="DEVICE_TYPE" /> do {NUM_WEEKS} týždňov}many{Aktualizujte zariadenie <ph name="DEVICE_TYPE" /> do {NUM_WEEKS} týždňa}other{Aktualizujte zariadenie <ph name="DEVICE_TYPE" /> do {NUM_WEEKS} týždňov}}</translation>
-<translation id="1055806300943943258">Vyhľadávajú sa zariadenia Bluetooth a USB...</translation>
 <translation id="1056466516655540509">Aktualizované pred <ph name="MINUTES" /> min.</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
 <translation id="1056898198331236512">Upozornenie</translation>
@@ -1983,7 +1982,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3201422919974259695">Tu sa budú zobrazovať dostupné zariadenia USB.</translation>
 <translation id="3202131003361292969">Cesta</translation>
 <translation id="3202173864863109533">Zvuk tejto karty bol stlmený.</translation>
-<translation id="3202218848974251205">Karanténa na ochranu súkromia</translation>
 <translation id="3208321278970793882">Aplikácia</translation>
 <translation id="3208584281581115441">Skontrolovať</translation>
 <translation id="3208703785962634733">Nepotvrdené</translation>
@@ -3144,6 +3142,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4538417792467843292">Odstrániť slovo</translation>
 <translation id="4538684596480161368">Na stránkach <ph name="HOST" /> vždy blokovať doplnky, ktoré nie sú v karanténe</translation>
 <translation id="4538792345715658285">Nainštalované na základe podnikových pravidiel.</translation>
+<translation id="4541123282641193691">Účet sa nepodarilo overiť. Skúste to neskôr alebo reštartujte Chromebook.</translation>
 <translation id="4541662893742891060">K tomuto profilu sa nepodarilo pripojiť. Technickú podporu vám poskytne operátor.</translation>
 <translation id="4541810033354695636">rozšírená realita</translation>
 <translation id="4542520061254486227">Čítať vaše údaje na weboch <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
@@ -4170,6 +4169,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="574209121243317957">Výška hlasu</translation>
 <translation id="5742505912938664543">Keď si tu pridáte sekundárny účet, budete s ním môcť prehliadať web, sťahovať aplikácie a kontrolovať Gmail aj ďalšie služby Googlu.</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
+<translation id="5746261205461426123">Otvoriť sprievodcu nastavením</translation>
 <translation id="5747552184818312860">Koniec platnosti</translation>
 <translation id="5747785204778348146">Vývojár – nestabilné</translation>
 <translation id="5747809636523347288">Prilepiť a prejsť na <ph name="URL" /></translation>
@@ -5330,6 +5330,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="708278670402572152">Ak chcete aktivovať vyhľadávanie, odpojte sa</translation>
 <translation id="7084321615353200053">Weby môžu žiadať o použitie kamery (odporúčané)</translation>
 <translation id="7085389578340536476">Povoliť Chromu zaznamenať zvuk?</translation>
+<translation id="7085805695634549980">Nepodarilo sa pripojiť k službám Googlu. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Zahŕňať súbory denníka Chromu do archívu</translation>
 <translation id="7088434364990739311">Kontrolu aktualizácií sa nepodarilo spustiť (kód chyby: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Otvárajte a komprimujte súbory ZIP v aplikácii Súbory.</translation>

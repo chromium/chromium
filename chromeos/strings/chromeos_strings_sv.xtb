@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
 <translation id="3188257591659621405">Mina filer</translation>
 <translation id="3199982728237701504">Dokumentmatare (tvåsidig)</translation>
+<translation id="3226405216343213872">Söker efter skannrar</translation>
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
 <translation id="3268178239013324452">Misslyckades – luckan är öppen</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Skannar sida <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % har slutförts.</translation>
 <translation id="3459509316159669723">Skriva ut</translation>
 <translation id="3488065109653206955">Delvis aktiverat</translation>
-<translation id="3515615323037921860">Utskriftsjobb</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="357889014807611375">Wi-Fi med datapriser</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
@@ -279,6 +279,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
+<translation id="7449585358422953039">Hanteras av <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">En portal hittades</translation>
 <translation id="7487067081878637334">Teknik</translation>
 <translation id="7490813197707563893">MAC-adress</translation>
@@ -295,7 +296,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Antal cykler</translation>
-<translation id="7732651821766520760">Test – <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Modell-id</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>

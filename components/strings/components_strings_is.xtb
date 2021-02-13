@@ -80,7 +80,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     &lt;li&gt;Hafðu samband við eiganda vefsvæðisins.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Þú slóst inn aðgangsorðið þitt á síðu sem þitt fyrirtæki hefur ekki umsjón með. Til að vernda reikninginn þinn skaltu ekki nota sama aðgangsorð í öðrum forritum og á öðrum síðum.</translation>
-<translation id="1259144770381827039">Sjá nánar.</translation>
 <translation id="1263231323834454256">Leslisti</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         Eftirfarandi virkni er ekki vistuð í þessu tæki:
@@ -1375,7 +1374,6 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6290238015253830360">Tillögur að greinum birtast hér</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google hjálpari í Chrome stoppar</translation>
-<translation id="6304463939629872728">Greiða með</translation>
 <translation id="6305205051461490394">Ekki næst í <ph name="URL" />.</translation>
 <translation id="6312113039770857350">Vefsíðan er ekki tiltæk</translation>
 <translation id="6321917430147971392">Athugaðu DNS-stillingarnar</translation>
@@ -1405,7 +1403,6 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6406765186087300643">C0 (umslag)</translation>
 <translation id="6409754798200046165">Þú varst að slá aðgangsorðið þitt inn á villandi vefsvæði. Chrome mælir með því að þú skiptir um aðgangsorð núna.</translation>
 <translation id="6410264514553301377">Sláðu inn gildistímann og CVC-númerið fyrir <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Ekki gleyma Google Pay tilboðinu</translation>
 <translation id="6415778972515849510">Chromium getur hjálpað þér að vernda Google reikninginn þinn og breyta aðgangsorðinu.</translation>
 <translation id="6423385022588644828">Staðfestu kortin þín hraðar með því að nota Touch ID héðan í frá</translation>
 <translation id="6425092077175753609">Nýja útlitshönnunin</translation>
@@ -1844,6 +1841,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="8202370299023114387">Skörun</translation>
 <translation id="8206978196348664717">Prc4 (umslag)</translation>
 <translation id="8211406090763984747">Tengingin er örugg</translation>
+<translation id="8213464188712611711">Minningar</translation>
 <translation id="8218327578424803826">Úthlutuð staðsetning:</translation>
 <translation id="8220146938470311105">C7/C6 (umslag)</translation>
 <translation id="8221250263817408492">Þú varst að slá aðgangsorðið þitt inn á villandi vefsvæði. Chromium mælir með því að þú farir á <ph name="WEBSITE_1" /> og önnur vefsvæði þar sem þú notar þetta aðgangsorð og breytir því núna.</translation>

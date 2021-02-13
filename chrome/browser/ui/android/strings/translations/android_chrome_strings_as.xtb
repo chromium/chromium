@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="1477626028522505441">ছার্ভাৰৰ সমস্যাৰ বাবে <ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল।</translation>
-<translation id="1497470209855416291">ট্ৰায়েল অক্ষম কৰা আছে</translation>
 <translation id="1506061864768559482">সন্ধান ইঞ্জিন</translation>
 <translation id="1513352483775369820">বুকমার্কবোৰ আৰু ৱেব ইতিহাস</translation>
 <translation id="1513858653616922153">পাছৱৰ্ড মচক</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">ব্যৱহাৰকাৰীৰ নামটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="1592864538817356322">মান্য সুৰক্ষা:</translation>
 <translation id="1612196535745283361">ডিভাইচ স্কেন কৰিবলৈ Chromeএ অৱস্থান এক্সেছ কৰাটো প্ৰয়োজনীয়। এই ডিভাইচটোৰ বাবে <ph name="BEGIN_LINK" />অৱস্থান এক্সেছ অফ কৰা আছে৷<ph name="END_LINK" /></translation>
-<translation id="1613577519914241527">অন কৰা থাকিলে, ৱেবছাইটে নিজৰ ছাইটটো অধিক প্ৰাসংগিক কৰিবলৈ আপোনাক ব্যক্তিগতভাৱে চিনাক্ত কৰা তথ্য ব্যৱহাৰ কৰিব নোৱাৰিব। কোনো সংগীতানুষ্ঠানত হোৱা ভিৰৰ দৰেই, ছাইটে কেৱল সহস্ৰাধিক ব্যৱহাৰকাৰীয়ে একে ধৰণৰ আগ্ৰহ শ্বেয়াৰ কৰা বুলিহে জানিব পাৰে।\n\nআপোনাৰ “ভিৰ”টো আপুনি চোৱা ছাইটৰ ভিত্তিক হয়। বিজ্ঞাপনদাতাই সমগ্ৰ ভিৰটোৱে কি কি ছাইট চায় সেয়াহে চাব পাৰে, আপুনি ব্যক্তিগতভাৱে কি কি ছাইট চাই সেয়া চাব নোৱাৰে।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{বাছনি কৰা ১টা বস্তু আঁতৰাওক}one{বাছনি কৰা #টা বস্তু আঁতৰাওক}other{বাছনি কৰা #টা বস্তু আঁতৰাওক}}</translation>
 <translation id="1641113438599504367">সুৰক্ষিত ব্ৰাউজিং</translation>
 <translation id="164269334534774161">আপুনি <ph name="CREATION_TIME" />ৰ পৰা এই পৃষ্ঠাটোৰ এটা অফলাইন প্ৰতিলিপি চাই আছে</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">পৰৱৰ্তী ভিডিঅ'টো চাওক</translation>
 <translation id="2074143993849053708">Assistantৰ কণ্ঠধ্বনিৰদ্বাৰা সন্ধানৰ সন্মতিৰ ইউআই বন্ধ কৰা হৈছে</translation>
 <translation id="2082238445998314030">ফলাফল <ph name="TOTAL_RESULTS" />ৰ ভিতৰত <ph name="RESULT_NUMBER" /></translation>
-<translation id="2083113399121613785">ট্ৰায়েল সক্ষম কৰা আছে</translation>
 <translation id="2096012225669085171">সকলো ডিভাইচতে ছিংক আৰু ব্যক্তিগতকৰণ কৰক</translation>
 <translation id="2100273922101894616">স্বয়ংক্ৰিয়ভাৱে ছাইন ইন কৰক</translation>
 <translation id="2100314319871056947">পাঠখিনি সৰু সৰুকৈ ভাগ কৰি শ্বেয়াৰ কৰিবলৈ চেষ্টা কৰক</translation>
@@ -469,7 +466,6 @@
 <translation id="4440958355523780886">Googleএ প্ৰদান কৰা লাইট পৃষ্ঠা। প্ৰকৃত পৃষ্ঠাটো চাবলৈ টিপক।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> টেব বন্ধ কৰক</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />লৈ বুকমার্ক কৰা হৈছে</translation>
-<translation id="4465314970046116177">গোপনীয়তা ছেণ্ডবক্স হৈছে নতুন প্ৰযুক্তিবিদ্যাৰ এক সমাহাৰ, যি লোকসকলক অৱশেষত তৃতীয়-পক্ষৰ তৃতীয় পক্ষৰ কুকিৰ দৰে ক্ৰছ-ছাইট ট্ৰেকিঙৰ প্ৰক্ৰিয়াৰ পৰা সুৰক্ষিত কৰাৰ সমান্তৰালভাৱে সেই প্ৰক্ৰিয়াসমূহৰ ওপৰত নিৰ্ভৰ কৰা ৱেবৰ সমল আৰু সেৱাসমূহ সংৰক্ষণ কৰে। এই নতুন প্ৰযুক্তিবিদ্যাটো বিকাশ কৰিবলৈ Chromeএ ৱেবছাইটৰ বিকাশকৰ্তা, প্ৰকাশক, বিজ্ঞাপনদাতা আৰু অন্য ব্ৰাউজাৰৰ সৈতে কাম কৰি আছে।</translation>
 <translation id="4472118726404937099">সমগ্ৰ ডিভাইচতে ছিংক আৰু ব্যক্তিকৃত কৰিবলৈ ছাইন ইন কৰি ছিংক অন কৰক</translation>
 <translation id="447252321002412580">Chromeৰ সুবিধা আৰু প্ৰদৰ্শন উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4479972344484327217">Chromeৰ বাবে <ph name="MODULE" /> ইনষ্টল কৰি থকা হৈছে…</translation>
@@ -502,7 +498,6 @@
 <translation id="4662373422909645029">উপনামত সংখ্যা থাকিব নোৱাৰে</translation>
 <translation id="4663499661119906179">আপোনাৰ বাবে থকা শীৰ্ষ ছাইটসমূহ আৰু কাহিনীবোৰ</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" />টা বুকমাৰ্ক মচা হ’ল</translation>
-<translation id="4665282149850138822">আপোনাৰ গৃহ স্ক্ৰীণত <ph name="NAME" />ক যোগ দিয়া হৈছে</translation>
 <translation id="4668347365065281350">কুকি আৰু স্থানীয়ভাৱে ষ্ট’ৰ কৰা অন্য ডেটাকে ধৰি ছাইটসমূহে ষ্ট’ৰ কৰা সকলো ডেটা</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
@@ -748,7 +743,6 @@
 উদাহৰণস্বৰূপে, কিছুমান ৱেবছাইটে আপোনাক আপুনি চোৱা অন্য ৱেবছাইটসমূহৰ ওপৰত আধাৰিত নোহোৱা কিছুমান বিজ্ঞাপন প্ৰদর্শন কৰি এই অনুৰোধলৈ সঁহাৰি জনাব পাৰে। বহুতো ৱেবছাইটে তথাপিও আপোনাৰ ব্ৰাউজিং ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব - উদাহৰণস্বৰূপে সুৰক্ষা উন্নত কৰিবলৈ, সমলৰ লগতে বিজ্ঞাপন তথা চুপাৰিছ প্ৰদান কৰিবলৈ আৰু ৰিপ’র্টিং কৰা পৰিসংখ্যা সৃষ্টি কৰিবলৈ ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব।</translation>
 <translation id="624789221780392884">আপডে’ট সাজু</translation>
 <translation id="6255999984061454636">সমলৰ পৰামৰ্শ</translation>
-<translation id="6266591733731644292">গোপনীয়তা ছেণ্ডবক্স এতিয়াও বহুলভাৱে ৰিলিজ কৰা হোৱা নাই। এই ট্ৰায়েলৰ সময় অৱধিত:\n<ph name="BEGIN_LIST_ITEM1" />ৱেবছাইট আৰু বিকাশকৰ্তাই আপোনাক বিশেষভাৱে চিনাক্ত কৰিব পৰাৰ তথ্য এক্সেছ নকৰাকৈ প্ৰাসংগিক অভিজ্ঞতাসমূহ সৃষ্টি কৰিবলৈ চেষ্টা কৰি চাব পাৰে<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />ব্যৱহাৰকাৰীয়ে এই পৃষ্ঠাখনত থকা নিয়ন্ত্ৰণ ব্যৱহাৰ কৰি ট্ৰায়েলটোৰ পৰা বাহিৰ হ'ব পাৰে।<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">এই পৃষ্ঠাটো প্ৰিণ্ট কৰোঁতে কিবা সমস্যা হৈছিল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6292420053234093573">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_LINK1" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
@@ -840,7 +834,6 @@
 <translation id="6813446258015311409">Chromeত ছাইন ইন কৰা হ’ল, খোলা আছে।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> টেবটো বাছনি কৰা হৈছে</translation>
-<translation id="6833996806551876956">গোপনীয়তা ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
 <translation id="6845325883481699275">Chromeৰ সুৰক্ষা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>
 <translation id="6850409657436465440">আপোনাৰ ডাউনল’ড প্ৰক্ৰিয়া চলি আছে</translation>
@@ -1012,6 +1005,7 @@
 <translation id="8015452622527143194">পৃষ্ঠাটোৰ সকলো সমল ডিফ’ল্ট আকাৰলৈ উভতাই নিয়ক</translation>
 <translation id="8026334261755873520">ব্ৰাউজিং ডেটা মচক</translation>
 <translation id="8027863900915310177">ডাউনল’ড কৰি ক’ত ছেভ কৰিব লাগে বাছনি কৰক</translation>
+<translation id="8032569120109842252">ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="8035133914807600019">নতুন ফ’ল্ডাৰ…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকী আছে</translation>
 <translation id="8037801708772278989">এইমাত্ৰ পৰীক্ষা কৰা হৈছে</translation>
@@ -1036,6 +1030,7 @@
 <translation id="8156139159503939589">আপুনি কি ভাষা পঢ়িব পাৰে?</translation>
 <translation id="8168435359814927499">সমল</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টা ফাইল বাকী আছে</translation>
+<translation id="8189750580333936930">গোপনীয়তা ছেণ্ডবক্স</translation>
 <translation id="8190358571722158785">১ দিন বাকী আছে</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8209050860603202033">ছবি খোলক</translation>
@@ -1070,7 +1065,6 @@
 <translation id="8442258441309440798">কোনো কাহিনী উপলব্ধ নহয়</translation>
 <translation id="8443209985646068659">Chrome আপডে’ট কৰিব নোৱাৰি</translation>
 <translation id="8445448999790540984">পাছৱর্ড ৰপ্তানি কৰিব নোৱাৰি</translation>
-<translation id="8447219758310755868">ক্ৰাউডমাস্কিং</translation>
 <translation id="8461694314515752532">আপোনাৰ নিজৰ ছিংক পাছফ্ৰেজৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক।</translation>
 <translation id="8466613982764129868">নিশ্চিত হৈ লওক যে <ph name="TARGET_DEVICE_NAME" /> ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1116,7 +1110,6 @@
 <translation id="8748850008226585750">সমল লুকাই ৰখা হৈছে</translation>
 <translation id="8788265440806329501">নেভিগেশ্বন ইতিহাস বন্ধ কৰা আছে</translation>
 <translation id="8788968922598763114">অন্তিমবাৰ খোলা টেবটো পুনৰ খোলক</translation>
-<translation id="8795672590390389447">গোপনীয়তা বিষয়ক ছেণ্ডবক্স</translation>
 <translation id="8798449543960971550">পঢ়ক</translation>
 <translation id="8812260976093120287">কিছুমান ৱেবছাইটত আপোনাৰ ডিভাইচত থকা ওপৰত উল্লেখ কৰা সমৰ্থিত পৰিশোধ এপ্‌ ব্যৱহাৰ কৰি পৰিশোধ কৰিব পাৰিব।</translation>
 <translation id="881688628773363275">পূৰ্বদৰ্শন টেবত থকা সমল চাব নোৱাৰি।</translation>

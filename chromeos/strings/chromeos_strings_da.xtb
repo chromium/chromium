@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Scanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % er blevet scannet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
-<translation id="3515615323037921860">Udskriftsjob</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
@@ -296,7 +295,6 @@
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Antal gennemførte cyklusser</translation>
-<translation id="7732651821766520760">Testen <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Model-id</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>

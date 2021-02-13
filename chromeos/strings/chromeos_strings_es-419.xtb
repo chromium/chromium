@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Se está escaneando la página <ph name="PAGE_NUM" />. Se completó el <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
-<translation id="3515615323037921860">Trabajos de impresión</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
 <translation id="3595596368722241419">Batería completa</translation>
@@ -297,7 +296,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Conteo de ciclos</translation>
-<translation id="7732651821766520760">Prueba de <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID del modelo</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>

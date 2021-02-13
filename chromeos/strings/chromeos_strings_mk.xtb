@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Откриен е портал за проверка</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
+<translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
 <translation id="3310640316857623290">Латенцијата на DNS е значително над дозволениот праг</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Се скенира страницата <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % завршено.</translation>
 <translation id="3459509316159669723">Се печати</translation>
 <translation id="3488065109653206955">Делумно активиран</translation>
-<translation id="3515615323037921860">Налози за печатење</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="357889014807611375">Wi-Fi со ограничен интернет</translation>
 <translation id="3595596368722241419">Батеријата е полна</translation>
@@ -296,7 +296,6 @@
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Број на циклуси</translation>
-<translation id="7732651821766520760">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID на модел</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>

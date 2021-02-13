@@ -50,7 +50,6 @@
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 週內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 週內更新 <ph name="DEVICE_TYPE" />}}</translation>
-<translation id="1055806300943943258">搜尋藍牙裝置和 USB 裝置...</translation>
 <translation id="1056466516655540509">更新時間為 <ph name="MINUTES" /> 分鐘前</translation>
 <translation id="1056775291175587022">沒有網路</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -1981,7 +1980,6 @@
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">分頁音訊已關閉。</translation>
-<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -3141,6 +3139,7 @@
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538684596480161368">一律禁止在 <ph name="HOST" /> 執行無沙箱防護的外掛程式</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
+<translation id="4541123282641193691">無法驗證帳戶。請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541662893742891060">無法連線至這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
 <translation id="4541810033354695636">擴增實境</translation>
 <translation id="4542520061254486227">讀取你在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上產生的資料</translation>
@@ -4167,6 +4166,7 @@
 <translation id="574209121243317957">音調</translation>
 <translation id="5742505912938664543">在這裡新增次要帳戶後，你就能透過該帳戶瀏覽網路、下載應用程式，以及查看 Gmail 郵件與使用其他 Google 服務。</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
+<translation id="5746261205461426123">開啟設定導覽</translation>
 <translation id="5747552184818312860">有效期限</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
 <translation id="5747809636523347288">貼上 <ph name="URL" /> 並前往該網址 (&amp;S)</translation>
@@ -5327,6 +5327,7 @@
 <translation id="708278670402572152">中斷連線即可啟用掃描功能</translation>
 <translation id="7084321615353200053">網站可以要求使用你的攝影機 (建議)</translation>
 <translation id="7085389578340536476">要允許 Chrome 錄音嗎？</translation>
+<translation id="7085805695634549980">無法連上 Google 服務。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7086672505018440886">封存 Chrome 記錄檔。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
 <translation id="7088561041432335295">Zip 封存工具 - 在「檔案」應用程式中開啟及封裝 ZIP 檔案。</translation>

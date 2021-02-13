@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="102360288709523007">Help make Chromium better by sending usage statistics and crash reports to Google.</translation>
-<translation id="1130979953299110755">By signing out, your bookmarks, history, passwords and other Chromium data will no longer be synced to your Google Account.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1361748954329991663">Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chromium anymore.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Start using Chromium scanner</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
-<translation id="8097322092271030751">Because your account is managed by <ph name="HOSTED_DOMAIN" />, your Chromium data will be deleted from this device when signing out. Your synced data will remain in your Google Account.</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">To make Chromium your default, open settings, tap 'Default browser app' and select Chromium.</translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>

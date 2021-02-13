@@ -197,6 +197,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2975121486251958312">Nur der Inkognitomodus ist verfügbar</translation>
+<translation id="2982481275546140226">Daten löschen</translation>
 <translation id="298306318844797842">Zahlungsmethode hinzufügen…</translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="3037605927509011580">Oh nein!</translation>
@@ -410,7 +411,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Synchronisierung aktivieren</translation>
-<translation id="5351284593342054342">Von diesem Gerät löschen</translation>
 <translation id="5388358297987318779">Bild öffnen</translation>
 <translation id="5407969256130905701">Änderungen verwerfen</translation>
 <translation id="5409365236829784218">Es sind keine Apps inst., die diese Datei öffnen können.</translation>
@@ -466,7 +466,6 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5948291296578561264">Dadurch können Sie Fotos in der Fotogalerie speichern.</translation>
 <translation id="5955891643922670672">Offlineversion wird angezeigt</translation>
 <translation id="5957613098218939406">Weitere Optionen</translation>
-<translation id="5961521066940389233">Auf diesem Gerät speichern</translation>
 <translation id="5964480694698977962">Neuen Inkognitotab erstellen.</translation>
 <translation id="5965679971710331625">Sie sind angemeldet</translation>
 <translation id="5979837087407522202">Passwörter suchen</translation>
@@ -481,7 +480,6 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier können Sie festlegen, welche Meldungen und Aktivitäten Ihnen angezeigt werden</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
-<translation id="6085282545406522838">Ihre synchronisierten Daten verbleiben in Ihrem Google-Konto.</translation>
 <translation id="6108923351542677676">Einrichtung läuft...</translation>
 <translation id="6119050551270742952">Die aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7203585745079012652">Gesprochene Antworten</translation>
 <translation id="7207383424303353046">Neu: Websites werden automatisch in Chrome geöffnet, wenn Sie es als Standard-Browser-App festlegen. <ph name="BEGIN_LINK" />Zu den Einstellungen<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Ungültiger Kartenalias</translation>
-<translation id="722989956228261714">Abmelden…</translation>
 <translation id="7265758999917665941">Für diese Website niemals</translation>
 <translation id="7272437679830969316">Ihre Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7291368939935408496">Passwörter werden zum Exportieren vorbereitet…</translation>
@@ -635,7 +632,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7537586195939242955">Ihr Pass kann derzeit nicht in Passbook installiert werden.</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>
-<translation id="7558943807639707687">Was möchten Sie mit Ihren Lesezeichen, Ihrem Verlauf und anderen Daten auf diesem Gerät tun?</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7583004045319035904">Nutzen Sie <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um Ihre Inkognitotabs zu entsperren.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>

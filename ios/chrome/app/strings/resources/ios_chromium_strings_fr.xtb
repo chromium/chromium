@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="102360288709523007">Envoyez à Google des statistiques d'utilisation et des rapports d'erreur pour améliorer Chromium.</translation>
-<translation id="1130979953299110755">Si vous vous déconnectez, vos favoris, votre historique, vos mots de passe et d'autres données Chromium ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chromium puisse l'ajouter à vos photos</translation>
 <translation id="1361748954329991663">Version de Chromium obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chromium.</translation>
@@ -71,7 +70,6 @@
 <translation id="7890287942691234100">Commencer à utiliser le lecteur Chromium</translation>
 <translation id="8013573822802650211">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
-<translation id="8097322092271030751">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil lorsque vous vous déconnecterez. En revanche, vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />Placez Chromium dans le dock.<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Pour définir Chromium comme votre navigateur par défaut, ouvrez "Paramètres", appuyez sur "Navigateur par défaut", puis sélectionnez "Chromium".</translation>
 <translation id="8240981428553046115">Chromium n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>

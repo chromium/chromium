@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
 <translation id="2975121486251958312">只能使用無痕模式</translation>
+<translation id="2982481275546140226">清除資料</translation>
 <translation id="298306318844797842">新增付款方式...</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
 <translation id="3037605927509011580">糟糕！</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
-<translation id="5351284593342054342">從這部裝置清除</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5409365236829784218">未安裝可開啟這個檔案的應用程式。</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">可讓你將相片儲存至相片庫。</translation>
 <translation id="5955891643922670672">正在查看離線版</translation>
 <translation id="5957613098218939406">更多選項</translation>
-<translation id="5961521066940389233">存放在此裝置中</translation>
 <translation id="5964480694698977962">新增無痕式分頁。</translation>
 <translation id="5965679971710331625">你已登入帳戶</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">年</translation>
 <translation id="6059830886158432458">請在這裡控管你的報導和活動</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
-<translation id="6085282545406522838">已同步處理的資料會繼續保留在你的 Google 帳戶中。</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6119050551270742952">目前的網頁處於無痕模式</translation>
 <translation id="6122191549521593678">線上</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">語音答覆</translation>
 <translation id="7207383424303353046">新功能：將 Chrome 設為預設的瀏覽器應用程式，即可自動在 Chrome 中開啟網站。<ph name="BEGIN_LINK" />開啟設定<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡片暱稱無效</translation>
-<translation id="722989956228261714">登出…</translation>
 <translation id="7265758999917665941">一律不儲存這個網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
 <translation id="7291368939935408496">正在準備匯出密碼...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="7554791636758816595">新分頁</translation>
-<translation id="7558943807639707687">你打算如何處理這部裝置上的書籤、歷史記錄和其他資料？</translation>
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁。</translation>
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>

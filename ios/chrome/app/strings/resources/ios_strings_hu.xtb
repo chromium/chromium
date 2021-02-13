@@ -197,6 +197,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2964349545761222050">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="2969979262385602596">Nem sikerült bejelentkezni. Kérjük, próbálja újra később.</translation>
 <translation id="2975121486251958312">Csak az inkognitó mód áll rendelkezésre</translation>
+<translation id="2982481275546140226">Adatok törlése</translation>
 <translation id="298306318844797842">Fizetési mód hozzáadása…</translation>
 <translation id="2989805286512600854">Megnyitás új lapon</translation>
 <translation id="3037605927509011580">A manóba!</translation>
@@ -410,7 +411,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5327248766486351172">Név</translation>
 <translation id="5339316356165661760">Szinkronizálás bekapcsolása</translation>
-<translation id="5351284593342054342">Törlés az eszközről</translation>
 <translation id="5388358297987318779">Kép megnyitása</translation>
 <translation id="5407969256130905701">Módosítások elvetése</translation>
 <translation id="5409365236829784218">A fájl megnyitásához nincs telepítve alkalmazás.</translation>
@@ -466,7 +466,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5948291296578561264">Segítségével fotókat menthet a fotótárba.</translation>
 <translation id="5955891643922670672">Offline verzió</translation>
 <translation id="5957613098218939406">További lehetőségek</translation>
-<translation id="5961521066940389233">Megtartás az eszközön</translation>
 <translation id="5964480694698977962">Új inkognitó lap létrehozása.</translation>
 <translation id="5965679971710331625">Sikeresen bejelentkezett</translation>
 <translation id="5979837087407522202">Jelszavak keresése</translation>
@@ -481,7 +480,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="605721222689873409">ÉÉ</translation>
 <translation id="6059830886158432458">Itt kezelheti a híreket és a tevékenységeket</translation>
 <translation id="6066301408025741299">Érintse meg a visszavonáshoz</translation>
-<translation id="6085282545406522838">Szinkronizált adatai továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="6108923351542677676">A telepítés folyamatban...</translation>
 <translation id="6119050551270742952">Ez a weboldal inkognitó módban van megnyitva</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -605,7 +603,6 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="7203585745079012652">Mondja ki a válaszokat</translation>
 <translation id="7207383424303353046">Újdonság: Ha alapértelmezett böngészőként állítja be a Chrome-ot, automatikusan nyithat meg benne webhelyeket. <ph name="BEGIN_LINK" />Beállítások megnyitása<ph name="END_LINK" />.</translation>
 <translation id="721597782417389033">Érvénytelen egyedi kártyanév</translation>
-<translation id="722989956228261714">Kijelentkezés…</translation>
 <translation id="7265758999917665941">Ezen a webhelyen soha</translation>
 <translation id="7272437679830969316">Nem sikerült ellenőrizni a személyazonosságát. A jelszó nem lett másolva.</translation>
 <translation id="7291368939935408496">Jelszavak előkészítése…</translation>
@@ -635,7 +632,6 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7537586195939242955">Sajnos jelenleg nem lehet létrehozni a kupont a Passbookban.</translation>
 <translation id="7554791636758816595">Új lap</translation>
-<translation id="7558943807639707687">Mit szeretne tenni az ezen az eszközön található könyvjelzőivel, előzményeivel és egyéb adataival?</translation>
 <translation id="7561196759112975576">Mindig</translation>
 <translation id="7583004045319035904">Az inkognitó lapok zárolását <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> használatával oldhatja fel.</translation>
 <translation id="7600965453749440009">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>

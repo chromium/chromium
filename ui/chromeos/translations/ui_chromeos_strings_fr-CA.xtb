@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Le fichier ou le répertoire n'est pas utilisable.</translation>
 <translation id="1363028406613469049">Numéro de suivi</translation>
 <translation id="1378727793141957596">Bienvenue dans Google Disque!</translation>
+<translation id="1379911846207762492">Vous pouvez rendre des fichiers accessibles hors ligne, pour quand vous n'avez pas de connexion Internet.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1395262318152388157">Curseur de la barre de recherche</translation>
 <translation id="1404323374378969387">Norvégien</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="3556731189587832921">Anglais (É.-U.) avec clavier international (PC)</translation>
 <translation id="357479282490346887">Lituanien</translation>
+<translation id="3592251141500063301">Impossible de rendre <ph name="FILE_NAME" /> accessible en mode hors ligne</translation>
 <translation id="3603385196401704894">Français canadien</translation>
 <translation id="3606220979431771195">Turc-F</translation>
 <translation id="3616113530831147358">Audio</translation>

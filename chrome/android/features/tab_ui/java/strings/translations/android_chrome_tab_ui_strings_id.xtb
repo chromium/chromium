@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2759453070259087442">Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="2977480621796371840">Hapus dari grup</translation>
+<translation id="3291470810748040983">Anda akan mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="3940195383040445971">Pantau harga di tab</translation>

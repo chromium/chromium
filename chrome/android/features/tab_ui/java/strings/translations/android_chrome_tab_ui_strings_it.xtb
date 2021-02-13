@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2759453070259087442">Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede.</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
+<translation id="3291470810748040983">Riceverai un avviso quando ci sarà un prezzo più basso in una scheda aperta</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>

@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
-<translation id="1497470209855416291">ট্রায়াল বন্ধ করা হয়েছে</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1513352483775369820">বুকমার্কগুলি এবং ওয়েব ইতিহাস</translation>
 <translation id="1513858653616922153">পাসওয়ার্ড মুছুন</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">ইউজারনেম কপি করুন</translation>
 <translation id="1592864538817356322">স্ট্যান্ডার্ড সুরক্ষা:</translation>
 <translation id="1612196535745283361">ডিভাইস স্ক্যান করার জন্য Chrome এর অবস্থানের অ্যাক্সেস প্রয়োজন। অবস্থানের অ্যাক্সেস <ph name="BEGIN_LINK" />এই ডিভাইসের জন্য বন্ধ করা হয়েছে<ph name="END_LINK" />।</translation>
-<translation id="1613577519914241527">চালু হওয়ার পর, ওয়েবসাইট সেইসব তথ্য ব্যবহার করতে পারবে না যেগুলি আপনাকে ব্যক্তিগতভাবে শনাক্ত করতে ও সাইটকে আরও প্রাসঙ্গিক করে তুলতে কাজে লাগে। কোনও কনসার্টে উপস্থিত দর্শকের মতো সাইট কেবল এইটুকুই জানতে পারবে যে হাজার হাজার ব্যবহারকারীর পছন্দ একই ধরনের।\n\nআপনার “দর্শকের পছন্দ” তারা কোন সাইটে যান তার উপর নির্ভর করে তৈরি হয়। বিজ্ঞাপনদাতা শুধু দেখতে পাবেন কোন কোন সাইটে সমস্ত দর্শক গেছেন, কিন্তু তিনি জানতে পারবেন না আপনি ব্যক্তিগতভাবে কোন সাইটে গেছিলেন।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{১ টি নির্বাচিত আইটেম সরান}one{#টি নির্বাচিত আইটেম সরান}other{#টি নির্বাচিত আইটেম সরান}}</translation>
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
 <translation id="164269334534774161">আপনি <ph name="CREATION_TIME" /> তারিখের এই পৃষ্ঠার একটি অফলাইন কপি দেখছেন</translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">পরবর্তী ভিডিও দেখুন</translation>
 <translation id="2074143993849053708">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI বন্ধ আছে</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
-<translation id="2083113399121613785">ট্রায়াল চালু করা আছে</translation>
 <translation id="2096012225669085171">বিভিন্ন ডিভাইস জুড়ে সিঙ্ক এবং ব্যক্তিগতকৃত করুন</translation>
 <translation id="2100273922101894616">অটো সাইন-ইন</translation>
 <translation id="2100314319871056947">টেক্সটটি ছোট ছোট ভাগে ভাগ করে পাঠানোর চেষ্টা করুন</translation>
@@ -471,7 +468,6 @@
 <translation id="4440958355523780886">Google লাইট পৃষ্ঠা পাঠিয়েছে। আসল পৃষ্ঠাটি লোড করতে ট্যাপ করুন।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ট্যাবটি বন্ধ করুন</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
-<translation id="4465314970046116177">গোপনীয়তা স্যান্ডবক্স নতুন প্রযুক্তির একটি সেট যা থার্ড-পার্টি কুকির মতোই ব্যবহারকারীকে বিভিন্ন সাইটের ডেটা ট্র্যাক করার মেকানিজম থেকে রক্ষা করে। এর সাথে এটি ওয়েব কন্টেন্ট ও পরিষেবাও সুরক্ষিত করে যা বর্তমান যুগে এই মেকানিজমের উপর নির্ভর করে থাকে। Chrome, এই নতুন প্রযুক্তি ডেভেলপ করার জন্য ওয়েবসাইট ডেভেলপার, প্রকাশক, বিজ্ঞাপনদাতা ও অন্যান্য ব্রাউজারের সাথে একসঙ্গে কাজ করে চলেছে।</translation>
 <translation id="4472118726404937099">ডিভাইস জুড়ে সিঙ্ক এবং ব্যক্তিগতকৃত করতে সাইন-ইন করে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="447252321002412580">Chrome-এর বৈশিষ্ট্য এবং পারফরম্যান্স আরও ভালো করতে সাহায্য করুন</translation>
 <translation id="4479972344484327217">Chrome-এর জন্য <ph name="MODULE" /> ইনস্টল করা হচ্ছে…</translation>
@@ -504,7 +500,6 @@
 <translation id="4662373422909645029">ডাকনামে সংখ্যা থাকবে না</translation>
 <translation id="4663499661119906179">আপনার জন্যই বেছে নেওয়া সেরা সাইট ও খবর দেখুন</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" />টি বুকমার্ক মোছা হয়েছে</translation>
-<translation id="4665282149850138822">আপনার হোম স্ক্রীনে <ph name="NAME" /> কে যোগ করা হয়েছে</translation>
 <translation id="4668347365065281350">কুকি ও স্থানীয়ভাবে সেভ করা ডেটা সহ সাইটের সেভ করা সব ডেটা</translation>
 <translation id="4684427112815847243">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}}</translation>
@@ -750,7 +745,6 @@
 উদাহরণস্বরূপ, কিছু ওয়েবসাইট আপনার দেখা অন্য ওয়েবসাইট ভিত্তিক নয় এমন বিজ্ঞাপন দেখিয়ে এই অনুরোধে প্রতিক্রিয়া জানাতে পারে৷ অনেক ওয়েবসাইট তারপরও আপনার ব্রাউজিং ডেটা সংগ্রহ এবং ব্যবহার করবে - উদাহরণস্বরূপ, আপনার নিরাপত্তা বাড়াতে, সামগ্রী, বিজ্ঞাপন এবং প্রস্তাবনা প্রদান করতে এবং রিপোর্ট পরিসংখ্যান তৈরি করতে৷</translation>
 <translation id="624789221780392884">আপডেট প্রস্তুত</translation>
 <translation id="6255999984061454636">কন্টেন্টের প্রস্তাবনা</translation>
-<translation id="6266591733731644292">গোপনীয়তা স্যান্ডবক্স এখনও অনেক জায়গায় রিলিজ করা হয়নি। ট্রায়াল চলাকালীন:\n<ph name="BEGIN_LIST_ITEM1" />ওয়েবসাইট ও অ্যাপ ডেভেলপাররা আপনার পরিচয় শনাক্ত করার মতো তথ্য অ্যাক্সেস না করেও প্রাসঙ্গিক অভিজ্ঞতা তৈরি করার কার্যপদ্ধতি ব্যবহার করে দেখতে পারেন।<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />এই পৃষ্ঠাতে দেওয়া কন্ট্রোল ব্যবহার করে ব্যবহারকারী এই ট্রায়ালের বিকল্প থেকে বেরিয়ে যেতে পারেন।<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6292420053234093573">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন।</translation>
@@ -843,7 +837,6 @@
 <translation id="6813446258015311409">Chrome-এ সাইন-ইন করার পৃষ্ঠা খোলা আছে।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ট্যাব বেছে নেওয়া হয়েছে</translation>
-<translation id="6833996806551876956">গোপনীয়তা স্যান্ডবক্স ট্রায়াল</translation>
 <translation id="6845325883481699275">Chrome-এর নিরাপত্তা উন্নত করতে সাহায্য করুন</translation>
 <translation id="6846298663435243399">লোড হচ্ছে...</translation>
 <translation id="6850409657436465440">ডাউনলোডটি এখনও চলছে</translation>
@@ -1015,6 +1008,7 @@
 <translation id="8015452622527143194">পৃষ্ঠার সবকিছুকে ডিফল্ট আকারে ফিরিয়ে আনুন</translation>
 <translation id="8026334261755873520">ব্রাউজ করা ডেটা সাফ করুন</translation>
 <translation id="8027863900915310177">ডাউনলোড করা ফাইল কোথায় সেভ করে রাখবেন, তা ঠিক করে নিন</translation>
+<translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="8035133914807600019">নতুন ফোল্ডার...</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকি আছে</translation>
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
@@ -1039,6 +1033,7 @@
 <translation id="8156139159503939589">আপনি কোন কোন ভাষা পড়তে পারেন?</translation>
 <translation id="8168435359814927499">কন্টেন্ট</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টি ফাইল বাকি</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">১ দিন বাকি আছে</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8209050860603202033">ছবি খুলুন</translation>
@@ -1074,7 +1069,6 @@
 <translation id="8442258441309440798">কোনও খবর উপলভ্য নেই</translation>
 <translation id="8443209985646068659">Chrome আপডেট হচ্ছে না</translation>
 <translation id="8445448999790540984">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
-<translation id="8447219758310755868">ক্রাউডমাস্কিং</translation>
 <translation id="8461694314515752532">আপনার নিজস্ব সিঙ্ক পাসফ্রেজ দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ডিভাইসটি ইন্টারনেটের সাথে কানেক্ট করা আছে কিনা দেখে নিন</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1120,7 +1114,6 @@
 <translation id="8748850008226585750">সামগ্রী লুকানো আছে</translation>
 <translation id="8788265440806329501">নেভিগেশনের ইতিহাস বন্ধ করা হয়েছে</translation>
 <translation id="8788968922598763114">সব শেষে বন্ধ করা ট্যাবটি পুনরায় খুলুন</translation>
-<translation id="8795672590390389447">গোপনীয়তা সংক্রান্ত স্যান্ডবক্স</translation>
 <translation id="8798449543960971550">পড়া হয়েছে</translation>
 <translation id="8812260976093120287">কিছু ওয়েবসাইটে আপনি উপরের সমর্থিত পেমেন্ট অ্যাপ্লিকেশান দিয়ে অর্থপ্রদান করতে পারেন।</translation>
 <translation id="881688628773363275">ট্যাব কন্টেন্ট প্রিভিউ করার বিকল্প উপলভ্য নেই।</translation>

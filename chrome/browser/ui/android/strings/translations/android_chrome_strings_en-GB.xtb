@@ -84,7 +84,6 @@
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1592864538817356322">Standard protection:</translation>
 <translation id="1612196535745283361">Chrome needs location access to scan for devices. Location access is <ph name="BEGIN_LINK" />turned off for this device<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">When on, websites won’t be able to use information that personally identifies you to make their sites more relevant. Similar to a crowd in a concert, sites can only know that thousands of users share a similar interest.\n\nYour 'crowd' is based on sites that you’ve visited. Advertisers can only see what sites the whole crowd visits, not what sites you personally visit.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
@@ -467,7 +466,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4440958355523780886">Lite page provided by Google. Tap to load the original.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
-<translation id="4465314970046116177">Privacy sandbox is a set of new technologies that will eventually protect people from cross-site tracking mechanisms, like third-party cookies, while preserving web content and services that depend on those mechanisms today. Chrome is working with website developers, publishers, advertisers and other browsers to develop this new technology.</translation>
 <translation id="4472118726404937099">To sync and personalise across devices, sign in and turn on sync</translation>
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
@@ -500,7 +498,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4662373422909645029">Nickname can’t include numbers</translation>
 <translation id="4663499661119906179">See top sites and stories for you</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bookmarks deleted</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> was added to your Home screen</translation>
 <translation id="4668347365065281350">All data stored by sites, including cookies and other locally stored data</translation>
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
@@ -590,6 +587,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> wants to scan for nearby Bluetooth devices. The following devices have been found:</translation>
 <translation id="5233638681132016545">New tab</translation>
+<translation id="5250483651202458397">Screenshot. Tap to close.</translation>
 <translation id="526421993248218238">Can't load this page</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
 <translation id="5292796745632149097">Send to</translation>
@@ -745,7 +743,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites that you’ve visited. Many websites will still collect and use your browsing data – for example to improve security, to provide content, ads and recommendations and to generate reporting statistics.</translation>
 <translation id="624789221780392884">Update ready</translation>
 <translation id="6255999984061454636">Content suggestions</translation>
-<translation id="6266591733731644292">Privacy sandbox is not widely released yet. During this trial period:\n<ph name="BEGIN_LIST_ITEM1" />Website and app developers can try out the ability to create relevant experiences without accessing uniquely identifiable information about you<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Users can opt out of the trial using the controls on this page.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6292420053234093573">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
@@ -835,9 +832,9 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6767294960381293877">List of devices to share a tab with, opened at half height.</translation>
 <translation id="6783942555455976443">Save this page for later and get a reminder</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
+<translation id="6813446258015311409">Sign in to Chrome, opened.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> tab, selected</translation>
-<translation id="6833996806551876956">Privacy sandbox trial</translation>
 <translation id="6845325883481699275">Help improve Chrome security</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>
@@ -1034,6 +1031,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8156139159503939589">What languages do you read?</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
+<translation id="8189750580333936930">Privacy sandbox</translation>
 <translation id="8190358571722158785">1 day left</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8209050860603202033">Open image</translation>
@@ -1069,7 +1067,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8442258441309440798">No stories available</translation>
 <translation id="8443209985646068659">Chrome can’t update</translation>
 <translation id="8445448999790540984">Can’t export passwords</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466613982764129868">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1095,6 +1092,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8583805026567836021">Clearing account data</translation>
 <translation id="8587585930972369234">Touch &amp; hold to search</translation>
 <translation id="860043288473659153">Cardholder name</translation>
+<translation id="8602358303461588329">Sign in to Chrome, closed.</translation>
 <translation id="860282621117673749">Price drop alerts</translation>
 <translation id="8616006591992756292">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Open the suggested URL specified in the downloaded content?</translation>
@@ -1114,7 +1112,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8748850008226585750">Contents hidden</translation>
 <translation id="8788265440806329501">Navigation history is closed</translation>
 <translation id="8788968922598763114">Reopen the last closed tab</translation>
-<translation id="8795672590390389447">Privacy sandbox</translation>
 <translation id="8798449543960971550">Read</translation>
 <translation id="8812260976093120287">On some websites, you can pay with above supported payment apps on your device.</translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>

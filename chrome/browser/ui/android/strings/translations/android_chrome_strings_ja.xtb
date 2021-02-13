@@ -84,7 +84,6 @@
 <translation id="1571304935088121812">ユーザー名をコピー</translation>
 <translation id="1592864538817356322">標準保護機能:</translation>
 <translation id="1612196535745283361">Chrome ではデバイスをスキャンするために現在地情報にアクセスする必要があります。現在地情報へのアクセスは<ph name="BEGIN_LINK" />このデバイスでオフになっています<ph name="END_LINK" />。</translation>
-<translation id="1613577519914241527">オンにした場合、ウェブサイトでは個人が特定されるような情報を使用してコンテンツの関連性を高めることはできなくなります。コンサートの観客（「クラウド」）と同じように、サイトでは数千のユーザーが同様の興味を持っていることだけを把握できます。\n\n「クラウド」は、ユーザーがこれまでにアクセスしたサイトに基づいて生成されます。広告主は、個々のユーザーがアクセスしたサイトではなく、観客全体がアクセスしたサイトのみを把握できます。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="164269334534774161">このページの <ph name="CREATION_TIME" /> のオフライン コピーを表示しています</translation>
@@ -467,7 +466,6 @@
 <translation id="4440958355523780886">Google から提供されている軽量版のページです。元のページを読み込むにはタップしてください。</translation>
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
-<translation id="4465314970046116177">プライバシー サンドボックスは、将来的にクロスサイト トラッキング メカニズム（サードパーティ Cookie など）からユーザーを保護しつつ、こうした今日のメカニズムに依存するウェブのコンテンツやサービスを維持するための新しい技術セットです。Chrome では、ウェブサイトのデベロッパー、パブリッシャー、広告主、その他のブラウザと連携して、この新しい技術を開発しています。</translation>
 <translation id="4472118726404937099">複数のデバイスで独自の設定を同期して共有するには、ログインして同期を有効にします</translation>
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
 <translation id="4479972344484327217">Chrome 用の <ph name="MODULE" /> をインストールしています…</translation>
@@ -500,7 +498,6 @@
 <translation id="4662373422909645029">ニックネームに数字を含めることはできません</translation>
 <translation id="4663499661119906179">よく使用するサイトや記事を表示します</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> 件のブックマークを削除しました</translation>
-<translation id="4665282149850138822">「<ph name="NAME" />」がホーム画面に追加されました</translation>
 <translation id="4668347365065281350">サイトによって保存されたすべてのデータ（Cookie やローカルに保存された他のデータを含む）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
@@ -590,6 +587,7 @@
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
+<translation id="5250483651202458397">スクリーンショット。タップすると閉じます。</translation>
 <translation id="526421993248218238">ページを読み込めません</translation>
 <translation id="5271967389191913893">デバイスでダウンロード コンテンツを開くことができません。</translation>
 <translation id="5292796745632149097">送信先</translation>
@@ -745,7 +743,6 @@
 たとえば一部のウェブサイトでは、このリクエストに対して、ユーザーが過去にアクセスしたウェブサイトとは関係のない広告が表示されます。トラッキングを拒否しても、実際のところ多くのウェブサイトではユーザーの閲覧データが収集され利用されています。その用途としては、セキュリティの強化や、コンテンツ、サービス、広告、おすすめの表示、レポート統計情報の作成などが挙げられます。</translation>
 <translation id="624789221780392884">アップデート準備完了</translation>
 <translation id="6255999984061454636">おすすめのコンテンツ</translation>
-<translation id="6266591733731644292">プライバシー サンドボックスは、現時点では限定リリースとなっています。試用期間中にできること:\n<ph name="BEGIN_LIST_ITEM1" />ウェブサイトやアプリのデベロッパーは、ユーザー個人を一意に特定できるような情報を使用せずに関連性の高いユーザー エクスペリエンスを提供するための機能を試すことができます。<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />ユーザーはこのページの設定で、この試用版を無効にするよう選択できます。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6292420053234093573">Chrome を使用すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。</translation>
@@ -835,9 +832,9 @@
 <translation id="6767294960381293877">タブを共有するデバイスのリストが画面の下半分に表示されました。</translation>
 <translation id="6783942555455976443">このページを後で読めるように保存してリマインダーを受け取ります</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
+<translation id="6813446258015311409">Chrome にログイン、の画面が開きました。</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />、タブ、選択中</translation>
-<translation id="6833996806551876956">プライバシー サンドボックス（試用版）</translation>
 <translation id="6845325883481699275">Chrome のセキュリティ改善に協力する</translation>
 <translation id="6846298663435243399">読み込んでいます…</translation>
 <translation id="6850409657436465440">ダウンロードが進行中です</translation>
@@ -1034,6 +1031,7 @@
 <translation id="8156139159503939589">どの言語で閲覧しますか？</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8186512483418048923">残り <ph name="FILES" /> ファイル</translation>
+<translation id="8189750580333936930">プライバシー サンドボックス</translation>
 <translation id="8190358571722158785">残り 1 日</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8209050860603202033">画像を開く</translation>
@@ -1069,7 +1067,6 @@
 <translation id="8442258441309440798">表示できる記事はありません</translation>
 <translation id="8443209985646068659">Chrome を更新できません</translation>
 <translation id="8445448999790540984">パスワードをエクスポートできません</translation>
-<translation id="8447219758310755868">クラウドによるマスキング</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1095,6 +1092,7 @@
 <translation id="8583805026567836021">アカウント データをクリア中</translation>
 <translation id="8587585930972369234">長押しして検索</translation>
 <translation id="860043288473659153">カード名義人</translation>
+<translation id="8602358303461588329">Chrome にログイン、の画面が閉じられました。</translation>
 <translation id="860282621117673749">値下げアラート</translation>
 <translation id="8616006591992756292">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="8617240290563765734">ダウンロード コンテンツに指定されている URL を開きますか？</translation>
@@ -1114,7 +1112,6 @@
 <translation id="8748850008226585750">メッセージは非表示です</translation>
 <translation id="8788265440806329501">ナビゲーション履歴は閉じられています</translation>
 <translation id="8788968922598763114">最後に閉じたタブを開く</translation>
-<translation id="8795672590390389447">プライバシー サンドボックス</translation>
 <translation id="8798449543960971550">既読</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>

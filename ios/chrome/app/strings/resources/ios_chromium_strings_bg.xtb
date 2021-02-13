@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="102360288709523007">Помогнете за подобряването на Chromium, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
-<translation id="1130979953299110755">Като излезете от профила си в Google, с него повече няма да се синхронизират вашите отметки, история, пароли и други данни в Chromium.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
 <translation id="1361748954329991663">Chromium не е актуален. Ако не виждате налични актуализации в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, е възможно устройството ви да не поддържа новите версии на Chromium.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Използване на скенера в Chromium</translation>
 <translation id="8013573822802650211">Влезте в профила си на всичките си устройства, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="8073677936375100957">Искате ли данните ви в Chromium да бъдат изчистени от устройството?</translation>
-<translation id="8097322092271030751">Тъй като профилът ви се управлява от <ph name="HOSTED_DOMAIN" />, при излизане от него данните ви в Chromium ще бъдат изтрити от това устройство. Синхронизираната информация ще остане в профила ви в Google.</translation>
 <translation id="8175055321229419309">Съвет: <ph name="BEGIN_LINK" />Преместете Chromium в лентата „Dock“<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">За да зададете Chromium като браузъра си по подразбиране, отворете „Настройки“, докоснете „Стандартно прилож. за браузър“ и изберете Chromium.</translation>
 <translation id="8240981428553046115">Chromium не можа да провери за актуализации. Опитайте отново по-късно.</translation>

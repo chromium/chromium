@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">Блакіраваць староннія файлы cookie</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
 <translation id="2975121486251958312">Даступны толькі рэжым інкогніта</translation>
+<translation id="2982481275546140226">Выдаліць даныя</translation>
 <translation id="298306318844797842">Дадаць спосаб аплаты...</translation>
 <translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5339316356165661760">Уключыць сінхранізацыю</translation>
-<translation id="5351284593342054342">Выдаліць з гэтай прылады</translation>
 <translation id="5388358297987318779">Адкрыць відарыс</translation>
 <translation id="5407969256130905701">Адхіліць змяненні</translation>
 <translation id="5409365236829784218">Няма ўсталяваных праграм, у якіх можна адкрыць гэты файл.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">Гэта дазваляе захоўваць фота ў бібліятэцы.</translation>
 <translation id="5955891643922670672">Паказваецца пазасеткавая версія</translation>
 <translation id="5957613098218939406">Дадатковыя параметры</translation>
-<translation id="5961521066940389233">Захаваць на гэтай прыладзе</translation>
 <translation id="5964480694698977962">Стварыць новую ўкладку інкогніта.</translation>
 <translation id="5965679971710331625">Вы ўвайшлі</translation>
 <translation id="5979837087407522202">Пошук пароляў</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Кіруйце паказам артыкулаў і гісторыяй дзеянняў тут</translation>
 <translation id="6066301408025741299">Каб скасаваць, націсніце тут.</translation>
-<translation id="6085282545406522838">Сінхранізаваныя даныя застануцца ва Уліковым запісе Google.</translation>
 <translation id="6108923351542677676">Ідзе наладка…</translation>
 <translation id="6119050551270742952">Вэб-старонка адкрыта ў рэжыме інкогніта</translation>
 <translation id="6122191549521593678">У інтэрнэце</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">Агучваць атрыманыя адказы</translation>
 <translation id="7207383424303353046">Навінка. Зрабіце Chrome стандартным браўзерам, каб сайты адкрываліся ў ім аўтаматычна. <ph name="BEGIN_LINK" />Адкрыць Налады<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Несапраўдны псеўданім карткі</translation>
-<translation id="722989956228261714">Выйсці…</translation>
 <translation id="7265758999917665941">Ніколі для гэтага сайта</translation>
 <translation id="7272437679830969316">Не ўдалося спраўдзіць вашу асобу. Пароль не скапіраваны.</translation>
 <translation id="7291368939935408496">Ідзе падрыхтоўка пароляў...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
-<translation id="7558943807639707687">Што рабіць з вашымі закладкамі, гісторыяй і іншымі данымі на гэтай прыладзе?</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7583004045319035904">Выкарыстоўвайце <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблакіроўкі ўкладак у рэжыме інкогніта</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>

@@ -90,6 +90,7 @@
 <translation id="315738237743207937">აღმოჩენილია ავტორიზაციის პორტალი</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
+<translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">სკანირდება გვერდი <ph name="PAGE_NUM" />. დასრულებულია <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ბეჭდვა</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
-<translation id="3515615323037921860">ბეჭდვის დავალებები</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
@@ -147,6 +147,7 @@
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
+<translation id="4652335678334611408">სესიის ჟურნალის შენახვა</translation>
 <translation id="4665014895760275686">მწარმოებელი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>
 <translation id="467715984478005772">სავარაუდოდ, გამოიყენება ქსელის დაცვა</translation>
@@ -295,7 +296,6 @@
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7819857487979277519">PSK (WPA ან RSN)</translation>

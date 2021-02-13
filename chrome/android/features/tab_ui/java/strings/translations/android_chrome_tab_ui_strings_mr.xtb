@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">गट शेअर करा</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="NUMBER_OF_TABS" /> टॅबसह विस्तार करा.</translation>
 <translation id="2977480621796371840">गटामधून काढून टाका</translation>
+<translation id="3291470810748040983">उघड्या टॅबमध्ये किंमत कमी असताना तुम्हाला सूचना मिळेल</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले <ph name="TITLE_OF_GROUP" /> टॅब कोलॅप्स करा.}}</translation>
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>

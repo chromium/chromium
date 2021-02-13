@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />: nie udało się udostępnić</translation>
 <translation id="1477626028522505441">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu problemów z serwerem.</translation>
-<translation id="1497470209855416291">Okres próbny jest wyłączony</translation>
 <translation id="1506061864768559482">Wyszukiwarka</translation>
 <translation id="1513352483775369820">Zakładki i historia online</translation>
 <translation id="1513858653616922153">Usuń hasło</translation>
@@ -85,7 +84,6 @@
 <translation id="1571304935088121812">Kopiuj nazwę użytkownika</translation>
 <translation id="1592864538817356322">Standardowa ochrona:</translation>
 <translation id="1612196535745283361">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. Dostęp jest <ph name="BEGIN_LINK" />wyłączony na tym urządzeniu<ph name="END_LINK" />.</translation>
-<translation id="1613577519914241527">Gdy ta funkcja jest włączona, strony internetowe nie mogą dostosowywać wyświetlanych treści do Twoich potrzeb na podstawie informacji, które pozwalają Cię zidentyfikować. Podobnie jak to jest w przypadku tłumu na koncercie, strony wiedzą tylko tyle, że podobne zainteresowania mają tysiące użytkowników.\n\n„Tłum” określany jest na podstawie tego, na jakie strony wchodzisz. Reklamodawcy widzą tylko to, na jakie strony wchodzi cały tłum, a nie Ty jako pojedynczy użytkownik.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Usuń 1 wybrany element}few{Usuń # wybrane elementy}many{Usuń # wybranych elementów}other{Usuń # wybranego elementu}}</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
@@ -153,7 +151,6 @@
 <translation id="2068748236079642969">Obejrzyj następny film</translation>
 <translation id="2074143993849053708">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta został zamknięty</translation>
 <translation id="2082238445998314030">Wynik <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2083113399121613785">Włączony jest okres próbny</translation>
 <translation id="2096012225669085171">Synchronizacja i personalizacja na urządzeniach</translation>
 <translation id="2100273922101894616">Automatyczne logowanie</translation>
 <translation id="2100314319871056947">Spróbuj udostępnić mniejsze fragmenty tekstu</translation>
@@ -431,6 +428,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>
 <translation id="4095189195365058471">Przeczytaj później <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Pomóż ulepszyć Chrome, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
+<translation id="4108314971463891922">Obserwuj</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4116038641877404294">Pobierz strony, by przeglądać je w trybie offline</translation>
 <translation id="4135200667068010335">Lista urządzeń, którym udostępnisz kartę, jest zamknięta.</translation>
@@ -468,7 +466,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4440958355523780886">Lżejsza wersja strony dostarczona przez Google. Kliknij, by załadować wersję oryginalną.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>
-<translation id="4465314970046116177">Piaskownica prywatności to zbiór nowych technologii opracowanych w celu zapewnienia użytkownikowi ochrony przed mechanizmami śledzącymi go na różnych stronach internetowych – np. plikami cookie innych firm – przy jednoczesnym zachowaniu pełnego dostępu do treści i usług internetowych, których działanie obecnie zależy od tych mechanizmów. Tę nową technologię rozwija zespół Chrome we współpracy z programistami stron internetowych, wydawcami, reklamodawcami i zespołami innych przeglądarek.</translation>
 <translation id="4472118726404937099">Aby synchronizować i personalizować wszystkie swoje urządzenia, zaloguj się i włącz synchronizację</translation>
 <translation id="447252321002412580">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="4479972344484327217">Instaluję moduł <ph name="MODULE" /> do Chrome…</translation>
@@ -501,7 +498,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4662373422909645029">Pseudonim tylko bez cyfr</translation>
 <translation id="4663499661119906179">Zobacz najciekawsze strony i artykuły dla Ciebie</translation>
 <translation id="4663756553811254707">Usunięte zakładki: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
-<translation id="4665282149850138822">Strona <ph name="NAME" /> została dodana do ekranu głównego</translation>
 <translation id="4668347365065281350">Wszystkie dane przechowywane przez strony, w tym pliki cookie i inne dane przechowywane lokalnie</translation>
 <translation id="4684427112815847243">Synchronizuj wszystko</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -643,6 +639,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5606787249466187650">Odkryj Piaskownicę prywatności</translation>
 <translation id="5620163320393916465">Brak zapisanych haseł</translation>
 <translation id="5620928963363755975">Znajdź pliki i strony w Pobranych plikach, używając przycisku Więcej opcji</translation>
+<translation id="562289928968387744">Zarządzaj reakcjami</translation>
 <translation id="5626134646977739690">Nazwa:</translation>
 <translation id="5639724618331995626">Pozwól na otwieranie wszystkich stron</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
@@ -746,7 +743,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy bez związku ze stronami odwiedzonymi przez Ciebie wcześniej. Wiele stron będzie nadal gromadzić dane przeglądania i używać ich na przykład do poprawy bezpieczeństwa, pokazywania treści, reklam i rekomendacji oraz do generowania statystyk.</translation>
 <translation id="624789221780392884">Aktualizacja jest gotowa</translation>
 <translation id="6255999984061454636">Polecane treści</translation>
-<translation id="6266591733731644292">Piaskownica prywatności nie została jeszcze udostępniona do powszechnego użytku. W tym okresie próbnym:\n<ph name="BEGIN_LIST_ITEM1" />Programiści mogą wypróbować możliwość dostosowywania tworzonych stron i aplikacji do potrzeb użytkowników bez uzyskiwania dostępu do informacji, które pozwalają zidentyfikować konkretne osoby.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Użytkownicy mogą zrezygnować z okresu próbnego za pomocą elementów sterujących na tej stronie.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6292420053234093573">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
@@ -839,7 +835,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6813446258015311409">Logowanie się w Chrome, otwarte.</translation>
 <translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
-<translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
 <translation id="6845325883481699275">Pomóż zwiększyć bezpieczeństwo Chrome</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
@@ -1036,6 +1031,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8156139159503939589">W jakich językach umiesz czytać?</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
+<translation id="8189750580333936930">Piaskownica prywatności</translation>
 <translation id="8190358571722158785">Pozostał dzień</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8209050860603202033">Otwórz grafikę</translation>
@@ -1071,7 +1067,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8442258441309440798">Brak artykułów</translation>
 <translation id="8443209985646068659">Nie można zaktualizować</translation>
 <translation id="8445448999790540984">Nie można wyeksportować haseł</translation>
-<translation id="8447219758310755868">Maskowanie przez tłum</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
 <translation id="8466613982764129868">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma połączenie z internetem</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1117,7 +1112,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8748850008226585750">Treści ukryte</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>
 <translation id="8788968922598763114">Ponownie otwórz ostatnio zamknięte karty</translation>
-<translation id="8795672590390389447">Piaskownica prywatności</translation>
 <translation id="8798449543960971550">Przeczytane</translation>
 <translation id="8812260976093120287">Używając swojego urządzenia, na niektórych stronach możesz płacić za pomocą powyższych obsługiwanych aplikacji do płatności.</translation>
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>

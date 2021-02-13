@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Ukurasa wa mwanzo umetambuliwa</translation>
 <translation id="3188257591659621405">Faili zangu</translation>
 <translation id="3199982728237701504">Mashine ya kuingiza Hati (Pande mbili)</translation>
+<translation id="3226405216343213872">Inatafuta vichanganuzi</translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
 <translation id="3268178239013324452">Haijakamilika - Kifuniko kimefunguka</translation>
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">Inachanganua ukurasa wa <ph name="PAGE_NUM" />. Asilimia <ph name="PERCENTAGE_VALUE" /> imekamilika.</translation>
 <translation id="3459509316159669723">Kuchapisha</translation>
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
-<translation id="3515615323037921860">Kazi za Kuchapisha</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
 <translation id="357889014807611375">Wi-Fi inayopima data</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
@@ -278,6 +278,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Imemaliza kuchanganua. Ukurasa mmoja umechanganuliwa}other{Imemaliza kuchanganua. Kurasa {NUMBER_OF_PAGES} zimechanganuliwa}}</translation>
+<translation id="7449585358422953039">Inadhibitiwa na <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7487067081878637334">Teknolojia</translation>
 <translation id="7490813197707563893">Anwani ya MAC</translation>
@@ -294,7 +295,6 @@
 <translation id="7701040980221191251">Hamna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Mara ambazo betri imechajiwa na kutumia chaji</translation>
-<translation id="7732651821766520760">Jaribio la <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Aina ya Kitambulisho</translation>
 <translation id="7805768142964895445">Hali</translation>
 <translation id="7819857487979277519">PSK (WPA au RSN)</translation>

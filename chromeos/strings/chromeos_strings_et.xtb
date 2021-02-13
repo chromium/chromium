@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Lehe <ph name="PAGE_NUM" /> skannimine. <ph name="PERCENTAGE_VALUE" />% on lõpetatud.</translation>
 <translation id="3459509316159669723">Printimine</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
-<translation id="3515615323037921860">Prinditööd</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="357889014807611375">mahupõhine WiFi</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
@@ -297,7 +296,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7701040980221191251">Pole</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Tsüklite arv</translation>
-<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>

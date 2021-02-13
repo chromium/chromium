@@ -90,6 +90,7 @@
 <translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
+<translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">درحال اسکن کردن صفحه <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />٪ انجام شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
-<translation id="3515615323037921860">کارهای چاپ</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
@@ -279,6 +279,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
+<translation id="7449585358422953039">توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7487067081878637334">فناوری</translation>
 <translation id="7490813197707563893">‏نشانی MAC</translation>
@@ -295,7 +296,6 @@
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">تعداد چرخه‌ها</translation>
-<translation id="7732651821766520760">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">شناسه مدل</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>

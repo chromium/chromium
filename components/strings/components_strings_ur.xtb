@@ -80,7 +80,6 @@
     &lt;li&gt;ویب سائٹ کے مالک سے رابطہ کریں۔&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو آپ کی تنظیم کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
-<translation id="1259144770381827039">تفصیلات دیکھیں۔</translation>
 <translation id="1263231323834454256">پڑھنے کی فہرست</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
          وہ سرگرمی جو اس آلے پر برقرار نہیں رہے گی:
@@ -727,6 +726,7 @@
 <translation id="3761718714832595332">اسٹیٹس چھپائیں</translation>
 <translation id="3765032636089507299">محفوظ براؤزنگ کا صفحہ زیر تعمیر ہے۔</translation>
 <translation id="3765588406864124894">میل باکس 9</translation>
+<translation id="3767485424735936570">منتظم کی پالیسی کے تحت <ph name="VM_NAME" /> میں اس مواد کو کاپی اور پیسٹ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="3778403066972421603">‏کیا آپ اس کارڈ کو اپنے Google اکاؤنٹ اور اس آلہ میں محفوظ کرنا چاہتے ہیں؟</translation>
 <translation id="3780694243617746492">آؤٹ پٹ کوڑے دان</translation>
 <translation id="3781428340399460090">گہرا گلابی</translation>
@@ -1130,6 +1130,7 @@
 <translation id="5299298092464848405">پالیسی کو پارس کرنے میں خرابی</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5306593769196050043">دونوں شیٹیں</translation>
+<translation id="5307166000025436103">ٹھیک ہے</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5308689395849655368">کریش رپورٹنگ کو غیر فعال کر دیا گیا ہے۔</translation>
 <translation id="5314967030527622926">کتابچہ بنانے والا</translation>
@@ -1376,7 +1377,6 @@
 <translation id="6290238015253830360">آپ کے تجویز کردہ مضامین یہاں ظاہر ہوتے ہیں</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">‏Chrome میں Google اسسٹنٹ موقوف کی جا ر ہی ہے</translation>
-<translation id="6304463939629872728">اس سے ادائیگی کریں</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ناقابل رسائی ہے۔</translation>
 <translation id="6312113039770857350">ویب صفحہ دستیاب نہیں ہے</translation>
 <translation id="6321917430147971392">‏اپنی DNS ترتیبات چیک کریں</translation>
@@ -1406,7 +1406,6 @@
 <translation id="6406765186087300643">C0 ‎(Envelope‎)‎</translation>
 <translation id="6409754798200046165">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز دیتا ہے۔</translation>
 <translation id="6410264514553301377">‏<ph name="CREDIT_CARD" /> کی اختتامی تاریخ اور CVC درج کریں</translation>
-<translation id="6410774864568266108">‏اپنی Google Pay کی پیشکش نہ بھولیں</translation>
 <translation id="6415778972515849510">‏Chromium آپ کی اپنا Google اکاؤنٹ محفوظ اور پاس ورڈ تبدیل کرنے میں مدد کر سکتا ہے۔</translation>
 <translation id="6423385022588644828">‏اب سے Touch ID کے استعمال سے تیزی سے اپنے کارڈز کی تصدیق کریں</translation>
 <translation id="6425092077175753609">مٹیریل</translation>
@@ -1461,6 +1460,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{‏1 سائٹ سے (آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے)}other{‏# سائٹس سے (آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے)}}</translation>
 <translation id="6648459603387803038">‏آپ کا منتظم دور سے آپ کے براؤزر کا سیٹ اپ تبدیل کر سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chrome سے باہر بھی کیا جا سکتا ہے۔</translation>
 <translation id="6648524591329069940">‏Serif فونٹ</translation>
+<translation id="6651270836885078973">کے زیر انتظام ہے:</translation>
 <translation id="6652101503459149953">‏Windows Hello کا استعمال کریں</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="666259744093848177">‏(x86_64 ترجمہ کردہ)</translation>

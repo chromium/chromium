@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">그룹 공유</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" />개의 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 확장합니다.</translation>
 <translation id="2977480621796371840">그룹에서 삭제</translation>
+<translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
 <translation id="3940195383040445971">탭에서 가격 추적</translation>

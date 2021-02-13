@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">ទប់ស្កាត់​ខូគី​ភាគី​ទីបី</translation>
 <translation id="2969979262385602596">បានបរាជ័យក្នុងការចូល។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="2975121486251958312">អាចប្រើបានតែមុខងារ​ឯកជនប៉ុណ្ណោះ</translation>
+<translation id="2982481275546140226">សម្អាតទិន្នន័យ</translation>
 <translation id="298306318844797842">បញ្ចូលវិធីបង់ប្រាក់...</translation>
 <translation id="2989805286512600854">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3037605927509011580">អូយ ទក់!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5339316356165661760">បើក​សមកាលកម្ម</translation>
-<translation id="5351284593342054342">សម្អាតពី​ឧបករណ៍នេះ</translation>
 <translation id="5388358297987318779">បើករូបភាព</translation>
 <translation id="5407969256130905701">លុបចោល​ការផ្លាស់ប្ដូរ</translation>
 <translation id="5409365236829784218">គ្មានកម្មវិធីដែលបានដំឡើងណាអាចបើកឯកសារនេះបានទេ។</translation>
@@ -466,7 +466,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5948291296578561264">វា​អនុញ្ញាត​ឱ្យអ្នក​រក្សាទុក​រូបថត​ទៅក្នុងបណ្ណាល័យរូបថត​របស់អ្នក។</translation>
 <translation id="5955891643922670672">កំពុង​មើល​កំណែ​គ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="5957613098218939406">ជម្រើសច្រើនទៀត</translation>
-<translation id="5961521066940389233">រក្សាទុកនៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="5964480694698977962">បង្កើតផ្ទាំងអនាមិកថ្មី</translation>
 <translation id="5965679971710331625">អ្នកបានចូលគណនីហើយ</translation>
 <translation id="5979837087407522202">ស្វែងរកពាក្យសម្ងាត់</translation>
@@ -481,7 +480,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="605721222689873409">ឆ្នាំ</translation>
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6066301408025741299">ប៉ះដើម្បីបោះបង់</translation>
-<translation id="6085282545406522838">ទិន្នន័យ​ដែលអ្នកបានធ្វើសមកាលកម្ម​នឹងនៅតែមាននៅក្នុងគណនី Google របស់អ្នកដដែល។</translation>
 <translation id="6108923351542677676">ការដំឡើងកំពុងដំណើរការ…</translation>
 <translation id="6119050551270742952">ទំព័របណ្ដាញ​បច្ចុប្បន្ន​ស្ថិតនៅក្នុងមុខងារឯកជន</translation>
 <translation id="6122191549521593678">លើអ៊ីនធឺណិត</translation>
@@ -605,7 +603,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7203585745079012652">ឆ្លើយតបទៅវិញ</translation>
 <translation id="7207383424303353046">ថ្មី៖ បើកគេហទំព័រ​នៅក្នុង Chrome ដោយស្វ័យប្រវត្តិ​ដោយធ្វើឱ្យ Chrome ក្លាយជា​កម្មវិធីរុករកតាម​អ៊ីនធឺណិតលំនាំដើម​របស់អ្នក។ <ph name="BEGIN_LINK" />បើក​ការកំណត់<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">ឈ្មោះហៅក្រៅរបស់​កាតមិនត្រឹមត្រូវ</translation>
-<translation id="722989956228261714">ចេញពីគណនី…</translation>
 <translation id="7265758999917665941">មិន​ចងចាំ​សម្រាប់​គេហទំព័រ​នេះទេ</translation>
 <translation id="7272437679830969316">មិនអាច​ផ្ទៀងផ្ទាត់​អត្តសញ្ញាណ​របស់អ្នក​បានទេ។ ពាក្យសម្ងាត់​មិន​បានចម្លង។</translation>
 <translation id="7291368939935408496">កំពុង​រៀបចំ​ពាក្យ​សម្ងាត់...</translation>
@@ -635,7 +632,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7514365320538308">ទាញយក</translation>
 <translation id="7537586195939242955">សូមទោស Pass របស់អ្នកមិនអាចដំឡើងទៅកាន់ Passbook បានទេនៅពេលនេះ។</translation>
 <translation id="7554791636758816595">ផ្ទាំងថ្មី</translation>
-<translation id="7558943807639707687">តើអ្នកចង់​ធ្វើអ្វីជាមួយនឹង​ចំណាំ ប្រវត្តិ និង​ទិន្នន័យផ្សេងទៀត​របស់អ្នក​នៅលើ​ឧបករណ៍នេះ?</translation>
 <translation id="7561196759112975576">ជានិច្ច</translation>
 <translation id="7583004045319035904">ប្រើ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ដើម្បីដោះសោផ្ទាំងឯកជនរបស់អ្នក។</translation>
 <translation id="7600965453749440009">មិនបកប្រែភាសា <ph name="LANGUAGE" /> ទៀតឡើយ</translation>

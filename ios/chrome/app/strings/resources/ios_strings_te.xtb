@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయి</translation>
 <translation id="2969979262385602596">సైన్ ఇన్ చేయడం విఫలమైంది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="2975121486251958312">అజ్ఞాత మోడ్ మాత్రమే అందుబాటులో ఉంది</translation>
+<translation id="2982481275546140226">డేటాను తీసివేయి</translation>
 <translation id="298306318844797842">చెల్లింపు పద్ధతిని జోడించు...</translation>
 <translation id="2989805286512600854">కొత్త టాబ్‌లో తెరువు</translation>
 <translation id="3037605927509011580">ఆవ్, స్నాప్!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5327248766486351172">పేరు</translation>
 <translation id="5339316356165661760">సింక్‌ను ఆన్ చేయి</translation>
-<translation id="5351284593342054342">ఈ పరికరం నుండి క్లియర్ చేయి</translation>
 <translation id="5388358297987318779">చిత్రాన్ని తెరువు</translation>
 <translation id="5407969256130905701">మార్పులను విస్మరించు</translation>
 <translation id="5409365236829784218">ఈ ఫైల్‌ను తెరవగలిగే యాప్‌లు ఇన్‌స్టాల్ చేయబడలేదు.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">ఇది మీ ఫోటో లైబ్రరీకి ఫోటోలను సేవ్ చేయడానికి మీకు వీలు కల్పిస్తుంది.</translation>
 <translation id="5955891643922670672">ఆఫ్‌లైన్ వెర్షన్‌ను చూస్తున్నారు</translation>
 <translation id="5957613098218939406">మరిన్ని ఎంపికలు</translation>
-<translation id="5961521066940389233">ఈ పరికరంలో ఉంచు</translation>
 <translation id="5964480694698977962">కొత్త అజ్ఞాత ట్యాబ్‌ను సృష్టించండి.</translation>
 <translation id="5965679971710331625">మీరు సైన్ ఇన్ చేసారు</translation>
 <translation id="5979837087407522202">పాస్‌వర్డ్‌లను వెతుకు</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ఇక్కడ మీ కథనాలు, యాక్టివిటీని కంట్రోల్ చేయండి</translation>
 <translation id="6066301408025741299">రద్దు చేయడానికి నొక్కండి.</translation>
-<translation id="6085282545406522838">మీ సింక్ చేయబడిన డేటా మీ Google ఖాతాలోనే ఉండిపోతుంది.</translation>
 <translation id="6108923351542677676">సెటప్ ప్రోగ్రెస్‌లో ఉంది...</translation>
 <translation id="6119050551270742952">ప్రస్తుత వెబ్‌పేజీ అజ్ఞాత మోడ్‌లో ఉంది</translation>
 <translation id="6122191549521593678">ఆన్‌లైన్</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">సమాధానాలను చదివి వినిపించు</translation>
 <translation id="7207383424303353046">కొత్తది: Chromeను మీ ఆటోమేటిక్ బ్రౌజర్ యాప్‌గా చేయడం ద్వారా, దానిలో సైట్‌లను ఆటోమేటిక్‌గా తెరవండి. <ph name="BEGIN_LINK" />సెట్టింగ్‌లను తెరవండి<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">కార్డ్ మారుపేరు చెల్లదు</translation>
-<translation id="722989956228261714">సైన్ అవుట్ చేయి…</translation>
 <translation id="7265758999917665941">ఈ సైట్ కోసం ఎప్పటికీ వద్దు</translation>
 <translation id="7272437679830969316">మీ గుర్తింపును ధృవీకరించడం సాధ్యపడలేదు. పాస్‌వర్డ్ కాపీ చేయబడలేదు.</translation>
 <translation id="7291368939935408496">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది...</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
 <translation id="7537586195939242955">క్షమించండి, ఈ సమయంలో పాస్‌బుక్‌కు మీ పాస్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు.</translation>
 <translation id="7554791636758816595">కొత్త ట్యాబ్</translation>
-<translation id="7558943807639707687">మీరు ఈ పరికరంలోని మీ బుక్‌మార్క్‌లు, హిస్టరీ, అలాగే ఇతర డేటాతో ఏం చేయాలనుకుంటున్నారు?</translation>
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="7583004045319035904">మీ అజ్ఞాత ట్యాబ్‌లను అన్‌లాక్ చేయడానికి <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ను ఉపయోగించండి.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ను ఎప్పటికీ అనువదించవద్దు</translation>

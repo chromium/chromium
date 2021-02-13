@@ -80,7 +80,6 @@
     &lt;li&gt;ৱেবছাইটটোৰ গৰাকীৰ সৈতে সম্পর্ক কৰক।&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">আপুনি আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা নকৰা এটা ছাইটত নিজৰ পাছৱৰ্ডটো দিছে। আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱৰ্ডটো অন্য এপ্‌ আৰু ছাইটত পুনৰ ব্যৱহাৰ নকৰিব।</translation>
-<translation id="1259144770381827039">সবিশেষ চাওক।</translation>
 <translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         এইসমূহ কাৰ্যকলাপ এই ডিভাইচটোত ছেভ কৰা নহ’ব:
@@ -721,6 +720,7 @@
 <translation id="3761718714832595332">ষ্টেটাছ লুকুৱাওক</translation>
 <translation id="3765032636089507299">সুৰক্ষিত ব্ৰাউজিঙৰ পৃষ্ঠাটো বনোৱা কাম চলি আছে।</translation>
 <translation id="3765588406864124894">মেইলবক্স ৯</translation>
+<translation id="3767485424735936570">প্ৰশাসকৰ নীতিয়ে এই সমল <ph name="VM_NAME" />ত প্ৰতিলিপি কৰি পে’ষ্ট কৰাটো চুপাৰিছ নকৰে</translation>
 <translation id="3778403066972421603">আপোনাৰ Google একাউণ্ট আৰু লগতে এই ডিভাইচত  এই কার্ডখন ছেভ কৰিব খোজেনে?</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3781428340399460090">উজ্জ্বল গুলপীয়া</translation>
@@ -1122,6 +1122,7 @@
 <translation id="5299298092464848405">নীতি পাৰ্ছ কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5306593769196050043">উভয় শ্বীট</translation>
+<translation id="5307166000025436103">ঠিক আছে</translation>
 <translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5308689395849655368">ক্ৰেশ্ব ৰিপর্ট কৰা সুবিধাটো অক্ষম কৰা হৈছে।</translation>
 <translation id="5314967030527622926">বুকলেট প্ৰস্তুত কৰোঁতা</translation>
@@ -1365,7 +1366,6 @@
 <translation id="6290238015253830360">আপুনি পৰামৰ্শ দিয়া প্ৰবন্ধবোৰ ইয়াত দেখা যাব</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chromeত Google Assistant বন্ধ হ'ব</translation>
-<translation id="6304463939629872728">ইয়াৰ জৰিয়তে চেক আউট কৰক</translation>
 <translation id="6305205051461490394"><ph name="URL" />ত উপনীত হ’ব নোৱাৰি৷</translation>
 <translation id="6312113039770857350">ৱেবপৃষ্ঠা উপলব্ধ নহয়</translation>
 <translation id="6321917430147971392">আপোনাৰ DNS ছেটিং পৰীক্ষা কৰক</translation>
@@ -1395,7 +1395,6 @@
 <translation id="6406765186087300643">C0 (লেফাফা)</translation>
 <translation id="6409754798200046165">আপুনি প্ৰবঞ্চনামূলক ছাইটটোত এইমাত্ৰ নিজৰ পাছৱৰ্ডটো দিছে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />ৰ ম্যাদ উকলা তাৰিখ আৰু CVC দিয়ক</translation>
-<translation id="6410774864568266108">আপোনাৰ Google Payৰ অফাৰটো নাপাহৰিব</translation>
 <translation id="6415778972515849510">Chromiumএ আপোনাৰ Google একাউণ্ট সুৰক্ষিত কৰাত আৰু আপোনৰ পাছৱৰ্ড সলনি কৰাত সহায় কৰিব পাৰে।</translation>
 <translation id="6423385022588644828">এতিয়াৰ পৰা স্পৰ্শ আইডি ব্যৱহাৰ কৰি আপোনাৰ কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰক</translation>
 <translation id="6425092077175753609">সামগ্ৰী</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{এটাৰ পৰাও নহয়}=1{১টা ছাইটৰ পৰা (আপুনি নিজৰ Google Accountৰ পৰা ছাইন আউট হৈ নাযায়)}one{#টা ছাইটৰ পৰা (আপুনি নিজৰ Google Accountৰ পৰা ছাইন আউট হৈ নাযায়)}other{#টা ছাইটৰ পৰা (আপুনি নিজৰ Google Accountৰ পৰা ছাইন আউট হৈ নাযায়)}}</translation>
 <translation id="6648459603387803038">আপোনাৰ প্ৰশাসকে দূৰৰ পৰাই আপোনাৰ ব্ৰাউজাৰৰ ছেটআপ সলনি কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ’ব পাৰে।</translation>
 <translation id="6648524591329069940">Serif ফ’ণ্ট</translation>
+<translation id="6651270836885078973">ইয়াৰ দ্বাৰা পৰিচালিত:</translation>
 <translation id="6652101503459149953">Windows Hello ব্যৱহাৰ কৰক</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="666259744093848177">(x86_64 অনুবাদ কৰা হৈছে)</translation>

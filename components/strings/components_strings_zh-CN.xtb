@@ -80,7 +80,6 @@
     &lt;li&gt;与网站所有者联系。&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">您在一个不受贵单位管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
-<translation id="1259144770381827039">查看详情。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         系统不会将以下活动记录保存到此设备上：
@@ -1356,7 +1355,6 @@
 <translation id="6290238015253830360">为您推荐的文章会显示在此处</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome 中的 Google 助理即将停止工作</translation>
-<translation id="6304463939629872728">结帐时使用</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
 <translation id="6312113039770857350">网页无法打开</translation>
 <translation id="6321917430147971392">请检查您的DNS设置是否正确</translation>
@@ -1386,7 +1384,6 @@
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">您刚刚在一个欺骗性网站中输入了密码。Chrome 建议您立即更改密码。</translation>
 <translation id="6410264514553301377">请输入“<ph name="CREDIT_CARD" />”的到期日期和银行卡验证码 (CVC)</translation>
-<translation id="6410774864568266108">别忘了使用您的 Google Pay 优惠</translation>
 <translation id="6415778972515849510">Chromium 可以帮助您保护您的 Google 帐号和更改密码。</translation>
 <translation id="6423385022588644828">从现在开始，您只需使用 Touch ID 便能更快速地确认银行卡</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1824,6 +1821,7 @@
 <translation id="8202370299023114387">冲突</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8213464188712611711">内存使用量</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8221250263817408492">您刚刚在一个诈骗网站中输入了密码。Chromium 建议您立即前往 <ph name="WEBSITE_1" /> 以及使用此密码的其他网站更改密码。</translation>

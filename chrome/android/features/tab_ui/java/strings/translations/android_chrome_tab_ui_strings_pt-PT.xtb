@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Partilhar grupo</translation>
 <translation id="2759453070259087442">Expanda o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
+<translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>

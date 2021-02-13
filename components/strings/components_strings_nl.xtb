@@ -80,7 +80,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
     &lt;li&gt;Neem contact op met de eigenaar van deze website.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Je hebt je wachtwoord ingevoerd op een site die niet door je organisatie wordt beheerd. Hergebruik je wachtwoord niet voor andere apps en sites om je account te beschermen.</translation>
-<translation id="1259144770381827039">Bekijk de details.</translation>
 <translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />Activiteit die niet op dit apparaat blijft staan:<ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
@@ -1359,7 +1358,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6290238015253830360">Je voorgestelde artikelen worden hier weergegeven</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">De Google Assistent in Chrome wordt gestopt</translation>
-<translation id="6304463939629872728">Afrekenen met</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is niet bereikbaar.</translation>
 <translation id="6312113039770857350">Webpagina niet beschikbaar</translation>
 <translation id="6321917430147971392">Controleer je DNS-instellingen</translation>
@@ -1389,7 +1387,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6406765186087300643">C0 (envelop)</translation>
 <translation id="6409754798200046165">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan om je wachtwoord nu te wijzigen.</translation>
 <translation id="6410264514553301377">Geef de vervaldatum en CVC-code op voor <ph name="CREDIT_CARD" /></translation>
-<translation id="6410774864568266108">Vergeet je Google Pay-aanbieding niet</translation>
 <translation id="6415778972515849510">Chromium kan je helpen je Google-account te beschermen en je wachtwoord te wijzigen.</translation>
 <translation id="6423385022588644828">Bevestig je kaarten sneller door vanaf nu Touch ID te gebruiken</translation>
 <translation id="6425092077175753609">Material</translation>
@@ -1828,6 +1825,7 @@ Aanvullende informatie:
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (envelop)</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
+<translation id="8213464188712611711">Herinneringen</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>
 <translation id="8220146938470311105">C7/C6 (envelop)</translation>
 <translation id="8221250263817408492">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium raadt je aan naar <ph name="WEBSITE_1" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>

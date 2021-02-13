@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="102360288709523007">დაგვეხმარეთ Chromium-ის გაუმჯობესებაში, გამოყენების სტატისტიკისა და შეცდომების შესახებ ანგარიშების Google-ში გაგზავნით.</translation>
-<translation id="1130979953299110755">გასვლის შემთხვევაში თქვენი სანიშნეები, ისტორია, პაროლები და Chromium-ის სხვა მონაცემები აღარ იქნება სინქრონიზებული თქვენს Google ანგარიშთან.</translation>
 <translation id="1185134272377778587">Chromium-ის შესახებ</translation>
 <translation id="1257458525759135959">სურათების შესანახად შეეხეთ „პარამეტრებს“ და მიეცით საშუალება Chromium-ს, დაამატოს თქვენი ფოტოები</translation>
 <translation id="1361748954329991663">Chromium მოძველდა. თუ <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />-ში განახლება მიუწვდომელია, შესაძლოა, რომ თქვენს მოწყობილობაზე Chromium-ის ახალი ვერსიები მხარდაჭერილი აღარ იყოს.</translation>
@@ -72,7 +71,6 @@
 <translation id="7890287942691234100">Chromium სკანერის გამოყენების დაწყება</translation>
 <translation id="8013573822802650211">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, შედით სისტემაში ყველა მათგანზე</translation>
 <translation id="8073677936375100957">გასუფთავდეს თქვენი Chromium მონაცემები ამ მოწყობილობიდან?</translation>
-<translation id="8097322092271030751">ვინაიდან თქვენს ანგარიშს მართავს <ph name="HOSTED_DOMAIN" />, სისტემიდან გასვლისას წაიშლება Chromium-ში არსებული თქვენი მონაცემები. თქვენი სინქრონიზებული მონაცემები დარჩება თქვენს Google ანგარიშში.</translation>
 <translation id="8175055321229419309">მინიშნება: <ph name="BEGIN_LINK" />გადაიტანეთ Chromium თქვენს დოკში<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromium-ის ნაგულისხმევად დასაყენებლად გახსენით პარამეტრები, შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“ და აირჩიეთ Chromium.</translation>
 <translation id="8240981428553046115">Chromium-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>

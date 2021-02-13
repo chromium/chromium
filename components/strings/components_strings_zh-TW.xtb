@@ -80,7 +80,6 @@
     &lt;li&gt;與網站擁有者聯絡。&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">你在不是由貴機構管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
-<translation id="1259144770381827039">查看詳細資料。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         這部裝置不會儲存的活動：
@@ -1363,7 +1362,6 @@
 <translation id="6290238015253830360">這裡會顯示推薦給你的文章</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">正在停止 Chrome 版 Google 助理</translation>
-<translation id="6304463939629872728">使用以下卡片結帳：</translation>
 <translation id="6305205051461490394">無法連上 <ph name="URL" />。</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
@@ -1393,7 +1391,6 @@
 <translation id="6406765186087300643">C0 (信封)</translation>
 <translation id="6409754798200046165">你剛才在詐騙網站上輸入了密碼。Chrome 建議你立即變更密碼。</translation>
 <translation id="6410264514553301377">輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼</translation>
-<translation id="6410774864568266108">別錯過 Google Pay 優惠</translation>
 <translation id="6415778972515849510">Chromium 可協助你保護 Google 帳戶並變更密碼。</translation>
 <translation id="6423385022588644828">現在就開始使用 Touch ID，加快卡片驗證速度</translation>
 <translation id="6425092077175753609">質感</translation>
@@ -1448,7 +1445,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{無}=1{1 個網站 (你不會因此登出 Google 帳戶)}other{# 個網站 (你不會因此登出 Google 帳戶)}}</translation>
 <translation id="6648459603387803038">你的系統管理員可以遠端變更瀏覽器設定。這部裝置上的活動也可以透過 Chrome 以外的服務管理。</translation>
 <translation id="6648524591329069940">Serif 字型</translation>
-<translation id="6651270836885078973">管理員：</translation>
+<translation id="6651270836885078973">管理網域/帳戶：</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="666259744093848177">(經過翻譯的 x86_64)</translation>
@@ -1832,6 +1829,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8206978196348664717">Prc4 (信封)</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
+<translation id="8213464188712611711">記憶</translation>
 <translation id="8218327578424803826">指派的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (信封)</translation>
 <translation id="8221250263817408492">你剛才在詐騙網站上輸入了密碼。Chromium 建議你立即前往 <ph name="WEBSITE_1" /> 以及也使用這個密碼的其他網站變更密碼。</translation>

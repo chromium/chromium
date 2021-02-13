@@ -80,7 +80,6 @@
     &lt;li&gt;ウェブサイトの所有者に問い合わせます。&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">組織が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
-<translation id="1259144770381827039">詳細をご確認ください。</translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         このデバイスに保存されないアクティビティ:
@@ -1363,7 +1362,6 @@
 <translation id="6290238015253830360">おすすめの記事がここに表示されます</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome の Google アシスタントを停止しています</translation>
-<translation id="6304463939629872728">決済方法</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
 <translation id="6312113039770857350">ウェブページへのアクセス不可</translation>
 <translation id="6321917430147971392">DNS 設定を確認してください</translation>
@@ -1393,7 +1391,6 @@
 <translation id="6406765186087300643">C0（封筒）</translation>
 <translation id="6409754798200046165">偽のサイトでパスワードを入力しました。パスワードをすぐに変更することをおすすめします。</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> の有効期限と CVC を入力</translation>
-<translation id="6410774864568266108">Google Pay もご利用いただけます</translation>
 <translation id="6415778972515849510">Chromium には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
 <translation id="6423385022588644828">今後 Touch ID を使用して、カードの確認をより迅速に行います</translation>
 <translation id="6425092077175753609">マテリアル</translation>
@@ -1832,6 +1829,7 @@
 <translation id="8202370299023114387">競合</translation>
 <translation id="8206978196348664717">Prc4（封筒）</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
+<translation id="8213464188712611711">思い出</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
 <translation id="8220146938470311105">C7 / C6（封筒）</translation>
 <translation id="8221250263817408492">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" /> のほか、このパスワードを使用しているサイトで、パスワードを今すぐ変更することをおすすめします。</translation>

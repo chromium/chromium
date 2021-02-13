@@ -90,6 +90,7 @@
 <translation id="315738237743207937">זוהה פורטל שבוי</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
+<translation id="3226405216343213872">מתבצע חיפוש אחר סורקים</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
@@ -102,7 +103,6 @@
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
-<translation id="3515615323037921860">משימות הדפסה</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
@@ -295,7 +295,6 @@
 <translation id="7701040980221191251">אין</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
-<translation id="7732651821766520760">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="102360288709523007">Pomozte Chromium zlepšovat – posílejte Googlu statistiky o využívání a zprávy o selhání.</translation>
-<translation id="1130979953299110755">Pokud se odhlásíte, vaše záložky, historie, hesla a další data v prohlížeči Chromium se už nebudou synchronizovat do vašeho účtu Google.</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1257458525759135959">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte prohlížeči Chromium přidávat obrázky do vašich fotek</translation>
 <translation id="1361748954329991663">Prohlížeč Chromium je zastaralý. Pokud v obchodě <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> není k dispozici žádná aktualizace, je možné, že vaše zařízení již nové verze prohlížeče Chromium nepodporuje.</translation>
@@ -71,7 +70,6 @@
 <translation id="7890287942691234100">Začněte používat skener prohlížeče Chromium</translation>
 <translation id="8013573822802650211">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, na všech zařízeních se přihlaste</translation>
 <translation id="8073677936375100957">Vymazat z tohoto zařízení data prohlížeče Chromium?</translation>
-<translation id="8097322092271030751">Protože váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, při odhlášení z tohoto zařízení se smažou vaše data v prohlížeči Chromium. Synchronizovaná data vám v účtu Google zůstanou.</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Přesuňte si prohlížeč Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Pokud chcete Chromium nastavit jako výchozí prohlížeč, otevřete Nastavení, klepněte na Výchozí prohlížeč a vyberte Chromium.</translation>
 <translation id="8240981428553046115">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>

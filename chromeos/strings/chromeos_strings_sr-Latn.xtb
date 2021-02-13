@@ -103,7 +103,6 @@
 <translation id="345898999683440380">Skenira se <ph name="PAGE_NUM" />. stranica. Dovršeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
 <translation id="3488065109653206955">Delimično aktivirano</translation>
-<translation id="3515615323037921860">Zadaci štampanja</translation>
 <translation id="3527036260304016759">Nije uspelo – nepoznata greška</translation>
 <translation id="357889014807611375">WiFi sa ograničenjem</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
@@ -297,7 +296,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
-<translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>

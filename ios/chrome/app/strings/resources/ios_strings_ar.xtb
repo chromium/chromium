@@ -197,6 +197,7 @@
 <translation id="2964349545761222050">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2969979262385602596">تعذّر تسجيل الدخول. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2975121486251958312">لا يتوفّر سوى "وضع التصفُّح المتخفي"</translation>
+<translation id="2982481275546140226">محو البيانات</translation>
 <translation id="298306318844797842">إضافة طريقة الدفع...</translation>
 <translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
@@ -410,7 +411,6 @@
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5327248766486351172">الاسم</translation>
 <translation id="5339316356165661760">تفعيل المزامنة</translation>
-<translation id="5351284593342054342">محو البيانات من هذا الجهاز</translation>
 <translation id="5388358297987318779">فتح الصورة</translation>
 <translation id="5407969256130905701">تجاهل التغييرات</translation>
 <translation id="5409365236829784218">لا تتوفر تطبيقات مثبتة يمكن من خلالها فتح هذا الملف.</translation>
@@ -466,7 +466,6 @@
 <translation id="5948291296578561264">يسمح لك ذلك بحفظ الصور في مكتبة صورك.</translation>
 <translation id="5955891643922670672">عرض النسخة بلا إنترنت</translation>
 <translation id="5957613098218939406">خيارات إضافية</translation>
-<translation id="5961521066940389233">الاحتفاظ بالبيانات على هذا الجهاز</translation>
 <translation id="5964480694698977962">إنشاء علامة تبويب جديدة للتصفح المتخفي.</translation>
 <translation id="5965679971710331625">تم تسجيل الدخول</translation>
 <translation id="5979837087407522202">بحث عن كلمات المرور</translation>
@@ -481,7 +480,6 @@
 <translation id="605721222689873409">العام</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
-<translation id="6085282545406522838">‏ستظل البيانات التي تمت مزامنتها متوفّرة في حسابك على Google.</translation>
 <translation id="6108923351542677676">الإعداد قيد التقدّم…</translation>
 <translation id="6119050551270742952">صفحة الويب الحالية في وضع التصفح المتخفي</translation>
 <translation id="6122191549521593678">متصل</translation>
@@ -605,7 +603,6 @@
 <translation id="7203585745079012652">النطق بالإجابات</translation>
 <translation id="7207383424303353046">‏جديد: يمكنك فتح المواقع الإلكترونية في Chrome تلقائيًا من خلال جعله تطبيق المتصفِّح التلقائي. <ph name="BEGIN_LINK" />فتح الإعدادات<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">لقب البطاقة غير صالح</translation>
-<translation id="722989956228261714">جارٍ تسجيل الخروج…</translation>
 <translation id="7265758999917665941">عدم حفظ كلمة المرور لهذا الموقع الإلكتروني</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
 <translation id="7291368939935408496">جارٍ تحضير كلمات المرور…</translation>
@@ -635,7 +632,6 @@
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
-<translation id="7558943807639707687">ما هو الإجراء الذي تريد اتخاذه بشأن إشاراتك المرجعية وسجلّك وبياناتك الأخرى على هذا الجهاز؟</translation>
 <translation id="7561196759112975576">دومًا</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
