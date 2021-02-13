@@ -125,7 +125,9 @@ promise_test(async t => {
 
   let encoder_init = {
     error: t.unreached_func("Encoder error"),
-    output: chunk => {
+    output: (chunk, config) => {
+      if (config)
+        decoder.configure(config);
       decoder.decode(chunk);
     }
   };
@@ -136,14 +138,8 @@ promise_test(async t => {
     sampleRate: sample_rate,
     numberOfChannels: 2,
     bitrate: 256000, //256kbit
-    // Opus header extradata.
-    // TODO(https://crbug.com/1177021) Get this data from AudioEncoder
-    description: new Uint8Array([0x4f, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64,
-      0x01, 0x02, 0x38, 0x01, 0x80, 0xbb, 0x00, 0x00, 0x00, 0x00, 0x00])
   };
-
   encoder.configure(config);
-  decoder.configure(config);
 
   let timestamp_us = 0;
   const frame_duration_s = total_duration_s / frame_count;
@@ -185,3 +181,64 @@ promise_test(async t => {
   }
 
 }, 'Encoding and decoding');
+
+promise_test(async t => {
+  let output_count = 0;
+  let encoder_config = {
+    codec: 'opus',
+    sampleRate: 24000,
+    numberOfChannels: 1,
+    bitrate: 96000
+  };
+  let decoder_config = null;
+
+  let init = {
+    error: t.unreached_func("Encoder error"),
+    output: (chunk, config) => {
+      // Only the first invocation of the output callback is supposed to have
+      // a |config| in it.
+      output_count++;
+      if (output_count == 1) {
+        assert_not_equals(config, null);
+        decoder_config = config;
+      } else {
+        assert_equals(config, null);
+      }
+    }
+  };
+
+  let encoder = new AudioEncoder(init);
+  encoder.configure(encoder_config);
+
+  let long_frame = make_audio_frame(0, encoder_config.numberOfChannels,
+    encoder_config.sampleRate, encoder_config.sampleRate);
+  encoder.encode(clone_frame(long_frame));
+  await encoder.flush();
+
+  // Long frame produced more than one output, and we've got decoder_config
+  assert_greater_than(output_count, 1);
+  assert_not_equals(decoder_config, null);
+  assert_equals(decoder_config.codec, encoder_config.codec);
+  assert_equals(decoder_config.sampleRate, encoder_config.sampleRate);
+  assert_equals(decoder_config.numberOfChannels, encoder_config.numberOfChannels);
+
+  // Check that description start with 'Opus'
+  let extra_data = new Uint8Array(decoder_config.description);
+  assert_equals(extra_data[0], 0x4f);
+  assert_equals(extra_data[1], 0x70);
+  assert_equals(extra_data[2], 0x75);
+  assert_equals(extra_data[3], 0x73);
+
+  decoder_config = null;
+  output_count = 0;
+  encoder_config.bitrate = 256000;
+  encoder.configure(encoder_config);
+  encoder.encode(clone_frame(long_frame));
+  await encoder.flush();
+
+  // After reconfiguring encoder should produce decoder config again
+  assert_greater_than(output_count, 1);
+  assert_not_equals(decoder_config, null);
+  assert_not_equals(decoder_config.description, null);
+  encoder.close();
+}, "Emit decoder config and extra data.");

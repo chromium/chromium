@@ -32,6 +32,7 @@ class MODULES_EXPORT AudioEncoderTraits {
     int channels = 0;
     uint64_t bitrate = 0;
     uint32_t sample_rate = 0;
+    String codec_string;
 
     void Trace(Visitor*) const {}
   };
@@ -89,6 +90,8 @@ class MODULES_EXPORT AudioEncoder final
   void CallOutputCallback(ParsedConfig* active_config,
                           uint32_t reset_count,
                           media::EncodedAudioBuffer encoded_buffer);
+
+  bool produced_first_output_ = false;
 };
 
 }  // namespace blink

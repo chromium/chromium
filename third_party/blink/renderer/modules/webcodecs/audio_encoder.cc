@@ -8,6 +8,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
@@ -72,6 +73,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       WTF::BindRepeating(status_callback, WrapCrossThreadWeakPersistent(this),
                          reset_count_),
       active_config_->bitrate);
+  produced_first_output_ = false;
 }
 
 void AudioEncoder::ProcessEncode(Request* request) {
@@ -129,6 +131,7 @@ AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
   result->channels = opts->numberOfChannels();
   result->bitrate = opts->bitrate();
   result->sample_rate = opts->sampleRate();
+  result->codec_string = opts->codec();
 
   if (result->channels == 0) {
     exception_state.ThrowTypeError("Invalid channel number.");
@@ -207,8 +210,25 @@ void AudioEncoder::CallOutputCallback(
                            encoded_buffer.encoded_data_size, deleter);
   auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
   auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(metadata, dom_array);
+
+  AudioDecoderConfig* decoder_config = nullptr;
+  if (!produced_first_output_) {
+    decoder_config = MakeGarbageCollected<AudioDecoderConfig>();
+    decoder_config->setCodec(active_config->codec_string);
+    decoder_config->setSampleRate(active_config->sample_rate);
+    decoder_config->setNumberOfChannels(active_config->channels);
+    auto extra_data = media_encoder_->GetExtraData();
+    if (!extra_data.empty()) {
+      auto* desc_array_buf =
+          DOMArrayBuffer::Create(extra_data.data(), extra_data.size());
+      decoder_config->setDescription(
+          ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
+    }
+    produced_first_output_ = true;
+  }
+
   ScriptState::Scope scope(script_state_);
-  output_callback_->InvokeAndReportException(nullptr, chunk);
+  output_callback_->InvokeAndReportException(nullptr, chunk, decoder_config);
 }
 
 }  // namespace blink

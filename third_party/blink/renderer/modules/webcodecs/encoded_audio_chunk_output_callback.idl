@@ -5,4 +5,5 @@
 // https://github.com/WICG/web-codecs
 
 [RuntimeEnabled=WebCodecs]
-callback EncodedAudioChunkOutputCallback = void(EncodedAudioChunk output);
+callback EncodedAudioChunkOutputCallback =
+  void(EncodedAudioChunk output, optional AudioDecoderConfig decoder_config);
