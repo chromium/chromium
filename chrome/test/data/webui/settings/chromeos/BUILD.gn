@@ -106,6 +106,7 @@ js_modulizer("modulize") {
     "os_files_page_test.js",
     "os_languages_page_tests.js",
     "os_languages_page_v2_tests.js",
+    "os_settings_main_test.js",
     "os_reset_page_test.js",
     "os_printing_page_tests.js",
     "os_people_page_test.js",

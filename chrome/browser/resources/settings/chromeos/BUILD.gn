@@ -504,6 +504,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_search_page/os_search_selection_dialog.m.js",
     "chromeos/os_settings_icons_css.m.js",
     "chromeos/os_settings_menu/os_settings_menu.m.js",
+    "chromeos/os_settings_main/os_settings_main.m.js",
     "chromeos/os_settings_page/main_page_behavior.m.js",
     "chromeos/os_settings_page/settings_idle_load.m.js",
     "chromeos/os_settings_page/os_settings_page.m.js",
@@ -1245,8 +1246,7 @@ group("closure_compile_module") {
     "os_privacy_page:closure_compile_module",
     "os_reset_page:closure_compile_module",
     "os_search_page:closure_compile_module",
-
-    #"os_settings_main:closure_compile_module",
+    "os_settings_main:closure_compile_module",
     "os_settings_menu:closure_compile_module",
     "os_settings_page:closure_compile_module",
     "os_settings_search_box:closure_compile_module",

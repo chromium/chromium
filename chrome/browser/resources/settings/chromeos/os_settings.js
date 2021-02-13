@@ -67,6 +67,7 @@ import './os_icons.m.js';
 import './os_people_page/account_manager.m.js';
 import './os_people_page/os_people_page.m.js';
 import './os_search_page/os_search_page.m.js';
+import './os_settings_main/os_settings_main.m.js';
 import './os_settings_page/os_settings_page.m.js';
 import './os_settings_page/settings_idle_load.m.js';
 import './os_settings_menu/os_settings_menu.m.js';
