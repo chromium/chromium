@@ -2820,7 +2820,7 @@
   {
     "name": "force-color-profile",
     "owners": [ "ccameron" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 99
   },
   {
     "name": "force-effective-connection-type",
