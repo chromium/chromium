@@ -118,6 +118,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -727,10 +728,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableRowRole() const {
   if (parent->RoleValue() == ax::mojom::blink::Role::kLayoutTable)
     return ax::mojom::blink::Role::kLayoutTableRow;
 
-  if (parent->IsTableLikeRole())
-    return ax::mojom::blink::Role::kRow;
-
-  return ax::mojom::blink::Role::kGenericContainer;
+  return ax::mojom::blink::Role::kRow;
 }
 
 ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {

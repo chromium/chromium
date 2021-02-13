@@ -10,6 +10,7 @@ rootWebArea
 ++++++++++++columnHeader name='Header 2'
 ++++++++++++++staticText name='Header 2'
 ++++++++++++++++inlineTextBox name='Header 2'
+++++++++rowGroup ignored invisible
 ++++++++rowGroup ignored
 ++++++genericContainer
 ++++++++staticText name='Done'

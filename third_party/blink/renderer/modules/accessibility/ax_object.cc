@@ -52,6 +52,10 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/html_table_cell_element.h"
+#include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_table_row_element.h"
+#include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
@@ -84,12 +88,96 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 
 namespace blink {
 
 namespace {
+
+#if defined(AX_FAIL_FAST_BUILD)
+// TODO(accessibility) Move this out of DEBUG by having a new enum in
+// ax_enums.mojom, and a matching ToString() in ax_enum_utils, as well as move
+// out duplicate code of String IgnoredReasonName(AXIgnoredReason reason) in
+// inspector_type_builder_helper.cc.
+String IgnoredReasonName(AXIgnoredReason reason) {
+  switch (reason) {
+    case kAXActiveModalDialog:
+      return "activeModalDialog";
+    case kAXAriaModalDialog:
+      return "activeAriaModalDialog";
+    case kAXAncestorIsLeafNode:
+      return "ancestorIsLeafNode";
+    case kAXAriaHiddenElement:
+      return "ariaHiddenElement";
+    case kAXAriaHiddenSubtree:
+      return "ariaHiddenSubtree";
+    case kAXEmptyAlt:
+      return "emptyAlt";
+    case kAXEmptyText:
+      return "emptyText";
+    case kAXInertElement:
+      return "inertElement";
+    case kAXInertSubtree:
+      return "inertSubtree";
+    case kAXInheritsPresentation:
+      return "inheritsPresentation";
+    case kAXLabelContainer:
+      return "labelContainer";
+    case kAXLabelFor:
+      return "labelFor";
+    case kAXNotRendered:
+      return "notRendered";
+    case kAXNotVisible:
+      return "notVisible";
+    case kAXPresentational:
+      return "presentationalRole";
+    case kAXProbablyPresentational:
+      return "probablyPresentational";
+    case kAXStaticTextUsedAsNameFor:
+      return "staticTextUsedAsNameFor";
+    case kAXUninteresting:
+      return "uninteresting";
+  }
+  NOTREACHED();
+  return "";
+}
+
+String GetIgnoredReasonsDebugString(AXObject::IgnoredReasons& reasons) {
+  if (reasons.size() == 0)
+    return "";
+  String string_builder = "(";
+  for (size_t count = 0; count < reasons.size(); count++) {
+    if (count > 0)
+      string_builder = string_builder + ',';
+    string_builder = string_builder + IgnoredReasonName(reasons[count].reason);
+  }
+  string_builder = string_builder + ")";
+  return string_builder;
+}
+
+#endif
+
+String GetElementString(Element* element) {
+  if (!element)
+    return "<null>";
+
+  String string_builder = "<";
+
+  string_builder = string_builder + element->tagName().LowerASCII();
+  // Cannot safely get @class from SVG elements.
+  if (!element->IsSVGElement() &&
+      element->FastHasAttribute(html_names::kClassAttr)) {
+    string_builder = string_builder + "." +
+                     element->FastGetAttribute(html_names::kClassAttr);
+  }
+  if (element->FastHasAttribute(html_names::kIdAttr)) {
+    string_builder =
+        string_builder + "#" + element->FastGetAttribute(html_names::kIdAttr);
+  }
+  return string_builder + ">";
+}
 
 Node* GetParentNodeForComputeParent(Node* node) {
   if (!node)
@@ -1003,6 +1091,11 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   node_data->role = RoleValue();
   node_data->id = AXObjectID();
 
+  DCHECK(!IsDetached()) << "Do not serialize detached nodes: "
+                        << ToString(true, true);
+  DCHECK(AccessibilityIsIncludedInTree())
+      << "Do not serialize unincluded nodes: " << ToString(true, true);
+
   AccessibilityExpanded expanded = IsExpanded();
   if (expanded) {
     if (expanded == kExpandedCollapsed)
@@ -1894,12 +1987,25 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     parent_ = ComputeParent();
 
   cached_is_hidden_via_style = ComputeIsHiddenViaStyle();
-  cached_is_inert_or_aria_hidden_ = ComputeIsInertOrAriaHidden();
+
+  // Decisions in what subtree descendants are included (each descendant's
+  // cached children_) depends on the ARIA hidden state. When it changes,
+  // the entire subtree needs to recompute descendants.
+  // In addition, the below computations for is_ignored_but_included_in_tree is
+  // dependent on having the correct new cached value.
+  bool is_inert_or_aria_hidden = ComputeIsInertOrAriaHidden();
+  if (cached_is_inert_or_aria_hidden_ != is_inert_or_aria_hidden) {
+    // If children already dirty (e.g. at Init() time), then setting the flag
+    // again will cause no additional work.
+    children_dirty_ = CanHaveChildren();
+    cached_is_inert_or_aria_hidden_ = is_inert_or_aria_hidden;
+  }
   cached_background_color_ = ComputeBackgroundColor();
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
   cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
   cached_has_inherited_presentational_role_ =
       !!InheritsPresentationalRoleFrom();
+
   bool is_ignored = ComputeAccessibilityIsIgnored();
   bool is_ignored_but_included_in_tree =
       is_ignored && ComputeAccessibilityIsIgnoredButIncludedInTree();
@@ -1931,6 +2037,15 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     bool is_included_in_tree = !is_ignored || is_ignored_but_included_in_tree;
     if (is_included_in_tree != LastKnownIsIncludedInTreeValue())
       included_in_tree_changed = true;
+  }
+
+  // Static text parent ignored state affects inline text children.
+  if (is_ignored != LastKnownIsIgnoredValue() &&
+      (RoleValue() == ax::mojom::blink::Role::kStaticText ||
+       RoleValue() == ax::mojom::blink::Role::kLineBreak)) {
+    // TODO(accessibility) Would like to call SetNeedsToUpdateChildren(), but
+    // can't call a non-const method from a const method.
+    children_dirty_ = CanHaveChildren();
   }
 
   cached_is_ignored_ = is_ignored;
@@ -2248,7 +2363,9 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
-  if (!GetNode()) {
+  const Node* node = GetNode();
+
+  if (!node) {
     if (GetLayoutObject()) {
       // All AXObjects created for anonymous layout objects are included.
       // See IsLayoutObjectRelevantForAccessibility() in
@@ -2273,14 +2390,14 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
 
   // Include all pseudo element content. Any anonymous subtree is included
   // from above, in the condition where there is no node.
-  if (GetNode()->IsPseudoElement())
+  if (node->IsPseudoElement())
     return true;
 
   // Use a flag to control whether or not the <html> element is included
   // in the accessibility tree. Either way it's always marked as "ignored",
   // but eventually we want to always include it in the tree to simplify
   // some logic.
-  if (IsA<HTMLHtmlElement>(GetNode()))
+  if (IsA<HTMLHtmlElement>(node))
     return RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled();
 
   // Keep the internal accessibility tree consistent for videos which lack
@@ -2319,8 +2436,16 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
 
   // Preserve SVG grouping elements.
-  if (IsA<SVGGElement>(GetNode()))
+  if (IsA<SVGGElement>(node))
     return true;
+
+  // Keep table-related elements in the tree, because it's too easy for them
+  // to in and out of being ignored based on their ancestry, as their role
+  // can depend on several levels up in the hierarchy.
+  if (IsA<HTMLTableElement>(node) || IsA<HTMLTableSectionElement>(node) ||
+      IsA<HTMLTableRowElement>(node) || IsA<HTMLTableCellElement>(node)) {
+    return true;
+  }
 
   // Preserve nodes with language attributes.
   if (HasAttribute(html_names::kLangAttr))
@@ -3227,13 +3352,20 @@ bool AXObject::HasGlobalARIAAttribute() const {
 int AXObject::IndexInParent() const {
   DCHECK(AccessibilityIsIncludedInTree())
       << "IndexInParent is only valid when a node is included in the tree";
-  if (!ParentObjectIncludedInTree())
+  AXObject* ax_parent_included = ParentObjectIncludedInTree();
+  if (!ax_parent_included)
     return 0;
 
   const AXObjectVector& siblings =
-      ParentObjectIncludedInTree()->ChildrenIncludingIgnored();
+      ax_parent_included->ChildrenIncludingIgnored();
+
   wtf_size_t index = siblings.Find(this);
-  DCHECK_NE(index, kNotFound);
+
+  DCHECK_NE(index, kNotFound)
+      << "Could not find child in parent:"
+      << "\nChild: " << ToString(true)
+      << "\nParent: " << ax_parent_included->ToString(true)
+      << "  #children=" << siblings.size();
   return (index == kNotFound) ? 0 : static_cast<int>(index);
 }
 
@@ -3558,8 +3690,9 @@ bool AXObject::IsDescendantOf(const AXObject& ancestor) const {
 
 AXObject* AXObject::NextSiblingIncludingIgnored() const {
   if (!AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating over objects excluded "
-                    "from the accessibility tree.";
+    NOTREACHED() << "We don't support iterating children of objects excluded "
+                    "from the accessibility tree: "
+                 << ToString(true, true);
     return nullptr;
   }
 
@@ -3575,8 +3708,9 @@ AXObject* AXObject::NextSiblingIncludingIgnored() const {
 
 AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
   if (!AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating over objects excluded "
-                    "from the accessibility tree.";
+    NOTREACHED() << "We don't support iterating children of objects excluded "
+                    "from the accessibility tree: "
+                 << ToString(true, true);
     return nullptr;
   }
 
@@ -3593,8 +3727,9 @@ AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
 AXObject* AXObject::NextInPreOrderIncludingIgnored(
     const AXObject* within) const {
   if (!AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating over objects excluded "
-                    "from the accessibility tree.";
+    NOTREACHED() << "We don't support iterating children of objects excluded "
+                    "from the accessibility tree: "
+                 << ToString(true, true);
     return nullptr;
   }
 
@@ -3617,8 +3752,9 @@ AXObject* AXObject::NextInPreOrderIncludingIgnored(
 AXObject* AXObject::PreviousInPreOrderIncludingIgnored(
     const AXObject* within) const {
   if (!AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating over objects excluded "
-                    "from the accessibility tree.";
+    NOTREACHED() << "We don't support iterating children of objects excluded "
+                    "from the accessibility tree: "
+                 << ToString(true, true);
     return nullptr;
   }
   if (within == this)
@@ -3636,8 +3772,9 @@ AXObject* AXObject::PreviousInPreOrderIncludingIgnored(
 AXObject* AXObject::PreviousInPostOrderIncludingIgnored(
     const AXObject* within) const {
   if (!AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating over objects excluded "
-                    "from the accessibility tree.";
+    NOTREACHED() << "We don't support iterating children of objects excluded "
+                    "from the accessibility tree: "
+                 << ToString(true, true);
     return nullptr;
   }
 
@@ -3672,7 +3809,8 @@ AXObject* AXObject::UnignoredNextSibling() const {
   if (AccessibilityIsIgnored()) {
     NOTREACHED() << "We don't support finding unignored siblings for ignored "
                     "objects because it is not clear whether to search for the "
-                    "sibling in the unignored tree or in the whole tree.";
+                    "sibling in the unignored tree or in the whole tree: "
+                 << ToString(true, true);
     return nullptr;
   }
 
@@ -3713,7 +3851,8 @@ AXObject* AXObject::UnignoredPreviousSibling() const {
   if (AccessibilityIsIgnored()) {
     NOTREACHED() << "We don't support finding unignored siblings for ignored "
                     "objects because it is not clear whether to search for the "
-                    "sibling in the unignored tree or in the whole tree.";
+                    "sibling in the unignored tree or in the whole tree: "
+                 << ToString(true, true);
     return nullptr;
   }
 
@@ -3902,7 +4041,7 @@ void AXObject::UpdateChildrenIfNecessary() {
 
 bool AXObject::NeedsToUpdateChildren() const {
   DCHECK(!children_dirty_ || CanHaveChildren())
-      << "This needs to update children but cannot have children: " << this;
+      << "Needs to update children but cannot have children: " << GetNode();
   return children_dirty_;
 }
 
@@ -5244,21 +5383,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
     // Add useful HTML element info, like <div.myClass#myId>.
-    if (GetElement()) {
-      string_builder =
-          string_builder + " <" + GetElement()->tagName().LowerASCII();
-      // Cannot safely get @class from SVG elements.
-      if (!GetElement()->IsSVGElement() &&
-          GetElement()->FastHasAttribute(html_names::kClassAttr)) {
-        string_builder = string_builder + "." +
-                         GetElement()->FastGetAttribute(html_names::kClassAttr);
-      }
-      if (GetElement()->FastHasAttribute(html_names::kIdAttr)) {
-        string_builder = string_builder + "#" +
-                         GetElement()->FastGetAttribute(html_names::kIdAttr);
-      }
-      string_builder = string_builder + ">";
-    }
+    if (GetElement())
+      string_builder = string_builder + " " + GetElementString(GetElement());
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
@@ -5266,6 +5392,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
           string_builder + " aria-owns=" +
           GetElement()->FastGetAttribute(html_names::kAriaOwnsAttr);
     }
+
     if (GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant)) {
       string_builder =
           string_builder + " aria-activedescendant=" +
@@ -5278,17 +5405,45 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     if (cached_values_only ? LastKnownIsIgnoredValue()
                            : AccessibilityIsIgnored()) {
       string_builder = string_builder + " isIgnored";
+#if defined(AX_FAIL_FAST_BUILD)
+      // TODO(accessibility) Move this out of AX_FAIL_FAST_BUILD by having a new
+      // ax_enum, and a ToString() in ax_enum_utils, as well as move out of
+      // String IgnoredReasonName(AXIgnoredReason reason) in
+      // inspector_type_builder_helper.cc.
+      if (!cached_values_only) {
+        AXObject::IgnoredReasons reasons;
+        ComputeAccessibilityIsIgnored(&reasons);
+        string_builder = string_builder + GetIgnoredReasonsDebugString(reasons);
+      }
+#endif
       if (cached_values_only ? !LastKnownIsIncludedInTreeValue()
                              : !AccessibilityIsIncludedInTree())
         string_builder = string_builder + " isRemovedFromTree";
     }
-    if (GetNode() &&
-        DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-            *GetNode(), DisplayLockActivationReason::kAccessibility)) {
-      string_builder = string_builder + " isDisplayLocked";
+    if (GetNode()) {
+      if (GetNode()->OwnerShadowHost()) {
+        string_builder = string_builder + (GetNode()->IsInUserAgentShadowRoot()
+                                               ? " inUserAgentShadowRoot:"
+                                               : " inShadowRoot:");
+        string_builder = string_builder + "<" +
+                         GetNode()->OwnerShadowHost()->tagName().LowerASCII() +
+                         ">";
+      }
+      if (GetNode()->GetShadowRoot()) {
+        string_builder = string_builder + " hasShadowRoot";
+      }
+      if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+              *GetNode(), DisplayLockActivationReason::kAccessibility)) {
+        string_builder = string_builder + " isDisplayLocked";
+      }
     }
-    if (AriaHiddenRoot())
-      string_builder = string_builder + " isAriaHidden";
+    if (const AXObject* aria_hidden_root = AriaHiddenRoot()) {
+      string_builder = string_builder + " ariaHiddenRoot";
+      if (aria_hidden_root != this) {
+        string_builder =
+            string_builder + GetElementString(aria_hidden_root->GetElement());
+      }
+    }
     if (GetDocument() && GetDocument()->Lifecycle().GetState() <
                              DocumentLifecycle::kLayoutClean) {
       string_builder = string_builder + " styleInfoUnavailable";
@@ -5299,7 +5454,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isInert";
     if (NeedsToUpdateChildren())
       string_builder = string_builder + " needsToUpdateChildren";
-    if (IsAXLayoutObject() && !GetLayoutObject())
+    if (!GetLayoutObject())
       string_builder = string_builder + " missingLayout";
 
     if (!cached_values_only)

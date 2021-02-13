@@ -1247,7 +1247,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
   AXObjectVector children_;
-  bool children_dirty_;
+  mutable bool children_dirty_;
   ax::mojom::blink::Role role_;
   ax::mojom::blink::Role aria_role_;
   LayoutRect explicit_element_rect_;

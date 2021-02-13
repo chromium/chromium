@@ -117,7 +117,10 @@ void AXMenuListPopup::AddChildren() {
   for (auto* const option_element : html_select_element->GetOptionList()) {
 #if DCHECK_IS_ON()
     AXObject* ax_preexisting = AXObjectCache().Get(option_element);
-    DCHECK(!ax_preexisting || !ax_preexisting->CachedParentObject())
+    DCHECK(!ax_preexisting ||
+           !ax_preexisting->AccessibilityIsIncludedInTree() ||
+           !ax_preexisting->CachedParentObject() ||
+           ax_preexisting->CachedParentObject() == this)
         << "\nChild = " << ax_preexisting->ToString(true, true)
         << "\n  IsAXMenuListOption? " << IsA<AXMenuListOption>(ax_preexisting)
         << "\nNew parent = " << ToString(true, true)
@@ -125,7 +128,7 @@ void AXMenuListPopup::AddChildren() {
         << ax_preexisting->CachedParentObject()->ToString(true, true);
 #endif
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
-    if (option) {
+    if (option && option->AccessibilityIsIncludedInTree()) {
       DCHECK(!option->IsDetached());
       children_.push_back(option);
     }

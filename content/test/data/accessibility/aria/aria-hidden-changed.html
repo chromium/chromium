@@ -1,0 +1,13 @@
+<!--
+@WAIT-FOR:done
+-->
+<h4 id="stay-hidden" aria-hidden="true">Stay hidden</h4>
+<h4 id="to-hidden">To hidden</h4>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.getElementById('to-hidden').setAttribute('aria-hidden', 'true');
+      document.title = 'done';
+    }, 100);
+  });
+</script>

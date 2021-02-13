@@ -914,8 +914,10 @@ AXObject* AXLayoutObject::NextOnLine() const {
   // AXLayoutObjects, regardless of role and tree depth, are connected to the
   // next inline text box on the same line. If there is no inline text box, they
   // are connected to the next leaf AXObject.
-  if (IsDetached())
+  if (IsDetached() || !AccessibilityIsIncludedInTree()) {
+    NOTREACHED();
     return nullptr;
+  }
 
   AXObject* result = nullptr;
   if (GetLayoutObject()->IsBoxListMarkerIncludingNG()) {
@@ -1038,13 +1040,13 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   // all AXLayoutObjects, regardless of role and tree depth, are connected to
   // the previous inline text box on the same line. If there is no inline text
   // box, they are connected to the previous leaf AXObject.
-  if (IsDetached())
+  if (IsDetached() || !AccessibilityIsIncludedInTree()) {
+    NOTREACHED();
     return nullptr;
+  }
 
   AXObject* result = nullptr;
-  AXObject* previous_sibling = AccessibilityIsIncludedInTree()
-                                   ? PreviousSiblingIncludingIgnored()
-                                   : nullptr;
+  AXObject* previous_sibling = PreviousSiblingIncludingIgnored();
   if (previous_sibling && previous_sibling->GetLayoutObject() &&
       previous_sibling->GetLayoutObject()->IsLayoutNGOutsideListMarker()) {
     // A list item should be proceeded by a list marker on the same line.

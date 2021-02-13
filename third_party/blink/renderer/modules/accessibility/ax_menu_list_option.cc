@@ -142,9 +142,8 @@ bool AXMenuListOption::OnNativeSetSelectedAction(bool b) {
 
 bool AXMenuListOption::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
-  if (IsInertOrAriaHidden()) {
-    if (ignored_reasons)
-      ComputeIsInertOrAriaHidden(ignored_reasons);
+  if (IsDetached()) {
+    NOTREACHED();
     return true;
   }
 

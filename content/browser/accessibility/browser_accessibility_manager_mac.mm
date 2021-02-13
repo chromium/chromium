@@ -273,7 +273,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       mac_notification = ui::NSAccessibilityMenuItemSelectedNotification;
       break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      DCHECK(node->GetData().IsRangeValueSupported());
+      DCHECK(node->GetData().IsRangeValueSupported())
+          << "Range value changed but range values are not supported: " << node;
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:

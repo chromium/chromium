@@ -392,6 +392,13 @@ void BlinkAXTreeSource::GetChildren(
       continue;
     }
 
+    if (!child.AccessibilityIsIncludedInTree()) {
+      NOTREACHED() << "Should not receive unincluded child."
+                   << "\nChild: " << child.ToString(true).Utf8()
+                   << "\nParent: " << parent.ToString(true).Utf8();
+      continue;
+    }
+
 #if DCHECK_IS_ON()
     CheckParentUnignoredOf(parent, child);
 #endif
@@ -458,6 +465,15 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   WebDocument document = GetMainDocument();
   blink::WebDisallowTransitionScope disallow(&document);
 #endif
+
+  dst->id = src.AxID();
+  dst->role = src.Role();
+
+  if (src.IsDetached() || !src.AccessibilityIsIncludedInTree()) {
+    dst->AddState(ax::mojom::State::kIgnored);
+    NOTREACHED();
+    return;
+  }
 
   // TODO(crbug.com/1068668): AX onion soup - finish migrating the rest of
   // this function inside of AXObject::Serialize and removing
