@@ -231,6 +231,10 @@ void MagnificationManager::SetProfile(Profile* profile) {
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
+        ash::prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
+        base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
         ash::prefs::kDockedMagnifierEnabled,
         base::BindRepeating(
             &MagnificationManager::UpdateDockedMagnifierFromPrefs,
@@ -279,6 +283,12 @@ void MagnificationManager::SetMagnifierScaleInternal(double scale) {
                                                           false /* animate */);
 }
 
+void MagnificationManager::SetMagnifierMouseFollowingModeInternal(
+    ash::MagnifierMouseFollowingMode mouse_following_mode) {
+  ash::Shell::Get()->magnification_controller()->set_mouse_following_mode(
+      mouse_following_mode);
+}
+
 void MagnificationManager::UpdateMagnifierFromPrefs() {
   if (!profile_)
     return;
@@ -290,16 +300,14 @@ void MagnificationManager::UpdateMagnifierFromPrefs() {
       prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierCenterFocus);
   const double scale =
       prefs->GetDouble(ash::prefs::kAccessibilityScreenMagnifierScale);
+  const ash::MagnifierMouseFollowingMode mouse_following_mode =
+      static_cast<ash::MagnifierMouseFollowingMode>(prefs->GetInteger(
+          ash::prefs::kAccessibilityScreenMagnifierMouseFollowingMode));
 
-  if (!enabled) {
-    SetMagnifierEnabledInternal(enabled);
-    SetMagnifierKeepFocusCenteredInternal(keep_focus_centered);
-    SetMagnifierScaleInternal(scale);
-  } else {
-    SetMagnifierScaleInternal(scale);
-    SetMagnifierKeepFocusCenteredInternal(keep_focus_centered);
-    SetMagnifierEnabledInternal(enabled);
-  }
+  SetMagnifierMouseFollowingModeInternal(mouse_following_mode);
+  SetMagnifierScaleInternal(scale);
+  SetMagnifierKeepFocusCenteredInternal(keep_focus_centered);
+  SetMagnifierEnabledInternal(enabled);
 
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleScreenMagnifier,

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
@@ -63,6 +64,15 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
 
   MagnificationController();
   ~MagnificationController() override;
+
+  void set_mouse_following_mode(
+      MagnifierMouseFollowingMode mouse_following_mode) {
+    mouse_following_mode_ = mouse_following_mode;
+  }
+
+  MagnifierMouseFollowingMode mouse_following_mode() const {
+    return mouse_following_mode_;
+  }
 
   // Enables (or disables if |enabled| is false) screen magnifier feature.
   void SetEnabled(bool enabled);
@@ -271,6 +281,10 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
   bool is_enabled_ = false;
 
   bool keep_focus_centered_ = false;
+
+  // The current mouse following mode (e.g. continuous, centered, edge).
+  MagnifierMouseFollowingMode mouse_following_mode_ =
+      MagnifierMouseFollowingMode::kEdge;
 
   // True if the cursor needs to move the given position after the animation
   // will be finished. When using this, set |position_after_animation_| as well.

@@ -763,11 +763,22 @@ void MagnificationController::OnMouseMove(const gfx::Point& location) {
   gfx::Point mouse(location);
   int margin = kCursorPanningMargin / scale_;  // No need to consider DPI.
 
+  // Edge mouse following mode.
+  // TODO(https://crbug.com/1178027): Add continuous mouse following mode.
+  int x_margin = margin;
+  int y_margin = margin;
+
+  if (mouse_following_mode_ == MagnifierMouseFollowingMode::kCentered) {
+    const gfx::Rect window_rect = GetViewportRect();
+    x_margin = window_rect.width() / 2;
+    y_margin = window_rect.height() / 2;
+  }
+
   // Reduce the bottom margin if the keyboard is visible.
   bool reduce_bottom_margin =
       keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
 
-  MoveMagnifierWindowFollowPoint(mouse, margin, margin, margin, margin,
+  MoveMagnifierWindowFollowPoint(mouse, x_margin, y_margin, x_margin, y_margin,
                                  reduce_bottom_margin);
 }
 

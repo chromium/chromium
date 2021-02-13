@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
@@ -100,6 +101,8 @@ class MagnificationManager
   void SetMagnifierEnabledInternal(bool enabled);
   void SetMagnifierKeepFocusCenteredInternal(bool keep_focus_centered);
   void SetMagnifierScaleInternal(double scale);
+  void SetMagnifierMouseFollowingModeInternal(
+      ash::MagnifierMouseFollowingMode mouse_following_mode);
   void UpdateMagnifierFromPrefs();
   void UpdateDockedMagnifierFromPrefs();
 
