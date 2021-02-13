@@ -28,6 +28,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/chromeos/fake_ime_keyboard.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/chromeos/events/modifier_key.h"
 #include "ui/chromeos/events/pref_names.h"
@@ -1556,6 +1557,84 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants) {
   });
 }
 
+TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants_Deprecated) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+
+  // All the previously supported Alt based rewrites no longer have any
+  // effect. The Search workarounds no longer take effect and the Search+Key
+  // portion is rewritten as expected.
+  TestNonAppleKeyboardVariants({
+      // Alt+Backspace -> No Rewrite
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE}},
+      // Control+Alt+Backspace -> No Rewrite
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE},
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE}},
+      // // Search+Alt+Backspace -> Alt+Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_ALT_DOWN, ui::DomKey::DEL}},
+      // Search+Control+Alt+Backspace -> Control+Alt+Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::DEL}},
+      // Alt+Up -> No Rewrite
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_UP}},
+      // Alt+Down -> No Rewrite
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_DOWN}},
+      // Ctrl+Alt+Up -> No Rewrite
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_UP},
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_UP}},
+      // Ctrl+Alt+Down -> No Rewrite
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_DOWN}},
+
+      // NOTE: The following were workarounds to avoid rewriting the
+      // Alt variants by additionally pressing Search.
+
+      // Search+Ctrl+Alt+Up -> Ctrl+Alt+PageUp(aka Prior)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::PAGE_UP}},
+      // Search+Ctrl+Alt+Down -> Ctrl+Alt+PageDown(aka Next)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::PAGE_DOWN}},
+  });
+}
+
 TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
   TestNonAppleKeyboardVariants({
@@ -1746,6 +1825,75 @@ TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKey) {
        {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
         ui::DomKey::Constant<'='>::Character},
        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+}
+
+TEST_F(EventRewriterTest, TestRewriteSearchNumberToFunctionKey_Deprecated) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+  TestNonAppleNonCustomLayoutKeyboardVariants({
+      // Search+Number should now have no effect.
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'1'>::Character},
+       {ui::VKEY_1, ui::DomCode::DIGIT1, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'1'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'2'>::Character},
+       {ui::VKEY_2, ui::DomCode::DIGIT2, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'2'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'3'>::Character},
+       {ui::VKEY_3, ui::DomCode::DIGIT3, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'3'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'4'>::Character},
+       {ui::VKEY_4, ui::DomCode::DIGIT4, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'4'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'5'>::Character},
+       {ui::VKEY_5, ui::DomCode::DIGIT5, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'5'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'6'>::Character},
+       {ui::VKEY_6, ui::DomCode::DIGIT6, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'6'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'7'>::Character},
+       {ui::VKEY_7, ui::DomCode::DIGIT7, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'7'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'8'>::Character},
+       {ui::VKEY_8, ui::DomCode::DIGIT8, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'8'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'9'>::Character},
+       {ui::VKEY_9, ui::DomCode::DIGIT9, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'9'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'0'>::Character},
+       {ui::VKEY_0, ui::DomCode::DIGIT0, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'0'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'-'>::Character},
+       {ui::VKEY_OEM_MINUS, ui::DomCode::MINUS, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'-'>::Character}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'='>::Character},
+       {ui::VKEY_OEM_PLUS, ui::DomCode::EQUAL, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'='>::Character}},
   });
 }
 
@@ -3585,6 +3733,13 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
   scoped_feature_list_.InitAndEnableFeature(
       chromeos::features::kUseSearchClickForRightClick);
+  DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
+}
+
+TEST_F(EventRewriterTest,
+       DontRewriteIfNotRewritten_SearchClickIsRightClick_New) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
 }
 
