@@ -52,7 +52,7 @@ public class HostBrowserLauncherParams {
         }
 
         String startUrl = null;
-        int source = WebApkConstants.SHORTCUT_SOURCE_UNKNOWN;
+        int source = WebApkConstants.ShortcutSource.UNKNOWN;
         boolean forceNavigation = false;
 
         // If the intent was from the WebAPK relaunching itself or from the host browser relaunching
@@ -71,16 +71,16 @@ public class HostBrowserLauncherParams {
                     new ComponentName(
                             context.getPackageName(), selectedShareTargetActivityClassName));
             startUrl = computeStartUrlForShareTarget(shareTargetMetaData, intent);
-            source = WebApkConstants.SHORTCUT_SOURCE_SHARE;
+            source = WebApkConstants.ShortcutSource.WEBAPK_SHARE_TARGET;
             forceNavigation = true;
         } else if (!TextUtils.isEmpty(intent.getDataString())) {
             startUrl = intent.getDataString();
             source = intent.getIntExtra(
-                    WebApkConstants.EXTRA_SOURCE, WebApkConstants.SHORTCUT_SOURCE_EXTERNAL_INTENT);
+                    WebApkConstants.EXTRA_SOURCE, WebApkConstants.ShortcutSource.EXTERNAL_INTENT);
             forceNavigation = intent.getBooleanExtra(WebApkConstants.EXTRA_FORCE_NAVIGATION, true);
         } else {
             startUrl = metadata.getString(WebApkMetaDataKeys.START_URL);
-            source = WebApkConstants.SHORTCUT_SOURCE_UNKNOWN;
+            source = WebApkConstants.ShortcutSource.UNKNOWN;
             forceNavigation = false;
         }
 
