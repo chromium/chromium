@@ -113,6 +113,7 @@ public class ChromeCachedFlags {
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP,
                 ShoppingPersistedTabData.TIME_TO_LIVE_MS,
                 ShoppingPersistedTabData.DISPLAY_TIME_MS,
+                ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS,
                 TabUiFeatureUtilities.ENABLE_PRICE_TRACKING,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,

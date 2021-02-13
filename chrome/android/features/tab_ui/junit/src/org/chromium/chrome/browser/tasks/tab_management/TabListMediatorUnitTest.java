@@ -1928,6 +1928,16 @@ public class TabListMediatorUnitTest {
                     doReturn(incognito).when(mTab1).isIncognito();
                     doReturn(incognito).when(mTab2).isIncognito();
 
+                    for (int i = 0; i < 2; i++) {
+                        CriticalPersistedTabData criticalPersistedTabData =
+                                mock(CriticalPersistedTabData.class);
+                        doReturn(System.currentTimeMillis())
+                                .when(criticalPersistedTabData)
+                                .getTimestampMillis();
+                        mTabModel.getTabAt(i).getUserDataHost().setUserData(
+                                CriticalPersistedTabData.class, criticalPersistedTabData);
+                    }
+
                     tabs.add(mTabModel.getTabAt(0));
                     tabs.add(mTabModel.getTabAt(1));
 
