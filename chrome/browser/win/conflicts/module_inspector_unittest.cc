@@ -170,8 +170,8 @@ TEST_F(ModuleInspectorTest, InspectionResultsCache) {
   // First create a cache with bogus data and create the cache file.
   ModuleInfoKey module_key(GetKernel32DllFilePath(), 0, 0);
   ModuleInspectionResult inspection_result;
-  inspection_result.location = L"BogusLocation";
-  inspection_result.basename = L"BogusBasename";
+  inspection_result.location = STRING16_LITERAL("BogusLocation");
+  inspection_result.basename = STRING16_LITERAL("BogusBasename");
 
   ASSERT_TRUE(
       CreateInspectionResultsCacheWithEntry(module_key, inspection_result));

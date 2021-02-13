@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/process/process.h"
+#include "base/strings/string_util.h"
 #include "chrome/test/base/process_inspector_win.h"
 
 // static
@@ -42,14 +43,15 @@ ProcessLineage::~ProcessLineage() = default;
 
 base::string16 ProcessLineage::ToString() const {
   std::wostringstream sstream;
-  base::string16 sep;
+  std::wstring sep;
   for (const auto& prop : lineage_) {
     sstream << sep << L"(process_id: " << prop.process_id
-            << L", command_line: \"" << prop.command_line << "\")";
+            << L", command_line: \"" << base::AsWString(prop.command_line)
+            << L"\")";
     if (sep.empty())
       sep = L", ";
   }
-  return sstream.str();
+  return base::AsString16(sstream.str());
 }
 
 ProcessLineage::ProcessLineage(std::vector<ProcessProperties> lineage)

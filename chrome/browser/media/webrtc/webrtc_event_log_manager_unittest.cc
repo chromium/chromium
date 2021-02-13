@@ -76,7 +76,7 @@
 namespace webrtc_event_logging {
 
 #if defined(OS_WIN)
-#define NumberToStringType base::NumberToString16
+#define NumberToStringType base::NumberToWString
 #else
 #define NumberToStringType base::NumberToString
 #endif

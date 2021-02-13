@@ -659,12 +659,7 @@ TEST_P(ProfileManagerGuestTest, GetGuestProfilePath) {
   base::FilePath expected_path = temp_dir_.GetPath();
   const std::string kExpectedGuestProfileName =
       IsEphemeral() ? "Guest 1" : "Guest Profile";
-#if defined(OS_WIN)
-  expected_path =
-      expected_path.Append(base::ASCIIToUTF16(kExpectedGuestProfileName));
-#else
-  expected_path = expected_path.Append(kExpectedGuestProfileName);
-#endif
+  expected_path = expected_path.AppendASCII(kExpectedGuestProfileName);
   EXPECT_EQ(expected_path, guest_path);
 }
 

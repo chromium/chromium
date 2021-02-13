@@ -110,8 +110,8 @@ bool TestStorageMonitor::GetStorageInfoForPath(
 #if defined(OS_WIN)
 bool TestStorageMonitor::GetMTPStorageInfoFromDeviceId(
     const std::string& storage_device_id,
-    base::string16* device_location,
-    base::string16* storage_object_id) const {
+    std::wstring* device_location,
+    std::wstring* storage_object_id) const {
   return false;
 }
 #endif

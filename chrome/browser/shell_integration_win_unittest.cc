@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
@@ -70,9 +71,9 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
             non_default_user_data_dir_.Append(non_default_profile_));
 
     extension_id_ = L"chromiumexampleappidforunittests";
-    base::string16 app_name =
-        base::UTF8ToUTF16(web_app::GenerateApplicationNameFromAppId(
-            base::UTF16ToUTF8(extension_id_)));
+    std::wstring app_name =
+        base::UTF8ToWide(web_app::GenerateApplicationNameFromAppId(
+            base::WideToUTF8(extension_id_)));
     extension_app_id_ = GetAppUserModelIdForApp(app_name, default_profile_path);
     non_default_profile_extension_app_id_ = GetAppUserModelIdForApp(
         app_name, default_user_data_dir.Append(non_default_profile_));
@@ -86,7 +87,7 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
       base::win::ShortcutProperties* shortcut_properties) {
     ShortcutTestObject shortcut_test_object;
     base::FilePath shortcut_path = shortcut_dir.Append(
-        L"Shortcut " + base::NumberToString16(shortcuts_.size()) +
+        L"Shortcut " + base::NumberToWString(shortcuts_.size()) +
         installer::kLnkExt);
     shortcut_test_object.path = shortcut_path;
     shortcut_test_object.properties = *shortcut_properties;
@@ -124,7 +125,7 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
 
     // Shortcut 3 is like shortcut 1, but it's appid is a prefix of the expected
     // appid instead of being totally different.
-    base::string16 chrome_app_id_is_prefix(chrome_app_id_);
+    std::wstring chrome_app_id_is_prefix(chrome_app_id_);
     chrome_app_id_is_prefix.push_back(L'1');
     temp_properties.set_target(chrome_exe_);
     temp_properties.set_app_id(chrome_app_id_is_prefix);
@@ -133,7 +134,7 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
 
     // Shortcut 4 is like shortcut 1, but it's appid is of the same size as the
     // expected appid.
-    base::string16 same_size_as_chrome_app_id(chrome_app_id_.size(), L'1');
+    std::wstring same_size_as_chrome_app_id(chrome_app_id_.size(), L'1');
     temp_properties.set_target(chrome_exe_);
     temp_properties.set_app_id(same_size_as_chrome_app_id);
     ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
@@ -211,7 +212,7 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
 
     // Shortcut 13 is like shortcut 1, but it's appid explicitly includes the
     // default profile.
-    base::string16 chrome_app_id_with_default_profile =
+    std::wstring chrome_app_id_with_default_profile =
         chrome_app_id_ + L".Default";
     temp_properties.set_target(chrome_exe_);
     temp_properties.set_app_id(chrome_app_id_with_default_profile);
@@ -236,32 +237,32 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
   base::FilePath other_target_;
 
   // Chrome's AppUserModelId.
-  base::string16 chrome_app_id_;
+  std::wstring chrome_app_id_;
 
   // A profile that isn't the Default profile.
-  base::string16 non_default_profile_;
+  std::wstring non_default_profile_;
 
   // A user data dir that isn't the default.
   base::FilePath non_default_user_data_dir_;
 
   // Chrome's AppUserModelId for the non-default profile.
-  base::string16 non_default_profile_chrome_app_id_;
+  std::wstring non_default_profile_chrome_app_id_;
 
   // Chrome's AppUserModelId for the non-default user data dir.
-  base::string16 non_default_user_data_dir_chrome_app_id_;
+  std::wstring non_default_user_data_dir_chrome_app_id_;
 
   // Chrome's AppUserModelId for the non-default user data dir and non-default
   // profile.
-  base::string16 non_default_user_data_dir_and_profile_chrome_app_id_;
+  std::wstring non_default_user_data_dir_and_profile_chrome_app_id_;
 
   // An example extension id of an example app.
-  base::string16 extension_id_;
+  std::wstring extension_id_;
 
   // The app id of the example app for the default profile and user data dir.
-  base::string16 extension_app_id_;
+  std::wstring extension_app_id_;
 
   // The app id of the example app for the non-default profile.
-  base::string16 non_default_profile_extension_app_id_;
+  std::wstring non_default_profile_extension_app_id_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ShellIntegrationWinMigrateShortcutTest);
@@ -328,7 +329,7 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateChromeProxyTest) {
   temp_properties.set_target(web_app::GetChromeProxyPath());
   temp_properties.set_app_id(L"Dumbo3.Default");
   base::CommandLine cmd_line = shell_integration::CommandLineArgsForLauncher(
-      GURL(), base::UTF16ToUTF8(extension_id_), base::FilePath());
+      GURL(), base::WideToUTF8(extension_id_), base::FilePath());
   ASSERT_EQ(cmd_line.GetCommandLineString(), L" --app-id=" + extension_id_);
   temp_properties.set_arguments(cmd_line.GetCommandLineString());
   ASSERT_NO_FATAL_FAILURE(
@@ -360,7 +361,7 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateChromeProxyTest) {
   base::win::ValidateShortcut(shortcuts_[2].path, shortcuts_[2].properties);
 
   shortcuts_[3].properties.set_app_id(GetAppUserModelIdForApp(
-      base::UTF8ToUTF16(web_app::GenerateApplicationNameFromURL(url)),
+      base::UTF8ToWide(web_app::GenerateApplicationNameFromURL(url)),
       base::FilePath()));
   base::win::ValidateShortcut(shortcuts_[3].path, shortcuts_[3].properties);
 }
@@ -384,11 +385,11 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateMixedCaseDirTest) {
 }
 
 TEST(ShellIntegrationWinTest, GetAppModelIdForProfileTest) {
-  const base::string16 base_app_id(install_static::GetBaseAppId());
+  const std::wstring base_app_id(install_static::GetBaseAppId());
 
   // Empty profile path should get chrome::kBrowserAppID
-  base::string16 app_name = L"app";
-  base::string16 expected_model_id_without_profile =
+  std::wstring app_name = L"app";
+  std::wstring expected_model_id_without_profile =
       base_app_id + L"." + app_name;
   base::FilePath empty_path;
   EXPECT_EQ(expected_model_id_without_profile,

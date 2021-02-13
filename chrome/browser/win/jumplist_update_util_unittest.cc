@@ -24,10 +24,10 @@ TEST(JumpListUpdateUtilTest, MostVisitedItemsUnchanged) {
   // Test data.
   static constexpr struct {
     const char* url;
-    const wchar_t* title;
-  } kTestData[] = {{"https://www.google.com/", L"Google"},
-                   {"https://www.youtube.com/", L"Youtube"},
-                   {"https://www.gmail.com/", L"Gmail"}};
+    const base::char16* title;
+  } kTestData[] = {{"https://www.google.com/", STRING16_LITERAL("Google")},
+                   {"https://www.youtube.com/", STRING16_LITERAL("Youtube")},
+                   {"https://www.gmail.com/", STRING16_LITERAL("Gmail")}};
 
   ShellLinkItemList jumplist_items;
   history::MostVisitedURLList history_items;

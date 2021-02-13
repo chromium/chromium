@@ -48,8 +48,8 @@ class ChromeBlacklistTrialTest : public testing::Test {
     return blacklist_state;
   }
 
-  base::string16 GetBlacklistVersion() {
-    base::string16 blacklist_version;
+  std::wstring GetBlacklistVersion() {
+    std::wstring blacklist_version;
     blacklist_registry_key_->ReadValue(blacklist::kBeaconVersion,
                                        &blacklist_version);
 
@@ -79,7 +79,7 @@ TEST_F(ChromeBlacklistTrialTest, DefaultRun) {
   // blacklist beacon was setup.
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_ENABLED),
             GetBlacklistState());
-  base::string16 version(base::UTF8ToUTF16(version_info::GetVersionNumber()));
+  std::wstring version(base::UTF8ToWide(version_info::GetVersionNumber()));
   ASSERT_EQ(version, GetBlacklistVersion());
 }
 
@@ -102,7 +102,7 @@ TEST_F(ChromeBlacklistTrialTest, BlacklistDisabledRun) {
   // values are indeed gone.
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_STATE_MAX),
             GetBlacklistState());
-  ASSERT_EQ(base::string16(), GetBlacklistVersion());
+  ASSERT_EQ(std::wstring(), GetBlacklistVersion());
 }
 
 TEST_F(ChromeBlacklistTrialTest, VerifyFirstRun) {
@@ -112,7 +112,7 @@ TEST_F(ChromeBlacklistTrialTest, VerifyFirstRun) {
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_ENABLED),
             GetBlacklistState());
 
-  base::string16 version(base::UTF8ToUTF16(version_info::GetVersionNumber()));
+  std::wstring version(base::UTF8ToWide(version_info::GetVersionNumber()));
   ASSERT_EQ(version, GetBlacklistVersion());
 }
 
@@ -147,8 +147,8 @@ TEST_F(ChromeBlacklistTrialTest, VersionChanged) {
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_ENABLED),
             GetBlacklistState());
 
-  base::string16 expected_version(
-      base::UTF8ToUTF16(version_info::GetVersionNumber()));
+  std::wstring expected_version(
+      base::UTF8ToWide(version_info::GetVersionNumber()));
   ASSERT_EQ(expected_version, GetBlacklistVersion());
 
   // The counter should be reset.

@@ -51,12 +51,12 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
     return testing_profile_manager_.get();
   }
   const AppId& app_id() const { return app_id_; }
-  const base::string16& app_name() const { return app_name_; }
+  const std::wstring& app_name() const { return app_name_; }
 
   // Adds a launcher file and OS registry entries for the given app parameters.
   void RegisterApp(const AppId& app_id,
-                   const base::string16& app_name,
-                   const base::string16& app_name_extension,
+                   const std::wstring& app_name,
+                   const std::wstring& app_name_extension,
                    const base::FilePath& profile_path) {
     base::Optional<base::FilePath> launcher_path = CreateAppLauncherFile(
         app_name, app_name_extension,
@@ -65,25 +65,25 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
 
     base::CommandLine launcher_command =
         GetAppLauncherCommand(app_id, launcher_path.value(), profile_path);
-    base::string16 prog_id = GetProgIdForApp(profile_path, app_id);
-    base::string16 user_visible_app_name(app_name);
+    std::wstring prog_id = GetProgIdForApp(profile_path, app_id);
+    std::wstring user_visible_app_name(app_name);
     user_visible_app_name.append(app_name_extension);
 
     ASSERT_TRUE(ShellUtil::AddApplicationClass(
-        prog_id, launcher_command, user_visible_app_name, base::string16(),
+        prog_id, launcher_command, user_visible_app_name, std::wstring(),
         base::FilePath()));
   }
 
   // Tests that an app with |app_id| is registered with the expected name /
   // extension.
   void TestRegisteredApp(const AppId& app_id,
-                         const base::string16& expected_app_name,
-                         const base::string16& expected_app_name_extension,
+                         const std::wstring& expected_app_name,
+                         const std::wstring& expected_app_name_extension,
                          const base::FilePath& profile_path) {
     // Ensure that the OS registry contains the expected app name.
-    base::string16 expected_user_visible_app_name(app_name());
+    std::wstring expected_user_visible_app_name(app_name());
     expected_user_visible_app_name.append(expected_app_name_extension);
-    base::string16 app_progid = GetProgIdForApp(profile_path, app_id);
+    std::wstring app_progid = GetProgIdForApp(profile_path, app_id);
     ShellUtil::FileAssociationsAndAppName registered_app =
         ShellUtil::GetFileAssociationsAndAppName(app_progid);
     EXPECT_EQ(expected_user_visible_app_name, registered_app.app_name);
@@ -108,16 +108,16 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
   TestingProfile* profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   const AppId app_id_ = "app_id";
-  const base::string16 app_name_ = L"app_name";
+  const std::wstring app_name_ = L"app_name";
 };
 
 TEST_F(WebAppHandlerRegistrationUtilsWinTest,
        GetAppNameExtensionForNextInstall) {
   // If no installations are present in any profile, the next app name extension
   // should be an empty string.
-  base::string16 app_name_extension =
+  std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id(), profile()->GetPath());
-  EXPECT_EQ(app_name_extension, base::string16());
+  EXPECT_EQ(app_name_extension, std::wstring());
 
   // After registering an app, the next app name should include a
   // profile-specific extension.
@@ -141,7 +141,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, GetProgIdForApp) {
   // https://docs.microsoft.com/en-us/windows/win32/com/-progid--key.
   AppId app_id1("app_id12345678901234567890123456789012345678901234");
   constexpr unsigned int kMaxProgIdLen = 39;
-  base::string16 prog_id1 = GetProgIdForApp(profile()->GetPath(), app_id1);
+  std::wstring prog_id1 = GetProgIdForApp(profile()->GetPath(), app_id1);
   EXPECT_LE(prog_id1.length(), kMaxProgIdLen);
   for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++)
     EXPECT_TRUE(std::isalnum(*itr) || (*itr == '.' && itr != prog_id1.begin()));
@@ -160,12 +160,12 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
        CheckAndUpdateExternalInstallationsAfterRegistration) {
   // Register the same app to profile1 and profile2.
   Profile* profile1 = profile();
-  RegisterApp(app_id(), app_name(), base::string16(), profile1->GetPath());
+  RegisterApp(app_id(), app_name(), std::wstring(), profile1->GetPath());
 
   Profile* profile2 =
       testing_profile_manager()->CreateTestingProfile("Profile 2");
 
-  base::string16 app_name_extension(
+  std::wstring app_name_extension(
       GetAppNameExtensionForNextInstall(app_id(), profile2->GetPath()));
   RegisterApp(app_id(), app_name(), app_name_extension, profile2->GetPath());
 
@@ -195,8 +195,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
 
   // Ensure that after updating from profile2 (which has no installation),
   // the single app installation is updated with a non profile-specific name.
-  TestRegisteredApp(app_id(), app_name(), base::string16(),
-                    profile()->GetPath());
+  TestRegisteredApp(app_id(), app_name(), std::wstring(), profile()->GetPath());
 }
 
 TEST_F(WebAppHandlerRegistrationUtilsWinTest,
@@ -225,7 +224,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
 }
 
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
-  base::string16 app_name_extension = L" extension";
+  std::wstring app_name_extension = L" extension";
   base::Optional<base::FilePath> launcher_path =
       CreateAppLauncherFile(app_name(), app_name_extension,
                             GetOsIntegrationResourcesDirectoryForApp(
@@ -234,7 +233,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
   EXPECT_TRUE(base::PathExists(launcher_path.value()));
 
   // On Windows 7 the extension is omitted.
-  base::string16 expected_user_visible_app_name(app_name());
+  std::wstring expected_user_visible_app_name(app_name());
   expected_user_visible_app_name.append(app_name_extension);
   base::FilePath expected_launcher_filename =
       base::win::GetVersion() > base::win::Version::WIN7
@@ -247,7 +246,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameWithInvalidChars) {
   // '*' is an invalid char in Windows file names, so it should be replaced
   // with '_'.
-  base::string16 app_name = L"app*name";
+  std::wstring app_name = L"app*name";
   // On Windows 7 the extension is omitted.
   base::FilePath expected_launcher_name =
       base::win::GetVersion() > base::win::Version::WIN7
@@ -260,7 +259,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameWithInvalidChars) {
 // prepended to it when used as a filename for its launcher.
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameIsReservedFilename) {
   // "con" is a reserved filename on Windows, so it should have '_' prepended.
-  base::string16 app_name = L"con";
+  std::wstring app_name = L"con";
   // On Windows 7 the extension is omitted.
   base::FilePath expected_launcher_name =
       base::win::GetVersion() > base::win::Version::WIN7
@@ -272,7 +271,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameIsReservedFilename) {
 // Test that an app name containing '.' characters has them replaced with '_' on
 // Windows 7 when used as a filename for its launcher.
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameContainsDot) {
-  base::string16 app_name = L"some.app.name";
+  std::wstring app_name = L"some.app.name";
 
   // "some.app.name" should become "some_app_name" on Windows 7 and the
   // extension is also omitted.

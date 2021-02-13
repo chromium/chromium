@@ -45,7 +45,7 @@ class ChromePromptActions {
   // called with the user's choice.
   void PromptUser(
       const std::vector<base::FilePath>& files_to_delete,
-      const base::Optional<std::vector<base::string16>>& registry_keys,
+      const base::Optional<std::vector<std::wstring>>& registry_keys,
       PromptUserReplyCallback reply_callback);
 
  private:

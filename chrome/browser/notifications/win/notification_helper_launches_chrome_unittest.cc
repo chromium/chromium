@@ -145,7 +145,7 @@ void KillProcessTree(base::Process process) {
 }
 
 // Returns the process with name |name| if it is found.
-base::Process FindProcess(const base::string16& name) {
+base::Process FindProcess(const std::wstring& name) {
   unsigned int pid;
   {
     base::NamedProcessIterator iter(name, nullptr);

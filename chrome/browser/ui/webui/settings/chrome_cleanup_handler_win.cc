@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -53,10 +54,10 @@ std::unique_ptr<base::ListValue> GetFilesAsListStorage(
 
 // Returns a ListValue containing a copy of the strings stored in |string_set|.
 std::unique_ptr<base::ListValue> GetStringSetAsListStorage(
-    const std::set<base::string16>& string_set) {
+    const std::set<std::wstring>& string_set) {
   auto value = std::make_unique<base::ListValue>();
-  for (const base::string16& string : string_set)
-    value->AppendString(string);
+  for (const std::wstring& string : string_set)
+    value->AppendString(base::AsString16(string));
 
   return value;
 }

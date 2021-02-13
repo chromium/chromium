@@ -100,8 +100,8 @@ class MockCleanerResults {
       prompt_user->add_files_to_delete(file.AsUTF8Unsafe());
     }
     if (options_.registry_keys().has_value()) {
-      for (const base::string16& key : options_.registry_keys().value()) {
-        prompt_user->add_registry_keys(base::UTF16ToUTF8(key));
+      for (const auto& key : options_.registry_keys().value()) {
+        prompt_user->add_registry_keys(base::WideToUTF8(key));
       }
     }
     if (!WriteMessage(request.SerializeAsString()))
@@ -323,20 +323,20 @@ void MockChromeCleanerProcess::Options::SetReportedResults(
     case ItemsReporting::kUnsupported:
       // Defined as an optional object in which a registry keys vector is not
       // present.
-      registry_keys_ = base::Optional<std::vector<base::string16>>();
+      registry_keys_ = base::Optional<std::vector<std::wstring>>();
       break;
 
     case ItemsReporting::kNotReported:
       // Defined as an optional object in which an empty registry keys vector is
       // present.
       registry_keys_ =
-          base::Optional<std::vector<base::string16>>(base::in_place);
+          base::Optional<std::vector<std::wstring>>(base::in_place);
       break;
 
     case ItemsReporting::kReported:
       // Defined as an optional object in which a non-empty registry keys vector
       // is present.
-      registry_keys_ = base::Optional<std::vector<base::string16>>({
+      registry_keys_ = base::Optional<std::vector<std::wstring>>({
           L"HKCU:32\\Software\\Some\\Unwanted Software",
           L"HKCU:32\\Software\\Another\\Unwanted Software",
       });

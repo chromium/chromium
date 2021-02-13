@@ -494,21 +494,21 @@ void ChromePromptChannel::HandlePromptUserRequest(
     files_to_delete.push_back(base::FilePath(file_path_wide));
   }
 
-  base::Optional<std::vector<base::string16>> optional_registry_keys;
+  base::Optional<std::vector<std::wstring>> optional_registry_keys;
   if (request.registry_keys_size()) {
-    std::vector<base::string16> registry_keys;
+    std::vector<std::wstring> registry_keys;
     registry_keys.reserve(request.registry_keys_size());
     for (const std::string& registry_key : request.registry_keys()) {
-      base::string16 registry_key_utf16;
-      if (!base::UTF8ToUTF16(registry_key.c_str(), registry_key.size(),
-                             &registry_key_utf16)) {
+      std::wstring registry_key_wide;
+      if (!base::UTF8ToWide(registry_key.c_str(), registry_key.size(),
+                            &registry_key_wide)) {
         LOG(ERROR) << "Undisplayable registry key in PromptUserRequest.";
         WriteStatusErrorCodeToHistogram(
             ErrorCategory::kCustomError,
             CustomErrors::kUndisplayableRegistryKey);
         return;
       }
-      registry_keys.push_back(registry_key_utf16);
+      registry_keys.push_back(registry_key_wide);
     }
     optional_registry_keys = registry_keys;
   }

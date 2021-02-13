@@ -240,14 +240,8 @@ bool StorageMonitorWinTest::GetMTPStorageInfo(
     const std::string& storage_device_id,
     std::wstring* pnp_device_id,
     std::wstring* storage_object_id) {
-  base::string16 device, object;
-  if (!monitor_->GetMTPStorageInfoFromDeviceId(storage_device_id, &device,
-                                               &object)) {
-    return false;
-  }
-  *pnp_device_id = base::UTF16ToWide(device);
-  *storage_object_id = base::UTF16ToWide(object);
-  return true;
+  return monitor_->GetMTPStorageInfoFromDeviceId(
+      storage_device_id, pnp_device_id, storage_object_id);
 }
 
 TEST_F(StorageMonitorWinTest, RandomMessage) {

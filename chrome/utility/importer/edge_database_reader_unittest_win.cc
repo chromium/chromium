@@ -24,7 +24,7 @@ namespace {
 
 class EdgeDatabaseReaderTest : public ::testing::Test {
  protected:
-  bool CopyTestDatabase(const base::string16& database_name,
+  bool CopyTestDatabase(const std::wstring& database_name,
                         base::FilePath* copied_path) {
     base::FilePath input_path;
     input_path = test_data_path_.AppendASCII("edge_database_reader")
@@ -39,7 +39,7 @@ class EdgeDatabaseReaderTest : public ::testing::Test {
     return false;
   }
 
-  bool WriteFile(const base::string16& name,
+  bool WriteFile(const std::wstring& name,
                  const std::string& contents,
                  base::FilePath* output_path) {
     *output_path = temp_dir_.GetPath().Append(name);
@@ -188,7 +188,8 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
     EXPECT_EQ(expected_filetime_col_value.dwHighDateTime,
               filetime_col_value.dwHighDateTime);
 
-    std::wstring row_string = base::StringPrintf(L"String: %d", row_count);
+    base::string16 row_string =
+        base::AsString16(base::StringPrintf(L"String: %d", row_count));
     base::string16 str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
@@ -282,7 +283,7 @@ TEST_F(EdgeDatabaseReaderTest, UnicodeStringsDatabaseTest) {
   EXPECT_NE(nullptr, table_enum);
   size_t utf8_strings_count = base::size(utf8_strings);
   for (size_t row_count = 0; row_count < utf8_strings_count; ++row_count) {
-    std::wstring row_string = base::UTF8ToWide(utf8_strings[row_count]);
+    base::string16 row_string = base::UTF8ToUTF16(utf8_strings[row_count]);
     base::string16 str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);

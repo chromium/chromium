@@ -88,16 +88,16 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
   bool ProgIdRegisteredForFileExtension(const std::string& file_ext,
                                         const AppId& app_id,
                                         Profile* profile) {
-    base::string16 key_name(ShellUtil::kRegClasses);
+    std::wstring key_name(ShellUtil::kRegClasses);
     key_name.push_back(base::FilePath::kSeparators[0]);
-    key_name.append(base::UTF8ToUTF16(file_ext));
+    key_name.append(base::UTF8ToWide(file_ext));
     key_name.push_back(base::FilePath::kSeparators[0]);
     key_name.append(ShellUtil::kRegOpenWithProgids);
     base::win::RegKey key;
     std::wstring value;
     EXPECT_EQ(ERROR_SUCCESS,
               key.Open(HKEY_CURRENT_USER, key_name.c_str(), KEY_READ));
-    base::string16 prog_id = GetProgIdForApp(profile->GetPath(), app_id);
+    std::wstring prog_id = GetProgIdForApp(profile->GetPath(), app_id);
     return key.ReadValue(prog_id.c_str(), &value) == ERROR_SUCCESS &&
            value == L"";
   }
@@ -132,7 +132,7 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
   base::FilePath GetAppSpecificLauncherFilePath(
       const std::string& sanitized_app_name) {
     base::FilePath app_specific_launcher_filepath(
-        base::ASCIIToUTF16(sanitized_app_name));
+        base::ASCIIToWide(sanitized_app_name));
     if (base::win::GetVersion() > base::win::Version::WIN7) {
       app_specific_launcher_filepath =
           app_specific_launcher_filepath.AddExtension(L"exe");
@@ -189,7 +189,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ASSERT_FALSE(file_associations_and_app_name.app_name.empty());
   // Profile 1's app name should now include the profile in the name.
   std::string app_name_str =
-      base::UTF16ToUTF8(file_associations_and_app_name.app_name);
+      base::WideToUTF8(file_associations_and_app_name.app_name);
   EXPECT_EQ(app_name_str, "app name (Default)");
   // Profile 1's app_launcher should include the profile in its name.
   base::FilePath profile1_app_specific_launcher_path =
@@ -252,7 +252,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ASSERT_FALSE(file_associations_and_app_name.app_name.empty());
   // Profile 2's app name should no longer include the profile in the name.
   std::string app_name_str =
-      base::UTF16ToUTF8(file_associations_and_app_name.app_name);
+      base::WideToUTF8(file_associations_and_app_name.app_name);
   EXPECT_EQ(app_name_str, kAppName);
   // Profile 2's app_launcher should no longer include the profile in its name.
   base::FilePath profile2_app_specific_launcher_path =
@@ -301,7 +301,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ASSERT_FALSE(file_associations_and_app_name2.app_name.empty());
   // Profile 2's app name should still include the profile name in its name.
   std::string app_name_str =
-      base::UTF16ToUTF8(file_associations_and_app_name2.app_name);
+      base::WideToUTF8(file_associations_and_app_name2.app_name);
   EXPECT_EQ(app_name_str, "app name (Profile 2)");
 
   // Profile 3's app name should still include the profile name in its name.
@@ -310,7 +310,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
           GetProgIdForApp(profile3->GetPath(), app_id())));
   ASSERT_FALSE(file_associations_and_app_name3.app_name.empty());
   // Profile 2's app name should still include the profile in the name.
-  app_name_str = base::UTF16ToUTF8(file_associations_and_app_name3.app_name);
+  app_name_str = base::WideToUTF8(file_associations_and_app_name3.app_name);
   EXPECT_EQ(app_name_str, "app name (Profile 3)");
 }
 

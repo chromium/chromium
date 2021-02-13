@@ -24,15 +24,14 @@ namespace {
 const char kProfileName[] = "Test";
 const char kProfileNameLowerCase[] = "test";
 const policy::RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
-base::FilePath::StringType kTestProfilePath =
-    FILE_PATH_LITERAL("/Path/To/Profile");
+const char kTestProfilePath[] = "/Path/To/Profile";
 
 const char kProfilePathField[] = "profile_path";
 const char kClearCacheField[] = "clear_cache";
 const char kClearCookiesField[] = "clear_cookies";
 
 enterprise_management::RemoteCommand CreateCommandProto(
-    const base::FilePath::StringType& profile_path,
+    const std::string& profile_path,
     bool clear_cache,
     bool clear_cookies) {
   enterprise_management::RemoteCommand command_proto;
@@ -195,7 +194,7 @@ TEST_F(ClearBrowsingDataJobTest, SuccessClearCookies) {
   base::RunLoop run_loop;
 
   AddTestingProfile();
-  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().value(),
+  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().AsUTF8Unsafe(),
                                           /* clear_cache= */ false,
                                           /* clear_cookies= */ true),
                        profile_manager());
@@ -219,7 +218,7 @@ TEST_F(ClearBrowsingDataJobTest, SuccessClearBoth) {
   base::RunLoop run_loop;
 
   AddTestingProfile();
-  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().value(),
+  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().AsUTF8Unsafe(),
                                           /* clear_cache= */ true,
                                           /* clear_cookies= */ false),
                        profile_manager());
@@ -243,7 +242,7 @@ TEST_F(ClearBrowsingDataJobTest, SuccessClearCache) {
   base::RunLoop run_loop;
 
   AddTestingProfile();
-  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().value(),
+  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().AsUTF8Unsafe(),
                                           /* clear_cache= */ true,
                                           /* clear_cookies= */ false),
                        profile_manager());
@@ -267,7 +266,7 @@ TEST_F(ClearBrowsingDataJobTest, SuccessClearNeither) {
   base::RunLoop run_loop;
 
   AddTestingProfile();
-  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().value(),
+  auto job = CreateJob(CreateCommandProto(GetTestProfilePath().AsUTF8Unsafe(),
                                           /* clear_cache= */ false,
                                           /* clear_cookies= */ false),
                        profile_manager());
@@ -297,10 +296,11 @@ TEST_F(ClearBrowsingDataJobTest, HandleProfilPathCaseSensitivity) {
   base::RunLoop run_loop;
 
   AddTestingProfile();
-  auto job = CreateJob(CreateCommandProto(GetTestProfilePathLowerCase().value(),
-                                          /* clear_cache= */ false,
-                                          /* clear_cookies= */ true),
-                       profile_manager());
+  auto job =
+      CreateJob(CreateCommandProto(GetTestProfilePathLowerCase().AsUTF8Unsafe(),
+                                   /* clear_cache= */ false,
+                                   /* clear_cookies= */ true),
+                profile_manager());
 
   bool done = false;
 

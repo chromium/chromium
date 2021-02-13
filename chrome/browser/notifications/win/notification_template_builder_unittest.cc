@@ -18,7 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/l10n_util_win.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 using message_center::Notification;
@@ -82,10 +82,10 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
   // Converts the notification data to XML and verifies it is as expected. Calls
   // must be wrapped in ASSERT_NO_FATAL_FAILURE().
   void VerifyXml(const message_center::Notification& notification,
-                 const base::string16& expected_xml_template) {
+                 const std::wstring& expected_xml_template) {
     FakeNotificationImageRetainer image_retainer;
     NotificationLaunchId launch_id(kEncodedId);
-    base::string16 xml_template =
+    std::wstring xml_template =
         BuildNotificationTemplate(&image_retainer, launch_id, notification);
     EXPECT_EQ(xml_template, expected_xml_template);
   }
@@ -356,9 +356,9 @@ TEST_F(NotificationTemplateBuilderTest, LocalizedContextMenu) {
 </toast>
 )";
 
-  base::string16 settings_msg = l10n_util::GetStringUTF16(
+  std::wstring settings_msg = l10n_util::GetWideString(
       IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME);
-  base::string16 expected_xml =
+  std::wstring expected_xml =
       base::StringPrintf(kExpectedXmlTemplate, settings_msg.c_str());
 
   ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, expected_xml));
@@ -406,7 +406,7 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
 TEST_F(NotificationTemplateBuilderTest, ContextMessage) {
   message_center::Notification notification = BuildNotification();
 
-  notification.set_context_message(L"context_message");
+  notification.set_context_message(STRING16_LITERAL("context_message"));
 
   const wchar_t kExpectedXml[] =
       LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
@@ -509,11 +509,12 @@ TEST_F(NotificationTemplateBuilderTest, ListEntries) {
 
   notification.set_type(message_center::NOTIFICATION_TYPE_MULTIPLE);
   std::vector<message_center::NotificationItem> items;
-  items.push_back({L"title1", L"message1"});
-  items.push_back({L"title2", L"message2"});
-  items.push_back({L"title3", L"message3"});
-  items.push_back({L"title4", L"message4"});
-  items.push_back({L"title5", L"message5"});  // Will be truncated.
+  items.push_back({STRING16_LITERAL("title1"), STRING16_LITERAL("message1")});
+  items.push_back({STRING16_LITERAL("title2"), STRING16_LITERAL("message2"}));
+  items.push_back({STRING16_LITERAL("title3"), STRING16_LITERAL("message3"}));
+  items.push_back({STRING16_LITERAL("title4"), STRING16_LITERAL("message4"}));
+  items.push_back({STRING16_LITERAL("title5"),
+                   STRING16_LITERAL("message5"}));  // Will be truncated.
   notification.set_items(items);
 
   const wchar_t kExpectedXml[] =

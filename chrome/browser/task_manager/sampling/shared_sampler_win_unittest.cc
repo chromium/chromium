@@ -170,7 +170,7 @@ TEST_F(SharedSamplerTest, MultipleRefreshTypes) {
 static int ReturnZeroThreadProcessInformation(unsigned char* buffer,
                                               int buffer_size) {
   // Calculate the number of bytes required for the structure, and ImageName.
-  base::string16 image_name =
+  std::wstring image_name =
       base::PathService::CheckedGet(base::FILE_EXE).BaseName().value();
 
   const int kImageNameBytes = image_name.length() * sizeof(base::char16);
