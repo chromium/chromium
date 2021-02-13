@@ -4603,6 +4603,11 @@ const char kReleaseNotesNotificationAllChannelsName[] =
 const char kReleaseNotesNotificationAllChannelsDescription[] =
     "Enables the release notes notification for all Chrome OS channels";
 
+const char kScalableStatusAreaName[] = "Enable Scalable Status Area";
+const char kScalableStatusAreaDescription[] =
+    "Showing important notification icons and date in status area when the "
+    "screen is sufficiently large.";
+
 const char kScanningUIName[] = "Scanning UI";
 const char kScanningUIDescription[] =
     "An experimental UI that allows users to interact with a connected "

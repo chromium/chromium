@@ -2695,6 +2695,9 @@ extern const char kReleaseNotesNotificationDescription[];
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
+extern const char kScalableStatusAreaName[];
+extern const char kScalableStatusAreaDescription[];
+
 extern const char kScanningUIName[];
 extern const char kScanningUIDescription[];
 

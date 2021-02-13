@@ -7087,6 +7087,12 @@ const FeatureEntry kFeatureEntries[] = {
     },
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-scalable-status-area", flag_descriptions::kScalableStatusAreaName,
+     flag_descriptions::kScalableStatusAreaDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kScalableStatusArea)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
