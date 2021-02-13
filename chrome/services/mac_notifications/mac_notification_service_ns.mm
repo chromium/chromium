@@ -8,6 +8,7 @@
 #import <Foundation/NSUserNotification.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
@@ -34,6 +35,35 @@ MacNotificationServiceNS::MacNotificationServiceNS(
 
 MacNotificationServiceNS::~MacNotificationServiceNS() {
   [notification_center_ setDelegate:nil];
+}
+
+void MacNotificationServiceNS::GetDisplayedNotifications(
+    notifications::mojom::ProfileIdentifierPtr profile,
+    GetDisplayedNotificationsCallback callback) {
+  std::vector<notifications::mojom::NotificationIdentifierPtr> notifications;
+  // Note: |profile| might be null if we want all notifications.
+  NSString* profile_id = profile ? base::SysUTF8ToNSString(profile->id) : nil;
+  bool incognito = profile && profile->incognito;
+
+  for (NSUserNotification* toast in
+       [notification_center_ deliveredNotifications]) {
+    NSString* toast_id =
+        [toast.userInfo objectForKey:notification_constants::kNotificationId];
+    NSString* toast_profile_id = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toast_incognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
+                        incognito == toast_incognito)) {
+      auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
+          base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
+      notifications.push_back(notifications::mojom::NotificationIdentifier::New(
+          base::SysNSStringToUTF8(toast_id), std::move(profile_identifier)));
+    }
+  }
+
+  std::move(callback).Run(std::move(notifications));
 }
 
 void MacNotificationServiceNS::CloseNotification(

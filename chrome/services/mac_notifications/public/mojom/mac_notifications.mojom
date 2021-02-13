@@ -34,7 +34,14 @@ struct NotificationActionInfo {
 // Interface to control notifications shown by the helper app. Implemented by
 // the helper app and called from the browser process.
 interface MacNotificationService {
-  // TODO(knollr): Add remaining methods to show / query notifications.
+  // TODO(knollr): Add remaining methods to show notifications.
+
+  // Gets a list of notification ids that are currently shown in the system
+  // notification center. If a |profile| is passed, the list is filtered to only
+  // include notification ids for that profile. Otherwise this will return all
+  // displayed notification ids for all profiles.
+  GetDisplayedNotifications(ProfileIdentifier? profile) =>
+      (array<NotificationIdentifier> notifications);
 
   // Closes the notification identified by |identifier|.
   CloseNotification(NotificationIdentifier identifier);

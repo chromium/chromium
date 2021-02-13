@@ -407,9 +407,9 @@ void NotificationPlatformBridgeMacUNNotification::DidGetDisplayedAlerts(
     GetDisplayedNotificationsCallback callback,
     std::set<std::string> alert_ids,
     bool supports_synchronization) {
-  // Create a copyable version of the OnceCallback because ObjectiveC blocks
-  // copy all referenced variables via copy constructor.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Move |callback| into block storage so we can use it from the block below.
+  __block GetDisplayedNotificationsCallback block_callback =
+      std::move(callback);
   bool incognito = profile->IsOffTheRecord();
   NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
 
@@ -436,9 +436,9 @@ void NotificationPlatformBridgeMacUNNotification::DidGetDisplayedAlerts(
       displayedNotifications.insert(alert_id);
 
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(copyable_callback, std::move(displayedNotifications),
-                       supports_synchronization));
+        FROM_HERE, base::BindOnce(std::move(block_callback),
+                                  std::move(displayedNotifications),
+                                  supports_synchronization));
   }];
 }
 

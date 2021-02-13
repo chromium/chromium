@@ -4,8 +4,14 @@
 
 #import <Foundation/NSUserNotification.h>
 
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
@@ -94,6 +100,42 @@ class MacNotificationServiceNSTest : public testing::Test {
     return toast;
   }
 
+  std::vector<base::scoped_nsobject<NSUserNotification>> SetupNotifications() {
+    std::vector<base::scoped_nsobject<NSUserNotification>> notifications = {
+        CreateNotification("notificationId", "profileId", /*incognito=*/false),
+        CreateNotification("notificationId", "profileId2", /*incognito=*/true),
+        CreateNotification("notificationId2", "profileId", /*incognito=*/true),
+        CreateNotification("notificationId", "profileId", /*incognito=*/true),
+    };
+
+    NSMutableArray* notifications_ns =
+        [NSMutableArray arrayWithCapacity:notifications.size()];
+    for (const auto& notification : notifications)
+      [notifications_ns addObject:notification.get()];
+
+    [[[mock_notification_center_ expect] andReturn:notifications_ns]
+        deliveredNotifications];
+
+    return notifications;
+  }
+
+  std::vector<notifications::mojom::NotificationIdentifierPtr>
+  GetDisplayedNotificationsSync(
+      notifications::mojom::ProfileIdentifierPtr profile) {
+    base::RunLoop run_loop;
+    std::vector<notifications::mojom::NotificationIdentifierPtr> displayed;
+    service_remote_->GetDisplayedNotifications(
+        std::move(profile),
+        base::BindLambdaForTesting(
+            [&](std::vector<notifications::mojom::NotificationIdentifierPtr>
+                    notifications) {
+              displayed = std::move(notifications);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return displayed;
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockNotificationActionHandler mock_handler_;
   mojo::Receiver<notifications::mojom::MacNotificationActionHandler>
@@ -104,27 +146,43 @@ class MacNotificationServiceNSTest : public testing::Test {
   std::unique_ptr<MacNotificationServiceNS> service_;
 };
 
+TEST_F(MacNotificationServiceNSTest, GetDisplayedNotificationsForProfile) {
+  auto notifications = SetupNotifications();
+  base::RunLoop run_loop;
+  auto profile = notifications::mojom::ProfileIdentifier::New(
+      "profileId", /*incognito=*/true);
+  auto displayed = GetDisplayedNotificationsSync(std::move(profile));
+  ASSERT_EQ(2u, displayed.size());
+
+  std::set<std::string> notification_ids;
+  for (const auto& notification : displayed) {
+    ASSERT_TRUE(notification->profile);
+    EXPECT_EQ("profileId", notification->profile->id);
+    EXPECT_TRUE(notification->profile->incognito);
+    notification_ids.insert(notification->id);
+  }
+
+  ASSERT_EQ(2u, notification_ids.size());
+  EXPECT_EQ(1u, notification_ids.count("notificationId"));
+  EXPECT_EQ(1u, notification_ids.count("notificationId2"));
+}
+
+TEST_F(MacNotificationServiceNSTest, GetAllDisplayedNotifications) {
+  auto notifications = SetupNotifications();
+  auto displayed = GetDisplayedNotificationsSync(/*profile=*/nullptr);
+  EXPECT_EQ(notifications.size(), displayed.size());
+}
+
 TEST_F(MacNotificationServiceNSTest, CloseNotification) {
-  // Create 4 unique notifications and return them from deliveredNotifications.
-  base::scoped_nsobject<NSUserNotification> other1 =
-      CreateNotification("notificationId", "profileId", /*incognito=*/false);
-  base::scoped_nsobject<NSUserNotification> other2 =
-      CreateNotification("notificationId", "profileId2", /*incognito=*/true);
-  base::scoped_nsobject<NSUserNotification> other3 =
-      CreateNotification("notificationId2", "profileId", /*incognito=*/true);
-  base::scoped_nsobject<NSUserNotification> expected =
-      CreateNotification("notificationId", "profileId", /*incognito=*/true);
-  NSArray* notifications =
-      @[ other1.get(), other2.get(), other3.get(), expected.get() ];
-  [[[mock_notification_center_ expect] andReturn:notifications]
-      deliveredNotifications];
+  auto notifications = SetupNotifications();
+  NSUserNotification* expected = notifications.back().get();
 
   // Expect to close the expected notification.
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
     quit_closure.Run();
-  }] removeDeliveredNotification:expected.get()];
+  }] removeDeliveredNotification:expected];
 
   auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
       "profileId", /*incognito=*/true);

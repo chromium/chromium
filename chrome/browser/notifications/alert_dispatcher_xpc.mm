@@ -109,9 +109,8 @@ void RecordXPCEvent(XPCConnectionEvent event) {
                              incognito:(BOOL)incognito
                               callback:
                                   (GetDisplayedNotificationsCallback)callback {
-  // Create a copyable version of the OnceCallback because ObjectiveC blocks
-  // copy all referenced variables via copy constructor.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Move |callback| into block storage so we can use it from the block below.
+  __block GetDisplayedNotificationsCallback blockCallback = std::move(callback);
   auto reply = ^(NSArray* alerts) {
     std::set<std::string> displayedNotifications;
 
@@ -119,9 +118,9 @@ void RecordXPCEvent(XPCConnectionEvent event) {
       displayedNotifications.insert(base::SysNSStringToUTF8(alert));
 
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(copyable_callback, std::move(displayedNotifications),
-                       /*supports_synchronization=*/true));
+        FROM_HERE, base::BindOnce(std::move(blockCallback),
+                                  std::move(displayedNotifications),
+                                  /*supports_synchronization=*/true));
   };
 
   [[self serviceProxy] getDisplayedAlertsForProfileId:profileId
@@ -131,9 +130,9 @@ void RecordXPCEvent(XPCConnectionEvent event) {
 
 - (void)getAllDisplayedAlertsWithCallback:
     (GetAllDisplayedNotificationsCallback)callback {
-  // Create a copyable version of the OnceCallback because ObjectiveC blocks
-  // copy all referenced variables via copy constructor.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Move |callback| into block storage so we can use it from the block below.
+  __block GetAllDisplayedNotificationsCallback blockCallback =
+      std::move(callback);
   auto reply = ^(NSArray* alerts) {
     std::vector<MacNotificationIdentifier> alertIds;
     alertIds.reserve([alerts count]);
@@ -155,7 +154,8 @@ void RecordXPCEvent(XPCConnectionEvent event) {
     base::flat_set<MacNotificationIdentifier> alertSet(std::move(alertIds));
 
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(copyable_callback, std::move(alertSet)));
+        FROM_HERE,
+        base::BindOnce(std::move(blockCallback), std::move(alertSet)));
   };
 
   [[self serviceProxy] getAllDisplayedAlertsWithReply:reply];

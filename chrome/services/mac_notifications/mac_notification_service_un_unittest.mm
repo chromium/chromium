@@ -4,9 +4,17 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#include <utility>
+#include <vector>
+
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -71,6 +79,77 @@ class MacNotificationServiceUNTest : public testing::Test {
         }]];
   }
 
+  API_AVAILABLE(macos(10.14))
+  base::scoped_nsobject<FakeUNNotification> CreateNotification(
+      const std::string& notification_id,
+      const std::string& profile_id,
+      bool incognito) {
+    NSString* identifier = base::SysUTF8ToNSString(
+        DeriveMacNotificationId(incognito, profile_id, notification_id));
+
+    UNMutableNotificationContent* content =
+        [[UNMutableNotificationContent alloc] init];
+    content.userInfo = @{
+      notification_constants::
+      kNotificationId : base::SysUTF8ToNSString(notification_id),
+      notification_constants::
+      kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
+      notification_constants::
+      kNotificationIncognito : [NSNumber numberWithBool:incognito],
+    };
+
+    UNNotificationRequest* request =
+        [UNNotificationRequest requestWithIdentifier:identifier
+                                             content:content
+                                             trigger:nil];
+
+    base::scoped_nsobject<FakeUNNotification> notification(
+        [[FakeUNNotification alloc] init]);
+    [notification setRequest:request];
+
+    return notification;
+  }
+
+  API_AVAILABLE(macos(10.14))
+  std::vector<base::scoped_nsobject<FakeUNNotification>> SetupNotifications() {
+    std::vector<base::scoped_nsobject<FakeUNNotification>> notifications = {
+        CreateNotification("notificationId", "profileId", /*incognito=*/false),
+        CreateNotification("notificationId", "profileId2", /*incognito=*/true),
+        CreateNotification("notificationId2", "profileId", /*incognito=*/true),
+        CreateNotification("notificationId", "profileId", /*incognito=*/true),
+    };
+
+    NSMutableArray* notifications_ns =
+        [NSMutableArray arrayWithCapacity:notifications.size()];
+    for (const auto& notification : notifications)
+      [notifications_ns addObject:notification.get()];
+
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
+      [invocation getArgument:&callback atIndex:2];
+      callback(notifications_ns);
+    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
+
+    return notifications;
+  }
+
+  std::vector<notifications::mojom::NotificationIdentifierPtr>
+  GetDisplayedNotificationsSync(
+      notifications::mojom::ProfileIdentifierPtr profile) {
+    base::RunLoop run_loop;
+    std::vector<notifications::mojom::NotificationIdentifierPtr> displayed;
+    service_remote_->GetDisplayedNotifications(
+        std::move(profile),
+        base::BindLambdaForTesting(
+            [&](std::vector<notifications::mojom::NotificationIdentifierPtr>
+                    notifications) {
+              displayed = std::move(notifications);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return displayed;
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockNotificationActionHandler mock_handler_;
   mojo::Receiver<notifications::mojom::MacNotificationActionHandler>
@@ -82,6 +161,37 @@ class MacNotificationServiceUNTest : public testing::Test {
   API_AVAILABLE(macos(10.14))
   std::unique_ptr<MacNotificationServiceUN> service_;
 };
+
+TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
+  if (@available(macOS 10.14, *)) {
+    auto notifications = SetupNotifications();
+    base::RunLoop run_loop;
+    auto profile = notifications::mojom::ProfileIdentifier::New(
+        "profileId", /*incognito=*/true);
+    auto displayed = GetDisplayedNotificationsSync(std::move(profile));
+    ASSERT_EQ(2u, displayed.size());
+
+    std::set<std::string> notification_ids;
+    for (const auto& notification : displayed) {
+      ASSERT_TRUE(notification->profile);
+      EXPECT_EQ("profileId", notification->profile->id);
+      EXPECT_TRUE(notification->profile->incognito);
+      notification_ids.insert(notification->id);
+    }
+
+    ASSERT_EQ(2u, notification_ids.size());
+    EXPECT_EQ(1u, notification_ids.count("notificationId"));
+    EXPECT_EQ(1u, notification_ids.count("notificationId2"));
+  }
+}
+
+TEST_F(MacNotificationServiceUNTest, GetAllDisplayedNotifications) {
+  if (@available(macOS 10.14, *)) {
+    auto notifications = SetupNotifications();
+    auto displayed = GetDisplayedNotificationsSync(/*profile=*/nullptr);
+    EXPECT_EQ(notifications.size(), displayed.size());
+  }
+}
 
 TEST_F(MacNotificationServiceUNTest, CloseNotification) {
   if (@available(macOS 10.14, *)) {

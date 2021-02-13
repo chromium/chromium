@@ -14,3 +14,14 @@ source_set("cpp") {
 
   deps = [ "//base" ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "notification_test_utils_mac.h",
+    "notification_test_utils_mac.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}

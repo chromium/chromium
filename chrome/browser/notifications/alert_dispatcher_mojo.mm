@@ -6,12 +6,18 @@
 
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 @implementation AlertDispatcherMojo {
   base::scoped_nsobject<NotificationAlertServiceBridge> _mojoService;
@@ -37,14 +43,56 @@
                              incognito:(BOOL)incognito
                               callback:
                                   (GetDisplayedNotificationsCallback)callback {
-  // TODO(knollr): Implement.
-  std::move(callback).Run(/*alerts=*/{}, /*supports_synchronization=*/false);
+  // Move |callback| into block storage so we can use it from the block below.
+  __block GetDisplayedNotificationsCallback blockCallback = std::move(callback);
+  auto reply = ^(NSArray* alerts) {
+    std::set<std::string> alertIds;
+
+    for (NSString* alert in alerts)
+      alertIds.insert(base::SysNSStringToUTF8(alert));
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(blockCallback), std::move(alertIds),
+                                  /*supports_synchronization=*/true));
+  };
+
+  [[self serviceProxy] getDisplayedAlertsForProfileId:profileId
+                                            incognito:incognito
+                                                reply:reply];
 }
 
 - (void)getAllDisplayedAlertsWithCallback:
     (GetAllDisplayedNotificationsCallback)callback {
-  // TODO(knollr): Implement.
-  std::move(callback).Run(/*alerts=*/{});
+  // Move |callback| into block storage so we can use it from the block below.
+  __block GetAllDisplayedNotificationsCallback blockCallback =
+      std::move(callback);
+  auto reply = ^(NSArray* alerts) {
+    std::vector<MacNotificationIdentifier> alertIdentifiers;
+    alertIdentifiers.reserve([alerts count]);
+
+    for (NSDictionary* alert in alerts) {
+      NSString* notificationId =
+          [alert objectForKey:notification_constants::kNotificationId];
+      NSString* profileId =
+          [alert objectForKey:notification_constants::kNotificationProfileId];
+      bool incognito =
+          [[alert objectForKey:notification_constants::kNotificationIncognito]
+              boolValue];
+
+      alertIdentifiers.push_back({base::SysNSStringToUTF8(notificationId),
+                                  base::SysNSStringToUTF8(profileId),
+                                  incognito});
+    }
+
+    // Initialize the base::flat_set via a std::vector to avoid N^2 runtime.
+    base::flat_set<MacNotificationIdentifier> identifiers(
+        std::move(alertIdentifiers));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(blockCallback), std::move(identifiers)));
+  };
+
+  [[self serviceProxy] getAllDisplayedAlertsWithReply:reply];
 }
 
 - (id<NotificationDelivery>)serviceProxy {

@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/notifications/notification_alert_service_bridge.h"
+#include <utility>
+#include <vector>
+
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#import "chrome/browser/notifications/notification_alert_service_bridge.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,6 +24,11 @@ namespace {
 class MockNotificationService
     : public notifications::mojom::MacNotificationService {
  public:
+  MOCK_METHOD(void,
+              GetDisplayedNotifications,
+              (notifications::mojom::ProfileIdentifierPtr,
+               GetDisplayedNotificationsCallback),
+              (override));
   MOCK_METHOD(void,
               CloseNotification,
               (notifications::mojom::NotificationIdentifierPtr),
@@ -82,6 +91,61 @@ TEST_F(NotificationAlertServiceBridgeTest, DisconnectHandler) {
   base::RunLoop run_loop;
   EXPECT_CALL(on_disconnect_, Run).WillOnce([&]() { run_loop.Quit(); });
   provider_receiver_.reset();
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, GetDisplayedAlertsForProfile) {
+  EXPECT_CALL(mock_service_, GetDisplayedNotifications)
+      .WillOnce([&](notifications::mojom::ProfileIdentifierPtr profile,
+                    MockNotificationService::GetDisplayedNotificationsCallback
+                        callback) {
+        ASSERT_TRUE(profile);
+        EXPECT_EQ("profileId", profile->id);
+        EXPECT_TRUE(profile->incognito);
+        std::vector<notifications::mojom::NotificationIdentifierPtr> alerts;
+        alerts.push_back(notifications::mojom::NotificationIdentifier::New(
+            "notificationId", std::move(profile)));
+        std::move(callback).Run(std::move(alerts));
+      });
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure run_loop_closure = run_loop.QuitClosure();
+  [bridge_ getDisplayedAlertsForProfileId:@"profileId"
+                                incognito:YES
+                                    reply:^(NSArray* alerts) {
+                                      ASSERT_EQ(1ul, [alerts count]);
+                                      EXPECT_NSEQ(@"notificationId", alerts[0]);
+                                      run_loop_closure.Run();
+                                    }];
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, GetAllDisplayedAlerts) {
+  EXPECT_CALL(mock_service_, GetDisplayedNotifications)
+      .WillOnce([&](notifications::mojom::ProfileIdentifierPtr profile,
+                    MockNotificationService::GetDisplayedNotificationsCallback
+                        callback) {
+        ASSERT_FALSE(profile);
+        std::vector<notifications::mojom::NotificationIdentifierPtr> alerts;
+        alerts.push_back(notifications::mojom::NotificationIdentifier::New(
+            "notificationId", notifications::mojom::ProfileIdentifier::New(
+                                  "profileId", /*incognito=*/true)));
+        std::move(callback).Run(std::move(alerts));
+      });
+
+  NSDictionary* expected = @{
+    notification_constants::kNotificationId : @"notificationId",
+    notification_constants::kNotificationProfileId : @"profileId",
+    notification_constants::kNotificationIncognito : @YES,
+  };
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure run_loop_closure = run_loop.QuitClosure();
+  [bridge_ getAllDisplayedAlertsWithReply:^(NSArray* alerts) {
+    ASSERT_EQ(1ul, [alerts count]);
+    EXPECT_NSEQ(expected, alerts[0]);
+    run_loop_closure.Run();
+  }];
   run_loop.Run();
 }
 

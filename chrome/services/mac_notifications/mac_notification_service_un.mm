@@ -8,8 +8,12 @@
 #import <UserNotifications/UserNotifications.h>
 
 #include <utility>
+#include <vector>
 
+#include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -37,6 +41,51 @@ MacNotificationServiceUN::MacNotificationServiceUN(
 
 MacNotificationServiceUN::~MacNotificationServiceUN() {
   [notification_center_ setDelegate:nil];
+}
+
+void MacNotificationServiceUN::GetDisplayedNotifications(
+    notifications::mojom::ProfileIdentifierPtr profile,
+    GetDisplayedNotificationsCallback callback) {
+  // Move |callback| into block storage so we can use it from the block below.
+  __block GetDisplayedNotificationsCallback block_callback =
+      std::move(callback);
+
+  // Note: |profile| might be null if we want all notifications.
+  NSString* profile_id = profile ? base::SysUTF8ToNSString(profile->id) : nil;
+  bool incognito = profile && profile->incognito;
+
+  // We need to call |callback| on the same sequence as this method is called.
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunnerHandle::Get();
+
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull toasts) {
+    std::vector<notifications::mojom::NotificationIdentifierPtr> notifications;
+
+    for (UNNotification* toast in toasts) {
+      NSDictionary* user_info = [[[toast request] content] userInfo];
+      NSString* toast_id =
+          [user_info objectForKey:notification_constants::kNotificationId];
+      NSString* toast_profile_id = [user_info
+          objectForKey:notification_constants::kNotificationProfileId];
+      bool toast_incognito = [[user_info
+          objectForKey:notification_constants::kNotificationIncognito]
+          boolValue];
+
+      if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
+                          incognito == toast_incognito)) {
+        auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
+            base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
+        notifications.push_back(
+            notifications::mojom::NotificationIdentifier::New(
+                base::SysNSStringToUTF8(toast_id),
+                std::move(profile_identifier)));
+      }
+    }
+
+    task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(block_callback),
+                                                    std::move(notifications)));
+  }];
 }
 
 void MacNotificationServiceUN::CloseNotification(

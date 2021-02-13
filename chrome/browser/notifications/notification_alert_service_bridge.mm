@@ -4,6 +4,7 @@
 
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -40,6 +41,42 @@ class MacNotificationActionHandlerImpl
   mojo::Receiver<notifications::mojom::MacNotificationActionHandler> binding_{
       this};
 };
+
+void DispatchGetNotificationsReply(
+    base::mac::ScopedBlock<void (^)(NSArray*)> reply,
+    std::vector<notifications::mojom::NotificationIdentifierPtr>
+        notifications) {
+  NSMutableArray* alert_ids =
+      [NSMutableArray arrayWithCapacity:notifications.size()];
+
+  for (const auto& notification : notifications)
+    [alert_ids addObject:base::SysUTF8ToNSString(notification->id)];
+
+  reply.get()(alert_ids);
+}
+
+void DispatchGetAllNotificationsReply(
+    base::mac::ScopedBlock<void (^)(NSArray*)> reply,
+    std::vector<notifications::mojom::NotificationIdentifierPtr>
+        notifications) {
+  NSMutableArray* alert_ids =
+      [NSMutableArray arrayWithCapacity:notifications.size()];
+
+  for (const auto& notification : notifications) {
+    NSString* notification_id = base::SysUTF8ToNSString(notification->id);
+    NSString* profile_id = base::SysUTF8ToNSString(notification->profile->id);
+    NSNumber* incognito =
+        [NSNumber numberWithBool:notification->profile->incognito];
+
+    [alert_ids addObject:@{
+      notification_constants::kNotificationId : notification_id,
+      notification_constants::kNotificationProfileId : profile_id,
+      notification_constants::kNotificationIncognito : incognito,
+    }];
+  }
+
+  reply.get()(alert_ids);
+}
 
 }  // namespace
 
@@ -112,11 +149,18 @@ class MacNotificationActionHandlerImpl
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
                              incognito:(BOOL)incognito
                                  reply:(void (^)(NSArray*))reply {
-  // TODO(knollr): implement.
+  auto profileIdentifier = notifications::mojom::ProfileIdentifier::New(
+      base::SysNSStringToUTF8(profileId), incognito);
+  _service->GetDisplayedNotifications(
+      std::move(profileIdentifier),
+      base::BindOnce(&DispatchGetNotificationsReply, base::RetainBlock(reply)));
 }
 
 - (void)getAllDisplayedAlertsWithReply:(void (^)(NSArray*))reply {
-  // TODO(knollr): implement.
+  _service->GetDisplayedNotifications(
+      /*profileIdentifier=*/nullptr,
+      base::BindOnce(&DispatchGetAllNotificationsReply,
+                     base::RetainBlock(reply)));
 }
 
 @end

@@ -11,41 +11,8 @@
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-@interface FakeContent : NSObject
-@property(nonatomic, retain) NSDictionary* userInfo;
-@end
-
-@implementation FakeContent
-@synthesize userInfo;
-@end
-
-@interface FakeRequest : NSObject
-@property(nonatomic, retain) FakeContent* content;
-@end
-
-@implementation FakeRequest
-@synthesize content;
-@end
-
-@interface FakeUNNotification : NSObject
-@property(nonatomic, retain) FakeRequest* request;
-@end
-
-@implementation FakeUNNotification
-@synthesize request;
-@end
-
-@interface FakeUNNotificationResponse : NSObject
-@property(nonatomic, retain) FakeUNNotification* notification;
-@property(nonatomic, copy) NSString* actionIdentifier;
-@end
-
-@implementation FakeUNNotificationResponse
-@synthesize notification;
-@synthesize actionIdentifier;
-@end
 
 namespace {
 
@@ -68,20 +35,25 @@ base::scoped_nsobject<UNNotificationBuilder> NewTestBuilder(
 }
 
 API_AVAILABLE(macosx(10.14))
-FakeUNNotificationResponse* CreateFakeResponse(NSDictionary* userInfo) {
-  FakeContent* fakeContent = [[FakeContent alloc] init];
-  fakeContent.userInfo = userInfo;
+base::scoped_nsobject<FakeUNNotificationResponse> CreateFakeResponse(
+    NSDictionary* userInfo) {
+  base::scoped_nsobject<UNMutableNotificationContent> content(
+      [[UNMutableNotificationContent alloc] init]);
+  content.get().userInfo = userInfo;
 
-  FakeRequest* fakeRequest = [[FakeRequest alloc] init];
-  fakeRequest.content = fakeContent;
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:@"identifier"
+                                           content:content.get()
+                                           trigger:nil];
 
-  FakeUNNotification* fakeNotification = [[FakeUNNotification alloc] init];
-  fakeNotification.request = fakeRequest;
+  base::scoped_nsobject<FakeUNNotification> fakeNotification(
+      [[FakeUNNotification alloc] init]);
+  fakeNotification.get().request = request;
 
-  FakeUNNotificationResponse* fakeResponse =
-      [[FakeUNNotificationResponse alloc] init];
-  fakeResponse.actionIdentifier = UNNotificationDefaultActionIdentifier;
-  fakeResponse.notification = fakeNotification;
+  base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse(
+      [[FakeUNNotificationResponse alloc] init]);
+  fakeResponse.get().actionIdentifier = UNNotificationDefaultActionIdentifier;
+  fakeResponse.get().notification = fakeNotification.get();
 
   return fakeResponse;
 }
@@ -98,10 +70,12 @@ TEST(UNNotificationResponseBuilderMacTest, TestNoCreatorPid) {
     [newUserInfo
         removeObjectForKey:notification_constants::kNotificationCreatorPid];
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(newUserInfo);
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(newUserInfo);
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
     NSNumber* creatorPid =
         [response objectForKey:notification_constants::kNotificationCreatorPid];
     EXPECT_TRUE([creatorPid isEqualToNumber:@0]);
@@ -116,10 +90,12 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationClick) {
     base::scoped_nsobject<NSMutableDictionary> userInfo(
         [[content userInfo] mutableCopy]);
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(userInfo);
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
 
     NSNumber* operation =
         [response objectForKey:notification_constants::kNotificationOperation];
@@ -141,11 +117,13 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationClose) {
     base::scoped_nsobject<NSMutableDictionary> userInfo(
         [[content userInfo] mutableCopy]);
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier = UNNotificationDismissActionIdentifier;
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(userInfo);
+    fakeResponse.get().actionIdentifier = UNNotificationDismissActionIdentifier;
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
 
     NSNumber* operation =
         [response objectForKey:notification_constants::kNotificationOperation];
@@ -167,12 +145,14 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationCloseButton) {
     base::scoped_nsobject<NSMutableDictionary> userInfo(
         [[content userInfo] mutableCopy]);
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier =
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(userInfo);
+    fakeResponse.get().actionIdentifier =
         notification_constants::kNotificationCloseButtonTag;
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
 
     NSNumber* operation =
         [response objectForKey:notification_constants::kNotificationOperation];
@@ -194,12 +174,14 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationSettingsButton) {
     base::scoped_nsobject<NSMutableDictionary> userInfo(
         [[content userInfo] mutableCopy]);
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier =
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(userInfo);
+    fakeResponse.get().actionIdentifier =
         notification_constants::kNotificationSettingsButtonTag;
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
 
     NSNumber* operation =
         [response objectForKey:notification_constants::kNotificationOperation];
@@ -221,12 +203,14 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationButtonOne) {
     base::scoped_nsobject<NSMutableDictionary> userInfo(
         [[content userInfo] mutableCopy]);
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier =
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(userInfo);
+    fakeResponse.get().actionIdentifier =
         notification_constants::kNotificationButtonOne;
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
 
     NSNumber* operation =
         [response objectForKey:notification_constants::kNotificationOperation];
@@ -247,12 +231,14 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationButtonTwo) {
     base::scoped_nsobject<NSMutableDictionary> userInfo(
         [[content userInfo] mutableCopy]);
 
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier =
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeResponse(userInfo);
+    fakeResponse.get().actionIdentifier =
         notification_constants::kNotificationButtonTwo;
 
     NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+        buildDictionary:static_cast<UNNotificationResponse*>(
+                            fakeResponse.get())];
 
     NSNumber* operation =
         [response objectForKey:notification_constants::kNotificationOperation];
