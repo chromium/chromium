@@ -600,6 +600,10 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
       const int8_t index = frame_header.reference_frame_index[i];
       CHECK_GE(index, 0);
       CHECK_LT(index, libgav1::kNumReferenceFrameTypes);
+      // AV1Decoder::CheckAndCleanUpReferenceFrames() ensures that
+      // |ref_frames[index]| is valid for all the reference frames needed by the
+      // current frame.
+      DCHECK_NE(va_pic_param.ref_frame_map[index], VA_INVALID_SURFACE);
       va_pic_param.ref_frame_idx[i] = base::checked_cast<uint8_t>(index);
     }
   }

@@ -390,8 +390,6 @@ void AV1Decoder::UpdateReferenceFrames(scoped_refptr<AV1Picture> pic) {
   DCHECK(current_frame_header_);
   const uint8_t refresh_frame_flags =
       current_frame_header_->refresh_frame_flags;
-  DCHECK(current_frame_->frame_type() != libgav1::kFrameKey ||
-         current_frame_header_->refresh_frame_flags == 0xff);
   const std::bitset<libgav1::kNumReferenceFrameTypes> update_reference_frame(
       refresh_frame_flags);
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
@@ -470,6 +468,13 @@ bool AV1Decoder::DecodeAndOutputPicture(
 
   if (pic->frame_header.show_frame && !accelerator_->OutputPicture(*pic))
     return false;
+
+  // |current_frame_header_->refresh_frame_flags| should be 0xff if the frame is
+  // either a SWITCH_FRAME or a visible KEY_FRAME (Spec 5.9.2).
+  DCHECK(!(current_frame_header_->frame_type == libgav1::kFrameSwitch ||
+           (current_frame_header_->frame_type == libgav1::kFrameKey &&
+            current_frame_header_->show_frame)) ||
+         current_frame_header_->refresh_frame_flags == 0xff);
   UpdateReferenceFrames(std::move(pic));
   return true;
 }
