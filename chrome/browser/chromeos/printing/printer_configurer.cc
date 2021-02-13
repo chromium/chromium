@@ -67,7 +67,7 @@ PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
       PRINTER_LOG(EVENT) << prefix << "Memory allocation error";
       return PrinterSetupResult::kMemoryAllocationError;
     case debugd::CupsResult::CUPS_PRINTER_UNREACHABLE:
-      PRINTER_LOG(EVENT) << prefix << "Printer is ureachable";
+      PRINTER_LOG(EVENT) << prefix << "Printer is unreachable";
       return PrinterSetupResult::kPrinterUnreachable;
     case debugd::CupsResult::CUPS_PRINTER_WRONG_RESPONSE:
       PRINTER_LOG(EVENT) << prefix << "Unexpected response from printer";
