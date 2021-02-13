@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
 
+#include <set>
 #include <vector>
 
 #include "base/macros.h"
@@ -73,6 +74,25 @@ class CONTENT_EXPORT Calculator {
   virtual void EmitResponsiveness(JankType jank_type,
                                   size_t janky_slices,
                                   bool was_process_suspended);
+
+  // Emits trace events for responsiveness metric. A trace event is emitted for
+  // the whole duration of the metric interval and sub events are emitted for
+  // the specific janky slices.
+  // Exposed for testing.
+  void EmitResponsivenessTraceEvents(JankType jank_type,
+                                     base::TimeTicks start_time,
+                                     base::TimeTicks end_time,
+                                     const std::set<int>& janky_slices);
+
+  // Exposed for testing.
+  virtual void EmitJankyIntervalsMeasurementTraceEvent(
+      base::TimeTicks start_time,
+      base::TimeTicks end_time,
+      size_t amount_of_slices);
+
+  // Exposed for testing.
+  virtual void EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
+                                                base::TimeTicks end_time);
 
   // Exposed for testing.
   base::TimeTicks GetLastCalculationTime();

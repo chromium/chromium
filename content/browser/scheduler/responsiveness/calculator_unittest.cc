@@ -27,6 +27,15 @@ class FakeCalculator : public Calculator {
                     size_t janky_slices,
                     bool was_process_suspended));
 
+  MOCK_METHOD3(EmitJankyIntervalsMeasurementTraceEvent,
+               void(base::TimeTicks start_time,
+                    base::TimeTicks end_time,
+                    size_t amount_of_slices));
+
+  MOCK_METHOD2(EmitJankyIntervalsJankTraceEvent,
+               void(base::TimeTicks start_time, base::TimeTicks end_time));
+
+  using Calculator::EmitResponsivenessTraceEvents;
   using Calculator::GetLastCalculationTime;
 };
 
@@ -527,6 +536,58 @@ TEST_F(ResponsivenessCalculatorTest, UnorderedEvents) {
   EXPECT_EXECUTION_JANKY_SLICES(3u);
   EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u);
   TriggerCalculation();
+}
+
+TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
+  constexpr base::TimeTicks kStartTime = base::TimeTicks();
+  constexpr base::TimeTicks kFinishTime =
+      kStartTime + base::TimeDelta::FromMilliseconds(kMeasurementIntervalInMs);
+  const std::set<int> janky_slices;
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
+      .Times(0);
+
+  calculator_->EmitResponsivenessTraceEvents(
+      JankType::kQueueAndExecution, kStartTime, kFinishTime, janky_slices);
+}
+
+TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsWrongMetric) {
+  constexpr base::TimeTicks kStartTime = base::TimeTicks();
+  constexpr base::TimeTicks kFinishTime =
+      kStartTime + base::TimeDelta::FromMilliseconds(kMeasurementIntervalInMs);
+  const std::set<int> janky_slices = {1};
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
+      .Times(0);
+
+  calculator_->EmitResponsivenessTraceEvents(JankType::kExecution, kStartTime,
+                                             kFinishTime, janky_slices);
+}
+
+TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
+  constexpr base::TimeDelta kSliceInterval =
+      base::TimeDelta::FromMilliseconds(kJankThresholdInMs);
+  constexpr base::TimeTicks kStartTime = base::TimeTicks();
+  constexpr base::TimeTicks kFinishTime =
+      kStartTime + base::TimeDelta::FromMilliseconds(kMeasurementIntervalInMs);
+
+  const std::set<int> janky_slices = {3, 4, 5, 12, 15};
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(
+                                kStartTime, kFinishTime, janky_slices.size()));
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+                                kStartTime + 3 * kSliceInterval,
+                                kStartTime + 6 * kSliceInterval));
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+                                kStartTime + 12 * kSliceInterval,
+                                kStartTime + 13 * kSliceInterval));
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+                                kStartTime + 15 * kSliceInterval,
+                                kStartTime + 16 * kSliceInterval));
+
+  calculator_->EmitResponsivenessTraceEvents(
+      JankType::kQueueAndExecution, kStartTime, kFinishTime, janky_slices);
 }
 
 }  // namespace responsiveness
