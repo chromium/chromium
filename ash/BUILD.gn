@@ -2238,6 +2238,7 @@ test("ash_unittests") {
     "system/message_center/ash_message_popup_collection_unittest.cc",
     "system/message_center/inactive_user_notification_blocker_unittest.cc",
     "system/message_center/message_center_ui_controller_unittest.cc",
+    "system/message_center/message_center_utils_unittest.cc",
     "system/message_center/notification_swipe_control_view_unittest.cc",
     "system/message_center/notifier_settings_view_unittest.cc",
     "system/message_center/session_state_notification_blocker_unittest.cc",

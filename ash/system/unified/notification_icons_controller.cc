@@ -5,16 +5,21 @@
 #include "ash/system/unified/notification_icons_controller.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/tray/tray_utils.h"
+#include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/separator.h"
 
 namespace ash {
 
@@ -22,6 +27,7 @@ namespace {
 
 // Maximum number of notification icons shown in the system tray button.
 constexpr int kMaxNotificationIconsShown = 2;
+constexpr int kSeparatorPadding = 3;
 
 // We only show notification icon in the tray if it is either:
 // *   Pinned (generally used for background process such as sharing your
@@ -32,6 +38,25 @@ bool ShouldShowNotification(message_center::Notification* notification) {
          notification->system_notification_warning_level() ==
              message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
 }
+
+class SeparatorTrayItemView : public TrayItemView {
+ public:
+  explicit SeparatorTrayItemView(Shelf* shelf) : TrayItemView(shelf) {
+    views::Separator* separator = new views::Separator();
+    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kSeparatorColor));
+    separator->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(kSeparatorPadding)));
+    AddChildView(separator);
+  }
+  ~SeparatorTrayItemView() override = default;
+  SeparatorTrayItemView(const SeparatorTrayItemView&) = delete;
+  SeparatorTrayItemView& operator=(const SeparatorTrayItemView&) = delete;
+
+  // TrayItemView:
+  void HandleLocaleChange() override {}
+  const char* GetClassName() const override { return "SeparatorTrayItemView"; }
+};
 
 }  // namespace
 
@@ -108,14 +133,44 @@ void NotificationIconsController::AddNotificationTrayItems(
         std::make_unique<NotificationIconTrayItemView>(tray_->shelf())));
   }
 
+  hidden_notification_count_view_ = tray_container->AddChildView(
+      std::make_unique<HiddenNotificationCountView>(tray_->shelf()));
+
+  separator_ = tray_container->AddChildView(
+      std::make_unique<SeparatorTrayItemView>(tray_->shelf()));
+
   OnSystemTrayButtonSizeChanged(tray_->model()->GetSystemTrayButtonSize());
+}
+
+void NotificationIconsController::UpdateHiddenNotificationCounter() {
+  if (!icons_view_visible_ || !TrayItemHasNotification()) {
+    hidden_notification_count_view_->SetVisible(false);
+    return;
+  }
+
+  // `first_unused_item_index_` is also the total number of notification icons
+  // shown in the tray.
+  int hidden_notification_num =
+      message_center_utils::GetNotificationCount() - first_unused_item_index_;
+  if (hidden_notification_num != 0)
+    hidden_notification_count_view_->label()->SetText(
+        l10n_util::GetStringFUTF16Int(
+            IDS_ASH_STATUS_TRAY_HIDDEN_NOTIFICATION_COUNT_LABEL,
+            hidden_notification_num));
+
+  hidden_notification_count_view_->SetVisible(hidden_notification_num != 0);
+}
+
+bool NotificationIconsController::TrayItemHasNotification() {
+  return first_unused_item_index_ != 0;
 }
 
 void NotificationIconsController::OnSystemTrayButtonSizeChanged(
     UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
   icons_view_visible_ =
       system_tray_size != UnifiedSystemTrayModel::SystemTrayButtonSize::kSmall;
-  Update();
+  UpdateNotificationIcons();
+  UpdateHiddenNotificationCounter();
 }
 
 void NotificationIconsController::OnNotificationAdded(const std::string& id) {
@@ -126,7 +181,7 @@ void NotificationIconsController::OnNotificationAdded(const std::string& id) {
 
   // Reset the notification icons if a notification is added since we don't
   // know the position where its icon should be added.
-  Update();
+  UpdateNotificationIcons();
 }
 
 void NotificationIconsController::OnNotificationRemoved(const std::string& id,
@@ -134,7 +189,7 @@ void NotificationIconsController::OnNotificationRemoved(const std::string& id,
   // If the notification removed is displayed in an icon, call update to show
   // another notification if needed.
   if (GetNotificationIconShownInTray(id))
-    Update();
+    UpdateNotificationIcons();
 }
 
 void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
@@ -143,7 +198,7 @@ void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
     item->UpdateTooltipText();
 }
 
-void NotificationIconsController::Update() {
+void NotificationIconsController::UpdateNotificationIcons() {
   auto it = tray_items_.begin();
   for (message_center::Notification* notification :
        message_center_utils::GetSortedVisibleNotifications()) {
@@ -162,6 +217,7 @@ void NotificationIconsController::Update() {
     (*it)->Reset();
     (*it)->SetVisible(false);
   }
+  separator_->SetVisible(icons_view_visible_ && TrayItemHasNotification());
 }
 
 NotificationIconTrayItemView*
