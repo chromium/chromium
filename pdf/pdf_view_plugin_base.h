@@ -56,9 +56,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
     uint32_t color;
   };
 
-  // The minimum zoom level allowed.
-  static constexpr double kMinZoom = 0.01;
-
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
@@ -155,29 +152,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
-  bool last_bitmap_smaller() const { return last_bitmap_smaller_; }
-  void set_last_bitmap_smaller(bool last_bitmap_smaller) {
-    last_bitmap_smaller_ = last_bitmap_smaller;
-  }
-
-  void set_needs_reraster(bool needs_reraster) {
-    needs_reraster_ = needs_reraster;
-  }
-
-  const gfx::PointF& scroll_position_at_last_raster() const {
-    return scroll_position_at_last_raster_;
-  }
-  void set_scroll_position_at_last_raster(const gfx::PointF& scroll_position) {
-    scroll_position_at_last_raster_ = scroll_position;
-  }
-
   bool stop_scrolling() const { return stop_scrolling_; }
   void set_stop_scrolling(bool stop_scrolling) {
     stop_scrolling_ = stop_scrolling;
-  }
-
-  void set_received_viewport_message(bool received) {
-    received_viewport_message_ = received;
   }
 
  private:
@@ -191,6 +168,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
+  void HandleViewportMessage(const base::Value& message);
 
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.

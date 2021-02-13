@@ -195,7 +195,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void HandleSaveAttachmentMessage(const pp::VarDictionary& dict);
   void HandleSaveMessage(const pp::VarDictionary& dict);
   void HandleUpdateScrollMessage(const pp::VarDictionary& dict);
-  void HandleViewportMessage(const pp::VarDictionary& dict);
 
   // Repaints plugin contents based on the current scroll position.
   void UpdateScroll();
@@ -322,17 +321,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // The scroll position in CSS pixels.
   gfx::Point scroll_position_;
-
-  // Enumeration of pinch states.
-  // This should match PinchPhase enum in
-  // chrome/browser/resources/pdf/viewport.js
-  enum PinchPhase {
-    PINCH_NONE = 0,
-    PINCH_START = 1,
-    PINCH_UPDATE_ZOOM_OUT = 2,
-    PINCH_UPDATE_ZOOM_IN = 3,
-    PINCH_END = 4
-  };
 
   // True if the plugin is full-page.
   bool full_ = false;

@@ -1491,7 +1491,7 @@ export class Viewport {
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/out_of_process_instance.h
+ * This should match PinchPhase enum in pdf/pdf_view_plugin_base.cc.
  * @enum {number}
  */
 export const PinchPhase = {

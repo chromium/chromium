@@ -90,19 +90,6 @@ constexpr char kType[] = "type";
 constexpr char kJSMessageId[] = "messageId";
 // Beep message arguments. (Plugin -> Page).
 constexpr char kJSBeepType[] = "beep";
-// Viewport message arguments. (Page -> Plugin).
-constexpr char kJSViewportType[] = "viewport";
-constexpr char kJSUserInitiated[] = "userInitiated";
-constexpr char kJSXOffset[] = "xOffset";
-constexpr char kJSYOffset[] = "yOffset";
-constexpr char kJSZoom[] = "zoom";
-constexpr char kJSPinchPhase[] = "pinchPhase";
-// kJSPinchX and kJSPinchY represent the center of the pinch gesture.
-constexpr char kJSPinchX[] = "pinchX";
-constexpr char kJSPinchY[] = "pinchY";
-// kJSPinchVector represents the amount of panning caused by the pinch gesture.
-constexpr char kJSPinchVectorX[] = "pinchVectorX";
-constexpr char kJSPinchVectorY[] = "pinchVectorY";
 // UpdateScroll message arguments. (Page -> Plugin).
 constexpr char kJSUpdateScrollType[] = "updateScroll";
 constexpr char kJSUpdateScrollX[] = "x";
@@ -742,9 +729,7 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 
   std::string type = dict.Get(kType).AsString();
 
-  if (type == kJSViewportType) {
-    HandleViewportMessage(dict);
-  } else if (type == kJSUpdateScrollType) {
+  if (type == kJSUpdateScrollType) {
     HandleUpdateScrollMessage(dict);
   } else if (type == kJSGetPasswordCompleteType) {
     HandleGetPasswordCompleteMessage(dict);
@@ -1750,128 +1735,6 @@ void OutOfProcessInstance::HandleUpdateScrollMessage(
   int y = dict.Get(pp::Var(kJSUpdateScrollY)).AsInt();
   scroll_position_ = gfx::Point(x, y);
   UpdateScroll();
-}
-
-void OutOfProcessInstance::HandleViewportMessage(
-    const pp::VarDictionary& dict) {
-  pp::Var layout_options_var = dict.Get(kJSLayoutOptions);
-  if (!layout_options_var.is_undefined()) {
-    DocumentLayout::Options layout_options;
-    layout_options.FromValue(ValueFromVar(layout_options_var));
-    // TODO(crbug.com/1013800): Eliminate need to get document size from here.
-    set_document_size(engine()->ApplyDocumentLayout(layout_options));
-    OnGeometryChanged(zoom(), device_scale());
-  }
-
-  if (!(dict.Get(pp::Var(kJSXOffset)).is_number() &&
-        dict.Get(pp::Var(kJSYOffset)).is_number() &&
-        dict.Get(pp::Var(kJSZoom)).is_number() &&
-        dict.Get(pp::Var(kJSPinchPhase)).is_number())) {
-    NOTREACHED();
-    return;
-  }
-  set_received_viewport_message(true);
-  set_stop_scrolling(false);
-  PinchPhase pinch_phase =
-      static_cast<PinchPhase>(dict.Get(pp::Var(kJSPinchPhase)).AsInt());
-  double new_zoom = dict.Get(pp::Var(kJSZoom)).AsDouble();
-  double zoom_ratio = new_zoom / zoom();
-
-  gfx::PointF scroll_position(dict.Get(pp::Var(kJSXOffset)).AsDouble(),
-                              dict.Get(pp::Var(kJSYOffset)).AsDouble());
-
-  if (pinch_phase == PINCH_START) {
-    set_scroll_position_at_last_raster(scroll_position);
-    set_last_bitmap_smaller(false);
-    set_needs_reraster(false);
-    return;
-  }
-
-  // When zooming in, we set a layer transform to avoid unneeded rerasters.
-  // Also, if we're zooming out and the last time we rerastered was when
-  // we were even further zoomed out (i.e. we pinch zoomed in and are now
-  // pinch zooming back out in the same gesture), we update the layer
-  // transform instead of rerastering.
-  if (pinch_phase == PINCH_UPDATE_ZOOM_IN ||
-      (pinch_phase == PINCH_UPDATE_ZOOM_OUT && zoom_ratio > 1.0)) {
-    if (!(dict.Get(pp::Var(kJSPinchX)).is_number() &&
-          dict.Get(pp::Var(kJSPinchY)).is_number() &&
-          dict.Get(pp::Var(kJSPinchVectorX)).is_number() &&
-          dict.Get(pp::Var(kJSPinchVectorY)).is_number())) {
-      NOTREACHED();
-      return;
-    }
-
-    pp::Point pinch_center(dict.Get(pp::Var(kJSPinchX)).AsDouble(),
-                           dict.Get(pp::Var(kJSPinchY)).AsDouble());
-    // Pinch vector is the panning caused due to change in pinch
-    // center between start and end of the gesture.
-    gfx::Vector2d pinch_vector =
-        gfx::Vector2d(dict.Get(kJSPinchVectorX).AsDouble() * zoom_ratio,
-                      dict.Get(kJSPinchVectorY).AsDouble() * zoom_ratio);
-    gfx::Vector2d scroll_delta;
-    // If the rendered document doesn't fill the display area we will
-    // use |paint_offset| to anchor the paint vertically into the same place.
-    // We use the scroll bars instead of the pinch vector to get the actual
-    // position on screen of the paint.
-    gfx::Vector2d paint_offset;
-
-    if (plugin_size().width() > GetDocumentPixelWidth() * zoom_ratio) {
-      // We want to keep the paint in the middle but it must stay in the same
-      // position relative to the scroll bars.
-      paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
-      scroll_delta =
-          gfx::Vector2d(0, (scroll_position.y() -
-                            scroll_position_at_last_raster().y() * zoom_ratio));
-
-      pinch_vector = gfx::Vector2d();
-      set_last_bitmap_smaller(true);
-    } else if (last_bitmap_smaller()) {
-      pinch_center = pp::Point((plugin_size().width() / device_scale()) / 2,
-                               (plugin_size().height() / device_scale()) / 2);
-      const double zoom_when_doc_covers_plugin_width =
-          zoom() * plugin_size().width() / GetDocumentPixelWidth();
-      paint_offset = gfx::Vector2d(
-          (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
-          (1 - zoom_ratio) * pinch_center.y());
-      pinch_vector = gfx::Vector2d();
-      scroll_delta =
-          gfx::Vector2d((scroll_position.x() -
-                         scroll_position_at_last_raster().x() * zoom_ratio),
-                        (scroll_position.y() -
-                         scroll_position_at_last_raster().y() * zoom_ratio));
-    }
-
-    paint_manager().SetTransform(zoom_ratio, PointFromPPPoint(pinch_center),
-                                 pinch_vector + paint_offset + scroll_delta,
-                                 true);
-    set_needs_reraster(false);
-    return;
-  }
-
-  if (pinch_phase == PINCH_UPDATE_ZOOM_OUT || pinch_phase == PINCH_END) {
-    // We reraster on pinch zoom out in order to solve the invalid regions
-    // that appear after zooming out.
-    // On pinch end the scale is again 1.f and we request a reraster
-    // in the new position.
-    paint_manager().ClearTransform();
-    set_last_bitmap_smaller(false);
-    set_needs_reraster(true);
-
-    // If we're rerastering due to zooming out, we need to update the scroll
-    // position for the last raster, in case the user continues the gesture by
-    // zooming in.
-    set_scroll_position_at_last_raster(scroll_position);
-  }
-
-  // Bound the input parameters.
-  new_zoom = std::max(kMinZoom, new_zoom);
-  DCHECK(dict.Get(pp::Var(kJSUserInitiated)).is_bool());
-
-  SetZoom(new_zoom);
-  scroll_position = BoundScrollPositionToDocument(scroll_position);
-  engine()->ScrolledToXPosition(scroll_position.x() * device_scale());
-  engine()->ScrolledToYPosition(scroll_position.y() * device_scale());
 }
 
 void OutOfProcessInstance::PreviewDocumentLoadComplete() {

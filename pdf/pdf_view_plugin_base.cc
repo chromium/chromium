@@ -42,6 +42,19 @@ namespace chrome_pdf {
 
 namespace {
 
+// The minimum zoom level allowed.
+constexpr double kMinZoom = 0.01;
+
+// Enumeration of pinch states.
+// This should match PinchPhase enum in chrome/browser/resources/pdf/viewport.js
+enum class PinchPhase {
+  kNone = 0,
+  kStart = 1,
+  kUpdateZoomOut = 2,
+  kUpdateZoomIn = 3,
+  kEnd = 4,
+};
+
 // Prepares messages from the plugin that reply to messages from the embedder.
 // If the "type" value of `message` is "foo", then the `reply_type` must be
 // "fooReply". The `message` from the embedder must have a "messageId" value
@@ -60,9 +73,6 @@ base::Value PrepareReplyMessage(base::StringPiece reply_type,
 }
 
 }  // namespace
-
-// static
-constexpr double PdfViewPluginBase::kMinZoom;
 
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
@@ -99,6 +109,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
+          {"viewport", &PdfViewPluginBase::HandleViewportMessage},
       });
 
   const std::string* type = message.FindStringKey("type");
@@ -357,6 +368,121 @@ void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
 
 void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
   engine()->SetTwoUpView(message.FindBoolKey("enableTwoUpView").value());
+}
+
+void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
+  const base::Value* layout_options_value =
+      message.FindDictKey("layoutOptions");
+  if (layout_options_value) {
+    DocumentLayout::Options layout_options;
+    layout_options.FromValue(*layout_options_value);
+    // TODO(crbug.com/1013800): Eliminate need to get document size from here.
+    document_size_ = engine()->ApplyDocumentLayout(layout_options);
+    OnGeometryChanged(zoom_, device_scale_);
+  }
+
+  gfx::PointF scroll_position(message.FindDoubleKey("xOffset").value(),
+                              message.FindDoubleKey("yOffset").value());
+  double new_zoom = message.FindDoubleKey("zoom").value();
+  const PinchPhase pinch_phase =
+      static_cast<PinchPhase>(message.FindIntKey("pinchPhase").value());
+
+  received_viewport_message_ = true;
+  stop_scrolling_ = false;
+  const double zoom_ratio = new_zoom / zoom_;
+
+  if (pinch_phase == PinchPhase::kStart) {
+    scroll_position_at_last_raster_ = scroll_position;
+    last_bitmap_smaller_ = false;
+    needs_reraster_ = false;
+    return;
+  }
+
+  // When zooming in, we set a layer transform to avoid unneeded rerasters.
+  // Also, if we're zooming out and the last time we rerastered was when
+  // we were even further zoomed out (i.e. we pinch zoomed in and are now
+  // pinch zooming back out in the same gesture), we update the layer
+  // transform instead of rerastering.
+  if (pinch_phase == PinchPhase::kUpdateZoomIn ||
+      (pinch_phase == PinchPhase::kUpdateZoomOut && zoom_ratio > 1.0)) {
+    // Get the coordinates of the center of the pinch gesture.
+    const double pinch_x = message.FindDoubleKey("pinchX").value();
+    const double pinch_y = message.FindDoubleKey("pinchY").value();
+    gfx::Point pinch_center(pinch_x, pinch_y);
+
+    // Get the pinch vector which represents the panning caused by the change in
+    // pinch center between the start and the end of the gesture.
+    const double pinch_vector_x = message.FindDoubleKey("pinchVectorX").value();
+    const double pinch_vector_y = message.FindDoubleKey("pinchVectorY").value();
+    gfx::Vector2d pinch_vector =
+        gfx::Vector2d(pinch_vector_x * zoom_ratio, pinch_vector_y * zoom_ratio);
+
+    gfx::Vector2d scroll_delta;
+    // If the rendered document doesn't fill the display area we will
+    // use `paint_offset` to anchor the paint vertically into the same place.
+    // We use the scroll bars instead of the pinch vector to get the actual
+    // position on screen of the paint.
+    gfx::Vector2d paint_offset;
+
+    if (plugin_size_.width() > GetDocumentPixelWidth() * zoom_ratio) {
+      // We want to keep the paint in the middle but it must stay in the same
+      // position relative to the scroll bars.
+      paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
+      scroll_delta =
+          gfx::Vector2d(0, (scroll_position.y() -
+                            scroll_position_at_last_raster_.y() * zoom_ratio));
+
+      pinch_vector = gfx::Vector2d();
+      last_bitmap_smaller_ = true;
+    } else if (last_bitmap_smaller_) {
+      // When the document width covers the display area's width, we will anchor
+      // the scroll bars disregarding where the actual pinch certer is.
+      pinch_center = gfx::Point((plugin_size_.width() / device_scale_) / 2,
+                                (plugin_size_.height() / device_scale_) / 2);
+      const double zoom_when_doc_covers_plugin_width =
+          zoom_ * plugin_size_.width() / GetDocumentPixelWidth();
+      paint_offset = gfx::Vector2d(
+          (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
+          (1 - zoom_ratio) * pinch_center.y());
+      pinch_vector = gfx::Vector2d();
+      scroll_delta =
+          gfx::Vector2d((scroll_position.x() -
+                         scroll_position_at_last_raster_.x() * zoom_ratio),
+                        (scroll_position.y() -
+                         scroll_position_at_last_raster_.y() * zoom_ratio));
+    }
+
+    paint_manager().SetTransform(zoom_ratio, pinch_center,
+                                 pinch_vector + paint_offset + scroll_delta,
+                                 true);
+    needs_reraster_ = false;
+    return;
+  }
+
+  if (pinch_phase == PinchPhase::kUpdateZoomOut ||
+      pinch_phase == PinchPhase::kEnd) {
+    // We reraster on pinch zoom out in order to solve the invalid regions
+    // that appear after zooming out.
+    // On pinch end the scale is again 1.f and we request a reraster
+    // in the new position.
+    paint_manager().ClearTransform();
+    last_bitmap_smaller_ = false;
+    needs_reraster_ = true;
+
+    // If we're rerastering due to zooming out, we need to update the scroll
+    // position for the last raster, in case the user continues the gesture by
+    // zooming in.
+    scroll_position_at_last_raster_ = scroll_position;
+  }
+
+  // Bound the input parameters.
+  new_zoom = std::max(kMinZoom, new_zoom);
+  DCHECK(message.FindBoolKey("userInitiated").has_value());
+
+  SetZoom(new_zoom);
+  scroll_position = BoundScrollPositionToDocument(scroll_position);
+  engine()->ScrolledToXPosition(scroll_position.x() * device_scale_);
+  engine()->ScrolledToYPosition(scroll_position.y() * device_scale_);
 }
 
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
