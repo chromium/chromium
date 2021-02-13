@@ -29,7 +29,7 @@ android_library("java") {
     "//services/media_session/public/cpp/android:media_session_java",
     "//services/media_session/public/mojom:mojom_java",
     "//third_party/android_deps:android_support_v4_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]

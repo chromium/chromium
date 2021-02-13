@@ -51,8 +51,8 @@ android_library("util_java") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//url:gurl_java",
   ]
 }
@@ -119,7 +119,7 @@ android_library("content_view_java") {
   deps = [
     "//base:base_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   sources = [
@@ -194,8 +194,8 @@ android_library("web_contents_delegate_java") {
     "//base:base_java",
     "//base:jni_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -245,7 +245,7 @@ android_library("context_menu_java") {
     "//base:base_java",
     "//base:jni_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -294,8 +294,8 @@ java_library("components_embedder_support_junit_tests") {
   deps = [
     ":util_java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 }
@@ -314,11 +314,11 @@ android_library("embedder_support_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",

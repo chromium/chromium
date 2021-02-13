@@ -67,7 +67,7 @@ android_library("ar_java_interfaces") {
 
   deps = [
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 
@@ -79,9 +79,9 @@ android_library("ar_java_base") {
     "//base:base_java",
     "//base:jni_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",
   ]
 
@@ -124,7 +124,7 @@ java_cpp_enum("webxr_android_enums") {
 }
 
 android_library("webxr_android_enums_java") {
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 
   srcjar_deps = [ ":webxr_android_enums" ]
 }

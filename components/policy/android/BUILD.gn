@@ -23,7 +23,7 @@ android_library("policy_java") {
   deps = [
     "//base:base_java",
     "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":java_switches_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -43,7 +43,7 @@ android_library("policy_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]
   sources = [

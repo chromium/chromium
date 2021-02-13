@@ -382,9 +382,9 @@ if (is_android) {
       "//components/query_tiles:query_tile_java",
       "//components/security_state/core:security_state_enums_java",
       "//content/public/android:content_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_collection_collection_java",
-      "//third_party/android_deps:androidx_core_core_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_collection_collection_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_full_java",
       "//url:gurl_java",
     ]

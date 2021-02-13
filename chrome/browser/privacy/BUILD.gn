@@ -32,10 +32,10 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//net/dns/public:secure_dns_mode_generated_enum",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_fragment_fragment_java",
-    "//third_party/android_deps:androidx_preference_preference_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
   ]
   srcjar_deps = [
     "//chrome/browser/net:secure_dns_management_mode_generated_enum",

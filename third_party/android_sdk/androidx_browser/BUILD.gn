@@ -41,11 +41,11 @@ android_library("androidx_browser_java") {
     "./src/browser/browser/src/main/java/androidx/browser/trusted/splashscreens/SplashScreenVersion.java",
   ]
   deps = [
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_collection_collection_java",
-    "//third_party/android_deps:androidx_concurrent_concurrent_futures_java",
-    "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
   srcjar_deps = [ ":androidx_browser_service_aidl" ]
   chromium_code = false

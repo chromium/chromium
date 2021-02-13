@@ -23,7 +23,7 @@ android_library("java") {
     "//base:jni_java",
     "//components/infobars/android:infobar_android_enums_java",
     "//components/infobars/android:java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

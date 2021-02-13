@@ -30,7 +30,7 @@ android_library("java") {
 
   deps = [
     ":java_resources",
-    "//third_party/android_deps:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_preference_preference_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.password_entry_edit"

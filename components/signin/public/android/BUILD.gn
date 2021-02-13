@@ -7,7 +7,7 @@ android_library("java") {
     "//components/signin/core/browser/android:java",
     "//net/android:net_java",
     "//third_party/android_deps:android_support_v4_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   srcjar_deps = [
@@ -53,7 +53,7 @@ android_library("signin_java_test_support") {
     ":signin_test_resources",
     "//base:base_java",
     "//components/signin/core/browser/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   sources = [
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
@@ -77,10 +77,10 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/signin/core/browser/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

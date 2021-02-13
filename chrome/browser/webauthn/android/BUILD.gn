@@ -11,7 +11,7 @@ android_library("java") {
     "//base:jni_java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

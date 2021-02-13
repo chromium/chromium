@@ -19,8 +19,8 @@ android_library("java") {
     "//base:jni_java",
     "//net/android:net_java",
     "//third_party/android_deps:android_support_v4_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
 

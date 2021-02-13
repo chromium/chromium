@@ -14,7 +14,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/profiles/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ "//components/consent_auditor:consent_auditor_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

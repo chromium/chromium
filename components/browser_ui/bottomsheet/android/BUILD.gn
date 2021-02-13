@@ -18,7 +18,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.components.browser_ui.bottomsheet"

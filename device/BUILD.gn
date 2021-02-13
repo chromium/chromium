@@ -413,8 +413,8 @@ if (is_android) {
       "//base:base_java",
       "//components/location/android:location_java",
       "//device/bluetooth:java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_sdk:android_test_mock_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
     srcjar_deps = [ ":bluetooth_test_javagen" ]
@@ -431,7 +431,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//device/gamepad:java",
       "//mojo/public/java:bindings_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/hamcrest:hamcrest_java",
     ]
     srcjar_deps = [ "//device/gamepad:java_enums_srcjar" ]

@@ -79,7 +79,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java",
       "//components/feature_engagement/public:public_java",
       "//content/public/android:content_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
     ]
 
@@ -119,7 +119,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//components/embedder_support/android:content_view_java",
       "//content/public/android:content_java",
-      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     ]
 
     # This internal file will be replaced by a generated file so the resulting
@@ -137,7 +137,7 @@ if (is_android) {
       ":java",
       "//base:base_java",
       "//chrome/browser/image_fetcher:java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/gif_player:gif_player_java",
     ]
   }

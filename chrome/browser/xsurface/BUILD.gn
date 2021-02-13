@@ -20,5 +20,5 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScopeDependencyProvider.java",
   ]
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

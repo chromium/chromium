@@ -19,7 +19,7 @@ android_library("battery_monitor_java") {
     "//mojo/public/java:system_java",
     "//services/device/public/mojom:mojom_java",
     "//services/service_manager/public/java:service_manager_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

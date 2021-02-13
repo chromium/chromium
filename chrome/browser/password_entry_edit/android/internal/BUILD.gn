@@ -17,7 +17,7 @@ android_library("java") {
     "//base:jni_java",
     "//chrome/browser/password_entry_edit/android:java",
     "//components/browser_ui/settings/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

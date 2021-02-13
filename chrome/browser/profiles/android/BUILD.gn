@@ -14,7 +14,7 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//components/embedder_support/android:browser_context_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [

@@ -15,7 +15,7 @@ android_library("javatests") {
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/site_engagement/content/android:java",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
 }

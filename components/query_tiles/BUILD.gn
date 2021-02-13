@@ -81,7 +81,7 @@ if (is_android) {
 
     deps = [
       "//components/browser_ui/widget/android:java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -99,7 +99,7 @@ if (is_android) {
       "//base:base_java",
       "//base:jni_java",
       "//components/browser_ui/widget/android:java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
     ]
 

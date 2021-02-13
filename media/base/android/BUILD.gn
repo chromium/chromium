@@ -163,7 +163,7 @@ if (is_android) {
       ":media_java_resources",
       "//base:base_java",
       "//base:jni_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     srcjar_deps = [
@@ -198,7 +198,7 @@ if (is_android) {
   android_library("display_java") {
     sources = [ "java/src/org/chromium/media/DisplayCompat.java" ]
 
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 
   junit_binary("media_base_junit_tests") {
@@ -211,7 +211,7 @@ if (is_android) {
       ":media_java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//third_party/android_deps:androidx_test_runner_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
     ]
   }

@@ -26,7 +26,7 @@ android_library("java") {
     "//components/browser_ui/share/android:java",
     "//components/embedder_support/android:context_menu_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]

@@ -20,7 +20,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//components/browser_ui/util/android:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
 }

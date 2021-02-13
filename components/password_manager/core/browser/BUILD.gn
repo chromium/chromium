@@ -427,7 +427,7 @@ if (is_android) {
   # Wrap the java_cpp_enum in android_library so it can be used by both
   # chrome_java and modules.
   android_library("password_manager_java_enums") {
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
     srcjar_deps = [ ":password_manager_java_enums_srcjar" ]
   }
 

@@ -15,7 +15,7 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/util:java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

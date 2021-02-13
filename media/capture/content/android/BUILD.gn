@@ -37,7 +37,7 @@ android_library("screen_capture_java") {
   deps = [
     "//base:base_java",
     "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   sources = [ "java/src/org/chromium/media/ScreenCapture.java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

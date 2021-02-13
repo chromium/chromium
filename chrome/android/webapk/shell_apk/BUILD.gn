@@ -77,7 +77,7 @@ template("webapk_java") {
       "//chrome/android/webapk/libs/common:common_java",
       "//chrome/android/webapk/libs/common:splash_java",
       "//components/webapk/android/libs/common:java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 }
@@ -362,8 +362,8 @@ android_library("shell_apk_javatests") {
     "//base:base_java_test_support",
     "//chrome/android/webapk/libs/common:common_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
   srcjar_deps = [ "javatests/dex_optimizer:dex_optimizer_service_aidl" ]
@@ -387,7 +387,7 @@ junit_binary("webapk_shell_apk_junit_tests") {
     "//chrome/android/webapk/libs/runtime_library:runtime_library_for_tests_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//components/webapk/android/libs/common:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 

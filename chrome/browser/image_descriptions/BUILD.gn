@@ -27,8 +27,8 @@ android_library("java") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_full_java",
   ]
 
@@ -82,9 +82,9 @@ android_library("javatests") {
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_preference_preference_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

@@ -31,7 +31,7 @@ if (is_android) {
 
   android_library("security_state_enums_java") {
     srcjar_deps = [ ":security_state_enums" ]
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }
 

@@ -35,9 +35,9 @@ if (is_android) {
       "//components/subresource_filter/android:java",
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
-      "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
     ]
   }

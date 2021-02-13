@@ -15,7 +15,7 @@ android_library("java") {
     "..:java",
     "..:manager_java",
     "//base:base_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
   ]
 }
@@ -32,7 +32,7 @@ java_library("junit") {
     "..:java",
     "..:manager_java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

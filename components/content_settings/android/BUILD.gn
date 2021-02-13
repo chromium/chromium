@@ -19,7 +19,7 @@ android_library("java") {
     "//base:jni_java",
     "//components/embedder_support/android:browser_context_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
@@ -43,7 +43,7 @@ source_set("android") {
 
 android_library("content_settings_enums_java") {
   srcjar_deps = [ ":content_settings_enums_javagen" ]
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 java_cpp_enum("content_settings_enums_javagen") {

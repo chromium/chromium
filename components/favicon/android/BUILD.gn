@@ -12,7 +12,7 @@ android_library("java") {
     "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:browser_context_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]
 

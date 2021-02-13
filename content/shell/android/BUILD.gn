@@ -251,9 +251,9 @@ android_library("content_shell_test_java") {
     "//content/public/test/android:content_java_test_support",
     "//content/shell/android:content_shell_java",
     "//mojo/public/java/system:test_support_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java",
@@ -274,7 +274,7 @@ android_library("content_shell_browsertests_java") {
     "//base:base_java",
     "//content/public/android:content_java",
     "//testing/android/native_test:native_test_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
   sources = [ "browsertests/src/org/chromium/content_shell/browsertests/ContentShellBrowserTestActivity.java" ]

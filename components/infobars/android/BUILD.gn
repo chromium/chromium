@@ -71,9 +71,9 @@ android_library("java") {
     "//base:jni_java",
     "//components/browser_ui/widget/android:java",
     "//components/infobars/core:infobar_enums_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -85,7 +85,7 @@ java_cpp_enum("infobar_android_enums") {
 }
 
 android_library("infobar_android_enums_java") {
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 
   srcjar_deps = [ ":infobar_android_enums" ]
 }
@@ -108,11 +108,11 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
 }

@@ -21,7 +21,7 @@ android_library("java") {
     "//base:jni_java",
     "//build:chromeos_buildflags",
     "//chrome/browser/preferences:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [
     ":chrome_android_java_switches_srcjar",
@@ -97,9 +97,9 @@ android_library("javatests") {
     "//base/test:test_support_java",
     "//chrome/android:chrome_java",
     "//chrome/test/android:chrome_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
