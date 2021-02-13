@@ -375,17 +375,17 @@ TEST_F('OSSettingsAmbientModePhotosPageTest', 'MAYBE_AllJsTests', () => {
 
 // Tests for the main contents of the settings page.
 // eslint-disable-next-line no-var
-var OSSettingsPageTest = class extends OSSettingsBrowserTest {
+var OSSettingsUiTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_util.js',
-      'os_settings_page_test.js',
+      'os_settings_ui_test.js',
     ]);
   }
 };
 
-TEST_F('OSSettingsPageTest', 'MAYBE_AllJsTests', () => {
+TEST_F('OSSettingsUiTest', 'MAYBE_AllJsTests', () => {
   // Run all registered tests.
   mocha.run();
 });
