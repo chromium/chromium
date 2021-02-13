@@ -43,9 +43,8 @@ suite('DialogTests', function() {
   /**
    * @param {function(SettingsResetProfileDialogElement)}
    *     closeDialogFn A function to call for closing the dialog.
-   * @return {!Promise}
    */
-  function testOpenCloseResetProfileDialog(closeDialogFn) {
+  async function testOpenCloseResetProfileDialog(closeDialogFn) {
     resetPageBrowserProxy.resetResolver('onShowResetProfileDialog');
     resetPageBrowserProxy.resetResolver('onHideResetProfileDialog');
 
@@ -58,34 +57,30 @@ suite('DialogTests', function() {
 
     const whenDialogClosed = eventToPromise('close', dialog);
 
-    return resetPageBrowserProxy.whenCalled('onShowResetProfileDialog')
-        .then(function() {
-          closeDialogFn(dialog);
-          return Promise.all([
-            whenDialogClosed,
-            resetPageBrowserProxy.whenCalled('onHideResetProfileDialog'),
-          ]);
-        });
+    await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
+    closeDialogFn(dialog);
+    await Promise.all([
+      whenDialogClosed,
+      resetPageBrowserProxy.whenCalled('onHideResetProfileDialog'),
+    ]);
   }
 
   // Tests that the reset profile dialog opens and closes correctly and that
   // resetPageBrowserProxy calls are occurring as expected.
-  test(TestNames.ResetProfileDialogOpenClose, function() {
-    return testOpenCloseResetProfileDialog(function(dialog) {
-             // Test case where the 'cancel' button is clicked.
-             dialog.$.cancel.click();
-           })
-        .then(function() {
-          return testOpenCloseResetProfileDialog(function(dialog) {
-            // Test case where the browser's 'back' button is clicked.
-            resetPage.currentRouteChanged(routes.BASIC);
-          });
-        });
+  test(TestNames.ResetProfileDialogOpenClose, async function() {
+    // Test case where the 'cancel' button is clicked.
+    await testOpenCloseResetProfileDialog((dialog) => {
+      dialog.$.cancel.click();
+    });
+    // Test case where the browser's 'back' button is clicked.
+    await testOpenCloseResetProfileDialog((dialog) => {
+      resetPage.currentRouteChanged(routes.BASIC);
+    });
   });
 
   // Tests that when user request to reset the profile the appropriate
   // message is sent to the browser.
-  test(TestNames.ResetProfileDialogAction, function() {
+  test(TestNames.ResetProfileDialogAction, async function() {
     // Open reset profile dialog.
     resetPage.$.resetProfile.click();
     flush();
@@ -98,53 +93,43 @@ suite('DialogTests', function() {
     assertTrue(!!showReportedSettingsLink);
     showReportedSettingsLink.click();
 
-    return resetPageBrowserProxy.whenCalled('showReportedSettings')
-        .then(function() {
-          // Ensure that the checkbox was not toggled as a result of
-          // clicking the link.
-          assertTrue(checkbox.checked);
-          assertFalse(dialog.$.reset.disabled);
-          assertFalse(dialog.$.resetSpinner.active);
-          dialog.$.reset.click();
-          assertTrue(dialog.$.reset.disabled);
-          assertTrue(dialog.$.cancel.disabled);
-          assertTrue(dialog.$.resetSpinner.active);
-          return resetPageBrowserProxy.whenCalled(
-              'performResetProfileSettings');
-        });
+    await resetPageBrowserProxy.whenCalled('showReportedSettings');
+    // Ensure that the checkbox was not toggled as a result of
+    // clicking the link.
+    assertTrue(checkbox.checked);
+    assertFalse(dialog.$.reset.disabled);
+    assertFalse(dialog.$.resetSpinner.active);
+    dialog.$.reset.click();
+    assertTrue(dialog.$.reset.disabled);
+    assertTrue(dialog.$.cancel.disabled);
+    assertTrue(dialog.$.resetSpinner.active);
+    await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
   });
 
-  function testResetRequestOrigin(expectedOrigin) {
+  async function testResetRequestOrigin(expectedOrigin) {
     const dialog = resetPage.$$('settings-reset-profile-dialog');
     assertTrue(!!dialog);
     dialog.$.reset.click();
-    return resetPageBrowserProxy.whenCalled('performResetProfileSettings')
-        .then(function(resetRequest) {
-          assertEquals(expectedOrigin, resetRequest);
-        });
+    const resetRequest =
+        await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
+    assertEquals(expectedOrigin, resetRequest);
   }
 
-  test(TestNames.ResetProfileDialogOriginUnknown, function() {
+  test(TestNames.ResetProfileDialogOriginUnknown, async function() {
     Router.getInstance().navigateTo(routes.RESET_DIALOG);
-    return resetPageBrowserProxy.whenCalled('onShowResetProfileDialog')
-        .then(function() {
-          return testResetRequestOrigin('');
-        });
+    await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
+    await testResetRequestOrigin('');
   });
 
-  test(TestNames.ResetProfileDialogOriginUserClick, function() {
+  test(TestNames.ResetProfileDialogOriginUserClick, async function() {
     resetPage.$.resetProfile.click();
-    return resetPageBrowserProxy.whenCalled('onShowResetProfileDialog')
-        .then(function() {
-          return testResetRequestOrigin('userclick');
-        });
+    await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
+    await testResetRequestOrigin('userclick');
   });
 
-  test(TestNames.ResetProfileDialogOriginTriggeredReset, function() {
+  test(TestNames.ResetProfileDialogOriginTriggeredReset, async function() {
     Router.getInstance().navigateTo(routes.TRIGGERED_RESET_DIALOG);
-    return resetPageBrowserProxy.whenCalled('onShowResetProfileDialog')
-        .then(function() {
-          return testResetRequestOrigin('triggeredreset');
-        });
+    await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
+    await testResetRequestOrigin('triggeredreset');
   });
 });

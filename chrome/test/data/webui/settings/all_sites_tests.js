@@ -127,51 +127,45 @@ suite('AllSites', function() {
     }
   }
 
-  test('All sites list populated', function() {
+  test('All sites list populated', async function() {
     setUpAllSites(prefsVarious);
     testElement.populateList_();
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      assertEquals(3, testElement.siteGroupMap.size);
+    await browserProxy.whenCalled('getAllSites');
+    assertEquals(3, testElement.siteGroupMap.size);
 
-      // Flush to be sure list container is populated.
-      flush();
-      const siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals(3, siteEntries.length);
-    });
+    // Flush to be sure list container is populated.
+    flush();
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(3, siteEntries.length);
   });
 
-  test('search query filters list', function() {
+  test('search query filters list', async function() {
     const SEARCH_QUERY = 'foo';
     setUpAllSites(prefsVarious);
     testElement.populateList_();
-    return browserProxy.whenCalled('getAllSites')
-        .then(() => {
-          // Flush to be sure list container is populated.
-          flush();
-          const siteEntries =
-              testElement.$.listContainer.querySelectorAll('site-entry');
-          assertEquals(3, siteEntries.length);
+    await browserProxy.whenCalled('getAllSites');
+    // Flush to be sure list container is populated.
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(3, siteEntries.length);
 
-          testElement.filter = SEARCH_QUERY;
-        })
-        .then(() => {
-          flush();
-          const siteEntries =
-              testElement.$.listContainer.querySelectorAll('site-entry');
-          const hiddenSiteEntries =
-              testElement.shadowRoot.querySelectorAll('site-entry[hidden]');
-          assertEquals(1, siteEntries.length - hiddenSiteEntries.length);
+    testElement.filter = SEARCH_QUERY;
+    flush();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    const hiddenSiteEntries =
+        testElement.shadowRoot.querySelectorAll('site-entry[hidden]');
+    assertEquals(1, siteEntries.length - hiddenSiteEntries.length);
 
-          for (let i = 0; i < siteEntries; ++i) {
-            const entry = siteEntries[i];
-            if (!hiddenSiteEntries.includes(entry)) {
-              assertTrue(entry.siteGroup.origins.some((origin) => {
-                return origin.includes(SEARCH_QUERY);
-              }));
-            }
-          }
-        });
+    for (let i = 0; i < siteEntries; ++i) {
+      const entry = siteEntries[i];
+      if (!hiddenSiteEntries.includes(entry)) {
+        assertTrue(entry.siteGroup.origins.some((origin) => {
+          return origin.includes(SEARCH_QUERY);
+        }));
+      }
+    }
   });
 
   test('can be sorted by most visited', function() {
@@ -217,58 +211,57 @@ suite('AllSites', function() {
     });
   });
 
-  test('can be sorted by storage', function() {
+  test('can be sorted by storage', async function() {
     localDataBrowserProxy.setCookieDetails(TEST_COOKIE_LIST);
     setUpAllSites(prefsVarious);
     testElement.populateList_();
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      flush();
-      let siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
-      // Add additional origins to SiteGroups with cookies to simulate their
-      // being grouped entries, plus add local storage.
-      siteEntries[0].siteGroup.origins[0].usage = 900;
-      siteEntries[1].siteGroup.origins.push(createOriginInfo('http://bar.com'));
-      siteEntries[1].siteGroup.origins[0].usage = 500;
-      siteEntries[1].siteGroup.origins[1].usage = 500;
-      siteEntries[2].siteGroup.origins.push(
-          createOriginInfo('http://google.com'));
+    await browserProxy.whenCalled('getAllSites');
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    // Add additional origins to SiteGroups with cookies to simulate their
+    // being grouped entries, plus add local storage.
+    siteEntries[0].siteGroup.origins[0].usage = 900;
+    siteEntries[1].siteGroup.origins.push(createOriginInfo('http://bar.com'));
+    siteEntries[1].siteGroup.origins[0].usage = 500;
+    siteEntries[1].siteGroup.origins[1].usage = 500;
+    siteEntries[2].siteGroup.origins.push(
+        createOriginInfo('http://google.com'));
 
-      testElement.onSortMethodChanged_();
-      siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-      // Verify all sites is not sorted by storage.
-      assertEquals(3, siteEntries.length);
-      assertEquals('foo.com', siteEntries[0].$.displayName.innerText.trim());
-      assertEquals('bar.com', siteEntries[1].$.displayName.innerText.trim());
-      assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
+    testElement.onSortMethodChanged_();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    // Verify all sites is not sorted by storage.
+    assertEquals(3, siteEntries.length);
+    assertEquals('foo.com', siteEntries[0].$.displayName.innerText.trim());
+    assertEquals('bar.com', siteEntries[1].$.displayName.innerText.trim());
+    assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
 
-      // Change the sort method, then verify all sites is now sorted by
-      // name.
-      testElement.root.querySelector('select').value = 'data-stored';
-      testElement.onSortMethodChanged_();
+    // Change the sort method, then verify all sites is now sorted by
+    // name.
+    testElement.root.querySelector('select').value = 'data-stored';
+    testElement.onSortMethodChanged_();
 
 
-      flush();
-      siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals(
-          'bar.com',
-          siteEntries[0]
-              .root.querySelector('#displayName .url-directionality')
-              .innerText.trim());
-      assertEquals(
-          'foo.com',
-          siteEntries[1]
-              .root.querySelector('#displayName .url-directionality')
-              .innerText.trim());
-      assertEquals(
-          'google.com',
-          siteEntries[2]
-              .root.querySelector('#displayName .url-directionality')
-              .innerText.trim());
-    });
+    flush();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(
+        'bar.com',
+        siteEntries[0]
+            .root.querySelector('#displayName .url-directionality')
+            .innerText.trim());
+    assertEquals(
+        'foo.com',
+        siteEntries[1]
+            .root.querySelector('#displayName .url-directionality')
+            .innerText.trim());
+    assertEquals(
+        'google.com',
+        siteEntries[2]
+            .root.querySelector('#displayName .url-directionality')
+            .innerText.trim());
   });
 
-  test('can be sorted by storage by passing URL param', function() {
+  test('can be sorted by storage by passing URL param', async function() {
     // The default sorting (most visited) will have the ascending storage
     // values. With the URL param, we expect the sites to be sorted by usage in
     // descending order.
@@ -277,116 +270,111 @@ suite('AllSites', function() {
     testElement = document.createElement('all-sites');
     document.body.appendChild(testElement);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      flush();
-      const siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
+    await browserProxy.whenCalled('getAllSites');
+    flush();
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
 
-      assertEquals(
-          'google.com',
-          siteEntries[0]
-              .root.querySelector('#displayName .url-directionality')
-              .innerText.trim());
-      assertEquals(
-          'bar.com',
-          siteEntries[1]
-              .root.querySelector('#displayName .url-directionality')
-              .innerText.trim());
-      assertEquals(
-          'foo.com',
-          siteEntries[2]
-              .root.querySelector('#displayName .url-directionality')
-              .innerText.trim());
-    });
+    assertEquals(
+        'google.com',
+        siteEntries[0]
+            .root.querySelector('#displayName .url-directionality')
+            .innerText.trim());
+    assertEquals(
+        'bar.com',
+        siteEntries[1]
+            .root.querySelector('#displayName .url-directionality')
+            .innerText.trim());
+    assertEquals(
+        'foo.com',
+        siteEntries[2]
+            .root.querySelector('#displayName .url-directionality')
+            .innerText.trim());
   });
 
-  test('can be sorted by name', function() {
+  test('can be sorted by name', async function() {
     setUpAllSites(prefsVarious);
     testElement.populateList_();
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      flush();
-      let siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
+    await browserProxy.whenCalled('getAllSites');
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
 
-      // Verify all sites is not sorted by name.
-      assertEquals(3, siteEntries.length);
-      assertEquals('foo.com', siteEntries[0].$.displayName.innerText.trim());
-      assertEquals('bar.com', siteEntries[1].$.displayName.innerText.trim());
-      assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
+    // Verify all sites is not sorted by name.
+    assertEquals(3, siteEntries.length);
+    assertEquals('foo.com', siteEntries[0].$.displayName.innerText.trim());
+    assertEquals('bar.com', siteEntries[1].$.displayName.innerText.trim());
+    assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
 
-      // Change the sort method, then verify all sites is now sorted by name.
-      testElement.root.querySelector('select').value = 'name';
-      testElement.onSortMethodChanged_();
-      flush();
-      siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals('bar.com', siteEntries[0].$.displayName.innerText.trim());
-      assertEquals('foo.com', siteEntries[1].$.displayName.innerText.trim());
-      assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
-    });
+    // Change the sort method, then verify all sites is now sorted by name.
+    testElement.root.querySelector('select').value = 'name';
+    testElement.onSortMethodChanged_();
+    flush();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals('bar.com', siteEntries[0].$.displayName.innerText.trim());
+    assertEquals('foo.com', siteEntries[1].$.displayName.innerText.trim());
+    assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
   });
 
-  test('can sort by name by passing URL param', function() {
+  test('can sort by name by passing URL param', async function() {
     document.body.innerHTML = '';
     setUpAllSites(prefsVarious, 'name');
     testElement = document.createElement('all-sites');
     document.body.appendChild(testElement);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      flush();
-      const siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
+    await browserProxy.whenCalled('getAllSites');
+    flush();
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
 
-      assertEquals('bar.com', siteEntries[0].$.displayName.innerText.trim());
-      assertEquals('foo.com', siteEntries[1].$.displayName.innerText.trim());
-      assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
-    });
+    assertEquals('bar.com', siteEntries[0].$.displayName.innerText.trim());
+    assertEquals('foo.com', siteEntries[1].$.displayName.innerText.trim());
+    assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
   });
 
-  test('merging additional SiteGroup lists works', function() {
+  test('merging additional SiteGroup lists works', async function() {
     setUpAllSites(prefsVarious);
     testElement.populateList_();
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      flush();
-      let siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals(3, siteEntries.length);
+    await browserProxy.whenCalled('getAllSites');
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(3, siteEntries.length);
 
-      // Pretend an additional set of SiteGroups were added.
-      const fooEtldPlus1 = 'foo.com';
-      const addEtldPlus1 = 'additional-site.net';
-      const fooOrigin = 'https://login.foo.com';
-      const addOrigin = 'http://www.additional-site.net';
-      const STORAGE_SITE_GROUP_LIST = /** @type {!Array{!SiteGroup}}*/ ([
-        {
-          // Test merging an existing site works, with overlapping origin lists.
-          'etldPlus1': fooEtldPlus1,
-          'origins': [
-            createOriginInfo(fooOrigin),
-            createOriginInfo('https://foo.com'),
-          ],
-        },
-        {
-          // Test adding a new site entry works.
-          'etldPlus1': addEtldPlus1,
-          'origins': [createOriginInfo(addOrigin)],
-        }
-      ]);
-      testElement.onStorageListFetched(STORAGE_SITE_GROUP_LIST);
+    // Pretend an additional set of SiteGroups were added.
+    const fooEtldPlus1 = 'foo.com';
+    const addEtldPlus1 = 'additional-site.net';
+    const fooOrigin = 'https://login.foo.com';
+    const addOrigin = 'http://www.additional-site.net';
+    const STORAGE_SITE_GROUP_LIST = /** @type {!Array{!SiteGroup}}*/ ([
+      {
+        // Test merging an existing site works, with overlapping origin lists.
+        'etldPlus1': fooEtldPlus1,
+        'origins': [
+          createOriginInfo(fooOrigin),
+          createOriginInfo('https://foo.com'),
+        ],
+      },
+      {
+        // Test adding a new site entry works.
+        'etldPlus1': addEtldPlus1,
+        'origins': [createOriginInfo(addOrigin)],
+      }
+    ]);
+    testElement.onStorageListFetched(STORAGE_SITE_GROUP_LIST);
 
-      flush();
-      siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals(4, siteEntries.length);
+    flush();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(4, siteEntries.length);
 
-      assertEquals(fooEtldPlus1, siteEntries[0].siteGroup.etldPlus1);
-      assertEquals(2, siteEntries[0].siteGroup.origins.length);
-      assertEquals(fooOrigin, siteEntries[0].siteGroup.origins[0].origin);
-      assertEquals(
-          'https://foo.com', siteEntries[0].siteGroup.origins[1].origin);
+    assertEquals(fooEtldPlus1, siteEntries[0].siteGroup.etldPlus1);
+    assertEquals(2, siteEntries[0].siteGroup.origins.length);
+    assertEquals(fooOrigin, siteEntries[0].siteGroup.origins[0].origin);
+    assertEquals('https://foo.com', siteEntries[0].siteGroup.origins[1].origin);
 
-      assertEquals(addEtldPlus1, siteEntries[3].siteGroup.etldPlus1);
-      assertEquals(1, siteEntries[3].siteGroup.origins.length);
-      assertEquals(addOrigin, siteEntries[3].siteGroup.origins[0].origin);
-    });
+    assertEquals(addEtldPlus1, siteEntries[3].siteGroup.etldPlus1);
+    assertEquals(1, siteEntries[3].siteGroup.origins.length);
+    assertEquals(addOrigin, siteEntries[3].siteGroup.origins[0].origin);
   });
 
   function resetSettingsViaOverflowMenu(buttonType) {

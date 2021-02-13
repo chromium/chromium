@@ -37,48 +37,28 @@ suite('SiteDataTest', function() {
     siteData.remove();
   });
 
-  test('remove button (trash) calls remove on origin', function() {
-    const promise =
-        eventToPromise('site-data-list-complete', siteData)
-            .then(() => {
-              flush();
-              const button =
-                  siteData.$$('site-data-entry').$$('.icon-delete-gray');
-              assertTrue(!!button);
-              assertEquals('CR-ICON-BUTTON', button.tagName);
-              button.click();
-              return testBrowserProxy.whenCalled('removeSite');
-            })
-            .then(function(path) {
-              assertEquals('Hello', path);
-              return testMetricsBrowserProxy.whenCalled(
-                  'recordSettingsPageHistogram');
-            })
-            .then(metric => {
-              assertEquals(
-                  PrivacyElementInteractions.SITE_DATA_REMOVE_SITE, metric);
-            });
+  test('remove button (trash) calls remove on origin', async function() {
     const sites = [
       {site: 'Hello', localData: 'Cookiez!'},
     ];
     testBrowserProxy.setCookieList(sites);
     document.body.appendChild(siteData);
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
-    return promise;
+
+    await eventToPromise('site-data-list-complete', siteData);
+    flush();
+    const button = siteData.$$('site-data-entry').$$('.icon-delete-gray');
+    assertTrue(!!button);
+    assertEquals('CR-ICON-BUTTON', button.tagName);
+    button.click();
+    const path = await testBrowserProxy.whenCalled('removeSite');
+    assertEquals('Hello', path);
+    const metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.SITE_DATA_REMOVE_SITE, metric);
   });
 
-  test('remove button hidden when no search results', function() {
-    const promise = eventToPromise('site-data-list-complete', siteData)
-                        .then(() => {
-                          assertEquals(2, siteData.$.list.items.length);
-                          const promise2 = eventToPromise(
-                              'site-data-list-complete', siteData);
-                          siteData.filter = 'Hello';
-                          return promise2;
-                        })
-                        .then(() => {
-                          assertEquals(1, siteData.$.list.items.length);
-                        });
+  test('remove button hidden when no search results', async function() {
     const sites = [
       {site: 'Hello', localData: 'Cookiez!'},
       {site: 'World', localData: 'Cookiez!'},
@@ -86,22 +66,27 @@ suite('SiteDataTest', function() {
     testBrowserProxy.setCookieList(sites);
     document.body.appendChild(siteData);
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
-    return promise;
+
+    await eventToPromise('site-data-list-complete', siteData);
+    assertEquals(2, siteData.$.list.items.length);
+    siteData.filter = 'Hello';
+    await eventToPromise('site-data-list-complete', siteData);
+    assertEquals(1, siteData.$.list.items.length);
   });
 
-  test('calls reloadCookies() when created', function() {
+  test('calls reloadCookies() when created', async function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
     document.body.appendChild(siteData);
     Router.getInstance().navigateTo(routes.COOKIES);
-    return testBrowserProxy.whenCalled('reloadCookies');
+    await testBrowserProxy.whenCalled('reloadCookies');
   });
 
-  test('calls reloadCookies() when visited again', function() {
+  test('calls reloadCookies() when visited again', async function() {
     document.body.appendChild(siteData);
     Router.getInstance().navigateTo(routes.COOKIES);
     testBrowserProxy.reset();
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
-    return testBrowserProxy.whenCalled('reloadCookies');
+    await testBrowserProxy.whenCalled('reloadCookies');
   });
 
   test('no call to reloadCookies() on same route navigation', async function() {

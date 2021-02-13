@@ -209,7 +209,7 @@ suite(extension_item_tests.suiteName, function() {
   /** Tests that the reload button properly fires the load-error event. */
   test(
       assert(extension_item_tests.TestNames.FailedReloadFiresLoadError),
-      function() {
+      async function() {
         item.set('inDevMode', true);
         item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
         flush();
@@ -239,21 +239,15 @@ suite(extension_item_tests.suiteName, function() {
         };
 
         item.$$('#dev-reload-button').click();
-        return proxyDelegate.whenCalled('reloadItem')
-            .then(function(id) {
-              expectEquals(item.data.id, id);
-              return verifyEventPromise(false);
-            })
-            .then(function() {
-              proxyDelegate.resetResolver('reloadItem');
-              proxyDelegate.setForceReloadItemError(true);
-              item.$$('#dev-reload-button').click();
-              return proxyDelegate.whenCalled('reloadItem');
-            })
-            .then(function(id) {
-              expectEquals(item.data.id, id);
-              return verifyEventPromise(true);
-            });
+        let id = await proxyDelegate.whenCalled('reloadItem');
+        expectEquals(item.data.id, id);
+        await verifyEventPromise(false);
+        proxyDelegate.resetResolver('reloadItem');
+        proxyDelegate.setForceReloadItemError(true);
+        item.$$('#dev-reload-button').click();
+        id = await proxyDelegate.whenCalled('reloadItem');
+        expectEquals(item.data.id, id);
+        return verifyEventPromise(true);
       });
 
   test(assert(extension_item_tests.TestNames.Warnings), function() {

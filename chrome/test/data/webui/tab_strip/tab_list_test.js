@@ -103,7 +103,7 @@ suite('TabList', () => {
     });
   }
 
-  setup(() => {
+  setup(async () => {
     document.documentElement.dir = 'ltr';
     document.body.innerHTML = '';
     document.body.style.margin = 0;
@@ -130,7 +130,7 @@ suite('TabList', () => {
         document.createElement('tabstrip-tab-list'));
     document.body.appendChild(tabList);
 
-    return testTabsApiProxy.whenCalled('getTabs');
+    await testTabsApiProxy.whenCalled('getTabs');
   });
 
   teardown(() => {
@@ -974,9 +974,9 @@ suite('TabList', () => {
     assertEquals(tabList.scrollLeft, 0);
   });
 
-  test('clicking on new tab button opens a new tab', () => {
+  test('clicking on new tab button opens a new tab', async () => {
     tabList.shadowRoot.querySelector('#newTabButton').click();
-    return testTabsApiProxy.whenCalled('createNewTab');
+    await testTabsApiProxy.whenCalled('createNewTab');
   });
 
   test('PreventsDraggingWhenOnlyOneTab', () => {

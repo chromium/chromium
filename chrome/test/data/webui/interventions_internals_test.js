@@ -91,7 +91,7 @@ suite('InterventionsInternalsUITest', function() {
     window.testPageHandler = testPageHandler;
   });
 
-  test('GetPreviewsEnabled', () => {
+  test('GetPreviewsEnabled', async () => {
     // Setup testPageHandler behavior.
     let testArray = [
       {
@@ -114,22 +114,17 @@ suite('InterventionsInternalsUITest', function() {
     testPageHandler.setTestingPreviewsModeMap(testArray);
     getSetupFnResolver().resolve();
 
-    return getSetupFnResolver()
-        .promise
-        .then(() => {
-          return testPageHandler.whenCalled('getPreviewsEnabled');
-        })
-        .then(() => {
-          testArray.forEach((value) => {
-            let expected = value.description + ': ' +
-                (value.enabled ? 'Enabled' : 'Disabled');
-            let actual = document.querySelector('#' + value.htmlId).textContent;
-            assertEquals(expected, actual);
-          });
-        });
+    await getSetupFnResolver().promise;
+    await testPageHandler.whenCalled('getPreviewsEnabled');
+    testArray.forEach((value) => {
+      let expected =
+          value.description + ': ' + (value.enabled ? 'Enabled' : 'Disabled');
+      let actual = document.querySelector('#' + value.htmlId).textContent;
+      assertEquals(expected, actual);
+    });
   });
 
-  test('GetPreviewsFlagsDetails', () => {
+  test('GetPreviewsFlagsDetails', async () => {
     // Setup testPageHandler behavior.
     let testArray = [
       {
@@ -155,22 +150,16 @@ suite('InterventionsInternalsUITest', function() {
     testPageHandler.setTestingPreviewsFlagsMap(testArray);
     getSetupFnResolver().resolve();
 
-    return getSetupFnResolver()
-        .promise
-        .then(() => {
-          return testPageHandler.whenCalled('getPreviewsFlagsDetails');
-        })
-        .then(() => {
-          testArray.forEach((value) => {
-            let key = value.htmlId;
-            let actualDescription =
-                document.querySelector('#' + key + 'Description');
-            let actualValue = document.querySelector('#' + key + 'Value');
-            assertEquals(value.description, actualDescription.textContent);
-            assertEquals(value.link, actualDescription.getAttribute('href'));
-            assertEquals(value.value, actualValue.textContent);
-          });
-        });
+    await getSetupFnResolver().promise;
+    await testPageHandler.whenCalled('getPreviewsFlagsDetails');
+    testArray.forEach((value) => {
+      let key = value.htmlId;
+      let actualDescription = document.querySelector('#' + key + 'Description');
+      let actualValue = document.querySelector('#' + key + 'Value');
+      assertEquals(value.description, actualDescription.textContent);
+      assertEquals(value.link, actualDescription.getAttribute('href'));
+      assertEquals(value.value, actualValue.textContent);
+    });
   });
 
   test('LogNewMessage', () => {
