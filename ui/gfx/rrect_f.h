@@ -105,7 +105,7 @@ class GEOMETRY_SKIA_EXPORT RRectF {
     kSimple,  // Non-zero width and height, X radii all equal and non-zero, Y
               // radii all equal and non-zero, and x_rad != y_rad.
     kOval,    // Non-zero width and height, X radii all equal to width/2, and Y
-              // radii all equal to height/2.
+              // radii all equal to height/2, and x_rad != y_rad.
     kComplex,  // Non-zero width and height, and arbitrary (non-equal) radii.
   };
   Type GetType() const;

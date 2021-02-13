@@ -63,6 +63,8 @@ TEST(RRectFTest, RRectTypes) {
   EXPECT_EQ(a.GetType(), RRectF::Type::kSingle);
   a = RRectF(40, 50, 60, 70, 5, 5);
   EXPECT_EQ(a.GetType(), RRectF::Type::kSingle);
+  a = RRectF(40, 50, 60, 60, 30, 30);
+  EXPECT_EQ(a.GetType(), RRectF::Type::kSingle);
   a = RRectF(40, 50, 60, 70, 6, 3);
   EXPECT_EQ(a.GetType(), RRectF::Type::kSimple);
   a = RRectF(40, 50, 60, 70, 30, 3);
