@@ -55,6 +55,10 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
     return trim_arc_on_memory_pressure_;
   }
 
+  virtual void TrimReceivedArcProcesses(
+      int allowed_to_trim,
+      arc::ArcProcessService::OptionalArcProcessList arc_processes);
+
  protected:
   friend class WorkingSetTrimmerPolicyChromeOSTest;
 
@@ -75,9 +79,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   // TrimArcProcesses will walk procfs looking for ARC container processes which
   // can be trimmed. These are virtual for testing.
   virtual void TrimArcProcesses();
-  virtual void TrimReceivedArcProcesses(
-      int allowed_to_trim,
-      arc::ArcProcessService::OptionalArcProcessList arc_processes);
   virtual bool IsArcProcessEligibleForReclaim(
       const arc::ArcProcess& arc_process);
   virtual bool TrimArcProcess(base::ProcessId pid);
