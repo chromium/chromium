@@ -111,6 +111,7 @@ TaskManagerImpl::TaskManagerImpl()
 }
 
 TaskManagerImpl::~TaskManagerImpl() {
+  StopUpdating();
 }
 
 // static
