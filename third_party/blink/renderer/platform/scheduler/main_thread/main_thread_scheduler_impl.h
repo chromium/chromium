@@ -143,6 +143,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::array<base::sequence_manager::TaskQueue::QueuePriority,
                net::RequestPrioritySize::NUM_PRIORITIES>
         net_to_blink_priority;
+
+    // If enabled, base::ThreadTaskRunnerHandle::Get() and
+    // base::SequencedTaskRunnerHandle::Get() returns the current active
+    // per-ASG task runner instead of the per-thread task runner.
+    bool mbi_override_task_runner_handle;
   };
 
   static const char* UseCaseToString(UseCase use_case);
