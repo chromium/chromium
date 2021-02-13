@@ -12,6 +12,7 @@ import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/util/branding.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
@@ -1224,4 +1225,12 @@ source_set("base_interactive_ui_tests") {
       "//ui/events:events",
     ]
   }
+}
+
+fuzzer_test("file_info_fuzzer") {
+  sources = [ "clipboard/file_info_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//ui/base/clipboard:file_info",
+  ]
 }
