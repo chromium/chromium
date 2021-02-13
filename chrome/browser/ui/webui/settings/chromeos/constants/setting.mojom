@@ -185,6 +185,7 @@ enum Setting {
   kChangeAuthPinV2 = 1110,
   kAddFingerprintV2 = 1111,
   kRemoveFingerprintV2 = 1112,
+  kPeripheralDataAccessProtection = 1113,
 
   // Languages and Input section.
   kAddLanguage = 1200,

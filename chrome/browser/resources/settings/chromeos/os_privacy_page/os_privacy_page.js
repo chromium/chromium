@@ -15,6 +15,7 @@ Polymer({
     DeepLinkingBehavior,
     settings.RouteObserverBehavior,
     LockStateBehavior,
+    PrefsBehavior,
   ],
 
   properties: {
@@ -104,6 +105,32 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /**
+     * True if Pciguard UI is enabled.
+     * @private
+     */
+    isPciguardUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('pciguardUiEnabled');
+      },
+      readOnly: true,
+    },
+
+    /** @private */
+    showDisableProtectionDialog_: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  /** @override */
+  attached() {
+    if (this.isPciguardUiEnabled_) {
+      this.supportedSettingIds.add(
+          chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection);
+    }
   },
 
   /**
@@ -232,5 +259,20 @@ Polymer({
     this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
       this.authToken_ = undefined;
     }, lifetimeMs);
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onToggleChanged_(e) {
+    if (!e.target.checked) {
+      this.showDisableProtectionDialog_ = true;
+    }
+  },
+
+  /** @private */
+  onDisableProtectionDialogClosed_() {
+    this.showDisableProtectionDialog_ = false;
   },
 });

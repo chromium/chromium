@@ -1,11 +1,16 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="peripheral_data_access_protection_dialog.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../os_people_page/users_page.html">
@@ -62,6 +67,19 @@
             label="$i18n{enableContentProtectionAttestation}"
             deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
         </settings-toggle-button>
+        <div class="hr"></div>
+        <!-- TODO(jimmyxgong): Update the url with the real one -->
+        <template is="dom-if" if="[[isPciguardUiEnabled_]]">
+          <settings-toggle-button
+              id="peripheral-data-access-protection"
+              pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
+              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+              sub-label="$i18n{peripheralDataAccessProtectionToggleDescription}"
+              deep-link-focus-id$="[[Setting.kPeripheralDataAccessProtection]]"
+              learn-more-url="url"
+              on-settings-boolean-control-change="onToggleChanged_">
+          </settings-toggle-button>
+        </template>
       </div>
 
       <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
@@ -110,6 +128,11 @@
       </template>
     </template>
 
+    <template is="dom-if" if="[[showDisableProtectionDialog_]]" restamp>
+      <settings-peripheral-data-access-protection-dialog
+          on-close="onDisableProtectionDialogClosed_" prefs="{{prefs}}">
+      </settings-peripheral-data-access-protection-dialog>
+    </template>
   </template>
   <script src="os_privacy_page.js"></script>
 </dom-module>

@@ -140,6 +140,18 @@ const std::vector<SearchConcept>& GetRemoveFingerprintSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetPciguardSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_PRIVACY_PERIPHERAL_DATA_ACCESS_PROTECTION,
+       mojom::kPrivacyAndSecuritySectionPath,
+       mojom::SearchResultIcon::kShield,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPeripheralDataAccessProtection}},
+  });
+  return *tags;
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const std::vector<SearchConcept>& GetPrivacyGoogleChromeSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
@@ -182,6 +194,10 @@ PrivacySection::PrivacySection(Profile* profile,
                             base::Unretained(this)));
     UpdateRemoveFingerprintSearchTags();
   }
+
+  if (chromeos::features::IsPciguardUiEnabled()) {
+    updater.AddSearchTags(GetPciguardSearchConcepts());
+  }
 }
 
 PrivacySection::~PrivacySection() = default;
@@ -196,6 +212,22 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableSuggestedContent", IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
       {"enableSuggestedContentDesc",
        IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESC},
+      {"peripheralDataAccessProtectionToggleTitle",
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE},
+      {"peripheralDataAccessProtectionToggleDescription",
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION},
+      {"peripheralDataAccessProtectionWarningTitle",
+       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE},
+      {"peripheralDataAccessProtectionWarningDescription",
+       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION},
+      {"peripheralDataAccessProtectionDisablingTitle",
+       IDS_OS_SETTINGS_DISABLING_DATA_ACCESS_PROTECTION_DIALOG_TITLE},
+      {"peripheralDataAccessProtectionDisablingDescription",
+       IDS_OS_SETTINGS_DISABLING_DATA_ACCESS_PROTECTION_DIALOG_DESCRIPTION},
+      {"peripheralDataAccessProtectionCancelButton",
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL},
+      {"peripheralDataAccessProtectionDisableButton",
+       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -208,6 +240,10 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
+
+  html_source->AddBoolean("pciguardUiEnabled",
+                          chromeos::features::IsPciguardUiEnabled());
+
   ::settings::AddPersonalizationOptionsStrings(html_source);
 }
 
@@ -247,6 +283,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   static constexpr mojom::Setting kSecurityAndSignInSettings[] = {
       mojom::Setting::kLockScreenV2,
       mojom::Setting::kChangeAuthPinV2,
+      mojom::Setting::kPeripheralDataAccessProtection,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSecurityAndSignInV2,
                             kSecurityAndSignInSettings, generator);

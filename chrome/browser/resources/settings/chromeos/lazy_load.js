@@ -46,6 +46,8 @@ import './os_printing_page/cups_saved_printers.m.js';
 import './os_printing_page/cups_settings_add_printer_dialog.m.js';
 import './os_printing_page/os_printing_page.m.js';
 import './os_privacy_page/os_privacy_page.m.js';
+import './os_privacy_page/peripheral_data_access_protection_dialog.m.js';
+import './os_reset_page/os_reset_page.m.js';
 import './os_reset_page/os_powerwash_dialog.m.js';
 import './os_reset_page/os_reset_page.m.js';
 import './os_files_page/smb_shares_page.m.js';
