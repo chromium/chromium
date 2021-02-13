@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
@@ -246,35 +247,6 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
 }
 
 // static
-std::unique_ptr<ContentAction> RequestContentScript::CreateForTest(
-    DeclarativeUserScriptSet* script_set,
-    const Extension* extension,
-    const base::Value& json_action,
-    std::string* error) {
-  // Simulate ContentAction-level initialization. Check that instance type is
-  // RequestContentScript.
-  error->clear();
-  const base::DictionaryValue* action_dict = NULL;
-  std::string instance_type;
-  if (!(json_action.GetAsDictionary(&action_dict) &&
-        action_dict->GetString(declarative_content_constants::kInstanceType,
-                               &instance_type) &&
-        instance_type ==
-            std::string(declarative_content_constants::kRequestContentScript)))
-    return std::unique_ptr<ContentAction>();
-
-  // Normal RequestContentScript data initialization.
-  ScriptData script_data;
-  if (!InitScriptData(action_dict, error, &script_data))
-    return std::unique_ptr<ContentAction>();
-
-  // Inject provided DeclarativeUserScriptSet, rather than looking it up
-  // using a BrowserContext.
-  return base::WrapUnique(
-      new RequestContentScript(script_set, extension, script_data));
-}
-
-// static
 bool RequestContentScript::InitScriptData(const base::DictionaryValue* dict,
                                           std::string* error,
                                           ScriptData* script_data) {
@@ -321,25 +293,16 @@ RequestContentScript::RequestContentScript(
   HostID host_id(HostID::EXTENSIONS, extension->id());
   InitScript(host_id, extension, script_data);
 
-  script_set_ = ExtensionSystem::Get(browser_context)
-                    ->user_script_manager()
-                    ->GetDeclarativeUserScriptSetByID(host_id);
-  AddScript();
-}
-
-RequestContentScript::RequestContentScript(DeclarativeUserScriptSet* script_set,
-                                           const Extension* extension,
-                                           const ScriptData& script_data) {
-  HostID host_id(HostID::EXTENSIONS, extension->id());
-  InitScript(host_id, extension, script_data);
-
-  script_set_ = script_set;
+  script_loader_ = ExtensionSystem::Get(browser_context)
+                       ->user_script_manager()
+                       ->GetUserScriptLoaderForExtension(extension->id());
   AddScript();
 }
 
 RequestContentScript::~RequestContentScript() {
-  DCHECK(script_set_);
-  script_set_->RemoveScript(UserScriptIDPair(script_.id(), script_.host_id()));
+  DCHECK(script_loader_);
+  script_loader_->RemoveScripts(
+      {UserScriptIDPair(script_.id(), script_.host_id())});
 }
 
 void RequestContentScript::InitScript(const HostID& host_id,
@@ -370,8 +333,10 @@ void RequestContentScript::InitScript(const HostID& host_id,
 }
 
 void RequestContentScript::AddScript() {
-  DCHECK(script_set_);
-  script_set_->AddScript(UserScript::CopyMetadataFrom(script_));
+  DCHECK(script_loader_);
+  auto scripts = std::make_unique<UserScriptList>();
+  scripts->push_back(UserScript::CopyMetadataFrom(script_));
+  script_loader_->AddScripts(std::move(scripts));
 }
 
 void RequestContentScript::Apply(const ApplyInfo& apply_info) const {

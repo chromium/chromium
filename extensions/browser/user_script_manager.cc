@@ -5,15 +5,15 @@
 #include "extensions/browser/user_script_manager.h"
 
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/declarative_user_script_set.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/user_script_loader.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 
 namespace extensions {
 
 UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
     : manifest_script_loader_(browser_context,
-                              HostID(),
+                              ExtensionId(),
                               true /* listen_for_extension_system_loaded */),
       browser_context_(browser_context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
@@ -21,14 +21,30 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
 
 UserScriptManager::~UserScriptManager() = default;
 
-DeclarativeUserScriptSet* UserScriptManager::GetDeclarativeUserScriptSetByID(
+UserScriptLoader* UserScriptManager::GetUserScriptLoaderByID(
     const HostID& host_id) {
-  auto it = declarative_user_script_sets_.find(host_id);
+  switch (host_id.type()) {
+    case HostID::EXTENSIONS:
+      return GetUserScriptLoaderForExtension(host_id.id());
+    case HostID::WEBUI:
+      return GetUserScriptLoaderForWebUI(GURL(host_id.id()));
+  }
+}
 
-  if (it != declarative_user_script_sets_.end())
-    return it->second.get();
+ExtensionUserScriptLoader* UserScriptManager::GetUserScriptLoaderForExtension(
+    const ExtensionId& extension_id) {
+  // TODO(crbug.com/1168627): This should be created when the extension loads.
+  auto it = extension_script_loaders_.find(extension_id);
+  return (it == extension_script_loaders_.end())
+             ? CreateExtensionUserScriptLoader(extension_id)
+             : it->second.get();
+}
 
-  return CreateDeclarativeUserScriptSet(host_id);
+WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
+    const GURL& url) {
+  auto it = webui_script_loaders_.find(url);
+  return (it == webui_script_loaders_.end()) ? CreateWebUIUserScriptLoader(url)
+                                             : it->second.get();
 }
 
 void UserScriptManager::OnExtensionLoaded(
@@ -48,9 +64,8 @@ void UserScriptManager::OnExtensionUnloaded(
     scripts_to_remove.insert(UserScriptIDPair(script->id(), script->host_id()));
   manifest_script_loader_.RemoveScripts(scripts_to_remove);
 
-  auto it = declarative_user_script_sets_.find(
-      HostID(HostID::EXTENSIONS, extension->id()));
-  if (it != declarative_user_script_sets_.end())
+  auto it = extension_script_loaders_.find(extension->id());
+  if (it != extension_script_loaders_.end())
     it->second->ClearScripts();
 }
 
@@ -71,12 +86,23 @@ std::unique_ptr<UserScriptList> UserScriptManager::GetManifestScriptsMetadata(
   return script_vector;
 }
 
-DeclarativeUserScriptSet* UserScriptManager::CreateDeclarativeUserScriptSet(
-    const HostID& host_id) {
-  // Inserts a new DeclarativeUserScriptSet and returns a ptr to it.
-  return declarative_user_script_sets_
-      .emplace(host_id, std::make_unique<DeclarativeUserScriptSet>(
-                            browser_context_, host_id))
+ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
+    const ExtensionId& extension_id) {
+  // Inserts a new ExtensionUserScriptLoader and returns a ptr to it.
+  return extension_script_loaders_
+      .emplace(extension_id,
+               std::make_unique<ExtensionUserScriptLoader>(
+                   browser_context_, extension_id,
+                   false /* listen_for_extension_system_loaded */))
+      .first->second.get();
+}
+
+WebUIUserScriptLoader* UserScriptManager::CreateWebUIUserScriptLoader(
+    const GURL& url) {
+  // Inserts a new WebUIUserScriptLoader and returns a ptr to it.
+  return webui_script_loaders_
+      .emplace(url,
+               std::make_unique<WebUIUserScriptLoader>(browser_context_, url))
       .first->second.get();
 }
 

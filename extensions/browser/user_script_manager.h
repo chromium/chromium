@@ -13,16 +13,18 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/web_ui_user_script_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/host_id.h"
 #include "extensions/common/user_script.h"
+#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
 }
 
 namespace extensions {
-class DeclarativeUserScriptSet;
+class UserScriptLoader;
 
 // Manages user scripts for all extensions and webview scripts from WebUI pages.
 // Owns one UserScriptLoader for manifest extension scripts, and a map of HostID
@@ -40,15 +42,14 @@ class UserScriptManager : public ExtensionRegistryObserver {
     return &manifest_script_loader_;
   }
 
-  // Gets the user script set for declarative scripts by the given HostID.
-  // If one does not exist, a new object will be created.
-  DeclarativeUserScriptSet* GetDeclarativeUserScriptSetByID(
-      const HostID& host_id);
+  UserScriptLoader* GetUserScriptLoaderByID(const HostID& host_id);
+
+  ExtensionUserScriptLoader* GetUserScriptLoaderForExtension(
+      const ExtensionId& extension_id);
+
+  WebUIUserScriptLoader* GetUserScriptLoaderForWebUI(const GURL& url);
 
  private:
-  using UserScriptSetMap =
-      std::map<HostID, std::unique_ptr<DeclarativeUserScriptSet>>;
-
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
@@ -62,21 +63,32 @@ class UserScriptManager : public ExtensionRegistryObserver {
   std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
       const Extension* extension);
 
-  // Creates a DeclarativeUserScriptSet object.
-  DeclarativeUserScriptSet* CreateDeclarativeUserScriptSet(
-      const HostID& host_id);
+  // Creates a ExtensionUserScriptLoader object.
+  // TODO(crbug.com/1168627): Remove this method once ExtensionUserScriptLoader
+  // is created only when an extension loads.
+  ExtensionUserScriptLoader* CreateExtensionUserScriptLoader(
+      const ExtensionId& extension_id);
 
-  // A map of DeclarativeUserScriptSets for each host. Each set is lazily
-  // initialized, and contains scripts from APIs for an extension host, or
-  // webview scripts for a WebUI host.
-  // TODO(crbug.com/1168627): Have one UserScriptLoader per extension, and split
-  // WebUI loaders into another set.
-  UserScriptSetMap declarative_user_script_sets_;
+  // Creates a WebUIUserScriptLoader object.
+  WebUIUserScriptLoader* CreateWebUIUserScriptLoader(const GURL& url);
 
   // Script loader for manifest extension scripts that handles loading contents
   // of scripts into shared memory and notifying renderers of scripts in shared
   // memory.
   ExtensionUserScriptLoader manifest_script_loader_;
+
+  // A map of ExtensionUserScriptLoader for each extension host, with one loader
+  // per extension. Currently, each loader is lazily initialized and contains
+  // scripts from APIs webview tags.
+  // TODO(crbug.com/1168627): Put manifest scripts in here too and remove
+  // |manifest_script_loader_|.
+  std::map<ExtensionId, std::unique_ptr<ExtensionUserScriptLoader>>
+      extension_script_loaders_;
+
+  // A map of WebUIUserScriptLoader for each WebUI host, each loader contains
+  // webview content scripts for the corresponding WebUI page and is lazily
+  // initialized.
+  std::map<GURL, std::unique_ptr<WebUIUserScriptLoader>> webui_script_loaders_;
 
   content::BrowserContext* const browser_context_;
 

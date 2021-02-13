@@ -233,20 +233,21 @@ void LoadScriptsOnFileTaskRunner(
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
-    const HostID& host_id,
+    const ExtensionId& extension_id,
     bool listen_for_extension_system_loaded)
     : ExtensionUserScriptLoader(
           browser_context,
-          host_id,
+          extension_id,
           listen_for_extension_system_loaded,
           ExtensionSystem::Get(browser_context)->content_verifier()) {}
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
-    const HostID& host_id,
+    const ExtensionId& extension_id,
     bool listen_for_extension_system_loaded,
     scoped_refptr<ContentVerifier> content_verifier)
-    : UserScriptLoader(browser_context, host_id),
+    : UserScriptLoader(browser_context,
+                       HostID(HostID::EXTENSIONS, extension_id)),
       content_verifier_(std::move(content_verifier)) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
   if (listen_for_extension_system_loaded) {

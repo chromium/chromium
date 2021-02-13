@@ -35,10 +35,10 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
   // the Extension System, e.g, when constructs UserScriptManager in
   // ExtensionSystemImpl.
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
-                            const HostID& host_id,
+                            const ExtensionId& extension_id,
                             bool listen_for_extension_system_loaded);
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
-                            const HostID& host_id,
+                            const ExtensionId& extension_id,
                             bool listen_for_extension_system_loaded,
                             scoped_refptr<ContentVerifier> content_verifier);
   ~ExtensionUserScriptLoader() override;

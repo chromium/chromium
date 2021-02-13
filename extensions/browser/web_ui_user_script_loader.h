@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "extensions/browser/user_script_loader.h"
 
+class GURL;
 class WebUIURLFetcher;
 
 namespace content {
@@ -24,7 +25,7 @@ class BrowserContext;
 class WebUIUserScriptLoader : public extensions::UserScriptLoader {
  public:
   WebUIUserScriptLoader(content::BrowserContext* browser_context,
-                        const HostID& host_id);
+                        const GURL& url);
   ~WebUIUserScriptLoader() override;
 
  private:

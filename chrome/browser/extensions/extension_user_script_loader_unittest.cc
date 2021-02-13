@@ -60,8 +60,7 @@ class ExtensionUserScriptLoaderTest : public testing::Test {
 // Test that we get notified even when there are no scripts.
 TEST_F(ExtensionUserScriptLoaderTest, NoScripts) {
   TestingProfile profile;
-  HostID host_id;
-  ExtensionUserScriptLoader loader(&profile, host_id,
+  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   ContentScriptLoadWaiter waiter(&loader);
@@ -208,7 +207,7 @@ TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
   user_scripts->push_back(std::move(user_script));
 
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, HostID(),
+  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
@@ -231,7 +230,7 @@ TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
   user_scripts->push_back(std::move(user_script));
 
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, HostID(),
+  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
@@ -255,7 +254,7 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
   user_scripts->push_back(std::move(user_script));
 
   TestingProfile profile;
-  ExtensionUserScriptLoader loader(&profile, HostID(),
+  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));

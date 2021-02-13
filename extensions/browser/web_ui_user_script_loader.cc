@@ -17,6 +17,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -45,8 +46,9 @@ struct WebUIUserScriptLoader::UserScriptRenderInfo {
 
 WebUIUserScriptLoader::WebUIUserScriptLoader(
     content::BrowserContext* browser_context,
-    const HostID& host_id)
-    : UserScriptLoader(browser_context, host_id), complete_fetchers_(0) {
+    const GURL& url)
+    : UserScriptLoader(browser_context, HostID(HostID::WEBUI, url.spec())),
+      complete_fetchers_(0) {
   SetReady(true);
 }
 
