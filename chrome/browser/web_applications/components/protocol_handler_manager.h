@@ -24,9 +24,17 @@ class ProtocolHandlerManager {
   void SetSubsystems(AppRegistrar* registrar);
   void Start();
 
+  // Get the list of handlers for the given protocol.
+  std::vector<ProtocolHandler> GetHandlersFor(
+      const std::string& protocol) const;
+
   // Gets all protocol handlers for |app_id|.
   virtual std::vector<apps::ProtocolHandlerInfo> GetAppProtocolHandlerInfos(
       const std::string& app_id) const = 0;
+
+  // Gets all protocol handlers for |app_id| as custom handler objects.
+  std::vector<ProtocolHandler> GetAppProtocolHandlers(
+      const AppId& app_id) const;
 
   // Registers OS specific protocol handlers for OSs that need them, using the
   // protocol handler information supplied in the app manifest.
@@ -49,6 +57,9 @@ class ProtocolHandlerManager {
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers);
 
   AppRegistrar* app_registrar_;
+
+ private:
+  Profile* const profile_;
 };
 
 }  // namespace web_app

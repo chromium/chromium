@@ -340,7 +340,7 @@ void OsIntegrationManager::RegisterProtocolHandlers(
     return;
   }
 
-  // TODO(crbug.com/1019239): Call protocol_handler_manager_ implementation.
+  protocol_handler_manager_->RegisterOsProtocolHandlers(app_id);
 
   // TODO(crbug.com/1087219): callback should be run after all hooks are
   // deployed, need to refactor protocol_handler_manager to allow this.
@@ -454,7 +454,9 @@ void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id) {
   if (!protocol_handler_manager_)
     return;
 
-  // TODO(crbug.com/1019239): Call protocol_handler_manager_ implementation.
+  // TODO(https://crbug.com/1019239) Make this take a callback, and return bool
+  // success or a single/list of enum errors.
+  protocol_handler_manager_->UnregisterOsProtocolHandlers(app_id);
 }
 
 void OsIntegrationManager::UnregisterWebAppOsUninstallation(
