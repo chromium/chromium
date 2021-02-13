@@ -41,7 +41,6 @@
 
 #include "base/auto_reset.h"
 #include "base/unguessable_token.h"
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -124,7 +123,6 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -1687,12 +1685,6 @@ void FrameLoader::ReportLegacyTLSVersion(const KURL& url,
       .SetIsSubresource(is_subresource)
       .SetIsAdResource(is_ad_resource)
       .Record(root.GetDocument()->UkmRecorder());
-
-  // Web tests use an outdated server on macOS. See https://crbug.com/936515.
-#if defined(OS_MAC)
-  if (WebTestSupport::IsRunningWebTest())
-    return;
-#endif
 
   String origin = SecurityOrigin::Create(url)->ToString();
   // To prevent log spam, only log the message once per origin.
