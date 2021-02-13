@@ -49,11 +49,7 @@ bool ShouldTreatURLSchemeAsCorsEnabled(const GURL& url) {
 // Should return the same value as the resource URL checks assigned to
 // |isAllowed| made inside MixedContentChecker::isMixedContent.
 bool IsUrlPotentiallySecure(const GURL& url) {
-  // blob: and filesystem: URLs never hit the network, and access is restricted
-  // to same-origin contexts, so they are not blocked.
-  return url.SchemeIs(url::kBlobScheme) ||
-         url.SchemeIs(url::kFileSystemScheme) ||
-         network::IsUrlPotentiallyTrustworthy(url);
+  return network::IsUrlPotentiallyTrustworthy(url);
 }
 
 // This method should return the same results as

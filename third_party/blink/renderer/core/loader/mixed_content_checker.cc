@@ -250,11 +250,7 @@ void CreateMixedContentIssue(
 static bool IsInsecureUrl(const KURL& url) {
   // |url| is mixed content if it is not a potentially trustworthy URL.
   // See https://w3c.github.io/webappsec-mixed-content/#should-block-response
-  // blob: and filesystem: are never blocked, for consistency with the function
-  // IsUrlPotentiallySecure() from mixed_content_navigation_throttle.cc
-  bool is_allowed = url.ProtocolIs("blob") || url.ProtocolIs("filesystem") ||
-                    network::IsUrlPotentiallyTrustworthy(url);
-  return !is_allowed;
+  return !network::IsUrlPotentiallyTrustworthy(url);
 }
 
 static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
