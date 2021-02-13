@@ -23,7 +23,9 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -177,9 +179,14 @@ class ASH_EXPORT CaptureModeController
   base::Optional<CaptureParams> GetCaptureParams() const;
 
   // Launches the mojo service that handles audio and video recording, and
-  // begins recording according to the given |capture_params|.
+  // begins recording according to the given |capture_params|. It creates an
+  // overlay on the video capturer so that can be used to record the mouse
+  // cursor. It gives the pending receiver end to that overlay on Viz, and the
+  // other end should be owned by the |video_recording_watcher_|.
   void LaunchRecordingServiceAndStartRecording(
-      const CaptureParams& capture_params);
+      const CaptureParams& capture_params,
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
+          cursor_overlay);
 
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();

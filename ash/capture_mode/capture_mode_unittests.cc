@@ -25,6 +25,7 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/home_screen/home_screen_controller.h"
+#include "ash/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
@@ -48,6 +49,10 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_tracker.h"
@@ -80,7 +85,7 @@ bool IsCursorCompositingEnabled() {
   return Shell::Get()
       ->window_tree_host_manager()
       ->cursor_window_controller()
-      ->ShouldEnableCursorCompositing();
+      ->is_cursor_compositing_enabled();
 }
 
 void ClickOnView(const views::View* view,
@@ -224,7 +229,7 @@ class CaptureModeSessionTestApi {
 class CaptureModeTest : public AshTestBase {
  public:
   CaptureModeTest() = default;
-  CaptureModeTest(base::test::TaskEnvironment::TimeSource time)
+  explicit CaptureModeTest(base::test::TaskEnvironment::TimeSource time)
       : AshTestBase(time) {}
   CaptureModeTest(const CaptureModeTest&) = delete;
   CaptureModeTest& operator=(const CaptureModeTest&) = delete;
@@ -574,16 +579,16 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
 
-  // The composited cursor should be enabled, and the stop-recording button
-  // should show up in the status area widget.
-  EXPECT_TRUE(IsCursorCompositingEnabled());
+  // The composited cursor should remain disabled now that we're using the
+  // cursor overlay on the capturer. The stop-recording button should show up in
+  // the status area widget.
+  EXPECT_FALSE(IsCursorCompositingEnabled());
   auto* stop_recording_button = Shell::GetPrimaryRootWindowController()
                                     ->GetStatusAreaWidget()
                                     ->stop_recording_button_tray();
   EXPECT_TRUE(stop_recording_button->visible_preferred());
 
-  // End recording via the stop-recording button. Expect that it's now hidden,
-  // and the cursor compositing is now disabled.
+  // End recording via the stop-recording button. Expect that it's now hidden.
   base::HistogramTester histogram_tester;
   ClickOnView(stop_recording_button, event_generator);
   EXPECT_FALSE(stop_recording_button->visible_preferred());
@@ -2941,5 +2946,195 @@ TEST_F(CaptureModeTest, AudioRecordingSetting) {
   StartImageRegionCapture();
   EXPECT_TRUE(controller->enable_audio_recording());
 }
+
+namespace {
+
+// -----------------------------------------------------------------------------
+// TestVideoCaptureOverlay:
+
+// Defines a fake video capture overlay to be used in testing the behavior of
+// the cursor overlay. The VideoRecordingWatcher will control this overlay via
+// mojo.
+using Overlay = viz::mojom::FrameSinkVideoCaptureOverlay;
+class TestVideoCaptureOverlay : public Overlay {
+ public:
+  explicit TestVideoCaptureOverlay(mojo::PendingReceiver<Overlay> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~TestVideoCaptureOverlay() override = default;
+
+  const gfx::RectF& last_bounds() const { return last_bounds_; }
+
+  bool IsHidden() const { return last_bounds_ == gfx::RectF(); }
+
+  // viz::mojom::FrameSinkVideoCaptureOverlay:
+  void SetImageAndBounds(const SkBitmap& image,
+                         const gfx::RectF& bounds) override {
+    last_bounds_ = bounds;
+  }
+  void SetBounds(const gfx::RectF& bounds) override { last_bounds_ = bounds; }
+
+ private:
+  mojo::Receiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver_;
+  gfx::RectF last_bounds_;
+};
+
+// -----------------------------------------------------------------------------
+//  CaptureModeCursorOverlayTest:
+
+// Defines a test fixure to test the behavior of the cursor overlay.
+class CaptureModeCursorOverlayTest : public CaptureModeTest {
+ public:
+  CaptureModeCursorOverlayTest() = default;
+  ~CaptureModeCursorOverlayTest() override = default;
+
+  aura::Window* window() const { return window_.get(); }
+  TestVideoCaptureOverlay* fake_overlay() const { return fake_overlay_.get(); }
+
+  // CaptureModeTest:
+  void SetUp() override {
+    CaptureModeTest::SetUp();
+    window_ = CreateTestWindow(gfx::Rect(200, 200));
+  }
+
+  void TearDown() override {
+    window_.reset();
+    CaptureModeTest::TearDown();
+  }
+
+  CaptureModeController* StartRecordingAndSetupFakeOverlay(
+      CaptureModeSource source) {
+    auto* controller = StartCaptureSession(source, CaptureModeType::kVideo);
+    auto* event_generator = GetEventGenerator();
+    if (source == CaptureModeSource::kWindow)
+      event_generator->MoveMouseToCenterOf(window_.get());
+    controller->StartVideoRecordingImmediatelyForTesting();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    auto* recording_watcher = controller->video_recording_watcher_for_testing();
+    mojo::PendingRemote<Overlay> overlay_pending_remote;
+    fake_overlay_ = std::make_unique<TestVideoCaptureOverlay>(
+        overlay_pending_remote.InitWithNewPipeAndPassReceiver());
+    recording_watcher->BindCursorOverlayForTesting(
+        std::move(overlay_pending_remote));
+
+    // The overlay should be initially hidden until a mourse event is received.
+    FlushOverlay();
+    EXPECT_TRUE(fake_overlay()->IsHidden());
+
+    // Generating some mouse events may or may not show the overlay, depending
+    // on the conditions of the test. Each test will verify its expectation
+    // after this returns.
+    event_generator->MoveMouseBy(10, 10);
+    FlushOverlay();
+
+    return controller;
+  }
+
+  void FlushOverlay() {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->is_recording_in_progress());
+    controller->video_recording_watcher_for_testing()
+        ->FlushCursorOverlayForTesting();
+  }
+
+  // The docked magnifier is one of the features that force the software-
+  // composited cursor to be used when enabled. We use it to test the behavior
+  // of the cursor overlay in that case.
+  void SetDockedMagnifierEnabled(bool enabled) {
+    Shell::Get()->docked_magnifier_controller()->SetEnabled(enabled);
+  }
+
+ private:
+  std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<TestVideoCaptureOverlay> fake_overlay_;
+};
+
+}  // namespace
+
+TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursorOverlay) {
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  // Entering tablet mode should hide the cursor overlay.
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  tablet_mode_controller_test_api.DetachAllMice();
+  tablet_mode_controller_test_api.EnterTabletMode();
+  FlushOverlay();
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+
+  // Exiting tablet mode should reshow the overlay.
+  tablet_mode_controller_test_api.LeaveTabletMode();
+  FlushOverlay();
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+}
+
+TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInFullscreenRecording) {
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  // When the software-composited cursor is enabled, the overlay is hidden to
+  // avoid having two overlapping cursors in the video.
+  SetDockedMagnifierEnabled(true);
+  EXPECT_TRUE(IsCursorCompositingEnabled());
+  FlushOverlay();
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+
+  SetDockedMagnifierEnabled(false);
+  EXPECT_FALSE(IsCursorCompositingEnabled());
+  FlushOverlay();
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+}
+
+TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInitiallyEnabled) {
+  // The software cursor is enabled before recording starts.
+  SetDockedMagnifierEnabled(true);
+  EXPECT_TRUE(IsCursorCompositingEnabled());
+
+  // Hence the overlay will be hidden initially.
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+}
+
+TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInPartialRegion) {
+  CaptureModeController::Get()->SetUserCaptureRegion(gfx::Rect(20, 20),
+                                                     /*by_user=*/true);
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kRegion);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  // The behavior in this case is exactly the same as in fullscreen recording.
+  SetDockedMagnifierEnabled(true);
+  EXPECT_TRUE(IsCursorCompositingEnabled());
+  FlushOverlay();
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+}
+
+TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInWindowRecording) {
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  // When recording a window, the software cursor has no effect of the cursor
+  // overlay, since the cursor widget is not in the recorded window subtree, so
+  // it cannot be captured by the frame sink capturer. We have to provide cursor
+  // capturing through the overlay.
+  SetDockedMagnifierEnabled(true);
+  EXPECT_TRUE(IsCursorCompositingEnabled());
+  FlushOverlay();
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+}
+
+TEST_F(CaptureModeCursorOverlayTest, OverlayHidesWhenOutOfBounds) {
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  const gfx::Point bottom_right =
+      window()->GetBoundsInRootWindow().bottom_right();
+  auto* generator = GetEventGenerator();
+  // Generate a click event to overcome throttling.
+  generator->MoveMouseTo(bottom_right);
+  generator->ClickLeftButton();
+  FlushOverlay();
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+}
+
+// TODO(afakhry): Add more cursor overlay tests.
 
 }  // namespace ash

@@ -13,20 +13,36 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/cursor/cursor_lookup.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
 namespace {
+
+// Recording is performed at a rate of 30 FPS. Any non-pressed/-released mouse
+// events that are too frequent will be throttled. We use the frame duration as
+// the minimum delay between any two successive such events that we use to
+// update the cursor overlay.
+constexpr base::TimeDelta kCursorEventsThrottleDelay =
+    base::TimeDelta::FromHz(30);
 
 // Returns true if |window_1| and |window_2| are both windows that belong to
 // the same Desk. Note that it will return false for windows that don't belong
@@ -35,6 +51,69 @@ bool AreWindowsOnSameDesk(aura::Window* window_1, aura::Window* window_2) {
   auto* container_1 = desks_util::GetDeskContainerForContext(window_1);
   auto* container_2 = desks_util::GetDeskContainerForContext(window_2);
   return container_1 && container_2 && container_1 == container_2;
+}
+
+// Gets the mouse cursor location in the coordinates of the given |window|. Use
+// this if a mouse event is not available.
+gfx::PointF GetCursorLocationInWindow(aura::Window* window) {
+  gfx::PointF cursor_point(
+      display::Screen::GetScreen()->GetCursorScreenPoint());
+  wm::ConvertPointFromScreen(window, &cursor_point);
+  return cursor_point;
+}
+
+// Gets the location of the given mouse |event| in the coordinates of the given
+// |window|.
+gfx::PointF GetEventLocationInWindow(aura::Window* window,
+                                     const ui::MouseEvent& event) {
+  aura::Window* target = static_cast<aura::Window*>(event.target());
+  gfx::PointF location = event.location_f();
+  if (target != window)
+    aura::Window::ConvertPointToTarget(target, window, &location);
+  return location;
+}
+
+// Returns the hotspot location of the given |cursor|.
+gfx::PointF GetCursorHotspot(const ui::Cursor& cursor,
+                             float cursor_scale_factor) {
+  DCHECK_GE(cursor_scale_factor, 1.f);
+
+  // ui::GetCursorHotspot() returns a scale-factor-200 hotspot for a
+  // scale-factor-100 bitmap when the scale factor is not 1.f, causing the
+  // hotspot to be out of bounds of the bitmap dimensions. See
+  // https://crbug.com/436993.
+  gfx::PointF hotspot(ui::GetCursorHotspot(cursor));
+  if (cursor_scale_factor > 1.f &&
+      cursor.type() != ui::mojom::CursorType::kCustom) {
+    hotspot.Scale(1.f / cursor_scale_factor);
+  }
+  return hotspot;
+}
+
+// Returns the cursor overlay bounds as defined by the documentation of the
+// FrameSinkVideoCaptureOverlay. The bounds should be relative within the bounds
+// of the recorded frame sink (i.e. in the range [0.f, 1.f) for both cursor
+// origin and size).
+gfx::RectF GetCursorOverlayBounds(
+    const aura::Window* recorded_window,
+    const gfx::PointF& location_in_recorded_window,
+    const gfx::PointF& cursor_hotspot,
+    const SkBitmap& cursor_bitmap) {
+  DCHECK(recorded_window);
+
+  // Even when recording a non-root window, we use the bounds of the root
+  // window, since it corresponds to the bounds of the source frame sink we are
+  // recording.
+  const auto window_size = recorded_window->GetRootWindow()->bounds().size();
+  if (window_size.IsEmpty())
+    return gfx::RectF();
+
+  gfx::RectF cursor_relative_bounds(
+      location_in_recorded_window - cursor_hotspot.OffsetFromOrigin(),
+      gfx::SizeF(cursor_bitmap.width(), cursor_bitmap.height()));
+  cursor_relative_bounds.Scale(1.f / window_size.width(),
+                               1.f / window_size.height());
+  return cursor_relative_bounds;
 }
 
 }  // namespace
@@ -84,11 +163,15 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
 
 VideoRecordingWatcher::VideoRecordingWatcher(
     CaptureModeController* controller,
-    aura::Window* window_being_recorded)
+    aura::Window* window_being_recorded,
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
+        cursor_capture_overlay)
     : controller_(controller),
+      cursor_manager_(Shell::Get()->cursor_manager()),
       window_being_recorded_(window_being_recorded),
       current_root_(window_being_recorded->GetRootWindow()),
-      recording_source_(controller_->source()) {
+      recording_source_(controller_->source()),
+      cursor_capture_overlay_remote_(std::move(cursor_capture_overlay)) {
   DCHECK(controller_);
   DCHECK(window_being_recorded_);
   DCHECK(current_root_);
@@ -101,6 +184,22 @@ VideoRecordingWatcher::VideoRecordingWatcher(
     root_observer_ =
         std::make_unique<RecordedWindowRootObserver>(current_root_, this);
     Shell::Get()->activation_client()->AddObserver(this);
+  } else {
+    // We only need to observe the changes in the state of the software-
+    // composited cursor when recording a root window (i.e. fullscreen or
+    // partial region capture), since the software cursor is in the layer
+    // subtree of the root window, and will be captured by the frame sink video
+    // capturer automatically without the need for the cursor overlay. In this
+    // case we need to avoid producing a video with two overlapping cursors.
+    // When recording a window however, the software cursor is not in its layer
+    // subtree, and has to always be captured using the cursor overlay.
+    auto* cursor_window_controller =
+        Shell::Get()->window_tree_host_manager()->cursor_window_controller();
+    // Note that the software cursor might have already been enabled prior to
+    // the recording starting.
+    force_cursor_overlay_hidden_ =
+        cursor_window_controller->is_cursor_compositing_enabled();
+    cursor_window_controller->AddObserver(this);
   }
 
   if (recording_source_ == CaptureModeSource::kRegion)
@@ -108,13 +207,34 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 
   display::Screen::GetScreen()->AddObserver(this);
   window_being_recorded_->AddObserver(this);
+  TabletModeController::Get()->AddObserver(this);
+
+  // Note the following:
+  // 1- We add |this| as a pre-target handler of the |window_being_recorded_| as
+  //    opposed to |Shell|. This ensures that we only get mouse events when the
+  //    window being recorded is the target. This is more efficient since we
+  //    won't get any event when the curosr is in a different display, or
+  //    targeting a different window.
+  // 2- We use the |kSystem| priority to ensure that we get these events before
+  //    other pre-target handlers can consume them (e.g. when opening a capture
+  //    mode session to take a screenshot while recording a video).
+  window_being_recorded_->AddPreTargetHandler(
+      this, ui::EventTarget::Priority::kSystem);
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
   DCHECK(window_being_recorded_);
 
-  if (recording_source_ == CaptureModeSource::kWindow)
+  window_being_recorded_->RemovePreTargetHandler(this);
+  TabletModeController::Get()->RemoveObserver(this);
+  if (recording_source_ == CaptureModeSource::kWindow) {
     Shell::Get()->activation_client()->RemoveObserver(this);
+  } else {
+    Shell::Get()
+        ->window_tree_host_manager()
+        ->cursor_window_controller()
+        ->RemoveObserver(this);
+  }
   display::Screen::GetScreen()->RemoveObserver(this);
   window_being_recorded_->RemoveObserver(this);
 }
@@ -266,9 +386,55 @@ void VideoRecordingWatcher::OnDimmedWindowParentChanged(
   }
 }
 
+void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
+  switch (event->type()) {
+    case ui::ET_MOUSEWHEEL:
+    case ui::ET_MOUSE_CAPTURE_CHANGED:
+      return;
+
+    case ui::ET_MOUSE_PRESSED:
+    case ui::ET_MOUSE_RELEASED:
+      // Pressed/released events are important, so we handle them immediately.
+      UpdateCursorOverlayNow(
+          GetEventLocationInWindow(window_being_recorded_, *event));
+      return;
+
+    default:
+      UpdateOrThrottleCursorOverlay(
+          GetEventLocationInWindow(window_being_recorded_, *event));
+  }
+}
+
+void VideoRecordingWatcher::OnTabletModeStarted() {
+  UpdateCursorOverlayNow(gfx::PointF());
+}
+
+void VideoRecordingWatcher::OnTabletModeEnded() {
+  UpdateCursorOverlayNow(GetCursorLocationInWindow(window_being_recorded_));
+}
+
+void VideoRecordingWatcher::OnCursorCompositingStateChanged(bool enabled) {
+  DCHECK_NE(recording_source_, CaptureModeSource::kWindow);
+  force_cursor_overlay_hidden_ = enabled;
+  UpdateCursorOverlayNow(
+      force_cursor_overlay_hidden_
+          ? gfx::PointF()
+          : GetCursorLocationInWindow(window_being_recorded_));
+}
+
 bool VideoRecordingWatcher::IsWindowDimmedForTesting(
     aura::Window* window) const {
   return dimmers_.contains(window);
+}
+
+void VideoRecordingWatcher::BindCursorOverlayForTesting(
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay) {
+  cursor_capture_overlay_remote_.reset();
+  cursor_capture_overlay_remote_.Bind(std::move(overlay));
+}
+
+void VideoRecordingWatcher::FlushCursorOverlayForTesting() {
+  cursor_capture_overlay_remote_.FlushForTesting();
 }
 
 void VideoRecordingWatcher::SetLayer(std::unique_ptr<ui::Layer> layer) {
@@ -411,6 +577,96 @@ void VideoRecordingWatcher::UpdateLayerStackingAndDimmers() {
       dimmer->window()->Show();
     }
   }
+}
+
+gfx::NativeCursor VideoRecordingWatcher::GetCurrentCursor() const {
+  const auto cursor = cursor_manager_->GetCursor();
+  // See the documentation in cursor_type.mojom. |kNull| is treated exactly as
+  // |kPointer|.
+  return (cursor.type() == ui::mojom::CursorType::kNull)
+             ? gfx::NativeCursor(ui::mojom::CursorType::kPointer)
+             : cursor;
+}
+
+void VideoRecordingWatcher::UpdateOrThrottleCursorOverlay(
+    const gfx::PointF& location) {
+  if (cursor_events_throttle_timer_.IsRunning()) {
+    throttled_cursor_location_ = location;
+    return;
+  }
+
+  UpdateCursorOverlayNow(location);
+  cursor_events_throttle_timer_.Start(
+      FROM_HERE, kCursorEventsThrottleDelay, this,
+      &VideoRecordingWatcher::OnThrottleTimerFiring);
+}
+
+void VideoRecordingWatcher::UpdateCursorOverlayNow(
+    const gfx::PointF& location) {
+  // Cancel any pending throttled event.
+  cursor_events_throttle_timer_.Stop();
+  throttled_cursor_location_.reset();
+
+  if (!cursor_capture_overlay_remote_)
+    return;
+
+  if (force_cursor_overlay_hidden_ ||
+      TabletModeController::Get()->InTabletMode()) {
+    HideCursorOverlay();
+    return;
+  }
+
+  const gfx::RectF window_local_bounds(
+      gfx::SizeF(window_being_recorded_->bounds().size()));
+  if (!window_local_bounds.Contains(location)) {
+    HideCursorOverlay();
+    return;
+  }
+
+  const gfx::NativeCursor cursor = GetCurrentCursor();
+  DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
+
+  const float cursor_scale_factor = std::max(1.f, cursor.image_scale_factor());
+  const SkBitmap cursor_image = ui::GetCursorBitmap(cursor);
+  const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
+      window_being_recorded_, location,
+      GetCursorHotspot(cursor, cursor_scale_factor), cursor_image);
+
+  if (cursor != last_cursor_) {
+    if (cursor_image.drawsNothing()) {
+      last_cursor_ = gfx::NativeCursor();
+      HideCursorOverlay();
+      return;
+    }
+
+    last_cursor_ = cursor;
+    last_cursor_overlay_bounds_ = cursor_overlay_bounds;
+    cursor_capture_overlay_remote_->SetImageAndBounds(
+        cursor_image, last_cursor_overlay_bounds_);
+    return;
+  }
+
+  if (last_cursor_overlay_bounds_ == cursor_overlay_bounds)
+    return;
+
+  last_cursor_overlay_bounds_ = cursor_overlay_bounds;
+  cursor_capture_overlay_remote_->SetBounds(last_cursor_overlay_bounds_);
+}
+
+void VideoRecordingWatcher::HideCursorOverlay() {
+  DCHECK(cursor_capture_overlay_remote_);
+
+  // No need to rehide if already hidden.
+  if (last_cursor_overlay_bounds_ == gfx::RectF())
+    return;
+
+  last_cursor_overlay_bounds_ = gfx::RectF();
+  cursor_capture_overlay_remote_->SetBounds(last_cursor_overlay_bounds_);
+}
+
+void VideoRecordingWatcher::OnThrottleTimerFiring() {
+  if (throttled_cursor_location_)
+    UpdateCursorOverlayNow(*throttled_cursor_location_);
 }
 
 }  // namespace ash
