@@ -83,7 +83,6 @@ class ArcAppIcon {
   // Returns |image_skia_| and valid if the |icon_type_| is
   // IconType::kUncompressed.
   const gfx::ImageSkia& image_skia() const {
-    DCHECK_EQ(IconType::kUncompressed, icon_type_);
     return image_skia_;
   }
   // Returns |compressed_images_| and valid if the |icon_type_| is
