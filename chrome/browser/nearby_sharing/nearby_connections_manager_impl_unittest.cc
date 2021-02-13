@@ -134,7 +134,8 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
 
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
-        .WillRepeatedly([&](base::OnceClosure) {
+        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+                                NearbyProcessStoppedCallback) {
           auto mock_reference_ptr =
               std::make_unique<chromeos::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();
@@ -490,7 +491,9 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryProcessStopped) {
   StartDiscovery(listener_remote, discovery_listener);
 
   EXPECT_CALL(nearby_connections_, StopAllEndpoints).Times(0);
-  nearby_connections_manager_.OnNearbyProcessStopped();
+  nearby_connections_manager_.OnNearbyProcessStopped(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
+          kNormal);
 
   // Invoking OnEndpointFound will do nothing.
   EXPECT_CALL(discovery_listener, OnEndpointDiscovered(testing::_, testing::_))

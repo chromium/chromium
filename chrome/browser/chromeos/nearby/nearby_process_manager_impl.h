@@ -53,16 +53,6 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
  private:
   friend class NearbyProcessManagerImplTest;
 
-  // These values are used for metrics. Entries should not be renumbered and
-  // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
-  enum class UtilityProcessShutdownReason {
-    kNormal = 0,
-    kCrash = 1,
-    kMojoPipeDisconnection = 2,
-    kMaxValue = kMojoPipeDisconnection
-  };
-
   class NearbyReferenceImpl
       : public NearbyProcessManager::NearbyProcessReference {
    public:
@@ -97,7 +87,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
   // NearbyProcessManagerImpl:
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
-      base::OnceClosure on_process_stopped_callback) override;
+      NearbyProcessStoppedCallback on_process_stopped_callback) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -108,8 +98,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   void OnSharingProcessCrash();
   void OnMojoPipeDisconnect();
   void OnReferenceDeleted(const base::UnguessableToken& reference_id);
-  void ShutDownProcess(UtilityProcessShutdownReason shutdown_reason);
-  void NotifyProcessStopped();
+  void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
+  void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
   NearbyConnectionsDependenciesProvider*
       nearby_connections_dependencies_provider_;
@@ -129,7 +119,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
   // Map which stores callbacks to be invoked if the Nearby process shuts down
   // unexpectedly, before clients release their references.
-  base::flat_map<base::UnguessableToken, base::OnceClosure>
+  base::flat_map<base::UnguessableToken, NearbyProcessStoppedCallback>
       id_to_process_stopped_callback_map_;
 
   bool shut_down_ = false;

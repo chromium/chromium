@@ -180,7 +180,9 @@ class NearbyProcessManagerImplTest : public testing::Test {
         nearby_process_manager_.get());
   }
 
-  void OnProcessStopped() { ++num_process_stopped_calls_; }
+  void OnProcessStopped(NearbyProcessManager::NearbyProcessShutdownReason) {
+    ++num_process_stopped_calls_;
+  }
 
   const base::test::TaskEnvironment task_environment_;
   size_t num_process_stopped_calls_ = 0u;

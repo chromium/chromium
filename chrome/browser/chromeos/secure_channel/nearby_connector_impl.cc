@@ -129,7 +129,8 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
                          base::Unretained(this), new_broker_id));
 }
 
-void NearbyConnectorImpl::OnNearbyProcessStopped() {
+void NearbyConnectorImpl::OnNearbyProcessStopped(
+    nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   PA_LOG(WARNING) << "Nearby process stopped unexpectedly. Destroying active "
                   << "connections.";
 

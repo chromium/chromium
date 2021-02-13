@@ -873,11 +873,14 @@ NearbySharingServiceImpl::GetCertificateManager() {
   return certificate_manager_.get();
 }
 
-void NearbySharingServiceImpl::OnNearbyProcessStopped() {
+void NearbySharingServiceImpl::OnNearbyProcessStopped(
+    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+        shutdown_reason) {
   DCHECK(process_reference_);
   InvalidateSurfaceState();
   process_reference_.reset();
-  NS_LOG(VERBOSE) << __func__ << ": Nearby process stopped";
+  NS_LOG(INFO) << __func__
+               << ": Shutdown reason:" << static_cast<int>(shutdown_reason);
 }
 
 sharing::mojom::NearbySharingDecoder*

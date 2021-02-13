@@ -55,7 +55,9 @@ class IncomingFramesReader {
   void OnDataReadFromConnection(base::Optional<std::vector<uint8_t>> bytes);
   void OnFrameDecoded(sharing::mojom::FramePtr mojo_frame);
   void OnTimeout();
-  void OnNearbyProcessStopped();
+  void OnNearbyProcessStopped(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
   void Done(base::Optional<sharing::mojom::V1FramePtr> frame);
   base::Optional<sharing::mojom::V1FramePtr> GetCachedFrame(
       base::Optional<sharing::mojom::V1Frame::Tag> frame_type);

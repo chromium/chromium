@@ -91,7 +91,8 @@ void IncomingFramesReader::ReadFrame(
   ReadNextFrame();
 }
 
-void IncomingFramesReader::OnNearbyProcessStopped() {
+void IncomingFramesReader::OnNearbyProcessStopped(
+    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   is_process_stopped_ = true;
   Done(base::nullopt);
 }

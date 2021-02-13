@@ -343,7 +343,8 @@ TEST_F(NearbyConnectorImplTest, NearbyProcessStops) {
   // Stop the Nearby process; this should result in a disconnection.
   base::RunLoop disconnect_run_loop;
   receiver.SetMojoDisconnectHandler(disconnect_run_loop.QuitClosure());
-  fake_nearby_process_manager_.SimulateProcessStopped();
+  fake_nearby_process_manager_.SimulateProcessStopped(
+      nearby::NearbyProcessManager::NearbyProcessShutdownReason::kNormal);
   disconnect_run_loop.Run();
   EXPECT_EQ(0u, fake_nearby_process_manager_.GetNumActiveReferences());
 }
@@ -359,7 +360,8 @@ TEST_F(NearbyConnectorImplTest, NearbyProcessStopsDuringConnectionAttempt) {
   on_connect_ = connect_run_loop.QuitClosure();
   base::RunLoop disconnect_run_loop;
   receiver.SetMojoDisconnectHandler(disconnect_run_loop.QuitClosure());
-  fake_nearby_process_manager_.SimulateProcessStopped();
+  fake_nearby_process_manager_.SimulateProcessStopped(
+      nearby::NearbyProcessManager::NearbyProcessShutdownReason::kNormal);
   connect_run_loop.Run();
   disconnect_run_loop.Run();
   EXPECT_EQ(0u, fake_nearby_process_manager_.GetNumActiveReferences());
