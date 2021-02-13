@@ -565,19 +565,21 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
       target = ComputePointerEventTarget(event).target_element;
     }
 
-    // Sometimes the Browser process tags events with kRelativeMotionEvent.
-    // For e.g. during pointer lock, it recenters cursor by warping so that
-    // cursor does not hit the screen boundary.
-    // Those fake events should not be forwarded to the DOM.
-    // The conditional return here is deliberately placed after the Create()
-    // call above because of some side-effects of Create() is still needed
-    // (in particular SetLastPosition(), see crbug.com/1066544)
-    if (event.GetModifiers() & WebInputEvent::Modifiers::kRelativeMotionEvent)
-      return WebInputEventResult::kHandledSuppressed;
-
     PointerEvent* pointer_event =
         pointer_event_factory_.Create(event, coalesced_events, predicted_events,
                                       frame_->GetDocument()->domWindow());
+    // The conditional return below is deliberately placed after the Create()
+    // call above because of some side-effects of Create() (in particular
+    // SetLastPosition()) is needed even with the early return below.  See
+    // crbug.com/1066544.
+    //
+    // Sometimes the Browser process tags events with kRelativeMotionEvent.
+    // E.g. during pointer lock, it recenters cursor by warping so that cursor
+    // does not hit the screen boundary.  Those fake events should not be
+    // forwarded to the DOM.
+    if (event.GetModifiers() & WebInputEvent::Modifiers::kRelativeMotionEvent)
+      return WebInputEventResult::kHandledSuppressed;
+
     if (pointer_event) {
       // TODO(crbug.com/1141595): We should handle this case further upstream.
       DispatchPointerEvent(target, pointer_event);
