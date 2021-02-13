@@ -9,7 +9,7 @@
 /**
  * @implements {chromeos.multideviceSetup.mojom.MultiDeviceSetupInterface}
  */
-class FakeMojoService {
+/* #export */ class FakeMojoService {
   constructor() {
     /**
      * The number of devices to return in a getEligibleHostDevices() call.

@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://multidevice-setup/strings.m.js';
+// #import 'chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js';
+
+// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 /**
  * In the testing framework, a click on a select option does not cause a
  * change in the select tag's attribute or trigger a change event so this
@@ -73,7 +80,7 @@ suite('MultiDeviceSetup', () => {
   let selectOptionByTextContent = function(optionText) {
     const optionNodeList =
         startSetupPageElement.$.deviceDropdown.querySelectorAll('option');
-    for (option of optionNodeList.values()) {
+    for (const option of optionNodeList.values()) {
       if (option.textContent.trim() === optionText) {
         option.click();
         return;

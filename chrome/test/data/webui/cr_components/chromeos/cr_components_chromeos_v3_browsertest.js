@@ -37,6 +37,12 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('NetworkHealth', 'connectivity-diagnostics', ...test));
 
 [
+ ['Integration', 'multidevice_setup/integration_test.m.js'],
+ ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.m.js'],
+ ['StartSetupPage', 'multidevice_setup/start_setup_page_test.m.js'],
+].forEach(test => registerTest('MultiDeviceSetup', 'multidevice-setup', ...test));
+
+[
  ['ActivationCodePage', 'cellular_setup/activation_code_page_test.m.js'],
  ['BasePage', 'cellular_setup/base_page_test.m.js'],
  ['ButtonBar', 'cellular_setup/button_bar_test.m.js'],

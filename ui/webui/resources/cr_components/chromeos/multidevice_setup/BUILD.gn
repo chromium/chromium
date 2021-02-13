@@ -197,6 +197,7 @@ js_library("setup_succeeded_page.m") {
 js_library("start_setup_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js" ]
   deps = [
+    ":mojo_api.m",
     ":multidevice_setup_delegate.m",
     ":multidevice_setup_shared_css.m",
     ":ui_page_container_behavior.m",
