@@ -72,8 +72,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // local hash-based method.
   bool IsInBackoffMode() const;
 
-  // Start the full URL lookup for |url|, call |request_callback| on the same
-  // thread when request is sent, call |response_callback| on the same thread
+  // Start the full URL lookup for |url|, call |request_callback| on the IO
+  // thread when request is sent, call |response_callback| on the IO thread
   // when response is received.
   // Note that |request_callback| is not called if there's a valid entry in the
   // cache for |url|.

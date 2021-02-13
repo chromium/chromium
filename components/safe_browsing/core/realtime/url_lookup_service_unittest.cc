@@ -681,4 +681,19 @@ TEST_F(RealTimeUrlLookupServiceTest,
   EXPECT_NE(nullptr, cache_response);
 }
 
+TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
+  EnableRealTimeUrlLookup(/* is_with_token_enabled */ false);
+  GURL url("http://example.test/");
+
+  base::MockCallback<RTLookupRequestCallback> request_callback;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  rt_service()->StartLookup(url, request_callback.Get(),
+                            response_callback.Get());
+
+  EXPECT_CALL(response_callback, Run(_, _, _)).Times(0);
+  rt_service()->Shutdown();
+
+  task_environment_->RunUntilIdle();
+}
+
 }  // namespace safe_browsing

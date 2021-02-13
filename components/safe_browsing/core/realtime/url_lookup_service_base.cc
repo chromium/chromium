@@ -457,12 +457,9 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
 
 void RealTimeUrlLookupServiceBase::Shutdown() {
   for (auto& pending : pending_requests_) {
-    // Treat all pending requests as safe, and not from cache so that a
-    // hash-based check isn't performed.
-    auto response = std::make_unique<RTLookupResponse>();
-    std::move(pending.second)
-        .Run(/* is_rt_lookup_successful */ true, /* is_cached_response */ false,
-             std::move(response));
+    // Pending requests are not posted back to the IO thread during shutdown,
+    // because it is too late to post a task to the IO thread when the UI thread
+    // is shutting down.
     delete pending.first;
   }
   pending_requests_.clear();
