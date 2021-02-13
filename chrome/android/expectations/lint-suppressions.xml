@@ -192,24 +192,6 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
 
-    <!-- crbug.com/1128074 remove this line and following 16 lines after the bug is resolved -->
-    <ignore regexp="The resource `R.drawable.ic_reading_list_folder` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_read` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_unread` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_ready_for_offline` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_mark_as_read` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_share` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_reminder_notification_title` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.reading_list_reminder_notification_subtitle` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.reading_list_unread_page_count` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_intro_text` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_save_pages_for_later` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_find_in_bookmarks` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_empty_list_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_empty_list_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_empty_list_description_offline` appears to be unused"/>
-
     <!-- crbug.com/1127531 remove this line and following 9 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.app_language_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.change_chrome_lang` appears to be unused"/>

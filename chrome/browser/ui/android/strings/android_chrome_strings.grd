@@ -3105,7 +3105,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Read
       </message>
       <message name="IDS_READING_LIST_UNREAD" desc="The header for the unread section in the reading list UI.">
-        Unread
+        Unread - Available offline
       </message>
       <message name="IDS_READING_LIST_SAVED" desc="App-based message shown after user adds a new link to the reading list. [CHAR-LIMIT=32]">
         Added to reading list
@@ -3113,16 +3113,13 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_READING_LIST_MARK_AS_READ" desc="The text for the action to mark the reading list as read.">
         Mark as read
       </message>
-      <message name="IDS_READING_LIST_SHARE" desc="The text for the action to share the reading list item.">
-        Share
-      </message>
       <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_TITLE" desc="The title of the reminder notification for reading list.">
         Catch up on your reading list
       </message>
       <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_SUBTITLE" desc="The subtitle of the reminder notification for reading list.">
           {READING_LIST_REMINDER_NOTIFICATION_SUBTITLE, plural,
-          =1 {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE">%1$d<ex>1</ex></ph> page}
-          other {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY">%1$d<ex>8</ex></ph> pages}}
+          =1 {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE">%1$d<ex>1</ex></ph> unread page}
+          other {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY">%1$d<ex>8</ex></ph> unread pages}}
       </message>
       <message name="IDS_READING_LIST_UNREAD_PAGE_COUNT" desc="Inform the user about the number of unread reading list items.">
           {READING_LIST_UNREAD_PAGE_COUNT, plural,
@@ -3143,12 +3140,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
       <message name="IDS_READING_LIST_EMPTY_LIST_TITLE" desc="The text on reading list page when there are no reading list items informing user that reading list is supposed to appear on this surface.">
         You’ll find your reading list here
-      </message>
-      <message name="IDS_READING_LIST_EMPTY_LIST_DESCRIPTION" desc="The description text on reading list page when there are no reading list items informing user that they can save articles to read later which will appear on this surface.">
-        You can save pages to your reading list to find them again
-      </message>
-      <message name="IDS_READING_LIST_EMPTY_LIST_DESCRIPTION_OFFLINE" desc="The description text on reading list page when there are no reading list items informing user that they can save articles to read later offline which will appear on this surface.">
-        You can save pages to your reading list to find them again or read offline
       </message>
 
       <!-- Offline pages -->
