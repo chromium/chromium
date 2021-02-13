@@ -17,6 +17,8 @@ static_library("browser") {
     sources += [
       "base_model_executor.h",
       "base_model_executor_helpers.h",
+      "bert_model_executor.cc",
+      "bert_model_executor.h",
       "optimization_target_model_executor.h",
     ]
   }
@@ -56,7 +58,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "page_text_observer_unittest.cc" ]
   if (build_with_tflite_lib) {
-    sources += [ "optimization_target_model_executor_unittest.cc" ]
+    sources += [
+      "bert_model_executor_unittest.cc",
+      "optimization_target_model_executor_unittest.cc",
+    ]
   }
   deps = [
     ":browser",
