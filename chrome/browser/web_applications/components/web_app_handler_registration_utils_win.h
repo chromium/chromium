@@ -23,7 +23,7 @@ std::wstring GetAppNameExtensionForNextInstall(
     const AppId& app_id,
     const base::FilePath& profile_path);
 
-base::FilePath GetAppSpecificLauncherFilename(const base::string16& app_name);
+base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name);
 
 // See https://docs.microsoft.com/en-us/windows/win32/com/-progid--key for
 // the allowed characters in a prog_id. Since the prog_id is stored in the

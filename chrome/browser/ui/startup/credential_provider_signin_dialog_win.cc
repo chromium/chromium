@@ -434,7 +434,7 @@ bool CanStartGCPWSignin() {
 #endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
   // Ensure that we are running under a "winlogon" desktop before starting the
   // gcpw sign in dialog.
-  return base::win::IsRunningUnderDesktopName(STRING16_LITERAL("winlogon"));
+  return base::win::IsRunningUnderDesktopName(L"winlogon");
 }
 
 bool StartGCPWSignin(const base::CommandLine& command_line,

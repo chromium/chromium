@@ -174,7 +174,7 @@ void VirtualDesktopHelper::InitImpl(HWND hwnd,
   }
   GUID guid = GUID_NULL;
   HRESULT hr =
-      CLSIDFromString(base::UTF8ToUTF16(initial_workspace).c_str(), &guid);
+      CLSIDFromString(base::UTF8ToWide(initial_workspace).c_str(), &guid);
   if (SUCCEEDED(hr)) {
     // There are valid reasons MoveWindowToDesktop can fail, e.g.,
     // the desktop was deleted. If it fails, the window will open on the

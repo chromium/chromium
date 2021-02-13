@@ -480,7 +480,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
         web_app::GetOsIntegrationResourcesDirectoryForApp(profile_dir, app_id,
                                                           GURL());
     web_app_path = web_app_path.Append(web_app::GetAppSpecificLauncherFilename(
-        base::UTF8ToUTF16(registrar.GetAppShortName(app_id))));
+        base::UTF8ToWide(registrar.GetAppShortName(app_id))));
     pwa_launcher_paths.push_back(std::move(web_app_path));
   }
 

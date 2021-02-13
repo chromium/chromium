@@ -463,7 +463,7 @@ void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
   set_close_on_deactivate(!keep_shown_for_testing_);
   if (file_info) {
 #if defined(OS_WIN)
-    local_file_name_ = file_info->display_name;
+    local_file_name_ = base::WideToUTF16(file_info->display_name);
 #else
     local_file_name_ = base::UTF8ToUTF16(file_info->display_name);
 #endif  // defined(OS_WIN)

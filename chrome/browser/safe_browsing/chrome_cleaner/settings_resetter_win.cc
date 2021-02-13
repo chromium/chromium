@@ -172,7 +172,7 @@ void SettingsResetter::OnResetCompleted(Profile* profile) {
 
 // Returns true if there is information of a completed cleanup in the registry.
 bool CleanupCompletedFromRegistry() {
-  base::string16 cleaner_key_path(
+  std::wstring cleaner_key_path(
       chrome_cleaner::kSoftwareRemovalToolRegistryKey);
   cleaner_key_path.append(L"\\").append(chrome_cleaner::kCleanerSubKey);
 

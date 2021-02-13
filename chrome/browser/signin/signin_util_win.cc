@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
@@ -101,8 +102,8 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
 // be still be signed in but sync will be started once the browser window is
 // ready.
 void ImportCredentialsFromProvider(Profile* profile,
-                                   const base::string16& gaia_id,
-                                   const base::string16& email,
+                                   const std::wstring& gaia_id,
+                                   const std::wstring& email,
                                    const std::string& refresh_token,
                                    bool turn_on_sync) {
   // For debugging purposes, record that the credentials for this profile
@@ -114,8 +115,8 @@ void ImportCredentialsFromProvider(Profile* profile,
   CoreAccountId account_id =
       IdentityManagerFactory::GetForProfile(profile)
           ->GetAccountsMutator()
-          ->AddOrUpdateAccount(base::UTF16ToUTF8(gaia_id),
-                               base::UTF16ToUTF8(email), refresh_token,
+          ->AddOrUpdateAccount(base::WideToUTF8(gaia_id),
+                               base::WideToUTF8(email), refresh_token,
                                /*is_under_advanced_protection=*/false,
                                signin_metrics::SourceForRefreshTokenOperation::
                                    kMachineLogon_CredentialProvider);
@@ -151,8 +152,8 @@ void ImportCredentialsFromProvider(Profile* profile,
 // true, importing refresh_token is allowed even if the profile has primary
 // account for the user authenticated through credential provider.
 void ExtractCredentialImportPreferences(
-    base::string16* cred_provider_gaia_id,
-    base::string16* cred_provider_email,
+    std::wstring* cred_provider_gaia_id,
+    std::wstring* cred_provider_email,
     bool* allow_import_only_on_first_run,
     bool* allow_import_when_primary_account_exists) {
   DCHECK(cred_provider_gaia_id);
@@ -180,9 +181,9 @@ void ExtractCredentialImportPreferences(
   if (!key_account.Valid())
     return;
 
-  base::string16 email;
+  std::wstring email;
   if (key_account.ReadValue(
-          base::UTF8ToUTF16(credential_provider::kKeyEmail).c_str(), &email) !=
+          base::UTF8ToWide(credential_provider::kKeyEmail).c_str(), &email) !=
       ERROR_SUCCESS) {
     return;
   }
@@ -211,7 +212,7 @@ void ExtractCredentialImportPreferences(
 // credential must be for the same account.  Starts the process to turn on DICE
 // only if |turn_on_sync| is true.
 bool TrySigninWithCredentialProvider(Profile* profile,
-                                     const base::string16& auth_gaia_id,
+                                     const std::wstring& auth_gaia_id,
                                      bool turn_on_sync) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, credential_provider::kRegHkcuAccountsPath,
@@ -227,13 +228,13 @@ bool TrySigninWithCredentialProvider(Profile* profile,
   if (!key_account.Valid())
     return false;
 
-  base::string16 gaia_id = it.Name();
+  std::wstring gaia_id = it.Name();
   if (!auth_gaia_id.empty() && auth_gaia_id != gaia_id)
     return false;
 
-  base::string16 email;
+  std::wstring email;
   if (key_account.ReadValue(
-          base::UTF8ToUTF16(credential_provider::kKeyEmail).c_str(), &email) !=
+          base::UTF8ToWide(credential_provider::kKeyEmail).c_str(), &email) !=
       ERROR_SUCCESS) {
     return false;
   }
@@ -245,7 +246,7 @@ bool TrySigninWithCredentialProvider(Profile* profile,
   DWORD size = 0;
   DWORD type;
   if (key_account.ReadValue(
-          base::UTF8ToUTF16(credential_provider::kKeyRefreshToken).c_str(),
+          base::UTF8ToWide(credential_provider::kKeyRefreshToken).c_str(),
           nullptr, &size, &type) != ERROR_SUCCESS) {
     return false;
   }
@@ -253,7 +254,7 @@ bool TrySigninWithCredentialProvider(Profile* profile,
   encrypted_refresh_token.resize(size);
   bool reauth_attempted = false;
   key_account.ReadValue(
-      base::UTF8ToUTF16(credential_provider::kKeyRefreshToken).c_str(),
+      base::UTF8ToWide(credential_provider::kKeyRefreshToken).c_str(),
       const_cast<char*>(encrypted_refresh_token.c_str()), &size, &type);
   if (!gaia_id.empty() && !email.empty() && type == REG_BINARY &&
       !encrypted_refresh_token.empty()) {
@@ -266,7 +267,7 @@ bool TrySigninWithCredentialProvider(Profile* profile,
   }
 
   key_account.DeleteValue(
-      base::UTF8ToUTF16(credential_provider::kKeyRefreshToken).c_str());
+      base::UTF8ToWide(credential_provider::kKeyRefreshToken).c_str());
   return reauth_attempted;
 }
 
@@ -316,8 +317,8 @@ bool CanSignInToCurrentProfile(const std::string& gaia_id,
 void SigninWithCredentialProviderIfPossible(Profile* profile) {
   bool import_only_on_first_run = true;
   bool import_when_primary_account_exists = false;
-  base::string16 cred_provider_gaia_id;
-  base::string16 cred_provider_email;
+  std::wstring cred_provider_gaia_id;
+  std::wstring cred_provider_email;
 
   ExtractCredentialImportPreferences(
       &cred_provider_gaia_id, &cred_provider_email, &import_only_on_first_run,
@@ -325,8 +326,8 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
   if (cred_provider_gaia_id.empty() || cred_provider_email.empty())
     return;
 
-  if (!CanSignInToCurrentProfile(base::UTF16ToUTF8(cred_provider_gaia_id),
-                                 base::UTF16ToUTF8(cred_provider_email),
+  if (!CanSignInToCurrentProfile(base::WideToUTF8(cred_provider_gaia_id),
+                                 base::WideToUTF8(cred_provider_email),
                                  profile) ||
       IsGCPWUsedInOtherProfile(profile)) {
     return;
@@ -336,9 +337,9 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
     return;
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  base::string16 gaia_id;
+  std::wstring gaia_id;
   if (identity_manager->HasPrimaryAccount()) {
-    gaia_id = base::UTF8ToUTF16(identity_manager->GetPrimaryAccountInfo().gaia);
+    gaia_id = base::UTF8ToWide(identity_manager->GetPrimaryAccountInfo().gaia);
 
     if (!import_when_primary_account_exists) {
       return;
@@ -363,8 +364,8 @@ bool ReauthWithCredentialProviderIfPossible(Profile* profile) {
     return false;
   }
 
-  base::string16 gaia_id =
-      base::UTF8ToUTF16(identity_manager->GetPrimaryAccountInfo().gaia.c_str());
+  std::wstring gaia_id =
+      base::UTF8ToWide(identity_manager->GetPrimaryAccountInfo().gaia.c_str());
   return TrySigninWithCredentialProvider(profile, gaia_id, false);
 }
 

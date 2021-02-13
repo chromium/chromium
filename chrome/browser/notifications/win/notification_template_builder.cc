@@ -357,7 +357,7 @@ const char kNotificationLaunchAttribute[] = "launch";
 // to use) for building the XML template because it is used frequently in
 // Chrome, is nicer to use and has already been vetted.
 // https://docs.microsoft.com/en-us/windows/uwp/controls-and-patterns/tiles-and-notifications-adaptive-interactive-toasts
-base::string16 BuildNotificationTemplate(
+std::wstring BuildNotificationTemplate(
     NotificationImageRetainer* image_retainer,
     const NotificationLaunchId& launch_id,
     const message_center::Notification& notification) {
@@ -436,7 +436,7 @@ base::string16 BuildNotificationTemplate(
 
   // The |kXmlVersionHeader| is automatically appended by libxml, but the toast
   // system in the Windows Action Center expects it to be absent.
-  return base::UTF8ToUTF16(
+  return base::UTF8ToWide(
       base::StringPiece(template_xml).substr(sizeof(kXmlVersionHeader) - 1));
 }
 

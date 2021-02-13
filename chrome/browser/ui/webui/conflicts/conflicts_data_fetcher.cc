@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/win/conflicts/module_database.h"

@@ -336,7 +336,10 @@ GURL ReadFaviconURLFromInternetShortcut(IUniformResourceLocator* url_locator) {
 // IE7 and above store the data.
 bool ReadFaviconDataFromInternetShortcut(const base::FilePath& file,
                                          std::string* data) {
-  return base::ReadFileToString(file.Append(kFaviconStreamName), data);
+  // Do not use .Append() here, since we don't want a separator added into the
+  // filename.
+  return base::ReadFileToString(
+      base::FilePath(file.value() + kFaviconStreamName), data);
 }
 
 // Reads the favicon imaga data in the Internet cache. IE6 doesn't hold the data

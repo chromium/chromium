@@ -11,7 +11,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/ranges/algorithm.h"
 #include "base/file_version_info.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string16.h"
@@ -33,7 +32,7 @@ constexpr uint32_t kFirstValidProcessType = content::PROCESS_TYPE_BROWSER;
 // and the certificate information.
 void PopulateModuleInfoData(const base::FilePath& module_path,
                             ModuleInspectionResult* inspection_result) {
-  inspection_result->location = module_path.value();
+  inspection_result->location = module_path.AsUTF16Unsafe();
 
   std::unique_ptr<FileVersionInfo> file_version_info(
       FileVersionInfo::CreateFileVersionInfo(module_path));
@@ -49,13 +48,13 @@ void PopulateModuleInfoData(const base::FilePath& module_path,
 // Returns the long path name given a short path name. A short path name is a
 // path that follows the 8.3 convention and has ~x in it. If the path is already
 // a long path name, the function returns the current path without modification.
-bool ConvertToLongPath(const std::wstring& short_path,
-                       std::wstring* long_path) {
+bool ConvertToLongPath(const base::string16& short_path,
+                       base::string16* long_path) {
   wchar_t long_path_buf[MAX_PATH];
   DWORD return_value =
-      ::GetLongPathName(short_path.c_str(), long_path_buf, MAX_PATH);
+      ::GetLongPathName(base::as_wcstr(short_path), long_path_buf, MAX_PATH);
   if (return_value != 0 && return_value < MAX_PATH) {
-    *long_path = long_path_buf;
+    *long_path = base::AsString16(std::wstring(long_path_buf));
     return true;
   }
 
@@ -153,17 +152,17 @@ bool IsBlockingEnabledInProcessTypes(uint32_t process_types) {
 namespace internal {
 
 void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
-  std::wstring path = inspection_result->location;
+  base::string16 path = inspection_result->location;
   if (!ConvertToLongPath(path, &inspection_result->location))
     inspection_result->location = path;
 
-  base::ranges::transform(inspection_result->location,
-                          inspection_result->location.begin(), &std::towlower);
+  inspection_result->location =
+      base::i18n::ToLower(inspection_result->location);
 
   // Location contains the filename, so the last slash is where the path
   // ends.
-  size_t last_slash = inspection_result->location.find_last_of(L"\\");
-  if (last_slash != std::wstring::npos) {
+  size_t last_slash = inspection_result->location.find_last_of('\\');
+  if (last_slash != base::string16::npos) {
     inspection_result->basename =
         inspection_result->location.substr(last_slash + 1);
     inspection_result->location =

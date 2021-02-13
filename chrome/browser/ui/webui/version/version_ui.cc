@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/i18n/message_formatter.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -195,7 +196,8 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
 #if defined(OS_WIN)
   html_source->AddString(
       version_ui::kCommandLine,
-      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
+      base::AsString16(
+          base::CommandLine::ForCurrentProcess()->GetCommandLineString()));
 #elif defined(OS_POSIX)
   std::string command_line;
   typedef std::vector<std::string> ArgvList;

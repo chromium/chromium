@@ -70,7 +70,7 @@ StringMapping GetEnvironmentVariablesMapping(
 // This function expects |prefix_mapping| and |path| to contain lowercase
 // strings. Also, |prefix_mapping| must not contain any trailing backslashes.
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  std::wstring* path);
+                                  base::string16* path);
 
 // Reads the file on disk to find out the SizeOfImage and TimeDateStamp
 // properties of the module. Returns false on error.

@@ -123,12 +123,12 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
           continue;  // Oops, don't know what to do with this item.
         }
 
-        base::FilePath::StringType path;
+        std::string path;
         // The plugin list constains all the plugin files in addition to the
         // plugin groups.
         if (plugin->GetString("path", &path)) {
           // Files have a path attribute, groups don't.
-          base::FilePath plugin_path(path);
+          base::FilePath plugin_path = base::FilePath::FromUTF8Unsafe(path);
 
           // The path to the internal plugin directory changes everytime Chrome
           // is auto-updated, since it contains the current version number. For
@@ -164,7 +164,7 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
             // |last_internal_dir|. We don't need to update it.
             if (!relative_path.empty()) {
               plugin_path = cur_internal_dir.Append(relative_path);
-              path = plugin_path.value();
+              path = plugin_path.AsUTF8Unsafe();
               plugin->SetString("path", path);
             }
           }

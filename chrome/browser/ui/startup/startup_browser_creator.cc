@@ -1272,7 +1272,7 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
   std::string profile_id =
       NotificationLaunchId::GetNotificationLaunchProfileId(command_line);
   if (!profile_id.empty()) {
-    return user_data_dir.Append(base::FilePath(base::UTF8ToUTF16(profile_id)));
+    return user_data_dir.Append(base::FilePath(base::UTF8ToWide(profile_id)));
   }
 #endif  // defined(OS_WIN)
 

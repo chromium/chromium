@@ -57,10 +57,10 @@ struct ModuleInspectionResult {
   ~ModuleInspectionResult();
 
   // The lowercase module path, not including the basename.
-  std::wstring location;
+  base::string16 location;
 
   // The basename of the module.
-  std::wstring basename;
+  base::string16 basename;
 
   // The name of the product the module belongs to.
   base::string16 product_name;

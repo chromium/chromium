@@ -93,7 +93,7 @@ std::pair<ScopedHandle, ScopedHandle> CreateMessagePipe(
   // Handles to inherit will be added to the LaunchOptions explicitly.
   security_attributes.bInheritHandle = false;
 
-  base::string16 pipe_name = base::UTF8ToUTF16(
+  std::wstring pipe_name = base::UTF8ToWide(
       base::StrCat({"\\\\.\\pipe\\chrome-cleaner-",
                     base::UnguessableToken::Create().ToString()}));
 
@@ -483,15 +483,15 @@ void ChromePromptChannel::HandlePromptUserRequest(
   std::vector<base::FilePath> files_to_delete;
   files_to_delete.reserve(request.files_to_delete_size());
   for (const std::string& file_path : request.files_to_delete()) {
-    base::string16 file_path_utf16;
-    if (!base::UTF8ToUTF16(file_path.c_str(), file_path.size(),
-                           &file_path_utf16)) {
+    std::wstring file_path_wide;
+    if (!base::UTF8ToWide(file_path.c_str(), file_path.size(),
+                          &file_path_wide)) {
       LOG(ERROR) << "Undisplayable file path in PromptUserRequest.";
       WriteStatusErrorCodeToHistogram(ErrorCategory::kCustomError,
                                       CustomErrors::kUndisplayableFilePath);
       return;
     }
-    files_to_delete.push_back(base::FilePath(file_path_utf16));
+    files_to_delete.push_back(base::FilePath(file_path_wide));
   }
 
   base::Optional<std::vector<base::string16>> optional_registry_keys;

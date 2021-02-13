@@ -11,6 +11,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -148,9 +149,9 @@ ProfilePrefStoreManager::CreateTrackedPrefStoreConfiguration(
       std::move(tracking_configuration), reporting_ids_count, seed_,
       legacy_device_id_, "ChromeRegistryHashStoreValidationSeed",
 #if defined(OS_WIN)
-      g_preference_validation_registry_path_for_testing
-          ? *g_preference_validation_registry_path_for_testing
-          : install_static::GetRegistryPath(),
+      base::AsString16(g_preference_validation_registry_path_for_testing
+                           ? *g_preference_validation_registry_path_for_testing
+                           : install_static::GetRegistryPath()),
 #else
       base::string16(),
 #endif

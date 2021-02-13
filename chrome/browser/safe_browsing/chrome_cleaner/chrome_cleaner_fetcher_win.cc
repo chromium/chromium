@@ -188,7 +188,7 @@ void ChromeCleanerFetcher::OnTemporaryDirectoryCreated(bool success) {
   DCHECK(!scoped_temp_dir_->GetPath().empty());
 
   base::FilePath temp_file = scoped_temp_dir_->GetPath().Append(
-      base::ASCIIToUTF16(base::GenerateGUID()) + L".tmp");
+      base::ASCIIToWide(base::GenerateGUID()) + L".tmp");
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GetSRTDownloadURL();

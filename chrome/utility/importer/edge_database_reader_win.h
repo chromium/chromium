@@ -38,13 +38,13 @@ class EdgeErrorObject {
 
 class EdgeDatabaseTableEnumerator : public EdgeErrorObject {
  public:
-  EdgeDatabaseTableEnumerator(const base::string16& table_name,
+  EdgeDatabaseTableEnumerator(const std::wstring& table_name,
                               JET_SESID session_id,
                               JET_TABLEID table_id);
 
   ~EdgeDatabaseTableEnumerator();
 
-  const base::string16& table_name() { return table_name_; }
+  const std::wstring& table_name() { return table_name_; }
 
   // Reset the enumerator to the start of the table. Returns true if successful.
   bool Reset();
@@ -61,7 +61,7 @@ class EdgeDatabaseTableEnumerator : public EdgeErrorObject {
 
   std::map<const std::wstring, JET_COLUMNBASE> columns_by_name_;
   JET_TABLEID table_id_;
-  base::string16 table_name_;
+  std::wstring table_name_;
   JET_SESID session_id_;
 
   DISALLOW_COPY_AND_ASSIGN(EdgeDatabaseTableEnumerator);

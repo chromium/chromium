@@ -26,21 +26,21 @@ namespace {
 // Hardcoded value for the secure version of Acrobat Reader.
 const char kSecureVersion[] = "11.0.8.4";
 
-const base::char16 kRegistryAcrobat[] = L"Acrobat.exe";
-const base::char16 kRegistryAcrobatReader[] = L"AcroRd32.exe";
-const base::char16 kRegistryApps[] =
+const wchar_t kRegistryAcrobat[] = L"Acrobat.exe";
+const wchar_t kRegistryAcrobatReader[] = L"AcroRd32.exe";
+const wchar_t kRegistryApps[] =
     L"Software\\Microsoft\\Windows\\CurrentVersion\\App Paths";
-const base::char16 kRegistryPath[] = L"Path";
+const wchar_t kRegistryPath[] = L"Path";
 
 // Gets the installed path for a registered app.
-base::FilePath GetInstalledPath(const base::char16* app) {
-  base::string16 reg_path(kRegistryApps);
+base::FilePath GetInstalledPath(const wchar_t* app) {
+  std::wstring reg_path(kRegistryApps);
   reg_path.append(L"\\");
   reg_path.append(app);
 
   base::FilePath filepath;
   base::win::RegKey hkcu_key(HKEY_CURRENT_USER, reg_path.c_str(), KEY_READ);
-  base::string16 path;
+  std::wstring path;
   // AppPaths can also be registered in HKCU: http://goo.gl/UgFOf.
   if (hkcu_key.ReadValue(kRegistryPath, &path) == ERROR_SUCCESS) {
     filepath = base::FilePath(path);
@@ -54,7 +54,7 @@ base::FilePath GetInstalledPath(const base::char16* app) {
 }
 
 bool IsAdobeReaderDefaultPDFViewerInternal(base::FilePath* path) {
-  base::char16 app_cmd_buf[MAX_PATH];
+  wchar_t app_cmd_buf[MAX_PATH];
   DWORD app_cmd_buf_len = MAX_PATH;
   HRESULT hr = AssocQueryString(ASSOCF_NONE, ASSOCSTR_COMMAND, L".pdf", L"open",
                                 app_cmd_buf, &app_cmd_buf_len);
@@ -68,8 +68,8 @@ bool IsAdobeReaderDefaultPDFViewerInternal(base::FilePath* path) {
   if (install_path.empty())
     return false;
 
-  base::string16 app_cmd(app_cmd_buf);
-  bool found = app_cmd.find(install_path.value()) != base::string16::npos;
+  std::wstring app_cmd(app_cmd_buf);
+  bool found = app_cmd.find(install_path.value()) != std::wstring::npos;
   if (found && path)
     *path = install_path;
   return found;

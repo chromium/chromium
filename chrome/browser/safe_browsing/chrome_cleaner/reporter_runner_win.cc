@@ -174,7 +174,7 @@ class UMAHistogramReporter {
   // Reports UwS found by the software reporter tool via UMA.
   void ReportFoundUwS() const {
     base::win::RegKey reporter_key;
-    std::vector<base::string16> found_uws_strings;
+    std::vector<std::wstring> found_uws_strings;
     if (reporter_key.Open(HKEY_CURRENT_USER, registry_key_.c_str(),
                           KEY_QUERY_VALUE | KEY_SET_VALUE) != ERROR_SUCCESS ||
         reporter_key.ReadValues(chrome_cleaner::kFoundUwsValueName,
@@ -183,7 +183,7 @@ class UMAHistogramReporter {
     }
 
     bool parse_error = false;
-    for (const base::string16& uws_string : found_uws_strings) {
+    for (const auto& uws_string : found_uws_strings) {
       // All UwS ids are expected to be integers.
       uint32_t uws_id = 0;
       if (base::StringToUint(uws_string, &uws_id)) {
@@ -780,7 +780,7 @@ class ReporterRunner {
         chrome_cleaner::kChromeVersionSwitch, version_info::GetVersionNumber());
     invocation->mutable_command_line().AppendSwitchNative(
         chrome_cleaner::kChromeChannelSwitch,
-        base::NumberToString16(ChannelAsInt()));
+        base::NumberToWString(ChannelAsInt()));
   }
 
   void SendResultAndDeleteSelf(SwReporterInvocationResult result) {

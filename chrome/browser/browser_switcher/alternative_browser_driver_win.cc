@@ -124,7 +124,7 @@ std::wstring GetBrowserLocation(const wchar_t* regkey_name) {
   return location;
 }
 
-const BrowserVarMapping* FindBrowserMapping(base::StringPiece16 path,
+const BrowserVarMapping* FindBrowserMapping(base::WStringPiece path,
                                             bool compare_typical_executable) {
   // If |compare_typical_executable| is true: also look at executable filenames,
   // to reduce false-negatives when the path is specified explicitly by the
@@ -194,7 +194,8 @@ bool IsInternetExplorer(base::StringPiece path) {
   // We don't treat IExplore.exe as Internet Explorer here. This way, admins can
   // set |AlternativeBrowserPath| to IExplore.exe to disable DDE, if it's
   // causing issues or slowness.
-  return (path.empty() || base::EqualsASCII(kIExploreKey, path));
+  return path.empty() ||
+         base::EqualsASCII(base::as_u16cstr(kIExploreKey), path);
 }
 
 bool TryLaunchWithDde(const GURL& url, const std::string& path) {

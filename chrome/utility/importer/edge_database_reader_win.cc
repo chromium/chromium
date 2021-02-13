@@ -118,7 +118,7 @@ bool EdgeErrorObject::SetLastError(JET_ERR error) {
 }
 
 EdgeDatabaseTableEnumerator::EdgeDatabaseTableEnumerator(
-    const base::string16& table_name,
+    const std::wstring& table_name,
     JET_SESID session_id,
     JET_TABLEID table_id)
     : table_id_(table_id), table_name_(table_name), session_id_(session_id) {}

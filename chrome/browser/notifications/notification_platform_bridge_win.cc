@@ -88,7 +88,7 @@ HRESULT CreateActivationFactory(wchar_t const (&class_name)[size],
                                 const IID& iid,
                                 void** factory) {
   ScopedHString ref_class_name =
-      ScopedHString::Create(base::StringPiece16(class_name, size - 1));
+      ScopedHString::Create(base::WStringPiece(class_name, size - 1));
   return base::win::RoGetActivationFactory(ref_class_name.get(), iid, factory);
 }
 
@@ -192,7 +192,7 @@ class NotificationPlatformBridgeWinImpl
   // classified with the display path.
   mswr::ComPtr<winui::Notifications::IToastNotification> GetToastNotification(
       const message_center::Notification& notification,
-      const base::string16& xml_template,
+      const std::wstring& xml_template,
       const std::string& profile_id,
       bool incognito) {
     ScopedHString ref_class_name =
@@ -367,7 +367,7 @@ class NotificationPlatformBridgeWinImpl
     NotificationLaunchId launch_id(notification_type, notification->id(),
                                    profile_id, incognito,
                                    notification->origin_url());
-    base::string16 xml_template = BuildNotificationTemplate(
+    std::wstring xml_template = BuildNotificationTemplate(
         image_retainer_.get(), launch_id, *notification);
     mswr::ComPtr<winui::Notifications::IToastNotification> toast =
         GetToastNotification(*notification, xml_template, profile_id,
@@ -683,7 +683,7 @@ class NotificationPlatformBridgeWinImpl
   // system, either under HKCU or HKLM.
   bool IsToastActivatorRegistered() {
     base::win::RegKey key;
-    base::string16 path =
+    std::wstring path =
         InstallUtil::GetToastActivatorRegistryPath() + L"\\LocalServer32";
     HKEY root = install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
                                                   : HKEY_CURRENT_USER;
@@ -774,16 +774,16 @@ class NotificationPlatformBridgeWinImpl
     notification_task_runner_->DeleteSoon(FROM_HERE, image_retainer_.release());
   }
 
-  base::string16 GetAppId() const {
+  std::wstring GetAppId() const {
     return ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall());
   }
 
-  base::string16 GetTag(const std::string& notification_id,
-                        const std::string& profile_id,
-                        bool incognito) {
+  std::wstring GetTag(const std::string& notification_id,
+                      const std::string& profile_id,
+                      bool incognito) {
     std::string payload = base::StringPrintf(
         "%s|%s|%d", notification_id.c_str(), profile_id.c_str(), incognito);
-    return base::NumberToString16(base::Hash(payload));
+    return base::NumberToWString(base::Hash(payload));
   }
 
   HRESULT OnFailed(winui::Notifications::IToastNotification* notification,
@@ -971,7 +971,7 @@ bool NotificationPlatformBridgeWin::HandleActivation(
     const base::CommandLine& command_line) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  NotificationLaunchId launch_id(base::UTF16ToUTF8(
+  NotificationLaunchId launch_id(base::WideToUTF8(
       command_line.GetSwitchValueNative(switches::kNotificationLaunchId)));
   if (!launch_id.is_valid()) {
     LogActivationStatus(ActivationStatus::kInvalidLaunchId);
@@ -979,10 +979,10 @@ bool NotificationPlatformBridgeWin::HandleActivation(
   }
 
   base::Optional<base::string16> reply;
-  base::string16 inline_reply =
+  std::wstring inline_reply =
       command_line.GetSwitchValueNative(switches::kNotificationInlineReply);
   if (!inline_reply.empty())
-    reply = inline_reply;
+    reply = base::AsString16(inline_reply);
 
   NotificationCommon::Operation operation;
   if (launch_id.is_for_dismiss_button())
@@ -1059,7 +1059,7 @@ NotificationPlatformBridgeWin::GetExpectedDisplayedNotificationForTesting()
 mswr::ComPtr<winui::Notifications::IToastNotification>
 NotificationPlatformBridgeWin::GetToastNotificationForTesting(
     const message_center::Notification& notification,
-    const base::string16& xml_template,
+    const std::wstring& xml_template,
     const std::string& profile_id,
     bool incognito) {
   return impl_->GetToastNotification(notification, xml_template, profile_id,

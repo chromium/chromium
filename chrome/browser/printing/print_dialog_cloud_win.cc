@@ -45,8 +45,8 @@ class PrintDataSetter : public content::WebContentsObserver {
  public:
   PrintDataSetter(content::WebContents* web_contents,
                   scoped_refptr<base::RefCountedMemory> data,
-                  const base::string16& print_job_title,
-                  const base::string16& print_ticket,
+                  const std::wstring& print_job_title,
+                  const std::wstring& print_ticket,
                   const std::string& file_type)
       : WebContentsObserver(web_contents) {
     DCHECK_NE(data->size(), 0u);
@@ -60,11 +60,11 @@ class PrintDataSetter : public content::WebContentsObserver {
 
     base::DictionaryValue message_data;
     message_data.SetString("type", "dataUrl");
-    message_data.SetString("title", print_job_title);
+    message_data.SetString("title", base::AsString16(print_job_title));
     message_data.SetString("content", base64_data);
     std::string json_data;
     base::JSONWriter::Write(message_data, &json_data);
-    message_data_ = L"cp-dialog-set-print-document::";
+    message_data_ = STRING16_LITERAL("cp-dialog-set-print-document::");
     message_data_.append(base::UTF8ToUTF16(json_data));
   }
 
@@ -86,8 +86,8 @@ class PrintDataSetter : public content::WebContentsObserver {
 };
 
 void CreatePrintDialog(content::BrowserContext* browser_context,
-                       const base::string16& print_job_title,
-                       const base::string16& print_ticket,
+                       const std::wstring& print_job_title,
+                       const std::wstring& print_ticket,
                        const std::string& file_type,
                        scoped_refptr<base::RefCountedMemory> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -126,8 +126,8 @@ scoped_refptr<base::RefCountedMemory> ReadFile(
 
 void CreatePrintDialogForFile(content::BrowserContext* browser_context,
                               const base::FilePath& path_to_file,
-                              const base::string16& print_job_title,
-                              const base::string16& print_ticket,
+                              const std::wstring& print_job_title,
+                              const std::wstring& print_ticket,
                               const std::string& file_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -146,9 +146,9 @@ bool CreatePrintDialogFromCommandLine(Profile* profile,
   DCHECK(!cloud_print_file.empty());
   if (cloud_print_file.empty())
     return false;
-  base::string16 print_job_title =
+  std::wstring print_job_title =
       command_line.GetSwitchValueNative(switches::kCloudPrintJobTitle);
-  base::string16 print_job_print_ticket =
+  std::wstring print_job_print_ticket =
       command_line.GetSwitchValueNative(switches::kCloudPrintPrintTicket);
   std::string file_type =
       command_line.GetSwitchValueASCII(switches::kCloudPrintFileType);

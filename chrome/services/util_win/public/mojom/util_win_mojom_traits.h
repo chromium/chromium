@@ -36,8 +36,8 @@ struct EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type> {
 template <>
 struct StructTraits<chrome::mojom::InspectionResultDataView,
                     ModuleInspectionResult> {
-  static const std::wstring& location(const ModuleInspectionResult& input);
-  static const std::wstring& basename(const ModuleInspectionResult& input);
+  static const base::string16& location(const ModuleInspectionResult& input);
+  static const base::string16& basename(const ModuleInspectionResult& input);
   static const base::string16& product_name(
       const ModuleInspectionResult& input);
   static const base::string16& description(const ModuleInspectionResult& input);

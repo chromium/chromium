@@ -510,7 +510,7 @@ void UserManagerScreenHandler::HandleRemoveUserWarningLoadStats(
   if (!profile_path)
     return;
 
-  base::Value return_profile_path(profile_path->value());
+  base::Value return_profile_path(profile_path->AsUTF8Unsafe());
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(*profile_path);
 
@@ -545,9 +545,9 @@ void UserManagerScreenHandler::RemoveUserDialogLoadStatsCallback(
     stat->SetKey("count", base::Value(item.count));
     return_value.SetWithoutPathExpansion(item.category, std::move(stat));
   }
-  web_ui()->CallJavascriptFunctionUnsafe("updateRemoveWarningDialog",
-                                         base::Value(profile_path.value()),
-                                         return_value);
+  web_ui()->CallJavascriptFunctionUnsafe(
+      "updateRemoveWarningDialog", base::Value(profile_path.AsUTF8Unsafe()),
+      return_value);
 }
 
 void UserManagerScreenHandler::OnGetTokenInfoResponse(

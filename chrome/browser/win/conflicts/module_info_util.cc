@@ -279,26 +279,26 @@ StringMapping GetEnvironmentVariablesMapping(
 }
 
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  std::wstring* path) {
-  const std::wstring path_copy = *path;
-  DCHECK_EQ(base::i18n::ToLower(base::AsString16(path_copy)), path_copy);
+                                  base::string16* path) {
+  const base::string16 path_copy = *path;
+  DCHECK_EQ(base::i18n::ToLower(path_copy), path_copy);
 
   size_t min_length = std::numeric_limits<size_t>::max();
   for (const auto& mapping : prefix_mapping) {
     DCHECK_EQ(base::i18n::ToLower(mapping.first), mapping.first);
-    if (base::StartsWith(base::AsString16(path_copy), mapping.first)) {
+    if (base::StartsWith(path_copy, mapping.first)) {
       // Make sure the matching prefix is a full path component.
       if (path_copy[mapping.first.length()] != '\\' &&
           path_copy[mapping.first.length()] != '\0') {
         continue;
       }
 
-      base::string16 collapsed_path = base::AsString16(path_copy);
+      base::string16 collapsed_path = path_copy;
       base::ReplaceFirstSubstringAfterOffset(&collapsed_path, 0, mapping.first,
                                              mapping.second);
       size_t length = collapsed_path.length() - mapping.second.length();
       if (length < min_length) {
-        *path = base::AsWString(collapsed_path);
+        *path = collapsed_path;
         min_length = length;
       }
     }

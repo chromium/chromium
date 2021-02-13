@@ -224,7 +224,7 @@ std::unique_ptr<OverlayWindowViews> OverlayWindowViews::Create(
   overlay_window->OnRootViewReady();
 
 #if defined(OS_WIN)
-  base::string16 app_user_model_id;
+  std::wstring app_user_model_id;
   Browser* browser =
       chrome::FindBrowserWithWebContents(controller->GetWebContents());
   if (browser) {

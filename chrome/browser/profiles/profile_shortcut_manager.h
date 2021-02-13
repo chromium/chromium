@@ -51,7 +51,7 @@ class ProfileShortcutManager {
   // the given |profile_path| should use.
   virtual void GetShortcutProperties(const base::FilePath& profile_path,
                                      base::CommandLine* command_line,
-                                     base::string16* name,
+                                     std::wstring* name,
                                      base::FilePath* icon_path) = 0;
 
   // Any time a profile is created this class might do a lot of work in the
