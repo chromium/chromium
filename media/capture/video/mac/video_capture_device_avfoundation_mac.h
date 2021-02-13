@@ -63,6 +63,9 @@ CAPTURE_EXPORT
   media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver
       GUARDED_BY(_lock);  // weak.
   bool _capturedFirstFrame GUARDED_BY(_lock);
+  bool _capturedFrameSinceLastStallCheck GUARDED_BY(_lock);
+  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
+      _weakPtrFactoryForStallCheck;
 
   // Used to rate-limit crash reports for https://crbug.com/1168112.
   bool _hasDumpedForFrameSizeMismatch;

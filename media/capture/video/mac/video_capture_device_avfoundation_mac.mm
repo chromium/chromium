@@ -391,13 +391,18 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
   }
 
-  base::AutoLock lock(_lock);
-  _capturedFirstFrame = false;
+  {
+    base::AutoLock lock(_lock);
+    _capturedFirstFrame = false;
+    _capturedFrameSinceLastStallCheck = NO;
+  }
+  [self doStallCheck:0];
   return YES;
 }
 
 - (void)stopCapture {
   DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  _weakPtrFactoryForStallCheck.reset();
   [self stopStillImageOutput];
   if ([_captureSession isRunning])
     [_captureSession stopRunning];  // Synchronous.
@@ -795,6 +800,61 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                             overriddenColorSpace);
 }
 
+// Sometimes (especially when the camera is accessed by another process, e.g,
+// Photo Booth), the AVCaptureSession will stop producing new frames. This check
+// happens with no errors or notifications being produced. To recover from this,
+// check to see if a new frame has been captured second. If 5 of these checks
+// fail consecutively, restart the capture session.
+// https://crbug.com/1176568
+- (void)doStallCheck:(int)failedCheckCount {
+  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+
+  int nextFailedCheckCount = failedCheckCount + 1;
+  {
+    base::AutoLock lock(_lock);
+    // This is to detect a capture was working, but stopped submitting new
+    // frames. If we haven't received any frames yet, don't do anything.
+    if (!_capturedFirstFrame)
+      nextFailedCheckCount = 0;
+
+    // If we captured a frame since last check, then we aren't stalled.
+    if (_capturedFrameSinceLastStallCheck)
+      nextFailedCheckCount = 0;
+    _capturedFrameSinceLastStallCheck = NO;
+  }
+
+  constexpr int kMaxFailedCheckCount = 5;
+  if (nextFailedCheckCount < kMaxFailedCheckCount) {
+    // Post a task to check for progress in 1 second. Create the weak factory
+    // for the posted task, if needed.
+    if (!_weakPtrFactoryForStallCheck) {
+      _weakPtrFactoryForStallCheck = std::make_unique<
+          base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>(self);
+    }
+    constexpr base::TimeDelta kStallCheckInterval =
+        base::TimeDelta::FromSeconds(1);
+    auto callback_lambda =
+        [](base::WeakPtr<VideoCaptureDeviceAVFoundation> weakSelf,
+           int failedCheckCount) {
+          VideoCaptureDeviceAVFoundation* strongSelf = weakSelf.get();
+          if (!strongSelf)
+            return;
+          [strongSelf doStallCheck:failedCheckCount];
+        };
+    _mainThreadTaskRunner->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(callback_lambda,
+                       _weakPtrFactoryForStallCheck->GetWeakPtr(),
+                       nextFailedCheckCount),
+        kStallCheckInterval);
+  } else {
+    // Capture appears to be stalled. Restart it.
+    LOG(ERROR) << "Capture appears to have stalled, restarting.";
+    [self stopCapture];
+    [self startCapture];
+  }
+}
+
 // |captureOutput| is called by the capture device to deliver a new frame.
 // Since the callback is configured to happen on a global dispatch queue, calls
 // may enter here concurrently and on any thread.
@@ -806,6 +866,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // Concurrent calls into |_frameReceiver| are not supported, so take |_lock|
   // before any of the subsequent paths.
   base::AutoLock lock(_lock);
+  _capturedFrameSinceLastStallCheck = YES;
   if (!_frameReceiver)
     return;
 
