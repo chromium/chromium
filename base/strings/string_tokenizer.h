@@ -9,13 +9,17 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 
 namespace base {
 
 // StringTokenizerT is a simple string tokenizer class.  It works like an
 // iterator that with each step (see the Advance method) updates members that
 // refer to the next token in the input string.  The user may optionally
-// configure the tokenizer to return delimiters.
+// configure the tokenizer to return delimiters. For the optional
+// WhitespacePolicy parameter, kSkipOver will cause the tokenizer to skip
+// over whitespace characters. The tokenizer never stops on a whitespace
+// character.
 //
 // EXAMPLE 1:
 //
@@ -80,6 +84,23 @@ namespace base {
 //   }
 //
 //
+// EXAMPLE 4:
+//
+//   std::string input = "this, \t is, \t a, \t test";
+//   StringTokenizer t(input, ",",
+//       StringTokenizer::WhitespacePolicy::kSkipOver);
+//   while (t.GetNext()) {
+//     printf("%s\n", t.token().c_str());
+//   }
+//
+// Output:
+//
+//   this
+//   is
+//   a
+//   test
+//
+//
 template <class str, class const_iterator>
 class StringTokenizerT {
  public:
@@ -96,23 +117,41 @@ class StringTokenizerT {
     RETURN_EMPTY_TOKENS = 1 << 1,
   };
 
+  // Policy indicating what to do with whitespace characters. Whitespace is
+  // defined to be the characters indicated here:
+  // https://www.w3schools.com/jsref/jsref_regexp_whitespace.asp
+  enum class WhitespacePolicy {
+    // Whitespace should be treated the same as any other non-delimiter
+    // character.
+    kIncludeInTokens,
+    // Whitespace is skipped over and not included in the resulting token.
+    // Whitespace will also delimit other tokens, however it is never returned
+    // even if RETURN_DELIMS is set. If quote chars are set (See set_quote_chars
+    // below) Whitespace will be included in a token when processing quotes.
+    kSkipOver,
+  };
+
   // The string object must live longer than the tokenizer. In particular, this
   // should not be constructed with a temporary. The deleted rvalue constructor
   // blocks the most obvious instances of this (e.g. passing a string literal to
   // the constructor), but caution must still be exercised.
-  StringTokenizerT(const str& string,
-                   const str& delims) {
-    Init(string.begin(), string.end(), delims);
+  StringTokenizerT(
+      const str& string,
+      const str& delims,
+      WhitespacePolicy whitespace_policy = WhitespacePolicy::kIncludeInTokens) {
+    Init(string.begin(), string.end(), delims, whitespace_policy);
   }
 
   // Don't allow temporary strings to be used with string tokenizer, since
   // Init() would otherwise save iterators to a temporary string.
   StringTokenizerT(str&&, const str& delims) = delete;
 
-  StringTokenizerT(const_iterator string_begin,
-                   const_iterator string_end,
-                   const str& delims) {
-    Init(string_begin, string_end, delims);
+  StringTokenizerT(
+      const_iterator string_begin,
+      const_iterator string_end,
+      const str& delims,
+      WhitespacePolicy whitespace_policy = WhitespacePolicy::kIncludeInTokens) {
+    Init(string_begin, string_end, delims, whitespace_policy);
   }
 
   // Set the options for this tokenizer.  By default, this is 0.
@@ -159,7 +198,8 @@ class StringTokenizerT {
  private:
   void Init(const_iterator string_begin,
             const_iterator string_end,
-            const str& delims) {
+            const str& delims,
+            WhitespacePolicy whitespace_policy) {
     start_pos_ = string_begin;
     token_begin_ = string_begin;
     token_end_ = string_begin;
@@ -167,6 +207,18 @@ class StringTokenizerT {
     delims_ = delims;
     options_ = 0;
     token_is_delim_ = true;
+    whitespace_policy_ = whitespace_policy;
+  }
+
+  bool ShouldSkip(char_type c) const {
+    return whitespace_policy_ == WhitespacePolicy::kSkipOver &&
+           IsAsciiWhitespace(c);
+  }
+
+  // Skip over any contiguous ignored characters.
+  void SkipWhitespace() {
+    while (token_end_ != end_ && ShouldSkip(*token_end_))
+      ++token_end_;
   }
 
   // Implementation of GetNext() for when we have no quote characters. We have
@@ -181,12 +233,16 @@ class StringTokenizerT {
         return false;
       }
       ++token_end_;
-      if (delims_.find(*token_begin_) == str::npos)
+      if (delims_.find(*token_begin_) == str::npos &&
+          !ShouldSkip(*token_begin_)) {
         break;
-      // else skip over delimiter.
+      }
+      // else skip over delimiter or skippable character.
     }
-    while (token_end_ != end_ && delims_.find(*token_end_) == str::npos)
+    while (token_end_ != end_ && delims_.find(*token_end_) == str::npos &&
+           !ShouldSkip(*token_end_)) {
       ++token_end_;
+    }
     return true;
   }
 
@@ -194,6 +250,7 @@ class StringTokenizerT {
   bool FullGetNext() {
     AdvanceState state;
 
+    SkipWhitespace();
     for (;;) {
       if (token_is_delim_) {
         // Last token was a delimiter. Note: This is also the case at the start.
@@ -250,13 +307,9 @@ class StringTokenizerT {
     return false;
   }
 
-  bool IsDelim(char_type c) const {
-    return delims_.find(c) != str::npos;
-  }
+  bool IsDelim(char_type c) const { return delims_.find(c) != str::npos; }
 
-  bool IsQuote(char_type c) const {
-    return quotes_.find(c) != str::npos;
-  }
+  bool IsQuote(char_type c) const { return quotes_.find(c) != str::npos; }
 
   struct AdvanceState {
     bool in_quote;
@@ -276,7 +329,7 @@ class StringTokenizerT {
         state->in_quote = false;
       }
     } else {
-      if (IsDelim(c))
+      if (IsDelim(c) || ShouldSkip(c))
         return false;
       state->in_quote = IsQuote(state->quote_char = c);
     }
@@ -291,6 +344,7 @@ class StringTokenizerT {
   str quotes_;
   int options_;
   bool token_is_delim_;
+  WhitespacePolicy whitespace_policy_;
 };
 
 typedef StringTokenizerT<std::string, std::string::const_iterator>
