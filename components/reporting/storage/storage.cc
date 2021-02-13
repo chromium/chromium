@@ -120,14 +120,16 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   // Factory method.
   static StatusOr<std::unique_ptr<UploaderInterface>> ProvideUploader(
       Priority priority,
-      bool need_encryption_key,
-      UploaderInterface::StartCb start_upload_cb) {
+      Storage* storage) {
     // TODO(b/170054326): Add periodic key request.
     // if (time to update key) {
     //   need_encryption_key = true;
     // }
-    ASSIGN_OR_RETURN(std::unique_ptr<UploaderInterface> uploader,
-                     start_upload_cb.Run(priority, need_encryption_key));
+    ASSIGN_OR_RETURN(
+        std::unique_ptr<UploaderInterface> uploader,
+        storage->start_upload_cb_.Run(
+            priority, EncryptionModule::is_enabled() &&
+                          !storage->encryption_module_->has_encryption_key()));
     return std::make_unique<QueueUploaderInterface>(priority,
                                                     std::move(uploader));
   }
@@ -508,11 +510,11 @@ void Storage::Create(
       for (const auto& queue_options : queues_options_) {
         StorageQueue::Create(
             /*options=*/queue_options.second,
-            base::BindRepeating(
-                &QueueUploaderInterface::ProvideUploader,
-                /*priority=*/queue_options.first,
-                !storage_->encryption_module_->has_encryption_key(),
-                storage_->start_upload_cb_),
+            // Note: the callback below belongs to the Queue and does not
+            // outlive Storage.
+            base::BindRepeating(&QueueUploaderInterface::ProvideUploader,
+                                /*priority=*/queue_options.first,
+                                base::Unretained(storage_.get())),
             storage_->encryption_module_,
             base::BindOnce(&StorageInitContext::ScheduleAddQueue,
                            base::Unretained(this),
