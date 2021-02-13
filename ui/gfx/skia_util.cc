@@ -13,7 +13,6 @@
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
-#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
