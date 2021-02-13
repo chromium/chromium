@@ -7,99 +7,152 @@
 import argparse
 import dataclasses
 import json
-import logging
 import os
+import shutil
 import socket
 import subprocess
 import sys
 import threading
-import time
+from typing import Dict, List, Optional, Tuple
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'gyp'))
 from util import server_utils
 
-# TODO(wnwen): Add type annotations.
+
+class Logger:
+  """Class to store global state for logging."""
+  num_processes: int = 0
+  completed_tasks: int = 0
+  total_tasks: int = 0
+
+  @classmethod
+  def _plural(cls, word: str, num: int, suffix: str = 's'):
+    if num == 1:
+      return word
+    return word + suffix
+
+  @classmethod
+  def _prefix(cls):
+    # Ninja's prefix is: [205 processes, 6/734 @ 6.5/s : 0.922s ]
+    # Time taken and task completion rate are not important for the build server
+    # since it is always running in the background and uses idle priority for
+    # its tasks.
+    processes_str = cls._plural('process', cls.num_processes, suffix='es')
+    return (f'{cls.num_processes} {processes_str}, '
+            f'{cls.completed_tasks}/{cls.total_tasks}')
+
+  @classmethod
+  def log(cls, msg: str, *, end: str = ''):
+    # Shrink the message (leaving a 2-char prefix and use the rest of the room
+    # for the suffix) according to terminal size so it is always one line.
+    width = shutil.get_terminal_size().columns
+    prefix = f'[{cls._prefix()}] '
+    max_msg_width = width - len(prefix)
+    if len(msg) > max_msg_width:
+      length_to_show = max_msg_width - 5  # Account for ellipsis and header.
+      msg = f'{msg[:2]}...{msg[-length_to_show:]}'
+    # \r to return the carriage to the beginning of line.
+    # \033[K to replace the normal \n to erase until the end of the line.
+    # Avoid the default line ending so the next \r overwrites the same line just
+    #     like ninja's output.
+    print(f'\r{prefix}{msg}\033[K', end=end, flush=True)
 
 
 @dataclasses.dataclass
 class Task:
   """Class to represent a single build task."""
   name: str
-  stamp_path: str
-  proc: subprocess.Popen
-  terminated: bool = False
+  cwd: str
+  cmd: List[str]
+  stamp_file: str
+  _proc: Optional[subprocess.Popen] = None
+  _thread: Optional[threading.Thread] = None
+  _terminated: bool = False
+  _return_code: Optional[int] = None
 
-  def is_running(self):
-    return self.proc.poll() is None
+  @property
+  def key(self):
+    return (self.cwd, self.name)
 
+  def start(self):
+    assert self._proc is None
+    Logger.num_processes += 1
+    Logger.log(f'STARTING {self.name}')
+    # The environment variable forces the script to actually run in order to
+    # avoid infinite recursion.
+    env = os.environ.copy()
+    env[server_utils.BUILD_SERVER_ENV_VARIABLE] = '1'
+    # Use os.nice(19) to ensure the lowest priority (idle) for these analysis
+    # tasks since we want to avoid slowing down the actual build.
+    # TODO(wnwen): Also use ionice to reduce resource consumption. Possibly use
+    #              cgroups to make these processes use even fewer resources than
+    #              idle priority.
+    self._proc = subprocess.Popen(
+        self.cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=self.cwd,
+        env=env,
+        text=True,
+        preexec_fn=lambda: os.nice(19),
+    )
+    # Avoid daemon=True to allow threads to finish running cleanup on Ctrl-C.
+    self._thread = threading.Thread(target=self._complete_when_process_finishes)
+    self._thread.start()
 
-def _log(msg):
-  # Subtract one from the total number of threads so we don't count the main
-  #     thread.
-  num = threading.active_count() - 1
-  # \r to return the carriage to the beginning of line.
-  # \033[K to replace the normal \n to erase until the end of the line.
-  # Avoid the default line ending so the next \r overwrites the same line just
-  #     like ninja's output.
-  # TODO(wnwen): When there is just one thread left and it finishes, the last
-  #              output is "[1 thread] FINISHED //...". It may be better to show
-  #              "ALL DONE" or something to that effect.
-  print(f'\r[{num} thread{"" if num == 1 else "s"}] {msg}\033[K', end='')
+  def terminate(self):
+    if self._terminated:
+      return
+    self._terminated = True
+    if self._proc:
+      self._proc.terminate()
+      self._proc.wait()
+    if self._thread:
+      self._thread.join()
 
+  def _complete_when_process_finishes(self):
+    assert self._proc
+    # We know Popen.communicate will return a str and not a byte since it is
+    # constructed with text=True.
+    stdout: str = self._proc.communicate()[0]
+    self._return_code = self._proc.returncode
+    self._proc = None
+    self._complete(stdout)
 
-def _run_when_completed(task):
-  _log(f'RUNNING {task.name}')
-  stdout, _ = task.proc.communicate()
+  def _complete(self, stdout: str):
+    assert self._proc is None
+    Logger.completed_tasks += 1
+    Logger.num_processes -= 1
+    failed = False
+    if self._terminated:
+      Logger.log(f'TERMINATED {self.name}')
+      # Ignore stdout as it is now outdated.
+      failed = True
+    else:
+      Logger.log(f'FINISHED {self.name}')
+      if stdout or self._return_code != 0:
+        failed = True
+        # An extra new line is needed since _log does not end with a new line.
+        print(f'\nFAILED: {self.name} Return code: {self._return_code}')
+        print(' '.join(self.cmd))
+        print(stdout)
 
-  # Avoid printing anything since the task is now outdated.
-  if task.terminated:
-    return
-
-  _log(f'FINISHED {task.name}')
-  if stdout:
-    # An extra new line is needed since _log does not end with a new line.
-    print(f'\nFAILED: {task.name}')
-    print(' '.join(task.proc.args))
-    print(stdout.decode('utf-8'))
-    # Force ninja to always re-run failed tasks.
-    try:
-      os.unlink(task.stamp_path)
-    except FileNotFoundError:
+    if failed:
+      # Force ninja to consider failed targets as dirty.
+      try:
+        os.unlink(os.path.join(self.cwd, self.stamp_file))
+      except FileNotFoundError:
+        pass
+    else:
+      # Ninja will rebuild targets when their inputs change even if their stamp
+      # file has a later modified time. Thus we do not need to worry about the
+      # script being run by the build server updating the mtime incorrectly.
       pass
-  # TODO(wnwen): Reset timestamp for stamp file to when the original request was
-  #              sent since otherwise if a file is edited while the task is
-  #              running, then the target would appear newer than the edit.
 
 
-def _init_task(*, name, cwd, cmd, stamp_file):
-  _log(f'STARTING {name}')
-  # The environment variable forces the script to actually run in order to avoid
-  # infinite recursion.
-  env = os.environ.copy()
-  env[server_utils.BUILD_SERVER_ENV_VARIABLE] = '1'
-  # Use os.nice(19) to ensure the lowest priority (idle) for these analysis
-  # tasks since we want to avoid slowing down the actual build.
-  proc = subprocess.Popen(
-      cmd,
-      stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT,  # Interleave outputs to match running locally.
-      cwd=cwd,
-      env=env,
-      preexec_fn=lambda: os.nice(19),
-  )
-  task = Task(name=name, stamp_path=os.path.join(cwd, stamp_file), proc=proc)
-  # Set daemon=True so that one Ctrl-C terminates the server.
-  # TODO(wnwen): Handle Ctrl-C and updating stamp files before exiting.
-  io_thread = threading.Thread(target=_run_when_completed,
-                               args=(task, ),
-                               daemon=True)
-  io_thread.start()
-  return task
-
-
-def _listen_for_request_data(sock):
+def _listen_for_request_data(sock: socket.socket):
   while True:
-    conn, _ = sock.accept()
+    conn = sock.accept()[0]
     received = []
     with conn:
       while True:
@@ -111,29 +164,38 @@ def _listen_for_request_data(sock):
       yield json.loads(b''.join(received))
 
 
-def _terminate_task(task):
-  task.terminated = True
-  task.proc.terminate()
-  task.proc.wait()
-  _log(f'TERMINATED {task.name}')
-
-
-def _process_requests(sock):
-  tasks = {}
-  # TODO(wnwen): Record and update start_time whenever we go from 0 to 1 active
-  #              threads so logging can display a reasonable time, e.g.
-  #              "[2 threads : 32.553s ] RUNNING //..."
-  for data in _listen_for_request_data(sock):
-    key = (data['name'], data['cwd'])
-    task = tasks.get(key)
-    if task and task.is_running():
-      _terminate_task(task)
-    tasks[key] = _init_task(**data)
+def _process_requests(sock: socket.socket):
+  # Since dicts in python can contain anything, explicitly type tasks to help
+  # make static type checking more useful.
+  tasks: Dict[Tuple[str, str], Task] = {}
+  try:
+    for data in _listen_for_request_data(sock):
+      task = Task(name=data['name'],
+                  cwd=data['cwd'],
+                  cmd=data['cmd'],
+                  stamp_file=data['stamp_file'])
+      Logger.total_tasks += 1
+      existing_task = tasks.get(task.key)
+      if existing_task:
+        existing_task.terminate()
+      tasks[task.key] = task
+      # TODO(wnwen): Rather than start it right away, add this task to a running
+      #              queue and run either a limited number of processes (10) or
+      #              even just 1 until the server load is very low (or ninja has
+      #              finished).
+      task.start()
+  except KeyboardInterrupt:
+    Logger.log('STOPPING SERVER...', end='\n')
+    # Gracefully exit by terminating all running tasks and allowing their io
+    # watcher threads to finish and run cleanup on their own.
+    for task in tasks.values():
+      task.terminate()
+    Logger.log('STOPPED', end='\n')
 
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  args = parser.parse_args()
+  parser.parse_args()
   with socket.socket(socket.AF_UNIX) as sock:
     sock.bind(server_utils.SOCKET_ADDRESS)
     sock.listen()
