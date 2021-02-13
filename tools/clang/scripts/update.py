@@ -302,8 +302,6 @@ def main():
       help='Which host OS to download for (default: %s)' % default_host_os,
       default=default_host_os,
       choices=('linux', 'mac', 'win'))
-  parser.add_argument('--force-local-build', action='store_true',
-                      help='(no longer used)')
   parser.add_argument('--print-revision', action='store_true',
                       help='Print current clang revision and exit.')
   parser.add_argument('--llvm-force-head-revision', action='store_true',
@@ -314,11 +312,6 @@ def main():
   parser.add_argument('--verify-version',
                       help='Verify that clang has the passed-in version.')
   args = parser.parse_args()
-
-  if args.force_local_build:
-    print(('update.py --force-local-build is no longer used to build clang; '
-           'use build.py instead.'))
-    return 1
 
   if args.verify_version and args.verify_version != RELEASE_VERSION:
     print('RELEASE_VERSION is %s but --verify-version argument was %s.' % (
