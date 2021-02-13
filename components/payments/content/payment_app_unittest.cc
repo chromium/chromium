@@ -59,6 +59,11 @@ class PaymentAppTest : public testing::TestWithParam<RequiredPaymentOptions>,
         required_options_(GetParam()) {
     local_card_.set_billing_address_id(address_.guid());
     CreateSpec();
+  }
+
+  void SetUp() override {
+    // Must be initialized after the ScopedFeatureList of the subclass test
+    // DownRankJustInTimePaymentAppTest (crbug.com/1172599)
     web_contents_ =
         test_web_contents_factory_.CreateWebContents(&browser_context_);
   }
