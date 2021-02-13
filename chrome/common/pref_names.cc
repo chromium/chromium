@@ -1983,6 +1983,14 @@ const char kWebAppsLastPreinstallSynchronizeVersion[] =
 // A list of all apps that have been migrated to web apps.
 const char kWebAppsMigratedDefaultApps[] = "web_apps.migrated_default_apps";
 
+// A list of migrated features for migrating default chrome apps.
+const char kWebAppsDidMigrateDefaultChromeApps[] =
+    "web_apps.did_migrate_default_chrome_apps";
+
+// A list of default chrome apps that were uninstalled by the user.
+const char kWebAppsUninstalledDefaultChromeApps[] =
+    "web_apps.uninstalled_default_chrome_apps";
+
 // Dictionary that maps web app ID to a dictionary of various preferences.
 // Used only in the new web applications system to store app preferences which
 // outlive the app installation and uninstallation.

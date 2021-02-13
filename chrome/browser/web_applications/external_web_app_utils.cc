@@ -556,4 +556,50 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
     update->EraseListValue(base::Value(app_id));
 }
 
+bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
+  const base::ListValue* migrated_features =
+      profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
+  if (!migrated_features)
+    return false;
+
+  for (const auto& val : migrated_features->GetList()) {
+    if (val.is_string() && val.GetString() == feature_name)
+      return true;
+  }
+
+  return false;
+}
+
+void SetMigrationRun(Profile* profile,
+                     base::StringPiece feature_name,
+                     bool was_migrated) {
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsDidMigrateDefaultChromeApps);
+  if (was_migrated)
+    update->Append(feature_name);
+  else
+    update->EraseListValue(base::Value(feature_name));
+}
+
+bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id) {
+  const base::ListValue* uninstalled_apps =
+      profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
+  if (!uninstalled_apps)
+    return false;
+
+  for (const auto& val : uninstalled_apps->GetList()) {
+    if (val.is_string() && val.GetString() == app_id)
+      return true;
+  }
+
+  return false;
+}
+
+void MarkDefaultAppAsUninstalled(Profile* profile, const std::string& app_id) {
+  if (WasDefaultAppUninstalled(profile, app_id))
+    return;
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsUninstalledDefaultChromeApps);
+  update->Append(app_id);
+}
 }  // namespace web_app

@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/lazy_instance.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
@@ -49,12 +50,19 @@ bool IsLocaleSupported() {
   return true;
 }
 
+base::LazyInstance<std::set<Profile*>>::Leaky g_perform_new_installation =
+    LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
 namespace default_apps {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kDefaultAppsInstallState, kUnknown);
+}
+
+// static
+bool Provider::DidPerformNewInstallationForProfile(Profile* profile) {
+  return g_perform_new_installation.Get().count(profile);
 }
 
 void Provider::InitProfileState() {
@@ -114,6 +122,8 @@ void Provider::InitProfileState() {
     profile_->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
                                      *new_install_state);
   }
+  if (perform_new_installation_)
+    g_perform_new_installation.Get().insert(profile_);
 }
 
 Provider::Provider(Profile* profile,

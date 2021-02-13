@@ -665,6 +665,8 @@ extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsAppAgnosticIphState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
 extern const char kWebAppsMigratedDefaultApps[];
+extern const char kWebAppsDidMigrateDefaultChromeApps[];
+extern const char kWebAppsUninstalledDefaultChromeApps[];
 extern const char kWebAppsPreferences[];
 
 #if defined(OS_WIN) || defined(OS_MAC) || \

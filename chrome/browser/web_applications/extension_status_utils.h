@@ -7,6 +7,10 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
+
+class Profile;
+
 namespace content {
 class BrowserContext;
 }
@@ -25,6 +29,22 @@ bool IsExtensionInstalled(content::BrowserContext* context,
 // with |extension_id|.
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,
                                     const std::string& extension_id);
+
+// Waits for extension system ready to run callback.
+void OnExtensionSystemReady(content::BrowserContext* context,
+                            base::OnceClosure callback);
+
+// Checks if default apps perform new installation.
+bool DidDefaultAppsPerformNewInstallation(Profile* profile);
+
+// Returns if the app is managed by extension default apps. This is a hardcoded
+// list of default apps for Windows/Linux/MacOS platforms that should be
+// migrated from extension to web app. Need to be removed after migration is
+// done.
+bool IsDefaultAppId(const std::string& app_id);
+
+// Makes WasManagedByDefaultApps return true for testing.
+void SetDefaultAppIdForTesting(const char* app_id);
 
 }  // namespace extensions
 

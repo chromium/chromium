@@ -53,6 +53,8 @@ class Provider : public extensions::ExternalProviderImpl {
   void VisitRegisteredExtension() override;
   void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) override;
 
+  static bool DidPerformNewInstallationForProfile(Profile* profile);
+
   // Exposed for testing.
   bool default_apps_enabled() const { return default_apps_enabled_; }
   bool is_migration() const { return is_migration_; }

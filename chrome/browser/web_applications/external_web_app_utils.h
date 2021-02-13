@@ -56,6 +56,16 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated);
 
+// Returns and sets whether the app indicated by `app_id` was unisntalled
+bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id);
+void MarkDefaultAppAsUninstalled(Profile* profile, const std::string& app_id);
+
+// Returns and sets whether the migration was run for the feature.
+bool WasMigrationRun(Profile* profile, base::StringPiece feature_name);
+void SetMigrationRun(Profile* profile,
+                     base::StringPiece feature_name,
+                     bool was_migrated);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_UTILS_H_
