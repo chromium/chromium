@@ -38,10 +38,29 @@ DOMAgentAura::~DOMAgentAura() {
 void DOMAgentAura::OnHostInitialized(aura::WindowTreeHost* host) {
   roots_.push_back(host->window());
   host->window()->AddObserver(this);
+
+  if (element_root() && !element_root()->is_updating()) {
+    // The tree is already built, needs to update.
+    UIElement* window_element =
+        new WindowElement(host->window(), this, element_root());
+    element_root()->AddChild(window_element);
+  }
 }
 
 void DOMAgentAura::OnWindowDestroying(aura::Window* window) {
   base::Erase(roots_, window);
+
+  if (element_root() && !element_root()->is_updating()) {
+    const auto& children = element_root()->children();
+    auto iter = std::find_if(
+        children.begin(), children.end(),
+        [window](UIElement* e) { return WindowElement::From(e) == window; });
+    if (iter != children.end()) {
+      UIElement* child_element = *iter;
+      element_root()->RemoveChild(child_element);
+      delete child_element;
+    }
+  }
 }
 
 std::vector<UIElement*> DOMAgentAura::CreateChildrenForRoot() {
