@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
 <translation id="1363028406613469049">曲目</translation>
 <translation id="1378727793141957596">欢迎使用 Google 云端硬盘！</translation>
+<translation id="1379911846207762492">您可将文件设为“可离线使用”，以便在未联网的情况下访问。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1395262318152388157">进度滑块</translation>
 <translation id="1404323374378969387">挪威语</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
 <translation id="357479282490346887">立陶宛语</translation>
+<translation id="3592251141500063301">无法将文件“<ph name="FILE_NAME" />”设为“可离线使用”</translation>
 <translation id="3603385196401704894">加拿大法语</translation>
 <translation id="3606220979431771195">土耳其语 F</translation>
 <translation id="3616113530831147358">音频</translation>
