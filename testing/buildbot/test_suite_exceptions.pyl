@@ -791,7 +791,7 @@
           ],
         },
         # TODD(crbug.com/1127110): Remove experimental once it works fine.
-        'experiment_percentage': 50,
+        'experiment_percentage': 100,
       },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [

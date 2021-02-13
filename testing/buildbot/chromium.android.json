@@ -31501,7 +31501,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter"
         ],
-        "experiment_percentage": 50,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
