@@ -38,7 +38,7 @@ class AXPlatformNodeTextProviderTest : public AXPlatformNodeWinTest {
       const AXPlatformNodeTextProviderTest&) = delete;
 
  protected:
-  ui::AXPlatformNodeWin* GetOwner(
+  AXPlatformNodeWin* GetOwner(
       const AXPlatformNodeTextProviderWin* text_provider) {
     return text_provider->owner_.Get();
   }
@@ -54,25 +54,25 @@ class AXPlatformNodeTextProviderTest : public AXPlatformNodeWinTest {
 
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData empty_text_data;
+  AXNodeData empty_text_data;
   empty_text_data.id = 3;
   empty_text_data.role = ax::mojom::Role::kStaticText;
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
   root_data.child_ids.push_back(2);
   root_data.child_ids.push_back(3);
 
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_data.id;
@@ -152,50 +152,50 @@ TEST_F(AXPlatformNodeTextProviderTest,
   const int BUTTON_TEXT_ID = 7;
   const int DIALOG_DETAIL_ID = 8;
 
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = ROOT_ID;
   root.role = ax::mojom::Role::kRootWebArea;
   root.SetName("Document");
   root.child_ids = {DIALOG_ID};
 
-  ui::AXNodeData dialog;
+  AXNodeData dialog;
   dialog.id = DIALOG_ID;
   dialog.role = ax::mojom::Role::kDialog;
   dialog.child_ids = {DIALOG_LABEL_ID, DIALOG_DESCRIPTION_ID, BUTTON_ID,
                       DIALOG_DETAIL_ID};
 
-  ui::AXNodeData dialog_label;
+  AXNodeData dialog_label;
   dialog_label.id = DIALOG_LABEL_ID;
   dialog_label.role = ax::mojom::Role::kStaticText;
   dialog_label.SetName("Dialog label.");
 
-  ui::AXNodeData dialog_description;
+  AXNodeData dialog_description;
   dialog_description.id = DIALOG_DESCRIPTION_ID;
   dialog_description.role = ax::mojom::Role::kStaticText;
   dialog_description.SetName("Dialog description.");
 
-  ui::AXNodeData button;
+  AXNodeData button;
   button.id = BUTTON_ID;
   button.role = ax::mojom::Role::kButton;
   button.child_ids = {BUTTON_IMG_ID, BUTTON_TEXT_ID};
 
-  ui::AXNodeData button_img;
+  AXNodeData button_img;
   button_img.id = BUTTON_IMG_ID;
   button_img.role = ax::mojom::Role::kImage;
 
-  ui::AXNodeData button_text;
+  AXNodeData button_text;
   button_text.id = BUTTON_TEXT_ID;
   button_text.role = ax::mojom::Role::kStaticText;
   button_text.SetName("ok.");
 
-  ui::AXNodeData dialog_detail;
+  AXNodeData dialog_detail;
   dialog_detail.id = DIALOG_DETAIL_ID;
   dialog_detail.role = ax::mojom::Role::kStaticText;
   dialog_detail.SetName("Some more detail about dialog.");
 
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = ROOT_ID;
@@ -239,7 +239,7 @@ TEST_F(AXPlatformNodeTextProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, NearestTextIndexToPoint) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kInlineTextBox;
   text_data.SetName("text");
@@ -247,7 +247,7 @@ TEST_F(AXPlatformNodeTextProviderTest, NearestTextIndexToPoint) {
   text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
                                 {2, 4, 8, 10});
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.relative_bounds.bounds = gfx::RectF(1, 1, 2, 2);
@@ -294,12 +294,12 @@ TEST_F(AXPlatformNodeTextProviderTest, NearestTextIndexToPoint) {
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRange) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
@@ -320,17 +320,17 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRange) {
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRangeNested) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 3;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData paragraph_data;
+  AXNodeData paragraph_data;
   paragraph_data.id = 2;
   paragraph_data.role = ax::mojom::Role::kParagraph;
   paragraph_data.child_ids.push_back(3);
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
@@ -351,12 +351,12 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRangeNested) {
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderSupportedSelection) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
@@ -378,27 +378,27 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderSupportedSelection) {
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData textbox_data;
+  AXNodeData textbox_data;
   textbox_data.id = 3;
   textbox_data.role = ax::mojom::Role::kInlineTextBox;
   textbox_data.SetName("textbox text");
   textbox_data.AddState(ax::mojom::State::kEditable);
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
   root_data.child_ids.push_back(2);
   root_data.child_ids.push_back(3);
 
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_data.id;
@@ -573,20 +573,20 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
   root_data.child_ids.push_back(2);
 
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_data.id;
@@ -612,7 +612,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
   ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
   root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
   action_data.target_node_id = 1;
   AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
@@ -633,20 +633,20 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetConversionTarget) {
-  ui::AXNodeData text_data;
+  AXNodeData text_data;
   text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
   text_data.SetName("some text");
 
-  ui::AXNodeData root_data;
+  AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
   root_data.child_ids.push_back(2);
 
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_data.id;
@@ -672,7 +672,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetConversionTarget) {
   ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
   root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
   action_data.target_node_id = 1;
   AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
