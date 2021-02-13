@@ -454,7 +454,8 @@ void Label::SetMaximumWidth(int max_width) {
 
 void Label::SetMaximumWidthSingleLine(int max_width) {
   DCHECK(!GetMultiLine());
-
+  if (max_width_single_line_ == max_width)
+    return;
   max_width_single_line_ = max_width;
   UpdateFullTextElideBehavior();
   OnPropertyChanged(&max_width_single_line_,
