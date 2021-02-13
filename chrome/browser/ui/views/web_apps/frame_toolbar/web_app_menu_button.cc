@@ -109,5 +109,5 @@ void WebAppMenuButton::FadeHighlightOff() {
 }
 
 BEGIN_METADATA(WebAppMenuButton, AppMenuButton)
-ADD_PROPERTY_METADATA(SkColor, Color)
+ADD_PROPERTY_METADATA(SkColor, Color, views::metadata::SkColorConverter)
 END_METADATA

@@ -272,5 +272,7 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
 BEGIN_METADATA(Windows10CaptionButton, views::Button)
 ADD_READONLY_PROPERTY_METADATA(int, BetweenButtonSpacing)
 ADD_READONLY_PROPERTY_METADATA(int, ButtonDisplayOrderIndex)
-ADD_READONLY_PROPERTY_METADATA(SkColor, BaseColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               BaseColor,
+                               views::metadata::SkColorConverter)
 END_METADATA

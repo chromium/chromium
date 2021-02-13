@@ -4,17 +4,22 @@
 
 #include "ui/views/metadata/type_conversion.h"
 
+#include <cmath>
 #include <string>
 
+#include "base/numerics/ranges.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/url_fixer.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -24,23 +29,8 @@
 namespace views {
 namespace metadata {
 
-base::Optional<SkColor> RgbaPiecesToSkColor(
-    const std::vector<base::StringPiece16>& pieces,
-    size_t start_piece) {
-  int r, g, b;
-  double a;
-  return ((pieces.size() >= start_piece + 4) &&
-          base::StringToInt(pieces[start_piece], &r) &&
-          base::IsValueInRangeForNumericType<uint8_t>(r) &&
-          base::StringToInt(pieces[start_piece + 1], &g) &&
-          base::IsValueInRangeForNumericType<uint8_t>(g) &&
-          base::StringToInt(pieces[start_piece + 2], &b) &&
-          base::IsValueInRangeForNumericType<uint8_t>(b) &&
-          base::StringToDouble(pieces[start_piece + 3], &a))
-             ? base::make_optional(SkColorSetARGB(
-                   base::ClampRound<SkAlpha>(a * SK_AlphaOPAQUE), r, g, b))
-             : base::nullopt;
-}
+const char kNoPrefix[] = "";
+const char kSkColorPrefix[] = "--";
 
 base::string16 PointerToString(const void* pointer_val) {
   return pointer_val ? base::ASCIIToUTF16("(assigned)")
@@ -363,20 +353,27 @@ base::Optional<gfx::ShadowValues> TypeConverter<gfx::ShadowValues>::FromString(
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (auto v : shadow_value_strings) {
-    base::string16 member_string;
-    base::RemoveChars(v, base::ASCIIToUTF16("()rgba"), &member_string);
-    const auto members = base::SplitStringPiece(
-        member_string, base::ASCIIToUTF16(","), base::TRIM_WHITESPACE,
-        base::SPLIT_WANT_NONEMPTY);
+    base::string16 value = base::string16(v);
+    base::String16Tokenizer tokenizer(
+        value, base::ASCIIToUTF16("(,)"),
+        base::String16Tokenizer::WhitespacePolicy::kSkipOver);
+    tokenizer.set_options(base::String16Tokenizer::RETURN_DELIMS);
     int x, y;
     double blur;
-    const auto color = RgbaPiecesToSkColor(members, 3);
-
-    if ((members.size() == 7) && base::StringToInt(members[0], &x) &&
-        base::StringToInt(members[1], &y) &&
-        base::StringToDouble(UTF16ToASCII(members[2]), &blur) &&
-        color.has_value())
-      ret.emplace_back(gfx::Vector2d(x, y), blur, color.value());
+    if (tokenizer.GetNext() && tokenizer.token() == base::ASCIIToUTF16("(") &&
+        tokenizer.GetNext() && base::StringToInt(tokenizer.token(), &x) &&
+        tokenizer.GetNext() && tokenizer.token() == base::ASCIIToUTF16(",") &&
+        tokenizer.GetNext() && base::StringToInt(tokenizer.token(), &y) &&
+        tokenizer.GetNext() && tokenizer.token() == base::ASCIIToUTF16(")") &&
+        tokenizer.GetNext() && tokenizer.token() == base::ASCIIToUTF16(",") &&
+        tokenizer.GetNext() && base::StringToDouble(tokenizer.token(), &blur) &&
+        tokenizer.GetNext() && tokenizer.token() == base::ASCIIToUTF16(",") &&
+        tokenizer.GetNext()) {
+      const auto color =
+          SkColorConverter::GetNextColor(tokenizer.token_begin(), value.cend());
+      if (color)
+        ret.emplace_back(gfx::Vector2d(x, y), blur, color.value());
+    }
   }
   return ret;
 }
@@ -425,6 +422,172 @@ base::Optional<url::Component> TypeConverter<url::Component>::FromString(
     return url::Component(begin, len);
   }
   return base::nullopt;
+}
+
+base::string16 TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ToString(
+    SkColor source_value) {
+  return base::UTF8ToUTF16(color_utils::SkColorToRgbaString(source_value));
+}
+
+base::Optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::FromString(
+    const base::string16& source_value) {
+  return GetNextColor(source_value.cbegin(), source_value.cend());
+}
+
+ValidStrings TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetValidStrings() {
+  return {};
+}
+
+bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
+    base::string16::const_iterator start,
+    base::string16::const_iterator end,
+    base::string16& color,
+    base::string16::const_iterator& next_token) {
+  static const auto open_paren = STRING16_LITERAL('(');
+  static const auto close_paren = STRING16_LITERAL(')');
+  static const std::vector<base::string16> schemes = {
+      base::ASCIIToUTF16("hsl"), base::ASCIIToUTF16("hsla"),
+      base::ASCIIToUTF16("rgb"), base::ASCIIToUTF16("rgba")};
+  base::String16Tokenizer tokenizer(
+      start, end, base::ASCIIToUTF16("(,)"),
+      base::String16Tokenizer::WhitespacePolicy::kSkipOver);
+  tokenizer.set_options(base::String16Tokenizer::RETURN_DELIMS);
+  for (; tokenizer.GetNext();) {
+    if (!tokenizer.token_is_delim()) {
+      base::StringPiece16 token = tokenizer.token_piece();
+      base::string16::const_iterator start_color = tokenizer.token_begin();
+      if (base::ranges::find(schemes.begin(), schemes.end(), token) !=
+          schemes.end()) {
+        if (!tokenizer.GetNext() || *tokenizer.token_begin() != open_paren)
+          return false;
+        for (;
+             tokenizer.GetNext() && *tokenizer.token_begin() != close_paren;) {
+        }
+        if (*tokenizer.token_begin() != close_paren)
+          return false;
+      }
+      next_token = tokenizer.token_end();
+      color = base::string16(start_color, next_token);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
+    base::string16::const_iterator start,
+    base::string16::const_iterator end,
+    base::string16& color) {
+  base::string16::const_iterator next_token;
+  return GetNextColor(start, end, color, next_token);
+}
+
+base::Optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
+    base::string16::const_iterator start,
+    base::string16::const_iterator end,
+    base::string16::const_iterator& next_token) {
+  base::string16 color;
+  if (GetNextColor(start, end, color, next_token)) {
+    if (base::StartsWith(color, base::ASCIIToUTF16("hsl"),
+                         base::CompareCase::SENSITIVE))
+      return ParseHslString(color);
+    if (base::StartsWith(color, base::ASCIIToUTF16("rgb"),
+                         base::CompareCase::SENSITIVE))
+      return ParseRgbString(color);
+    if (base::StartsWith(color, base::ASCIIToUTF16("0x"),
+                         base::CompareCase::INSENSITIVE_ASCII))
+      return ParseHexString(color);
+    SkColor value;
+    if (base::StringToUint(color, &value))
+      return base::make_optional(value);
+  }
+  return base::nullopt;
+}
+
+base::Optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
+    base::string16::const_iterator start,
+    base::string16::const_iterator end) {
+  base::string16::const_iterator next_token;
+  return GetNextColor(start, end, next_token);
+}
+
+base::Optional<SkColor>
+TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::RgbaPiecesToSkColor(
+    const std::vector<base::StringPiece16>& pieces,
+    size_t start_piece) {
+  int r, g, b;
+  double a;
+  return ((pieces.size() >= start_piece + 4) &&
+          base::StringToInt(pieces[start_piece], &r) &&
+          base::IsValueInRangeForNumericType<uint8_t>(r) &&
+          base::StringToInt(pieces[start_piece + 1], &g) &&
+          base::IsValueInRangeForNumericType<uint8_t>(g) &&
+          base::StringToInt(pieces[start_piece + 2], &b) &&
+          base::IsValueInRangeForNumericType<uint8_t>(b) &&
+          base::StringToDouble(pieces[start_piece + 3], &a) && a >= 0.0 &&
+          a <= 1.0)
+             ? base::make_optional(SkColorSetARGB(
+                   base::ClampRound<SkAlpha>(a * SK_AlphaOPAQUE), r, g, b))
+             : base::nullopt;
+}
+
+base::Optional<SkColor>
+TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseHexString(
+    const base::string16& hex_string) {
+  SkColor value;
+  if (base::HexStringToUInt(base::UTF16ToUTF8(hex_string), &value)) {
+    // Add in a 1.0 alpha channel if it wasn't included in the input.
+    if (hex_string.length() <= 8)
+      value = SkColorSetA(value, 0xFF);
+    return base::make_optional(value);
+  }
+  return base::nullopt;
+}
+
+base::Optional<SkColor>
+TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseHslString(
+    const base::string16& hsl_string) {
+  base::string16 pruned_string;
+  base::RemoveChars(hsl_string, base::ASCIIToUTF16("(%)hsla"), &pruned_string);
+  const auto values =
+      base::SplitStringPiece(pruned_string, base::ASCIIToUTF16(", "),
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  double h, s, v;
+  double a = 1.0;
+  if (values.size() >= 3 && values.size() <= 4 &&
+      base::StringToDouble(values[0], &h) &&
+      base::StringToDouble(values[1], &s) &&
+      base::StringToDouble(values[2], &v) &&
+      (values.size() == 3 ||
+       (base::StringToDouble(values[3], &a) && a >= 0.0 && a <= 1.0))) {
+    SkScalar hsv[3];
+    hsv[0] = base::ClampToRange(std::fmod(h, 360.0), 0.0, 360.0);
+    hsv[1] = s > 1.0 ? base::ClampToRange(s, 0.0, 100.0) / 100.0
+                     : base::ClampToRange(s, 0.0, 1.0);
+    hsv[2] = v > 1.0 ? base::ClampToRange(v, 0.0, 100.0) / 100.0
+                     : base::ClampToRange(v, 0.0, 1.0);
+    return base::make_optional(
+        SkHSVToColor(base::ClampRound<SkAlpha>(a * SK_AlphaOPAQUE), hsv));
+  }
+  return base::nullopt;
+}
+
+base::Optional<SkColor>
+TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseRgbString(
+    const base::string16& rgb_string) {
+  // Declare a constant string here for use below since it might trigger an
+  // ASAN error due to the stack temp going out of scope before the call to
+  // RgbaPiecesToSkColor.
+  static const auto opaque_alpha = base::ASCIIToUTF16("1.0");
+  base::string16 pruned_string;
+  base::RemoveChars(rgb_string, base::ASCIIToUTF16("()rgba"), &pruned_string);
+  auto values =
+      base::SplitStringPiece(pruned_string, base::ASCIIToUTF16(", "),
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // if it was just an rgb string, add the 1.0 alpha
+  if (values.size() == 3)
+    values.push_back(opaque_alpha);
+  return RgbaPiecesToSkColor(values, 0);
 }
 
 }  // namespace metadata

@@ -24,6 +24,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -58,13 +59,19 @@ using ArgType =
                               T,
                               const T&>::type;
 
+VIEWS_EXPORT extern const char kNoPrefix[];
+VIEWS_EXPORT extern const char kSkColorPrefix[];
+
 // General Type Conversion Template Functions ---------------------------------
-template <bool serializable, bool read_only = false>
+template <bool serializable,
+          bool read_only = false,
+          const char* name_prefix = kNoPrefix>
 struct BaseTypeConverter {
   static constexpr bool is_serializable = serializable;
   static constexpr bool is_read_only = read_only;
   static bool IsSerializable() { return is_serializable; }
   static bool IsReadOnly() { return is_read_only; }
+  static const char* PropertyNamePrefix() { return name_prefix; }
 };
 
 template <typename T>
@@ -73,6 +80,34 @@ struct TypeConverter : BaseTypeConverter<std::is_enum<T>::value> {
   static base::Optional<T> FromString(const base::string16& source_value);
   static ValidStrings GetValidStrings();
 };
+
+// The following definitions and macros are needed only in cases where a type
+// is a mere alias to a POD type AND a specialized type converter is also needed
+// to handle different the string conversions different from the existing POD
+// type converter. See SkColor below as an example of their use.
+// NOTE: This should be a rare occurrence and if possible use a unique type and
+// a TypeConverter specialization based on that unique type.
+
+template <typename T, typename K>
+struct Uniquifier {
+  using type = T;
+  using tag = K;
+};
+
+#define MAKE_TYPE_UNIQUE(type_name) \
+  struct type_name##Tag {};         \
+  using type_name##Unique =         \
+      ::views::metadata::Uniquifier<type_name, type_name##Tag>
+
+#define _UNIQUE_TYPE_NAME1(type_name) type_name##Unique
+
+#define _UNIQUE_TYPE_NAME2(qualifier, type_name) qualifier::type_name##Unique
+
+#define _GET_TYPE_MACRO(_1, _2, NAME, ...) NAME
+
+#define UNIQUE_TYPE_NAME(name, ...)                                            \
+  _GET_TYPE_MACRO(name, ##__VA_ARGS__, _UNIQUE_TYPE_NAME2, _UNIQUE_TYPE_NAME1) \
+  (name, ##__VA_ARGS__)
 
 // Types and macros for generating enum converters ----------------------------
 template <typename T>
@@ -140,13 +175,6 @@ static const EnumStrings<T>& GetEnumStringsInstance();
   }
 
 // String Conversions ---------------------------------------------------------
-
-// Converts the four elements of |pieces| beginning at |start_piece| to an
-// SkColor by assuming the pieces are split from a string like "rgba(r,g,b,a)".
-// Returns nullopt if conversion was unsuccessful.
-VIEWS_EXPORT base::Optional<SkColor> RgbaPiecesToSkColor(
-    const std::vector<base::StringPiece16>& pieces,
-    size_t start_piece);
 
 VIEWS_EXPORT base::string16 PointerToString(const void* pointer_val);
 
@@ -276,6 +304,60 @@ struct TypeConverter<std::vector<T>>
   }
   static ValidStrings GetValidStrings() { return {}; }
 };
+
+MAKE_TYPE_UNIQUE(SkColor);
+
+template <>
+struct VIEWS_EXPORT TypeConverter<UNIQUE_TYPE_NAME(SkColor)>
+    : BaseTypeConverter<true, false, kSkColorPrefix> {
+  static base::string16 ToString(SkColor source_value);
+  static base::Optional<SkColor> FromString(const base::string16& source_value);
+  static ValidStrings GetValidStrings();
+
+  // Parses a string within |start| and |end| for a color string in the forms
+  // rgb(r, g, b), rgba(r, g, b, a), hsl(h, s%, l%), hsla(h, s%, l%, a),
+  // 0xXXXXXX, 0xXXXXXXXX, <decimal number>
+  // Returns the full string in |color| and the position immediately following
+  // the last token in |next_token|.
+  // Returns false if the input string cannot be properly parsed. |color| and
+  // |next_token| will be undefined.
+  static bool GetNextColor(base::string16::const_iterator start,
+                           base::string16::const_iterator end,
+                           base::string16& color,
+                           base::string16::const_iterator& next_token);
+  static bool GetNextColor(base::string16::const_iterator start,
+                           base::string16::const_iterator end,
+                           base::string16& color);
+
+  // Same as above, except returns the color string converted into an |SkColor|.
+  // Returns base::nullopt if the color string cannot be properly parsed or the
+  // string cannot be converted into a valid SkColor and |next_token| may be
+  // undefined.
+  static base::Optional<SkColor> GetNextColor(
+      base::string16::const_iterator start,
+      base::string16::const_iterator end,
+      base::string16::const_iterator& next_token);
+  static base::Optional<SkColor> GetNextColor(
+      base::string16::const_iterator start,
+      base::string16::const_iterator end);
+
+  // Converts the four elements of |pieces| beginning at |start_piece| to an
+  // SkColor by assuming the pieces are split from a string like
+  // "rgba(r,g,b,a)". Returns nullopt if conversion was unsuccessful.
+  static base::Optional<SkColor> RgbaPiecesToSkColor(
+      const std::vector<base::StringPiece16>& pieces,
+      size_t start_piece);
+
+ private:
+  static base::Optional<SkColor> ParseHexString(
+      const base::string16& hex_string);
+  static base::Optional<SkColor> ParseHslString(
+      const base::string16& hsl_string);
+  static base::Optional<SkColor> ParseRgbString(
+      const base::string16& rgb_string);
+};
+
+using SkColorConverter = TypeConverter<UNIQUE_TYPE_NAME(SkColor)>;
 
 }  // namespace metadata
 }  // namespace views

@@ -1326,13 +1326,17 @@ bool LocationBarView::GetPopupMode() const {
 
 BEGIN_METADATA(LocationBarView, views::View)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)
-ADD_READONLY_PROPERTY_METADATA(SkColor, OpaqueBorderColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               OpaqueBorderColor,
+                               views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
 ADD_PROPERTY_METADATA(base::string16, ImeInlineAutocompletion)
 ADD_PROPERTY_METADATA(base::string16, OmniboxAdditionalText)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumLeadingWidth)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumTrailingWidth)
-ADD_READONLY_PROPERTY_METADATA(SkColor, BorderColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               BorderColor,
+                               views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, LocalBoundsWithoutEndcaps)
 ADD_READONLY_PROPERTY_METADATA(bool, PopupMode)
 END_METADATA

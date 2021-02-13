@@ -354,7 +354,7 @@ DEFINE_ENUM_CONVERTERS(
       base::ASCIIToUTF16("CAPTION_BUTTON_ICON_COUNT")}})
 
 BEGIN_METADATA(FrameCaptionButton, Button)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
 ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
 END_METADATA

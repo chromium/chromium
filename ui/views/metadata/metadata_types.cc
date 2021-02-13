@@ -142,6 +142,10 @@ void MemberMetaDataBase::SetValueAsString(View* obj,
   NOTREACHED();
 }
 
+const char* MemberMetaDataBase::GetMemberNamePrefix() const {
+  return "";
+}
+
 MemberMetaDataBase::ValueStrings MemberMetaDataBase::GetValidValues() const {
   return ValueStrings();
 }

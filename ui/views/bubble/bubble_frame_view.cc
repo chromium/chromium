@@ -930,7 +930,9 @@ ADD_PROPERTY_METADATA(BubbleFrameView::PreferredArrowAdjustment,
                       PreferredArrowAdjustment)
 ADD_PROPERTY_METADATA(int, CornerRadius)
 ADD_PROPERTY_METADATA(BubbleBorder::Arrow, Arrow)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
+ADD_PROPERTY_METADATA(SkColor,
+                      BackgroundColor,
+                      views::metadata::SkColorConverter)
 END_METADATA
 
 }  // namespace views

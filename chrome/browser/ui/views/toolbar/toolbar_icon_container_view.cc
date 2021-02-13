@@ -268,6 +268,6 @@ void ToolbarIconContainerView::OnButtonHighlightedChanged(
 }
 
 BEGIN_METADATA(ToolbarIconContainerView, views::View)
-ADD_PROPERTY_METADATA(SkColor, IconColor)
+ADD_PROPERTY_METADATA(SkColor, IconColor, views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA

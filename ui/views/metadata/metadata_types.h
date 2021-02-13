@@ -171,6 +171,13 @@ class VIEWS_EXPORT MemberMetaDataBase {
   // vector indicates that the natural limits of the underlying type applies.
   virtual ValueStrings GetValidValues() const;
 
+  // Return an optional prefix string used by the ui-devtools frontend to
+  // prepend to the member name which causes a special value editor to become
+  // available. For instance, an SkColor member type would add the "--" string
+  // which tells the frontend to display a color swatch and a color editing
+  // dialog.
+  virtual const char* GetMemberNamePrefix() const;
+
   const std::string& member_name() const { return member_name_; }
   const std::string& member_type() const { return member_type_; }
 

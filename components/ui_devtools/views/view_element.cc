@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
@@ -19,19 +20,17 @@ namespace ui_devtools {
 
 namespace {
 
-// Returns true if |property_name| is type SkColor, false if not. If type
-// SkColor, remove the "--" from the name.
-bool GetSkColorPropertyName(std::string& property_name) {
-  if (property_name.length() < 2U)
-    return false;
-
-  // Check if property starts with "--", meaning its type is SkColor.
-  if (property_name[0] == '-' && property_name[1] == '-') {
-    // Remove "--" from |property_name|.
-    base::TrimString(property_name, "-", &property_name);
-    return true;
+// Remove any custom editor "prefixes" from the property name. The prefixes must
+// not be valid identifier characters.
+void StripPrefix(std::string& property_name) {
+  auto cur = property_name.cbegin();
+  for (; cur < property_name.cend(); ++cur) {
+    if ((*cur >= 'A' && *cur <= 'Z') || (*cur >= 'a' && *cur <= 'z') ||
+        *cur == '_') {
+      break;
+    }
   }
-  return false;
+  property_name.erase(property_name.cbegin(), cur);
 }
 
 }  // namespace
@@ -96,20 +95,11 @@ ViewElement::GetCustomPropertiesForMatchedStyle() const {
   std::vector<UIElement::UIProperty> class_properties;
   views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
   for (auto member = metadata->begin(); member != metadata->end(); member++) {
-    // Check if type is SkColor and add "--" to property name so that DevTools
-    // frontend will interpret this field as a color. Also convert SkColor value
-    // to rgba string.
     auto flags = (*member)->GetPropertyFlags();
-    if ((*member)->member_type() == "SkColor") {
-      SkColor color;
-      if (base::StringToUint(
-              base::UTF16ToUTF8((*member)->GetValueAsString(view_)), &color))
-        class_properties.emplace_back("--" + (*member)->member_name(),
-                                      color_utils::SkColorToRgbaString(color));
-    } else if (!!(flags & views::metadata::PropertyFlags::kSerializable) ||
-               !!(flags & views::metadata::PropertyFlags::kReadOnly)) {
+    if (!!(flags & views::metadata::PropertyFlags::kSerializable) ||
+        !!(flags & views::metadata::PropertyFlags::kReadOnly)) {
       class_properties.emplace_back(
-          (*member)->member_name(),
+          (*member)->GetMemberNamePrefix() + (*member)->member_name(),
           base::UTF16ToUTF8((*member)->GetValueAsString(view_)));
     }
 
@@ -151,12 +141,8 @@ bool ViewElement::SetPropertiesFromString(const std::string& text) {
     std::string property_name = tokens.at(i);
     std::string property_value = base::ToLowerASCII(tokens.at(i + 1));
 
-    // Check if property is type SkColor.
-    if (GetSkColorPropertyName(property_name)) {
-      // Convert from CSS color format to SkColor.
-      if (!ParseColorFromFrontend(property_value, &property_value))
-        continue;
-    }
+    // Remove any type editor "prefixes" from the property name.
+    StripPrefix(property_name);
 
     views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
     views::metadata::MemberMetaDataBase* member =

@@ -51,18 +51,19 @@
     static views::metadata::ClassMetaData* meta_data_ ALLOW_UNUSED_TYPE; \
   }
 
-#define METADATA_PROPERTY_TYPE_INTERNAL(property_type, property_name)     \
-  views::metadata::ClassPropertyMetaData<                                 \
-      ViewClass, property_type, decltype(&ViewClass::Set##property_name), \
-      &ViewClass::Set##property_name,                                     \
-      decltype(std::declval<ViewClass>().Get##property_name()),           \
-      &ViewClass::Get##property_name>
+#define METADATA_PROPERTY_TYPE_INTERNAL(property_type, property_name, ...) \
+  views::metadata::ClassPropertyMetaData<                                  \
+      ViewClass, property_type, decltype(&ViewClass::Set##property_name),  \
+      &ViewClass::Set##property_name,                                      \
+      decltype(std::declval<ViewClass>().Get##property_name()),            \
+      &ViewClass::Get##property_name, ##__VA_ARGS__>
 
-#define METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type, property_name) \
+#define METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type, property_name, \
+                                                 ...)                          \
   views::metadata::ClassPropertyReadOnlyMetaData<                              \
       ViewClass, property_type,                                                \
       decltype(std::declval<ViewClass>().Get##property_name()),                \
-      &ViewClass::Get##property_name>
+      &ViewClass::Get##property_name, ##__VA_ARGS__>
 
 #define BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,   \
                                 parent_class_name)                           \

@@ -575,7 +575,9 @@ void IconLabelBubbleView::UpdateBorder() {
 }
 
 BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)
-ADD_READONLY_PROPERTY_METADATA(SkColor, ForegroundColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               ForegroundColor,
+                               views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(double, AnimationValue)
 ADD_READONLY_PROPERTY_METADATA(int, InternalSpacing)
 ADD_READONLY_PROPERTY_METADATA(int, ExtraInternalSpacing)

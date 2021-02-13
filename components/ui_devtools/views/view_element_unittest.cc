@@ -84,7 +84,7 @@ class NamedTestView : public views::View {
 
 BEGIN_METADATA(NamedTestView, views::View)
 ADD_PROPERTY_METADATA(bool, BoolProperty)
-ADD_PROPERTY_METADATA(SkColor, ColorProperty)
+ADD_PROPERTY_METADATA(SkColor, ColorProperty, views::metadata::SkColorConverter)
 END_METADATA
 
 class ViewElementTest : public views::ViewsTestBase {
@@ -260,27 +260,28 @@ TEST_F(ViewElementTest, ColorProperty) {
       "--ColorProperty: rgba(0,0,  255, 1);"));
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorBLUE);
 
-  EXPECT_TRUE(element()->SetPropertiesFromString("--ColorProperty: #0352fc"));
-  EXPECT_EQ(view()->GetColorProperty(), SkColorSetARGB(255, 3, 82, 252));
-
   EXPECT_TRUE(element()->SetPropertiesFromString(
       "--ColorProperty: hsl(240, 84%, 28%);"));
-  EXPECT_EQ(view()->GetColorProperty(), SkColorSetARGB(255, 11, 11, 131));
+  EXPECT_EQ(view()->GetColorProperty(), SkColorSetARGB(255, 0x0B, 0x0B, 0x47));
+
+  EXPECT_TRUE(element()->SetPropertiesFromString(
+      "--ColorProperty: hsla(240, 84%, 28%, 0.5);"));
+  EXPECT_EQ(view()->GetColorProperty(), SkColorSetARGB(128, 0x0B, 0x0B, 0x47));
 }
 
 TEST_F(ViewElementTest, BadColorProperty) {
   DCHECK_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  EXPECT_FALSE(
-      element()->SetPropertiesFromString("-ColorProperty: rgba(1,2,3,4);"));
+  element()->SetPropertiesFromString("--ColorProperty: #0352fc");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  EXPECT_FALSE(
-      element()->SetPropertiesFromString("--ColorProperty: rgba(1,2,3,4;"));
+  element()->SetPropertiesFromString("--ColorProperty: rgba(1,2,3,4);");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  EXPECT_FALSE(
-      element()->SetPropertiesFromString("--ColorProperty: rgb(1,2,3,4;)"));
+  element()->SetPropertiesFromString("--ColorProperty: rgba(1,2,3,4;");
+  EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
+
+  element()->SetPropertiesFromString("--ColorProperty: rgb(1,2,3,4;)");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 }
 

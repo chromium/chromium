@@ -195,7 +195,9 @@ class CustomTabBarTitleOriginView : public views::View {
 
 BEGIN_METADATA(CustomTabBarTitleOriginView, views::View)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumWidth)
-ADD_READONLY_PROPERTY_METADATA(SkColor, LocationColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               LocationColor,
+                               views::metadata::SkColorConverter)
 END_METADATA
 
 CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
@@ -542,7 +544,9 @@ bool CustomTabBarView::GetShowTitle() const {
 }
 
 BEGIN_METADATA(CustomTabBarView, views::AccessiblePaneView)
-ADD_READONLY_PROPERTY_METADATA(SkColor, DefaultFrameColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               DefaultFrameColor,
+                               views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(base::Optional<SkColor>, ThemeColor)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowTitle)
 END_METADATA

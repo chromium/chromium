@@ -3857,8 +3857,12 @@ ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
 ADD_READONLY_PROPERTY_METADATA(int, PinnedTabCount)
 ADD_READONLY_PROPERTY_METADATA(base::Optional<int>, FocusedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(int, StrokeThickness)
-ADD_READONLY_PROPERTY_METADATA(SkColor, ToolbarTopSeparatorColor)
-ADD_READONLY_PROPERTY_METADATA(SkColor, TabSeparatorColor)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               ToolbarTopSeparatorColor,
+                               views::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               TabSeparatorColor,
+                               views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(float, HoverOpacityForRadialHighlight)
 ADD_READONLY_PROPERTY_METADATA(int, ActiveTabWidth)
 ADD_READONLY_PROPERTY_METADATA(int, InactiveTabWidth)

@@ -32,7 +32,6 @@ template <typename TClass,
 class ClassPropertyReadOnlyMetaData : public MemberMetaDataBase {
  public:
   using MemberMetaDataBase::MemberMetaDataBase;
-  ClassPropertyReadOnlyMetaData() = default;
   ClassPropertyReadOnlyMetaData(const ClassPropertyReadOnlyMetaData&) = delete;
   ClassPropertyReadOnlyMetaData& operator=(
       const ClassPropertyReadOnlyMetaData&) = delete;
@@ -48,6 +47,10 @@ class ClassPropertyReadOnlyMetaData : public MemberMetaDataBase {
     return kTypeIsSerializable
                ? (PropertyFlags::kReadOnly | PropertyFlags::kSerializable)
                : PropertyFlags::kReadOnly;
+  }
+
+  const char* GetMemberNamePrefix() const override {
+    return TConverter::PropertyNamePrefix();
   }
 
  private:
@@ -73,9 +76,8 @@ class ClassPropertyMetaData : public ClassPropertyReadOnlyMetaData<TClass,
                                                                    Get,
                                                                    TConverter> {
  public:
-  using ClassPropertyReadOnlyMetaData<TClass, TValue, TRet, Get>::
+  using ClassPropertyReadOnlyMetaData<TClass, TValue, TRet, Get, TConverter>::
       ClassPropertyReadOnlyMetaData;
-  ClassPropertyMetaData() = default;
   ClassPropertyMetaData(const ClassPropertyMetaData&) = delete;
   ClassPropertyMetaData& operator=(const ClassPropertyMetaData&) = delete;
   ~ClassPropertyMetaData() override = default;

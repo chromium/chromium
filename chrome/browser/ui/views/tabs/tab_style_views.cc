@@ -958,14 +958,14 @@ base::string16 views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
 // static
 base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
     TabStyle::TabColors>::FromString(const base::string16& source_value) {
-  base::string16 pruned_string;
-  base::RemoveChars(source_value, base::ASCIIToUTF16("()rgba"), &pruned_string);
-  const auto values =
-      base::SplitStringPiece(pruned_string, base::ASCIIToUTF16("{,}"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  const auto foreground_color = RgbaPiecesToSkColor(values, 0);
-  const auto background_color = RgbaPiecesToSkColor(values, 4);
-  return (foreground_color.has_value() && background_color.has_value())
+  base::string16 trimmed_string;
+  base::TrimString(source_value, base::ASCIIToUTF16("{ }"), &trimmed_string);
+  base::string16::const_iterator color_pos = trimmed_string.cbegin();
+  const auto foreground_color = SkColorConverter::GetNextColor(
+      color_pos, trimmed_string.cend(), color_pos);
+  const auto background_color =
+      SkColorConverter::GetNextColor(color_pos, trimmed_string.cend());
+  return (foreground_color && background_color)
              ? base::make_optional<TabStyle::TabColors>(
                    foreground_color.value(), background_color.value())
              : base::nullopt;

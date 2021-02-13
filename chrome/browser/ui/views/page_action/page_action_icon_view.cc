@@ -255,6 +255,6 @@ void PageActionIconView::UpdateBorder() {
 }
 
 BEGIN_METADATA(PageActionIconView, IconLabelBubbleView)
-ADD_PROPERTY_METADATA(SkColor, IconColor)
+ADD_PROPERTY_METADATA(SkColor, IconColor, views::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, Active)
 END_METADATA

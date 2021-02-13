@@ -215,7 +215,8 @@ class StringTokenizerT {
            IsAsciiWhitespace(c);
   }
 
-  // Skip over any contiguous ignored characters.
+  // Skip over any contiguous whitespace characters according to the whitespace
+  // policy.
   void SkipWhitespace() {
     while (token_end_ != end_ && ShouldSkip(*token_end_))
       ++token_end_;
@@ -318,7 +319,8 @@ class StringTokenizerT {
     AdvanceState() : in_quote(false), in_escape(false), quote_char('\0') {}
   };
 
-  // Returns true if a delimiter was not hit.
+  // Returns true if a delimiter or, depending on policy, whitespace was not
+  // hit.
   bool AdvanceOne(AdvanceState* state, char_type c) {
     if (state->in_quote) {
       if (state->in_escape) {

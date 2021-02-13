@@ -264,8 +264,8 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
 }
 
 BEGIN_METADATA(ProgressBar, View)
-ADD_PROPERTY_METADATA(SkColor, ForegroundColor)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
+ADD_PROPERTY_METADATA(SkColor, ForegroundColor, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
 END_METADATA
 
 }  // namespace views
