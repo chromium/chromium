@@ -530,6 +530,9 @@ enum StringAttribute {
   kTooltip,
   kUrl,
   kValue,
+  // TODO(bebeaudr): kAriaVirtualContent is currently a string attribute to
+  // facilitate prototyping. Make it an enum when we're done prototyping.
+  kVirtualContent,
 };
 
 enum IntAttribute {

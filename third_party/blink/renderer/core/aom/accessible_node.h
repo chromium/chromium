@@ -40,7 +40,8 @@ enum class AOMStringProperty {
   kRole,
   kRoleDescription,
   kSort,
-  kValueText
+  kValueText,
+  kVirtualContent
 };
 
 // All of the properties of AccessibleNode that have type "boolean".
@@ -336,6 +337,9 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
 
   AtomicString valueText() const;
   void setValueText(const AtomicString&);
+
+  AtomicString virtualContent() const;
+  void setVirtualContent(const AtomicString&);
 
   AccessibleNodeList* childNodes();
 

@@ -137,6 +137,7 @@
     {name: "aria-valuemin", type: "decimal"},
     {name: "aria-valuenow", type: "decimal"},
     {name: "aria-valuetext", type: "string"},
+    {name: "aria-virtualcontent", type: "string"},
   ],
   roles: [
     {

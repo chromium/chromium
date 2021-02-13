@@ -195,6 +195,7 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
                     AXPropertyFilter::DENY);  // Don't show false value
   AddPropertyFilter(property_filters, "roleDescription=*");
   AddPropertyFilter(property_filters, "errormessageId=*");
+  AddPropertyFilter(property_filters, "virtualContent=*");
 }
 
 const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",

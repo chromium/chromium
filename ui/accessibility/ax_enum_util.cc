@@ -804,6 +804,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "url";
     case ax::mojom::StringAttribute::kValue:
       return "value";
+    case ax::mojom::StringAttribute::kVirtualContent:
+      return "virtualContent";
   }
 
   return "";

@@ -55,6 +55,8 @@ QualifiedName GetCorrespondingARIAAttribute(AOMStringProperty property) {
       return html_names::kAriaSortAttr;
     case AOMStringProperty::kValueText:
       return html_names::kAriaValuetextAttr;
+    case AOMStringProperty::kVirtualContent:
+      return html_names::kAriaVirtualcontentAttr;
   }
 
   NOTREACHED();
@@ -910,6 +912,15 @@ void AccessibleNode::setValueText(const AtomicString& value_text) {
   NotifyAttributeChanged(html_names::kAriaValuetextAttr);
 }
 
+AtomicString AccessibleNode::virtualContent() const {
+  return GetProperty(AOMStringProperty::kVirtualContent);
+}
+
+void AccessibleNode::setVirtualContent(const AtomicString& virtual_content) {
+  SetStringProperty(AOMStringProperty::kVirtualContent, virtual_content);
+  NotifyAttributeChanged(html_names::kAriaVirtualcontentAttr);
+}
+
 AccessibleNodeList* AccessibleNode::childNodes() {
   return AccessibleNodeList::Create(children_);
 }
@@ -991,6 +1002,7 @@ bool AccessibleNode::IsStringTokenProperty(AOMStringProperty property) {
                                     // supported.
     case AOMStringProperty::kRoleDescription:
     case AOMStringProperty::kValueText:
+    case AOMStringProperty::kVirtualContent:
       break;
   }
   return false;

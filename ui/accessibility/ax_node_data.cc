@@ -1529,6 +1529,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kValue:
         result += " value=" + value;
         break;
+      case ax::mojom::StringAttribute::kVirtualContent:
+        result += " virtual_content=" + value;
+        break;
       case ax::mojom::StringAttribute::kNone:
         break;
     }

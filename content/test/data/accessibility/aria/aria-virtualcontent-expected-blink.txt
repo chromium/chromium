@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer virtualContent='block-end'
+++++++++staticText name='hello world'
+++++++++++inlineTextBox name='hello world'

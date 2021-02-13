@@ -59,6 +59,9 @@ enum class AXUIntAttribute {
 enum class AXStringAttribute {
   kAriaKeyShortcuts,
   kAriaRoleDescription,
+  // TODO(bebeaudr): kAriaVirtualContent is currently a string attribute to
+  // facilitate prototyping. Make it an enum when we're done prototyping.
+  kAriaVirtualContent,
 };
 
 enum class AXObjectAttribute {

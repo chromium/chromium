@@ -76,6 +76,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaValueMin
     property ariaValueNow
     property ariaValueText
+    property ariaVirtualContent
     property assignedSlot
     property attachInternals
     property attachShadow
@@ -1280,6 +1281,7 @@ namespace http://www.w3.org/2000/svg
     property ariaValueMin
     property ariaValueNow
     property ariaValueText
+    property ariaVirtualContent
     property assignedSlot
     property attachShadow
     property attributeStyleMap

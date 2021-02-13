@@ -2103,6 +2103,7 @@ interface Element : Node
     getter ariaValueMin
     getter ariaValueNow
     getter ariaValueText
+    getter ariaVirtualContent
     getter assignedSlot
     getter attributeStyleMap
     getter attributes
@@ -2246,6 +2247,7 @@ interface Element : Node
     setter ariaValueMin
     setter ariaValueNow
     setter ariaValueText
+    setter ariaVirtualContent
     setter classList
     setter className
     setter editContext
@@ -2315,6 +2317,7 @@ interface ElementInternals
     getter ariaValueMin
     getter ariaValueNow
     getter ariaValueText
+    getter ariaVirtualContent
     getter form
     getter labels
     getter role
@@ -2374,6 +2377,7 @@ interface ElementInternals
     setter ariaValueMin
     setter ariaValueNow
     setter ariaValueText
+    setter ariaVirtualContent
     setter role
 interface EncodedAudioChunk
     attribute @@toStringTag
