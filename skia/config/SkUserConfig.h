@@ -228,8 +228,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_CONVEXITY_DIRECTION_CHANGE
 
-#define SK_SUPPORT_LEGACY_RUNTIME_EFFECTS
-
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
