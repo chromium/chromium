@@ -235,12 +235,6 @@
   <message name="IDS_CHECKING_FOR_UPDATES" desc="Notification for checking for update">
     Checking for updates
   </message>
-  <message name="IDS_CHECKING_FOR_UPDATE_MSG" desc="Chrome OS OOBE: message shown during checking for update stage.">
-    Future software and security updates will install automatically.
-  </message>
-  <message name="IDS_UPDATE_MSG" desc="Chrome OS OOBE: message shown during update stage.">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will restart after this update. Future software and security updates will install automatically.
-  </message>
   <message name="IDS_QUICK_FIX_RELEASE_BUILD" desc="Quick Fix build which is Chrome OS release build displayed string instead of canary/dev/beta.">
     QuickFix
   </message>

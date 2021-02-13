@@ -62,36 +62,8 @@ void UpdateScreenHandler::SetUpdateStatus(
          timeleft_message);
 }
 
-void UpdateScreenHandler::SetEstimatedTimeLeft(int value) {
-  CallJS("login.UpdateScreen.setEstimatedTimeLeft", value);
-}
-
-void UpdateScreenHandler::SetShowEstimatedTimeLeft(bool value) {
-  CallJS("login.UpdateScreen.showEstimatedTimeLeft", value);
-}
-
-void UpdateScreenHandler::SetUpdateCompleted(bool value) {
-  CallJS("login.UpdateScreen.setUpdateCompleted", value);
-}
-
-void UpdateScreenHandler::SetShowCurtain(bool value) {
-  CallJS("login.UpdateScreen.showUpdateCurtain", value);
-}
-
-void UpdateScreenHandler::SetProgressMessage(const base::string16& value) {
-  CallJS("login.UpdateScreen.setProgressMessage", value);
-}
-
-void UpdateScreenHandler::SetProgress(int value) {
-  CallJS("login.UpdateScreen.setUpdateProgress", value);
-}
-
 void UpdateScreenHandler::SetRequiresPermissionForCellular(bool value) {
   CallJS("login.UpdateScreen.setRequiresPermissionForCellular", value);
-}
-
-void UpdateScreenHandler::SetCancelUpdateShortcutEnabled(bool value) {
-  CallJS("login.UpdateScreen.setCancelUpdateShortcutEnabled", value);
 }
 
 void UpdateScreenHandler::ShowLowBatteryWarningMessage(bool value) {
@@ -102,24 +74,18 @@ void UpdateScreenHandler::SetAutoTransition(bool value) {
   CallJS("login.UpdateScreen.setAutoTransition", value);
 }
 
+void UpdateScreenHandler::SetCancelUpdateShortcutEnabled(bool value) {
+  CallJS("login.UpdateScreen.setCancelUpdateShortcutEnabled", value);
+}
+
 void UpdateScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("checkingForUpdatesMsg", IDS_CHECKING_FOR_UPDATE_MSG);
-  builder->AddF("installingUpdateDesc", IDS_UPDATE_MSG,
-                ui::GetChromeOSDeviceName());
   builder->Add("updateCompeletedMsg", IDS_UPDATE_COMPLETED);
   builder->Add("updateCompeletedRebootingMsg", IDS_UPDATE_COMPLETED_REBOOTING);
   builder->Add("updateStatusTitle", IDS_UPDATE_STATUS_TITLE);
   builder->Add("updateScreenAccessibleTitle",
                IDS_UPDATE_SCREEN_ACCESSIBLE_TITLE);
   builder->Add("checkingForUpdates", IDS_CHECKING_FOR_UPDATES);
-  builder->Add("downloading", IDS_DOWNLOADING);
-  builder->Add("downloadingTimeLeftLong", IDS_DOWNLOADING_TIME_LEFT_LONG);
-  builder->Add("downloadingTimeLeftStatusOneHour",
-               IDS_DOWNLOADING_TIME_LEFT_STATUS_ONE_HOUR);
-  builder->Add("downloadingTimeLeftStatusMinutes",
-               IDS_DOWNLOADING_TIME_LEFT_STATUS_MINUTES);
-  builder->Add("downloadingTimeLeftSmall", IDS_DOWNLOADING_TIME_LEFT_SMALL);
 
   builder->Add("slideUpdateTitle", IDS_UPDATE_SLIDE_UPDATE_TITLE);
   builder->Add("slideUpdateText", IDS_UPDATE_SLIDE_UPDATE_TEXT);
@@ -149,15 +115,6 @@ void UpdateScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE);
   builder->Add("updateOverCellularPromptMessage",
                IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
-
-  // For Material Design OOBE
-  builder->Add("updatingScreenTitle", IDS_UPDATING_SCREEN_TITLE);
-}
-
-void UpdateScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
-  dict->SetBoolKey("betterUpdateScreenFeatureEnabled",
-                   chromeos::features::IsBetterUpdateEnabled());
-  BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
 void UpdateScreenHandler::Initialize() {

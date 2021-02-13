@@ -161,20 +161,18 @@ void UpdateScreen::ShowImpl() {
         base::BindRepeating(&UpdateScreen::OnAccessibilityStatusChanged,
                             weak_factory_.GetWeakPtr()));
   }
-  if (chromeos::features::IsBetterUpdateEnabled()) {
-    DCHECK(!power_manager_subscription_);
+  if (!power_manager_subscription_) {
     power_manager_subscription_ = std::make_unique<
         ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>(this);
     power_manager_subscription_->Add(PowerManagerClient::Get());
-    PowerManagerClient::Get()->RequestStatusUpdate();
   }
+  PowerManagerClient::Get()->RequestStatusUpdate();
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (view_) {
     view_->SetCancelUpdateShortcutEnabled(true);
   }
 #endif
   RefreshView(version_updater_->update_info());
-
   show_timer_.Start(FROM_HERE, kShowDelay,
                     base::BindOnce(&UpdateScreen::MakeSureScreenIsShown,
                                    weak_factory_.GetWeakPtr()));
@@ -233,11 +231,7 @@ void UpdateScreen::OnWaitForRebootTimeElapsed() {
   MakeSureScreenIsShown();
   if (!view_)
     return;
-  if (chromeos::features::IsBetterUpdateEnabled()) {
-    view_->SetUIState(UpdateView::UIState::kManualReboot);
-  } else {
-    view_->SetUpdateCompleted(true);
-  }
+  view_->SetUIState(UpdateView::UIState::kManualReboot);
 }
 
 void UpdateScreen::PrepareForUpdateCheck() {
@@ -380,14 +374,10 @@ void UpdateScreen::UpdateInfoChanged(
                            finalize_time_);
         RecordDownloadingTime(tick_clock_->NowTicks() -
                               start_update_downloading_);
-        if (chromeos::features::IsBetterUpdateEnabled()) {
-          ShowRebootInProgress();
-          wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
-                                   version_updater_.get(),
-                                   &VersionUpdater::RebootAfterUpdate);
-        } else {
-          version_updater_->RebootAfterUpdate();
-        }
+        ShowRebootInProgress();
+        wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
+                                 version_updater_.get(),
+                                 &VersionUpdater::RebootAfterUpdate);
       } else {
         hide_progress_on_exit_ = true;
         ExitUpdate(Result::UPDATE_NOT_REQUIRED);
@@ -408,8 +398,7 @@ void UpdateScreen::UpdateInfoChanged(
     default:
       NOTREACHED();
   }
-  if (chromeos::features::IsBetterUpdateEnabled())
-    UpdateBatteryWarningVisibility();
+  UpdateBatteryWarningVisibility();
   if (need_refresh_view)
     RefreshView(update_info);
 }
@@ -432,13 +421,8 @@ void UpdateScreen::PowerChanged(
 
 void UpdateScreen::ShowRebootInProgress() {
   MakeSureScreenIsShown();
-  if (view_) {
-    if (chromeos::features::IsBetterUpdateEnabled()) {
-      view_->SetUIState(UpdateView::UIState::kRestartInProgress);
-    } else {
-      view_->SetUpdateCompleted(true);
-    }
-  }
+  if (view_)
+    view_->SetUIState(UpdateView::UIState::kRestartInProgress);
 }
 
 void UpdateScreen::SetUpdateStatusMessage(int percent,
@@ -480,12 +464,6 @@ void UpdateScreen::UpdateBatteryWarningVisibility() {
 
 void UpdateScreen::RefreshView(const VersionUpdater::UpdateInfo& update_info) {
   if (view_) {
-    view_->SetProgress(update_info.progress);
-    view_->SetProgressMessage(update_info.progress_message);
-    view_->SetEstimatedTimeLeft(update_info.estimated_time_left_in_secs);
-    view_->SetShowEstimatedTimeLeft(update_info.show_estimated_time_left);
-    view_->SetShowCurtain(update_info.progress_unavailable ||
-                          hide_progress_on_exit_);
     view_->SetRequiresPermissionForCellular(
         update_info.requires_permission_for_cellular);
   }

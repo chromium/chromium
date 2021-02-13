@@ -132,6 +132,7 @@
 -UpdateRequiredScreenPolicyPresentTest.*
 -UpdateRequiredScreenTest.*
 -UpdateScreenTest.*
+-BetterUpdateScreenTest.*
 -UserCloudExternalDataManagerTest.*
 -UserCreationScreenEnrolledTest.*
 -UserCreationScreenLoginTest.*

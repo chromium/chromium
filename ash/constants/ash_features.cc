@@ -137,13 +137,6 @@ const base::Feature kAssistPersonalInfoPhoneNumber{
 extern const base::Feature kAvatarToolbarButton{
     "AvatarToolbarButton", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables better version of the UpdateScreen in OOBE. Displays low battery
-// warnings during the update downloading and further stages. Provides time
-// estimates of the update stages.
-// https://crbug.com/1101317
-const base::Feature kBetterUpdateScreen{"BetterUpdateScreen",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables more aggressive filtering out of Bluetooth devices with
 // "appearances" that are less likely to be pairable or useful.
 const base::Feature kBluetoothAggressiveAppearanceFilter{
@@ -743,10 +736,6 @@ bool IsAmbientModePhotoPreviewEnabled() {
 
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
-}
-
-bool IsBetterUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kBetterUpdateScreen);
 }
 
 bool IsCellularActivationUiEnabled() {
