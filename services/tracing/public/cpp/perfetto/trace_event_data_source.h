@@ -266,6 +266,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
 
   bool disable_interning_ = false;
   base::OnceClosure stop_complete_callback_;
+  base::TimeTicks process_creation_time_ticks_;
 
   // Incremented and accessed atomically but without memory order guarantees.
   static constexpr uint32_t kInvalidSessionID = 0;

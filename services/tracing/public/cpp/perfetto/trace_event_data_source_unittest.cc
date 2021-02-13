@@ -738,28 +738,6 @@ TEST_F(TraceEventDataSourceTest, BasicTraceEvent) {
   ExpectEventNames(e_packet, {{1u, "bar"}});
 }
 
-TEST_F(TraceEventDataSourceTest, TraceLogMetadataEvents) {
-  StartTraceEventDataSource();
-
-  base::RunLoop wait_for_flush;
-  TraceEventDataSource::GetInstance()->StopTracing(
-      wait_for_flush.QuitClosure());
-  wait_for_flush.Run();
-
-  bool has_process_uptime_event = false;
-  for (size_t i = 0; i < producer_client()->GetFinalizedPacketCount(); ++i) {
-    auto* packet = producer_client()->GetFinalizedPacket(i);
-    for (auto& event_name : packet->interned_data().event_names()) {
-      if (event_name.name() == "process_uptime_seconds") {
-        has_process_uptime_event = true;
-        break;
-      }
-    }
-  }
-
-  EXPECT_TRUE(has_process_uptime_event);
-}
-
 TEST_F(TraceEventDataSourceTest, TimestampedTraceEvent) {
   StartTraceEventDataSource();
 

@@ -514,6 +514,10 @@ TraceEventDataSource::TraceEventDataSource()
     : DataSourceBase(mojom::kTraceEventDataSourceName),
       disable_interning_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPerfettoDisableInterning)) {
+  // Use an approximate creation time as this is not available as TimeTicks in
+  // all platforms.
+  process_creation_time_ticks_ = TRACE_TIME_TICKS_NOW();
+
   DCHECK(session_flags_.is_lock_free())
       << "SessionFlags are not atomic! We rely on efficient lock-free look-up "
          "of the session flags when emitting a trace event.";
@@ -1288,6 +1292,8 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 
   ProcessDescriptor* process = track_descriptor->set_process();
   process->set_pid(process_id);
+  process->set_start_timestamp_ns(
+      process_creation_time_ticks_.since_origin().InNanoseconds());
   if (!privacy_filtering_enabled && !process_name.empty()) {
     process->set_process_name(process_name);
   }
