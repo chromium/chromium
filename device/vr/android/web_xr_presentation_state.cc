@@ -218,7 +218,10 @@ void WebXrPresentationState::TryDeferredProcessing() {
   // Run synchronously, not via PostTask, to ensure we don't
   // get a new SendVSync scheduling in between.
   TransitionFrameAnimatingToProcessing();
-  std::move(animating_frame_->deferred_start_processing).Run();
+
+  // After the above call, the frame that was in animating_frame_ is now in
+  // processing_frame_.
+  std::move(processing_frame_->deferred_start_processing).Run();
 }
 
 }  // namespace device
