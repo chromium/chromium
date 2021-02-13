@@ -5950,6 +5950,16 @@
       'test_buildbucket_api_gpu_use_cases',
     ],
 
+    'gpu_angle_win7_nvidia_gtests': [
+      'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
+      'gpu_angle_unit_gtests',
+      'gpu_angle_white_box_gtests',
+      'gpu_angle_deqp_egl_d3d11_gtests',
+      'gpu_angle_deqp_gles2_d3d11_gtests',
+      'gpu_angle_deqp_gles3_d3d11_gtests',
+    ],
+
     'gpu_angle_win_amd_gtests': [
       'gpu_angle_deqp_gles2_d3d11_gtests',
       'gpu_angle_deqp_gles2_vulkan_gtests',

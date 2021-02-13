@@ -136,7 +136,7 @@
     },
 
     'chromium.angle': {
-      'android-angle-arm64-builder': 'angle_specific_android_release_trybot_arm64',
+      'android-angle-arm64-builder': 'angle_specific_no_trace_android_release_trybot_arm64',
       'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_trybot_arm64_fastbuild',
       'android-angle-perf-arm64-builder': 'angle_specific_android_vulkan_ndk_release_trybot_dcheck_off_arm64',
       'android-angle-vk-arm-builder': 'angle_specific_android_vulkan_ndk_release_trybot',
@@ -1491,8 +1491,8 @@
       'shared_release_trybot_dcheck_off', 'arm64',
     ],
 
-    'angle_specific_android_release_trybot_arm64': [
-      'angle_specific_tests', 'android_without_codecs',
+    'angle_specific_no_trace_android_release_trybot_arm64': [
+      'angle_specific_no_trace_tests', 'android_without_codecs',
       'shared_release_trybot', 'arm64',
     ],
 
@@ -2732,6 +2732,10 @@
     'angle_specific_tests': {
       'mixins': ['angle_gles1_conform_tests', 'angle_deqp_tests',
                  'angle_trace_perf_tests', 'disable_nacl'],
+    },
+
+    'angle_specific_no_trace_tests': {
+      'mixins': ['angle_gles1_conform_tests', 'angle_deqp_tests'],
     },
 
     'angle_trace_perf_tests': {

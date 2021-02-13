@@ -1273,7 +1273,11 @@
           'isolated_scripts': 'gpu_angle_perf_isolated_scripts',
         },
       },
-      'android-angle-vk-arm-builder': {},
+      'android-angle-vk-arm-builder': {
+        'additional_compile_targets': [
+          'angle_apks',
+        ],
+      },
       'android-angle-vk-arm-pixel2': {
         'os_type': 'android',
         'mixins': [
@@ -1282,15 +1286,16 @@
           'android_q',
           'walleye',
         ],
-        'additional_compile_targets': [
-          'angle_apks',
-        ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_android_vulkan_gtests',
           'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
-      'android-angle-vk-arm64-builder': {},
+      'android-angle-vk-arm64-builder': {
+        'additional_compile_targets': [
+          'angle_apks',
+        ],
+      },
       'android-angle-vk-arm64-pixel2': {
         'os_type': 'android',
         'mixins': [
@@ -1299,12 +1304,8 @@
           'android_q',
           'walleye',
         ],
-        'additional_compile_targets': [
-          'angle_apks',
-        ],
         'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_android_vulkan_gtests',
-          'gtest_tests': 'gpu_angle_gtests',
+          'gtest_tests': 'gpu_angle_android_vulkan_gtests',
           'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
@@ -1496,7 +1497,7 @@
           'win7_nvidia_quadro_p400',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_win7_nvidia_gtests',
+          'gtest_tests': 'gpu_angle_win7_nvidia_gtests',
         },
       },
       'win7-angle-x86-amd': {

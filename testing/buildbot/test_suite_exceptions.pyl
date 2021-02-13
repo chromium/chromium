@@ -91,6 +91,11 @@
           '--max-processes=1',
         ],
       },
+      'win10-angle-x64-intel': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
     },
   },
   'angle_perftests': {
@@ -130,6 +135,11 @@
         ],
       },
       'Win10 FYI x64 Release (Intel HD 630)': {
+        'args': [
+          '--max-processes=1',
+        ],
+      },
+      'win10-angle-x64-intel': {
         'args': [
           '--max-processes=1',
         ],
