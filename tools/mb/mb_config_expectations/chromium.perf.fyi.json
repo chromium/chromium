@@ -40,6 +40,9 @@
   "fuchsia-builder-perf-fyi": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images-internal/astro-release/"
+      ],
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
