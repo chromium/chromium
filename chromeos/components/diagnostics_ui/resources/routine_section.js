@@ -243,7 +243,8 @@ Polymer({
       case ExecutionProgress.kRunning:
         this.setBadgeAndStatusText_(
             BadgeType.RUNNING, loadTimeData.getString('testRunning'),
-            loadTimeData.getStringF('routineNameText', this.currentTestName_));
+            loadTimeData.getStringF(
+                'routineNameText', this.currentTestName_.toLowerCase()));
         break;
       case ExecutionProgress.kCancelled:
         this.setBadgeAndStatusText_(

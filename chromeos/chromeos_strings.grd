@@ -807,7 +807,7 @@ Try tapping the mic to ask me anything.
         <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available.
       </message>
       <message name="IDS_DIAGNOSTICS_CANCELLED_TEST_TEXT" desc="The text that displays the test that was cancelled.">
-        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test has been cancelled
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test has been cancelled
       </message>
       <message name="IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_SUCCESS" desc="The text shown when the session log is successfully saved to the users' device.">
         Download complete

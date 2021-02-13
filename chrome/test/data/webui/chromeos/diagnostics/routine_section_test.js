@@ -407,7 +407,7 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusTextElement().hidden);
           dx_utils.assertElementContainsText(
               getStatusTextElement(),
-              loadTimeData.getString('memoryRoutineText'));
+              loadTimeData.getString('memoryRoutineText').toLowerCase());
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -462,7 +462,8 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusTextElement().hidden);
           dx_utils.assertElementContainsText(
               getStatusTextElement(),
-              loadTimeData.getString('cpuFloatingPointAccuracyRoutineText'));
+              loadTimeData.getString('cpuFloatingPointAccuracyRoutineText')
+                  .toLowerCase());
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -482,7 +483,7 @@ export function routineSectionTestSuite() {
           assertFalse(getStatusTextElement().hidden);
           dx_utils.assertElementContainsText(
               getStatusTextElement(),
-              loadTimeData.getString('cpuCacheRoutineText'));
+              loadTimeData.getString('cpuCacheRoutineText').toLowerCase());
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -712,7 +713,8 @@ export function routineSectionTestSuite() {
           // Status text shows test that is running.
           dx_utils.assertElementContainsText(
               getStatusTextElement(),
-              loadTimeData.getStringF('routineNameText', getCurrentTestName()));
+              loadTimeData.getStringF(
+                  'routineNameText', getCurrentTestName().toLowerCase()));
         });
   });
 
