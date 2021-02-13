@@ -54,7 +54,7 @@ class UninstallationViaOsSettingsHelper {
                            base::ASCIIToWide(app_id_).c_str());
     base::MD5Digest digest;
     base::MD5Sum(key.c_str(), key.size() * sizeof(wchar_t), &digest);
-    return base::ASCIIToUTF16(base::MD5DigestToBase16(digest));
+    return base::ASCIIToWide(base::MD5DigestToBase16(digest));
   }
 
   base::CommandLine GetCommandLine() const {
@@ -118,15 +118,14 @@ void RegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
 
   UninstallationViaOsSettingsHelper uninstall_os_settings_helper(
       profile->GetPath(), app_id);
-  base::string16 hash_key =
-      uninstall_os_settings_helper.GetUninstallStringKey();
+  std::wstring hash_key = uninstall_os_settings_helper.GetUninstallStringKey();
 
   auto uninstall_commandline = uninstall_os_settings_helper.GetCommandLine();
   base::FilePath icon_path =
       uninstall_os_settings_helper.GetWebAppIconPath(app_name);
-  base::string16 product_name = install_static::GetChromeInstallSubDirectory();
+  std::wstring product_name = install_static::GetChromeInstallSubDirectory();
 
-  ::RegisterUninstallationViaOsSettings(hash_key, base::UTF8ToUTF16(app_name),
+  ::RegisterUninstallationViaOsSettings(hash_key, base::UTF8ToWide(app_name),
                                         product_name, uninstall_commandline,
                                         icon_path);
 }
@@ -139,8 +138,7 @@ void UnegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
 
   UninstallationViaOsSettingsHelper uninstall_os_settings_helper(
       profile->GetPath(), app_id);
-  base::string16 hash_key =
-      uninstall_os_settings_helper.GetUninstallStringKey();
+  std::wstring hash_key = uninstall_os_settings_helper.GetUninstallStringKey();
   ::UnregisterUninstallationViaOsSettings(hash_key);
 }
 

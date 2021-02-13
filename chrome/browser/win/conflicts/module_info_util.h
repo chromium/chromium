@@ -70,7 +70,7 @@ StringMapping GetEnvironmentVariablesMapping(
 // This function expects |prefix_mapping| and |path| to contain lowercase
 // strings. Also, |prefix_mapping| must not contain any trailing backslashes.
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  base::string16* path);
+                                  std::wstring* path);
 
 // Reads the file on disk to find out the SizeOfImage and TimeDateStamp
 // properties of the module. Returns false on error.
@@ -82,7 +82,7 @@ namespace internal {
 
 // Removes trailing null characters from the certificate's subject.
 // Exposed for testing.
-void NormalizeCertificateSubject(base::string16* subject);
+void NormalizeCertificateSubject(std::wstring* subject);
 
 }  // namespace internal
 

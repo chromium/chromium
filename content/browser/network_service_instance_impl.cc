@@ -262,7 +262,7 @@ ServiceStatus DetectSecurityProviders() {
   if (!key.Valid())
     return ServiceStatus::kUnknown;
 
-  std::vector<base::string16> packages;
+  std::vector<std::wstring> packages;
   if (key.ReadValues(L"Security Packages", &packages) != ERROR_SUCCESS)
     return ServiceStatus::kUnknown;
 

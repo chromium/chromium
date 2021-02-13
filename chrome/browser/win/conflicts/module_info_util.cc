@@ -101,7 +101,7 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
   if (!subject_name_size)
     return base::string16();
 
-  base::string16 subject_name;
+  std::wstring subject_name;
   subject_name.resize(subject_name_size);
 
   // Get subject name.
@@ -115,7 +115,7 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
   // characters.
   internal::NormalizeCertificateSubject(&subject_name);
 
-  return subject_name;
+  return base::AsString16(subject_name);
 }
 
 // Helper for scoped tracking a catalog admin context.
@@ -254,7 +254,7 @@ void GetCertificateInfo(const base::FilePath& filename,
 }
 
 bool IsMicrosoftModule(base::StringPiece16 subject) {
-  static constexpr wchar_t kMicrosoft[] = L"Microsoft ";
+  static constexpr base::char16 kMicrosoft[] = STRING16_LITERAL("Microsoft ");
   return base::StartsWith(subject, kMicrosoft);
 }
 
@@ -269,7 +269,9 @@ StringMapping GetEnvironmentVariablesMapping(
       value = base::TrimString(value, "\\", base::TRIM_TRAILING).as_string();
       string_mapping.push_back(
           std::make_pair(base::i18n::ToLower(base::UTF8ToUTF16(value)),
-                         L"%" + base::i18n::ToLower(variable) + L"%"));
+                         STRING16_LITERAL("%") +
+                             base::i18n::ToLower(base::AsString16(variable)) +
+                             STRING16_LITERAL("%")));
     }
   }
 
@@ -277,26 +279,26 @@ StringMapping GetEnvironmentVariablesMapping(
 }
 
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  base::string16* path) {
-  const base::string16 path_copy = *path;
-  DCHECK_EQ(base::i18n::ToLower(path_copy), path_copy);
+                                  std::wstring* path) {
+  const std::wstring path_copy = *path;
+  DCHECK_EQ(base::i18n::ToLower(base::AsString16(path_copy)), path_copy);
 
   size_t min_length = std::numeric_limits<size_t>::max();
   for (const auto& mapping : prefix_mapping) {
     DCHECK_EQ(base::i18n::ToLower(mapping.first), mapping.first);
-    if (base::StartsWith(path_copy, mapping.first)) {
+    if (base::StartsWith(base::AsString16(path_copy), mapping.first)) {
       // Make sure the matching prefix is a full path component.
       if (path_copy[mapping.first.length()] != '\\' &&
           path_copy[mapping.first.length()] != '\0') {
         continue;
       }
 
-      base::string16 collapsed_path = path_copy;
+      base::string16 collapsed_path = base::AsString16(path_copy);
       base::ReplaceFirstSubstringAfterOffset(&collapsed_path, 0, mapping.first,
                                              mapping.second);
       size_t length = collapsed_path.length() - mapping.second.length();
       if (length < min_length) {
-        *path = collapsed_path;
+        *path = base::AsWString(collapsed_path);
         min_length = length;
       }
     }
@@ -334,9 +336,9 @@ bool GetModuleImageSizeAndTimeDateStamp(const base::FilePath& path,
 
 namespace internal {
 
-void NormalizeCertificateSubject(base::string16* subject) {
+void NormalizeCertificateSubject(std::wstring* subject) {
   size_t first_null = subject->find(L'\0');
-  if (first_null != base::string16::npos)
+  if (first_null != std::wstring::npos)
     subject->resize(first_null);
 }
 

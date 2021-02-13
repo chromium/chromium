@@ -14,6 +14,7 @@
 #include "base/hash/md5.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 
 namespace {
 
@@ -34,8 +35,8 @@ void SerializeInspectionResult(const ModuleInfoKey& module_key,
   pickle->WriteUInt32(module_key.module_time_date_stamp);
 
   // ModuleInspectionResult:
-  pickle->WriteString16(inspection_result.location);
-  pickle->WriteString16(inspection_result.basename);
+  pickle->WriteString16(base::AsString16(inspection_result.location));
+  pickle->WriteString16(base::AsString16(inspection_result.basename));
   pickle->WriteString16(inspection_result.product_name);
   pickle->WriteString16(inspection_result.description);
   pickle->WriteString16(inspection_result.version);
@@ -77,9 +78,15 @@ bool DeserializeInspectionResult(uint32_t min_time_stamp,
   ModuleInspectionResult& inspection_result = value.second.first;
   uint32_t& time_stamp = value.second.second;
 
-  if (!pickle_iterator->ReadString16(&inspection_result.location) ||
-      !pickle_iterator->ReadString16(&inspection_result.basename) ||
-      !pickle_iterator->ReadString16(&inspection_result.product_name) ||
+  base::string16 location, basename;
+  if (!pickle_iterator->ReadString16(&location) ||
+      !pickle_iterator->ReadString16(&basename)) {
+    return false;
+  }
+  inspection_result.location = base::AsWString(location);
+  inspection_result.basename = base::AsWString(basename);
+
+  if (!pickle_iterator->ReadString16(&inspection_result.product_name) ||
       !pickle_iterator->ReadString16(&inspection_result.description) ||
       !pickle_iterator->ReadString16(&inspection_result.version) ||
       !pickle_iterator->ReadInt(

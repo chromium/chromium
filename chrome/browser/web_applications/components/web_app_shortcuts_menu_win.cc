@@ -79,10 +79,10 @@ bool WriteShortcutsMenuIconsToIcoFiles(
   return true;
 }
 
-base::string16 GenerateAppUserModelId(const base::FilePath& profile_path,
-                                      const web_app::AppId& app_id) {
-  base::string16 app_name =
-      base::UTF8ToUTF16(web_app::GenerateApplicationNameFromAppId(app_id));
+std::wstring GenerateAppUserModelId(const base::FilePath& profile_path,
+                                    const web_app::AppId& app_id) {
+  std::wstring app_name =
+      base::UTF8ToWide(web_app::GenerateApplicationNameFromAppId(app_id));
   return shell_integration::win::GetAppUserModelIdForApp(app_name,
                                                          profile_path);
 }
@@ -109,8 +109,7 @@ void RegisterShortcutsMenuWithOsTask(
     return;
   }
 
-  base::string16 app_user_model_id =
-      GenerateAppUserModelId(profile_path, app_id);
+  std::wstring app_user_model_id = GenerateAppUserModelId(profile_path, app_id);
   JumpListUpdater jumplist_updater(app_user_model_id);
   if (!jumplist_updater.BeginUpdate())
     return;
@@ -138,7 +137,7 @@ void RegisterShortcutsMenuWithOsTask(
     shortcut_link->set_title(shortcuts_menu_item_infos[i].name);
     base::FilePath shortcut_icon_path =
         GetShortcutIconPath(shortcut_data_dir, i);
-    shortcut_link->set_icon(shortcut_icon_path.value(), 0);
+    shortcut_link->set_icon(shortcut_icon_path, 0);
     shortcut_list.push_back(std::move(shortcut_link));
   }
 

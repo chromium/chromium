@@ -149,7 +149,7 @@ bool CreateOrderBlob(const base::FilePath& favorites_folder,
     ILFree(id_list_full);
   }
 
-  base::string16 key_path(importer::GetIEFavoritesOrderKey());
+  std::wstring key_path(importer::GetIEFavoritesOrderKey());
   if (!path.empty())
     key_path += L"\\" + path;
   base::win::RegKey key;
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
   // Verify malformed registry data are safely ignored and alphabetical
   // sort is performed.
   for (size_t i = 0; i < base::size(kBadBinary); ++i) {
-    base::string16 key_path(importer::GetIEFavoritesOrderKey());
+    std::wstring key_path(importer::GetIEFavoritesOrderKey());
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));

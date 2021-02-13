@@ -387,11 +387,10 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
     // or is longer than the max length supported by the IAttachmentExecute
     // service, use a generic value that reliably maps to the Internet zone.
     GURL source_url = web_contents()->GetLastCommittedURL();
-    base::string16 source =
-        (source_url.is_valid() &&
-         source_url.spec().size() <= INTERNET_MAX_URL_LENGTH)
-            ? base::UTF8ToUTF16(source_url.spec())
-            : L"about:internet";
+    std::wstring source = (source_url.is_valid() &&
+                           source_url.spec().size() <= INTERNET_MAX_URL_LENGTH)
+                              ? base::UTF8ToWide(source_url.spec())
+                              : L"about:internet";
 
     // For each "file", check against the OS that it is allowed
     // The same instance cannot be used to check multiple files, so this

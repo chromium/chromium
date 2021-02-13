@@ -11,6 +11,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
 #include "base/file_version_info.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string16.h"
@@ -48,8 +49,8 @@ void PopulateModuleInfoData(const base::FilePath& module_path,
 // Returns the long path name given a short path name. A short path name is a
 // path that follows the 8.3 convention and has ~x in it. If the path is already
 // a long path name, the function returns the current path without modification.
-bool ConvertToLongPath(const base::string16& short_path,
-                       base::string16* long_path) {
+bool ConvertToLongPath(const std::wstring& short_path,
+                       std::wstring* long_path) {
   wchar_t long_path_buf[MAX_PATH];
   DWORD return_value =
       ::GetLongPathName(short_path.c_str(), long_path_buf, MAX_PATH);
@@ -152,17 +153,17 @@ bool IsBlockingEnabledInProcessTypes(uint32_t process_types) {
 namespace internal {
 
 void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
-  base::string16 path = inspection_result->location;
+  std::wstring path = inspection_result->location;
   if (!ConvertToLongPath(path, &inspection_result->location))
     inspection_result->location = path;
 
-  inspection_result->location =
-      base::i18n::ToLower(inspection_result->location);
+  base::ranges::transform(inspection_result->location,
+                          inspection_result->location.begin(), &std::towlower);
 
   // Location contains the filename, so the last slash is where the path
   // ends.
   size_t last_slash = inspection_result->location.find_last_of(L"\\");
-  if (last_slash != base::string16::npos) {
+  if (last_slash != std::wstring::npos) {
     inspection_result->basename =
         inspection_result->location.substr(last_slash + 1);
     inspection_result->location =
@@ -173,12 +174,14 @@ void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
   }
 
   // Some version strings use ", " instead ".". Convert those.
-  base::ReplaceSubstringsAfterOffset(&inspection_result->version, 0, L", ",
-                                     L".");
+  base::ReplaceSubstringsAfterOffset(&inspection_result->version, 0,
+                                     STRING16_LITERAL(", "),
+                                     STRING16_LITERAL("."));
 
   // Some version strings have things like (win7_rtm.090713-1255) appended
   // to them. Remove that.
-  size_t first_space = inspection_result->version.find_first_of(L" ");
+  size_t first_space =
+      inspection_result->version.find_first_of(STRING16_LITERAL(" "));
   if (first_space != base::string16::npos)
     inspection_result->version =
         inspection_result->version.substr(0, first_space);

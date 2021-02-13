@@ -34,8 +34,8 @@
 namespace {
 
 // Toolbar favorites are placed under this special folder name.
-const base::char16 kFavoritesBarTitle[] = L"_Favorites_Bar_";
-const base::char16 kSpartanDatabaseFile[] = L"spartan.edb";
+const base::char16 kFavoritesBarTitle[] = STRING16_LITERAL("_Favorites_Bar_");
+const wchar_t kSpartanDatabaseFile[] = L"spartan.edb";
 
 struct EdgeFavoriteEntry {
   EdgeFavoriteEntry()
@@ -125,7 +125,7 @@ void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
       // If the favorites bar then load all children as toolbar items.
       if (base::EqualsCaseInsensitiveASCII(entry->title, kFavoritesBarTitle)) {
         // Replace name with Links similar to IE.
-        path->push_back(L"Links");
+        path->push_back(STRING16_LITERAL("Links"));
         BuildBookmarkEntries(*entry, true, bookmarks, favicons, path);
         path->pop_back();
       } else {
@@ -218,8 +218,8 @@ void EdgeImporter::ParseFavoritesDatabase(
   // attribute, as the open database operation will fail in such cases.
   // The log folder will usually not be present when running the unit tests.
   if (base::PathExists(log_folder))
-    database.set_log_folder(log_folder.value());
-  if (!database.OpenDatabase(database_path.value())) {
+    database.set_log_folder(log_folder);
+  if (!database.OpenDatabase(database_path)) {
     DVLOG(1) << "Error opening database " << database.GetErrorMessage();
     return;
   }
@@ -259,8 +259,10 @@ void EdgeImporter::ParseFavoritesDatabase(
     base::string16 favicon_file;
     if (!enumerator->RetrieveColumn(L"FaviconFile", &favicon_file))
       continue;
-    if (!favicon_file.empty())
-      entry.favicon_file = favicon_base.Append(favicon_file);
+    if (!favicon_file.empty()) {
+      entry.favicon_file =
+          favicon_base.Append(base::FilePath::FromUTF16Unsafe(favicon_file));
+    }
     if (!enumerator->RetrieveColumn(L"ParentId", &entry.parent_id))
       continue;
     if (!enumerator->RetrieveColumn(L"ItemId", &entry.item_id))

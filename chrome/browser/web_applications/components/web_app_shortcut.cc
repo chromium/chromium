@@ -126,8 +126,8 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
   std::string scheme_port(scheme + "_" + port);
 
 #if defined(OS_WIN)
-  base::FilePath::StringType host_path(base::UTF8ToUTF16(host));
-  base::FilePath::StringType scheme_port_path(base::UTF8ToUTF16(scheme_port));
+  base::FilePath::StringType host_path(base::UTF8ToWide(host));
+  base::FilePath::StringType scheme_port_path(base::UTF8ToWide(scheme_port));
 #elif defined(OS_POSIX)
   base::FilePath::StringType host_path(host);
   base::FilePath::StringType scheme_port_path(scheme_port);

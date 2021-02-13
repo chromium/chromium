@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 
@@ -104,13 +105,13 @@ bool EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::
 }
 
 // static
-const base::string16& StructTraits<
+const std::wstring& StructTraits<
     chrome::mojom::InspectionResultDataView,
     ModuleInspectionResult>::location(const ModuleInspectionResult& input) {
   return input.location;
 }
 // static
-const base::string16& StructTraits<
+const std::wstring& StructTraits<
     chrome::mojom::InspectionResultDataView,
     ModuleInspectionResult>::basename(const ModuleInspectionResult& input) {
   return input.basename;

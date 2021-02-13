@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 
 #if defined(GOOGLE_CHROME_BUILD)
@@ -42,7 +41,7 @@ class ThirdPartyMetricsRecorder : public ModuleDatabaseObserver {
   // crash reporter. Creating another instance of ThirdPartyMetricsRecorder
   // will start overwriting the current values in the crash keys. This is not
   // a problem in practice because this class is leaked.
-  void AddUnsignedModuleToCrashkeys(const base::string16& module_basename);
+  void AddUnsignedModuleToCrashkeys(const std::wstring& module_basename);
 
 #if defined(GOOGLE_CHROME_BUILD)
   // Invoked periodically to record heartbeat metrics related to third-party
