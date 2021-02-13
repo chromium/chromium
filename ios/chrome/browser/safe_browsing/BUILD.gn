@@ -12,6 +12,7 @@ source_set("safe_browsing") {
     "chrome_password_protection_service.mm",
     "chrome_password_protection_service_factory.h",
     "chrome_password_protection_service_factory.mm",
+    "input_event_observer.h",
     "password_protection_java_script_feature.h",
     "password_protection_java_script_feature.mm",
     "pending_unsafe_resource_storage.h",
@@ -73,7 +74,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/net",
-    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/signin",
@@ -100,6 +101,20 @@ js_compile_bundle("password_protection_js") {
   closure_entry_point = "__crWeb.passwordProtection"
 
   sources = [ "resources/password_protection.js" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/common",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_support") {

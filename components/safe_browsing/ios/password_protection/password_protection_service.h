@@ -40,6 +40,9 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       RequestOutcome outcome,
       PasswordType password_type,
       const LoginReputationClientResponse* response) = 0;
+
+  // Records a Chrome Sync event that sync password reuse was detected.
+  virtual void MaybeLogPasswordReuseDetectedEvent(web::WebState* web_state) = 0;
 };
 
 }  // namespace safe_browsing

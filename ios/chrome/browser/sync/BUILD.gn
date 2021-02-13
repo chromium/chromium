@@ -77,7 +77,7 @@ source_set("sync") {
     "//ios/chrome/browser/gcm/instance_id",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
-    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
@@ -100,7 +100,7 @@ source_set("sync") {
   ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/glue",

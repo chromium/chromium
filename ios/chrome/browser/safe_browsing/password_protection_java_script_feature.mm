@@ -6,9 +6,11 @@
 
 #import <WebKit/WebKit.h>
 
+#include "base/check.h"
 #import "base/ios/ios_util.h"
-#include "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#include "ios/chrome/browser/safe_browsing/input_event_observer.h"
+#include "ios/web/public/js_messaging/web_view_web_state_map.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -78,17 +80,43 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
   std::string event_type_str = base::SysNSStringToUTF8(eventType);
   std::string text_str = base::SysNSStringToUTF8(text);
 
+  web::WebViewWebStateMap* map =
+      web::WebViewWebStateMap::FromBrowserState(browser_state);
+  web::WebState* web_state = map->GetWebStateForWebView(message.webView);
+  InputEventObserver* observer = lookup_by_web_state_[web_state];
+  if (!observer)
+    return;
+
   if (event_type_str == kKeyPressedEventType) {
     // A keypress event should consist of a single character. A longer string
     // means the message isn't well-formed, so might be coming from a
     // compromised WebProcess.
     if (text_str.size() > 1)
       return;
-
-    // TODO(crbug.com/1147970): Forward the entered key to
-    // PasswordReuseDetectionMananger.
+    observer->OnKeyPressed(text_str);
   } else if (event_type_str == kPasteEventType) {
-    // TODO(crbug.com/1147970): Forward the pasted text to
-    // PasswordReuseDetectionMananger.
+    observer->OnPaste(text_str);
   }
+}
+
+void PasswordProtectionJavaScriptFeature::AddObserver(
+    InputEventObserver* observer) {
+  DCHECK(!lookup_by_observer_[observer]);
+  web::WebState* web_state = observer->web_state();
+  DCHECK(web_state);
+  // A web state can only have one observer.
+  DCHECK(!lookup_by_web_state_[web_state]);
+  lookup_by_web_state_[web_state] = observer;
+  lookup_by_observer_[observer] = web_state;
+}
+
+void PasswordProtectionJavaScriptFeature::RemoveObserver(
+    InputEventObserver* observer) {
+  // Note: observer->web_state() can already be null if the WebState has been
+  // destroyed.
+  web::WebState* web_state = lookup_by_observer_[observer];
+  DCHECK(web_state);
+  DCHECK_EQ(observer, lookup_by_web_state_[web_state]);
+  lookup_by_web_state_.erase(web_state);
+  lookup_by_observer_.erase(observer);
 }

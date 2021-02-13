@@ -61,7 +61,7 @@ ChromePasswordProtectionServiceFactory::BuildServiceInstanceFor(
 
 bool ChromePasswordProtectionServiceFactory::ServiceIsCreatedWithBrowserState()
     const {
-  return true;
+  return false;
 }
 
 web::BrowserState* ChromePasswordProtectionServiceFactory::GetBrowserStateToUse(

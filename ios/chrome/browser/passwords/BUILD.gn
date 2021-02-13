@@ -7,8 +7,6 @@ import("//ios/web/js_compile.gni")
 source_set("passwords") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "credentials_cleaner_runner_factory.cc",
-    "credentials_cleaner_runner_factory.h",
     "ios_chrome_affiliation_service_factory.cc",
     "ios_chrome_affiliation_service_factory.h",
     "ios_chrome_bulk_leak_check_service_factory.cc",
@@ -23,8 +21,6 @@ source_set("passwords") {
     "ios_chrome_password_manager_client.mm",
     "ios_chrome_password_manager_driver.h",
     "ios_chrome_password_manager_driver.mm",
-    "ios_chrome_password_store_factory.cc",
-    "ios_chrome_password_store_factory.h",
     "ios_password_requirements_service_factory.cc",
     "ios_password_requirements_service_factory.h",
     "notify_auto_signin_view_controller.h",
@@ -39,13 +35,12 @@ source_set("passwords") {
     "password_store_observer_bridge.mm",
     "password_tab_helper.h",
     "password_tab_helper.mm",
-    "save_passwords_consumer.h",
-    "save_passwords_consumer.mm",
     "well_known_change_password_tab_helper.h",
     "well_known_change_password_tab_helper.mm",
   ]
   deps = [
     ":infobar_delegates",
+    ":store_factory",
     "//base",
     "//base:i18n",
     "//components/autofill/core/browser",
@@ -78,8 +73,11 @@ source_set("passwords") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/safe_browsing:features",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/translate:translate",
     "//ios/chrome/browser/ui:feature_flags",
@@ -104,9 +102,47 @@ source_set("passwords") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ ":passwords_generation_utils" ]
+  public_deps = [
+    ":passwords_generation_utils",
+    ":store_factory",
+  ]
 
   allow_circular_includes_from = [ ":passwords_generation_utils" ]
+}
+
+source_set("save_passwords_consumer") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "save_passwords_consumer.h",
+    "save_passwords_consumer.mm",
+  ]
+  deps = [ "//components/password_manager/core/browser" ]
+}
+
+source_set("store_factory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "credentials_cleaner_runner_factory.cc",
+    "credentials_cleaner_runner_factory.h",
+    "ios_chrome_password_store_factory.cc",
+    "ios_chrome_password_store_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/signin/public/identity_manager",
+    "//components/sync",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync/glue",
+    "//ios/chrome/browser/webdata_services",
+    "//ios/web/public",
+    "//services/network/public/cpp",
+  ]
 }
 
 source_set("infobar_delegates") {

@@ -154,8 +154,8 @@ class ChromePasswordProtectionService
       safe_browsing::PasswordType password_type,
       const safe_browsing::LoginReputationClientResponse* response) override;
 
-  // Records a Chrome Sync event that sync password reuse was detected.
-  void MaybeLogPasswordReuseDetectedEvent(web::WebState* web_state);
+  // PasswordProtectionService override.
+  void MaybeLogPasswordReuseDetectedEvent(web::WebState* web_state) override;
 
   // Records a Chrome Sync event with the result of the user's interaction with
   // the warning dialog.
