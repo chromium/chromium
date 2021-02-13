@@ -2551,8 +2551,6 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
     if (!transform->IsIdentityOr2DTranslation())
       return true;
   }
-  if (properties->ScrollTranslation())
-    return true;
   if (properties->ReplacedContentTransform())
     return true;
   if (properties->TransformIsolationNode())
@@ -2561,6 +2559,8 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
     if (offset_translation->RequiresCompositingForScrollDependentPosition())
       return true;
   }
+  if (properties->OverflowClip())
+    return true;
   return false;
 }
 
@@ -2651,8 +2651,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
   bool is_layout_shift_root = IsLayoutShiftRoot(object_, fragment_data_);
   UpdateLayoutShiftRootChanged(is_layout_shift_root);
   if (full_context_.was_layout_shift_root || is_layout_shift_root) {
+    // A layout shift root (e.g. with mere OverflowClip) may have non-zero
+    // paint offset. Exclude the layout shift root's paint offset delta from
+    // additional_offset_to_layout_shift_root_delta.
     context_.current.additional_offset_to_layout_shift_root_delta =
-        PhysicalOffset();
+        context_.old_paint_offset - fragment_data_.PaintOffset();
   }
 
 #if DCHECK_IS_ON()

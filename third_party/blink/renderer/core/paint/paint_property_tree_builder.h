@@ -49,14 +49,14 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // "Additional offset to layout shift root" is the accumulation of paint
     // offsets encoded in PaintOffsetTranslations between the local transform
     // space and the layout shift root. The layout shift root is the nearest
-    // transform node (not including the transform nodes for the current object)
-    // that is one of:
-    //   * The transform property tree state of the containing LayoutView
-    //   * A transform that is not identity or 2d translation
-    //   * A scroll translation
-    //   * A replaced contents transform
-    //   * A transform isolation node
-    //   * A paint offset translation for a sticky or fixed position element
+    // ancestor with
+    // - a transform node that is one of:
+    //   * the transform property tree state of the containing LayoutView
+    //   * a transform that is not identity or 2d translation
+    //   * a replaced contents transform
+    //   * a transform isolation node
+    //   * a paint offset translation for a sticky or fixed position element
+    // - or an overflow clip node.
     // The offset plus paint_offset is the offset for layout shift tracking.
     // It doesn't include transforms because we need to ignore transform changes
     // for layout shift tracking, see
