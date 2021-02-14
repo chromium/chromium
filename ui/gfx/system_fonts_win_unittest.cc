@@ -34,7 +34,7 @@ class SystemFontsWinTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(SystemFontsWinTest);
 };
 
-LOGFONT CreateLOGFONT(const base::char16* name, LONG height) {
+LOGFONT CreateLOGFONT(const wchar_t* name, LONG height) {
   LOGFONT logfont = {};
   logfont.lfHeight = height;
   auto result = wcscpy_s(logfont.lfFaceName, name);
@@ -42,8 +42,8 @@ LOGFONT CreateLOGFONT(const base::char16* name, LONG height) {
   return logfont;
 }
 
-const base::char16 kSegoeUI[] = L"Segoe UI";
-const base::char16 kArial[] = L"Arial";
+const wchar_t kSegoeUI[] = L"Segoe UI";
+const wchar_t kArial[] = L"Arial";
 
 }  // namespace
 

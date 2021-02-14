@@ -88,18 +88,18 @@ TEST_F(FontFallbackWinTest, NulTerminatedStringPiece) {
   Font base_font;
   Font fallback_font;
   // Multiple ending NUL characters.
-  const wchar_t kTest1[] = {0x0540, 0x0541, 0, 0, 0};
+  const base::char16 kTest1[] = {0x0540, 0x0541, 0, 0, 0};
   EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
                                base::StringPiece16(kTest1, base::size(kTest1)),
                                &fallback_font));
   // No ending NUL character.
-  const wchar_t kTest2[] = {0x0540, 0x0541};
+  const base::char16 kTest2[] = {0x0540, 0x0541};
   EXPECT_TRUE(GetFallbackFont(base_font, kDefaultApplicationLocale,
                               base::StringPiece16(kTest2, base::size(kTest2)),
                               &fallback_font));
 
   // NUL only characters.
-  const wchar_t kTest3[] = {0, 0, 0};
+  const base::char16 kTest3[] = {0, 0, 0};
   EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
                                base::StringPiece16(kTest3, base::size(kTest3)),
                                &fallback_font));
@@ -115,7 +115,7 @@ TEST_F(FontFallbackWinTest, CJKLocaleFallback) {
   // common feature of written Chinese (hanzi), Japanese (kanji), and Korean
   // (hanja). The same text will be rendered using a different font based on
   // locale.
-  const wchar_t kCJKTest[] = L"\u8AA4\u904E\u9AA8";
+  const base::char16 kCJKTest[] = STRING16_LITERAL("\u8AA4\u904E\u9AA8");
   Font base_font;
   Font fallback_font;
 
