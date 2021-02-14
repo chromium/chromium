@@ -99,7 +99,7 @@ const base::Feature kLayoutNG{"LayoutNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable TableNG
 const base::Feature kLayoutNGTable{"LayoutNGTable",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable LayoutNGFieldset by default. This feature is for a kill switch.
 const base::Feature kLayoutNGFieldset{"LayoutNGFieldset",
