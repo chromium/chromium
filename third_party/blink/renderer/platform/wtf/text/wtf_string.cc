@@ -35,9 +35,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace WTF {
 
@@ -639,5 +641,10 @@ void String::Show() const {
   DLOG(INFO) << *this;
 }
 #endif
+
+void String::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  StringUTF8Adaptor adaptor(*this);
+  std::move(context).WriteString(adaptor.data(), adaptor.size());
+}
 
 }  // namespace WTF

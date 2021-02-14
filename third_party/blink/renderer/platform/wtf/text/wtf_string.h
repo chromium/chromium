@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #ifdef __OBJC__
 #include <objc/objc.h>
@@ -556,6 +557,8 @@ class WTF_EXPORT String {
   // For use in the debugger.
   void Show() const;
 #endif
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   friend struct HashTraits<String>;
