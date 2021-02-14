@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Open link in <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New Notification}other{# New Notifications}}</translation>
 <translation id="1139343347646843679">There was an error while configuring Linux. Please contact your administrator.</translation>
+<translation id="1139923033416533844">Memory usage</translation>
 <translation id="1140351953533677694">Access your Bluetooth and Serial devices</translation>
 <translation id="114036956334641753">Audio and captions</translation>
 <translation id="1140746652461896221">Block content on any page that you visit</translation>
@@ -677,6 +678,7 @@
 <translation id="1734212868489994726">Light blue</translation>
 <translation id="1734230530703461088">Failed to load extensions within the time limit. Please contact your administrator.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> may not be able to keep itself updated</translation>
+<translation id="173522743738009831">About Privacy Sandbox</translation>
 <translation id="173628468822554835">Got it. By default, new sites that you visit won't send you notifications.</translation>
 <translation id="1736419249208073774">Explore</translation>
 <translation id="1737968601308870607">File bug</translation>
@@ -1000,6 +1002,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
 <translation id="211144231511833662">Clear types</translation>
 <translation id="2111670510994270194">New tab to the right</translation>
+<translation id="2111810003053064883">Advertisers can study the effectiveness of ads in a way that does not track you across sites.</translation>
 <translation id="21133533946938348">Pin tab</translation>
 <translation id="2113479184312716848">Open &amp;File...</translation>
 <translation id="2113921862428609753">Authority Information Access</translation>
@@ -1029,6 +1032,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2138398485845393913">Connection to '<ph name="DEVICE_NAME" />' still in progress</translation>
 <translation id="2139545522194199494">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, connect</translation>
 <translation id="2139919072249842737">Set up button</translation>
+<translation id="2140788884185208305">Battery health</translation>
 <translation id="214169863967063661">Open appearance settings</translation>
 <translation id="2142328300403846845">Open Link as</translation>
 <translation id="2142582065325732898">Turn on <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> to view recent Chrome tabs. <ph name="LINK2_BEGIN" />Learn more<ph name="LINK2_END" /></translation>
@@ -1543,6 +1547,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2712173769900027643">Ask permission</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">Security key request</translation>
 <translation id="2715751256863167692">This upgrade resets your Chromebook and removes current user data.</translation>
 <translation id="2716986496990888774">This setting is managed by a parent.</translation>
 <translation id="2718395828230677721">Night Light</translation>
@@ -2002,6 +2007,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3238192140106069382">Connecting and verifying</translation>
 <translation id="3239373508713281971">Time limit removed for <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.</translation>
+<translation id="3242905690080165035">Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
 <translation id="3246107497225150582">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
@@ -2162,6 +2168,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3428419049384081277">You're signed in!</translation>
 <translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3428800329481094896">Fetching the Linux container SSH keys</translation>
+<translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3429271624041785769">Web content languages</translation>
 <translation id="3429275422858276529">Bookmark this page to easily find it later</translation>
 <translation id="3432227430032737297">Remove all shown</translation>
@@ -3145,6 +3152,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4541662893742891060">Unable to connect to this profile. For technical support, please contact your operator.</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542520061254486227">Read your data on <ph name="WEBSITE_1" /> and <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Advertisers can learn when thousands of users share a similar interest – like a crowd at a concert – and select ads for the crowd, rather than an individual person.</translation>
 <translation id="4543778593405494224">Certificate manager</translation>
 <translation id="4544174279960331769">Default blue avatar</translation>
 <translation id="4545028762441890696">To re-enable it, accept the new permissions:</translation>
@@ -3193,6 +3201,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4582563038311694664">Reset all settings</translation>
 <translation id="4585793705637313973">Edit page</translation>
 <translation id="4586275095964870617"><ph name="URL" /> could not be open in an alternative browser. Please contact your system administrator.</translation>
+<translation id="4587645918878093912">Today, websites rely on many technologies, such as third-party cookies, for important services like showing relevant ads and measuring a site’s performance.</translation>
 <translation id="4589713469967853491">Logs successfully written to downloads directory.</translation>
 <translation id="4590324241397107707">Database storage</translation>
 <translation id="4592891116925567110">Stylus drawing app</translation>
@@ -4620,6 +4629,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6271348838875430303">correction undone</translation>
 <translation id="6272643420381259437">There was an error (<ph name="ERROR" />) while downloading the plug-in</translation>
 <translation id="6273677812470008672">Quality</translation>
+<translation id="6275846828483490454">Privacy Sandbox is an ongoing initiative to preserve the open web that will help safeguard you from tracking mechanisms.</translation>
 <translation id="6276210637549544171">The proxy <ph name="PROXY_SERVER" /> requires a username and password.</translation>
 <translation id="6277105963844135994">Network timeout</translation>
 <translation id="6277518330158259200">T&amp;ake Screenshot</translation>
@@ -5274,6 +5284,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7018275672629230621">Read and change your browsing history</translation>
 <translation id="7019805045859631636">Fast</translation>
 <translation id="7022562585984256452">Your home page has been set.</translation>
+<translation id="7023206482239788111">Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services – without breaking sites, and while preventing you from being surreptitiously tracked across the web.</translation>
 <translation id="7025082428878635038">Introducing a new way to navigate with gestures</translation>
 <translation id="7025190659207909717">Mobile data service management</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Open all in &amp;incognito window}=1{Open in &amp;incognito window}other{Open all ({COUNT}) in &amp;incognito window}}</translation>
@@ -5452,6 +5463,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7234010996000898150">Cancelling Linux restore</translation>
 <translation id="7235716375204803342">Fetching activities...</translation>
 <translation id="7235737137505019098">Your security key does not have enough space for any more accounts.</translation>
+<translation id="7238640585329759787">When enabled, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7240339475467890413">Connect to new hotspot?</translation>
 <translation id="7241389281993241388">Please sign in to <ph name="TOKEN_NAME" /> to import the client certificate.</translation>
@@ -6112,6 +6124,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7968833647796919681">Enable performance data collection</translation>
 <translation id="7968982339740310781">View details</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7970618607181090249">Touch screen detected</translation>
 <translation id="7970673414865679092">Ethernet details</translation>
 <translation id="7970882136539140748">Can't save card at the moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 With RSA Encryption</translation>
@@ -6550,6 +6563,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8480082892550707549">Even if you have downloaded files from this site before, the site may be temporarily unsafe (hacked). Try downloading this file later.</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirm USB Permission</translation>
+<translation id="8481980314595922412">Trial features are on</translation>
 <translation id="8487678622945914333">Zoom In</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>
 <translation id="8490896350101740396">The following kiosk apps "<ph name="UPDATED_APPS" />" have been updated. Please reboot the device to complete the update process.</translation>
@@ -7059,6 +7073,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9031549947500880805">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data.</translation>
 <translation id="9033765790910064284">Continue anyway</translation>
 <translation id="9033857511263905942">&amp;Paste</translation>
+<translation id="903386633044383289">Connect to devices</translation>
 <translation id="9037818663270399707">Your connection is not private for all network traffic</translation>
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{You have one attempt remaining.}other{You have # attempts remaining.}}</translation>
@@ -7191,6 +7206,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9180281769944411366">This process may take a few minutes. Starting the Linux container.</translation>
 <translation id="9180380851667544951">Site can share your screen</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
+<translation id="9185818139207739329">Enable Privacy Sandbox trials</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9188732951356337132">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Use your Android phone as a security key</translation>

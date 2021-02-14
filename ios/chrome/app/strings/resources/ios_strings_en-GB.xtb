@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1952728750904661634">Sign in with managed account</translation>
 <translation id="1965935827552890526">Finish what you were doing in your other open Chrome window.</translation>
+<translation id="1973912524893600642">Keep data</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
@@ -299,6 +300,7 @@ Follow the steps below:</translation>
 <translation id="4038354071007134711">No application on this device can open the file.</translation>
 <translation id="4042870976416480368">Find in Page</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
+<translation id="4079195788735381731">Your organisation signed you out</translation>
 <translation id="4082688844002261427">Control how your browsing history is used to personalise Search, ads and more</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
 <translation id="411254640334432676">Download failed.</translation>
@@ -411,6 +413,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5317780077021120954">Save</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
+<translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /></translation>
 <translation id="5388358297987318779">Open image</translation>
 <translation id="5407969256130905701">Discard changes</translation>
 <translation id="5409365236829784218">There are no applications installed that can open this file.</translation>
@@ -497,6 +500,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6308436439357671616">This lets you take and upload photos.</translation>
 <translation id="6324528485781869530">Switch Sync Account</translation>

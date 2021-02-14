@@ -3528,7 +3528,7 @@
 <translation id="5932767795525445337">此政策也可用于固定 Android 应用。</translation>
 <translation id="5934763632608026594">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的 Web 应用管理设置。
 
-      此政策让管理员能够为通过 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 安装的 Web 应用指定设置。您可以使用特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
+      此政策让管理员能够为通过 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 安装的 Web 应用指定设置。您可以使用特殊 ID <ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
 
       <ph name="RUN_ON_OS_LOGIN_FIELD" />字段用于指定 Web 应用能否在操作系统登录期间运行。如果此字段设为<ph name="BLOCKED" />，Web 应用将不会在操作系统登录期间运行，而且用户无法在日后启用此设置。如果此字段设为<ph name="RUN_WINDOWED" />，Web 应用将会在操作系统登录期间运行，但用户无法在日后停用此设置。如果此字段设为<ph name="ALLOWED" />，用户将能够配置 Web 应用是否可在操作系统登录期间运行。默认配置仅接受<ph name="ALLOWED" />值和<ph name="BLOCKED" />值。
       </translation>

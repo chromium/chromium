@@ -1445,7 +1445,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (você não será desconectado da sua Conta do Google)}one{De # site (você não será desconectado da sua Conta do Google)}other{De # sites (você não será desconectado da sua Conta do Google)}}</translation>
 <translation id="6648459603387803038">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.</translation>
 <translation id="6648524591329069940">Fonte Serif</translation>
-<translation id="6651270836885078973">Gerenciado por:</translation>
+<translation id="6651270836885078973">Gerenciamento por:</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="666259744093848177">(x86_64 com tradução)</translation>

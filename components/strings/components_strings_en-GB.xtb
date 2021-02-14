@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Accepted cards</translation>
 <translation id="1021753677514347426">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chromium. While some legitimate cases for monitoring do exist, like on a school or company network, Chromium wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="1024111578869940408">Attackers sometimes mimic sites by making hard-to-see changes to the web address.</translation>
+<translation id="1028781062521375153">See details</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
 <translation id="1032854598605920125">Rotate clockwise</translation>
 <translation id="1036348656032585052">Turn off</translation>
@@ -146,6 +147,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1462951478840426066">Use the fonts on your computer so that you can create high-fidelity content</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Left</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> is your code for <ph name="EMBEDDED_ORIGIN" /> to continue on <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Show more</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1640180200866533862">User policies</translation>
 <translation id="1640244768702815859">Try <ph name="BEGIN_LINK" />visiting the site's homepage<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Delay output until</translation>
+<translation id="164212631332220697">Pay with <ph name="CARD_DETAIL" /> at checkout.</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1645368109819982629">Unsupported protocol</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1009,6 +1012,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4879725228911483934">Open and place windows on your screens</translation>
 <translation id="4880827082731008257">Search history</translation>
 <translation id="4881695831933465202">Open</translation>
+<translation id="4885256590493466218">Pay with <ph name="CARD_DETAIL" /> at checkout</translation>
 <translation id="4889420713887366944">Open incognito window button; press enter to open a new incognito window to browse privately</translation>
 <translation id="4892518386797173871">Rear</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1978,6 +1982,7 @@ Additional details:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is your code for <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Bookmark this tab</translation>
 <translation id="8751426954251315517">Please try again next time</translation>
+<translation id="8757526089434340176">Google Pay offer available</translation>
 <translation id="8759274551635299824">This card has expired</translation>
 <translation id="87601671197631245">This site uses an outdated security configuration, which may expose your information (for example, passwords, messages or credit cards) when it is sent to this site.</translation>
 <translation id="8761567432415473239">Google Safe Browsing recently <ph name="BEGIN_LINK" />found harmful programs<ph name="END_LINK" /> on <ph name="SITE" />.</translation>
