@@ -19,18 +19,22 @@ NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
 
 scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
-  LayoutUnit intrinsic_block_size = natural_size_.block_size;
-  LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(),
-      intrinsic_block_size + BorderPadding().BlockSum(),
-      container_builder_.InitialBorderBoxSize().inline_size);
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
-  container_builder_.SetFragmentsTotalBlockSize(block_size);
   // Set this as a legacy root so that legacy painters are used.
   container_builder_.SetIsLegacyLayoutRoot();
+
+  // TODO(dgrogan): |natural_size_.block_size| is frequently not the correct
+  // intrinsic block size. Move |ComputeIntrinsicBlockSizeForAspectRatioElement|
+  // from NGFlexLayoutAlgorithm to ng_length_utils and call it here.
+  LayoutUnit intrinsic_block_size = natural_size_.block_size;
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size +
+                                           BorderPadding().BlockSum());
+
   return container_builder_.ToBoxFragment();
 }
 
+// TODO(dgrogan): |natural_size_.inline_size| is frequently not the correct
+// intrinsic inline size. Move NGFlexLayoutAlgorithm's
+// |ComputeIntrinsicInlineSizeForAspectRatioElement| to here.
 MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesInput& child_input) const {
   MinMaxSizes sizes({natural_size_.inline_size, natural_size_.inline_size});

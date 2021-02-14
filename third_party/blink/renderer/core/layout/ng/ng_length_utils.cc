@@ -743,6 +743,15 @@ void ComputeReplacedSize(const NGBlockNode& node,
   LayoutUnit block_max = ResolveMaxBlockLength(space, style, border_padding,
                                                style.LogicalMaxHeight());
 
+  // When |ComputeReplacedSizes| was written it was only used for abspos
+  // replaced elements, whose ConstraintSpaces don't have forced inline or block
+  // sizes. So |ComputeReplacedSizes| doesn't obey forced inline or
+  // block sizes; it never needed to. But to use |ComputeReplacedSizes| in
+  // NGReplacedLayoutAlgorithm, which I want to do, |ComputeReplacedSizes| needs
+  // to honor forced sizes from the constraint space, or else replaced elements
+  // that are flex/grid items will ignore the forced sizes from the parent.
+  // TODO(dgrogan): Add support for forced sizes and stretching-if-auto in these
+  // next ~20 lines.
   const Length& inline_length = style.LogicalWidth();
   const Length& block_length = style.LogicalHeight();
   base::Optional<LayoutUnit> replaced_inline;
@@ -1249,6 +1258,7 @@ bool ClampScrollbarToContentBox(NGBoxStrut* scrollbars,
 NGFragmentGeometry CalculateInitialFragmentGeometry(
     const NGConstraintSpace& constraint_space,
     const NGBlockNode& node) {
+  DCHECK(node.CanUseNewLayout());
   const ComputedStyle& style = node.Style();
   NGBoxStrut border = ComputeBorders(constraint_space, node);
   NGBoxStrut padding = ComputePadding(constraint_space, style);
@@ -1268,6 +1278,42 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
     // This call has the side-effect of setting HasPercentHeightDescendants
     // correctly.
     node.GetLayoutBox()->ComputePercentageLogicalHeight(Length::Percent(0));
+  }
+
+  if (node.IsReplaced()) {
+    LogicalSize border_box_size;
+    MinMaxSizesInput min_max_input(
+        constraint_space.ReplacedPercentageResolutionBlockSize(),
+        MinMaxSizesType::kIntrinsic);
+    MinMaxSizes intrinsic_min_max_sizes =
+        node.ComputeMinMaxSizes(constraint_space.GetWritingMode(),
+                                min_max_input)
+            .sizes;
+    base::Optional<LogicalSize> replaced_size;
+    base::Optional<LogicalSize> aspect_ratio;
+    ComputeReplacedSize(node, constraint_space, intrinsic_min_max_sizes,
+                        &replaced_size, &aspect_ratio);
+    bool has_aspect_ratio_without_intrinsic_size =
+        !replaced_size && aspect_ratio && !aspect_ratio->IsEmpty();
+    if (has_aspect_ratio_without_intrinsic_size) {
+      // TODO(dgrogan): This doesn't obey min/max-width or transferred
+      // min/max-height or margins. Maybe use ResolveInlineLength with
+      // fill-available, then clamp with ComputeMinMaxInlineSizes after adapting
+      // it for Replaced elements. Or use ComputeInlineSizeForFragment with a
+      // ConstraintSpace with StretchInlineSizeIfAuto.
+      DCHECK_GE(constraint_space.AvailableSize().inline_size, LayoutUnit());
+      border_box_size.inline_size =
+          std::max(constraint_space.AvailableSize().inline_size,
+                   border_padding.InlineSum());
+      border_box_size.block_size = BlockSizeFromAspectRatio(
+          border_padding, *aspect_ratio, EBoxSizing::kContentBox,
+          border_box_size.inline_size);
+    } else {
+      DCHECK(replaced_size.has_value())
+          << "Images should have at least one of aspect_ratio or replaced_size";
+      border_box_size = *replaced_size;
+    }
+    return {border_box_size, border, scrollbar, padding};
   }
 
   LayoutUnit default_block_size = CalculateDefaultBlockSize(
