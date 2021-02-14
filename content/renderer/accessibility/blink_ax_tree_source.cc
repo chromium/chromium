@@ -370,8 +370,7 @@ void BlinkAXTreeSource::GetChildren(
     std::vector<WebAXObject>* out_children) const {
   CHECK(frozen_);
 
-  if ((parent.Role() == ax::mojom::Role::kStaticText ||
-       parent.Role() == ax::mojom::Role::kLineBreak) &&
+  if (ui::CanHaveInlineTextBoxChildren(parent.Role()) &&
       ShouldLoadInlineTextBoxes(parent)) {
     parent.LoadInlineTextBoxes();
   }

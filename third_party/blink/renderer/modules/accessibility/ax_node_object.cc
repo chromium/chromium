@@ -3600,8 +3600,7 @@ void AXNodeObject::AddChildrenImpl() {
     return;
   }
 
-  if (RoleValue() == ax::mojom::blink::Role::kStaticText ||
-      RoleValue() == ax::mojom::blink::Role::kLineBreak) {
+  if (ui::CanHaveInlineTextBoxChildren(RoleValue())) {
     AddInlineTextBoxChildren();
     CHECK_ATTACHED();
     return;
@@ -3860,6 +3859,7 @@ bool AXNodeObject::CanHaveChildren() const {
       return false;
     case ax::mojom::blink::Role::kPopUpButton:
       return true;
+    case ax::mojom::blink::Role::kLineBreak:
     case ax::mojom::blink::Role::kStaticText:
       return AXObjectCache().InlineTextBoxAccessibilityEnabled();
     case ax::mojom::blink::Role::kImage:

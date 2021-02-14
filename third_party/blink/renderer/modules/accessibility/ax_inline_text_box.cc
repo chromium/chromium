@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/accessibility/ax_role_properties.h"
 
 namespace blink {
 
@@ -357,6 +358,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
 void AXInlineTextBox::Init(AXObject* parent) {
   role_ = ax::mojom::blink::Role::kInlineTextBox;
   DCHECK(parent);
+  DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
+      << "Unexpected parent of inline text box: " << parent->RoleValue();
   SetParent(parent);
   UpdateCachedAttributeValuesIfNeeded(false);
 }

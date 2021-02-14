@@ -2039,10 +2039,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       included_in_tree_changed = true;
   }
 
-  // Static text parent ignored state affects inline text children.
+  // Presence of inline text children depends on ignored state.
   if (is_ignored != LastKnownIsIgnoredValue() &&
-      (RoleValue() == ax::mojom::blink::Role::kStaticText ||
-       RoleValue() == ax::mojom::blink::Role::kLineBreak)) {
+      ui::CanHaveInlineTextBoxChildren(RoleValue())) {
     // TODO(accessibility) Would like to call SetNeedsToUpdateChildren(), but
     // can't call a non-const method from a const method.
     children_dirty_ = CanHaveChildren();

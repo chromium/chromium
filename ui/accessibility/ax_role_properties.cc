@@ -20,6 +20,16 @@ constexpr bool kExposeLayoutTableAsDataTable = false;
 
 }  // namespace
 
+bool CanHaveInlineTextBoxChildren(ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kLineBreak:
+    case ax::mojom::Role::kStaticText:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool HasPresentationalChildren(const ax::mojom::Role role) {
   // See http://www.w3.org/TR/core-aam-1.1/#exclude_elements2.
   if (IsImage(role))
