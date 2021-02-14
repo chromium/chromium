@@ -396,8 +396,10 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
 #else
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(features::kDesktopCaptureMacV2))
+  if (desktop_id.type == DesktopMediaID::TYPE_SCREEN &&
+      base::FeatureList::IsEnabled(features::kDesktopCaptureMacV2)) {
     video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
+  }
 #endif
   if (!video_capture_device)
     video_capture_device = DesktopCaptureDevice::Create(desktop_id);
