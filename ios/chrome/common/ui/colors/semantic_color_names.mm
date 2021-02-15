@@ -54,6 +54,8 @@ NSString* const kGrey900Color = @"grey_900_color";
 // Temporary for iOS 12
 
 NSString* const kBackgroundDarkColor = @"background_dark_color";
+NSString* const kSecondaryBackgroundDarkColor =
+    @"secondary_background_dark_color";
 NSString* const kCloseButtonDarkColor = @"close_button_dark_color";
 NSString* const kTableViewRowHighlightDarkColor =
     @"table_view_row_highlight_dark_color";

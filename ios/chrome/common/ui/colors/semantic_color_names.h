@@ -75,6 +75,7 @@ extern NSString* const kGrey900Color;
 // TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
 
 extern NSString* const kBackgroundDarkColor;
+extern NSString* const kSecondaryBackgroundDarkColor;
 extern NSString* const kCloseButtonDarkColor;
 extern NSString* const kTableViewRowHighlightDarkColor;
 extern NSString* const kTextPrimaryDarkColor;
