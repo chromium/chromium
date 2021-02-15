@@ -7,9 +7,8 @@
 
 #include "build/build_config.h"
 
-#include <windows.h>
-
 #include "base/component_export.h"
+#include "base/win/windows_types.h"
 
 namespace ui {
 
@@ -19,6 +18,10 @@ COMPONENT_EXPORT(UI_BASE) void SetResourcesDataDLL(HINSTANCE handle);
 
 // Loads and returns an icon from the app module.
 COMPONENT_EXPORT(UI_BASE) HICON LoadThemeIconFromResourcesDataDLL(int icon_id);
+
+// Loads and returns a cursor from the app module.
+COMPONENT_EXPORT(UI_BASE)
+HCURSOR LoadCursorFromResourcesDataDLL(const wchar_t* cursor_id);
 
 }  // namespace ui
 

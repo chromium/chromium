@@ -8,18 +8,15 @@
 
 #include <memory>
 
-#include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/resource/resource_bundle_win.h"
 #include "ui/resources/grit/ui_unscaled_resources.h"
 
 namespace ui {
 
 namespace {
-
-base::LazyInstance<std::wstring>::DestructorAtExit
-    g_cursor_resource_module_name;
 
 const wchar_t* GetCursorId(gfx::NativeCursor native_cursor) {
   switch (native_cursor.type()) {
@@ -155,18 +152,12 @@ void CursorLoaderWin::SetPlatformCursor(gfx::NativeCursor* cursor) {
   } else {
     const wchar_t* cursor_id = GetCursorId(*cursor);
     PlatformCursor platform_cursor = LoadCursor(nullptr, cursor_id);
-    if (!platform_cursor && !g_cursor_resource_module_name.Get().empty()) {
-      platform_cursor = LoadCursor(
-          GetModuleHandle(g_cursor_resource_module_name.Get().c_str()),
-          cursor_id);
-    }
+    // Try loading the cursor from the Chromium resources.
+    if (!platform_cursor)
+      platform_cursor = LoadCursorFromResourcesDataDLL(cursor_id);
+    DCHECK(platform_cursor) << "Failed to load cursor " << cursor->type();
     cursor->SetPlatformCursor(platform_cursor);
   }
-}
-
-// static
-void CursorLoaderWin::SetCursorResourceModule(const std::wstring& module_name) {
-  g_cursor_resource_module_name.Get() = module_name;
 }
 
 }  // namespace ui

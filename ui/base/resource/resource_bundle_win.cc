@@ -4,6 +4,8 @@
 
 #include "ui/base/resource/resource_bundle_win.h"
 
+#include <windows.h>
+
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/image_operations.h"
@@ -48,6 +50,10 @@ void SetResourcesDataDLL(HINSTANCE handle) {
 
 HICON LoadThemeIconFromResourcesDataDLL(int icon_id) {
   return ::LoadIcon(GetCurrentResourceDLL(), MAKEINTRESOURCE(icon_id));
+}
+
+HCURSOR LoadCursorFromResourcesDataDLL(const wchar_t* cursor_id) {
+  return ::LoadCursor(GetCurrentResourceDLL(), cursor_id);
 }
 
 }  // namespace ui;
