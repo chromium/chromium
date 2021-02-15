@@ -1940,7 +1940,8 @@ const char kPrivacyReorderedAndroidDescription[] =
 
 const char kPrivacySandboxSettingsName[] = "Privacy Sandbox Settings";
 const char kPrivacySandboxSettingsDescription[] =
-    "Enables privacy sandbox settings";
+    "Enables privacy sandbox settings. Requires at least one of the Privacy "
+    "Sandbox APIs to be enabled.";
 
 const char kPrivacySettingsRedesignName[] = "Privacy Settings Redesign";
 const char kPrivacySettingsRedesignDescription[] =
