@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -22,12 +23,12 @@ FilteredServiceDirectory::~FilteredServiceDirectory() {}
 void FilteredServiceDirectory::AddService(base::StringPiece service_name) {
   outgoing_directory_.AddPublicService(
       std::make_unique<vfs::Service>(
-          [this, service_name = service_name.as_string()](
+          [this, service_name = std::string(service_name)](
               zx::channel channel, async_dispatcher_t* dispatcher) {
             DCHECK_EQ(dispatcher, async_get_default_dispatcher());
             directory_->Connect(service_name, std::move(channel));
           }),
-      service_name.as_string());
+      std::string(service_name));
 }
 
 void FilteredServiceDirectory::ConnectClient(

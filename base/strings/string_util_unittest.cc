@@ -15,6 +15,7 @@
 #include "base/bits.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -757,7 +758,7 @@ TEST(StringUtilTest, ReplaceSubstringsAfterOffset) {
 
   // std::string with insufficient capacity: expansion must realloc the buffer.
   for (const auto& scenario : cases) {
-    std::string str = scenario.str.as_string();
+    std::string str(scenario.str);
     str.shrink_to_fit();  // This is nonbinding, but it's the best we've got.
     ReplaceSubstringsAfterOffset(&str, scenario.start_offset,
                                  scenario.find_this, scenario.replace_with);
@@ -766,7 +767,7 @@ TEST(StringUtilTest, ReplaceSubstringsAfterOffset) {
 
   // std::string with ample capacity: should be possible to grow in-place.
   for (const auto& scenario : cases) {
-    std::string str = scenario.str.as_string();
+    std::string str(scenario.str);
     str.reserve(std::max(scenario.str.length(), scenario.expected.length()) *
                 2);
 

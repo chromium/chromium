@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -109,10 +110,10 @@ bool SplitIntoTwo(const std::string& separator,
   std::vector<StringPiece> parts =
       SplitStringPiece(*first, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
   if (parts.size() == 2) {
-    *second = parts[1].as_string();
+    *second = std::string(parts[1]);
   } else if (parts.size() > 2) {
     DLOG(ERROR) << "Only one '" << separator
-                << "' is allowed but got: " << first->as_string();
+                << "' is allowed but got: " << *first;
     return false;
   }
   *first = parts[0];
@@ -150,7 +151,7 @@ bool ParseEnableFeatures(const std::string& enable_features,
     if (!SplitIntoTwo("<", &enable_feature, &study))
       return false;
 
-    const std::string feature_name = enable_feature.as_string();
+    const std::string feature_name(enable_feature);
     // If feature params were set but group and study weren't, associate the
     // feature and its feature params to a synthetic field trial as the
     // feature params only make sense when it's combined with a field trial.
@@ -258,7 +259,7 @@ void FeatureList::InitializeFromSharedMemory(
     if (!entry->GetFeatureAndTrialName(&feature_name, &trial_name))
       continue;
 
-    FieldTrial* trial = FieldTrialList::Find(trial_name.as_string());
+    FieldTrial* trial = FieldTrialList::Find(trial_name);
     RegisterOverride(feature_name, override_state, trial);
   }
 }
@@ -548,7 +549,7 @@ void FeatureList::RegisterOverridesFromCommandLine(
     std::string::size_type pos = feature_name.find('<');
     if (pos != std::string::npos) {
       feature_name = StringPiece(value.data(), pos);
-      trial = FieldTrialList::Find(value.substr(pos + 1).as_string());
+      trial = FieldTrialList::Find(std::string(value.substr(pos + 1)));
 #if !defined(OS_NACL)
       // If the below DCHECK fires, it means a non-existent trial name was
       // specified via the "Feature<Trial" command-line syntax.
@@ -574,11 +575,11 @@ void FeatureList::RegisterOverride(StringPiece feature_name,
     overridden_state = OVERRIDE_USE_DEFAULT;
   }
 
-  // Note: The semantics of insert() is that it does not overwrite the entry if
+  // Note: The semantics of emplace() is that it does not overwrite the entry if
   // one already exists for the key. Thus, only the first override for a given
   // feature name takes effect.
-  overrides_.insert(std::make_pair(
-      feature_name.as_string(), OverrideEntry(overridden_state, field_trial)));
+  overrides_.emplace(std::string(feature_name),
+                     OverrideEntry(overridden_state, field_trial));
 }
 
 void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,

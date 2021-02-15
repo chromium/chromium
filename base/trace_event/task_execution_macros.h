@@ -38,7 +38,7 @@
             &ctx, base::trace_event::TraceSourceLocation(                    \
                       /*function_name=*/nullptr, file, line)));              \
     log->set_body_iid(base::trace_event::InternedLogMessage::Get(            \
-        &ctx, message.as_string()));                                         \
+        &ctx, std::string(message)));                                        \
   });
 
 #endif  // BASE_TRACE_EVENT_TASK_EXECUTION_MACROS_H_

@@ -30,6 +30,7 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_xml_unittest_result_printer.h"
 #include "base/test/gtest_xml_util.h"
@@ -524,8 +525,8 @@ void TestSuite::UnitTestAssertHandler(const char* file,
   // logged text, concatenated with stack trace of assert.
   // Concatenate summary and stack_trace here, to pass it as a message.
   if (printer_) {
-    const std::string summary_str = summary.as_string();
-    const std::string stack_trace_str = summary_str + stack_trace.as_string();
+    const std::string summary_str(summary);
+    const std::string stack_trace_str = summary_str + std::string(stack_trace);
     printer_->OnAssert(file, line, summary_str, stack_trace_str);
   }
 

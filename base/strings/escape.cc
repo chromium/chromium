@@ -4,6 +4,7 @@
 
 #include "base/strings/escape.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -262,7 +263,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
     adjustments->clear();
   // Do not unescape anything, return the |escaped_text| text.
   if (rules == UnescapeRule::NONE)
-    return escaped_text.as_string();
+    return std::string(escaped_text);
 
   // The output of the unescaping is always smaller than the input, so we can
   // reserve the input size to make sure we have enough buffer and don't have

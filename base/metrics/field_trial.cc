@@ -18,6 +18,7 @@
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -230,7 +231,7 @@ bool FieldTrial::FieldTrialEntry::GetParams(
     StringPiece value;
     if (!ReadStringPair(&iter, &key, &value))
       return key.empty();  // Non-empty is bad: got one of a pair.
-    (*params)[key.as_string()] = value.as_string();
+    (*params)[std::string(key)] = std::string(value);
   }
 }
 
@@ -341,17 +342,17 @@ void FieldTrial::EnableBenchmarking() {
 
 // static
 FieldTrial* FieldTrial::CreateSimulatedFieldTrial(
-    const std::string& trial_name,
+    StringPiece trial_name,
     Probability total_probability,
-    const std::string& default_group_name,
+    StringPiece default_group_name,
     double entropy_value) {
   return new FieldTrial(trial_name, total_probability, default_group_name,
                         entropy_value);
 }
 
-FieldTrial::FieldTrial(const std::string& trial_name,
+FieldTrial::FieldTrial(StringPiece trial_name,
                        const Probability total_probability,
-                       const std::string& default_group_name,
+                       StringPiece default_group_name,
                        double entropy_value)
     : trial_name_(trial_name),
       divisor_(total_probability),
@@ -535,7 +536,7 @@ FieldTrial* FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
 }
 
 // static
-FieldTrial* FieldTrialList::Find(const std::string& trial_name) {
+FieldTrial* FieldTrialList::Find(StringPiece trial_name) {
   if (!global_)
     return nullptr;
   AutoLock auto_lock(global_->lock_);
@@ -680,8 +681,8 @@ void FieldTrialList::GetActiveFieldTrialGroupsFromString(
   for (const auto& entry : entries) {
     if (entry.activated) {
       FieldTrial::ActiveGroup group;
-      group.trial_name = entry.trial_name.as_string();
-      group.group_name = entry.group_name.as_string();
+      group.trial_name = std::string(entry.trial_name);
+      group.group_name = std::string(entry.group_name);
       active_groups->push_back(group);
     }
   }
@@ -711,8 +712,8 @@ void FieldTrialList::GetInitiallyActiveFieldTrials(
     if (subtle::NoBarrier_Load(&entry->activated) &&
         entry->GetTrialAndGroupName(&trial_name, &group_name)) {
       FieldTrial::ActiveGroup group;
-      group.trial_name = trial_name.as_string();
-      group.group_name = group_name.as_string();
+      group.trial_name = std::string(trial_name);
+      group.group_name = std::string(group_name);
       active_groups->push_back(group);
     }
   }
@@ -729,10 +730,7 @@ bool FieldTrialList::CreateTrialsFromString(const std::string& trials_string) {
     return false;
 
   for (const auto& entry : entries) {
-    const std::string trial_name = entry.trial_name.as_string();
-    const std::string group_name = entry.group_name.as_string();
-
-    FieldTrial* trial = CreateFieldTrial(trial_name, group_name);
+    FieldTrial* trial = CreateFieldTrial(entry.trial_name, entry.group_name);
     if (!trial)
       return false;
     if (entry.activated) {
@@ -891,9 +889,8 @@ void FieldTrialList::CopyFieldTrialStateToFlags(
 }
 
 // static
-FieldTrial* FieldTrialList::CreateFieldTrial(
-    const std::string& name,
-    const std::string& group_name) {
+FieldTrial* FieldTrialList::CreateFieldTrial(StringPiece name,
+                                             StringPiece group_name) {
   DCHECK(global_);
   DCHECK_GE(name.size(), 0u);
   DCHECK_GE(group_name.size(), 0u);
@@ -1079,7 +1076,7 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     // Update the ref on the field trial and add it to the list to be made
     // iterable.
     FieldTrial::FieldTrialRef new_ref = allocator->GetAsReference(new_entry);
-    FieldTrial* trial = global_->PreLockedFind(trial_name.as_string());
+    FieldTrial* trial = global_->PreLockedFind(trial_name);
     trial->ref_ = new_ref;
     new_refs.push_back(new_ref);
 
@@ -1321,11 +1318,7 @@ bool FieldTrialList::CreateTrialsFromSharedMemoryMapping(
     if (!entry->GetTrialAndGroupName(&trial_name, &group_name))
       return false;
 
-    // TODO(lawrencewu): Convert the API for CreateFieldTrial to take
-    // StringPieces.
-    FieldTrial* trial =
-        CreateFieldTrial(trial_name.as_string(), group_name.as_string());
-
+    FieldTrial* trial = CreateFieldTrial(trial_name, group_name);
     trial->ref_ = mem_iter.GetAsReference(entry);
     if (subtle::NoBarrier_Load(&entry->activated)) {
       // Call |group()| to mark the trial as "used" and notify observers, if
@@ -1445,7 +1438,7 @@ void FieldTrialList::ActivateFieldTrialEntryWhileLocked(
   }
 }
 
-FieldTrial* FieldTrialList::PreLockedFind(const std::string& name) {
+FieldTrial* FieldTrialList::PreLockedFind(StringPiece name) {
   auto it = registered_.find(name);
   if (registered_.end() == it)
     return nullptr;

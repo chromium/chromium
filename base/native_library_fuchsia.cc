@@ -21,6 +21,8 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/posix/safe_strerror.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -87,7 +89,7 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 }
 
 std::string GetNativeLibraryName(StringPiece name) {
-  return base::StringPrintf("lib%s.so", name.as_string().c_str());
+  return StrCat({"lib", name, ".so"});
 }
 
 std::string GetLoadableModuleName(StringPiece name) {

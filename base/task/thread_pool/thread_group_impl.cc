@@ -24,6 +24,7 @@
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_token.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -347,7 +348,7 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
                                  TrackedRef<TaskTracker> task_tracker,
                                  TrackedRef<Delegate> delegate)
     : ThreadGroup(std::move(task_tracker), std::move(delegate)),
-      thread_group_label_(thread_group_label.as_string()),
+      thread_group_label_(thread_group_label),
       priority_hint_(priority_hint),
       idle_workers_stack_cv_for_testing_(lock_.CreateConditionVariable()),
       // Mimics the UMA_HISTOGRAM_COUNTS_1000 macro. When a worker runs more

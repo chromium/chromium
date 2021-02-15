@@ -1278,9 +1278,8 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
     // succeed, fall back to strcmp. This can occur when the input string is
     // invalid UTF-8.
     if (!cfstring1 || !cfstring2) {
-      int comparison =
-          memcmp(string1.as_string().c_str(), string2.as_string().c_str(),
-                 std::min(string1.length(), string2.length()));
+      int comparison = memcmp(string1.data(), string2.data(),
+                              std::min(string1.length(), string2.length()));
       if (comparison < 0)
         return -1;
       if (comparison > 0)
@@ -1301,12 +1300,11 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 // Generic Posix system comparisons.
 int FilePath::CompareIgnoreCase(StringPieceType string1,
                                 StringPieceType string2) {
-  // Specifically need null termianted strings for this API call.
-  int comparison = strcasecmp(string1.as_string().c_str(),
-                              string2.as_string().c_str());
-  if (comparison < 0)
+  size_t rlen = std::min(string1.size(), string2.size());
+  int comparison = strncasecmp(string1.data(), string2.data(), rlen);
+  if (comparison < 0 || (comparison == 0 && string1.size() < string2.size()))
     return -1;
-  if (comparison > 0)
+  if (comparison > 0 || (comparison == 0 && string1.size() > string2.size()))
     return 1;
   return 0;
 }

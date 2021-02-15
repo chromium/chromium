@@ -34,7 +34,7 @@ class BASE_EXPORT ScopedServicePublisher {
   ScopedServicePublisher(vfs::PseudoDir* pseudo_dir,
                          fidl::InterfaceRequestHandler<Interface> handler,
                          base::StringPiece name = Interface::Name_)
-      : pseudo_dir_(pseudo_dir), name_(name.as_string()) {
+      : pseudo_dir_(pseudo_dir), name_(name) {
     pseudo_dir_->AddEntry(name_,
                           std::make_unique<vfs::Service>(std::move(handler)));
   }

@@ -10,6 +10,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,7 +202,7 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
 std::string GetNativeLibraryName(StringPiece name) {
   DCHECK(IsStringASCII(name));
-  return name.as_string() + ".dll";
+  return StrCat({name, ".dll"});
 }
 
 std::string GetLoadableModuleName(StringPiece name) {

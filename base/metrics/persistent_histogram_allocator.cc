@@ -27,7 +27,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/process/process_handle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -771,7 +773,7 @@ bool GlobalHistogramAllocator::ParseFilePath(const FilePath& path,
     return false;
 
   if (out_name)
-    *out_name = parts[0].as_string();
+    *out_name = std::string(parts[0]);
 
   if (out_stamp) {
     int64_t stamp;
@@ -800,12 +802,11 @@ void GlobalHistogramAllocator::ConstructFilePaths(const FilePath& dir,
     *out_base_path = ConstructFilePath(dir, name);
 
   if (out_active_path) {
-    *out_active_path =
-        ConstructFilePath(dir, name.as_string().append("-active"));
+    *out_active_path = ConstructFilePath(dir, StrCat({name, "-active"}));
   }
 
   if (out_spare_path) {
-    *out_spare_path = ConstructFilePath(dir, name.as_string().append("-spare"));
+    *out_spare_path = ConstructFilePath(dir, StrCat({name, "-spare"}));
   }
 }
 
@@ -823,13 +824,11 @@ void GlobalHistogramAllocator::ConstructFilePathsForUploadDir(
   }
 
   if (out_active_path) {
-    *out_active_path =
-        ConstructFilePath(active_dir, name + std::string("-active"));
+    *out_active_path = ConstructFilePath(active_dir, StrCat({name, "-active"}));
   }
 
   if (out_spare_path) {
-    *out_spare_path =
-        ConstructFilePath(active_dir, name + std::string("-spare"));
+    *out_spare_path = ConstructFilePath(active_dir, StrCat({name, "-spare"}));
   }
 }
 

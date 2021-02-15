@@ -750,8 +750,7 @@ Optional<Value> JSONParser::ConsumeNumber() {
     return Value(num_int);
 
   double num_double;
-  if (StringToDouble(num_string.as_string(), &num_double) &&
-      std::isfinite(num_double)) {
+  if (StringToDouble(num_string, &num_double) && std::isfinite(num_double)) {
     return Value(num_double);
   }
 

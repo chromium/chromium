@@ -21,6 +21,7 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -471,7 +472,7 @@ void PersistentMemoryAllocator::CreateTrackingHistograms(
     base::StringPiece name) {
   if (name.empty() || readonly_)
     return;
-  std::string name_string = name.as_string();
+  std::string name_string(name);
 
 #if 0
   // This histogram wasn't being used so has been disabled. It is left here

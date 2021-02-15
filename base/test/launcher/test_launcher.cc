@@ -1260,9 +1260,8 @@ bool LoadFilterFile(const FilePath& file_path,
     }
 
     // Strip comments and whitespace from each line.
-    std::string trimmed_line =
-        TrimWhitespaceASCII(filter_line.substr(0, hash_pos), TRIM_ALL)
-            .as_string();
+    std::string trimmed_line(
+        TrimWhitespaceASCII(filter_line.substr(0, hash_pos), TRIM_ALL));
 
     if (trimmed_line.substr(0, 2) == "//") {
       LOG(ERROR) << "Line " << line_num << " in " << file_path

@@ -19,6 +19,7 @@
 #include "base/pending_task.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/test/spin_wait.h"
@@ -301,9 +302,9 @@ TEST_F(ActivityAnalyzerTest, UserDataSnapshotTest) {
           analyzer_snapshot.user_data_stack.at(1);
       EXPECT_EQ(8U, user_data.size());
       ASSERT_TRUE(Contains(user_data, "raw2"));
-      EXPECT_EQ("foo2", user_data.at("raw2").Get().as_string());
+      EXPECT_EQ("foo2", user_data.at("raw2").Get());
       ASSERT_TRUE(Contains(user_data, "string2"));
-      EXPECT_EQ("bar2", user_data.at("string2").GetString().as_string());
+      EXPECT_EQ("bar2", user_data.at("string2").GetString());
       ASSERT_TRUE(Contains(user_data, "char2"));
       EXPECT_EQ('2', user_data.at("char2").GetChar());
       ASSERT_TRUE(Contains(user_data, "int2"));
@@ -332,8 +333,8 @@ TEST_F(ActivityAnalyzerTest, UserDataSnapshotTest) {
     const ActivityUserData::Snapshot& user_data =
         analyzer_snapshot.user_data_stack.at(0);
     EXPECT_EQ(8U, user_data.size());
-    EXPECT_EQ("foo1", user_data.at("raw1").Get().as_string());
-    EXPECT_EQ("bar1", user_data.at("string1").GetString().as_string());
+    EXPECT_EQ("foo1", user_data.at("raw1").Get());
+    EXPECT_EQ("bar1", user_data.at("string1").GetString());
     EXPECT_EQ('1', user_data.at("char1").GetChar());
     EXPECT_EQ(-1111, user_data.at("int1").GetInt());
     EXPECT_EQ(1111U, user_data.at("uint1").GetUint());
@@ -381,9 +382,9 @@ TEST_F(ActivityAnalyzerTest, GlobalUserDataTest) {
   const ActivityUserData::Snapshot& snapshot =
       global_analyzer.GetProcessDataSnapshot(pid);
   ASSERT_TRUE(Contains(snapshot, "raw"));
-  EXPECT_EQ("foo", snapshot.at("raw").Get().as_string());
+  EXPECT_EQ("foo", snapshot.at("raw").Get());
   ASSERT_TRUE(Contains(snapshot, "string"));
-  EXPECT_EQ("bar", snapshot.at("string").GetString().as_string());
+  EXPECT_EQ("bar", snapshot.at("string").GetString());
   ASSERT_TRUE(Contains(snapshot, "bool1"));
   EXPECT_FALSE(snapshot.at("bool1").GetBool());
   ASSERT_TRUE(Contains(snapshot, "bool2"));

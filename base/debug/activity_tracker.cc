@@ -23,6 +23,7 @@
 #include "base/pickle.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
@@ -401,8 +402,8 @@ bool ActivityUserData::CreateSnapshot(Snapshot* output_snapshot) const {
       case END_OF_VALUES:  // Included for completeness purposes.
         NOTREACHED();
     }
-    auto inserted = output_snapshot->insert(
-        std::make_pair(entry.second.name.as_string(), std::move(value)));
+    auto inserted = output_snapshot->emplace(std::string(entry.second.name),
+                                             std::move(value));
     DCHECK(inserted.second);  // True if inserted, false if existed.
   }
 

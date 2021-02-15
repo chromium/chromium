@@ -17,7 +17,7 @@ ScopedFxLogger CreateFxLoggerFromLogSink(
 ScopedFxLogger CreateFxLoggerFromLogSinkWithTag(
     fuchsia::logger::LogSinkHandle log_sink,
     base::StringPiece tag) {
-  std::string tag_string = tag.as_string();
+  std::string tag_string(tag);
   const char* tag_c_string = tag_string.c_str();
 
   fx_logger_config_t config = {
