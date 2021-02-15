@@ -177,28 +177,39 @@ struct ToV8Traits<
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                         T* script_wrappable)
       WARN_UNUSED_RESULT {
-    return ToV8(script_state->GetIsolate(), script_wrappable,
-                script_state->GetContext()->Global());
+    CHECK(script_wrappable);
+    v8::Local<v8::Value> wrapper =
+        DOMDataStore::GetWrapper(script_wrappable, script_state->GetIsolate());
+    if (!wrapper.IsEmpty()) {
+      return wrapper;
+    }
+
+    if (!script_wrappable->WrapV2(script_state).ToLocal(&wrapper)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    return wrapper;
   }
 
-  // This overload is used for the case when the ToV8() caller already has
-  // a receiver object (a creation context object) which is needed to create
-  // a wrapper.
-  static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate,
-                                        T* script_wrappable,
-                                        v8::Local<v8::Object> creation_context)
-      WARN_UNUSED_RESULT {
-    if (UNLIKELY(!script_wrappable)) {
-      return v8::Null(isolate);
-    }
+  // This overload is used for the case when a ToV8 caller does not have
+  // |script_state| but has a receiver object (a creation context object)
+  // which is needed to create a wrapper. If a wrapper object corresponding to
+  // the receiver object exists, ToV8 can return it without CreationContext()
+  // which is slow.
+  static v8::MaybeLocal<v8::Value> ToV8(
+      v8::Isolate* isolate,
+      T* script_wrappable,
+      v8::Local<v8::Object> creation_context_object) WARN_UNUSED_RESULT {
+    CHECK(script_wrappable);
     v8::Local<v8::Value> wrapper =
         DOMDataStore::GetWrapper(script_wrappable, isolate);
     if (!wrapper.IsEmpty()) {
       return wrapper;
     }
 
-    if (!script_wrappable->WrapV2(isolate, creation_context)
-             .ToLocal(&wrapper)) {
+    CHECK(!creation_context_object.IsEmpty());
+    ScriptState* script_state =
+        ScriptState::From(creation_context_object->CreationContext());
+    if (!script_wrappable->WrapV2(script_state).ToLocal(&wrapper)) {
       return v8::MaybeLocal<v8::Value>();
     }
     return wrapper;

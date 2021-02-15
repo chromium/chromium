@@ -72,13 +72,12 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(
 }
 
 v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapperV2(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> creation_context,
+    ScriptState* script_state,
     const WrapperTypeInfo* type) {
-  RUNTIME_CALL_TIMER_SCOPE(isolate,
+  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
                            RuntimeCallStats::CounterId::kCreateWrapper);
 
-  V8WrapperInstantiationScope scope(creation_context, isolate, type);
+  V8WrapperInstantiationScope scope(script_state, type);
   if (scope.AccessCheckFailed()) {
     // V8WrapperInstantiationScope's ctor throws an exception
     // if AccessCheckFailed.
@@ -98,7 +97,7 @@ v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapperV2(
     // V8PerContextData::createWrapperFromCache, though there is no need to
     // cache resulting objects or their constructors.
     const DOMWrapperWorld& world = DOMWrapperWorld::World(scope.GetContext());
-    wrapper = type->GetV8ClassTemplate(isolate, world)
+    wrapper = type->GetV8ClassTemplate(script_state->GetIsolate(), world)
                   .As<v8::FunctionTemplate>()
                   ->InstanceTemplate()
                   ->NewInstance(scope.GetContext())

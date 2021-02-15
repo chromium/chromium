@@ -39,9 +39,7 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
     NOTREACHED();
     return v8::Local<v8::Object>();
   }
-  v8::MaybeLocal<v8::Value> WrapV2(
-      v8::Isolate*,
-      v8::Local<v8::Object> creation_context) override {
+  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) override {
     NOTREACHED();
     return v8::MaybeLocal<v8::Value>();
   }
