@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">לא ניתן להשתמש בקובץ או בספרייה.</translation>
 <translation id="1363028406613469049">רצועה</translation>
 <translation id="1378727793141957596">‏ברוך בואך אל Google Drive!</translation>
+<translation id="1379911846207762492">ניתן להגדיר קבצים כזמינים אופליין כדי לאפשר גישה אליהם כשאין חיבור לאינטרנט.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1395262318152388157">מחוון חיפוש</translation>
 <translation id="1404323374378969387">נורווגית</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="3556731189587832921">‏מקלדת Workman בינלאומית באנגלית (ארה"ב) ל-PC</translation>
 <translation id="357479282490346887">ליטאית</translation>
+<translation id="3592251141500063301">לא ניתן היה להגדיר את הקובץ <ph name="FILE_NAME" /> כזמין אופליין</translation>
 <translation id="3603385196401704894">צרפתית קנדית</translation>
 <translation id="3606220979431771195">‏טורקית-F</translation>
 <translation id="3616113530831147358">אודיו</translation>

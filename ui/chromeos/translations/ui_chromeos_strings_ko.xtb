@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
 <translation id="1363028406613469049">트랙</translation>
 <translation id="1378727793141957596">Google Drive에 오신 것을 환영합니다.</translation>
+<translation id="1379911846207762492">파일을 오프라인에서 사용하도록 설정하면 인터넷에 연결되어 있지 않을 때도 액세스할 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1395262318152388157">탐색 슬라이더</translation>
 <translation id="1404323374378969387">노르웨이어</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더에 복사하세요.</translation>
 <translation id="3556731189587832921">영어(미국, 국제 PC 키보드)</translation>
 <translation id="357479282490346887">리투아니아어</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정할 수 없습니다.</translation>
 <translation id="3603385196401704894">프랑스어(캐나다)</translation>
 <translation id="3606220979431771195">터키어-F</translation>
 <translation id="3616113530831147358">오디오</translation>

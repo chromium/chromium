@@ -4211,6 +4211,7 @@
 <translation id="5798301976526354562">텍스트 크기(실시간 자막에도 적용됨)</translation>
 <translation id="579907812742603813">보호된 콘텐츠</translation>
 <translation id="579915268381781820">보안 키가 삭제되었습니다.</translation>
+<translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> 관련 도움말, 혜택 및 소식을 받아 보고 의견을 공유하세요.</translation>
 <translation id="5799508265798272974">Linux 가상 머신: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">마지막 다운로드 이후 대상 파일이 잘렸거나 삭제되었습니다.</translation>
 <translation id="5801568494490449797">환경설정</translation>
@@ -6028,6 +6029,7 @@
 <translation id="7880823633812189969">다시 시작하면 로컬 데이터가 삭제됩니다</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">계정 보기</translation>
+<translation id="7883792253546618164">언제든지 수신 거부할 수 있습니다.</translation>
 <translation id="7885253890047913815">최근 대상</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">새 탭에서 보기</translation>
