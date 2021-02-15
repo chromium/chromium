@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
 namespace blink {
 
@@ -739,6 +740,44 @@ TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF16) {
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFF", 0);
   ASSERT_EQ(0u, results.CountForTesting());
+}
+
+// Tests that a suggested value is not found by searches.
+TEST_F(FindBufferTest, DoNotSearchInSuggestedValues) {
+  SetBodyContent("<input name='field' type='text'>");
+
+  // The first node of the document should be the input field.
+  Node* input_element = GetDocument().body()->firstChild();
+  ASSERT_TRUE(IsA<TextControlElement>(*input_element));
+  TextControlElement& text_control_element =
+      To<TextControlElement>(*input_element);
+  ASSERT_EQ(text_control_element.NameForAutofill(), "field");
+
+  // The suggested value to a string that contains the search string.
+  text_control_element.SetSuggestedValue("aba");
+  ASSERT_EQ(text_control_element.SuggestedValue(), "aba");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  {
+    // Apply a search for 'aba'.
+    FindBuffer buffer(WholeDocumentRange());
+    const auto results = buffer.FindMatches("aba", 0);
+
+    // There should be no result because the suggested value is not supposed to
+    // be considered in a search.
+    EXPECT_EQ(0U, results.CountForTesting());
+  }
+  // Convert the suggested value to an autofill value.
+  text_control_element.SetAutofillValue(text_control_element.SuggestedValue());
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  {
+    // Apply a search for 'aba' again.
+    FindBuffer buffer(WholeDocumentRange());
+    const auto results = buffer.FindMatches("aba", 0);
+
+    // This time, there should be a match.
+    EXPECT_EQ(1U, results.CountForTesting());
+  }
 }
 
 TEST_F(FindBufferTest, FindInTable) {
