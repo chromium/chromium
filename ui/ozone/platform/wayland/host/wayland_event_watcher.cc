@@ -56,6 +56,8 @@ void WaylandEventWatcher::OnFileCanReadWithoutBlocking(int fd) {
 
   if (prepared_) {
     prepared_ = false;
+    // Errors will be checked the next time OnFileCanReadWithoutBlocking calls
+    // CheckForErrors.
     if (wl_display_read_events(display_) == -1)
       return;
     wl_display_dispatch_pending(display_);
@@ -115,17 +117,26 @@ void WaylandEventWatcher::MaybePrepareReadQueue() {
 }
 
 bool WaylandEventWatcher::CheckForErrors() {
+  // Errors are fatal. If this function returns non-zero the display can no
+  // longer be used.
   int err = wl_display_get_error(display_);
 
   // TODO(crbug.com/1172305): Wayland display_error message should be printed
   // automatically by wl_log(). However, wl_log() does not print anything. Needs
   // investigation.
-  if (err == EPROTO) {
-    uint32_t ec, id;
-    const struct wl_interface* intf;
-    ec = wl_display_get_protocol_error(display_, &intf, &id);
-    LOG(ERROR) << "Fatal Wayland protocol error " << ec << " on interface "
-               << intf->name << " (object " << id << "). Shutting down..";
+  if (err) {
+    // When |err| is EPROTO, we can still use the |display_| to retrieve the
+    // protocol error. Otherwise, get the error string from strerror and
+    // shutdown the browser.
+    if (err == EPROTO) {
+      uint32_t ec, id;
+      const struct wl_interface* intf;
+      ec = wl_display_get_protocol_error(display_, &intf, &id);
+      LOG(ERROR) << "Fatal Wayland protocol error " << ec << " on interface "
+                 << intf->name << " (object " << id << "). Shutting down..";
+    } else {
+      LOG(ERROR) << "Fatal Wayland communication error: " << std::strerror(err);
+    }
 
     // This can be null in tests.
     if (!shutdown_cb_.is_null())
