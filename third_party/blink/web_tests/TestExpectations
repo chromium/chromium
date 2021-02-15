@@ -5677,3 +5677,6 @@ crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/jso
 # Sheriff 2021-02-11
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause.js [ Failure Pass ]
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infinite.js [ Failure Pass ]
+
+# Sheriff 2021-02-15
+crbug.com/1177996 [ Linux ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
