@@ -606,11 +606,6 @@ void FrameTree::DidChangeLoadProgressForNode(FrameTreeNode& node,
 void FrameTree::DidCancelLoading() {
   OPTIONAL_TRACE_EVENT0("content", "FrameTree::DidCancelLoading");
   navigator_.controller().DiscardNonCommittedEntries();
-  // TODO(https://crbug.com/1170277): This should not be needed as we already
-  // send a notification in
-  // NavigationControllerImpl::DiscardNonCommittedEntries().
-  navigator_.controller().delegate()->NotifyNavigationStateChanged(
-      INVALIDATE_TYPE_URL);
 }
 
 void FrameTree::StopLoading() {
