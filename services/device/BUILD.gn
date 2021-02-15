@@ -226,14 +226,10 @@ source_set("tests") {
   }
 
   if (is_chromeos_ash) {
-    sources += [
-      "fingerprint/fingerprint_chromeos_unittest.cc",
-      "usb/usb_service_linux_unittest.cc",
-    ]
+    sources += [ "fingerprint/fingerprint_chromeos_unittest.cc" ]
     deps += [
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/biod:test_support",
-      "//chromeos/dbus/permission_broker",
       "//chromeos/network:test_support",
       "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",

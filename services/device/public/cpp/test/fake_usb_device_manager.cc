@@ -88,12 +88,6 @@ void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
   std::move(callback).Run(true);
 }
 
-void FakeUsbDeviceManager::EnumerateDevicesAndSetVmSharingClient(
-    mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
-    EnumerateDevicesAndSetVmSharingClientCallback callback) {
-  EnumerateDevicesAndSetClient(std::move(client), std::move(callback));
-}
-
 void FakeUsbDeviceManager::OpenFileDescriptor(
     const std::string& guid,
     uint32_t drop_privileges_mask,

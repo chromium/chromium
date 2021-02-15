@@ -296,7 +296,7 @@ void UsbServiceMac::AddDevice(io_service_t device) {
   device_map_[entry_id] = mac_device;
   devices()[mac_device->guid()] = mac_device;
 
-  NotifyDeviceAdded(mac_device, /*is_restricted_device=*/false);
+  NotifyDeviceAdded(mac_device);
 }
 
 void UsbServiceMac::RemoveDevices() {
@@ -318,7 +318,7 @@ void UsbServiceMac::RemoveDevices() {
 
     auto by_guid_it = devices().find(mac_device->guid());
     devices().erase(by_guid_it);
-    NotifyDeviceRemoved(mac_device, /*is_restricted_device=*/false);
+    NotifyDeviceRemoved(mac_device);
     mac_device->OnDisconnect();
   }
 }

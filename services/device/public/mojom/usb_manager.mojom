@@ -43,14 +43,6 @@ interface UsbDeviceManager {
   [EnableIf=is_chromeos]
   CheckAccess(string guid) => (bool success);
 
-  // Similar to EnumerateDevicesAndSetClient, but mass storage devices are not
-  // filtered out. The VM sharing client can only be set once, all future calls
-  // to this function will be ignored.
-  [EnableIf=is_chromeos]
-  EnumerateDevicesAndSetVmSharingClient(
-      pending_associated_remote<UsbDeviceManagerClient> client)
-          => (array<UsbDeviceInfo> results);
-
   // Attempt to open a USB device using permission_broker and return
   // a file descriptor. Allow access only to interfaces specified in
   // |allowed_interfaces_mask|. The |lifeline_fd| should be the remote end of

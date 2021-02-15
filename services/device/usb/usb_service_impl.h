@@ -48,8 +48,7 @@ class UsbServiceImpl final :
 
  private:
   // device::UsbService implementation
-  void GetDevices(bool allow_restricted_devices,
-                  GetDevicesCallback callback) override;
+  void GetDevices(GetDevicesCallback callback) override;
 
 #if defined(OS_WIN)
   // device::DeviceMonitorWin::Observer implementation

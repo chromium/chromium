@@ -42,14 +42,6 @@ class UsbDeviceLinux : public UsbDevice {
     device_info_->webusb_landing_page = url;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // We allow all interfaces here except mass storage interfaces. This is used
-  // to lock down devices in Open(), although the permission broker may further
-  // restrict access. It is possible to bypass this restriction by using
-  // UsbDeviceManager::OpenFileDescriptor() instead.
-  uint32_t AllowedInterfacesMask();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
  protected:
   friend class UsbServiceLinux;
 

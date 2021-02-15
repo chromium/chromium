@@ -245,8 +245,7 @@ UsbServiceImpl::~UsbServiceImpl() {
     libusb_hotplug_deregister_callback(context_->context(), hotplug_handle_);
 }
 
-void UsbServiceImpl::GetDevices(bool allow_restricted_devices,
-                                GetDevicesCallback callback) {
+void UsbServiceImpl::GetDevices(GetDevicesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (usb_unavailable_) {
@@ -258,7 +257,7 @@ void UsbServiceImpl::GetDevices(bool allow_restricted_devices,
 
   if (hotplug_enabled_ && !enumeration_in_progress_) {
     // The device list is updated live when hotplug events are supported.
-    UsbService::GetDevices(allow_restricted_devices, std::move(callback));
+    UsbService::GetDevices(std::move(callback));
   } else {
     pending_enumeration_callbacks_.push_back(std::move(callback));
     RefreshDevices();
@@ -490,7 +489,7 @@ void UsbServiceImpl::AddDevice(scoped_refptr<UsbDeviceImpl> device) {
                 << device->serial_number() << "\", guid=" << device->guid();
 
   if (enumeration_ready_)
-    NotifyDeviceAdded(device, /*is_restricted_device=*/false);
+    NotifyDeviceAdded(device);
 }
 
 void UsbServiceImpl::RemoveDevice(scoped_refptr<UsbDeviceImpl> device) {
@@ -499,7 +498,7 @@ void UsbServiceImpl::RemoveDevice(scoped_refptr<UsbDeviceImpl> device) {
 
   USB_LOG(USER) << "USB device removed: guid=" << device->guid();
 
-  NotifyDeviceRemoved(device, /*is_restricted_device=*/false);
+  NotifyDeviceRemoved(device);
   device->OnDisconnect();
 }
 
