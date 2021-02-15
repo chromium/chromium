@@ -41,11 +41,12 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
 
     void FileSelectionCanceled() override;
 
-   protected:
-    ~FileSelectListenerImpl() override;
     // This sets |was_file_select_listener_function_called_| to true so that
     // tests can pass with mocked overrides of this class.
     void SetListenerFunctionCalledTrueForTesting();
+
+   protected:
+    ~FileSelectListenerImpl() override;
 
    private:
     FileChooserImpl* owner_;
@@ -60,6 +61,8 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
                      mojo::PendingReceiver<blink::mojom::FileChooser> receiver);
   static mojo::Remote<blink::mojom::FileChooser> CreateBoundForTesting(
       RenderFrameHostImpl* render_frame_host);
+  static std::pair<FileChooserImpl*, mojo::Remote<blink::mojom::FileChooser>>
+  CreateForTesting(RenderFrameHostImpl* render_frame_host);
 
   ~FileChooserImpl() override;
 

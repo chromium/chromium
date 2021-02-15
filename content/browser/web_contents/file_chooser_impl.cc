@@ -87,6 +87,16 @@ mojo::Remote<blink::mojom::FileChooser> FileChooserImpl::CreateBoundForTesting(
   return chooser;
 }
 
+// static
+std::pair<FileChooserImpl*, mojo::Remote<blink::mojom::FileChooser>>
+FileChooserImpl::CreateForTesting(RenderFrameHostImpl* render_frame_host) {
+  mojo::Remote<blink::mojom::FileChooser> chooser;
+  FileChooserImpl* impl = new FileChooserImpl(render_frame_host);
+  mojo::MakeSelfOwnedReceiver(base::WrapUnique(impl),
+                              chooser.BindNewPipeAndPassReceiver());
+  return std::make_pair(impl, std::move(chooser));
+}
+
 FileChooserImpl::FileChooserImpl(RenderFrameHostImpl* render_frame_host)
     : render_frame_host_(render_frame_host) {
   Observe(WebContents::FromRenderFrameHost(render_frame_host));
@@ -151,8 +161,10 @@ void FileChooserImpl::FileSelected(
     const base::FilePath& base_dir,
     blink::mojom::FileChooserParams::Mode mode) {
   listener_impl_ = nullptr;
-  if (!render_frame_host_)
+  if (!render_frame_host_) {
+    std::move(callback_).Run(nullptr);
     return;
+  }
   storage::FileSystemContext* file_system_context = nullptr;
   const int pid = render_frame_host_->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -182,8 +194,6 @@ void FileChooserImpl::FileSelected(
 
 void FileChooserImpl::FileSelectionCanceled() {
   listener_impl_ = nullptr;
-  if (!render_frame_host_)
-    return;
   std::move(callback_).Run(nullptr);
 }
 
