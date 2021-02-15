@@ -12,6 +12,8 @@ static_library("structured") {
   sources = [
     "event_base.cc",
     "event_base.h",
+    "external_metrics.cc",
+    "external_metrics.h",
     "histogram_util.cc",
     "histogram_util.h",
     "key_data.cc",
@@ -92,6 +94,7 @@ static_library("structured_events") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "external_metrics_unittest.cc",
     "key_data_unittest.cc",
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
