@@ -645,10 +645,10 @@ const CGFloat kClearButtonSize = 28.0f;
   self.omniboxInteractedWhileFocused = YES;
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(base::Optional<GURL> optionalURL) {
-        NSString* url;
-        if (optionalURL) {
-          url = base::SysUTF8ToNSString(optionalURL.value().spec());
+        if (!optionalURL) {
+          return;
         }
+        NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
           [self.dispatcher loadQuery:url immediately:YES];
           [self.dispatcher cancelOmniboxEdit];
@@ -664,10 +664,10 @@ const CGFloat kClearButtonSize = 28.0f;
   self.omniboxInteractedWhileFocused = YES;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(base::Optional<base::string16> optionalText) {
-        NSString* query;
-        if (optionalText) {
-          query = base::SysUTF16ToNSString(optionalText.value());
+        if (!optionalText) {
+          return;
         }
+        NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
           [self.dispatcher loadQuery:query immediately:YES];
           [self.dispatcher cancelOmniboxEdit];
