@@ -1881,7 +1881,13 @@ TEST_P(LayerWithRealCompositorTest, ModifyHierarchy) {
 }
 
 // Checks that basic background blur is working.
-TEST_P(LayerWithRealCompositorTest, BackgroundBlur) {
+// TODO(crbug.com/1174372) Flaky on Windows
+#if defined(OS_WIN)
+#define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
+#else
+#define MAYBE_BackgroundBlur BackgroundBlur
+#endif
+TEST_P(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   GetCompositor()->SetScaleAndSize(1.0f, gfx::Size(200, 200),
