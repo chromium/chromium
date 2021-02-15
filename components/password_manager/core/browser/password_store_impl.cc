@@ -361,7 +361,7 @@ std::vector<InsecureCredential> PasswordStoreImpl::ReadSecurityIssues(
     FormPrimaryKey parent_key) {
   if (!login_db_)
     return {};
-  return login_db_->GetCompromisedCredentials(parent_key);
+  return login_db_->insecure_credentials_table().GetRows(parent_key);
 }
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginByPrimaryKeySync(

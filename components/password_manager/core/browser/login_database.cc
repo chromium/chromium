@@ -1665,12 +1665,6 @@ FormRetrievalResult LoginDatabase::GetLoginsBySignonRealmAndUsername(
   return StatementToForms(&s, nullptr, &key_to_form_map);
 }
 
-std::vector<CompromisedCredentials> LoginDatabase::GetCompromisedCredentials(
-    FormPrimaryKey parent_key) {
-  TRACE_EVENT0("passwords", "LoginDatabase::GetCompromisedCredentials");
-  return insecure_credentials_table_.GetRows(parent_key);
-}
-
 bool LoginDatabase::GetAutofillableLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetAutofillableLogins");

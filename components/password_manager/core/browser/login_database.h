@@ -154,11 +154,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
       const base::string16& username,
       PrimaryKeyToFormMap& key_to_form_map) WARN_UNUSED_RESULT;
 
-  // Gets the complete list of all compromised credentials for the password form
-  // with primary key `parent_key`.
-  std::vector<CompromisedCredentials> GetCompromisedCredentials(
-      FormPrimaryKey parent_key) WARN_UNUSED_RESULT;
-
   // Gets the complete list of not blocklisted credentials.
   bool GetAutofillableLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
