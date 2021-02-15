@@ -63,7 +63,9 @@ IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
   EXPECT_EQ(true, content::EvalJs(portal_contents, "focusPromise"));
 }
 
-IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest, AutofocusAcrossActivation) {
+// TODO(crbug.com/1059404) Flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
+                       DISABLED_AutofocusAcrossActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/autofocus.html"));
   ui_test_utils::NavigateToURL(browser(), url);
