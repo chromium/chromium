@@ -72,6 +72,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
       const std::string& app_id,
       const ::full_restore::RestoreData::LaunchList& launch_list);
 
+  void LaunchArcApp(const std::string& app_id,
+                    const ::full_restore::RestoreData::LaunchList& launch_list);
+
   Profile* profile_ = nullptr;
 
   bool should_restore_ = false;

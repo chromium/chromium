@@ -187,7 +187,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
 
   switch (app_type) {
     case apps::mojom::AppType::kArc:
-      // TODO(crbug.com/1146900): Handle ARC apps
+      LaunchArcApp(app_id, it->second);
       break;
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
@@ -231,6 +231,29 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         it.second->intent.has_value() ? it.second->intent.value() : intent);
     params.restore_id = it.first;
     launcher->LaunchAppWithParams(std::move(params));
+  }
+}
+
+void AppLaunchHandler::LaunchArcApp(
+    const std::string& app_id,
+    const ::full_restore::RestoreData::LaunchList& launch_list) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
+
+  for (const auto& it : launch_list) {
+    DCHECK(it.second->event_flag.has_value());
+    apps::mojom::WindowInfoPtr window_info = it.second->GetAppWindowInfo();
+    window_info->window_id = it.first;
+    if (it.second->intent.has_value()) {
+      proxy->LaunchAppWithIntent(app_id, it.second->event_flag.value(),
+                                 std::move(it.second->intent.value()),
+                                 apps::mojom::LaunchSource::kFromFullRestore,
+                                 std::move(window_info));
+    } else {
+      proxy->Launch(app_id, it.second->event_flag.value(),
+                    apps::mojom::LaunchSource::kFromFullRestore,
+                    std::move(window_info));
+    }
   }
 }
 

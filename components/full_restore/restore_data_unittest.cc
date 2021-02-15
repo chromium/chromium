@@ -392,4 +392,34 @@ TEST_F(RestoreDataTest, GetWindowInfo) {
   EXPECT_EQ(kWindowStateType1, window_info->window_state_type.value());
 }
 
+TEST_F(RestoreDataTest, GetAppWindowInfo) {
+  // Add the app launch info, but do not modify the window info.
+  AddAppLaunchInfos();
+
+  const auto it = restore_data().app_id_to_launch_list().find(kAppId2);
+  EXPECT_TRUE(it != restore_data().app_id_to_launch_list().end());
+  EXPECT_FALSE(it->second.empty());
+
+  auto data_it = it->second.find(kWindowId3);
+  EXPECT_TRUE(data_it != it->second.end());
+
+  auto app_window_info = data_it->second->GetAppWindowInfo();
+  EXPECT_TRUE(app_window_info);
+  EXPECT_EQ(-1, app_window_info->state);
+  EXPECT_EQ(kDisplayId2, app_window_info->display_id);
+  EXPECT_FALSE(app_window_info->bounds);
+
+  // Modify the window info.
+  ModifyWindowInfos();
+
+  app_window_info = data_it->second->GetAppWindowInfo();
+  EXPECT_EQ(static_cast<int32_t>(kWindowStateType3), app_window_info->state);
+  EXPECT_EQ(kDisplayId2, app_window_info->display_id);
+  EXPECT_TRUE(app_window_info->bounds);
+  EXPECT_EQ(kCurrentBounds3,
+            gfx::Rect(app_window_info->bounds->x, app_window_info->bounds->y,
+                      app_window_info->bounds->width,
+                      app_window_info->bounds->height));
+}
+
 }  // namespace full_restore

@@ -277,7 +277,7 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
     window_state_type = window_info.window_state_type.value();
 }
 
-std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() {
+std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
   auto window_info = std::make_unique<WindowInfo>();
 
   if (activation_index.has_value())
@@ -294,6 +294,26 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() {
 
   if (window_state_type.has_value())
     window_info->window_state_type = window_state_type.value();
+
+  return window_info;
+}
+
+apps::mojom::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
+  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+
+  if (display_id.has_value())
+    window_info->display_id = display_id.value();
+
+  if (current_bounds.has_value()) {
+    window_info->bounds = apps::mojom::Rect::New();
+    window_info->bounds->x = current_bounds.value().x();
+    window_info->bounds->y = current_bounds.value().y();
+    window_info->bounds->width = current_bounds.value().width();
+    window_info->bounds->height = current_bounds.value().height();
+  }
+
+  if (window_state_type.has_value())
+    window_info->state = static_cast<int32_t>(window_state_type.value());
 
   return window_info;
 }
