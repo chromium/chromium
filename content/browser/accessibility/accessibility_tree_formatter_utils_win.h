@@ -14,6 +14,10 @@
 #include "content/common/content_export.h"
 #include "ui/gfx/win/hwnd_util.h"
 
+namespace ui {
+struct AXTreeSelector;
+}
+
 namespace content {
 
 CONTENT_EXPORT base::string16 IAccessibleRoleToString(int32_t ia_role);
@@ -38,6 +42,10 @@ CONTENT_EXPORT std::string BstrToUTF8(BSTR bstr);
 CONTENT_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id);
 
 CONTENT_EXPORT HWND GetHwndForProcess(base::ProcessId pid);
+
+// Returns HWND of window matching a given tree selector.
+CONTENT_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_WIN_H_

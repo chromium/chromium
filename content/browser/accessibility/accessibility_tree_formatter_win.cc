@@ -224,9 +224,7 @@ base::Value AccessibilityTreeFormatterWin::BuildTreeForWindow(
 
 base::Value AccessibilityTreeFormatterWin::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  LOG(ERROR) << "Windows does not yet support building accessibility trees for "
-                "tree selectors";
-  return base::Value(base::Value::Type::DICTIONARY);
+  return BuildTreeForWindow(GetHWNDBySelector(selector));
 }
 
 void AccessibilityTreeFormatterWin::RecursiveBuildTree(
