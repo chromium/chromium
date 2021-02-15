@@ -81,6 +81,12 @@ class CrowdDenyPreloadData {
     is_ready_to_use_ = is_ready;
   }
 
+  inline int get_pending_origins_queue_size_for_testing() {
+    return origins_pending_verification_.size();
+  }
+
+  inline bool IsReadyToUse() { return is_ready_to_use_; }
+
  private:
   friend class testing::ScopedCrowdDenyPreloadDataOverride;
   friend class CrowdDenyPreloadDataTest;

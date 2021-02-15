@@ -147,9 +147,7 @@ void AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive() {
   permissions::PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
       crowd_deny->version_on_disk());
 
-  // Empty |version_on_disk| means the CrowdDeny component has not yet been
-  // loaded from a disk.
-  if (!crowd_deny->version_on_disk().has_value())
+  if (!crowd_deny->IsReadyToUse())
     crowd_deny_request_start_time_ = base::TimeTicks::Now();
 
   crowd_deny->GetReputationDataForSiteAsync(
@@ -161,17 +159,17 @@ void AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive() {
 
 void AbusiveOriginPermissionRevocationRequest::OnSiteReputationReady(
     const CrowdDenyPreloadData::SiteReputation* site_reputation) {
+  if (crowd_deny_request_start_time_.has_value()) {
+    crowd_deny_request_duration_ =
+        base::TimeTicks::Now() - crowd_deny_request_start_time_.value();
+  }
+
   if (site_reputation && !site_reputation->warning_only() &&
       (site_reputation->notification_ux_quality() ==
            CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS ||
        site_reputation->notification_ux_quality() ==
            CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT)) {
     DCHECK(g_browser_process->safe_browsing_service());
-
-    if (crowd_deny_request_start_time_.has_value()) {
-      crowd_deny_request_duration_ =
-          base::TimeTicks::Now() - crowd_deny_request_start_time_.value();
-    }
 
     if (g_browser_process->safe_browsing_service()) {
       safe_browsing_request_.emplace(
@@ -183,8 +181,6 @@ void AbusiveOriginPermissionRevocationRequest::OnSiteReputationReady(
       return;
     }
   }
-
-  crowd_deny_request_start_time_.reset();
   NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -232,7 +233,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
   QueryAndExpectDecisionForUrl(unknown_origin, Outcome::PERMISSION_NOT_REVOKED);
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest_Async) {
+TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataAsyncTest) {
   auto* instance = CrowdDenyPreloadData::GetInstance();
   // From this point on CrowdDenyPreloadData is not usable for origins
   // verification.
@@ -276,6 +277,71 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest_Async) {
                             SiteReputation::ABUSIVE_PROMPTS,
                             /*has_warning=*/false);
   run_loop.Run();
+}
+
+TEST_F(AbusiveOriginPermissionRevocationRequestTest,
+       PreloadDataAsyncHistogramTest) {
+  base::HistogramTester histograms;
+  // The Crowd Deny component is ready to use, there should be no
+  // DelayedPushNotification recording.
+  {
+    const GURL origin_1 = GURL("https://not-abusive-origin-1.com/");
+    SetPermission(origin_1, CONTENT_SETTING_ALLOW);
+    base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
+    AddToPreloadDataBlocklist(origin_1, SiteReputation::ACCEPTABLE,
+                              /*has_warning=*/false);
+    auto permission_revocation_1 =
+        std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+            GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
+
+    EXPECT_CALL(mock_callback_receiver_1, Run(Outcome::PERMISSION_NOT_REVOKED));
+    base::RunLoop().RunUntilIdle();
+    histograms.ExpectTotalCount(
+        "Permissions.CrowdDeny.PreloadData.DelayedPushNotification", 0);
+  }
+
+  auto* crowd_deny = CrowdDenyPreloadData::GetInstance();
+  // From this point on CrowdDenyPreloadData is not usable for origin
+  // verification. DelayedPushNotification should be tracked for non-abusive
+  // origins.
+  crowd_deny->set_is_ready_to_use_for_testing(false);
+
+  const GURL origin_1 = GURL("https://not-abusive-origin-1.com/");
+  SetPermission(origin_1, CONTENT_SETTING_ALLOW);
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
+  auto permission_revocation_1 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
+  EXPECT_CALL(mock_callback_receiver_1, Run(Outcome::PERMISSION_NOT_REVOKED));
+
+  const GURL origin_2 = GURL("https://not-abusive-origin-2.com/");
+  SetPermission(origin_2, CONTENT_SETTING_ALLOW);
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_2;
+  auto permission_revocation_2 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), origin_2, mock_callback_receiver_2.Get());
+  EXPECT_CALL(mock_callback_receiver_2, Run(Outcome::PERMISSION_NOT_REVOKED));
+
+  const GURL abusive_origin = GURL("https://abusive-origin.com/");
+  SetPermission(abusive_origin, CONTENT_SETTING_ALLOW);
+  AddToSafeBrowsingBlocklist(abusive_origin);
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_3;
+  auto permission_revocation_3 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), abusive_origin, mock_callback_receiver_3.Get());
+  EXPECT_CALL(mock_callback_receiver_3,
+              Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, crowd_deny->get_pending_origins_queue_size_for_testing());
+  // Set Crowd Deny reputation only for abusive origin. Non-abusive origins will
+  // have default reputation.
+  AddToPreloadDataBlocklist(abusive_origin, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount(
+      "Permissions.CrowdDeny.PreloadData.DelayedPushNotification", 2);
 }
 
 TEST_F(AbusiveOriginPermissionRevocationRequestTest,
