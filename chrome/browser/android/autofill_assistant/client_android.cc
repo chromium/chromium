@@ -547,11 +547,7 @@ void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
   base::Optional<ShowProgressBarProto::StepProgressBarConfiguration>
       progress_bar_config;
   base::Optional<int> progress_bar_active_step;
-  if (controller_) {
-    // Legacy, remove as soon as possible.
-    status_message = controller_->GetStatusMessage();
-    DestroyController();
-  } else if (trigger_script_bridge_.GetLastShownTriggerScript().has_value()) {
+  if (trigger_script_bridge_.GetLastShownTriggerScript().has_value()) {
     auto last_shown_trigger_script =
         trigger_script_bridge_.GetLastShownTriggerScript();
     status_message =
@@ -570,6 +566,7 @@ void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
     }
   }
 
+  DestroyController();
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
       RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),

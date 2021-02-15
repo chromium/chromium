@@ -62,10 +62,6 @@ JavaTestEndpointService::JavaTestEndpointService(
 
 JavaTestEndpointService::~JavaTestEndpointService() {}
 
-bool JavaTestEndpointService::IsLiteService() const {
-  return false;
-}
-
 void JavaTestEndpointService::GetScriptsForUrl(
     const GURL& url,
     const TriggerContext& trigger_context,

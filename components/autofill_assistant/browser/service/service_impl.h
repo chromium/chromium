@@ -48,8 +48,6 @@ class ServiceImpl : public Service {
       Client* client,
       const ServerUrlFetcher& url_fetcher);
 
-  bool IsLiteService() const override;
-
   ServiceImpl(std::unique_ptr<ServiceRequestSender> request_sender,
               const GURL& script_server_url,
               const GURL& action_server_url,

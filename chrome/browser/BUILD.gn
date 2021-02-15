@@ -2542,8 +2542,6 @@ static_library("browser") {
       "android/autofill_assistant/generic_ui_root_controller_android.h",
       "android/autofill_assistant/interaction_handler_android.cc",
       "android/autofill_assistant/interaction_handler_android.h",
-      "android/autofill_assistant/lite_service_bridge.cc",
-      "android/autofill_assistant/lite_service_bridge.h",
       "android/autofill_assistant/onboarding_coordinator_bridge.cc",
       "android/autofill_assistant/onboarding_coordinator_bridge.h",
       "android/autofill_assistant/onboarding_fetcher_factory.cc",

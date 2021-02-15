@@ -261,9 +261,6 @@ class UiDelegate {
   // Notifies the UI delegate that it should shut down.
   virtual void ShutdownIfNecessary() = 0;
 
-  // Returns whether the UI delegate is currently running a lite script or not.
-  virtual bool IsRunningLiteScript() const = 0;
-
   // Called when the visibility of the keyboard has changed.
   virtual void OnKeyboardVisibilityChanged(bool visible) = 0;
 

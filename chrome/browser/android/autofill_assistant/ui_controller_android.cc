@@ -335,8 +335,7 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
   Java_AssistantCollectUserDataModel_setWebContents(
       env, GetCollectUserDataModel(), java_web_contents);
   OnClientSettingsChanged(ui_delegate_->GetClientSettings());
-  Java_AssistantModel_setPeekModeDisabled(env, GetModel(),
-                                          ui_delegate->IsRunningLiteScript());
+  Java_AssistantModel_setPeekModeDisabled(env, GetModel(), false);
 
   if (ui_delegate->GetState() != AutofillAssistantState::INACTIVE &&
       ui_delegate->IsTabSelected()) {
@@ -688,13 +687,6 @@ void UiControllerAndroid::OnTabSwitched(
     return;
   }
 
-  // TODO(b/167947210) Allow lite scripts to transition from CCT to regular
-  // scripts.
-  if (activity_changed && ui_delegate_->IsRunningLiteScript()) {
-    Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
-    return;
-  }
-
   ui_delegate_->SetBottomSheetState(
       ui_controller_android_utils::ToNativeBottomSheetState(state));
   ui_delegate_->SetTabSelected(false);
@@ -914,17 +906,10 @@ bool UiControllerAndroid::OnBackButtonClicked() {
   }
 
   if (ui_delegate_ == nullptr ||
-      ui_delegate_->GetState() == AutofillAssistantState::STOPPED ||
-      ui_delegate_->IsRunningLiteScript()) {
+      ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
     if (client_->GetWebContents() != nullptr &&
         client_->GetWebContents()->GetController().CanGoBack()) {
       client_->GetWebContents()->GetController().GoBack();
-    }
-
-    // Lite scripts should not shut down here. The navigation will be handled
-    // by the lite script coordinator.
-    if (!ui_delegate_ || !ui_delegate_->IsRunningLiteScript()) {
-      Shutdown(Metrics::DropOutReason::BACK_BUTTON_CLICKED);
     }
 
     return true;
@@ -944,9 +929,7 @@ bool UiControllerAndroid::OnBackButtonClicked() {
 }
 
 void UiControllerAndroid::OnBottomSheetClosedWithSwipe() {
-  if (ui_delegate_->IsTabSelected() && ui_delegate_->IsRunningLiteScript()) {
-    Shutdown(Metrics::DropOutReason::SHEET_CLOSED);
-  }
+  // Nothing to do
 }
 
 void UiControllerAndroid::CloseOrCancel(

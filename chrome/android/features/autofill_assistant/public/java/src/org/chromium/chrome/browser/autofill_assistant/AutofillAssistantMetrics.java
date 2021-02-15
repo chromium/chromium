@@ -10,8 +10,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
-import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptOnboarding;
-import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptShownToUser;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
@@ -83,42 +81,6 @@ public class AutofillAssistantMetrics {
                 /* eventName = */ "AutofillAssistant.LiteScriptFinished",
                 /* metricName = */ "LiteScriptFinished",
                 /* metricValue = */ finishedState);
-    }
-
-    /**
-     * UKM metric. Records the onboarding after a successful lite script.
-     *
-     * The events recorded by this call lacks a trigger type. This is only appropriate when called
-     * for the deprecated lite script triggers, not defined from a TriggerProto.
-     */
-    @Deprecated
-    /* package */ static void recordLiteScriptOnboarding(
-            WebContents webContents, @LiteScriptOnboarding int onboarding) {
-        if (!areWebContentsValid(webContents)) {
-            return;
-        }
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
-                /* eventName = */ "AutofillAssistant.LiteScriptOnboarding",
-                /* metricName = */ "LiteScriptOnboarding",
-                /* metricValue = */ onboarding);
-    }
-
-    /**
-     * UKM metric. Records whether the lite script prompt was shown to the user or not.
-     *
-     * The events recorded by this call lacks a trigger type. This is only appropriate when called
-     * for the deprecated lite script trigger, not defined from a TriggerProto.
-     */
-    @Deprecated
-    /* package */ static void recordLiteScriptShownToUser(
-            WebContents webContents, @LiteScriptShownToUser int shownToUser) {
-        if (!areWebContentsValid(webContents)) {
-            return;
-        }
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
-                /* eventName = */ "AutofillAssistant.LiteScriptShownToUser",
-                /* metricName = */ "LiteScriptShownToUser",
-                /* metricValue = */ shownToUser);
     }
 
     /**

@@ -25,8 +25,6 @@ class JavaTestEndpointService : public Service {
   JavaTestEndpointService(const JavaTestEndpointService&) = delete;
   JavaTestEndpointService& operator=(const JavaTestEndpointService&) = delete;
 
-  bool IsLiteService() const override;
-
   void GetScriptsForUrl(const GURL& url,
                         const TriggerContext& trigger_context,
                         ResponseCallback callback) override;

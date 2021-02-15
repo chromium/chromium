@@ -131,8 +131,6 @@ class ControllerTest : public content::RenderViewHostTestHarness {
     ON_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _, _))
         .WillByDefault(RunOnceCallback<5>(net::HTTP_OK, ""));
 
-    ON_CALL(*mock_service_, IsLiteService).WillByDefault(Return(false));
-
     ON_CALL(*mock_web_controller_, OnFindElement(_, _))
         .WillByDefault(RunOnceCallback<1>(ClientStatus(), nullptr));
 
@@ -1824,60 +1822,6 @@ TEST_F(ControllerTest, UnexpectedNavigationDuringPromptAction) {
                                    AutofillAssistantState::STOPPED));
 }
 
-TEST_F(ControllerTest, UnexpectedNavigationDuringLiteScriptPromptAction) {
-  ON_CALL(*mock_service_, IsLiteService).WillByDefault(Return(true));
-
-  SupportsScriptResponseProto script_response;
-  AddRunnableScript(&script_response, "autostart")
-      ->mutable_presentation()
-      ->set_autostart(true);
-  SetNextScriptResponse(script_response);
-
-  ActionsResponseProto autostart_script;
-  autostart_script.add_actions()
-      ->mutable_prompt()
-      ->add_choices()
-      ->mutable_chip()
-      ->set_text("continue");
-  autostart_script.add_actions()->mutable_tell()->set_message("never shown");
-  SetupActionsForScript("autostart", autostart_script);
-
-  Start();
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
-  EXPECT_EQ(controller_->GetUserActions()[0].chip().text, "continue");
-
-  // No error is shown for lite scripts.
-  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(_)).Times(0);
-
-  // Renderer (Document) initiated navigation is allowed.
-  EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
-  EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://a.example.com/page"), web_contents()->GetMainFrame());
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-
-  // Expected browser initiated navigation is allowed.
-  EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
-  EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
-  controller_->ExpectNavigation();
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://b.example.com/page"));
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-
-  // Unexpected browser initiated navigation is allowed for lite scripts.
-  EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
-  EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://c.example.com/page"));
-  EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-
-  // Full history of state transitions.
-  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::STARTING,
-                                   AutofillAssistantState::RUNNING,
-                                   AutofillAssistantState::PROMPT));
-}
-
 TEST_F(ControllerTest, UnexpectedNavigationInRunningState) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "autostart")
@@ -2880,32 +2824,6 @@ TEST_F(ControllerTest, PauseAndNavigate) {
   EXPECT_CALL(mock_client_, Shutdown(Metrics::DropOutReason::NAVIGATION));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://b.example.com/path"));
-}
-
-TEST_F(ControllerTest,
-       LiteScriptWithOnboardingDoesNotShowInitialStatusMessage) {
-  SupportsScriptResponseProto script_response;
-  AddRunnableScript(&script_response, "script")
-      ->mutable_presentation()
-      ->set_autostart(true);
-  SetupScripts(script_response);
-
-  ActionsResponseProto actions_response;
-  actions_response.add_actions()->mutable_tell()->set_message("Hello World");
-
-  SetupActionsForScript("script", actions_response);
-  auto trigger_context = std::make_unique<TriggerContextImpl>(
-      std::map<std::string, std::string>{
-          {"TRIGGER_SCRIPT_USED", "example/path"}},
-      /* exp = */ std::string());
-  trigger_context->SetOnboardingShown(true);
-
-  testing::InSequence seq;
-  EXPECT_CALL(mock_observer_,
-              OnStatusMessageChanged(testing::Not("Hello World")))
-      .Times(0);
-  EXPECT_CALL(mock_observer_, OnStatusMessageChanged("Hello World")).Times(1);
-  Start("http://a.example.com/path", std::move(trigger_context));
 }
 
 TEST_F(ControllerTest, RegularScriptShowsDefaultInitialStatusMessage) {

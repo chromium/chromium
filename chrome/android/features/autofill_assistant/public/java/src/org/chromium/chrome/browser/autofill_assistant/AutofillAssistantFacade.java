@@ -52,8 +52,8 @@ public class AutofillAssistantFacade {
      */
     private static final String LITE_SCRIPT_EXPERIMENT_TRIAL =
             "AutofillAssistantLiteScriptExperiment";
-    private static final String LITE_SCRIPT_EXPERIMENT_TRIAL_CONTROL = "Control";
-    private static final String LITE_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT = "Experiment";
+    private static final String TRIGGER_SCRIPT_EXPERIMENT_TRIAL_CONTROL = "Control";
+    private static final String TRIGGER_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT = "Experiment";
 
     /** Returns true if conditions are satisfied to attempt to start Autofill Assistant. */
     private static boolean isConfigured(AutofillAssistantArguments arguments) {
@@ -118,26 +118,13 @@ public class AutofillAssistantFacade {
                 // Create a field trial and assign experiment arm based on script parameter. This
                 // is needed to tag UKM data to allow for A/B experiment comparisons.
                 FieldTrialList.createFieldTrial(LITE_SCRIPT_EXPERIMENT_TRIAL,
-                        arguments.isLiteScriptExperiment() ? LITE_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
-                                                           : LITE_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
+                        arguments.isTriggerScriptExperiment()
+                                ? TRIGGER_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
+                                : TRIGGER_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
 
                 // Record this as soon as possible, to establish a baseline.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_INTENT_RECEIVED);
-
-                // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
-                // regular autofill assistant Chrome setting. Since M-88, they also respect the new
-                // proactive help setting.
-                if (arguments.containsLegacyTriggerScripts()
-                        && (!AutofillAssistantPreferencesUtil.isProactiveHelpOn())) {
-                    if (AutofillAssistantPreferencesUtil
-                                    .isAutofillAssistantLiteScriptCancelThresholdReached()) {
-                        AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
-                                LiteScriptStarted.LITE_SCRIPT_CANCELED_TWO_TIMES);
-                    }
-                    Log.v(TAG, "TriggerScript stopping: proactive help setting is turned off");
-                    return;
-                }
 
                 if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
                                 == null

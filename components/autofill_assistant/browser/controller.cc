@@ -48,49 +48,6 @@ static constexpr int kAutostartInitialProgress = 5;
 // Experiment for toggling the new progress bar.
 const char kProgressBarExperiment[] = "4400697";
 
-// Returns true if the state requires a UI to be shown.
-//
-// Note that the UI might be shown in RUNNING state, even if it doesn't require
-// it.
-bool StateNeedsUiInRegularScript(AutofillAssistantState state,
-                                 bool browse_mode_invisible) {
-  switch (state) {
-    case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-    case AutofillAssistantState::MODAL_DIALOG:
-    case AutofillAssistantState::STARTING:
-      return true;
-
-    case AutofillAssistantState::INACTIVE:
-    case AutofillAssistantState::TRACKING:
-    case AutofillAssistantState::STOPPED:
-    case AutofillAssistantState::RUNNING:
-      return false;
-
-    case AutofillAssistantState::BROWSE:
-      return browse_mode_invisible;
-  }
-}
-
-// Same as |StateNeedsUiInRegularScript|, but does not show UI in STARTING
-// state.
-bool StateNeedsUiInLiteScript(AutofillAssistantState state) {
-  switch (state) {
-    case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-    case AutofillAssistantState::MODAL_DIALOG:
-      return true;
-
-    case AutofillAssistantState::STARTING:
-    case AutofillAssistantState::BROWSE:
-    case AutofillAssistantState::INACTIVE:
-    case AutofillAssistantState::TRACKING:
-    case AutofillAssistantState::STOPPED:
-    case AutofillAssistantState::RUNNING:
-      return false;
-  }
-}
-
 }  // namespace
 
 Controller::Controller(content::WebContents* web_contents,
@@ -1293,18 +1250,12 @@ bool Controller::Start(const GURL& deeplink_url,
 }
 
 void Controller::ShowFirstMessageAndStart() {
-  if (!status_message_.empty()) {
-    // A status message may have been set prior to calling |Start|.
-    SetStatusMessage(status_message_);
-  } else if (!(GetTriggerContext()->is_onboarding_shown() &&
-               GetTriggerContext()->WasStartedByLegacyTriggerScript())) {
-    SetStatusMessage(
-        l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
-                                  base::UTF8ToUTF16(GetCurrentURL().host())));
-  } else {
-    // Only show default status message if necessary. Scripts started by lite
-    // scripts that also showed the onboarding do not show the loading message.
-  }
+  // |status_message_| may be non-empty due to a trigger script that was run.
+  SetStatusMessage(
+      status_message_.empty()
+          ? l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
+                                      base::UTF8ToUTF16(GetCurrentURL().host()))
+          : status_message_);
   if (step_progress_bar_configuration_.has_value() &&
       step_progress_bar_configuration_->use_step_progress_bar()) {
     if (!progress_active_step_.has_value()) {
@@ -1705,14 +1656,9 @@ void Controller::OnScriptError(const std::string& error_message,
   if (state_ == AutofillAssistantState::STOPPED)
     return;
 
-  // For lite scripts, don't attach the UI on error, and don't show an error
-  // while shutting down.
-  if (!IsRunningLiteScript()) {
-    RequireUI();
-    SetStatusMessage(error_message);
-    SetProgressBarErrorState(true);
-  }
-
+  RequireUI();
+  SetStatusMessage(error_message);
+  SetProgressBarErrorState(true);
   EnterStoppedState(/*show_feedback_chip=*/true);
 
   if (tracking_) {
@@ -1754,8 +1700,7 @@ void Controller::OnFatalError(const std::string& error_message,
 void Controller::RecordDropOutOrShutdown(Metrics::DropOutReason reason) {
   // If there is an UI, we wait for it to be closed before shutting down (the UI
   // will call |ShutdownIfNecessary|).
-  // Lite scripts go away immediately, even if UI is currently being shown.
-  if (client_->HasHadUI() && !IsRunningLiteScript()) {
+  if (client_->HasHadUI()) {
     // We report right away to make sure we don't lose this reason if the client
     // is unexpectedly destroyed while the error message is showing (for example
     // if the tab is closed).
@@ -1949,9 +1894,6 @@ void Controller::DidStartNavigation(
     return;
   }
 
-  // In lite scripts, navigations are allowed (the lite script will fail if the
-  // trigger condition stops being true).
-  //
   // In regular scripts, the following types of navigations are allowed for the
   // main frame, when in PROMPT state:
   //  - first-time URL load
@@ -1968,7 +1910,7 @@ void Controller::DidStartNavigation(
   // Everything else, such as going back to a previous page, or refreshing the
   // page is considered an end condition. If going back to a previous page is
   // required, consider using the BROWSE state instead.
-  if (!IsRunningLiteScript() && state_ == AutofillAssistantState::PROMPT &&
+  if (state_ == AutofillAssistantState::PROMPT &&
       web_contents()->GetLastCommittedURL().is_valid() &&
       !navigation_handle->WasServerRedirect() &&
       !navigation_handle->IsRendererInitiated()) {
@@ -2117,14 +2059,24 @@ void Controller::WriteUserData(
 }
 
 bool Controller::StateNeedsUI(AutofillAssistantState state) {
-  if (IsRunningLiteScript()) {
-    return StateNeedsUiInLiteScript(state);
-  }
-  return StateNeedsUiInRegularScript(state, browse_mode_invisible_);
-}
+  // Note that the UI might be shown in RUNNING state, even if it doesn't
+  // require it.
+  switch (state) {
+    case AutofillAssistantState::PROMPT:
+    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
+    case AutofillAssistantState::MODAL_DIALOG:
+    case AutofillAssistantState::STARTING:
+      return true;
 
-bool Controller::IsRunningLiteScript() const {
-  return service_ ? service_->IsLiteService() : false;
+    case AutofillAssistantState::INACTIVE:
+    case AutofillAssistantState::TRACKING:
+    case AutofillAssistantState::STOPPED:
+    case AutofillAssistantState::RUNNING:
+      return false;
+
+    case AutofillAssistantState::BROWSE:
+      return browse_mode_invisible_;
+  }
 }
 
 void Controller::OnKeyboardVisibilityChanged(bool visible) {
