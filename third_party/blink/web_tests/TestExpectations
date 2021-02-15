@@ -348,6 +348,9 @@ crbug.com/898394 virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html
 
 crbug.com/1024151 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
 
+# Temporarily disabled DevTools tests, waiting for DevTools CLs to roll in.
+crbug.com/1178365 http/tests/devtools/elements/elements-panel-structure.js [ Pass Failure ]
+
 # Subpixel rounding differences that are incorrect.
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Flaky subpixel AA difference (not necessarily incorrect, but flaky)
