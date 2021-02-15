@@ -40,7 +40,6 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -164,9 +163,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -243,48 +240,6 @@ bool IsNetworkPredictionEnabled(PrefService* prefs) {
 }
 
 }  // namespace
-
-#if defined(OS_WIN)
-// This policy only exists on Windows.
-
-// Sets the locale policy before the browser is started.
-class LocalePolicyTest : public PolicyTest {
- public:
-  LocalePolicyTest() {}
-  ~LocalePolicyTest() override {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    policies.Set(key::kApplicationLocaleValue, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value("fr"),
-                 nullptr);
-    provider_.UpdateChromePolicy(policies);
-    // The "en-US" ResourceBundle is always loaded before this step for tests,
-    // but in this test we want the browser to load the bundle as it
-    // normally would.
-    ui::ResourceBundle::CleanupSharedInstance();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LocalePolicyTest, ApplicationLocaleValue) {
-  // Verifies that the default locale can be overridden with policy.
-  EXPECT_EQ("fr", g_browser_process->GetApplicationLocale());
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
-  base::string16 french_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
-  base::string16 title;
-  EXPECT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &title));
-  EXPECT_EQ(french_title, title);
-
-  // Make sure this is really French and differs from the English title.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string loaded =
-      ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("en-US");
-  EXPECT_EQ("en-US", loaded);
-  base::string16 english_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
-  EXPECT_NE(french_title, english_title);
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, BookmarkBarEnabled) {
   // Verifies that the bookmarks bar can be forced to always or never show up.

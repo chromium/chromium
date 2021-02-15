@@ -1673,6 +1673,7 @@ if (!is_android) {
         "../browser/chrome_main_browsertest.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
+        "../browser/policy/locale_policy_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/safe_browsing/chrome_cleaner/reporter_runner_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_corrupt_profiles_browsertest_win.cc",
