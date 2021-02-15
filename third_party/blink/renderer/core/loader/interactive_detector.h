@@ -216,7 +216,6 @@ class CORE_EXPORT InteractiveDetector
   void TimeToInteractiveTimerFired(TimerBase*);
   void CheckTimeToInteractiveReached();
   void OnTimeToInteractiveDetected();
-  std::unique_ptr<TracedValue> ComputeTimeToInteractiveTraceArgs();
   base::TimeDelta ComputeTotalBlockingTime();
 
   Vector<VisibilityChangeEvent> visibility_change_events_;

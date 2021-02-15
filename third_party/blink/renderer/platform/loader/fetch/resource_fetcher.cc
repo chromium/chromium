@@ -243,19 +243,6 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
   return new_priority;
 }
 
-std::unique_ptr<TracedValue> BeginResourceLoadData(
-    const blink::ResourceRequest& request) {
-  auto value = std::make_unique<TracedValue>();
-  value->SetString("url", request.Url().GetString());
-  return value;
-}
-
-std::unique_ptr<TracedValue> EndResourceLoadFailData() {
-  auto value = std::make_unique<TracedValue>();
-  value->SetString("outcome", "Fail");
-  return value;
-}
-
 std::unique_ptr<TracedValue> ResourcePrioritySetData(
     blink::ResourceLoadPriority priority) {
   auto value = std::make_unique<TracedValue>();
@@ -916,7 +903,7 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourcePrioritySet",
       TRACE_ID_WITH_SCOPE("BlinkResourceID",
                           TRACE_ID_LOCAL(resource_request.InspectorId())),
-      "data", ResourcePrioritySetData(resource_request.Priority()));
+      "priority", resource_request.Priority());
 
   KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   base::Optional<ResourceRequestBlockedReason> blocked_reason =
@@ -1007,8 +994,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       params.IsFromOriginDirtyStyleSheet());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
-      TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)),
-      "beginData", BeginResourceLoadData(resource_request));
+      TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)), "url",
+      resource_request.Url());
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE(
       "Blink.Fetch.RequestResourceTime");
   TRACE_EVENT1("blink", "ResourceFetcher::requestResource", "url",
@@ -1183,7 +1170,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     TRACE_EVENT_NESTABLE_ASYNC_END1(
         TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
         TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)),
-        "endData", EndResourceLoadFailData());
+        "outcome", "Fail");
   }
 
   return resource;

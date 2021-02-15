@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class Clock;
@@ -117,7 +118,8 @@ class CORE_EXPORT DocumentLoadTiming final {
   void NotifyDocumentTimingChanged();
   void EnsureReferenceTimesSet();
   LocalFrame* GetFrame() const;
-  std::unique_ptr<TracedValue> GetNavigationStartTracingData() const;
+  void WriteNavigationStartDataIntoTracedValue(
+      perfetto::TracedValue context) const;
 
   base::TimeTicks reference_monotonic_time_;
   base::TimeDelta reference_wall_time_;

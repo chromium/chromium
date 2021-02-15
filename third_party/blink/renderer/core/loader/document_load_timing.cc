@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 
@@ -114,20 +115,20 @@ void DocumentLoadTiming::MarkNavigationStart() {
   navigation_start_ = reference_monotonic_time_;
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "blink.user_timing", "navigationStart", navigation_start_, "frame",
-      ToTraceValue(GetFrame()), "data", GetNavigationStartTracingData());
+      ToTraceValue(GetFrame()), "data", [&](perfetto::TracedValue ctx) {
+        WriteNavigationStartDataIntoTracedValue(std::move(ctx));
+      });
   NotifyDocumentTimingChanged();
 }
 
-std::unique_ptr<TracedValue> DocumentLoadTiming::GetNavigationStartTracingData()
-    const {
-  auto data = std::make_unique<TracedValue>();
-  data->SetString("documentLoaderURL",
-                  document_loader_ ? document_loader_->Url().GetString() : "");
-  data->SetBoolean("isLoadingMainFrame",
-                   GetFrame() ? GetFrame()->IsMainFrame() : false);
-  data->SetString("navigationId",
-                  IdentifiersFactory::LoaderId(document_loader_));
-  return data;
+void DocumentLoadTiming::WriteNavigationStartDataIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("documentLoaderURL",
+           document_loader_ ? document_loader_->Url().GetString() : "");
+  dict.Add("isLoadingMainFrame",
+           GetFrame() ? GetFrame()->IsMainFrame() : false);
+  dict.Add("navigationId", IdentifiersFactory::LoaderId(document_loader_));
 }
 
 void DocumentLoadTiming::SetNavigationStart(base::TimeTicks navigation_start) {
@@ -138,7 +139,9 @@ void DocumentLoadTiming::SetNavigationStart(base::TimeTicks navigation_start) {
   navigation_start_ = navigation_start;
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "blink.user_timing", "navigationStart", navigation_start_, "frame",
-      ToTraceValue(GetFrame()), "data", GetNavigationStartTracingData());
+      ToTraceValue(GetFrame()), "data", [&](perfetto::TracedValue context) {
+        WriteNavigationStartDataIntoTracedValue(std::move(context));
+      });
 
   // The reference times are adjusted based on the embedder's navigationStart.
   DCHECK(!reference_monotonic_time_.is_null());

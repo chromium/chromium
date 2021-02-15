@@ -572,25 +572,21 @@ void InteractiveDetector::OnTimeToInteractiveDetected() {
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "loading,rail", "InteractiveTime", interactive_time_, "frame",
       ToTraceValue(GetSupplementable()->GetFrame()), "args",
-      ComputeTimeToInteractiveTraceArgs());
+      [&](perfetto::TracedValue context) {
+        // We log the trace event even if there is user input, but annotate the
+        // event with whether that happened.
+        bool had_user_input_before_interactive =
+            !page_event_times_.first_invalidating_input.is_null() &&
+            page_event_times_.first_invalidating_input < interactive_time_;
+
+        auto dict = std::move(context).WriteDictionary();
+        dict.Add("had_user_input_before_interactive",
+                 had_user_input_before_interactive);
+        dict.Add("total_blocking_time_ms",
+                 ComputeTotalBlockingTime().InMillisecondsF());
+      });
 
   long_tasks_.clear();
-}
-
-std::unique_ptr<TracedValue>
-InteractiveDetector::ComputeTimeToInteractiveTraceArgs() {
-  // We log the trace event even if there is user input, but annotate the event
-  // with whether that happened.
-  bool had_user_input_before_interactive =
-      !page_event_times_.first_invalidating_input.is_null() &&
-      page_event_times_.first_invalidating_input < interactive_time_;
-
-  auto dict = std::make_unique<TracedValue>();
-  dict->SetBoolean("had_user_input_before_interactive",
-                   had_user_input_before_interactive);
-  dict->SetDouble("total_blocking_time_ms",
-                  ComputeTotalBlockingTime().InMillisecondsF());
-  return dict;
 }
 
 base::TimeDelta InteractiveDetector::ComputeTotalBlockingTime() {
