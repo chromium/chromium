@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 636 tests; 612 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 636 tests; 614 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS In <input>, execCommand("bold", false, bold), a[b]c): calling execCommand()
 PASS In <input>, execCommand("bold", false, bold), a[b]c): checking value and selection after execCommand()
 PASS In <input>, execCommand("bold", false, bold), a[b]c): checking beforeinput event
@@ -113,7 +113,7 @@ PASS In <input>, execCommand("insertimage", false, no-image.png), a[b]c): checki
 PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): calling execCommand()
 PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking value and selection after execCommand()
 PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking beforeinput event
-FAIL In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event assert_equals: expected "insertText" but got ""
+PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event
 PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): calling execCommand()
 PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): checking value and selection after execCommand()
 PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): checking beforeinput event
@@ -431,7 +431,7 @@ PASS In <input> in contenteditable, execCommand("insertimage", false, no-image.p
 PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): calling execCommand()
 PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking value and selection after execCommand()
 PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking beforeinput event
-FAIL In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event assert_equals: expected "insertText" but got ""
+PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event
 PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): calling execCommand()
 PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking value and selection after execCommand()
 PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking beforeinput event
