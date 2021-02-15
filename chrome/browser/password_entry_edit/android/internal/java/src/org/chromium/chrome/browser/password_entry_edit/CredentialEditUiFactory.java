@@ -16,8 +16,11 @@ public class CredentialEditUiFactory {
      */
     public static void create(CredentialEditFragmentView fragmentView) {
         CredentialEditBridge bridge = CredentialEditBridge.get();
-        if (bridge != null) {
-            bridge.initialize(new CredentialEditCoordinator(fragmentView));
+        if (bridge == null) {
+            // There is no backend to talk to, so the UI shouldn't be shown.
+            fragmentView.dismiss();
+            return;
         }
+        bridge.initialize(new CredentialEditCoordinator(fragmentView, bridge));
     }
 }

@@ -10,13 +10,14 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.UiDismissalHandler;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Class mediating the communication between the credential edit UI and the C++ part responsible
  * for saving the changes.
  */
-class CredentialEditBridge {
+class CredentialEditBridge implements UiDismissalHandler {
     private static CredentialEditBridge sCredentialEditBridge;
 
     private long mNativeCredentialEditBridge;
@@ -61,7 +62,8 @@ class CredentialEditBridge {
 
     // This can be called either before or after the native counterpart has gone away, depending
     // on where the edit component is being destroyed from.
-    void onUiDismissed() {
+    @Override
+    public void onUiDismissed() {
         if (mNativeCredentialEditBridge != 0) {
             CredentialEditBridgeJni.get().onUIDismissed(mNativeCredentialEditBridge);
         }

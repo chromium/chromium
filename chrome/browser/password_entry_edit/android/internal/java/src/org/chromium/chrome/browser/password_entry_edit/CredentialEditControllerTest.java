@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.password_entry_edit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.FEDERATION_ORIGIN;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD_VISIBLE;
+import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_DISMISSED_BY_NATIVE;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.USERNAME;
 
@@ -51,5 +53,11 @@ public class CredentialEditControllerTest {
         assertEquals(TEST_USERNAME, mModel.get(USERNAME));
         assertEquals(TEST_PASSWORD, mModel.get(PASSWORD));
         assertFalse(mModel.get(PASSWORD_VISIBLE));
+    }
+
+    @Test
+    public void testDismissPropagatesToTheModel() {
+        mMediator.dismiss();
+        assertTrue(mModel.get(UI_DISMISSED_BY_NATIVE));
     }
 }

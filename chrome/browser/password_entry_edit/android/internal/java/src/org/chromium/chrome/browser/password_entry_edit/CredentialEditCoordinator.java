@@ -8,19 +8,32 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.FEDERATION_ORIGIN;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
+import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.ComponentStateDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Creates the credential edit UI and is responsible for managing it.
  */
-class CredentialEditCoordinator {
+class CredentialEditCoordinator implements ComponentStateDelegate {
     private final CredentialEditFragmentView mFragmentView;
     private final CredentialEditMediator mMediator;
+    private final UiDismissalHandler mDismissalHandler;
     private PropertyModel mModel;
 
-    CredentialEditCoordinator(CredentialEditFragmentView fragmentView) {
+    interface UiDismissalHandler {
+        /**
+         * Issued when the Ui is being permanently dismissed.
+         */
+        void onUiDismissed();
+    }
+
+    CredentialEditCoordinator(
+            CredentialEditFragmentView fragmentView, UiDismissalHandler dismissalHandler) {
         mFragmentView = fragmentView;
         mMediator = new CredentialEditMediator();
+        mDismissalHandler = dismissalHandler;
+        mFragmentView.setComponentStateDelegate(this);
     }
 
     void setCredential(String displayUrlOrAppName, String username, String password,
@@ -29,11 +42,22 @@ class CredentialEditCoordinator {
                          .with(URL_OR_APP, displayUrlOrAppName)
                          .with(FEDERATION_ORIGIN, displayFederationOrigin)
                          .build();
+        CredentialEditCoordinator.setupModelChangeProcessor(mModel, mFragmentView);
         mMediator.initialize(mModel);
         mMediator.setCredential(username, password);
     }
 
     void dismiss() {
-        // TODO(crbug.com/1175785): Dismiss the UI, if it wasn't dismissed already.
+        mMediator.dismiss();
+    }
+
+    @Override
+    public void onDestroy() {
+        mDismissalHandler.onUiDismissed();
+    }
+
+    static void setupModelChangeProcessor(PropertyModel model, CredentialEditFragmentView view) {
+        PropertyModelChangeProcessor.create(
+                model, view, CredentialEditViewBinder::bindCredentialEditView);
     }
 }
