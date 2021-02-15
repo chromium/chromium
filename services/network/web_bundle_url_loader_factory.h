@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   base::WeakPtr<WebBundleURLLoaderFactory> GetWeakPtr() const;
 
   void SetBundleStream(mojo::ScopedDataPipeConsumerHandle body);
+  void ReportErrorAndCancelPendingLoaders(SubresourceWebBundleLoadResult result,
+                                          mojom::WebBundleErrorType error,
+                                          const std::string& message);
   mojo::PendingRemote<mojom::URLLoaderClient> WrapURLLoaderClient(
       mojo::PendingRemote<mojom::URLLoaderClient> wrapped);
 
@@ -53,6 +56,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   class BundleDataSource;
   class URLLoader;
 
+  bool HasError() const;
   void StartLoad(URLLoader* loader);
   void OnMetadataParsed(web_package::mojom::BundleMetadataPtr metadata,
                         web_package::mojom::BundleMetadataParseErrorPtr error);
@@ -61,7 +65,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
                         web_package::mojom::BundleResponseParseErrorPtr error);
   void OnMemoryQuotaExceeded();
   void OnDataCompleted();
-  void MaybeRecordLoadResult();
+  void MaybeRecordLoadResult(SubresourceWebBundleLoadResult result);
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
@@ -71,10 +75,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
-  web_package::mojom::BundleMetadataParseErrorPtr metadata_error_;
-  bool quota_exceeded_error_ = false;
+  base::Optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
-  bool load_result_recorded_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
 
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};

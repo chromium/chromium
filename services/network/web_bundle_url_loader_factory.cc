@@ -24,11 +24,6 @@ namespace {
 
 constexpr size_t kBlockedBodyAllocationSize = 1;
 
-void RecordLoadResult(
-    WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult result) {
-  base::UmaHistogramEnumeration("SubresourceWebBundles.LoadResult", result);
-}
-
 void DeleteProducerAndRunCallback(
     std::unique_ptr<mojo::DataPipeProducer> producer,
     base::OnceCallback<void(MojoResult result)> callback,
@@ -423,6 +418,11 @@ base::WeakPtr<WebBundleURLLoaderFactory> WebBundleURLLoaderFactory::GetWeakPtr()
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+bool WebBundleURLLoaderFactory::HasError() const {
+  return load_result_.has_value() &&
+         *load_result_ != SubresourceWebBundleLoadResult::kSuccess;
+}
+
 void WebBundleURLLoaderFactory::SetBundleStream(
     mojo::ScopedDataPipeConsumerHandle body) {
   mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source;
@@ -461,11 +461,7 @@ void WebBundleURLLoaderFactory::StartSubresourceRequest(
   URLLoader* loader =
       new URLLoader(std::move(receiver), url_request, std::move(client),
                     request_initiator_origin_lock_);
-  if (metadata_error_) {
-    loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
-    return;
-  }
-  if (quota_exceeded_error_) {
+  if (HasError()) {
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
   }
@@ -499,29 +495,36 @@ void WebBundleURLLoaderFactory::StartLoad(URLLoader* loader) {
                      weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr()));
 }
 
+void WebBundleURLLoaderFactory::ReportErrorAndCancelPendingLoaders(
+    SubresourceWebBundleLoadResult result,
+    mojom::WebBundleErrorType error,
+    const std::string& message) {
+  MaybeRecordLoadResult(result);
+  web_bundle_handle_->OnWebBundleError(error, message);
+  auto pending_loaders = std::move(pending_loaders_);
+  for (auto loader : pending_loaders) {
+    if (loader)
+      loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+  }
+
+  source_.reset();
+  parser_.reset();
+}
+
 void WebBundleURLLoaderFactory::OnMetadataParsed(
     web_package::mojom::BundleMetadataPtr metadata,
     web_package::mojom::BundleMetadataParseErrorPtr error) {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMetadataParsed");
   if (error) {
-    metadata_error_ = std::move(error);
-    MaybeRecordLoadResult();
-    web_bundle_handle_->OnWebBundleError(
-        mojom::WebBundleErrorType::kMetadataParseError,
-        metadata_error_->message);
-    auto pending_loaders = std::move(pending_loaders_);
-    for (auto loader : pending_loaders) {
-      if (loader)
-        loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
-    }
-
-    source_.reset();
-    parser_.reset();
+    ReportErrorAndCancelPendingLoaders(
+        SubresourceWebBundleLoadResult::kMetadataParseError,
+        mojom::WebBundleErrorType::kMetadataParseError, error->message);
     return;
   }
 
   metadata_ = std::move(metadata);
-  MaybeRecordLoadResult();
+  if (data_completed_)
+    MaybeRecordLoadResult(SubresourceWebBundleLoadResult::kSuccess);
   for (auto loader : pending_loaders_)
     StartLoad(loader.get());
   pending_loaders_.clear();
@@ -586,46 +589,26 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
 
 void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMemoryQuotaExceeded");
-  quota_exceeded_error_ = true;
-  MaybeRecordLoadResult();
-  web_bundle_handle_->OnWebBundleError(
+  ReportErrorAndCancelPendingLoaders(
+      SubresourceWebBundleLoadResult::kMemoryQuotaExceeded,
       mojom::WebBundleErrorType::kMemoryQuotaExceeded,
       "Memory quota exceeded. Currently, there is an upper limit on the total "
       "size of subresource web bundles in a process. See "
       "https://crbug.com/1154140 for more details.");
-  auto pending_loaders = std::move(pending_loaders_);
-  for (auto loader : pending_loaders) {
-    if (loader) {
-      loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
-    }
-  }
-  source_.reset();
-  parser_.reset();
 }
 
 void WebBundleURLLoaderFactory::OnDataCompleted() {
   data_completed_ = true;
-  MaybeRecordLoadResult();
+  if (metadata_)
+    MaybeRecordLoadResult(SubresourceWebBundleLoadResult::kSuccess);
 }
 
-void WebBundleURLLoaderFactory::MaybeRecordLoadResult() {
-  if (load_result_recorded_)
+void WebBundleURLLoaderFactory::MaybeRecordLoadResult(
+    SubresourceWebBundleLoadResult result) {
+  if (load_result_.has_value())
     return;
-  if (quota_exceeded_error_) {
-    RecordLoadResult(SubresourceWebBundleLoadResult::kMemoryQuotaExceeded);
-    load_result_recorded_ = true;
-    return;
-  }
-  if (metadata_error_) {
-    RecordLoadResult(SubresourceWebBundleLoadResult::kMetadataParseError);
-    load_result_recorded_ = true;
-    return;
-  }
-  if (metadata_ && data_completed_) {
-    RecordLoadResult(SubresourceWebBundleLoadResult::kSuccess);
-    load_result_recorded_ = true;
-    return;
-  }
+  load_result_ = result;
+  base::UmaHistogramEnumeration("SubresourceWebBundles.LoadResult", result);
 }
 
 }  // namespace network
