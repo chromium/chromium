@@ -239,10 +239,8 @@ class X11WindowTest : public testing::Test {
   TestScreen* test_screen_ = nullptr;
 };
 
-// https://crbug.com/898742: Test might be flaky. Disable again if it is still
-// flaky after it is moved from views_unittests to x11_unittests. Tests that the
-// shape is properly set on the x window.
-TEST_F(X11WindowTest, Shape) {
+// https://crbug.com/898742: Test is flaky.
+TEST_F(X11WindowTest, DISABLED_Shape) {
   if (!IsShapeExtensionAvailable())
     return;
 
