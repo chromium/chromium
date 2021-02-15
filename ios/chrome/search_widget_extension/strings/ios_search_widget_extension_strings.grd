@@ -156,7 +156,7 @@ all other OS specific variables will be false.
     <file path="resources/ios_search_widget_extension_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/ios_search_widget_extension_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_IOS_NEW_SEARCH" desc="Label in the widget extension for the action to launch the app and open a new search. [Length: 30em]">
         New Search

@@ -207,7 +207,7 @@ third_party/libaddressinput/BUILD.gn.
     <file path="resources/address_input_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/address_input_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Chromium name for the file with original strings to work well with
            translation tools. -->

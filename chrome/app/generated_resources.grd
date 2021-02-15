@@ -269,7 +269,7 @@ are declared in tools/grit/grit_rule.gni.
     <file path="resources/generated_resources_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/generated_resources_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Bookmarks specific strings -->
       <part file="bookmarks_strings.grdp" />

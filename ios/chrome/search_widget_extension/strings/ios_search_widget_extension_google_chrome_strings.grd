@@ -156,7 +156,7 @@ all other OS specific variables will be false.
     <file path="resources/ios_search_widget_extension_google_chrome_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/ios_search_widget_extension_google_chrome_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_IOS_SEARCH_WIDGET_TITLE" desc="Title of the widget.">
         Chrome - Quick Actions

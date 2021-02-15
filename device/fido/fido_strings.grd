@@ -180,7 +180,7 @@ This file contains the strings for //device/fido.
     <file path="strings/fido_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/fido_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
     <if expr="is_macosx">
       <message name="IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON" desc="Sentence fragment (lower case). Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message asking the user to confirm or cancel this action.">

@@ -7,7 +7,7 @@
     </output>
     <output filename="ui_base_test_resources.pak" type="data_package" lang="en" />
   </outputs>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message translateable="false" name="IDS_SIMPLE">
         Hello World!

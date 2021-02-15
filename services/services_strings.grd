@@ -180,7 +180,7 @@ This file contains strings for code in //services.
     <file path="strings/services_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/services_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process V8 proxy resolution.">
         V8 Proxy Resolver

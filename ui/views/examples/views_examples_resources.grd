@@ -7,7 +7,7 @@
     </output>
     <output filename="views_examples_resources.pak" type="data_package" lang="en" />
   </outputs>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
        <!-- colored dialog example -->
       <message translateable="false" name="IDS_COLORED_DIALOG_CHOOSER_CHECKBOX">

@@ -216,7 +216,7 @@ below:
     <file path="translations/blink_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="translations/blink_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- TODO add all of your "string table" messages here.  Remember to
       change nontranslateable parts of the messages into placeholders (using the

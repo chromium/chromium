@@ -6,7 +6,7 @@
     </output>
     <output filename="chrome_test_resources.pak" type="data_package" />
   </outputs>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message translateable="false" name="IDS_FEATURE_PROMO_BODY">
         Use this feature please

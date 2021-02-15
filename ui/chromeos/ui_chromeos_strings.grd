@@ -146,7 +146,7 @@
     <file path="translations/ui_chromeos_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="translations/ui_chromeos_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Files app strings. It's shared with ARC++ (//components/arc). -->
       <part file="file_manager_strings.grdp" />

@@ -146,7 +146,7 @@
     <file path="strings/shortcut_viewer_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/shortcut_viewer_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
   <!-- Title -->
   <message name="IDS_KSV_TITLE" desc="The tooltip text of the keyboard shortcut viewer shelf icon.">

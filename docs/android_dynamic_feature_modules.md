@@ -593,7 +593,7 @@ follows:
     <!-- Here, too, list XTB files for all other supported languages. -->
     ...
   </translations>
-  <release allow_pseudo="false" seq="1">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_BAR_IMPL_TEXT" desc="Magical string.">
         impl

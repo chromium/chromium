@@ -14,7 +14,7 @@
   <translations>
     <file path="substitute.xmb" lang="sv" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages first_id="8192">
       <message name="IDS_COPYRIGHT_GOOGLE_LONG" sub_variable="true" desc="Gadget copyright notice.  Needs to be updated every year.">
         Copyright 2008 Google Inc. All Rights Reserved.

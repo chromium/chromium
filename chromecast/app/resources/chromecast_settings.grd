@@ -120,7 +120,7 @@ This file contains the strings for Chromecast settings.
     <file path="chromecast_settings_zh-CN.xtb" lang="zh-CN" />
     <file path="chromecast_settings_zh-TW.xtb" lang="zh-TW" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_CHROMECAST_SETTINGS_ACCEPT_LANGUAGES"
                use_name_for_id="true">
