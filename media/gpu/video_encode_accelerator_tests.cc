@@ -506,12 +506,11 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
-// TODO(hiroh): Enable this test after the test dashboard becomes more green.
 // Downscaling is required in VideoEncodeAccelerator when zero-copy video
 // capture is enabled. One example is simulcast, camera produces 360p VideoFrame
 // and there are two VideoEncodeAccelerator for 360p and 180p. VideoEncoder for
 // 180p is fed 360p and thus has to perform the scaling from 360p to 180p.
-TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   if (auto skip_reason = SupportsNV12DmaBufInput())
     GTEST_SKIP() << *skip_reason;
   constexpr gfx::Size kMinOutputResolution(240, 180);
@@ -543,14 +542,12 @@ TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
-// TODO(hiroh): Enable this test after the test dashboard becomes more green.
 // Encode VideoFrames with cropping the rectangle (0, 60, size).
 // Cropping is required in VideoEncodeAccelerator when zero-copy video
 // capture is enabled. One example is when 640x360 capture recording is
-// requested, a camera cannot produce the resolution and instead produce 640x480
-// frames with visible_rect=0, 60, 640x360.
-TEST_F(VideoEncoderTest,
-       DISABLED_FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
+// requested, a camera cannot produce the resolution and instead produces
+// 640x480 frames with visible_rect=0, 60, 640x360.
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
   if (auto skip_reason = SupportsNV12DmaBufInput())
     GTEST_SKIP() << *skip_reason;
   constexpr int kGrowHeight = 120;
@@ -586,10 +583,12 @@ TEST_F(VideoEncoderTest,
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
-// TODO(hiroh): Enable this test after the test dashboard becomes more green.
 // Encode VideoFrames with cropping the rectangle (60, 0, size).
-TEST_F(VideoEncoderTest,
-       DISABLED_FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
+// Cropping is required in VideoEncodeAccelerator when zero-copy video
+// capture is enabled. One example is when 640x360 capture recording is
+// requested, a camera cannot produce the resolution and instead produces
+// 760x360 frames with visible_rect=60, 0, 640x360.
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
   if (auto skip_reason = SupportsNV12DmaBufInput())
     GTEST_SKIP() << *skip_reason;
   constexpr int kGrowWidth = 120;
