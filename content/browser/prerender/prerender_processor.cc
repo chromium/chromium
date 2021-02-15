@@ -39,6 +39,15 @@ void PrerenderProcessor::Start(
   }
   state_ = State::kStarted;
 
+  // Abort cross-origin prerendering.
+  // TODO(https://crbug.com/1176054): This is a tentative behavior. We plan to
+  // support cross-origin prerendering later.
+  if (!initiator_origin_.IsSameOriginWith(
+          url::Origin::Create(attributes->url))) {
+    mojo::ReportBadMessage("PP_CROSS_ORIGIN");
+    return;
+  }
+
   // Prerendering is only supported for <link rel=prerender>.
   // We may want to support it for <link rel=next> if NoStatePrefetch re-enables
   // it again. See https://crbug.com/1161545.
@@ -48,14 +57,6 @@ void PrerenderProcessor::Start(
     case blink::mojom::PrerenderRelType::kNext:
       return;
   }
-
-  // Abort cross-origin prerendering.
-  // TODO(https://crbug.com/1176054): This is a tentative behavior. We plan to
-  // support it cross-origin prerendering later.
-  // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch to avoid
-  // performance degradation.
-  if (!initiator_origin_.IsSameOriginWith(url::Origin::Create(attributes->url)))
-    return;
 
   // TODO(https://crbug.com/1132746): Validate the origin, etc and send
   // mojo::ReportBadMessage() if necessary like the legacy prerender

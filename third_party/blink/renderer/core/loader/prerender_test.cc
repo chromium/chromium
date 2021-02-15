@@ -217,18 +217,18 @@ class PrerenderTest : public testing::Test,
 INSTANTIATE_TEST_SUITE_P(All, PrerenderTest, testing::Bool());
 
 TEST_P(PrerenderTest, SinglePrerender) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
+  Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
   MockPrerenderProcessor& processor = *processors()[0];
 
-  EXPECT_EQ(KURL("http://prerender.com/"), processor.Url());
+  EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
   EXPECT_EQ(mojom::blink::PrerenderRelType::kPrerender, processor.RelType());
 
   EXPECT_EQ(0u, processor.CancelCount());
 }
 
 TEST_P(PrerenderTest, CancelPrerender) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
+  Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
   MockPrerenderProcessor& processor = *processors()[0];
 
@@ -238,20 +238,20 @@ TEST_P(PrerenderTest, CancelPrerender) {
 }
 
 TEST_P(PrerenderTest, TwoPrerenders) {
-  Initialize("http://www.foo.com/", "prerender/multiple_prerenders.html");
+  Initialize("http://example.com/", "prerender/multiple_prerenders.html");
 
   ASSERT_EQ(processors().size(), 2u);
   MockPrerenderProcessor& first_processor = *processors()[0];
-  EXPECT_EQ(KURL("http://first-prerender.com/"), first_processor.Url());
+  EXPECT_EQ(KURL("http://example.com/first"), first_processor.Url());
   MockPrerenderProcessor& second_processor = *processors()[1];
-  EXPECT_EQ(KURL("http://second-prerender.com/"), second_processor.Url());
+  EXPECT_EQ(KURL("http://example.com/second"), second_processor.Url());
 
   EXPECT_EQ(0u, first_processor.CancelCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
 }
 
 TEST_P(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
-  Initialize("http://www.foo.com/", "prerender/multiple_prerenders.html");
+  Initialize("http://example.com/", "prerender/multiple_prerenders.html");
 
   ASSERT_EQ(processors().size(), 2u);
   MockPrerenderProcessor& first_processor = *processors()[0];
@@ -272,7 +272,7 @@ TEST_P(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
 }
 
 TEST_P(PrerenderTest, TwoPrerendersAddingThird) {
-  Initialize("http://www.foo.com/", "prerender/multiple_prerenders.html");
+  Initialize("http://example.com/", "prerender/multiple_prerenders.html");
 
   ASSERT_EQ(processors().size(), 2u);
   MockPrerenderProcessor& first_processor = *processors()[0];
@@ -292,11 +292,11 @@ TEST_P(PrerenderTest, TwoPrerendersAddingThird) {
 }
 
 TEST_P(PrerenderTest, MutateTarget) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
+  Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
   MockPrerenderProcessor& processor = *processors()[0];
 
-  EXPECT_EQ(KURL("http://prerender.com/"), processor.Url());
+  EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
 
   EXPECT_EQ(0u, processor.CancelCount());
 
@@ -306,18 +306,18 @@ TEST_P(PrerenderTest, MutateTarget) {
 
   ASSERT_EQ(processors().size(), 2u);
   MockPrerenderProcessor& mutated_processor = *processors()[1];
-  EXPECT_EQ(KURL("http://mutated.com/"), mutated_processor.Url());
+  EXPECT_EQ(KURL("http://example.com/mutated"), mutated_processor.Url());
 
   EXPECT_EQ(1u, processor.CancelCount());
   EXPECT_EQ(0u, mutated_processor.CancelCount());
 }
 
 TEST_P(PrerenderTest, MutateRel) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
+  Initialize("http://example.com/", "prerender/single_prerender.html");
   ASSERT_EQ(processors().size(), 1u);
   MockPrerenderProcessor& processor = *processors()[0];
 
-  EXPECT_EQ(KURL("http://prerender.com/"), processor.Url());
+  EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
 
   EXPECT_EQ(0u, processor.CancelCount());
 

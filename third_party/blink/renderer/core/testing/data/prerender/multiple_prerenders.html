@@ -1,8 +1,8 @@
 <html>
   <head></head>
   <body>
-    <link id="firstPrerender" rel=prerender href="http://first-prerender.com/"/>
-    <link id="secondPrerender" rel=prerender href="http://second-prerender.com/"/>
+    <link id="firstPrerender" rel=prerender href="/first"/>
+    <link id="secondPrerender" rel=prerender href="/second"/>
 
     <p id="emptyParagraph"></p>
 
@@ -31,7 +31,7 @@
       function addThirdPrerender()
       {
           var emptyParagraph = document.getElementById("emptyParagraph");
-          emptyParagraph.innerHTML = '<link id="thirdPrerender" rel=prerender href="http://third-prererender.com/"/>';
+          emptyParagraph.innerHTML = '<link id="thirdPrerender" rel=prerender href="/third"/>';
           var thirdPrerender = document.getElementById('thirdPrerender');
       }
     </script>

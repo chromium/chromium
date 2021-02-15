@@ -238,21 +238,11 @@ TEST_F(PrerenderProcessorTest, CrossOrigin) {
   attributes->url = kPrerenderingUrl;
   attributes->referrer = blink::mojom::Referrer::New();
 
-  // Start() call with the cross-origin URL should be aborted.
+  // Start() call with the cross-origin URL should be reported as a bad message.
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
   remote->Start(std::move(attributes));
   remote.FlushForTesting();
-  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-
-  // Start() call with the cross-origin URL is a valid request, currently it's
-  // not supported though. The request shouldn't result in a bad message
-  // failure.
-  EXPECT_TRUE(bad_message_error.empty());
-
-  // Cancel() call should not be reported as a bad mojo message as well.
-  remote->Cancel();
-  remote.FlushForTesting();
-  EXPECT_TRUE(bad_message_error.empty());
+  EXPECT_EQ(bad_message_error, "PP_CROSS_ORIGIN");
 }
 
 // Tests that prerendering triggered by <link rel=next> is aborted. This trigger

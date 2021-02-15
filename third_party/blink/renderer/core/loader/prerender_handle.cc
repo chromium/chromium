@@ -67,10 +67,14 @@ PrerenderHandle* PrerenderHandle::Create(
   HeapMojoRemote<mojom::blink::PrerenderProcessor> prerender_processor(context);
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor> prefetch_processor(
       context);
-  if (features::IsPrerender2Enabled()) {
-    // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch when the
-    // origin of `url` is different from the origin of `context` (cross-origin
-    // prerendering).
+
+  // Run prerendering only when kPrerender2 is enabled and the origin of the
+  // prerendering URL is the same as the origin of the trigger context.
+  // TODO(https://crbug.com/1176054): This is a tentative behavior. We plan to
+  // support cross-origin prerendering later.
+  if (features::IsPrerender2Enabled() &&
+      context->GetSecurityOrigin()->IsSameOriginWith(
+          SecurityOrigin::Create(url).get())) {
     context->GetBrowserInterfaceBroker().GetInterface(
         prerender_processor.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
