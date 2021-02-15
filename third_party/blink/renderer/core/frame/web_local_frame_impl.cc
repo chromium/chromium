@@ -2618,6 +2618,10 @@ void WebLocalFrameImpl::ShowContextMenu(
 void WebLocalFrameImpl::ShowDeferredContextMenu(
     mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
     const UntrustworthyContextMenuParams& params) {
+  // The local frame may become detached before the object is GC'ed. So, this
+  // method needs to check if GetFrame() returns a nullptr.
+  if (!GetFrame())
+    return;
   GetFrame()->GetLocalFrameHostRemote().ShowContextMenu(std::move(client),
                                                         params);
 }
