@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
@@ -129,7 +130,6 @@
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_containing.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
@@ -240,11 +240,6 @@ void Record(ContextMenuHistogram action, bool is_image, bool is_link) {
     UMA_HISTOGRAM_ENUMERATION("ContextMenu.SelectedOptionIOS.Link", action,
                               NUM_ACTIONS);
   }
-}
-
-// Returns the status bar background color.
-UIColor* StatusBarBackgroundColor() {
-  return UIColor.blackColor;
 }
 
 // Maximum length for a context menu title formed from a URL.
@@ -714,11 +709,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Adds the given url to the reading list.
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title;
 
+// The thumb strip's pan gesture handler that will be added to the toolbar and
+// tab strip.
+@property(nonatomic, weak)
+    ViewRevealingVerticalPanHandler* thumbStripPanHandler;
+
 @end
 
 @implementation BrowserViewController
-
-@synthesize thumbStripPanHandler = _thumbStripPanHandler;
 
 #pragma mark - Object lifecycle
 
@@ -1438,7 +1436,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                         action:@selector(shieldWasTapped:)
               forControlEvents:UIControlEventTouchUpInside];
   self.view.autoresizingMask = initialViewAutoresizing;
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   [self addChildViewController:self.browserContainerViewController];
   [self.view addSubview:self.contentArea];
@@ -1464,16 +1461,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [tapRecognizer setDelegate:self];
   [tapRecognizer setCancelsTouchesInView:NO];
   [self.contentArea addGestureRecognizer:tapRecognizer];
-
-  // When using the thumb strip, the web content needs to be hidden when the
-  // thumb strip is opened.
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    self.browserViewHiderCoordinator = [[BrowserViewHiderCoordinator alloc]
-        initWithBaseViewController:self
-                           browser:self.browser];
-    self.browserViewHiderCoordinator.locationBarModel = self.locationBarModel;
-    [self.browserViewHiderCoordinator start];
-  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1706,7 +1693,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         }
       }];
 
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
+  if (self.thumbStripEnabled) {
+    DCHECK(self.thumbStripPanHandler);
     CGFloat baseViewHeight = size.height;
     self.thumbStripPanHandler.baseViewHeight = baseViewHeight;
     // On rotation, reposition the BVC container if positioned at the bottom.
@@ -1913,7 +1901,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)installFakeStatusBar {
-  if (ShowThumbStripInTraitCollection(self.traitCollection) &&
+  // This method is called when the view is loaded and when the thumb strip is
+  // installed via addAnimatee -> didAnimateViewReveal-> installFakeStatusBar.
+
+  // Remove the _fakeStatusBarView if present.
+  [_fakeStatusBarView removeFromSuperview];
+  _fakeStatusBarView = nil;
+
+  if (self.thumbStripEnabled &&
       !fullscreen::features::ShouldUseSmoothScrolling()) {
     // A fake status bar on the browser view is not necessary when the thumb
     // strip feature is enabled because the view behind the browser view already
@@ -1923,16 +1918,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // up to behind the tab strip, making the fake status bar necessary.
     return;
   }
+
   CGRect statusBarFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 0);
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-  if (IsIPadIdiom()) {
-    [_fakeStatusBarView setBackgroundColor:StatusBarBackgroundColor()];
-    [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-    [[self view] addSubview:_fakeStatusBarView];
+  if ([self canShowTabStrip]) {
+    _fakeStatusBarView.backgroundColor = UIColor.blackColor;
+    _fakeStatusBarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    DCHECK(self.contentArea);
+    [self.view insertSubview:_fakeStatusBarView aboveSubview:self.contentArea];
   } else {
-    // Add a white bar on phone so that the status bar on the NTP is white.
-    [_fakeStatusBarView setBackgroundColor:ntp_home::kNTPBackgroundColor()];
+    // Add a white bar when there is no tab strip so that the status bar on the
+    // NTP is white.
+    _fakeStatusBarView.backgroundColor = ntp_home::kNTPBackgroundColor();
     [self.view insertSubview:_fakeStatusBarView atIndex:0];
   }
 }
@@ -2845,26 +2843,80 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                          IDS_IOS_READING_LIST_SNACKBAR_MESSAGE)];
 }
 
-#pragma mark - Private Methods: Thumb Strip
+#pragma mark - ** Protocol Implementations and Helpers **
 
-// Sets up the thumb strip pan gesture handler.
-- (void)setUpThumbStrip {
-  [self.thumbStripPanHandler
-      addAnimatee:self.primaryToolbarCoordinator.animatee];
-  [self.thumbStripPanHandler
-      addAnimatee:self.browserViewHiderCoordinator.animatee];
-  [self.thumbStripPanHandler addAnimatee:self];
+#pragma mark - ThumbStripSupporting
 
-  self.primaryToolbarCoordinator.panGestureHandler = self.thumbStripPanHandler;
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    self.legacyTabStripCoordinator.panGestureHandler =
-        self.thumbStripPanHandler;
-  }
-  self.browserViewHiderCoordinator.panGestureHandler =
-      self.thumbStripPanHandler;
+- (BOOL)isThumbStripEnabled {
+  return self.browserViewHiderCoordinator != nil;
 }
 
-#pragma mark - ** Protocol Implementations and Helpers **
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(![self isThumbStripEnabled]);
+  DCHECK(panHandler);
+  self.thumbStripPanHandler = panHandler;
+
+  BrowserViewHiderCoordinator* browserViewHiderCoordinator =
+      [[BrowserViewHiderCoordinator alloc]
+          initWithBaseViewController:self
+                             browser:self.browser];
+  browserViewHiderCoordinator.locationBarModel = self.locationBarModel;
+  [browserViewHiderCoordinator start];
+  [panHandler addAnimatee:browserViewHiderCoordinator.animatee];
+  self.browserViewHiderCoordinator = browserViewHiderCoordinator;
+
+  [panHandler addAnimatee:self.primaryToolbarCoordinator.animatee];
+  [panHandler addAnimatee:self];
+
+  self.primaryToolbarCoordinator.panGestureHandler = panHandler;
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    self.legacyTabStripCoordinator.panGestureHandler = panHandler;
+  }
+  self.browserViewHiderCoordinator.panGestureHandler = panHandler;
+
+  self.view.backgroundColor = UIColor.clearColor;
+
+  CGRect webStateViewFrame = self.contentArea.bounds;
+  if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
+    CGFloat toolbarHeight = [self expandedTopToolbarHeight];
+    webStateViewFrame = UIEdgeInsetsInsetRect(
+        webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+  }
+  UIView* webStateView = [self viewForWebState:self.currentWebState];
+  webStateView.frame = webStateViewFrame;
+}
+
+- (void)thumbStripDisabled {
+  DCHECK([self isThumbStripEnabled]);
+
+  [self.browserViewHiderCoordinator stop];
+  self.browserViewHiderCoordinator.locationBarModel = nil;
+  self.browserViewHiderCoordinator = nil;
+
+  self.primaryToolbarCoordinator.panGestureHandler = nil;
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    self.legacyTabStripCoordinator.panGestureHandler = nil;
+  }
+  self.browserViewHiderCoordinator.panGestureHandler = nil;
+
+  self.view.transform = CGAffineTransformIdentity;
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    self.tabStripSnapshot.transform =
+        [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
+  }
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.thumbStripPanHandler = nil;
+
+  CGRect webStateViewFrame = self.contentArea.bounds;
+  if (self.thumbStripPanHandler.currentState == ViewRevealState::Peeked) {
+    CGFloat toolbarHeight = [self expandedTopToolbarHeight];
+    webStateViewFrame = UIEdgeInsetsInsetRect(
+        webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
+  }
+  UIView* webStateView = [self viewForWebState:self.currentWebState];
+  webStateView.frame = webStateViewFrame;
+}
 
 #pragma mark - WebNavigationNTPDelegate
 
@@ -2880,14 +2932,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)reloadNTPForWebState:(web::WebState*)webState {
   NewTabPageCoordinator* coordinator = _ntpCoordinatorsForWebStates[webState];
   [coordinator reload];
-}
-
-#pragma mark - ThumbStripAttacher
-
-- (void)setThumbStripPanHandler:
-    (ViewRevealingVerticalPanHandler*)thumbStripPanHandler {
-  _thumbStripPanHandler = thumbStripPanHandler;
-  [self setUpThumbStrip];
 }
 
 #pragma mark - ViewRevealingAnimatee
@@ -2981,6 +3025,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  if (!self.view.superview) {
+    return;
+  }
   CGFloat tabStripHeight = self.tabStripView.frame.size.height;
   CGFloat hideHeight = tabStripHeight + self.headerOffset;
   switch (nextViewRevealState) {

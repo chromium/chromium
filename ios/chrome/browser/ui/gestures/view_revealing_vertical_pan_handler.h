@@ -33,6 +33,7 @@
 - (instancetype)initWithPeekedHeight:(CGFloat)peekedHeight
                  revealedCoverHeight:(CGFloat)revealedCoverHeight
                       baseViewHeight:(CGFloat)baseViewHeight
+                        initialState:(ViewRevealState)initialState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -25,18 +25,32 @@ const CGFloat kThumbStripHeight =
 
 @property(nonatomic, strong) ThumbStripMediator* mediator;
 
+// The initial state for the pan handler.
+@property(nonatomic, assign) ViewRevealState initialState;
+
 @end
 
 @implementation ThumbStripCoordinator
 
 #pragma mark - ChromeCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              initialState:(ViewRevealState)initialState {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _initialState = initialState;
+  }
+  return self;
+}
+
 - (void)start {
   CGFloat baseViewHeight = self.baseViewController.view.frame.size.height;
   self.panHandler = [[ViewRevealingVerticalPanHandler alloc]
       initWithPeekedHeight:kThumbStripHeight
        revealedCoverHeight:kBVCHeightTabGrid
-            baseViewHeight:baseViewHeight];
+            baseViewHeight:baseViewHeight
+              initialState:self.initialState];
 
   self.mediator = [[ThumbStripMediator alloc] init];
   self.mediator.consumer = self;
@@ -51,9 +65,13 @@ const CGFloat kThumbStripHeight =
 }
 
 - (void)stop {
+  self.mediator.regularWebStateList = nil;
+  self.mediator.incognitoWebStateList = nil;
   self.mediator.webViewScrollViewObserver = nil;
   self.panHandler = nil;
   self.mediator = nil;
+  self.regularBrowser = nullptr;
+  self.incognitoBrowser = nullptr;
 }
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {

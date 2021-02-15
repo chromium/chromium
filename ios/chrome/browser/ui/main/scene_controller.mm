@@ -308,8 +308,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                    incognitoBrowser:self.incognitoInterface.browser];
     tabGridCoordinator.delegate = self;
     _mainCoordinator = tabGridCoordinator;
-    tabGridCoordinator.regularThumbStripAttacher = self.mainInterface.bvc;
-    tabGridCoordinator.incognitoThumbStripAttacher =
+    tabGridCoordinator.regularThumbStripSupporting = self.mainInterface.bvc;
+    tabGridCoordinator.incognitoThumbStripSupporting =
         self.incognitoInterface.bvc;
   }
   return _mainCoordinator;
@@ -1685,7 +1685,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
              focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(dismissTabGrid ||
          ShowThumbStripInTraitCollection(
-             self.currentInterface.viewController.traitCollection));
+             self.mainCoordinator.baseViewController.traitCollection));
   [self beginActivatingBrowser:browser
             dismissTabSwitcher:dismissTabGrid
                   focusOmnibox:focusOmnibox];
@@ -1715,7 +1715,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
          browser == self.incognitoInterface.browser);
   DCHECK(dismissTabSwitcher ||
          ShowThumbStripInTraitCollection(
-             self.currentInterface.viewController.traitCollection));
+             self.mainCoordinator.baseViewController.traitCollection));
 
   self.activatingBrowser = YES;
   ApplicationMode mode = (browser == self.mainInterface.browser)
@@ -1757,12 +1757,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
     return;
   }
-
-  // The tab switcher dismissal animation runs
-  // as part of the BVC presentation process.  The BVC is presented before the
-  // animations begin, so it should be the current active VC at this point.
-  DCHECK_EQ(self.mainCoordinator.activeViewController,
-            self.currentInterface.viewController);
 
   if (self.modeToDisplayOnTabSwitcherDismissal ==
       TabSwitcherDismissalMode::NORMAL) {
@@ -2773,7 +2767,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Always set the new otr Browser for the tablet or grid switcher.
   // Notify the TabGrid with the new Incognito Browser.
   self.mainCoordinator.incognitoBrowser = self.incognitoInterface.browser;
-  self.mainCoordinator.incognitoThumbStripAttacher =
+  self.mainCoordinator.incognitoThumbStripSupporting =
       self.incognitoInterface.bvc;
 }
 @end

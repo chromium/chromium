@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation_layout_providing.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol ApplicationCommands;
 @protocol IncognitoReauthCommands;
@@ -23,6 +24,7 @@
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
 @class TabGridViewController;
+@protocol ViewControllerTraitCollectionObserver;
 
 // Delegate protocol for an object that can handle presenting ("opening") tabs
 // from the tab grid.
@@ -57,7 +59,7 @@
     : UIViewController <GridTransitionAnimationLayoutProviding,
                         LayoutSwitcherProvider,
                         TabGridPaging,
-                        ViewRevealingAnimatee>
+                        ThumbStripSupporting>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
@@ -87,6 +89,11 @@
 // Data sources provide lazy access to heavy-weight resources.
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;
 @property(nonatomic, weak) id<GridImageDataSource> incognitoTabsImageDataSource;
+
+// An optional object to be notified whenever the trait collection of this view
+// controller changes.
+@property(nonatomic, weak) id<ViewControllerTraitCollectionObserver>
+    traitCollectionObserver;
 
 // Readwrite override of the UIViewController property. This object will ignore
 // the value supplied by UIViewController.

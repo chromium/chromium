@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol IncognitoReauthCommands;
 @protocol GridDragDropHandler;
@@ -60,8 +61,10 @@
 @end
 
 // A view controller that contains a grid of items.
-@interface GridViewController
-    : UIViewController <GridConsumer, LayoutSwitcher, IncognitoReauthConsumer>
+@interface GridViewController : UIViewController <GridConsumer,
+                                                  LayoutSwitcher,
+                                                  IncognitoReauthConsumer,
+                                                  ThumbStripSupporting>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
 // The view that is shown when there are no items.

@@ -53,6 +53,18 @@
   self.mediator.consumer = self.viewController;
 }
 
+- (void)stop {
+  self.mediator.consumer = nil;
+  [self.mediator disconnect];
+
+  self.mediator = nil;
+
+  [self.viewController removeFromParentViewController];
+  [self.viewController.view removeFromSuperview];
+
+  self.viewController = nil;
+}
+
 - (id<ViewRevealingAnimatee>)animatee {
   return self.viewController;
 }

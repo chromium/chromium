@@ -10,6 +10,7 @@ source_set("gestures") {
     "layout_switcher_provider.h",
     "pan_handler_scroll_view.h",
     "pan_handler_scroll_view.mm",
+    "view_controller_trait_collection_observer.h",
     "view_revealing_animatee.h",
     "view_revealing_vertical_pan_handler.h",
     "view_revealing_vertical_pan_handler.mm",

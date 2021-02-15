@@ -14,11 +14,18 @@
 #error "This file requires ARC support."
 #endif
 
+@interface BVCContainerViewController ()
+
+// The thumb strip's pan gesture handler that will be added to the toolbar and
+// tab strip.
+@property(nonatomic, weak)
+    ViewRevealingVerticalPanHandler* thumbStripPanHandler;
+
+@end
+
 @implementation BVCContainerViewController
 
-@synthesize thumbStripPanHandler = _thumbStripPanHandler;
-
-#pragma mark - public property implementation
+#pragma mark - Public
 
 - (UIViewController*)currentBVC {
   return [self.childViewControllers firstObject];
@@ -28,7 +35,7 @@
   // When the thumb strip is enabled, the BVC container stays around all the
   // time. When on a tab grid page with no tabs or the recent tab page, the
   // currentBVC will be set to nil.
-  DCHECK(bvc || ShowThumbStripInTraitCollection(self.traitCollection));
+  DCHECK(bvc || self.isThumbStripEnabled);
   if (self.currentBVC == bvc) {
     return;
   }
@@ -54,12 +61,6 @@
     bvc.view.transform = oldTransform;
     [self.view addSubview:bvc.view];
     [bvc didMoveToParentViewController:self];
-
-    if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-      // The background needs to be clear to allow the thumb strip to be seen
-      // during the enter/exit thumb strip animation.
-      self.currentBVC.view.backgroundColor = [UIColor clearColor];
-    }
   }
 
   DCHECK(self.currentBVC == bvc);
@@ -99,6 +100,25 @@
                          : [super shouldAutorotate];
 }
 
+#pragma mark - ThumbStripSupporting
+
+- (BOOL)isThumbStripEnabled {
+  return self.thumbStripPanHandler != nil;
+}
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(!self.thumbStripEnabled);
+  self.thumbStripPanHandler = panHandler;
+  [panHandler addAnimatee:self];
+}
+
+- (void)thumbStripDisabled {
+  DCHECK(self.thumbStripEnabled);
+  self.view.transform = CGAffineTransformIdentity;
+  self.thumbStripPanHandler = nil;
+}
+
 #pragma mark - ViewRevealingAnimatee
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
@@ -107,6 +127,7 @@
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  DCHECK(self.thumbStripPanHandler);
   switch (nextViewRevealState) {
     case ViewRevealState::Hidden:
       self.view.transform = CGAffineTransformIdentity;

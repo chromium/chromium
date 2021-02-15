@@ -11,12 +11,14 @@
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 #import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
 // The weight multiplier of the gesture velocity used in the equation that
 // determines whether the translation and velocity of the gesture are enough
 // to trigger revealing the view. The threshold is the percentage of the height
@@ -89,14 +91,15 @@ enum class LayoutTransitionState {
 
 - (instancetype)initWithPeekedHeight:(CGFloat)peekedHeight
                  revealedCoverHeight:(CGFloat)revealedCoverHeight
-                      baseViewHeight:(CGFloat)baseViewHeight {
+                      baseViewHeight:(CGFloat)baseViewHeight
+                        initialState:(ViewRevealState)initialState {
   if (self = [super init]) {
     _peekedHeight = peekedHeight;
     _revealedCoverHeight = revealedCoverHeight;
     _baseViewHeight = baseViewHeight;
     _revealedHeight = baseViewHeight - revealedCoverHeight;
     _remainingHeight = _revealedHeight - peekedHeight;
-    _currentState = ViewRevealState::Hidden;
+    _currentState = initialState;
     _animatees = [NSHashTable weakObjectsHashTable];
     _layoutTransitionState = LayoutTransitionState::Inactive;
   }

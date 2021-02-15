@@ -10,12 +10,12 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/chrome_root_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol ApplicationCommands;
 class Browser;
 @protocol BrowsingDataCommands;
 @protocol TabGridCoordinatorDelegate;
-@protocol ThumbStripAttacher;
 
 @interface TabGridCoordinator : ChromeRootCoordinator
 
@@ -48,8 +48,9 @@ class Browser;
 
 // Weak references to the regular and incognito browser view controllers,
 // used to set up the thumb strip.
-@property(nonatomic, weak) id<ThumbStripAttacher> regularThumbStripAttacher;
-@property(nonatomic, weak) id<ThumbStripAttacher> incognitoThumbStripAttacher;
+@property(nonatomic, weak) id<ThumbStripSupporting> regularThumbStripSupporting;
+@property(nonatomic, weak) id<ThumbStripSupporting>
+    incognitoThumbStripSupporting;
 
 // If this property is YES, it means the tab grid is the main user interface at
 // the moment. Returns NO if thumb strip is active.

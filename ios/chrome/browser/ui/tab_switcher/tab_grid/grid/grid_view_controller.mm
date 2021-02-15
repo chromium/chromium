@@ -13,6 +13,7 @@
 #include "base/numerics/ranges.h"
 #import "base/numerics/safe_conversions.h"
 #include "ios/chrome/browser/procedural_block_types.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -89,9 +89,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 // YES while batch updates and the batch update completion are being performed.
 @property(nonatomic) BOOL updating;
+
 @end
 
 @implementation GridViewController
+
+@synthesize thumbStripEnabled = _thumbStripEnabled;
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -106,11 +109,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)loadView {
   self.horizontalLayout = [[HorizontalLayout alloc] init];
   self.gridLayout = [[GridLayout alloc] init];
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    self.currentLayout = self.horizontalLayout;
-  } else {
-    self.currentLayout = self.gridLayout;
-  }
+  self.currentLayout = self.gridLayout;
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
@@ -124,12 +123,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.backgroundView = [[UIView alloc] init];
   collectionView.backgroundView.backgroundColor =
       [UIColor colorNamed:kGridBackgroundColor];
-  // For thumb strip, the horizontal layout should bounce horizontal. In the
-  // grid layout, the scrolling between tabs will take priority over this
-  // bouncing.
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    collectionView.alwaysBounceHorizontal = YES;
-  }
+
   // CollectionView, in contrast to TableView, doesn’t inset the
   // cell content to the safe area guide by default. We will just manage the
   // collectionView contentInset manually to fit in the safe area instead.
@@ -291,7 +285,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
+  if (self.thumbStripEnabled) {
     // The PlusSignCell (new item button) is always appended at the end of the
     // collection.
     return base::checked_cast<NSInteger>(self.items.count + 1);
@@ -466,7 +460,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     destinationIndex =
         base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
   }
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
+  if (self.thumbStripEnabled) {
     // The sourceIndexPath is nil if the drop item is not from the same
     // collection view.
     NSUInteger plusSignCellIndex =
@@ -527,7 +521,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  if (!ShowThumbStripInTraitCollection(self.traitCollection))
+  if (!self.thumbStripEnabled)
     return;
   [self updateFractionVisibleOfLastItem];
 }
@@ -833,7 +827,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // |targetIndexPathForMoveFromItemAtIndexPath:toProposedIndexPath:| gets
   // called, and that's why indexPath.item is not being compared to
   // self.items.count here.
-  return ShowThumbStripInTraitCollection(self.traitCollection) &&
+  return self.thumbStripEnabled &&
          indexPath.item == [self.collectionView numberOfItemsInSection:0] - 1;
 }
 
@@ -979,6 +973,44 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     cell.accessibilityIdentifier = [NSString
         stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
   }
+}
+
+#pragma mark - ThumbStripSupporting
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(!self.thumbStripEnabled);
+
+  UICollectionView* collectionView = self.collectionView;
+  collectionView.alwaysBounceHorizontal = YES;
+
+  if (panHandler.currentState == ViewRevealState::Revealed) {
+    collectionView.collectionViewLayout = self.gridLayout;
+    self.currentLayout = self.gridLayout;
+  } else {
+    collectionView.collectionViewLayout = self.horizontalLayout;
+    self.currentLayout = self.horizontalLayout;
+  }
+
+  [collectionView.collectionViewLayout invalidateLayout];
+  [collectionView reloadData];
+  _thumbStripEnabled = YES;
+}
+
+- (void)thumbStripDisabled {
+  DCHECK(self.thumbStripEnabled);
+
+  UICollectionView* collectionView = self.collectionView;
+  FlowLayout* gridLayout = self.gridLayout;
+
+  collectionView.collectionViewLayout = gridLayout;
+  self.currentLayout = gridLayout;
+  collectionView.alwaysBounceHorizontal = NO;
+
+  [collectionView.collectionViewLayout invalidateLayout];
+  [collectionView reloadData];
+
+  _thumbStripEnabled = NO;
 }
 
 @end

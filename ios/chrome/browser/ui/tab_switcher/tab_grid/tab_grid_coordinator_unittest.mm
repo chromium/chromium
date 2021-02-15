@@ -295,7 +295,8 @@ TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
 // Test that the tab grid coordinator reports the tab grid as the main interface
 // correctly.
 TEST_F(TabGridCoordinatorTest, tabGridActive) {
-  EXPECT_TRUE(coordinator_.tabGridActive);
+  // tabGridActive is false until the first appearance.
+  EXPECT_FALSE(coordinator_.tabGridActive);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
                    shouldCloseTabGrid:YES

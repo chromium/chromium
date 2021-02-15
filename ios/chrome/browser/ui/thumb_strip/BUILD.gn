@@ -6,11 +6,11 @@ import("//build/config/chrome_build.gni")
 
 source_set("thumb_strip") {
   sources = [
-    "thumb_strip_attacher.h",
     "thumb_strip_coordinator.h",
     "thumb_strip_coordinator.mm",
     "thumb_strip_mediator.h",
     "thumb_strip_mediator.mm",
+    "thumb_strip_supporting.h",
   ]
   deps = [
     "//base",

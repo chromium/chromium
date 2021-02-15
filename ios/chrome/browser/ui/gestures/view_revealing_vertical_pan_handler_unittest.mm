@@ -168,7 +168,8 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, DetectPan) {
       [[ViewRevealingVerticalPanHandler alloc]
           initWithPeekedHeight:kThumbStripHeight
            revealedCoverHeight:kBVCHeightTabGrid
-                baseViewHeight:kBaseViewHeight];
+                baseViewHeight:kBaseViewHeight
+                  initialState:ViewRevealState::Hidden];
 
   // Create a fake layout switcher and a provider.
   FakeLayoutSwitcher* fake_layout_switcher = [[FakeLayoutSwitcher alloc] init];
@@ -212,7 +213,8 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, ManualStateChange) {
       [[ViewRevealingVerticalPanHandler alloc]
           initWithPeekedHeight:kThumbStripHeight
            revealedCoverHeight:kBVCHeightTabGrid
-                baseViewHeight:kBaseViewHeight];
+                baseViewHeight:kBaseViewHeight
+                  initialState:ViewRevealState::Hidden];
 
   // Create a fake layout switcher and a provider.
   FakeLayoutSwitcher* fake_layout_switcher = [[FakeLayoutSwitcher alloc] init];
@@ -243,7 +245,8 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, ConflictingGestures) {
       [[ViewRevealingVerticalPanHandler alloc]
           initWithPeekedHeight:kThumbStripHeight
            revealedCoverHeight:kBVCHeightTabGrid
-                baseViewHeight:kBaseViewHeight];
+                baseViewHeight:kBaseViewHeight
+                  initialState:ViewRevealState::Hidden];
 
   // Create a fake animatee.
   FakeAnimatee* fake_animatee = [[FakeAnimatee alloc] init];
@@ -300,7 +303,8 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, CurrentState) {
       [[ViewRevealingVerticalPanHandler alloc]
           initWithPeekedHeight:kThumbStripHeight
            revealedCoverHeight:kBVCHeightTabGrid
-                baseViewHeight:kBaseViewHeight];
+                baseViewHeight:kBaseViewHeight
+                  initialState:ViewRevealState::Hidden];
   EXPECT_EQ(ViewRevealState::Hidden, pan_handler.currentState);
 
   [pan_handler setNextState:ViewRevealState::Revealed animated:NO];

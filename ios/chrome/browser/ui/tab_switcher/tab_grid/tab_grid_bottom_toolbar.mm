@@ -20,6 +20,7 @@
   UIBarButtonItem* _spaceItem;
   NSArray<NSLayoutConstraint*>* _compactConstraints;
   NSArray<NSLayoutConstraint*>* _floatingConstraints;
+  NSLayoutConstraint* _largeNewTabButtonBottomAnchor;
   TabGridNewTabButton* _smallNewTabButton;
   TabGridNewTabButton* _largeNewTabButton;
 }
@@ -159,11 +160,13 @@
     floatingButtonVerticalInset += kBVCHeightTabGrid;
   }
 
+  _largeNewTabButtonBottomAnchor = [_largeNewTabButton.bottomAnchor
+      constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
+                     constant:-floatingButtonVerticalInset];
+
   _floatingConstraints = @[
     [_largeNewTabButton.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_largeNewTabButton.bottomAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
-                       constant:-floatingButtonVerticalInset],
+    _largeNewTabButtonBottomAnchor,
     [_largeNewTabButton.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor
                        constant:-kTabGridFloatingButtonHorizontalInset],
@@ -179,6 +182,12 @@
 }
 
 - (void)updateLayout {
+  CGFloat floatingButtonVerticalInset = kTabGridFloatingButtonVerticalInset;
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
+    floatingButtonVerticalInset += kBVCHeightTabGrid;
+  }
+  _largeNewTabButtonBottomAnchor.constant = -floatingButtonVerticalInset;
+
   if ([self shouldUseCompactLayout]) {
     // For incognito/regular pages, display all 3 buttons;
     // For remote tabs page, only display new tab button.

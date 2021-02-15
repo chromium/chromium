@@ -13,6 +13,8 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
@@ -30,7 +32,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/thumb_strip_plus_sign_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -113,7 +114,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 @interface TabGridViewController () <GridViewControllerDelegate,
                                      LayoutSwitcher,
-                                     UIScrollViewAccessibilityDelegate>
+                                     UIScrollViewAccessibilityDelegate,
+                                     ViewRevealingAnimatee>
 // Whether the view is visible. Bookkeeping is based on |-viewWillAppear:| and
 // |-viewWillDisappear methods. Note that the |Did| methods are not reliably
 // called (e.g., edge case in multitasking).
@@ -186,10 +188,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupRemoteTabsViewController];
   [self setupTopToolbar];
   [self setupBottomToolbar];
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    [self setupThumbStripPlusSignButton];
-    [self setupForegroundView];
-  }
 
   // Hide the toolbars and the floating button, so they can fade in the first
   // time there's a transition into this view controller.
@@ -233,6 +231,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)didReceiveMemoryWarning {
   [self.regularTabsImageDataSource clearPreloadedSnapshots];
   [self.incognitoTabsImageDataSource clearPreloadedSnapshots];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self.traitCollectionObserver viewController:self
+                      traitCollectionDidChange:previousTraitCollection];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -702,7 +706,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                             ? self.bottomToolbar.intrinsicContentSize.height
                             : 0;
-  BOOL showThumbStrip = ShowThumbStripInTraitCollection(self.traitCollection);
+  BOOL showThumbStrip = self.thumbStripEnabled;
   if (showThumbStrip) {
     bottomInset += self.topToolbar.intrinsicContentSize.height;
   }
@@ -807,7 +811,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (!self.viewVisible) {
     return;
   }
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
+  if (self.thumbStripEnabled) {
     [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                          focusOmnibox:NO
                                          closeTabGrid:NO];
@@ -849,10 +853,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.view addSubview:scrollView];
   self.scrollContentView = contentView;
   self.scrollView = scrollView;
+  self.scrollView.scrollEnabled = !self.isThumbStripEnabled;
   self.scrollView.accessibilityIdentifier = kTabGridScrollViewIdentifier;
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    self.scrollView.scrollEnabled = NO;
-  }
   NSArray* constraints = @[
     [contentView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
     [contentView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
@@ -1061,7 +1063,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   foregroundView.translatesAutoresizingMaskIntoConstraints = NO;
   foregroundView.userInteractionEnabled = NO;
   foregroundView.backgroundColor = [UIColor blackColor];
-  [self.view addSubview:foregroundView];
+  [self.view insertSubview:foregroundView aboveSubview:self.plusSignButton];
   AddSameConstraints(foregroundView, self.view);
 }
 
@@ -1075,8 +1077,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [plusSignButton addTarget:self
                      action:@selector(plusSignButtonTapped:)
            forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:plusSignButton];
-
+  DCHECK(self.bottomToolbar);
+  [self.view insertSubview:plusSignButton aboveSubview:self.bottomToolbar];
   NSArray* constraints = @[
     [plusSignButton.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [plusSignButton.bottomAnchor
@@ -1193,7 +1195,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // animations.
 - (void)showToolbars {
   [self.topToolbar show];
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
+  if (self.thumbStripEnabled) {
     GridViewController* gridViewController =
         [self gridViewControllerForPage:self.currentPage];
     DCHECK(gridViewController);
@@ -1426,6 +1428,43 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+#pragma mark - ThumbStripSupporting
+
+- (BOOL)isThumbStripEnabled {
+  return self.foregroundView != nil;
+}
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(!self.thumbStripEnabled);
+  self.scrollView.scrollEnabled = NO;
+  [self setupThumbStripPlusSignButton];
+  [self setupForegroundView];
+  [panHandler addAnimatee:self];
+  [self.regularTabsViewController thumbStripEnabledWithPanHandler:panHandler];
+  [self.incognitoTabsViewController thumbStripEnabledWithPanHandler:panHandler];
+}
+
+- (void)thumbStripDisabled {
+  [self.regularTabsViewController thumbStripDisabled];
+  [self.incognitoTabsViewController thumbStripDisabled];
+
+  DCHECK(self.thumbStripEnabled);
+  self.scrollView.scrollEnabled = YES;
+  [self.plusSignButton removeFromSuperview];
+  self.plusSignButton = nil;
+  [self.foregroundView removeFromSuperview];
+  self.foregroundView = nil;
+
+  self.topToolbar.transform = CGAffineTransformIdentity;
+  self.topToolbar.alpha = 1;
+  [self showToolbars];
+
+  self.regularTabsViewController.gridView.transform = CGAffineTransformIdentity;
+  self.incognitoTabsViewController.gridView.transform =
+      CGAffineTransformIdentity;
+}
+
 #pragma mark - GridViewControllerDelegate
 
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -1451,8 +1490,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.activePage = self.currentPage;
   // When the tab grid is peeked, selecting an item should not close the grid
   // unless the user has selected an already selected tab.
-  BOOL closeTabGrid =
-      alreadySelected || self.currentState != ViewRevealState::Peeked;
+  BOOL closeTabGrid = !self.thumbStripEnabled || alreadySelected ||
+                      self.currentState != ViewRevealState::Peeked;
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO
                                        closeTabGrid:closeTabGrid];
@@ -1528,7 +1567,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewControllerWillBeginDragging:
     (GridViewController*)gridViewController {
-  if (!ShowThumbStripInTraitCollection(self.traitCollection)) {
+  if (!self.thumbStripEnabled) {
     return;
   }
   [self.incognitoPopupMenuHandler dismissPopupMenuAnimated:YES];
