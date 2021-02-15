@@ -56,6 +56,11 @@ var MultiStepBehavior = {
   stepElements_: {},
 
   /*
+   * Whether the element is shown (Between onBeforeShow and onBeforeHide calls).
+   */
+  shown_: false,
+
+  /*
    * Method that lists all possible steps for current element.
    * Default implementation uses value UI_STEPS that can be either array or
    * enum-style object.
@@ -89,6 +94,7 @@ var MultiStepBehavior = {
   },
 
   onBeforeShow() {
+    this.shown_ = true;
     // Only set uiStep to defaultUIStep if it is not set yet.
     if (!this.uiStep) {
       this.setUIStep(this.defaultUIStep());
@@ -100,6 +106,7 @@ var MultiStepBehavior = {
   onBeforeHide() {
     if (this.uiStep)
       this.hideUIStep_(this.uiStep);
+    this.shown_ = false;
   },
 
   /**
@@ -131,6 +138,10 @@ var MultiStepBehavior = {
   },
 
   showUIStep_(step) {
+    if (!this.shown_) {
+      // Will execute from onBeforeShow.
+      return;
+    }
     for (let element of this.stepElements_[step] || []) {
       cr.ui.login.invokePolymerMethod(element, 'onBeforeShow');
       element.hidden = false;

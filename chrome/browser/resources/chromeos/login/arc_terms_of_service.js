@@ -272,6 +272,7 @@ Polymer({
   /** Called when dialog is hidden. */
   onBeforeHide() {
     this.reset_();
+    this.is_shown_ = false;
   },
 
   /**
@@ -618,7 +619,8 @@ Polymer({
     this.setUIStep(UIState.LOADED);
     this.enableButtons_(true);
     this.showFullDialog = false;
-    this.$.arcTosNextButton.focus();
+    if (this.is_shown_)
+      this.$.arcTosNextButton.focus();
   },
 
   /**

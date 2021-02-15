@@ -81,7 +81,6 @@ namespace chromeos {
 namespace {
 
 constexpr char kArcTosID[] = "arc-tos";
-const test::UIPath kArcTosDialog = {kArcTosID, "arcTosDialog"};
 enum class ArcState { kNotAvailable, kAcceptTerms };
 
 std::string ArcStateToString(ArcState arc_state) {
@@ -156,7 +155,11 @@ void WaitForGaiaSignInScreen(bool arc_available) {
   // TODO(https://crbug/com/959902): Fix ARC terms of service screen to better
   //     handle this case.
   if (arc_available) {
-    test::OobeJS().CreateVisibilityWaiter(true, kArcTosDialog)->Wait();
+    test::OobeJS()
+        .CreateWaiterWithDescription(
+            test::GetOobeElementPath({kArcTosID}) + ".uiStep === 'loaded'",
+            "Waiting for ARC TOS to load")
+        ->Wait();
   }
 
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'gaia-signin' screen.";
