@@ -278,6 +278,7 @@
 
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot',
+      'Libfuzzer Upload Linux ASan (reclient)': 'libfuzzer_asan_release_bot_reclient',
       'Libfuzzer Upload Linux ASan Debug': 'libfuzzer_asan_debug_bot',
       'Libfuzzer Upload Linux MSan': 'libfuzzer_msan_release_bot',
       'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot',
@@ -2255,6 +2256,10 @@
       'libfuzzer', 'asan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer',
     ],
 
+    'libfuzzer_asan_release_bot_reclient': [
+      'libfuzzer', 'asan', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'shared_release_bot_reclient',
+    ],
+
     'libfuzzer_asan_release_bot_v8_arm64': [
       'libfuzzer', 'asan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'v8_simulate_arm64', 'disable_seed_corpus',
     ],
@@ -3308,6 +3313,10 @@
 
     'shared_release_bot': {
       'mixins': ['shared', 'release', 'goma'],
+    },
+
+    'shared_release_bot_reclient': {
+      'mixins': ['shared', 'release', 'reclient']
     },
 
     'shared_release_trybot': {
