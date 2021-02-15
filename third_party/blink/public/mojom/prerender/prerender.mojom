@@ -23,6 +23,25 @@ struct PrerenderAttributes {
   gfx.mojom.Size view_size;
 };
 
+// This interface is used to request NoStatePrefetch from a renderer process to
+// the browser process. This is created per prerender request, for example, when
+// a new <link rel=prerender> element is added, when the element's href is
+// changed, etc.
+interface NoStatePrefetchProcessor {
+  // Requests the browesr process to start prefetching with
+  // |prerender_attribute|. This must be called only one time before any other
+  // functions.
+  Start(PrerenderAttributes prerender_attribute);
+
+  // Cancels the ongoing prefetching. This is supposed to be called when the
+  // <link rel=prerender> element is removed, the element's href is changed,
+  // etc. This must be called after Start().
+  Cancel();
+};
+
+// Prerender2 (https://crbug.com/1132746):
+// This interface is used only when blink::features::kPrerender2 is enabled.
+//
 // This interface is used to request prerendering from a renderer process to the
 // browser process. This is created per prerender request, for example, when a
 // new <link rel=prerender> element is added, when the element's href is

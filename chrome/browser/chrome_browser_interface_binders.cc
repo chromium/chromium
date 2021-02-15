@@ -63,7 +63,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/insecure_input/insecure_input_service.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
@@ -350,9 +349,9 @@ void BindPrerenderCanceler(
   no_state_prefetch_contents->AddPrerenderCancelerReceiver(std::move(receiver));
 }
 
-void BindPrerenderProcessor(
+void BindNoStatePrefetchProcessor(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver) {
+    mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver) {
   prerender::PrerenderProcessorImpl::Create(
       frame_host, std::move(receiver),
       std::make_unique<prerender::ChromePrerenderProcessorImplDelegate>());
@@ -516,11 +515,8 @@ void PopulateChromeFrameBinders(
   map->Add<prerender::mojom::PrerenderCanceler>(
       base::BindRepeating(&BindPrerenderCanceler));
 
-  // When Prerender2 is enabled, the content layer already added a binder.
-  if (!blink::features::IsPrerender2Enabled()) {
-    map->Add<blink::mojom::PrerenderProcessor>(
-        base::BindRepeating(&BindPrerenderProcessor));
-  }
+  map->Add<blink::mojom::NoStatePrefetchProcessor>(
+      base::BindRepeating(&BindNoStatePrefetchProcessor));
 
   if (performance_manager::PerformanceManager::IsAvailable()) {
     map->Add<performance_manager::mojom::DocumentCoordinationUnit>(

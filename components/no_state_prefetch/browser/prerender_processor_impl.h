@@ -16,26 +16,26 @@ class RenderFrameHost;
 
 namespace prerender {
 
-// PrerenderProcessorImpl implements blink::mojom::PrerenderProcessor and works
-// as the browser-side entry point of NoStatePrefetch for <link rel=prerender>.
-// This is a self-owned object and deletes itself when the mojo connection is
-// lost.
-class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
+// PrerenderProcessorImpl implements blink::mojom::NoStatePrefetchProcessor and
+// works as the browser-side entry point of NoStatePrefetch for
+// <link rel=prerender>. This is a self-owned object and deletes itself when the
+// mojo connection is lost.
+class PrerenderProcessorImpl : public blink::mojom::NoStatePrefetchProcessor {
  public:
   PrerenderProcessorImpl(
       int render_process_id,
       int render_frame_id,
       const url::Origin& initiator_origin,
-      mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver,
+      mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver,
       std::unique_ptr<PrerenderProcessorImplDelegate> delegate);
   ~PrerenderProcessorImpl() override;
 
   static void Create(
       content::RenderFrameHost* frame_host,
-      mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver,
+      mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver,
       std::unique_ptr<PrerenderProcessorImplDelegate> delegate);
 
-  // blink::mojom::PrerenderProcessor implementation
+  // blink::mojom::NoStatePrefetchProcessor implementation
   void Start(blink::mojom::PrerenderAttributesPtr attributes) override;
   void Cancel() override;
 
@@ -55,7 +55,7 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
   // abandoning prerendering.
   base::Optional<int> link_trigger_id_;
 
-  mojo::Receiver<blink::mojom::PrerenderProcessor> receiver_{this};
+  mojo::Receiver<blink::mojom::NoStatePrefetchProcessor> receiver_{this};
 };
 
 }  // namespace prerender

@@ -810,6 +810,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                             base::Unretained(host)));
   }
 
+  if (blink::features::IsPrerender2Enabled()) {
+    map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
+        &RenderFrameHostImpl::BindPrerenderProcessor, base::Unretained(host)));
+  }
+
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebNfc)) {
     map->Add<device::mojom::NFC>(base::BindRepeating(
@@ -842,13 +847,8 @@ void PopulateBinderMapWithContext(
   // production embedder (such as in tests).
   map->Add<blink::mojom::InsecureInputService>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::InsecureInputService>));
-  if (blink::features::IsPrerender2Enabled()) {
-    map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
-        &RenderFrameHostImpl::BindPrerenderProcessor, base::Unretained(host)));
-  } else {
-    map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
-        &EmptyBinderForFrame<blink::mojom::PrerenderProcessor>));
-  }
+  map->Add<blink::mojom::NoStatePrefetchProcessor>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::NoStatePrefetchProcessor>));
   map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
       &EmptyBinderForFrame<payments::mojom::PaymentCredential>));
   map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(

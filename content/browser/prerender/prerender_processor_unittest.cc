@@ -78,7 +78,7 @@ TEST_F(PrerenderProcessorTest, StartCancel) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   const GURL kPrerenderingUrl = GetSameOriginUrl("/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
@@ -103,7 +103,7 @@ TEST_F(PrerenderProcessorTest, StartDisconnect) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   const GURL kPrerenderingUrl = GetSameOriginUrl("/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
@@ -129,7 +129,7 @@ TEST_F(PrerenderProcessorTest, CancelOnDestruction) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   const GURL kPrerenderingUrl = GetSameOriginUrl("/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
@@ -153,7 +153,7 @@ TEST_F(PrerenderProcessorTest, StartTwice) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
@@ -190,7 +190,7 @@ TEST_F(PrerenderProcessorTest, CancelBeforeStart) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
@@ -222,7 +222,7 @@ TEST_F(PrerenderProcessorTest, CrossOrigin) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
@@ -264,7 +264,7 @@ TEST_F(PrerenderProcessorTest, RelTypeNext) {
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
   render_frame_host->BindPrerenderProcessor(
-      render_frame_host, remote.BindNewPipeAndPassReceiver());
+      remote.BindNewPipeAndPassReceiver());
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;

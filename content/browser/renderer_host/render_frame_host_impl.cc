@@ -7852,10 +7852,8 @@ void RenderFrameHostImpl::BindScreenEnumerationReceiver(
 }
 
 void RenderFrameHostImpl::BindPrerenderProcessor(
-    RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver) {
   DCHECK(blink::features::IsPrerender2Enabled());
-  DCHECK_EQ(render_frame_host, this);
   prerender_processor_receivers_.Add(
       std::make_unique<PrerenderProcessor>(*this), std::move(pending_receiver));
 }

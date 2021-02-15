@@ -17,7 +17,7 @@ PrerenderProcessorImpl::PrerenderProcessorImpl(
     int render_process_id,
     int render_frame_id,
     const url::Origin& initiator_origin,
-    mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver,
+    mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver,
     std::unique_ptr<PrerenderProcessorImplDelegate> delegate)
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id),
@@ -33,7 +33,7 @@ PrerenderProcessorImpl::~PrerenderProcessorImpl() = default;
 // static
 void PrerenderProcessorImpl::Create(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver,
+    mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver,
     std::unique_ptr<PrerenderProcessorImplDelegate> delegate) {
   // PrerenderProcessorImpl is a self-owned object. This deletes itself on the
   // mojo disconnect handler.

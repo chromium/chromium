@@ -14,7 +14,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -73,9 +72,9 @@ void BindPageHandler(
   concrete_controller->BindInterface(std::move(receiver));
 }
 
-void BindPrerenderProcessor(
+void BindNoStatePrefetchProcessor(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<blink::mojom::PrerenderProcessor> receiver) {
+    mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver) {
   prerender::PrerenderProcessorImpl::Create(
       frame_host, std::move(receiver),
       std::make_unique<PrerenderProcessorImplDelegateImpl>());
@@ -145,11 +144,9 @@ void PopulateWebLayerFrameBinders(
   map->Add<translate::mojom::ContentTranslateDriver>(
       base::BindRepeating(&BindContentTranslateDriver));
 
-  // When Prerender2 is enabled, the content layer already added a binder.
-  if (!blink::features::IsPrerender2Enabled()) {
-    map->Add<blink::mojom::PrerenderProcessor>(
-        base::BindRepeating(&BindPrerenderProcessor));
-  }
+  map->Add<blink::mojom::NoStatePrefetchProcessor>(
+      base::BindRepeating(&BindNoStatePrefetchProcessor));
+
   map->Add<prerender::mojom::PrerenderCanceler>(
       base::BindRepeating(&BindPrerenderCanceler));
 

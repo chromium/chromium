@@ -74,7 +74,7 @@ class PrerenderProcessorImplTest : public content::RenderViewHostTestHarness {};
 TEST_F(PrerenderProcessorImplTest, StartCancelAbandon) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
-  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
   PrerenderProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
       std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
@@ -106,7 +106,7 @@ TEST_F(PrerenderProcessorImplTest, StartCancelAbandon) {
 TEST_F(PrerenderProcessorImplTest, StartAbandon) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
-  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
   PrerenderProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
       std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
@@ -132,7 +132,7 @@ TEST_F(PrerenderProcessorImplTest, StartAbandon) {
 TEST_F(PrerenderProcessorImplTest, StartTwice) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
-  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
   PrerenderProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
       std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
@@ -169,7 +169,7 @@ TEST_F(PrerenderProcessorImplTest, StartTwice) {
 TEST_F(PrerenderProcessorImplTest, Cancel) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
-  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
   PrerenderProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
       std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
@@ -185,7 +185,7 @@ TEST_F(PrerenderProcessorImplTest, Cancel) {
 TEST_F(PrerenderProcessorImplTest, Abandon) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
-  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
   PrerenderProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
       std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
