@@ -203,8 +203,7 @@ namespace media {
 
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    bool provide_av1_resolutions) {
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   TRACE_EVENT0("gpu,startup", "GetSupportedD3D11VideoDecoderResolutions");
   SupportedResolutionRangeMap supported_resolutions;
 
@@ -246,7 +245,7 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
 
   const bool should_test_for_av1_support =
       base::FeatureList::IsEnabled(kMediaFoundationAV1Decoding) &&
-      !workarounds.disable_accelerated_av1_decode && provide_av1_resolutions;
+      !workarounds.disable_accelerated_av1_decode;
 
   // Enumerate supported video profiles and look for the known profile for each
   // codec. We first look through the the decoder profiles so we don't run N
