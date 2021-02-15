@@ -269,10 +269,6 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 07/2019.
   syncer::MigrateSyncSuppressedPref(prefs);
-  syncer::ClearObsoleteClearServerDataPrefs(prefs);
-  syncer::ClearObsoleteAuthErrorPrefs(prefs);
-  syncer::ClearObsoleteFirstSyncTime(prefs);
-  syncer::ClearObsoleteSyncLongPollIntervalSeconds(prefs);
   prefs->ClearPref(kLastKnownGoogleURL);
   prefs->ClearPref(kLastPromptedGoogleURL);
 
@@ -297,4 +293,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 12/2020.
   prefs->ClearPref(kDomainsWithCookiePref);
+
+  // Added 2/2021.
+  syncer::ClearObsoletePassphrasePromptPrefs(prefs);
 }

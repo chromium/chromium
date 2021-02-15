@@ -142,12 +142,12 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
       const base::android::JavaParamRef<jobject>& obj);
 
   // Pure SyncPrefs calls.
-  jboolean IsPassphrasePrompted(
+  jboolean IsPassphrasePromptMutedForCurrentProductVersion(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  void SetPassphrasePrompted(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
-                             jboolean prompted);
+  void MarkPassphrasePromptMutedForCurrentProductVersion(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   jboolean HasKeepEverythingSynced(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

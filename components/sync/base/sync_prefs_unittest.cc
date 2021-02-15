@@ -307,6 +307,16 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
+  EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
+
+  sync_prefs_->SetPassphrasePromptMutedProductVersion(83);
+  EXPECT_EQ(83, sync_prefs_->GetPassphrasePromptMutedProductVersion());
+
+  sync_prefs_->ClearPassphrasePromptMutedProductVersion();
+  EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
+}
+
 // Similar to SyncPrefsTest, but does not create a SyncPrefs instance. This lets
 // individual tests set up the "before" state of the PrefService before
 // SyncPrefs gets created.

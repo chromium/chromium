@@ -6,10 +6,12 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_crypto.h"
+#include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -36,6 +38,11 @@ ModelTypeSet ResolvePreferredOsTypes(UserSelectableOsTypeSet selected_types) {
   return preferred_types;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+int GetCurrentMajorProductVersion() {
+  DCHECK(version_info::GetVersion().IsValid());
+  return version_info::GetVersion().components()[0];
+}
 
 }  // namespace
 
@@ -168,6 +175,17 @@ bool SyncUserSettingsImpl::IsPassphraseRequiredForPreferredDataTypes() const {
   // passphrase, we must prompt the user for a passphrase. The only way for the
   // user to avoid entering their passphrase is to disable the encrypted types.
   return IsEncryptedDatatypeEnabled() && IsPassphraseRequired();
+}
+
+bool SyncUserSettingsImpl::IsPassphrasePromptMutedForCurrentProductVersion()
+    const {
+  return prefs_->GetPassphrasePromptMutedProductVersion() ==
+         GetCurrentMajorProductVersion();
+}
+
+void SyncUserSettingsImpl::MarkPassphrasePromptMutedForCurrentProductVersion() {
+  prefs_->SetPassphrasePromptMutedProductVersion(
+      GetCurrentMajorProductVersion());
 }
 
 bool SyncUserSettingsImpl::IsTrustedVaultKeyRequired() const {

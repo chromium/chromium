@@ -200,9 +200,6 @@ class ProfileSyncService : public SyncService,
   // once (before this object is destroyed).
   void Shutdown() override;
 
-  bool IsPassphrasePrompted() const;
-  void SetPassphrasePrompted(bool prompted);
-
 #if defined(OS_ANDROID)
   // Persists the fact that sync should no longer respect whether Android master
   // sync is enabled. This will be respected for the current syncing account
@@ -472,12 +469,6 @@ class ProfileSyncService : public SyncService,
   std::unique_ptr<StartupController> startup_controller_;
 
   std::unique_ptr<SyncStoppedReporter> sync_stopped_reporter_;
-
-  // Whether the major version has changed since the last time Chrome ran,
-  // and therefore a passphrase required state should result in prompting
-  // the user. This logic is only enabled on platforms that consume the
-  // IsPassphrasePrompted sync preference.
-  bool passphrase_prompt_triggered_by_version_;
 
   // Used in OnSyncRequestedPrefChange() to know whether the notification was
   // caused by the service itself setting the pref.

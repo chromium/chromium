@@ -49,11 +49,9 @@ extern const char kSyncCacheGuid[];
 extern const char kSyncBirthday[];
 extern const char kSyncBagOfChips[];
 
-extern const char kSyncPassphrasePrompted[];
+extern const char kSyncPassphrasePromptMutedProductVersion[];
 
 extern const char kSyncInvalidationVersions[];
-
-extern const char kSyncLastRunVersion[];
 
 extern const char kEnableLocalSyncBackend[];
 extern const char kLocalSyncBackendDir[];

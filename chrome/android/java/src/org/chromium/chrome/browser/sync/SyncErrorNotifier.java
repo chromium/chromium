@@ -93,7 +93,7 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
                 && mProfileSyncService.isPassphraseRequiredForPreferredDataTypes()) {
             assert (!mProfileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes());
 
-            if (mProfileSyncService.isPassphrasePrompted()) {
+            if (mProfileSyncService.isPassphrasePromptMutedForCurrentProductVersion()) {
                 return;
             }
 
@@ -212,7 +212,7 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
      */
     private Intent createPassphraseIntent() {
         // Make sure we don't prompt too many times.
-        mProfileSyncService.setPassphrasePrompted(true);
+        mProfileSyncService.markPassphrasePromptMutedForCurrentProductVersion();
 
         Intent intent = new Intent(ContextUtils.getApplicationContext(), PassphraseActivity.class);
         // This activity will become the start of a new task on this history stack.

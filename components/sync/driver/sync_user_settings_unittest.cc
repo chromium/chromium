@@ -294,6 +294,39 @@ TEST_F(SyncUserSettingsTest, AppsAreHandledByOsSettings) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(SyncUserSettingsTest, ShouldMutePassphrasePrompt) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_FALSE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+
+  sync_user_settings->MarkPassphrasePromptMutedForCurrentProductVersion();
+  EXPECT_TRUE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+
+  // Clearing the preference should unmute the prompt.
+  sync_prefs_->ClearPassphrasePromptMutedProductVersion();
+  EXPECT_FALSE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+}
+
+TEST_F(SyncUserSettingsTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
+  // Mimic an old product version being written to prefs.
+  sync_prefs_->SetPassphrasePromptMutedProductVersion(/*major_version=*/73);
+
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_FALSE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+
+  // Muting should still work.
+  sync_user_settings->MarkPassphrasePromptMutedForCurrentProductVersion();
+  EXPECT_TRUE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+}
+
 }  // namespace
 
 }  // namespace syncer

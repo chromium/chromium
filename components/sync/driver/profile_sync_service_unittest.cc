@@ -972,35 +972,6 @@ TEST_F(ProfileSyncServiceTest, NoDisableSyncFlag) {
   EXPECT_TRUE(switches::IsSyncAllowedByFlag());
 }
 
-// Test that the passphrase prompt due to version change logic gets triggered
-// on a datatype type requesting startup, but only happens once.
-TEST_F(ProfileSyncServiceTest, PassphrasePromptDueToVersion) {
-  SignIn();
-  CreateService(ProfileSyncService::MANUAL_START);
-  InitializeForNthSync();
-
-  SyncTransportDataPrefs transport_data_prefs(prefs());
-  ASSERT_EQ(PRODUCT_VERSION, transport_data_prefs.GetLastRunVersion());
-
-  transport_data_prefs.SetPassphrasePrompted(true);
-
-  // Until a datatype requests startup while a passphrase is required the
-  // passphrase prompt bit should remain set.
-  EXPECT_TRUE(transport_data_prefs.IsPassphrasePrompted());
-  TriggerPassphraseRequired();
-  EXPECT_TRUE(transport_data_prefs.IsPassphrasePrompted());
-
-  // Because the last version was unset, this run should be treated as a new
-  // version and force a prompt.
-  TriggerDataTypeStartRequest();
-  EXPECT_FALSE(transport_data_prefs.IsPassphrasePrompted());
-
-  // At this point further datatype startup request should have no effect.
-  transport_data_prefs.SetPassphrasePrompted(true);
-  TriggerDataTypeStartRequest();
-  EXPECT_TRUE(transport_data_prefs.IsPassphrasePrompted());
-}
-
 // Test that when ProfileSyncService receives actionable error
 // RESET_LOCAL_SYNC_DATA it restarts sync.
 TEST_F(ProfileSyncServiceTest, ResetSyncData) {

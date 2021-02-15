@@ -402,17 +402,20 @@ jboolean ProfileSyncServiceAndroid::IsAuthenticatedAccountPrimary(
   return sync_service_->IsAuthenticatedAccountPrimary();
 }
 
-jboolean ProfileSyncServiceAndroid::IsPassphrasePrompted(
+jboolean
+ProfileSyncServiceAndroid::IsPassphrasePromptMutedForCurrentProductVersion(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return sync_service_->IsPassphrasePrompted();
+  return sync_service_->GetUserSettings()
+      ->IsPassphrasePromptMutedForCurrentProductVersion();
 }
 
-void ProfileSyncServiceAndroid::SetPassphrasePrompted(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean prompted) {
-  sync_service_->SetPassphrasePrompted(prompted);
+void ProfileSyncServiceAndroid::
+    MarkPassphrasePromptMutedForCurrentProductVersion(
+        JNIEnv* env,
+        const JavaParamRef<jobject>& obj) {
+  sync_service_->GetUserSettings()
+      ->MarkPassphrasePromptMutedForCurrentProductVersion();
 }
 
 jboolean ProfileSyncServiceAndroid::HasKeepEverythingSynced(

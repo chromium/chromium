@@ -44,7 +44,6 @@
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/model/type_entities_count.h"
-#include "components/version_info/version_info_values.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
@@ -165,7 +164,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
       start_behavior_(init_params.start_behavior),
-      passphrase_prompt_triggered_by_version_(false),
       is_setting_sync_requested_(false),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if defined(OS_ANDROID)
@@ -180,17 +178,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
   // If Sync is disabled via command line flag, then ProfileSyncService
   // shouldn't be instantiated.
   DCHECK(switches::IsSyncAllowedByFlag());
-
-  std::string last_version = sync_transport_data_prefs_.GetLastRunVersion();
-  std::string current_version = PRODUCT_VERSION;
-  sync_transport_data_prefs_.SetLastRunVersion(current_version);
-
-  // Check for a major version change. Note that the versions have format
-  // MAJOR.MINOR.BUILD.PATCH.
-  if (last_version.substr(0, last_version.find('.')) !=
-      current_version.substr(0, current_version.find('.'))) {
-    passphrase_prompt_triggered_by_version_ = true;
-  }
 
   bool should_wait_for_policies =
       base::FeatureList::IsEnabled(switches::kSyncRequiresPoliciesLoaded);
@@ -432,17 +419,6 @@ void ProfileSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {
     return;
   }
 
-  // If this is a data type change after a major version update, reset the
-  // passphrase prompted state and notify observers.
-  if (user_settings_->IsPassphraseRequired() &&
-      passphrase_prompt_triggered_by_version_) {
-    // The major version has changed and a local syncable change was made.
-    // Reset the passphrase prompt state.
-    passphrase_prompt_triggered_by_version_ = false;
-    SetPassphrasePrompted(false);
-    NotifyObservers();
-  }
-
   if (engine_) {
     DVLOG(1) << "A data type requested sync startup, but it looks like "
                 "something else beat it to the punch.";
@@ -606,6 +582,7 @@ void ProfileSyncService::StopImpl(SyncStopDataFate data_fate) {
       // with their previous settings by default. We do however require going
       // through first-time setup again and set SyncRequested to false.
       sync_prefs_.ClearFirstSetupComplete();
+      sync_prefs_.ClearPassphrasePromptMutedProductVersion();
       SetSyncRequestedAndIgnoreNotification(false);
       // For explicit passphrase users, clear the encryption key, such that they
       // will need to reenter it if sync gets re-enabled.
@@ -1766,14 +1743,6 @@ void ProfileSyncService::OverrideNetworkForTest(
     startup_controller_->TryStart(/*force_immediate=*/true);
     DCHECK(engine_);
   }
-}
-
-bool ProfileSyncService::IsPassphrasePrompted() const {
-  return sync_transport_data_prefs_.IsPassphrasePrompted();
-}
-
-void ProfileSyncService::SetPassphrasePrompted(bool prompted) {
-  sync_transport_data_prefs_.SetPassphrasePrompted(prompted);
 }
 
 #if defined(OS_ANDROID)

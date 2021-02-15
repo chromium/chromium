@@ -69,10 +69,6 @@ class SyncTransportDataPrefs {
   void SetBagOfChips(const std::string& bag_of_chips);
   std::string GetBagOfChips() const;
 
-  // Out of band sync passphrase prompt getter/setter.
-  bool IsPassphrasePrompted() const;
-  void SetPassphrasePrompted(bool value);
-
   base::Time GetLastSyncedTime() const;
   void SetLastSyncedTime(base::Time time);
 
@@ -100,13 +96,6 @@ class SyncTransportDataPrefs {
   std::map<ModelType, int64_t> GetInvalidationVersions() const;
   void UpdateInvalidationVersions(
       const std::map<ModelType, int64_t>& invalidation_versions);
-
-  // Will return the contents of the LastRunVersion preference. This may be an
-  // empty string if no version info was present, and is only valid at
-  // Sync startup time (after which the LastRunVersion preference will have been
-  // updated to the current version).
-  std::string GetLastRunVersion() const;
-  void SetLastRunVersion(const std::string& current_version);
 
  private:
   // Never null.
@@ -200,6 +189,11 @@ class SyncPrefs {
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
 
+  // Muting mechanism for passphrase prompts, used on Android.
+  int GetPassphrasePromptMutedProductVersion() const;
+  void SetPassphrasePromptMutedProductVersion(int major_version);
+  void ClearPassphrasePromptMutedProductVersion();
+
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);
@@ -228,10 +222,7 @@ class SyncPrefs {
   DISALLOW_COPY_AND_ASSIGN(SyncPrefs);
 };
 
-void ClearObsoleteClearServerDataPrefs(PrefService* pref_service);
-void ClearObsoleteAuthErrorPrefs(PrefService* pref_service);
-void ClearObsoleteFirstSyncTime(PrefService* pref_service);
-void ClearObsoleteSyncLongPollIntervalSeconds(PrefService* pref_service);
+void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service);
 void MigrateSyncSuppressedPref(PrefService* pref_service);
 
 }  // namespace syncer

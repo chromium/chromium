@@ -50,6 +50,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   syncer::ModelTypeSet GetEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
+  bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
+  void MarkPassphrasePromptMutedForCurrentProductVersion() override;
   bool IsTrustedVaultKeyRequired() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;
   bool IsTrustedVaultRecoverabilityDegraded() const override;

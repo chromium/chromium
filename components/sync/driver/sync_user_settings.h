@@ -97,6 +97,9 @@ class SyncUserSettings {
   // Whether a passphrase is required to decrypt the data for any currently
   // enabled data type.
   virtual bool IsPassphraseRequiredForPreferredDataTypes() const = 0;
+  // Passphrase prompt mute-state getter and setter, used on Android.
+  virtual bool IsPassphrasePromptMutedForCurrentProductVersion() const = 0;
+  virtual void MarkPassphrasePromptMutedForCurrentProductVersion() = 0;
   // Whether trusted vault keys are required for encryption or decryption. Note
   // that Sync might still be working fine if the user has disabled all
   // encrypted data types.

@@ -26,20 +26,13 @@ namespace syncer {
 
 namespace {
 
-// Obsolete prefs related to the removed ClearServerData flow.
-const char kSyncPassphraseEncryptionTransitionInProgress[] =
-    "sync.passphrase_encryption_transition_in_progress";
-const char kSyncNigoriStateForPassphraseTransition[] =
-    "sync.nigori_state_for_passphrase_transition";
+// Obsolete pref that used to store whether a platform specific passphrase error
+// prompt has been shown to the user (e.g. an Android system notification).
+const char kObsoleteSyncPassphrasePrompted[] = "sync.passphrase_prompted";
 
-// Obsolete pref that used to store a bool on whether Sync has an auth error.
-const char kSyncHasAuthError[] = "sync.has_auth_error";
-
-// Obsolete pref that used to store the timestamp of first sync.
-const char kSyncFirstSyncTime[] = "sync.first_sync_time";
-
-// Obsolete pref that used to store long poll intervals received by the server.
-const char kSyncLongPollIntervalSeconds[] = "sync.long_poll_interval";
+// Obsolete pref that used to store the product version from the last restart of
+// Chrome.
+const char kObsoleteSyncLastRunVersion[] = "sync.last_run_version";
 
 // Obsolete pref that used to store if sync should be prevented from
 // automatically starting up. This is now replaced by its inverse
@@ -115,9 +108,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSyncManaged, false);
   registry->RegisterStringPref(prefs::kSyncKeystoreEncryptionBootstrapToken,
                                std::string());
-  registry->RegisterBooleanPref(prefs::kSyncPassphrasePrompted, false);
+  registry->RegisterIntegerPref(prefs::kSyncPassphrasePromptMutedProductVersion,
+                                0);
   registry->RegisterDictionaryPref(prefs::kSyncInvalidationVersions);
-  registry->RegisterStringPref(prefs::kSyncLastRunVersion, std::string());
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
 #if defined(OS_ANDROID)
@@ -125,14 +118,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
 #endif  // defined(OS_ANDROID)
 
-  registry->RegisterBooleanPref(kSyncPassphraseEncryptionTransitionInProgress,
-                                false);
-  registry->RegisterStringPref(kSyncNigoriStateForPassphraseTransition,
-                               std::string());
-  registry->RegisterBooleanPref(kSyncHasAuthError, false);
-  registry->RegisterInt64Pref(kSyncFirstSyncTime, 0);
-  registry->RegisterInt64Pref(kSyncLongPollIntervalSeconds, 0);
+  // Obsolete prefs.
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
+  registry->RegisterBooleanPref(kObsoleteSyncPassphrasePrompted, false);
+  registry->RegisterStringPref(kObsoleteSyncLastRunVersion, std::string());
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -152,9 +141,7 @@ void SyncTransportDataPrefs::ClearAllExceptEncryptionBootstrapToken() {
   pref_service_->ClearPref(prefs::kSyncLastPollTime);
   pref_service_->ClearPref(prefs::kSyncPollIntervalSeconds);
   pref_service_->ClearPref(prefs::kSyncKeystoreEncryptionBootstrapToken);
-  pref_service_->ClearPref(prefs::kSyncPassphrasePrompted);
   pref_service_->ClearPref(prefs::kSyncInvalidationVersions);
-  pref_service_->ClearPref(prefs::kSyncLastRunVersion);
   pref_service_->ClearPref(prefs::kSyncGaiaId);
   pref_service_->ClearPref(prefs::kSyncCacheGuid);
   pref_service_->ClearPref(prefs::kSyncBirthday);
@@ -475,14 +462,6 @@ std::string SyncTransportDataPrefs::GetBagOfChips() const {
   return decoded;
 }
 
-bool SyncTransportDataPrefs::IsPassphrasePrompted() const {
-  return pref_service_->GetBoolean(prefs::kSyncPassphrasePrompted);
-}
-
-void SyncTransportDataPrefs::SetPassphrasePrompted(bool value) {
-  pref_service_->SetBoolean(prefs::kSyncPassphrasePrompted, value);
-}
-
 #if defined(OS_ANDROID)
 void SyncPrefs::SetDecoupledFromAndroidMasterSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -526,36 +505,28 @@ void SyncTransportDataPrefs::UpdateInvalidationVersions(
                      *invalidation_dictionary);
 }
 
-std::string SyncTransportDataPrefs::GetLastRunVersion() const {
-  return pref_service_->GetString(prefs::kSyncLastRunVersion);
-}
-
-void SyncTransportDataPrefs::SetLastRunVersion(
-    const std::string& current_version) {
-  pref_service_->SetString(prefs::kSyncLastRunVersion, current_version);
-}
-
 bool SyncPrefs::IsLocalSyncEnabled() const {
   return local_sync_enabled_;
 }
 
-void ClearObsoleteClearServerDataPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncPassphraseEncryptionTransitionInProgress);
-  pref_service->ClearPref(kSyncNigoriStateForPassphraseTransition);
+int SyncPrefs::GetPassphrasePromptMutedProductVersion() const {
+  return pref_service_->GetInteger(
+      prefs::kSyncPassphrasePromptMutedProductVersion);
 }
 
-void ClearObsoleteAuthErrorPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncHasAuthError);
+void SyncPrefs::SetPassphrasePromptMutedProductVersion(int major_version) {
+  pref_service_->SetInteger(prefs::kSyncPassphrasePromptMutedProductVersion,
+                            major_version);
 }
 
-void ClearObsoleteFirstSyncTime(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncFirstSyncTime);
+void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
+  pref_service_->ClearPref(prefs::kSyncPassphrasePromptMutedProductVersion);
 }
 
-void ClearObsoleteSyncLongPollIntervalSeconds(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncLongPollIntervalSeconds);
+void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service) {
+  pref_service->ClearPref(kObsoleteSyncLastRunVersion);
+  pref_service->ClearPref(kObsoleteSyncPassphrasePrompted);
 }
-
 
 void MigrateSyncSuppressedPref(PrefService* pref_service) {
   // If the new kSyncRequested already has a value, there's nothing to be

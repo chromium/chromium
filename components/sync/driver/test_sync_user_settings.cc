@@ -154,6 +154,14 @@ bool TestSyncUserSettings::IsPassphraseRequiredForPreferredDataTypes() const {
   return passphrase_required_for_preferred_data_types_;
 }
 
+bool TestSyncUserSettings::IsPassphrasePromptMutedForCurrentProductVersion()
+    const {
+  return false;
+}
+
+void TestSyncUserSettings::MarkPassphrasePromptMutedForCurrentProductVersion() {
+}
+
 bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {
   return trusted_vault_key_required_;
 }

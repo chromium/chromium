@@ -61,6 +61,14 @@ class SyncUserSettingsMock : public SyncUserSettings {
               IsPassphraseRequiredForPreferredDataTypes,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              IsPassphrasePromptMutedForCurrentProductVersion,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              MarkPassphrasePromptMutedForCurrentProductVersion,
+              (),
+              (override));
   MOCK_METHOD(bool, IsTrustedVaultKeyRequired, (), (const override));
   MOCK_METHOD(bool,
               IsTrustedVaultKeyRequiredForPreferredDataTypes,
