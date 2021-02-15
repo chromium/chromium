@@ -1,6 +1,6 @@
 Tests that elements panel shows DOM tree structure.
 
-  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  <!DOCTYPE html>
 - <html>
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -8,11 +8,11 @@ Tests that elements panel shows DOM tree structure.
     - <body>
         - <div id="level1">
             - <div id="level2">
-                  ""Quoted Text". Special&nbsp;characters: ><"'&nbsp;&ensp;&emsp;&thinsp;&#8202;&#8203;&zwnj;&zwj;&lrm;&rlm; &#8234;&#8235;&#8236;&#8237;&#8238;&shy;"
+                  "\n          ><"'\n          &nbsp;_&shy;_&ensp;_&emsp;_&thinsp;_&hairsp;_&ZeroWidthSpace;_&zwnj;_&zwj;_&lrm;_&rlm;_&#x202A;_&#x202B;_&#x202C;_&#x202D;_&#x202E;_&NoBreak;_&#xFEFF;\n          "
                   <div id="level3"></div>
               </div>
           </div>
-          <div id="control-character">&#65279;&#147;</div>
+          <div id="replacement-character">&#xFEFF;</div>
       </body>
   </html>
 

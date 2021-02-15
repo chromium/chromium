@@ -7,15 +7,18 @@
   await TestRunner.loadModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
-      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+      <!DOCTYPE html>
       <div id="level1">
-          <div id="level2">&quot;Quoted Text&quot;. Special&#xA0;characters: &gt;&lt;&quot;'&#xA0;&#x2002;&#x2003;&#x2009;&#x200A;&#x200B;&#x200C;&#x200D;&#x200E;&#x200F; &#x202A;&#x202B;&#x202C;&#x202D;&#x202E;&#xAD;<div id="level3"></div>
-          </div>
+        <div id="level2">
+          &gt;&lt;&quot;'
+          &nbsp;_&shy;_&ensp;_&emsp;_&thinsp;_&hairsp;_&ZeroWidthSpace;_&zwnj;_&zwj;_&lrm;_&rlm;_&#x202A;_&#x202B;_&#x202C;_&#x202D;_&#x202E;_&NoBreak;_&#xFEFF;
+          <div id="level3"></div>
+        </div>
       </div>
-      <div id="control-character"></div>
+      <div id="replacement-character"></div>
     `);
   await TestRunner.evaluateInPagePromise(`
-      document.querySelector("#control-character").textContent = "\ufeff\u0093";
+      document.querySelector("#replacement-character").textContent = "\uFEFF";
   `);
 
   // Warm up highlighter module.
