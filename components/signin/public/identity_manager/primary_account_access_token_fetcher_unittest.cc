@@ -14,6 +14,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,7 +57,9 @@ class PrimaryAccountAccessTokenFetcherTest
       AccessTokenFetcher::TokenCallback callback,
       PrimaryAccountAccessTokenFetcher::Mode mode,
       ConsentLevel consent) {
-    std::set<std::string> scopes{"scope"};
+    // API scope that does not require consent.
+    std::set<std::string> scopes = {
+        GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
     return std::make_unique<PrimaryAccountAccessTokenFetcher>(
         "test_consumer", identity_test_env_.identity_manager(), scopes,
         std::move(callback), mode, consent);

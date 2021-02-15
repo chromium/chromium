@@ -10,6 +10,8 @@ if (is_android) {
 
 source_set("identity_manager") {
   sources = [
+    "access_token_constants.cc",
+    "access_token_constants.h",
     "access_token_fetcher.cc",
     "access_token_fetcher.h",
     "access_token_info.cc",
