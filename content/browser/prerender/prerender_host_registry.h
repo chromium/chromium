@@ -17,12 +17,25 @@ namespace content {
 
 class FrameTreeNode;
 class PrerenderHost;
+class RenderFrameHostImpl;
 class WebContentsImpl;
 
 // Prerender2:
-// PrerenderHostRegistry manages running prerender hosts and provides the host
-// to navigation code for activating prerendered contents. This is created and
+// PrerenderHostRegistry creates and retains a prerender host, and reserves it
+// for NavigationRequest to activate the prerendered page. This is created and
 // owned by StoragePartitionImpl.
+// TODO(https://crbug.com/1170619): Tie the registry with WebContentsImpl.
+//
+// The APIs of this class are categorized into two: APIs for triggers and APIs
+// for activators.
+//
+// - Triggers (e.g., PrerenderProcessor) can request to create a new prerender
+//   host by CreateAndStartHost() and cancel it by AbandonHost(). Triggers
+//   cannot cancel the host after it's preserved by an activator.
+// - Activators (i.e., NavigationRequest) can reserve the prerender host on
+//   activation start by ReserveHostToActivate() and activate it by
+//   ActivateReservedHost(). They can abandon the host by
+//   AbandonPreservedHost().
 class CONTENT_EXPORT PrerenderHostRegistry {
  public:
   PrerenderHostRegistry();
@@ -33,12 +46,14 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHostRegistry(PrerenderHostRegistry&&) = delete;
   PrerenderHostRegistry& operator=(PrerenderHostRegistry&&) = delete;
 
+  // For triggers.
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
   int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
                          WebContentsImpl& web_contents,
                          const url::Origin& initiator_origin);
 
+  // For triggers.
   // Destroys the host registered for `frame_tree_node_id`.
   // TODO(https://crbug.com/1169594): Distinguish two paths that cancel
   // prerendering. A prerender can be canceled due to the following reasons:
@@ -50,14 +65,30 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // should destroy the PrerenderHost.
   void AbandonHost(int frame_tree_node_id);
 
-  // Selects the host to activate for a navigation for the given FrameTreeNode.
-  // Returns nullptr if it's not found or not ready for activation yet.
-  std::unique_ptr<PrerenderHost> FindHostToActivate(
-      const GURL& navigation_url,
-      FrameTreeNode& frame_tree_node);
+  // For activators.
+  // Reserves the host to activate for a navigation for the given FrameTreeNode.
+  // Returns the root frame tree node id of the prerendered page, which can be
+  // used as the id of the host. Returns RenderFrameHost::kNoFrameTreeNodeId if
+  // it's not found or not ready for activation yet. The caller is responsible
+  // for calling ActivateReservedHost() or AbandonReservedHost() with the id to
+  // release the reserved host.
+  int ReserveHostToActivate(const GURL& navigation_url,
+                            FrameTreeNode& frame_tree_node);
 
-  // Returns a prerender host for `prerendering_url`. Returns nullptr if the URL
-  // doesn't match any prerender host.
+  // For activators.
+  // Activates the host reserved by ReserveHostToActivate(). Returns true if
+  // activation succeeded. `current_render_frame_host` is the
+  // RenderFrameHostImpl that will be swapped out and destroyed by the
+  // activation.
+  bool ActivateReservedHost(int frame_tree_node_id,
+                            RenderFrameHostImpl& current_render_frame_host);
+
+  // For activators.
+  // Abandons the host reserved by ReserveHostToActivate().
+  void AbandonReservedHost(int frame_tree_node_id);
+
+  // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
+  // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
   // Waits until a prerender host for `prerendering_url` is created and returns
@@ -65,11 +96,17 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHost* WaitForHostByUrlForTesting(const GURL& prerendering_url);
 
  private:
+  // Hosts that are not reserved for activation yet.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
   std::map<int, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
   std::map<GURL, int> frame_tree_node_id_by_url_;
+
+  // Hosts that are reserved for activation.
+  std::map<int, std::unique_ptr<PrerenderHost>>
+      reserved_prerender_host_by_frame_tree_node_id_;
+
   base::OnceClosure on_host_created_;
 };
 

@@ -82,9 +82,11 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   // the prerendered page.
   prerender_host->DidFinishNavigation(nullptr);
 
-  EXPECT_TRUE(registry->FindHostToActivate(
-      kPrerenderingUrl, *render_frame_host->frame_tree_node()));
+  EXPECT_EQ(registry->ReserveHostToActivate(
+                kPrerenderingUrl, *render_frame_host->frame_tree_node()),
+            prerender_frame_tree_node_id);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  registry->AbandonReservedHost(prerender_frame_tree_node_id);
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
@@ -121,9 +123,11 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   // the prerendered page.
   prerender_host1->DidFinishNavigation(nullptr);
 
-  EXPECT_TRUE(registry->FindHostToActivate(
-      kPrerenderingUrl, *render_frame_host->frame_tree_node()));
+  EXPECT_EQ(registry->ReserveHostToActivate(
+                kPrerenderingUrl, *render_frame_host->frame_tree_node()),
+            frame_tree_node_id1);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  registry->AbandonReservedHost(frame_tree_node_id1);
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
@@ -159,20 +163,26 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
   prerender_host2->DidFinishNavigation(nullptr);
 
   // Select the first host.
-  EXPECT_TRUE(registry->FindHostToActivate(
-      kPrerenderingUrl1, *render_frame_host->frame_tree_node()));
+  EXPECT_EQ(registry->ReserveHostToActivate(
+                kPrerenderingUrl1, *render_frame_host->frame_tree_node()),
+            frame_tree_node_id1);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   // The second host should still be findable.
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2),
             prerender_host2);
 
   // Select the second host.
-  EXPECT_TRUE(registry->FindHostToActivate(
-      kPrerenderingUrl2, *render_frame_host->frame_tree_node()));
+  EXPECT_EQ(registry->ReserveHostToActivate(
+                kPrerenderingUrl2, *render_frame_host->frame_tree_node()),
+            frame_tree_node_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
+
+  registry->AbandonReservedHost(frame_tree_node_id1);
+  registry->AbandonReservedHost(frame_tree_node_id2);
 }
 
-TEST_F(PrerenderHostRegistryTest, FindHostToActivateBeforeReadyForActivation) {
+TEST_F(PrerenderHostRegistryTest,
+       ReserveHostToActivateBeforeReadyForActivation) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
@@ -193,8 +203,9 @@ TEST_F(PrerenderHostRegistryTest, FindHostToActivateBeforeReadyForActivation) {
   // The prerender host is not ready for activation yet, so the registry
   // shouldn't select the host and instead should abandon it.
   ASSERT_FALSE(prerender_host->is_ready_for_activation());
-  EXPECT_FALSE(registry->FindHostToActivate(
-      kPrerenderingUrl, *render_frame_host->frame_tree_node()));
+  EXPECT_EQ(registry->ReserveHostToActivate(
+                kPrerenderingUrl, *render_frame_host->frame_tree_node()),
+            kNoFrameTreeNodeId);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 

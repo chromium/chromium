@@ -45,7 +45,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
   // Start prerendering before adding the host to `frame_tree_node_id_by_url_`
   // to make sure navigation for prerendering doesn't select itself.
-  // TODO(https://crbug.com/1132746): FindHostToActivate() should avoid
+  // TODO(https://crbug.com/1132746): ReserveHostToActivate() should avoid
   // selecting a prerender host when the current NavigationRequest is for
   // prerendering regardless of the calling order of StartPrerendering(). At
   // this point, RenderFrameHostImpl doesn't know its prerendering state until
@@ -83,17 +83,17 @@ void PrerenderHostRegistry::AbandonHost(int frame_tree_node_id) {
   }
 }
 
-std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
+int PrerenderHostRegistry::ReserveHostToActivate(
     const GURL& navigation_url,
     FrameTreeNode& frame_tree_node) {
   RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();
-  TRACE_EVENT2("navigation", "PrerenderHostRegistry::FindHostToActivate",
+  TRACE_EVENT2("navigation", "PrerenderHostRegistry::ReserveHostToActivate",
                "navigation_url", navigation_url.spec(), "render_frame_host",
                base::trace_event::ToTracedValue(render_frame_host));
 
   // Disallow activation when the navigation is for prerendering.
   if (render_frame_host->IsPrerendering())
-    return nullptr;
+    return RenderFrameHost::kNoFrameTreeNodeId;
 
   // Disallow activation when the render frame host is for a nested browsing
   // context (e.g., iframes). This is because nested browsing contexts are
@@ -101,7 +101,7 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
   // script with the parent, but prerendered pages are created in new browsing
   // context groups.
   if (render_frame_host->GetParent())
-    return nullptr;
+    return RenderFrameHost::kNoFrameTreeNodeId;
 
   // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
   // windows) exist in the same browsing context group. This is because these
@@ -109,11 +109,11 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
   // pages are created in new browsing context groups.
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   if (site_instance->GetRelatedActiveContentsCount() != 1u)
-    return nullptr;
+    return RenderFrameHost::kNoFrameTreeNodeId;
 
   auto id_iter = frame_tree_node_id_by_url_.find(navigation_url);
   if (id_iter == frame_tree_node_id_by_url_.end())
-    return nullptr;
+    return RenderFrameHostImpl::kNoFrameTreeNodeId;
   const int prerender_frame_tree_node_id = id_iter->second;
   frame_tree_node_id_by_url_.erase(id_iter);
 
@@ -124,10 +124,10 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
   prerender_host_by_frame_tree_node_id_.erase(host_iter);
 
   // If the host is not ready for activation yet, destroys it and returns
-  // nullptr. This is because it is likely that the prerendered page is never
-  // used from now on.
+  // an invalid id. This is because it is likely that the prerendered page is
+  // never used from now on.
   if (!host->is_ready_for_activation())
-    return nullptr;
+    return RenderFrameHost::kNoFrameTreeNodeId;
 
   switch (blink::features::kPrerender2ImplementationParam.Get()) {
     case blink::features::Prerender2Implementation::kWebContents:
@@ -135,13 +135,37 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
     case blink::features::Prerender2Implementation::kMPArch:
       // The feature param disallows activation of the prerendered page for
       // testing. Destroy the host to dispose of the prerendered page and return
-      // nullptr.
+      // an invalid id.
       // TODO(https://crbug.com/1170277): Remove once activation support is
       // added to MPArch.
-      return nullptr;
+      return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
-  return host;
+  // Reserve the host for activation.
+  auto result = reserved_prerender_host_by_frame_tree_node_id_.emplace(
+      prerender_frame_tree_node_id, std::move(host));
+  DCHECK(result.second);
+
+  return prerender_frame_tree_node_id;
+}
+
+bool PrerenderHostRegistry::ActivateReservedHost(
+    int frame_tree_node_id,
+    RenderFrameHostImpl& current_render_frame_host) {
+  auto iter =
+      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (iter == reserved_prerender_host_by_frame_tree_node_id_.end())
+    return false;
+  std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
+  reserved_prerender_host_by_frame_tree_node_id_.erase(iter);
+  return prerender_host->ActivatePrerenderedContents(current_render_frame_host);
+}
+
+void PrerenderHostRegistry::AbandonReservedHost(int frame_tree_node_id) {
+  // AbandonReservedHost() should not be called for non-reserved hosts.
+  DCHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
+                         frame_tree_node_id));
+  reserved_prerender_host_by_frame_tree_node_id_.erase(frame_tree_node_id);
 }
 
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(

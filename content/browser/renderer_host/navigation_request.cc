@@ -1398,6 +1398,14 @@ NavigationRequest::~NavigationRequest() {
           common_params_->url.spec(), "Net Error Code", net_error_);
     }
   }
+
+  if (blink::features::IsPrerender2Enabled() && IsPrerenderedPageActivation()) {
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        frame_tree_node_->current_frame_host()->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+    prerender_host_registry->AbandonReservedHost(prerender_frame_tree_node_id_);
+  }
 }
 
 void NavigationRequest::BeginNavigation() {
@@ -1601,9 +1609,11 @@ void NavigationRequest::BeginNavigation() {
         frame_tree_node_->current_frame_host()->GetStoragePartition());
     PrerenderHostRegistry* prerender_host_registry =
         storage_partition_impl->GetPrerenderHostRegistry();
-    prerender_host_ = prerender_host_registry->FindHostToActivate(
-        common_params_->url, *frame_tree_node_);
-    // If `prerender_host_` exists, this navigation will activate the
+    prerender_frame_tree_node_id_ =
+        prerender_host_registry->ReserveHostToActivate(common_params_->url,
+                                                       *frame_tree_node_);
+    // If `prerender_frame_tree_node_id_` is not
+    // RenderFrameHost::kNoFrameTreeNodeId, this navigation will activate the
     // prerendered page on navigation commit.
   }
 
@@ -3471,13 +3481,16 @@ void NavigationRequest::CommitNavigation() {
     RenderFrameHostImpl* current_frame_host =
         frame_tree_node_->current_frame_host();
     DCHECK(!current_frame_host->GetParent());
-    // Retain the prerender host in a local variable because
-    // ActivatePrerenderedContents() will delete `this`. This should be a
-    // tentative approach until MPArch.
-    // TODO(https://crbug.com/1132746): Simplify the ownership structure after
-    // MPArch migration.
-    std::unique_ptr<PrerenderHost> prerender_host = std::move(prerender_host_);
-    prerender_host->ActivatePrerenderedContents(*current_frame_host);
+
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        current_frame_host->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+    // Do not touch `this` after this point. Activating the reserved prerender
+    // host destroys `this`.
+    bool result = prerender_host_registry->ActivateReservedHost(
+        prerender_frame_tree_node_id_, *current_frame_host);
+    DCHECK(result);
     return;
   }
 
@@ -5680,7 +5693,7 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
 
 bool NavigationRequest::IsPrerenderedPageActivation() const {
   CHECK_GE(state_, WILL_START_REQUEST);
-  return !!prerender_host_;
+  return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
 }
 
 bool NavigationRequest::IsWaitingForBeforeUnload() {

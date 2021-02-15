@@ -1602,7 +1602,7 @@ class CONTENT_EXPORT NavigationRequest
   // Prerender2:
   // This is valid only when this navigation will activate the prerendered
   // page.
-  std::unique_ptr<PrerenderHost> prerender_host_;
+  int prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   // The following fields that constitute the ClientSecurityState. This
   // state is used to take security decisions about the request, and later on
