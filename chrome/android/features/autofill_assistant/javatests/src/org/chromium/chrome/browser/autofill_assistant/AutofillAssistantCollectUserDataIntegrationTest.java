@@ -244,6 +244,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1176952")
     public void testFailingAutofillSendsProperError() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);

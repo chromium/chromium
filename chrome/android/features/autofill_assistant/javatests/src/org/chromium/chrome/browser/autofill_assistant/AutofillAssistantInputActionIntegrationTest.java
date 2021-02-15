@@ -447,6 +447,7 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1172648")
     public void clickOnButtonCoveredByOverlay() throws Exception {
         checkElementExists(mTestRule.getWebContents(), "button");
         checkElementExists(mTestRule.getWebContents(), "overlay");
