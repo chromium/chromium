@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
@@ -91,15 +92,6 @@ import org.chromium.url.GURL;
 public class ContextualSearchManager
         implements ContextualSearchManagementDelegate, ContextualSearchNetworkCommunicator,
                    ContextualSearchSelectionHandler, ChromeAccessibilityUtil.Observer {
-    /** A delegate for reporting selected context to GSA for search quality. */
-    public interface ContextReporterDelegate {
-        /**
-         * Reports that the given display selection has been established for the current tab.
-         * @param displaySelection The information about the selection being displayed.
-         */
-        void reportDisplaySelection(@Nullable GSAContextDisplaySelection displaySelection);
-    }
-
     // TODO(donnd): provide an inner class that implements some of these interfaces rather than
     // having the manager itself implement the interface because that exposes all the public methods
     // of that interface at the manager level.
@@ -1796,16 +1788,16 @@ public class ContextualSearchManager
      * @param reporter A context reporter for the feature to report the current selection when
      *                 triggered.
      */
-    public void enableContextReporting(ContextReporterDelegate reporter) {
+    public void enableContextReporting(Callback<GSAContextDisplaySelection> reporter) {
         mContextReportingObserver = new ContextualSearchObserver() {
             @Override
             public void onShowContextualSearch(GSAContextDisplaySelection contextSelection) {
-                if (contextSelection != null) reporter.reportDisplaySelection(contextSelection);
+                if (contextSelection != null) reporter.onResult(contextSelection);
             }
 
             @Override
             public void onHideContextualSearch() {
-                reporter.reportDisplaySelection(null);
+                reporter.onResult(null);
             }
         };
         addObserver(mContextReportingObserver);

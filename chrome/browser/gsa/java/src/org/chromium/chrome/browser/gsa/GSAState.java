@@ -25,7 +25,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -39,6 +38,8 @@ import java.util.List;
  * A class responsible for representing the current state of Chrome's integration with GSA.
  */
 public class GSAState {
+    public static final String PACKAGE_NAME = "com.google.android.googlequicksearchbox";
+
     /** Used to observe state changes in the class. */
     public interface Observer {
         /** Called when the GSA account name is set. */
@@ -218,7 +219,7 @@ public class GSAState {
      * @return Whether the given intent can be handled by Agsa.
      */
     public boolean canAgsaHandleIntent(@NonNull Intent intent) {
-        if (!intent.getPackage().equals(IntentHandler.PACKAGE_GSA)) return false;
+        if (!intent.getPackage().equals(PACKAGE_NAME)) return false;
 
         PackageManager packageManager = mContext.getPackageManager();
         try {
@@ -240,8 +241,7 @@ public class GSAState {
      */
     public @Nullable String getAgsaVersionName() {
         try {
-            PackageInfo packageInfo =
-                    mContext.getPackageManager().getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
+            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
             return packageInfo.versionName;
         } catch (NameNotFoundException e) {
             return null;
