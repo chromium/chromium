@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.webapps.PwaInstallBottomSheetView;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
@@ -89,8 +90,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppData;
@@ -98,7 +97,6 @@ import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.installable.InstallableAmbientBadgeInfoBar;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -123,6 +121,9 @@ public class AppBannerManagerTest {
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    @Rule
+    public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -246,9 +247,6 @@ public class AppBannerManagerTest {
                 mOnEventCallback.notifyCalled();
             }
         };
-
-        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade(null));
-        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
