@@ -5607,6 +5607,12 @@ crbug.com/1050549 http/tests/devtools/extensions/extensions-timeline-api.js [ Pa
 # Flaky test
 crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js [ Pass Timeout ]
 
+# Needs to be rebaselined after V8 CL rolls
+crbug.com/1177685 http/tests/devtools/console/console-log-linkify-stack-in-errors.js [ Pass Failure ]
+crbug.com/1177685 http/tests/devtools/console/function-name-in-console-message-stack.js [ Pass Failure ]
+crbug.com/1177685 http/tests/devtools/sources/debugger-pause/function-name-in-callstack.js [ Pass Failure ]
+crbug.com/1177685 http/tests/devtools/sources/debugger-ui/function-display-name-call-stack.js [ Pass Failure ]
+
 # Sheriff 2018-01-25
 crbug.com/893869 css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
 crbug.com/1155125 [ Linux ] http/tests/history/replacestate-post-to-get-2.html [ Pass Timeout ]
