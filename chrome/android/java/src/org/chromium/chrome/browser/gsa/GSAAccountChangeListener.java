@@ -45,6 +45,8 @@ public class GSAAccountChangeListener {
     public static final String ACCOUNT_UPDATE_BROADCAST_PERMISSION =
             "com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS";
 
+    private static GSAAccountChangeListener sInstance;
+
     // Reference count for the connection.
     private int mUsersCount;
     private GSAServiceClient mClient;
@@ -64,14 +66,14 @@ public class GSAAccountChangeListener {
         }
     }
 
-    /**
-     * @param gsaHelper Helper object triggering interation methods with GSA.
-     * @return the instance of GSAAccountChangeListener.
-     */
-    public static GSAAccountChangeListener create(GSAHelper gsaHelper) {
-        assert !SysUtils.isLowEndDevice();
-        Context context = ContextUtils.getApplicationContext();
-        return new GSAAccountChangeListener(context, gsaHelper);
+    /** @return the instance of GSAAccountChangeListener. */
+    public static GSAAccountChangeListener getInstance() {
+        if (sInstance == null) {
+            assert !SysUtils.isLowEndDevice();
+            Context context = ContextUtils.getApplicationContext();
+            sInstance = new GSAAccountChangeListener(context);
+        }
+        return sInstance;
     }
 
     /**
@@ -85,13 +87,13 @@ public class GSAAccountChangeListener {
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
-    private GSAAccountChangeListener(Context context, GSAHelper gsaHelper) {
+    private GSAAccountChangeListener(Context context) {
         Context applicationContext = context.getApplicationContext();
         applicationContext.registerReceiver(new AccountChangeBroadcastReceiver(),
                 new IntentFilter(ACCOUNT_UPDATE_BROADCAST_INTENT),
                 ACCOUNT_UPDATE_BROADCAST_PERMISSION, null);
 
-        createGsaClientAndConnect(applicationContext, gsaHelper);
+        createGsaClientAndConnect(applicationContext);
 
         // If some future version of GSA no longer broadcasts the account change
         // notification, need to fall back to the service.
@@ -117,7 +119,7 @@ public class GSAAccountChangeListener {
                     // GSA has been updated, it might no longer support the broadcast. Reconnect to
                     // check.
                     mClient = null;
-                    createGsaClientAndConnect(applicationContext, gsaHelper);
+                    createGsaClientAndConnect(applicationContext);
                 }
             }
         };
@@ -126,7 +128,7 @@ public class GSAAccountChangeListener {
         context.registerReceiver(gsaUpdatedReceiver, filter);
     }
 
-    private void createGsaClientAndConnect(final Context context, GSAHelper gsaHelper) {
+    private void createGsaClientAndConnect(final Context context) {
         Callback<Bundle> onMessageReceived = new Callback<Bundle>() {
             @Override
             public void onResult(Bundle result) {
@@ -159,7 +161,7 @@ public class GSAAccountChangeListener {
                 }
             }
         };
-        mClient = new GSAServiceClient(context, onMessageReceived, gsaHelper);
+        mClient = new GSAServiceClient(context, onMessageReceived);
         mClient.connect();
     }
 

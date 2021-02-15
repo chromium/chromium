@@ -6,19 +6,21 @@ package org.chromium.chrome.browser.gsa;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.PassphraseType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,23 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ContextReporter {
     private static final String TAG = "GSA";
-
-    /**
-     * Interface for a selection context reporter used by contextual search.
-     */
-    public interface SelectionReporter {
-        /**
-         * Enable selection context reporting.
-         * @param callback Callback invoked when reporting selected context to GSA.
-         */
-        void enable(Callback<GSAContextDisplaySelection> callback);
-
-        /**
-         * Disable selection context reporting. The reporting callback doesn't
-         * get invoked while disabled.
-         */
-        void disable();
-    }
 
     // Values for UMA histogram.
     public static final int STATUS_SUCCESS = 0;
@@ -70,10 +55,8 @@ public class ContextReporter {
     // This should always stay last and have the highest number.
     private static final int STATUS_BOUNDARY = 21;
 
-    private final @NonNull Supplier<Tab> mCurrentTabSupplier;
-    private final @NonNull Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final @NonNull GSAContextReportDelegate mDelegate;
-    private final @Nullable SelectionReporter mSelectionReporter;
+    private final ChromeActivity mActivity;
+    private final GSAContextReportDelegate mDelegate;
     private TabModelSelectorTabObserver mSelectorTabObserver;
     private TabModelSelectorTabModelObserver mModelObserver;
     private boolean mLastContextWasTitleChange;
@@ -83,19 +66,12 @@ public class ContextReporter {
 
     /**
      * Creates a ContextReporter for an Activity.
-     * @param currentTabSupplier Supplier of the current tab.
-     * @param tabModelSelectorSupplier Supplier of tab model selector.
-     * @param selectionReporter Controller enabling/disabling selection context reporting.
-     * @param delegate Delegate used to communicate with GSA.
+     * @param activity Chrome Activity which context will be reported.
+     * @param controller used to communicate with GSA
      */
-    public ContextReporter(@NonNull Supplier<Tab> currentTabSupplier,
-            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @Nullable SelectionReporter selectionReporter,
-            @NonNull GSAContextReportDelegate delegate) {
-        mCurrentTabSupplier = currentTabSupplier;
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mSelectionReporter = selectionReporter;
-        mDelegate = delegate;
+    public ContextReporter(ChromeActivity activity, GSAContextReportDelegate controller) {
+        mActivity = activity;
+        mDelegate = controller;
         mContextInUse = new AtomicBoolean(false);
         Log.d(TAG, "Created a new ContextReporter");
     }
@@ -104,9 +80,10 @@ public class ContextReporter {
      * Starts reporting context.
      */
     public void enable() {
-        reportUsageOfCurrentContextIfPossible(mCurrentTabSupplier.get(), false, null);
+        Tab currentTab = mActivity.getActivityTab();
+        reportUsageOfCurrentContextIfPossible(currentTab, false, null);
 
-        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        TabModelSelector selector = mActivity.getTabModelSelector();
         assert selector != null;
 
         if (mSelectorTabObserver == null) {
@@ -132,7 +109,11 @@ public class ContextReporter {
                 }
             };
         }
-        if (mSelectionReporter != null) mSelectionReporter.enable(this::reportDisplaySelection);
+        ContextualSearchManager manager = mActivity.getContextualSearchManager();
+        if (manager != null) {
+            manager.enableContextReporting(
+                    (selection) -> ContextReporter.this.reportDisplaySelection(selection));
+        }
     }
 
     /**
@@ -149,7 +130,9 @@ public class ContextReporter {
             mModelObserver.destroy();
             mModelObserver = null;
         }
-        if (mSelectionReporter != null) mSelectionReporter.disable();
+        if (mActivity.getContextualSearchManager() != null) {
+            mActivity.getContextualSearchManager().disableContextReporting();
+        }
     }
 
     /**
@@ -157,7 +140,7 @@ public class ContextReporter {
      * @param displaySelection The information about the selection being displayed.
      */
     private void reportDisplaySelection(@Nullable GSAContextDisplaySelection displaySelection) {
-        Tab currentTab = mCurrentTabSupplier.get();
+        Tab currentTab = mActivity.getActivityTab();
         reportUsageOfCurrentContextIfPossible(currentTab, false, displaySelection);
     }
 
@@ -165,15 +148,9 @@ public class ContextReporter {
         if (mContextInUse.compareAndSet(true, false)) mDelegate.reportContextUsageEnded();
     }
 
-    /**
-     * Reports the usage of the current context.
-     * @param tab Tab being used for the reporting.
-     * @param isTitleChange {@code true} if the title is updated.
-     * @param displaySelection The information about the selection being displayed.
-     */
     private void reportUsageOfCurrentContextIfPossible(
             Tab tab, boolean isTitleChange, @Nullable GSAContextDisplaySelection displaySelection) {
-        Tab currentTab = mCurrentTabSupplier.get();
+        Tab currentTab = mActivity.getActivityTab();
         if (currentTab == null || currentTab.isIncognito()) {
             if (currentTab == null) {
                 reportStatus(STATUS_NO_TAB);
@@ -187,9 +164,8 @@ public class ContextReporter {
         }
 
         String currentUrl = currentTab.getUrlString();
-        if (TextUtils.isEmpty(currentUrl)
-                || !(currentUrl.startsWith(UrlConstants.HTTP_URL_PREFIX)
-                        || currentUrl.startsWith(UrlConstants.HTTPS_URL_PREFIX))) {
+        if (TextUtils.isEmpty(currentUrl) || !(currentUrl.startsWith(UrlConstants.HTTP_URL_PREFIX)
+                || currentUrl.startsWith(UrlConstants.HTTPS_URL_PREFIX))) {
             reportStatus(STATUS_INVALID_SCHEME);
             Log.d(TAG, "Not reporting, URL scheme is invalid");
             reportUsageEndedIfNecessary();
@@ -231,5 +207,21 @@ public class ContextReporter {
     public static void reportStatus(int status) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Search.IcingContextReportingStatus", status, STATUS_BOUNDARY);
+    }
+
+    /**
+     * Records an appropriate status via UMA given the current sync status.
+     */
+    public static void reportSyncStatus(@Nullable ProfileSyncService syncService) {
+        if (syncService == null || !syncService.isEngineInitialized()) {
+            reportStatus(STATUS_SYNC_NOT_INITIALIZED);
+        } else if (!syncService.getActiveDataTypes().contains(ModelType.TYPED_URLS)) {
+            reportStatus(STATUS_SYNC_NOT_SYNCING_URLS);
+        } else if (syncService.getPassphraseType() != PassphraseType.KEYSTORE_PASSPHRASE
+                && syncService.getPassphraseType() != PassphraseType.TRUSTED_VAULT_PASSPHRASE) {
+            reportStatus(STATUS_SYNC_NOT_KEYSTORE_PASSPHRASE);
+        } else {
+            reportStatus(STATUS_SYNC_OTHER);
+        }
     }
 }

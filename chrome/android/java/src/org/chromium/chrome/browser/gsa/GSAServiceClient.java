@@ -19,6 +19,7 @@ import android.util.Log;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.AppHooks;
 
 /**
  * A simple client that connects and talks to the GSAService using Messages.
@@ -84,15 +85,14 @@ public class GSAServiceClient {
      *
      * @param context Appliation context.
      * @param onMessageReceived optional callback when a message is received.
-     * @param gsaHelper Helper object for triggering interation methods with GSA.
      */
-    GSAServiceClient(Context context, Callback<Bundle> onMessageReceived, GSAHelper gsaHelper) {
+    GSAServiceClient(Context context, Callback<Bundle> onMessageReceived) {
         mContext = context.getApplicationContext();
         mOnMessageReceived = onMessageReceived;
         mHandler = new IncomingHandler();
         mMessenger = new Messenger(mHandler);
         mConnection = new GSAServiceConnection();
-        mGsaHelper = gsaHelper;
+        mGsaHelper = AppHooks.get().createGsaHelper();
     }
 
     /**
@@ -145,7 +145,8 @@ public class GSAServiceClient {
 
             mService = new Messenger(service);
             try {
-                Message registerClientMessage = Message.obtain(null, REQUEST_REGISTER_CLIENT);
+                Message registerClientMessage = Message.obtain(
+                        null, REQUEST_REGISTER_CLIENT);
                 registerClientMessage.replyTo = mMessenger;
                 Bundle b = mGsaHelper.getBundleForRegisteringGSAClient(mContext);
                 if (b == null) b = new Bundle();
