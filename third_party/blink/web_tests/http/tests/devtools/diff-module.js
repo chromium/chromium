@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the Diff module correctly diffs things.\n`);
-  await TestRunner.loadModule('diff');
+  await TestRunner.loadLegacyModule('diff');
 
   print(Diff.Diff.charDiff('test this sentence.', 'test that sentence'));
   print(Diff.Diff.lineDiff(['test this sentence.'], ['test that sentence']));
