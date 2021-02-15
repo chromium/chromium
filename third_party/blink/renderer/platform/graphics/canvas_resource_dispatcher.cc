@@ -8,6 +8,9 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/single_thread_task_runner.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -65,7 +68,10 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
       num_unreclaimed_frames_posted_(0),
       client_(client),
       agent_group_scheduler_compositor_task_runner_(
-          std::move(agent_group_scheduler_compositor_task_runner)) {
+          std::move(agent_group_scheduler_compositor_task_runner)),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation.Canvas")) {
   // Frameless canvas pass an invalid |frame_sink_id_|; don't create mojo
   // channel for this special case.
   if (!frame_sink_id_.is_valid())
@@ -321,8 +327,19 @@ void CanvasResourceDispatcher::SetSuspendAnimation(bool suspend_animation) {
 }
 
 void CanvasResourceDispatcher::SetNeedsBeginFrameInternal() {
-  if (sink_)
-    sink_->SetNeedsBeginFrame(needs_begin_frame_ && !suspend_animation_);
+  if (!sink_)
+    return;
+
+  bool needs_begin_frame = needs_begin_frame_ && !suspend_animation_;
+  sink_->SetNeedsBeginFrame(needs_begin_frame);
+
+  if (needs_begin_frame) {
+    animation_power_mode_voter_->VoteFor(
+        power_scheduler::PowerMode::kAnimation);
+  } else {
+    animation_power_mode_voter_->ResetVoteAfterTimeout(
+        power_scheduler::PowerModeVoter::kAnimationTimeout);
+  }
 }
 
 bool CanvasResourceDispatcher::HasTooManyPendingFrames() const {

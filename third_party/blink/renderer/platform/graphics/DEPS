@@ -14,6 +14,7 @@ include_rules = [
     "+base/barrier_closure.h",
     "+cc",
     "+components/paint_preview/common",
+    "+components/power_scheduler",
     "+components/viz/client",
     "+components/viz/common",
     "+gpu/config",

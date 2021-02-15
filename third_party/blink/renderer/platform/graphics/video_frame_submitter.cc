@@ -11,6 +11,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "media/base/video_frame.h"
@@ -37,7 +40,10 @@ VideoFrameSubmitter::VideoFrameSubmitter(
       rotation_(media::VIDEO_ROTATION_0),
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
-      frame_trackers_(false, nullptr) {
+      frame_trackers_(false, nullptr),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation.Video")) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -65,6 +71,8 @@ void VideoFrameSubmitter::StartRendering() {
 
   if (compositor_frame_sink_) {
     compositor_frame_sink_->SetNeedsBeginFrame(IsDrivingFrameUpdates());
+    animation_power_mode_voter_->VoteFor(
+        power_scheduler::PowerMode::kAnimation);
   }
 
   frame_trackers_.StartSequence(cc::FrameSequenceTrackerType::kVideo);
@@ -374,11 +382,15 @@ void VideoFrameSubmitter::UpdateSubmissionState() {
 
   const auto is_driving_frame_updates = IsDrivingFrameUpdates();
   compositor_frame_sink_->SetNeedsBeginFrame(is_driving_frame_updates);
+  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
   // If we're not driving frame updates, then we're paused / off-screen / etc.
   // Roughness reporting should stop until we resume.  Since the current frame
   // might be on-screen for a long time, we also discard the current window.
-  if (!is_driving_frame_updates)
+  if (!is_driving_frame_updates) {
     roughness_reporter_->Reset();
+    animation_power_mode_voter_->ResetVoteAfterTimeout(
+        power_scheduler::PowerModeVoter::kAnimationTimeout);
+  }
 
   // These two calls are very important; they are responsible for significant
   // memory savings when content is off-screen.

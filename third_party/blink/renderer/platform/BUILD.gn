@@ -1649,6 +1649,7 @@ component("platform") {
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/paint_preview/common",
+    "//components/power_scheduler",
     "//components/search_engines:search_engine_utils",
     "//components/viz/client",
     "//components/viz/common",

@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/shared_bitmap.h"
@@ -194,6 +195,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // frames should be ignored by the video tracker even if they are reported as
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   THREAD_CHECKER(thread_checker_);
 
