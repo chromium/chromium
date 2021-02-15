@@ -20,6 +20,9 @@ namespace {
 // Padding used between the text and error icon.
 const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
 
+// Size of the error icon image.
+const CGFloat KErrorIconImageSize = 18;
+
 }  // namespace
 
 @implementation TableViewAccountItem
@@ -144,8 +147,8 @@ const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
 
   _textLeadingAnchorConstraint = [_textLabel.leadingAnchor
       constraintEqualToAnchor:_imageView.trailingAnchor];
-  _errorIconWidthConstraint = [_errorIcon.widthAnchor
-      constraintEqualToConstant:kTableViewIconImageSize];
+  _errorIconWidthConstraint =
+      [_errorIcon.widthAnchor constraintEqualToConstant:KErrorIconImageSize];
   [NSLayoutConstraint activateConstraints:@[
     // Set leading anchors.
     [_imageView.leadingAnchor
@@ -158,6 +161,7 @@ const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
     [_imageView.widthAnchor constraintEqualToConstant:kTableViewIconImageSize],
     [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
     _errorIconWidthConstraint,
+    [_errorIcon.heightAnchor constraintEqualToAnchor:_errorIcon.widthAnchor],
 
     // Set vertical anchors.
     [_imageView.centerYAnchor
@@ -225,7 +229,7 @@ const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
   }
 
   if (_errorIcon.image) {
-    _errorIconWidthConstraint.constant = kTableViewIconImageSize;
+    _errorIconWidthConstraint.constant = KErrorIconImageSize;
   } else {
     _errorIconWidthConstraint.constant = 0;
   }
