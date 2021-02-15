@@ -1601,26 +1601,10 @@ void NavigationRequest::BeginNavigation() {
         frame_tree_node_->current_frame_host()->GetStoragePartition());
     PrerenderHostRegistry* prerender_host_registry =
         storage_partition_impl->GetPrerenderHostRegistry();
-    DCHECK(prerender_host_registry);
-    std::unique_ptr<PrerenderHost> prerender_host =
-        prerender_host_registry->FindHostToActivate(common_params_->url,
-                                                    *frame_tree_node_);
-
-    switch (blink::features::kPrerender2ImplementationParam.Get()) {
-      case blink::features::Prerender2Implementation::kWebContents:
-        // If `prerender_host_` exists, this navigation will activate the
-        // prerendered page on navigation commit.
-        prerender_host_ = std::move(prerender_host);
-        break;
-      // TODO(https://crbug.com/1170277): Remove once activation support is
-      // added to MPArch
-      case blink::features::Prerender2Implementation::kMPArch:
-        // The feature param disallows activation of the prerendered page for
-        // testing. Destroy `prerender_host` to dispose of the prerendered
-        // page.
-        prerender_host.reset();
-        break;
-    }
+    prerender_host_ = prerender_host_registry->FindHostToActivate(
+        common_params_->url, *frame_tree_node_);
+    // If `prerender_host_` exists, this navigation will activate the
+    // prerendered page on navigation commit.
   }
 
   WillStartRequest();

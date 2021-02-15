@@ -129,6 +129,18 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
   if (!host->is_ready_for_activation())
     return nullptr;
 
+  switch (blink::features::kPrerender2ImplementationParam.Get()) {
+    case blink::features::Prerender2Implementation::kWebContents:
+      break;
+    case blink::features::Prerender2Implementation::kMPArch:
+      // The feature param disallows activation of the prerendered page for
+      // testing. Destroy the host to dispose of the prerendered page and return
+      // nullptr.
+      // TODO(https://crbug.com/1170277): Remove once activation support is
+      // added to MPArch.
+      return nullptr;
+  }
+
   return host;
 }
 
