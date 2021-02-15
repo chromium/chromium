@@ -82,6 +82,11 @@ void PlatformSensorChromeOS::OnSampleUpdated(
     }
   }
 
+  if (num_failed_reads_ > 0 && ++num_recovery_reads_ == kNumRecoveryReads) {
+    num_recovery_reads_ = 0;
+    --num_failed_reads_;
+  }
+
   SensorReading reading;
 
   switch (GetType()) {
@@ -162,6 +167,7 @@ void PlatformSensorChromeOS::OnErrorOccurred(
 
     case chromeos::sensors::mojom::ObserverErrorType::READ_FAILED:
       LOG(ERROR) << "Sensor " << iio_device_id_ << ": Failed to read a sample";
+      OnReadFailure();
       break;
 
     case chromeos::sensors::mojom::ObserverErrorType::READ_TIMEOUT:
@@ -379,6 +385,20 @@ void PlatformSensorChromeOS::SetChannelsEnabledCallback(
 
 double PlatformSensorChromeOS::GetScaledValue(int64_t value) const {
   return value * scale_;
+}
+
+void PlatformSensorChromeOS::OnReadFailure() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (++num_failed_reads_ < kNumFailedReadsBeforeGivingUp) {
+    LOG(ERROR) << "ReadSamples error #" << num_failed_reads_ << " occurred";
+    return;
+  }
+
+  num_failed_reads_ = num_recovery_reads_ = 0;
+
+  LOG(ERROR) << "Too many failed reads";
+  ResetOnError();
 }
 
 }  // namespace device

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -51,6 +52,12 @@ class PlatformSensorChromeOS
   void StopSensor() override;
 
  private:
+  // Those numbers were based on the values used in CrOS Power Manager:
+  // src/platform2/power_manager/powerd/system/ambient_light_sensor_delegate_mojo.h
+  static constexpr uint32_t kNumFailedReadsBeforeGivingUp = 20;
+  // Number of successful reads to recover |num_failed_reads_| by one.
+  static constexpr uint32_t kNumRecoveryReads = 2;
+
   void ResetOnError();
 
   void StartReadingIfReady();
@@ -70,6 +77,8 @@ class PlatformSensorChromeOS
   void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices);
 
   double GetScaledValue(int64_t value) const;
+
+  void OnReadFailure();
 
   int32_t iio_device_id_;
   const PlatformSensorConfiguration default_configuration_;
@@ -93,12 +102,22 @@ class PlatformSensorChromeOS
   // and IPC can be notified that updates are available.
   SensorReading old_values_;
 
+  // Number of failed reads. Triggers an error if it reaches
+  // kNumFailedReadsBeforeGivingUp.
+  uint32_t num_failed_reads_ = 0;
+  // Every time this reaches kNumRecoveryReads |num_failed_reads_| is
+  // decremented by 1.
+  uint32_t num_recovery_reads_ = 0;
+
   mojo::Receiver<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
       receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PlatformSensorChromeOS> weak_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorChromeOSOneChannelTest,
+                           ResetOnTooManyFailures);
 };
 
 }  // namespace device

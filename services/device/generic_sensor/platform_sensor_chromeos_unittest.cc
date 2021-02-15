@@ -158,7 +158,7 @@ class PlatformSensorChromeOSOneChannelTest
 };
 
 TEST_P(PlatformSensorChromeOSOneChannelTest, MissingChannels) {
-  SetChannels(GetParam().second, false);
+  SetChannels(GetParam().second, /*set_first_channel=*/false);
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
@@ -175,7 +175,7 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, MissingChannels) {
 }
 
 TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
-  SetChannels(GetParam().second, true);
+  SetChannels(GetParam().second, /*set_first_channel=*/true);
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
@@ -203,6 +203,44 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
   EXPECT_CALL(*client.get(), OnSensorError())
       .WillOnce(base::test::RunOnceClosure(loop.QuitClosure()));
   loop.Run();
+
+  sensor_->RemoveClient(client.get());
+}
+
+TEST_P(PlatformSensorChromeOSOneChannelTest, ResetOnTooManyFailures) {
+  SetChannels(GetParam().second, /*set_first_channel=*/true);
+
+  auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
+  sensor_->AddClient(client.get());
+  sensor_->StartListening(client.get(),
+                          PlatformSensorConfiguration(
+                              GetSensorMaxAllowedFrequency(GetParam().first)));
+  EXPECT_TRUE(sensor_->IsActiveForTesting());
+
+  WaitForAndCheckReading(client.get());
+
+  EXPECT_CALL(*client.get(), OnSensorError()).Times(0);
+  for (size_t i = 0;
+       i < PlatformSensorChromeOS::kNumFailedReadsBeforeGivingUp - 1; ++i) {
+    sensor_->OnErrorOccurred(
+        chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);
+  }
+
+  base::flat_map<int32_t, int64_t> sample;
+  sample[0] = kFakeSampleData;
+  sample[1] = kFakeTimestampData;
+
+  for (size_t i = 0; i < PlatformSensorChromeOS::kNumRecoveryReads; ++i)
+    sensor_->OnSampleUpdated(sample);
+
+  // |num_failed_reads_| is recovered by 1.
+  sensor_->OnErrorOccurred(
+      chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);
+
+  EXPECT_CALL(*client.get(), OnSensorError()).Times(1);
+
+  sensor_->OnErrorOccurred(
+      chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);
 
   sensor_->RemoveClient(client.get());
 }
