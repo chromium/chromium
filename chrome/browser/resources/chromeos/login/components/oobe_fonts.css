@@ -8,7 +8,7 @@
   --oobe-header-font-family: "Google Sans", Roboto, sans-serif;
 
   --oobe-header-font-size: 28px;
-  --oobe-header-line-height: 36px;
+  --oobe-radio-card-label-font-size: 18px;
   --oobe-modal-dialog-header-font-size: 15px;
   --oobe-default-font-size: 13px;
 
@@ -22,6 +22,8 @@
   --oobe-subheader-text-color: var(--google-grey-700);
   --oobe-text-color: var(--google-grey-700);
 
+  --oobe-header-line-height: 36px;
+  --oobe-radio-card-label-line-height: 24px;
   --oobe-default-line-height: 20px;
 
   --oobe-default-font: {
