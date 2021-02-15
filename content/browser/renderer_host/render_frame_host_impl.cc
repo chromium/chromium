@@ -4543,9 +4543,8 @@ void RenderFrameHostImpl::UpdateBrowserControlsState(
 }
 
 bool RenderFrameHostImpl::Reload() {
-  NavigationControllerImpl* controller = static_cast<NavigationControllerImpl*>(
-      frame_tree_node_->navigator().GetController());
-  return controller->ReloadFrame(frame_tree_node_);
+  return frame_tree_node_->navigator().controller().ReloadFrame(
+      frame_tree_node_);
 }
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(

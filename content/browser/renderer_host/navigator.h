@@ -81,10 +81,6 @@ class CONTENT_EXPORT Navigator {
   // Returns the delegate of this Navigator.
   NavigatorDelegate* GetDelegate();
 
-  // Returns the NavigationController associated with this Navigator.
-  // TODO(https://crbug.com/1170277): Remove. Use controller() instead
-  NavigationController* GetController() { return &controller_; }
-
   // Notifications coming from the RenderFrameHosts ----------------------------
 
   // The RenderFrameHostImpl has failed to load the document.
@@ -203,6 +199,7 @@ class CONTENT_EXPORT Navigator {
   // commit the current navigation.
   void LogCommitNavigationSent();
 
+  // Returns the NavigationController associated with this Navigator.
   NavigationControllerImpl& controller() { return controller_; }
 
  private:

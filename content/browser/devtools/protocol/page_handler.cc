@@ -504,7 +504,7 @@ void PageHandler::Navigate(const std::string& url,
   params.referrer = Referrer(GURL(referrer.fromMaybe("")), policy);
   params.transition_type = type;
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
-  frame_tree_node->navigator().GetController()->LoadURLWithParams(params);
+  frame_tree_node->navigator().controller().LoadURLWithParams(params);
 
   base::UnguessableToken frame_token = frame_tree_node->devtools_frame_token();
   auto navigate_callback = navigate_callbacks_.find(frame_token);

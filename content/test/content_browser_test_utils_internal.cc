@@ -53,7 +53,7 @@ bool NavigateFrameToURL(FrameTreeNode* node, const GURL& url) {
   params.frame_tree_node_id = node->frame_tree_node_id();
   FrameTree* frame_tree = node->frame_tree();
 
-  node->navigator().GetController()->LoadURLWithParams(params);
+  node->navigator().controller().LoadURLWithParams(params);
   observer.Wait();
 
   if (!observer.last_navigation_succeeded()) {

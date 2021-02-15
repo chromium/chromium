@@ -171,8 +171,8 @@ FrameTreeNode::~FrameTreeNode() {
   // never be reused - we can save some memory by removing the history entry.
   // See also https://crbug.com/784356.
   if (is_created_by_script_ && parent_) {
-    NavigationEntryImpl* nav_entry = static_cast<NavigationEntryImpl*>(
-        navigator().GetController()->GetLastCommittedEntry());
+    NavigationEntryImpl* nav_entry =
+        navigator().controller().GetLastCommittedEntry();
     if (nav_entry) {
       nav_entry->RemoveEntryForFrame(this,
                                      /* only_if_different_position = */ false);

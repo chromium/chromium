@@ -375,11 +375,10 @@ class RenderFrameHostManagerTest
     FrameNavigationEntry* frame_entry = entry->root_node()->frame_entry.get();
     FrameTreeNode* frame_tree_node =
         manager->current_frame_host()->frame_tree_node();
-    NavigationControllerImpl* controller =
-        static_cast<NavigationControllerImpl*>(manager->current_frame_host()
-                                                   ->frame_tree_node()
-                                                   ->navigator()
-                                                   .GetController());
+    NavigationControllerImpl& controller = manager->current_frame_host()
+                                               ->frame_tree_node()
+                                               ->navigator()
+                                               .controller();
     mojom::NavigationType navigate_type =
         entry->IsRestored() ? mojom::NavigationType::RESTORE
                             : mojom::NavigationType::DIFFERENT_DOCUMENT;
@@ -405,11 +404,9 @@ class RenderFrameHostManagerTest
             *frame_entry, common_params->url, frame_entry->committed_origin(),
             common_params->method,
             entry->GetSubframeUniqueNames(frame_tree_node),
-            controller->GetPendingEntryIndex() ==
-                -1 /* intended_as_new_entry */,
-            controller->GetIndexOfEntry(entry),
-            controller->GetLastCommittedEntryIndex(),
-            controller->GetEntryCount(),
+            controller.GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
+            controller.GetIndexOfEntry(entry),
+            controller.GetLastCommittedEntryIndex(), controller.GetEntryCount(),
             frame_tree_node->current_replication_state().frame_policy);
     commit_params->post_content_type = post_content_type;
 
