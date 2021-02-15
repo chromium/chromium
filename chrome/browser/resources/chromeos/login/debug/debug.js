@@ -292,6 +292,10 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'offline-ad-login',
       kind: ScreenKind.NORMAL,
+      // Remove this step from preview here, because it can only occur during
+      // enterprise enrollment step and it is already available there in debug
+      // overlay.
+      handledSteps: 'unlock',
       suffix: 'E',
     },
     {

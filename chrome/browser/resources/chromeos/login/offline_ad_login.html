@@ -9,7 +9,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
 <!--
@@ -49,17 +49,17 @@
 <dom-module id="offline-ad-login-element">
   <template>
     <style include="md-select oobe-dialog-host">
+      :host-context(html[new-layout]) div[slot='content'] {
+        /* Center content vertically. */
+        margin-bottom: auto;
+        margin-top: auto;
+      }
+
       .select-title {
         color: var(--google-grey-900);
         font-size: 13px;
         line-height: var(--subtitle-line-height);
         padding-inline-end: 16px;
-      }
-
-      oobe-dialog[slot='subtitle'] {
-        color: rgb(95, 99, 104);
-        padding-bottom: 64px;
-        padding-top: 2px;
       }
 
       .encryption-subtitle {
@@ -102,11 +102,6 @@
         width: 240px;
       }
 
-      #moreOptionsDlg[slot='title'] {
-        padding-bottom: 18px;
-        padding-top: 20px;
-      }
-
       #moreOptionsDlg {
         --cr-input-error-display: none;
       }
@@ -115,42 +110,49 @@
         padding-bottom: 28px;
       }
     </style>
-    <oobe-dialog id="unlockStep" for-step="unlock"
-        title-key="adUnlockTitle"
-        subtitle-key="adUnlockSubtitle"
-        aria-label$="[[i18nDynamic(locale, adWelcomeMessagekey)]]" has-buttons>
-      <hd-iron-icon slot="oobe-icon"
+    <oobe-adaptive-dialog id="unlockStep" for-step="unlock" role="dialog"
+        aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
-      <div slot="footer" id="adUnlock">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'adUnlockTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'adUnlockSubtitle')]]
+      </div>
+      <div slot="content" id="adUnlock">
         <cr-input id="unlockPasswordInput" type="password" slot="inputs"
-            invalid="{{unlockPasswordInvalid}}"
+            invalid="{{unlockPasswordInvalid}}" class="focus-on-show"
             label="[[i18nDynamic(locale, 'adUnlockPassword')]]"
             error-message="[[i18nDynamic(locale, 'adUnlockIncorrectPassword')]]"
             disabled="[[disabled]]" on-keydown="onKeydownUnlockPassword_"
             required>
         </cr-input>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="skipButton" on-click="onSkipClicked_"
             text-key="adUnlockPasswordSkip"></oobe-text-button>
         <oobe-next-button id="unlockButton"
             on-click="onUnlockPasswordEntered_"></oobe-next-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="credsStep" for-step="creds"
-        title-key="[[adWelcomeMessageKey]]"
-        aria-label$="[[i18nDynamic(locale, adWelcomeMessagekey)]]" has-buttons>
-      <hd-iron-icon slot="oobe-icon" hidden="[[!isDomainJoin]]"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="credsStep" for-step="creds" role="dialog"
+        aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">
+      <hd-iron-icon slot="icon" hidden="[[!isDomainJoin]]"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, adWelcomeMessageKey)]]
+      </h1>
       <div slot="subtitle" hidden="[[isDomainJoin]]">
         [[i18nDynamic(locale, 'enterpriseInfoMessage', realm)]]
       </div>
       <paper-progress slot="progress" hidden="[[!loading]]" indeterminate>
       </paper-progress>
-      <div slot="footer" hidden="[[loading]]">
-        <div class="layout vertical" hidden id="joinConfig">
+      <div slot="content" hidden="[[loading]]">
+        <div class="layout vertical" id="joinConfig"
+            hidden="[[!joinConfigVisible_]]">
           <span class="select-divider-line top-line"></span>
           <div class="layout horizontal justified">
             <div class="flex self-center select-title">
@@ -161,13 +163,13 @@
           </div>
           <span class="select-divider-line bottom-line"></span>
         </div>
-        <div class="vertical layout">
+        <div class="layout vertical">
           <cr-input slot="inputs" id="machineNameInput" required
               hidden="[[!isDomainJoin]]" value="{{machineName}}"
               disabled="[[disabled]]" invalid="[[machineNameInvalid]]"
               pattern="[[machineNameInputPattern_]]"
               label="[[i18nDynamic(locale, 'oauthEnrollAdMachineNameInput')]]"
-              on-keydown="onKeydownMachineNameInput_"
+              on-keydown="onKeydownMachineNameInput_" class="focus-on-show"
               error-message="[[getMachineNameError_(locale, errorState,
                   selectedConfigOption_)]]">
           </cr-input>
@@ -204,7 +206,8 @@
       </div>
       <div slot="back-navigation" hidden="[[loading]]">
         <oobe-back-button id="backToUnlockButton" on-click="onBackToUnlock_"
-            disabled="[[disabled]]" hidden></oobe-back-button>
+            disabled="[[disabled]]" hidden="[[!backToUnlockButtonVisible_]]">
+        </oobe-back-button>
         <oobe-back-button id="backButton" on-click="onBackButton_"
             hidden="[[isDomainJoin]]"></oobe-back-button>
       </div>
@@ -212,7 +215,7 @@
         <oobe-next-button id="nextButton" on-click="onSubmit_"
             disabled="[[disabled]]"></oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <cr-dialog id="moreOptionsDlg" on-close="onMoreOptionsClosed_">
       <div slot="title">
