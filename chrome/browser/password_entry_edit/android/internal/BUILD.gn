@@ -10,7 +10,13 @@ android_library("java") {
     "//chrome/android:chrome_all_java",
   ]
 
-  sources = [ "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditBridge.java",
+    "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditCoordinator.java",
+    "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditMediator.java",
+    "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditProperties.java",
+    "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditUiFactory.java",
+  ]
 
   deps = [
     "//base:base_java",
@@ -18,7 +24,23 @@ android_library("java") {
     "//chrome/browser/password_entry_edit/android:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditControllerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_junit_test_support",
+    "//chrome/browser/password_entry_edit/android:java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
 }

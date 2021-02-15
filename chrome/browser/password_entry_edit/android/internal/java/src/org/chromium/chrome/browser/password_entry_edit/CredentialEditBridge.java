@@ -20,11 +20,14 @@ class CredentialEditBridge {
     private static CredentialEditBridge sCredentialEditBridge;
 
     private long mNativeCredentialEditBridge;
+    private CredentialEditCoordinator mCoordinator;
 
     @Nullable
     static CredentialEditBridge get() {
         return sCredentialEditBridge;
     }
+
+    private CredentialEditBridge(long nativeCredentialEditBridge) {}
 
     private CredentialEditBridge() {}
 
@@ -43,10 +46,17 @@ class CredentialEditBridge {
         settingsLauncher.launchSettingsActivity(context, CredentialEditFragmentView.class);
     }
 
+    public void initialize(CredentialEditCoordinator coordinator) {
+        mCoordinator = coordinator;
+        // This will result in setCredential being called from native with the required data.
+        CredentialEditBridgeJni.get().getCredential(mNativeCredentialEditBridge);
+    }
+
     @CalledByNative
     void setCredential(String displayUrlOrAppName, String username, String password,
             String displayFederationOrigin) {
-        // TODO(crbug.com/1170289): Pass the credential data to the UI to be displayed.
+        mCoordinator.setCredential(
+                displayUrlOrAppName, username, password, displayFederationOrigin);
     }
 
     // This can be called either before or after the native counterpart has gone away, depending
@@ -61,7 +71,7 @@ class CredentialEditBridge {
 
     @CalledByNative
     void destroy() {
-        // TODO(crbug.com/1175785): Dismiss the UI, if it wasn't dismissed already.
+        if (mCoordinator != null) mCoordinator.dismiss();
         mNativeCredentialEditBridge = 0;
         sCredentialEditBridge = null;
     }

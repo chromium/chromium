@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 source_set("android") {
   sources = [
@@ -39,4 +40,13 @@ android_library("java") {
 android_resources("java_resources") {
   sources = []
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
+}
+
+android_library_factory("factory_java") {
+  # These deps will be inherited by the resulting android_library target.
+  deps = [ ":java" ]
+
+  # This internal file will be replaced by a generated file so the resulting
+  # android_library target does not actually depend on this internal file.
+  sources = [ "//chrome/browser/password_entry_edit/android/internal/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditUiFactory.java" ]
 }
