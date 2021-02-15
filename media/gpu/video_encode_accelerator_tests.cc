@@ -560,6 +560,14 @@ TEST_F(VideoEncoderTest,
                                         original_resolution.height());
   const gfx::Size expanded_resolution(
       original_resolution.width(), original_resolution.height() + kGrowHeight);
+  constexpr gfx::Size kMaxExpandedResolution(1920, 1080);
+  if (!gfx::Rect(kMaxExpandedResolution)
+           .Contains(gfx::Rect(expanded_resolution))) {
+    GTEST_SKIP() << "Expanded video resolution is too large, "
+                 << "expanded_resolution=" << expanded_resolution.ToString()
+                 << ", maximum expanded resolution="
+                 << kMaxExpandedResolution.ToString();
+  }
 
   auto nv12_expanded_video = g_env->GenerateNV12Video()->Expand(
       expanded_resolution, expanded_visible_rect);
@@ -591,6 +599,14 @@ TEST_F(VideoEncoderTest,
                                         original_resolution.height());
   const gfx::Size expanded_resolution(original_resolution.width() + kGrowWidth,
                                       original_resolution.height());
+  constexpr gfx::Size kMaxExpandedResolution(1920, 1080);
+  if (!gfx::Rect(kMaxExpandedResolution)
+           .Contains(gfx::Rect(expanded_resolution))) {
+    GTEST_SKIP() << "Expanded video resolution is too large, "
+                 << "expanded_resolution=" << expanded_resolution.ToString()
+                 << ", maximum expanded resolution="
+                 << kMaxExpandedResolution.ToString();
+  }
 
   auto nv12_expanded_video = g_env->GenerateNV12Video()->Expand(
       expanded_resolution, expanded_visible_rect);
