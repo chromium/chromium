@@ -98,6 +98,13 @@ void AccountManagerFacadeImpl::GetAccounts(
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
+    const AccountAdditionSource& source) {
+  ShowAddAccountDialog(
+      source,
+      base::DoNothing::Once<const account_manager::AccountAdditionResult&>());
+}
+
+void AccountManagerFacadeImpl::ShowAddAccountDialog(
     const AccountAdditionSource& source,
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {

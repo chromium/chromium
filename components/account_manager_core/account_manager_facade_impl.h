@@ -43,6 +43,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void RemoveObserver(Observer* observer) override;
   void GetAccounts(
       base::OnceCallback<void(const std::vector<Account>&)> callback) override;
+  void ShowAddAccountDialog(const AccountAdditionSource& source) override;
   void ShowAddAccountDialog(
       const AccountAdditionSource& source,
       base::OnceCallback<void(const account_manager::AccountAdditionResult&

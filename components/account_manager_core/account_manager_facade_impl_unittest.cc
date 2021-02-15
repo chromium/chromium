@@ -299,9 +299,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogCallsMojo) {
   EXPECT_EQ(0, account_manager().show_add_account_dialog_calls());
   account_manager_facade->ShowAddAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsAddAccountButton,
-      base::BindOnce(
-          [](const account_manager::AccountAdditionResult& result) {}));
+          kSettingsAddAccountButton);
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
 }
@@ -316,9 +314,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {
   auto source = account_manager::AccountManagerFacade::AccountAdditionSource::
       kSettingsAddAccountButton;
 
-  account_manager_facade->ShowAddAccountDialog(
-      source, base::BindOnce(
-                  [](const account_manager::AccountAdditionResult& result) {}));
+  account_manager_facade->ShowAddAccountDialog(source);
   account_manager_facade->FlushMojoForTesting();
 
   // Check that UMA stats were sent.
