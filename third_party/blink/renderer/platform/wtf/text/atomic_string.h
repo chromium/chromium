@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace WTF {
 
@@ -225,6 +226,8 @@ class WTF_EXPORT AtomicString {
   bool IsSafeToSendToAnotherThread() const {
     return string_.IsSafeToSendToAnotherThread();
   }
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
 #ifndef NDEBUG
   void Show() const;

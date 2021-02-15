@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 #ifndef NDEBUG
@@ -911,6 +912,10 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements) {
 bool KURL::IsSafeToSendToAnotherThread() const {
   return string_.IsSafeToSendToAnotherThread() &&
          (!inner_url_ || inner_url_->IsSafeToSendToAnotherThread());
+}
+
+void KURL::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  return perfetto::WriteIntoTracedValue(std::move(context), GetString());
 }
 
 KURL::operator GURL() const {

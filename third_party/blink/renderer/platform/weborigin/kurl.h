@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -237,6 +238,8 @@ class PLATFORM_EXPORT KURL {
   // a GURL to a layer that is expecting one instead of a KURL or a WebURL.
   // TODO(crbug.com/862940): Make this conversion explicit.
   operator GURL() const;
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   friend struct WTF::HashTraits<blink::KURL>;

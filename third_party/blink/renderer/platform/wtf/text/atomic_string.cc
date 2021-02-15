@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace WTF {
 
@@ -95,6 +96,10 @@ AtomicString AtomicString::Number(double number, unsigned precision) {
 
 std::ostream& operator<<(std::ostream& out, const AtomicString& s) {
   return out << s.GetString();
+}
+
+void AtomicString::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  perfetto::WriteIntoTracedValue(std::move(context), GetString());
 }
 
 #ifndef NDEBUG
