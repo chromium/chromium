@@ -54,17 +54,22 @@ export class EmojiButton extends PolymerElement {
 
     if (this.variants && this.variants.length) {
       this.variantsVisible = !this.variantsVisible;
-      if (this.variantsVisible) {
-        // need to defer this until <emoji-variants> is created and sized by
-        // Polymer.
-        beforeNextRender(this, () => {
-          this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
-            button: this,
-            variants: this.shadowRoot.querySelector('emoji-variants'),
-          }));
-        });
-      }
     }
+
+    // send event so emoji-picker knows to close other variants.
+    // need to defer this until <emoji-variants> is created and sized by
+    // Polymer.
+    beforeNextRender(this, () => {
+      const button = this.variantsVisible ? this : null;
+      const variants = this.variantsVisible ?
+          this.shadowRoot.querySelector('emoji-variants') :
+          null;
+
+      this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
+        button,
+        variants,
+      }));
+    });
   }
 
   _className(variants) {
