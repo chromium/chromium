@@ -32,8 +32,6 @@ struct Feature;
 
 namespace features {
 
-extern const BASE_EXPORT Feature kPartitionAllocGigaCage;
-
 #if PA_ALLOW_PCSCAN
 extern const BASE_EXPORT Feature kPartitionAllocPCScan;
 #endif  // PA_ALLOW_PCSCAN
@@ -66,11 +64,7 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
   if (!recent_enough_windows_version)
     return false;
 #endif  // defined(PA_HAS_64_BITS_POINTERS) && defined(OS_WIN)
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return true;
-#else
-  return FeatureList::IsEnabled(kPartitionAllocGigaCage);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 }  // namespace features
