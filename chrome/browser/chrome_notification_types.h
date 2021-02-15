@@ -119,12 +119,6 @@ enum NotificationType {
 
   // Profiles -----------------------------------------------------------------
 
-  // Sent after a Profile has been created. This notification is sent both for
-  // normal and OTR profiles.
-  // The details are none and the source is the new profile.
-  // TODO(https://crbug.com/1174786): Remove.
-  NOTIFICATION_PROFILE_CREATED,
-
   // Use ProfileManagerObserver::OnProfileAdded instead of this notification.
   // Sent after a Profile has been added to ProfileManager.
   // The details are none and the source is the new profile.

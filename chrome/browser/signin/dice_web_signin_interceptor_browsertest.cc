@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -121,35 +122,6 @@ class FakeDiceWebSigninInterceptorDelegate
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
 };
-
-// Waits until a new profile is created.
-class ProfileWaiter : public ProfileManagerObserver {
- public:
-  ProfileWaiter() {
-    profile_manager_observer_.Add(g_browser_process->profile_manager());
-  }
-
-  ~ProfileWaiter() override = default;
-
-  Profile* WaitForProfileAdded() {
-    run_loop_.Run();
-    return profile_;
-  }
-
- private:
-  // ProfileManagerObserver:
-  void OnProfileAdded(Profile* profile) override {
-    profile_manager_observer_.RemoveAll();
-    profile_ = profile;
-    run_loop_.Quit();
-  }
-
-  Profile* profile_ = nullptr;
-  ScopedObserver<ProfileManager, ProfileManagerObserver>
-      profile_manager_observer_{this};
-  base::RunLoop run_loop_;
-};
-
 
 // Runs the interception and returns the new profile that was created.
 Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,

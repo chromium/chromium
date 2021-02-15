@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/login_policy_test_base.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/policy_service.h"
@@ -233,11 +233,9 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
 
   SkipToLoginScreen();
 
-  content::WindowedNotificationObserver profile_created_observer(
-      chrome::NOTIFICATION_PROFILE_CREATED,
-      content::NotificationService::AllSources());
+  ProfileWaiter profile_waiter;
   TriggerLogIn(kAccountId, kAccountPassword, kEmptyServices);
-  profile_created_observer.Wait();
+  profile_waiter.WaitForProfileAdded();
 
   const base::Value* policy_value =
       device_wide_policy_service
@@ -252,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
 
   // Make sure that session startup finishes before letting chrome exit.
   // Rationale: We've seen CHECK-failures when exiting chrome right after
-  // NOTIFICATION_PROFILE_CREATED, see e.g. https://crbug.com/1002066 .
+  // a new profile is created, see e.g. https://crbug.com/1002066.
   chromeos::test::WaitForPrimaryUserSessionStart();
 }
 

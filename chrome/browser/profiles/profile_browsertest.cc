@@ -34,7 +34,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_impl.h"
@@ -54,7 +53,6 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -403,18 +401,16 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true));
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_PROFILE_CREATED,
-        content::NotificationService::AllSources());
-
     std::unique_ptr<Profile> profile(CreateProfile(
         temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
 
     // Wait for the profile to be created.
-    observer.Wait();
+    run_loop.Run();
     CheckChromeVersion(profile.get(), true);
   }
 
@@ -433,18 +429,16 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   CreatePrefsFileInDirectory(temp_dir.GetPath());
 
   MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, false));
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, false))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_PROFILE_CREATED,
-        content::NotificationService::AllSources());
-
     std::unique_ptr<Profile> profile(CreateProfile(
         temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
 
     // Wait for the profile to be created.
-    observer.Wait();
+    run_loop.Run();
     CheckChromeVersion(profile.get(), false);
   }
 
@@ -459,18 +453,16 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DISABLED_ProfileReadmeCreated) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true));
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnProfileCreated(testing::NotNull(), true, true))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_PROFILE_CREATED,
-        content::NotificationService::AllSources());
-
     std::unique_ptr<Profile> profile(CreateProfile(
         temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
 
     // Wait for the profile to be created.
-    observer.Wait();
+    run_loop.Run();
 
     // Verify that README exists.
     EXPECT_TRUE(
@@ -735,81 +727,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, LastSelectedDirectory) {
   base::FilePath home;
   base::PathService::Get(base::DIR_HOME, &home);
   ASSERT_EQ(profile_impl->last_selected_directory(), home);
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, Notifications) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  // Create the profile and check that a notification is received for it.
-  std::unique_ptr<Profile> profile;
-  {
-    content::WindowedNotificationObserver profile_created_observer(
-        chrome::NOTIFICATION_PROFILE_CREATED,
-        content::NotificationService::AllSources());
-
-    profile = CreateProfile(temp_dir.GetPath(), nullptr,
-                            Profile::CREATE_MODE_SYNCHRONOUS);
-    profile_created_observer.Wait();
-
-    EXPECT_EQ(profile_created_observer.source(),
-              content::Source<Profile>(profile.get()));
-  }
-
-  // Now retrieve the off-the-record profile, which will be created because it
-  // doesn't exist yet.
-  Profile* otr_profile = nullptr;
-  {
-    content::WindowedNotificationObserver profile_created_observer(
-        chrome::NOTIFICATION_PROFILE_CREATED,
-        content::NotificationService::AllSources());
-
-    otr_profile = profile->GetPrimaryOTRProfile();
-    profile_created_observer.Wait();
-
-    EXPECT_EQ(profile_created_observer.source(),
-              content::Source<Profile>(otr_profile));
-    EXPECT_TRUE(profile->HasPrimaryOTRProfile());
-    EXPECT_TRUE(otr_profile->IsOffTheRecord());
-    EXPECT_TRUE(otr_profile->IsPrimaryOTRProfile());
-    EXPECT_TRUE(otr_profile->IsIncognitoProfile());
-  }
-
-  // We are about to destroy a profile. In production that will only happen
-  // as part of the destruction of BrowserProcess's ProfileManager. This
-  // happens in PostMainMessageLoopRun(). This means that to have this test
-  // represent production we have to make sure that no tasks are pending on the
-  // main thread before we destroy the profile. We also would need to prohibit
-  // the posting of new tasks on the main thread as in production the main
-  // thread's message loop will not be accepting them. We fallback on flushing
-  // as many runners as possible here to avoid the posts coming from any of
-  // them.
-  FlushIoTaskRunnerAndSpinThreads();
-
-  // Destroy the off-the-record profile.
-  {
-    ProfileDestructionWatcher watcher;
-    watcher.Watch(otr_profile);
-    if (profile->HasPrimaryOTRProfile()) {
-      profile->DestroyOffTheRecordProfile(profile->GetPrimaryOTRProfile());
-      watcher.WaitForDestruction();
-    }
-
-    EXPECT_FALSE(profile->HasPrimaryOTRProfile());
-  }
-
-  // Destroy the regular profile.
-  {
-    ProfileDestructionWatcher watcher;
-    watcher.Watch(profile.get());
-    profile.reset();
-    watcher.WaitForDestruction();
-  }
-
-  // Pending tasks related to |profile| could depend on |temp_dir|. We need to
-  // let them complete before |temp_dir| goes out of scope.
-  FlushIoTaskRunnerAndSpinThreads();
 }
 
 // Verifies creating an OTR with non-primary id results in a different profile

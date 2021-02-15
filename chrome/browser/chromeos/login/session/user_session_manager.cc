@@ -1569,8 +1569,6 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
               &UserSessionManager::CompleteProfileCreateAfterAuthTransfer,
               AsWeakPtr(), profile));
     } else {
-      // We need to post task so that OnProfileCreated() caller sends out
-      // NOTIFICATION_PROFILE_CREATED which marks user profile as initialized.
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(

@@ -532,9 +532,7 @@ class Profile : public content::BrowserContext {
     is_system_profile_ = is_system_profile;
   }
 
-  // Creates an OffTheRecordProfile which points to this Profile. The caller is
-  // responsible for sending a NOTIFICATION_PROFILE_CREATED when the profile is
-  // correctly assigned to its owner.
+  // Creates an OffTheRecordProfile which points to this Profile.
   static std::unique_ptr<Profile> CreateOffTheRecordProfile(
       Profile* parent,
       const OTRProfileID& otr_profile_id);

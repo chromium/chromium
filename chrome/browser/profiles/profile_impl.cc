@@ -51,7 +51,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
 #include "chrome/browser/content_index/content_index_provider_factory.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
@@ -149,7 +148,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
@@ -798,10 +796,6 @@ void ProfileImpl::DoFinalInit() {
   // profile session, so initialize it here.
   federated_learning::FlocIdProviderFactory::GetForProfile(this);
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PROFILE_CREATED, content::Source<Profile>(this),
-      content::NotificationService::NoDetails());
-
   AnnouncementNotificationServiceFactory::GetForProfile(this)
       ->MaybeShowNotification();
 }
@@ -958,11 +952,6 @@ Profile* ProfileImpl::GetOffTheRecordProfile(
   otr_profiles_[otr_profile_id] = std::move(otr_profile);
 
   NotifyOffTheRecordProfileCreated(raw_otr_profile);
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PROFILE_CREATED,
-      content::Source<Profile>(raw_otr_profile),
-      content::NotificationService::NoDetails());
 
   return raw_otr_profile;
 }

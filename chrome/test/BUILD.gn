@@ -145,6 +145,8 @@ static_library("test_support") {
     "base/find_result_waiter.h",
     "base/js_test_api.cc",
     "base/js_test_api.h",
+    "base/profile_waiter.cc",
+    "base/profile_waiter.h",
     "base/scoped_browser_locale.cc",
     "base/scoped_browser_locale.h",
     "base/scoped_testing_local_state.cc",

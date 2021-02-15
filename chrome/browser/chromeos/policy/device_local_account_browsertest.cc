@@ -29,6 +29,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -91,6 +92,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -777,15 +779,14 @@ static bool IsKnownUser(const AccountId& account_id) {
 }
 
 // Helper that listen extension installation when new profile is created.
-class ExtensionInstallObserver : public content::NotificationObserver,
+class ExtensionInstallObserver : public ProfileManagerObserver,
                                  public extensions::ExtensionRegistryObserver {
  public:
   explicit ExtensionInstallObserver(const std::string& extension_id)
       : registry_(nullptr),
         waiting_extension_id_(extension_id),
         observed_(false) {
-    registrar_.Add(this, chrome::NOTIFICATION_PROFILE_CREATED,
-                   content::NotificationService::AllSources());
+    profile_manager_observer_.Observe(g_browser_process->profile_manager());
   }
 
   ~ExtensionInstallObserver() override {
@@ -811,17 +812,13 @@ class ExtensionInstallObserver : public content::NotificationObserver,
     }
   }
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(chrome::NOTIFICATION_PROFILE_CREATED, type);
-
-    Profile* profile = content::Source<Profile>(source).ptr();
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override {
     // Ignore lock screen apps profile.
     if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile))
       return;
     registry_ = extensions::ExtensionRegistry::Get(profile);
+    profile_manager_observer_.Reset();
 
     // Check if extension is already installed with newly created profile.
     if (registry_->GetInstalledExtension(waiting_extension_id_)) {
@@ -836,7 +833,8 @@ class ExtensionInstallObserver : public content::NotificationObserver,
 
   extensions::ExtensionRegistry* registry_;
   base::RunLoop run_loop_;
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
   std::string waiting_extension_id_;
   bool observed_;
 
