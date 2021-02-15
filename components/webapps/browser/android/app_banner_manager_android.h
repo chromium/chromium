@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
@@ -84,8 +85,13 @@ class AppBannerManagerAndroid
   void AddToHomescreenFromBadge() override;
   void BadgeDismissed() override;
 
-  // Installs the current app.
-  void Install();
+  // Installs the app referenced by the data in |a2hs_params|.
+  // |a2hs_event_callback| will be run to inform the caller of the progress of
+  // the installation.
+  void Install(const AddToHomescreenParams& a2hs_params,
+               base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
+                                            const AddToHomescreenParams&)>
+                   a2hs_event_callback);
 
   // Returns the appropriate app name based on whether we have a native/web app.
   base::string16 GetAppName() const override;
@@ -118,6 +124,20 @@ class AppBannerManagerAndroid
   virtual void RecordExtraMetricsForInstallEvent(
       AddToHomescreenInstaller::Event event,
       const AddToHomescreenParams& a2hs_params);
+
+  // Creates the AddToHomescreenParams for a given install source.
+  std::unique_ptr<AddToHomescreenParams> CreateAddToHomescreenParams(
+      webapps::WebappInstallSource install_source);
+
+  // Use as a callback to notify |this| after an install event such as a dialog
+  // being cancelled or an app being installed has occurred.
+  void OnInstallEvent(AddToHomescreenInstaller::Event event,
+                      const AddToHomescreenParams& a2hs_params);
+
+  base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();
+
+  // Java-side object containing data about a native app.
+  base::android::ScopedJavaGlobalRef<jobject> native_app_data_;
 
  private:
   // Creates the Java-side AppBannerManager.
@@ -153,20 +173,8 @@ class AppBannerManagerAndroid
   // Hides the ambient badge if it is showing.
   void HideAmbientBadge();
 
-  // Use as a callback to notify |this| after an install event such as a dialog
-  // being cancelled or an app being installed has occurred.
-  void OnInstallEvent(AddToHomescreenInstaller::Event event,
-                      const AddToHomescreenParams& a2hs_params);
-
-  // Creates the AddToHomescreenParams for a given install source.
-  std::unique_ptr<AddToHomescreenParams> CreateAddToHomescreenParams(
-      webapps::WebappInstallSource install_source);
-
   // The Java-side AppBannerManager.
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
-
-  // Java-side object containing data about a native app.
-  base::android::ScopedJavaGlobalRef<jobject> native_app_data_;
 
   // App package name for a native app banner.
   std::string native_app_package_;

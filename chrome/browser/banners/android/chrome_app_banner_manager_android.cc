@@ -83,13 +83,41 @@ void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
 }
 
 void ChromeAppBannerManagerAndroid::ShowAmbientBadge() {
-  if (!PwaBottomSheetController::MaybeCreateAndShow(
-          web_contents(), GetAppName(), primary_icon_,
-          has_maskable_primary_icon_, manifest_.start_url, screenshots(),
-          manifest_.description.value_or(base::string16()),
-          /* show_expaned= */ false)) {
+  WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
+      web_contents(), InstallTrigger::AMBIENT_BADGE);
+  if (!MaybeShowPwaBottomSheetController(/* expand_sheet= */ false,
+                                         install_source)) {
     AppBannerManagerAndroid::ShowAmbientBadge();
   }
+}
+
+void ChromeAppBannerManagerAndroid::ShowBannerUi(
+    WebappInstallSource install_source) {
+  if (!native_app_data_.is_null()) {
+    AppBannerManagerAndroid::ShowBannerUi(install_source);
+    return;
+  }
+
+  if (!MaybeShowPwaBottomSheetController(/* expand_sheet= */ true,
+                                         install_source)) {
+    AppBannerManagerAndroid::ShowBannerUi(install_source);
+    return;
+  }
+
+  ReportStatus(SHOWING_WEB_APP_BANNER);
+}
+
+bool ChromeAppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
+    bool expand_sheet,
+    WebappInstallSource install_source) {
+  auto a2hs_params = CreateAddToHomescreenParams(install_source);
+  return PwaBottomSheetController::MaybeShow(
+      web_contents(), GetAppName(), primary_icon_, has_maskable_primary_icon_,
+      manifest_.start_url, screenshots_,
+      manifest_.description.value_or(base::string16()), expand_sheet,
+      std::move(a2hs_params),
+      base::BindRepeating(&ChromeAppBannerManagerAndroid::OnInstallEvent,
+                          ChromeAppBannerManagerAndroid::GetAndroidWeakPtr()));
 }
 
 void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

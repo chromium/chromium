@@ -224,6 +224,43 @@ void AppBannerManagerAndroid::OnInstallEvent(
     const AddToHomescreenParams& a2hs_params) {
   RecordExtraMetricsForInstallEvent(event, a2hs_params);
 
+  // If the install source is a menu install source, user interacted with the
+  // bottom sheet installer UI.
+  if (a2hs_params.install_source == WebappInstallSource::MENU_BROWSER_TAB ||
+      a2hs_params.install_source == WebappInstallSource::MENU_CUSTOM_TAB) {
+    DCHECK_NE(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
+    switch (event) {
+      case AddToHomescreenInstaller::Event::INSTALL_STARTED:
+        AppBannerSettingsHelper::RecordBannerEvent(
+            web_contents(), web_contents()->GetVisibleURL(),
+            a2hs_params.shortcut_info->url.spec(),
+            AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+            base::Time::Now());
+        break;
+      case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED:
+        SendBannerAccepted();
+        OnInstall(a2hs_params.shortcut_info->display);
+        break;
+      case AddToHomescreenInstaller::Event::UI_CANCELLED:
+        // Collapsing the bottom sheet installer UI does not count as
+        // UI_CANCELLED as it is still visible to the user and they can expand
+        // it later.
+        SendBannerDismissed();
+        break;
+      default:
+        break;
+    }
+    return;
+  }
+
+  DCHECK(a2hs_params.app_type == AddToHomescreenParams::AppType::NATIVE ||
+         a2hs_params.install_source ==
+             WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB ||
+         a2hs_params.install_source ==
+             WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB ||
+         a2hs_params.install_source == WebappInstallSource::API_BROWSER_TAB ||
+         a2hs_params.install_source == WebappInstallSource::API_CUSTOM_TAB);
+
   switch (event) {
     case AddToHomescreenInstaller::Event::INSTALL_STARTED:
       TrackDismissEvent(DISMISS_EVENT_DISMISSED);
@@ -431,14 +468,13 @@ base::string16 AppBannerManagerAndroid::GetAppName() const {
   return native_app_title_;
 }
 
-void AppBannerManagerAndroid::Install() {
-  WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
-      web_contents(), InstallTrigger::AMBIENT_BADGE);
-  auto params = CreateAddToHomescreenParams(install_source);
-  AddToHomescreenInstaller::Install(
-      web_contents(), *params,
-      base::BindRepeating(&AppBannerManagerAndroid::OnInstallEvent,
-                          weak_factory_.GetWeakPtr()));
+void AppBannerManagerAndroid::Install(
+    const AddToHomescreenParams& a2hs_params,
+    base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
+                                 const AddToHomescreenParams&)>
+        a2hs_event_callback) {
+  AddToHomescreenInstaller::Install(web_contents(), a2hs_params,
+                                    std::move(a2hs_event_callback));
 }
 
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
@@ -514,6 +550,11 @@ void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
     const AddToHomescreenParams& a2hs_params) {}
 
 base::WeakPtr<AppBannerManager> AppBannerManagerAndroid::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+base::WeakPtr<AppBannerManagerAndroid>
+AppBannerManagerAndroid::GetAndroidWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

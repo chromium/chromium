@@ -28,8 +28,10 @@ class ChromeAppBannerManagerAndroid
   using content::WebContentsUserData<
       ChromeAppBannerManagerAndroid>::FromWebContents;
 
-  // Simple accessors:
-  const std::vector<SkBitmap>& screenshots() { return screenshots_; }
+  // Returns false if the bottom sheet can't be shown. In that case an
+  // alternative UI should be shown.
+  bool MaybeShowPwaBottomSheetController(bool expand_sheet,
+                                         WebappInstallSource install_source);
 
  protected:
   // AppBannerManagerAndroid:
@@ -38,6 +40,7 @@ class ChromeAppBannerManagerAndroid
       const InstallableData& result) override;
   void MaybeShowAmbientBadge() override;
   void ShowAmbientBadge() override;
+  void ShowBannerUi(WebappInstallSource install_source) override;
   void RecordExtraMetricsForInstallEvent(
       AddToHomescreenInstaller::Event event,
       const AddToHomescreenParams& a2hs_params) override;

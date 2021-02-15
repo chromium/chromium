@@ -196,6 +196,7 @@ import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
+import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webxr.ArDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -2262,7 +2263,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 PwaBottomSheetController controller =
                         PwaBottomSheetControllerProvider.from(getWindowAndroid());
                 if (controller != null) {
-                    controller.requestOrExpandBottomSheetInstaller(currentTab.getWebContents());
+                    controller.requestOrExpandBottomSheetInstaller(
+                            currentTab.getWebContents(), InstallTrigger.MENU);
                     return true;
                 }
             }

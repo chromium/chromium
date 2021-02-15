@@ -15,6 +15,8 @@ class WebContents;
 
 namespace webapps {
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 enum class InstallTrigger {
   AMBIENT_BADGE,
   API,
@@ -27,6 +29,8 @@ enum class InstallTrigger {
 // NOTE: each enum entry which is reportable must be added to
 // InstallableMetrics::IsReportableInstallSource().
 // This enum backs a UMA histogram and must be treated as append-only.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 enum class WebappInstallSource {
   // Menu item in a browser tab.
   MENU_BROWSER_TAB = 0,

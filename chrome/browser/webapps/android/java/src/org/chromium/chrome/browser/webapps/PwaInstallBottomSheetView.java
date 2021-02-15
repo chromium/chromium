@@ -110,6 +110,9 @@ public class PwaInstallBottomSheetView {
 
     // Testing functions:
 
+    public static int getButtonInstallViewIdForTesting() {
+        return R.id.button_install;
+    }
     public static int getAppNameViewIdForTesting() {
         return R.id.app_name;
     }

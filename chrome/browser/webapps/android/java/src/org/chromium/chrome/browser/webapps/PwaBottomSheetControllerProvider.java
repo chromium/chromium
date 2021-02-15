@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -83,5 +84,30 @@ public class PwaBottomSheetControllerProvider {
         PwaBottomSheetController controller = fromWebContents(webContents);
         if (controller == null) return;
         controller.expandBottomSheetInstaller();
+    }
+
+    /**
+     * Returns whether the PWA Bottom Sheet Installer UI sheet exists and is visible.
+     * @param webContents The WebContents the UI is associated with.
+     */
+    @CalledByNative
+    private static boolean doesBottomSheetExist(WebContents webContents) {
+        PwaBottomSheetController controller = fromWebContents(webContents);
+        return (controller != null && controller.isBottomSheetVisible());
+    }
+
+    /**
+     * Makes a request to update install source and maybe expand the PWA Bottom Sheet Installer UI.
+     * @param webContents The WebContents the UI is associated with.
+     * @param installSource The source for triggering installation.
+     * @param expandSheet Whether the Bottom Sheet Installer UI sheet should be expanded.
+     */
+    @CalledByNative
+    private static void updateState(
+            WebContents webContents, @WebappInstallSource int installSource, boolean expandSheet) {
+        PwaBottomSheetController controller = fromWebContents(webContents);
+        if (controller == null) return;
+        controller.updateInstallSource(installSource);
+        if (expandSheet) controller.expandBottomSheetInstaller();
     }
 }

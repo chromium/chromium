@@ -22,6 +22,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
+import org.chromium.components.webapps.InstallTrigger;
+import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -168,6 +170,7 @@ public class PwaBottomSheetController
     public void requestBottomSheetInstaller(long nativePwaBottomSheetController,
             WindowAndroid windowAndroid, WebContents webContents, Bitmap icon,
             boolean isAdaptiveIcon, String title, String origin, String description) {
+        assert mNativePwaBottomSheetController == 0;
         mNativePwaBottomSheetController = nativePwaBottomSheetController;
         mWebContents = webContents;
 
@@ -203,16 +206,11 @@ public class PwaBottomSheetController
     }
 
     /**
-     * Makes a request to expand the Bottom Sheet Installer UI if visible already.
-     * @return Whether the Bottom Sheet Installer UI was expanded.
+     * @return Whether the Bottom Sheet Installer UI sheet is visible.
      */
-    public boolean expandBottomSheetInstaller() {
-        if (mPwaBottomSheetContent != null
-                && mBottomSheetController.getCurrentSheetContent() == mPwaBottomSheetContent) {
-            mBottomSheetController.expandSheet();
-            return true;
-        }
-        return false;
+    public boolean isBottomSheetVisible() {
+        return (mPwaBottomSheetContent != null
+                && mBottomSheetController.getCurrentSheetContent() == mPwaBottomSheetContent);
     }
 
     // onClickListener:
@@ -230,16 +228,6 @@ public class PwaBottomSheetController
                 mBottomSheetController.expandSheet();
             }
         }
-    }
-
-    /**
-     * Makes a request to show the Bottom Sheet Installer UI in expanded state. If the
-     * UI is not visible, it will be shown.
-     * @param webContents The WebContents the UI is associated with.
-     */
-    public void requestOrExpandBottomSheetInstaller(WebContents webContents) {
-        if (expandBottomSheetInstaller()) return;
-        PwaBottomSheetControllerJni.get().createAndShowBottomSheetInstaller(webContents);
     }
 
     /**
@@ -263,6 +251,36 @@ public class PwaBottomSheetController
     // JNI wrapper methods:
 
     /**
+     * Makes a request to show the Bottom Sheet Installer UI in expanded state. If the
+     * UI is not visible, it will be shown.
+     * @param webContents The WebContents the UI is associated with.
+     * @param trigger The install trigger for the WebContents.
+     */
+    public void requestOrExpandBottomSheetInstaller(
+            WebContents webContents, @InstallTrigger int trigger) {
+        PwaBottomSheetControllerJni.get().requestOrExpandBottomSheetInstaller(webContents, trigger);
+    }
+
+    /**
+     * Makes a request to expand the Bottom Sheet Installer UI if visible already and notifies c++
+     * side to track UI events.
+     */
+    public void expandBottomSheetInstaller() {
+        if (!isBottomSheetVisible()) return;
+        mBottomSheetController.expandSheet();
+        PwaBottomSheetControllerJni.get().onSheetExpanded(mNativePwaBottomSheetController);
+    }
+
+    /**
+     * Called when the source for webapp installation changes after controller was created.
+     * @param installSource The source for triggering webapp installation.
+     */
+    public void updateInstallSource(@WebappInstallSource int installSource) {
+        PwaBottomSheetControllerJni.get().updateInstallSource(
+                mNativePwaBottomSheetController, installSource);
+    }
+
+    /**
      * Called when the user wants to install.
      */
     public void onAddToHomescreen() {
@@ -275,11 +293,16 @@ public class PwaBottomSheetController
      */
     public void destroy() {
         PwaBottomSheetControllerJni.get().destroy(mNativePwaBottomSheetController);
+        mNativePwaBottomSheetController = 0;
     }
 
     @NativeMethods
     interface Natives {
-        void createAndShowBottomSheetInstaller(WebContents webContents);
+        void requestOrExpandBottomSheetInstaller(
+                WebContents webContents, @InstallTrigger int trigger);
+        void onSheetExpanded(long nativePwaBottomSheetController);
+        void updateInstallSource(
+                long nativePwaBottomSheetController, @WebappInstallSource int installSource);
         void onAddToHomescreen(long nativePwaBottomSheetController, WebContents webContents);
         void destroy(long nativePwaBottomSheetController);
     }

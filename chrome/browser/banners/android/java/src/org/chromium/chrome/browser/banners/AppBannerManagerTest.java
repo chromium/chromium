@@ -106,6 +106,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -426,11 +427,19 @@ public class AppBannerManagerTest {
         tapAndWaitForModalBanner(tab);
     }
 
-    private void triggerBottomSheet(
-            ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
+    private void triggerBottomSheet(ChromeActivityTestRule<? extends ChromeActivity> rule,
+            String url, boolean click) throws Exception {
         resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
+
+        if (click) {
+            final ChromeActivity activity = rule.getActivity();
+            TouchCommon.singleClickView(activity.getActivityTab().getView());
+            waitUntilBottomSheetStatus(rule, BottomSheetController.SheetState.FULL);
+            return;
+        }
+
         waitUntilBottomSheetStatus(rule, BottomSheetController.SheetState.PEEK);
     }
 
@@ -462,7 +471,7 @@ public class AppBannerManagerTest {
         ThreadUtils.runOnUiThread(() -> {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
-                            "Webapp.Install.InstallEvent", 4));
+                            "Webapp.Install.InstallEvent", 4 /* API_BROWSER_TAB */));
         });
 
         // Make sure that the splash screen icon was downloaded.
@@ -503,7 +512,7 @@ public class AppBannerManagerTest {
         ThreadUtils.runOnUiThread(() -> {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
-                            "Webapp.Install.InstallEvent", 5));
+                            "Webapp.Install.InstallEvent", 5 /* API_CUSTOM_TAB */));
         });
 
         // Make sure that the splash screen icon was downloaded.
@@ -748,7 +757,8 @@ public class AppBannerManagerTest {
     public void testBottomSheet() throws Exception {
         triggerBottomSheet(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifest(
-                        mTestServer, WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL));
+                        mTestServer, WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL),
+                /*click=*/false);
 
         View toolbar = mBottomSheetController.getCurrentSheetContent().getToolbarView();
         View content = mBottomSheetController.getCurrentSheetContent().getContentView();
@@ -790,6 +800,66 @@ public class AppBannerManagerTest {
 
         waitUntilBottomSheetStatus(
                 mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
+    public void testAppInstalledEventBottomSheet() throws Exception {
+        triggerBottomSheet(mTabbedActivityTestRule,
+                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
+                        WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
+                        "call_stashed_prompt_on_click_verify_appinstalled"),
+                /*click=*/true);
+
+        View toolbar = mBottomSheetController.getCurrentSheetContent().getToolbarView();
+
+        // Install app from the bottom sheet.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ButtonCompat buttonInstall = toolbar.findViewById(
+                    PwaInstallBottomSheetView.getButtonInstallViewIdForTesting());
+            TouchCommon.singleClickView(buttonInstall);
+        });
+
+        waitUntilBottomSheetStatus(
+                mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
+
+        // The appinstalled event should fire (and cause the title to change).
+        new TabTitleObserver(mTabbedActivityTestRule.getActivity().getActivityTab(),
+                "Got appinstalled: listener, attr")
+                .waitForTitleUpdate(3);
+
+        ThreadUtils.runOnUiThread(() -> {
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Webapp.Install.InstallEvent", 4 /* API_BROWSER_TAB */));
+        });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
+    public void testDismissBottomSheetResolvesUserChoice() throws Exception {
+        triggerBottomSheet(mTabbedActivityTestRule,
+                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
+                        WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click"),
+                /*click=*/true);
+
+        // Dismiss the bottom sheet.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBottomSheetController.hideContent(
+                    mBottomSheetController.getCurrentSheetContent(), false);
+        });
+
+        waitUntilBottomSheetStatus(
+                mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
+
+        // Ensure userChoice is resolved.
+        new TabTitleObserver(
+                mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: dismissed")
+                .waitForTitleUpdate(3);
     }
 
     @Test
