@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.autofill.settings;
 
 import android.os.Handler;
 import android.text.SpannableStringBuilder;
@@ -20,6 +20,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
+import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -29,10 +30,12 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorFi
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorValueIconGenerator;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
+import org.chromium.chrome.browser.payments.AddressEditor;
+import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
-import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
 
@@ -52,13 +55,8 @@ import java.util.concurrent.ExecutionException;
 /**
  * A credit card editor. Can be used for editing both local and server credit cards. Everything in
  * local cards can be edited. For server cards, only the billing address is editable.
- *
- * Note that this class is used by PaymentRequest only and will be removed when not needed any more.
- * Please use {@link org.chromium.chrome.browser.autofill.settings.CardEditor} instead.
  */
-@Deprecated
-public class CardEditor
-        extends EditorBase<AutofillPaymentInstrument> implements CreditCardScanner.Delegate {
+public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements Delegate {
     /** Description of a card network. */
     private static class CardIssuerNetwork {
         /**
@@ -146,15 +144,24 @@ public class CardEditor
     private final EditorValueIconGenerator mCardIconGenerator;
     private final AsyncTask<Calendar> mCalendar;
 
-    @Nullable private EditorFieldModel mIconHint;
-    @Nullable private EditorFieldModel mNumberField;
-    @Nullable private EditorFieldModel mNameField;
-    @Nullable private EditorFieldModel mMonthField;
-    @Nullable private EditorFieldModel mYearField;
-    @Nullable private EditorFieldModel mBillingAddressField;
-    @Nullable private EditorFieldModel mSaveCardCheckbox;
-    @Nullable private CreditCardScanner mCardScanner;
-    @Nullable private EditorFieldValidator mCardExpirationMonthValidator;
+    @Nullable
+    private EditorFieldModel mIconHint;
+    @Nullable
+    private EditorFieldModel mNumberField;
+    @Nullable
+    private EditorFieldModel mNameField;
+    @Nullable
+    private EditorFieldModel mMonthField;
+    @Nullable
+    private EditorFieldModel mYearField;
+    @Nullable
+    private EditorFieldModel mBillingAddressField;
+    @Nullable
+    private EditorFieldModel mSaveCardCheckbox;
+    @Nullable
+    private CreditCardScanner mCardScanner;
+    @Nullable
+    private EditorFieldValidator mCardExpirationMonthValidator;
     private boolean mCanScan;
     private boolean mIsScanning;
     private int mCurrentMonth;
@@ -238,8 +245,8 @@ public class CardEditor
             public boolean isValid(@Nullable CharSequence value) {
                 return value != null
                         && mAcceptedIssuerNetworks.contains(
-                                   PersonalDataManager.getInstance().getBasicCardIssuerNetwork(
-                                           value.toString(), true));
+                                PersonalDataManager.getInstance().getBasicCardIssuerNetwork(
+                                        value.toString(), true));
             }
 
             @Override
@@ -531,7 +538,7 @@ public class CardEditor
                         int year = Integer.parseInt(yearValue.toString());
 
                         return year > mCurrentYear
-                              || (year == mCurrentYear && month >= mCurrentMonth);
+                                || (year == mCurrentYear && month >= mCurrentMonth);
                     }
 
                     @Override
@@ -543,21 +550,10 @@ public class CardEditor
 
             mMonthField = EditorFieldModel.createDropdown(
                     mContext.getString(R.string.autofill_credit_card_editor_expiration_date),
-                    buildMonthDropdownKeyValues(calendar),
-                    mCardExpirationMonthValidator,
+                    buildMonthDropdownKeyValues(calendar), mCardExpirationMonthValidator,
                     mContext.getString(
-                          R.string.payments_card_expiration_invalid_validation_message));
+                            R.string.payments_card_expiration_invalid_validation_message));
             mMonthField.setIsFullLine(false);
-
-            if (PaymentRequestService.getObserverForTest() != null) {
-                mMonthField.setDropdownCallback(new Callback<Pair<String, Runnable>>() {
-                    @Override
-                    public void onResult(final Pair<String, Runnable> eventData) {
-                        PaymentRequestService.getObserverForTest()
-                                .onPaymentRequestServiceExpirationMonthChange();
-                    }
-                });
-            }
         }
         if (mMonthField.getDropdownKeys().contains(card.getMonth())) {
             mMonthField.setValue(card.getMonth());
@@ -568,9 +564,8 @@ public class CardEditor
 
         // Expiration year dropdown is side-by-side with the expiration year dropdown. The dropdown
         // should include the card's expiration year, so it's not cached.
-        mYearField = EditorFieldModel.createDropdown(
-                null /* label */, buildYearDropdownKeyValues(calendar, card.getYear()),
-                null /* hint */);
+        mYearField = EditorFieldModel.createDropdown(null /* label */,
+                buildYearDropdownKeyValues(calendar, card.getYear()), null /* hint */);
         mYearField.setIsFullLine(false);
         if (mYearField.getDropdownKeys().contains(card.getYear())) {
             mYearField.setValue(card.getYear());
@@ -681,10 +676,6 @@ public class CardEditor
                 final boolean isSelectingIncompleteAddress =
                         mIncompleteProfilesForBillingAddress.containsKey(eventData.first);
                 if (!isAddingNewAddress && !isSelectingIncompleteAddress) {
-                    if (PaymentRequestService.getObserverForTest() != null) {
-                        PaymentRequestService.getObserverForTest()
-                                .onPaymentRequestServiceBillingAddressChangeProcessed();
-                    }
                     return;
                 }
                 assert isAddingNewAddress != isSelectingIncompleteAddress;
@@ -736,9 +727,9 @@ public class CardEditor
                             }
 
                             // Add the newly added or edited address to the top of the dropdown.
-                            billingAddresses.add(
-                                    0, new DropdownKeyValue(billingAddress.getIdentifier(),
-                                               billingAddress.getSublabel()));
+                            billingAddresses.add(0,
+                                    new DropdownKeyValue(billingAddress.getIdentifier(),
+                                            billingAddress.getSublabel()));
                             mBillingAddressField.setDropdownKeyValues(billingAddresses);
                             mBillingAddressField.setValue(billingAddress.getIdentifier());
                         }
