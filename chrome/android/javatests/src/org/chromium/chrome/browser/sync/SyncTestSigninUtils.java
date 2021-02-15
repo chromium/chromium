@@ -11,9 +11,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 /**
  * Utility class for sign-in functionalities in native Sync browser tests.
  */
-public final class SyncTestSigninUtils {
-    private static final String TAG = "SyncTestSigninUtils";
-    // TODO(https://crbug.com/1101944): Remove the sAccountManagerTestRule from this class
+final class SyncTestSigninUtils {
     private static final AccountManagerTestRule sAccountManagerTestRule =
             new AccountManagerTestRule();
 
