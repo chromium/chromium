@@ -291,7 +291,9 @@ void OmniboxViewIOS::UpdatePopup() {
 }
 
 void OmniboxViewIOS::UpdatePopupAppearance() {
-  DCHECK(popup_provider_);
+  if (!popup_provider_) {
+    return;
+  }
   popup_provider_->SetTextAlignment([field_ bestTextAlignment]);
   popup_provider_->SetSemanticContentAttribute(
       [field_ bestSemanticContentAttribute]);
@@ -779,7 +781,9 @@ void OmniboxViewIOS::FocusOmnibox() {
 }
 
 BOOL OmniboxViewIOS::IsPopupOpen() {
-  DCHECK(popup_provider_);
+  if (!popup_provider_) {
+    return NO;
+  }
   return popup_provider_->IsPopupOpen();
 }
 
