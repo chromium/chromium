@@ -6,10 +6,10 @@
   <style is="custom-style">
     html {
       --oobe-adaptive-dialog-text-line-height: 18px;
-      --oobe-adaptive-dialog-buttons-horizontal-padding: min(40px,
-        max(24px, calc(var(--oobe-adaptive-dialog-width) * 0.025)));
-      --oobe-adaptive-dialog-buttons-vertical-padding: min(40px,
-        max(24px, calc(var(--oobe-adaptive-dialog-height) * 0.025)));
+      --oobe-adaptive-dialog-buttons-horizontal-padding: clamp(20px,
+        calc(var(--oobe-adaptive-dialog-width) * 0.035), 40px);
+      --oobe-adaptive-dialog-buttons-vertical-padding: clamp(20px,
+        calc(var(--oobe-adaptive-dialog-height) * 0.035), 40px);
       --oobe-adaptive-dialog-back-button-vertical-padding:
         var(--oobe-adaptive-dialog-buttons-vertical-padding);
       --oobe-adaptive-dialog-content-padding: 40px;
