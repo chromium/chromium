@@ -17657,6 +17657,13 @@ metrics consent we also won't be able to send UMA metrics. -->
       label="SameSiteCookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::ReadCookie"/>
   <int value="35"
       label="SameSiteCookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::SetCookie"/>
+  <int value="36" label="SharedArrayBufferIssue::TransferIssue"/>
+  <int value="37" label="SharedArrayBufferIssue::CreationIssue"/>
+  <int value="38" label="TrustedWebActivityIssue::kHttpError"/>
+  <int value="39" label="TrustedWebActivityIssue::kUnavailableOffline"/>
+  <int value="40" label="TrustedWebActivityIssue::kDigitalAssetLinks"/>
+  <int value="41" label="LowTextContrastIssue"/>
+  <int value="42" label="CorsIssue"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
