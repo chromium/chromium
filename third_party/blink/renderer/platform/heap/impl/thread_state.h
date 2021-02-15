@@ -392,6 +392,9 @@ class PLATFORM_EXPORT ThreadState final {
 
   void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
+  // Returns the total size of live objects on the heap.
+  size_t GetUsedSizeInBytes();
+
  private:
   class IncrementalMarkingScheduler;
 

@@ -135,4 +135,10 @@ void ThreadState::CollectAllGarbageForTesting(BlinkGC::StackState stack_state) {
   }
 }
 
+size_t ThreadState::GetUsedSizeInBytes() {
+  cppgc::HeapStatistics stats =
+      cpp_heap_->CollectStatistics(cppgc::HeapStatistics::kBrief);
+  return stats.used_size_bytes;
+}
+
 }  // namespace blink

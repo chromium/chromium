@@ -1678,4 +1678,10 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
   }
 }
 
+size_t ThreadState::GetUsedSizeInBytes() {
+  Statistics stats = ThreadState::StatisticsCollector(this).CollectStatistics(
+      Statistics::kBrief);
+  return stats.used_size_bytes;
+}
+
 }  // namespace blink

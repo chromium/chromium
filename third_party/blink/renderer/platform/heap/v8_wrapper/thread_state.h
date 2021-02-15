@@ -117,6 +117,9 @@ class PLATFORM_EXPORT ThreadState final {
         IsGarbageCollectionAllowed(cpp_heap().GetHeapHandle());
   }
 
+  // Returns the total size of live objects on the heap.
+  size_t GetUsedSizeInBytes();
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
