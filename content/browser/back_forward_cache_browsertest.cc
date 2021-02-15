@@ -2284,13 +2284,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheSMSService) {
 }
 
 // crbug.com/1090223
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
-#define MAYBE_DoesNotCachePaymentManager DISABLED_DoesNotCachePaymentManager
-#else
-#define MAYBE_DoesNotCachePaymentManager DoesNotCachePaymentManager
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_DoesNotCachePaymentManager) {
+                       DISABLED_DoesNotCachePaymentManager) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to a page which includes PaymentManager functionality. Note
