@@ -1305,6 +1305,7 @@ source_set("unit_tests") {
     "layout/api/selection_state_test.cc",
     "layout/collapsed_border_value_test.cc",
     "layout/force_legacy_layout_test.cc",
+    "layout/geometry/axis_test.cc",
     "layout/geometry/logical_rect_test.cc",
     "layout/geometry/physical_rect_test.cc",
     "layout/geometry/physical_size_test.cc",

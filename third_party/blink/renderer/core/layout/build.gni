@@ -46,6 +46,7 @@ blink_core_sources_layout = [
   "fragmentainer_iterator.h",
   "fragmentation_context.h",
   "generated_children.h",
+  "geometry/axis.h",
   "geometry/box_sides.h",
   "geometry/logical_offset.cc",
   "geometry/logical_offset.h",

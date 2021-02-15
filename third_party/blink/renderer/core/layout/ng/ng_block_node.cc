@@ -454,8 +454,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
       LogicalSize available_size = CalculateChildAvailableSize(
           constraint_space, *this, fragment_geometry->border_box_size,
           fragment_geometry->border + fragment_geometry->padding);
+      LogicalAxes contained_axes = ContainedAxes();
       GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-          *element, available_size);
+          *element, available_size, contained_axes);
     }
   }
 

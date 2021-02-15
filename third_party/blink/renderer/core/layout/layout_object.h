@@ -632,10 +632,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   inline bool IsContainerForContainerQueries() const {
     NOT_DESTROYED();
-    // TODO(crbug.com/1146092): Determine from the container queries what kind
-    // of size containment we require. Right now we allow query matching as long
-    // as there's any size containment at all specified, but we need the axes in
-    // the queries and the size containment to match.
     return ShouldApplyLayoutContainment() &&
            (ShouldApplyInlineSizeContainment() ||
             ShouldApplyBlockSizeContainment());

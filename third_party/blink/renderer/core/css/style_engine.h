@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
@@ -406,7 +407,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleAndLayoutTree();
   // To be called from layout when container queries change for the container.
   void UpdateStyleAndLayoutTreeForContainer(Element& container,
-                                            const LogicalSize&);
+                                            const LogicalSize&,
+                                            LogicalAxes contained_axes);
   void RecalcStyle() { RecalcStyle({}, StyleRecalcContext()); }
 
   void ClearEnsuredDescendantStyles(Element& element);

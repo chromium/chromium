@@ -500,6 +500,7 @@
     {
       // Support for contain:inline-size and contain:block-size
       name: "CSSContainSize1D",
+      implied_by: ["CSSContainerQueries"]
     },
     {
       // The main content-visibility feature.

@@ -9,7 +9,17 @@
 
 namespace blink {
 
-ContainerQueryEvaluator::ContainerQueryEvaluator(double width, double height) {
+namespace {
+bool IsSufficientlyContained(PhysicalAxes contained_axes,
+                             PhysicalAxes queried_axes) {
+  return (contained_axes & queried_axes) == queried_axes;
+}
+}  // namespace
+
+ContainerQueryEvaluator::ContainerQueryEvaluator(double width,
+                                                 double height,
+                                                 PhysicalAxes contained_axes)
+    : contained_axes_(contained_axes) {
   auto* cached_values = MakeGarbageCollected<MediaValuesCached>();
   cached_values->OverrideViewportDimensions(width, height);
   media_query_evaluator_ =
@@ -18,6 +28,8 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(double width, double height) {
 
 bool ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
+  if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
+    return false;
   return media_query_evaluator_->Eval(*container_query.media_queries_);
 }
 

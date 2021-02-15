@@ -592,7 +592,7 @@
     "prefix": "container-queries",
     "bases": ["wpt_internal/css/css-conditional/container-queries",
               "wpt_internal/css/css-contain"],
-    "args": ["--enable-blink-features=CSSContainerQueries,CSSContainSize1D"]
+    "args": ["--enable-blink-features=CSSContainerQueries"]
   },
   {
     "prefix": "appcache-origin-trial",

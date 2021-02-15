@@ -2005,7 +2005,8 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
 
 void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     Element& container,
-    const LogicalSize& logical_size) {
+    const LogicalSize& logical_size,
+    LogicalAxes contained_axes) {
   DCHECK(!style_recalc_root_.GetRootNode());
   DCHECK(!container.NeedsStyleRecalc());
   DCHECK(!in_container_query_style_recalc_);
@@ -2014,11 +2015,12 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   StyleRecalcContext style_recalc_context;
 
-  PhysicalSize physical_size = ToPhysicalSize(
-      logical_size, container.ComputedStyleRef().GetWritingMode());
+  WritingMode writing_mode = container.ComputedStyleRef().GetWritingMode();
+  PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
+  PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
   style_recalc_context.cq_evaluator =
-      MakeGarbageCollected<ContainerQueryEvaluator>(physical_size.width,
-                                                    physical_size.height);
+      MakeGarbageCollected<ContainerQueryEvaluator>(
+          physical_size.width, physical_size.height, physical_axes);
 
   style_recalc_root_.Update(nullptr, &container);
   RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},

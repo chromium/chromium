@@ -25,6 +25,20 @@ class ContainerQueryTest : public PageTestBase,
         css_test_helpers::ParseRule(GetDocument(), rule_string));
   }
 
+  ContainerQuery* ParseContainerQuery(String query) {
+    String rule = "@container " + query + " {}";
+    StyleRuleContainer* container = ParseAtContainer(rule);
+    if (!container)
+      return nullptr;
+    return &container->GetContainerQuery();
+  }
+
+  PhysicalAxes QueriedAxes(String query) {
+    ContainerQuery* container_query = ParseContainerQuery(query);
+    DCHECK(container_query);
+    return container_query->QueriedAxes();
+  }
+
   String SerializeCondition(StyleRuleContainer* container) {
     if (!container)
       return "";
@@ -153,6 +167,32 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
   container->setAttribute(html_names::kClassAttr, "");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
+}
+
+TEST_F(ContainerQueryTest, QueriedAxes) {
+  auto horizontal = PhysicalAxes(kPhysicalAxisHorizontal);
+  auto vertical = PhysicalAxes(kPhysicalAxisVertical);
+  auto both = PhysicalAxes(kPhysicalAxisBoth);
+  auto none = PhysicalAxes(kPhysicalAxisNone);
+
+  EXPECT_EQ(horizontal, QueriedAxes("(min-width: 1px)"));
+  EXPECT_EQ(horizontal, QueriedAxes("(max-width: 1px)"));
+  EXPECT_EQ(horizontal, QueriedAxes("(width: 1px)"));
+
+  EXPECT_EQ(vertical, QueriedAxes("(min-height: 1px)"));
+  EXPECT_EQ(vertical, QueriedAxes("(max-height: 1px)"));
+  EXPECT_EQ(vertical, QueriedAxes("(height: 1px)"));
+
+  EXPECT_EQ(both, QueriedAxes("(width: 1px) and (height: 1px)"));
+  EXPECT_EQ(both, QueriedAxes("(min-width: 1px) and (max-height: 1px)"));
+
+  // TODO(crbug.com/1145970): We want to test the case where no axes are
+  // queried (kPhysicalAxisNone). This can (for now) be achieved by using
+  // some media query feature (e.g. "resolution"). Ultimately, using
+  // "resolution" will not be allowed in @container: we will then need to find
+  // another way to author a container query that queries no axes (or make it
+  // illegal altogether).
+  EXPECT_EQ(none, QueriedAxes("(resolution: 150dpi)"));
 }
 
 }  // namespace blink

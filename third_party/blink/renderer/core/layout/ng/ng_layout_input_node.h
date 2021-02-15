@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
@@ -255,6 +256,15 @@ class CORE_EXPORT NGLayoutInputNode {
 
   bool IsContainerForContainerQueries() const {
     return box_->IsContainerForContainerQueries();
+  }
+
+  LogicalAxes ContainedAxes() const {
+    LogicalAxes axes(kLogicalAxisNone);
+    if (ShouldApplyInlineSizeContainment())
+      axes |= LogicalAxes(kLogicalAxisInline);
+    if (ShouldApplyBlockSizeContainment())
+      axes |= LogicalAxes(kLogicalAxisBlock);
+    return axes;
   }
 
   // CSS defines certain cases to synthesize inline block baselines from box.

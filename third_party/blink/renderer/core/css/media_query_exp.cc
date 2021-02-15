@@ -287,6 +287,18 @@ bool MediaQueryExp::IsDeviceDependent() const {
          media_feature_ == media_feature_names::kMaxDeviceHeightMediaFeature;
 }
 
+bool MediaQueryExp::IsWidthDependent() const {
+  return media_feature_ == media_feature_names::kWidthMediaFeature ||
+         media_feature_ == media_feature_names::kMinWidthMediaFeature ||
+         media_feature_ == media_feature_names::kMaxWidthMediaFeature;
+}
+
+bool MediaQueryExp::IsHeightDependent() const {
+  return media_feature_ == media_feature_names::kHeightMediaFeature ||
+         media_feature_ == media_feature_names::kMinHeightMediaFeature ||
+         media_feature_ == media_feature_names::kMaxHeightMediaFeature;
+}
+
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
     : media_feature_(other.MediaFeature()), exp_value_(other.ExpValue()) {}
 

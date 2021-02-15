@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -16,7 +17,9 @@ class ContainerQuery;
 class CORE_EXPORT ContainerQueryEvaluator final
     : public GarbageCollected<ContainerQueryEvaluator> {
  public:
-  ContainerQueryEvaluator(double width, double height);
+  ContainerQueryEvaluator(double width,
+                          double height,
+                          PhysicalAxes contained_axes);
 
   bool Eval(const ContainerQuery&) const;
 
@@ -25,6 +28,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
  private:
   // TODO(crbug.com/1145970): Don't lean on MediaQueryEvaluator.
   Member<MediaQueryEvaluator> media_query_evaluator_;
+  PhysicalAxes contained_axes_;
 };
 
 }  // namespace blink
