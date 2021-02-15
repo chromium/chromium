@@ -55,8 +55,7 @@ inline float GetRatioRoundedToTwoDecimals(int numerator, int denominator) {
 void FillInStatsFeatures(
     const permissions::PredictionRequestFeatures::ActionCounts& counts,
     permissions::StatsFeatures* features) {
-  int total_counts =
-      counts.denies + counts.dismissals + counts.grants + counts.ignores;
+  int total_counts = counts.total();
 
   // Round to only 2 decimal places to help prevent fingerprinting.
   features->set_avg_deny_rate(

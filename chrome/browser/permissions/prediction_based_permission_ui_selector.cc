@@ -34,6 +34,10 @@ constexpr auto VeryUnlikely = permissions::
 constexpr base::TimeDelta kPermissionActionCutoffAge =
     base::TimeDelta::FromDays(28);
 
+// Only send requests if there are at least 4 action in the user's history for
+// the particular permission type.
+constexpr size_t kRequestedPermissionMinimumHistoricalActions = 4;
+
 base::Optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
 ParsePredictionServiceMockLikelihood(const std::string& value) {
@@ -83,31 +87,38 @@ PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
 void PredictionBasedPermissionUiSelector::SelectUiToUse(
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
+  callback_ = std::move(callback);
   if (!IsAllowedToUseAssistedPrompts()) {
-    std::move(callback).Run(Decision::UseNormalUiAndShowNoWarning());
+    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    return;
+  }
+
+  auto features = BuildPredictionRequestFeatures(request);
+  if (features.requested_permission_counts.total() <
+      kRequestedPermissionMinimumHistoricalActions) {
+    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
   if (likelihood_override_for_testing_.has_value()) {
     if (ShouldPredictionTriggerQuietUi(
             likelihood_override_for_testing_.value())) {
-      std::move(callback).Run(
+      std::move(callback_).Run(
           Decision(QuietUiReason::kPredictedVeryUnlikelyGrant,
                    Decision::ShowNoWarning()));
     } else {
-      std::move(callback).Run(Decision::UseNormalUiAndShowNoWarning());
+      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     }
     return;
   }
 
-  last_request_grant_likelihood_ = base::nullopt;
-
   DCHECK(!request_);
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);
-  callback_ = std::move(callback);
+
+  last_request_grant_likelihood_ = base::nullopt;
   request_ = std::make_unique<PredictionServiceRequest>(
-      service, BuildPredictionRequestFeatures(request),
+      service, features,
       base::BindOnce(
           &PredictionBasedPermissionUiSelector::LookupReponseReceived,
           base::Unretained(this)));

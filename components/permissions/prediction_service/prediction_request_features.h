@@ -16,6 +16,7 @@ struct PredictionRequestFeatures {
     size_t denies = 0;
     size_t dismissals = 0;
     size_t ignores = 0;
+    size_t total() const { return grants + denies + dismissals + ignores; }
   };
 
   // Whether a gesture is present or not.
