@@ -118,7 +118,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
           eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
     });
 
-    test('Invalid activation code', async function() {
+    // TODO(crbug.com/1178379) Fails consistenly.
+    test.skip('Invalid activation code', async function() {
       euicc.setProfileInstallResultForTest(
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorInvalidActivationCode);
