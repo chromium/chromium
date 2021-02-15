@@ -262,6 +262,9 @@
   self.ntpViewController = nil;
   self.discoverFeedWrapperViewController = nil;
 
+  [self.ntpMediator shutdown];
+  self.ntpMediator = nil;
+
   [self.containedViewController willMoveToParentViewController:nil];
   [self.containedViewController.view removeFromSuperview];
   [self.containedViewController removeFromParentViewController];

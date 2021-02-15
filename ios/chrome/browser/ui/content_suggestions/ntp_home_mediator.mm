@@ -170,8 +170,7 @@ const char kNTPHelpURL[] =
 
 - (void)shutdown {
   _searchEngineObserver.reset();
-  DCHECK(_webStateObserver);
-  if (_webState) {
+  if (_webState && _webStateObserver) {
     [self saveContentOffsetForWebState:_webState];
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
@@ -180,6 +179,7 @@ const char kNTPHelpURL[] =
     _voiceSearchAvailability->RemoveObserver(self);
     _voiceSearchAvailability = nullptr;
   }
+  _identityObserverBridge.reset();
 }
 
 - (void)locationBarDidBecomeFirstResponder {
