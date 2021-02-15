@@ -33,6 +33,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -61,7 +62,7 @@ class NavigationURLLoaderTest : public testing::Test {
             false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,
             network::mojom::RequestDestination::kDocument,
-            blink::WebMixedContentContextType::kBlockable,
+            blink::mojom::MixedContentContextType::kBlockable,
             false /* is_form_submission */,
             false /* was_initiated_by_link_click */,
             GURL() /* searchable_form_url */,

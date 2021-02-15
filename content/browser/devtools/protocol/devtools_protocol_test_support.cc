@@ -14,6 +14,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 
 namespace content {
 
@@ -161,7 +162,7 @@ blink::SecurityStyle DevToolsProtocolTest::GetSecurityStyle(
       SecurityStyleExplanation(
           "an explanation title", "an explanation summary",
           "an explanation description", cert_,
-          blink::WebMixedContentContextType::kNotMixedContent));
+          blink::mojom::MixedContentContextType::kNotMixedContent));
   return blink::SecurityStyle::kNeutral;
 }
 

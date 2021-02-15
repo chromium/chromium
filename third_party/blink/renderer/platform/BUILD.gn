@@ -542,7 +542,6 @@ component("platform") {
     "exported/web_media_player_source.cc",
     "exported/web_media_stream_audio_sink.cc",
     "exported/web_memory_pressure_listener.cc",
-    "exported/web_mixed_content.cc",
     "exported/web_network_state_notifier.cc",
     "exported/web_runtime_features.cc",
     "exported/web_security_origin.cc",

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/loader/mixed_content.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -370,10 +372,10 @@ void MixedContentChecker::Count(
   // Roll blockable content up into a single counter, count unblocked types
   // individually so we can determine when they can be safely moved to the
   // blockable category:
-  WebMixedContentContextType context_type =
-      WebMixedContent::ContextTypeFromRequestContext(
+  mojom::blink::MixedContentContextType context_type =
+      MixedContent::ContextTypeFromRequestContext(
           request_context, DecideCheckModeForPlugin(frame->GetSettings()));
-  if (context_type == WebMixedContentContextType::kBlockable) {
+  if (context_type == mojom::blink::MixedContentContextType::kBlockable) {
     UseCounter::Count(source->GetDocument(),
                       WebFeature::kMixedContentBlockable);
     return;
@@ -468,12 +470,12 @@ bool MixedContentChecker::ShouldBlockFetch(
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone ||
       settings->GetStrictMixedContentChecking();
 
-  WebMixedContentContextType context_type =
-      WebMixedContent::ContextTypeFromRequestContext(
+  mojom::blink::MixedContentContextType context_type =
+      MixedContent::ContextTypeFromRequestContext(
           request_context, DecideCheckModeForPlugin(settings));
 
   switch (context_type) {
-    case WebMixedContentContextType::kOptionallyBlockable:
+    case mojom::blink::MixedContentContextType::kOptionallyBlockable:
       allowed = !strict_mode;
       if (allowed) {
         if (content_settings_client)
@@ -482,7 +484,7 @@ bool MixedContentChecker::ShouldBlockFetch(
       }
       break;
 
-    case WebMixedContentContextType::kBlockable: {
+    case mojom::blink::MixedContentContextType::kBlockable: {
       // Strictly block subresources that are mixed with respect to their
       // subframes, unless all insecure content is allowed. This is to avoid the
       // following situation: https://a.com embeds https://b.com, which loads a
@@ -520,12 +522,12 @@ bool MixedContentChecker::ShouldBlockFetch(
       break;
     }
 
-    case WebMixedContentContextType::kShouldBeBlockable:
+    case mojom::blink::MixedContentContextType::kShouldBeBlockable:
       allowed = !strict_mode;
       if (allowed)
         local_frame_host.DidDisplayInsecureContent();
       break;
-    case WebMixedContentContextType::kNotMixedContent:
+    case mojom::blink::MixedContentContextType::kNotMixedContent:
       NOTREACHED();
       break;
   };
@@ -760,9 +762,9 @@ bool MixedContentChecker::ShouldAutoupgrade(
   if (!base::FeatureList::IsEnabled(
           blink::features::kMixedContentAutoupgrade) ||
       context_https_state == HttpsState::kNone ||
-      WebMixedContent::ContextTypeFromRequestContext(
-          type, WebMixedContent::CheckModeForPlugin::kStrict) !=
-          WebMixedContentContextType::kOptionallyBlockable) {
+      MixedContent::ContextTypeFromRequestContext(
+          type, MixedContent::CheckModeForPlugin::kStrict) !=
+          mojom::blink::MixedContentContextType::kOptionallyBlockable) {
     return false;
   }
   if (settings_client && !settings_client->ShouldAutoupgradeMixedContent()) {
@@ -775,17 +777,18 @@ bool MixedContentChecker::ShouldAutoupgrade(
 void MixedContentChecker::HandleCertificateError(
     const ResourceResponse& response,
     mojom::blink::RequestContextType request_context,
-    WebMixedContent::CheckModeForPlugin check_mode_for_plugin,
+    MixedContent::CheckModeForPlugin check_mode_for_plugin,
     mojom::blink::ContentSecurityNotifier& notifier) {
-  WebMixedContentContextType context_type =
-      WebMixedContent::ContextTypeFromRequestContext(request_context,
-                                                     check_mode_for_plugin);
-  if (context_type == WebMixedContentContextType::kBlockable) {
+  mojom::blink::MixedContentContextType context_type =
+      MixedContent::ContextTypeFromRequestContext(request_context,
+                                                  check_mode_for_plugin);
+  if (context_type == mojom::blink::MixedContentContextType::kBlockable) {
     notifier.NotifyContentWithCertificateErrorsRan();
   } else {
     // contextTypeFromRequestContext() never returns NotMixedContent (it
     // computes the type of mixed content, given that the content is mixed).
-    DCHECK_NE(context_type, WebMixedContentContextType::kNotMixedContent);
+    DCHECK_NE(context_type,
+              mojom::blink::MixedContentContextType::kNotMixedContent);
     notifier.NotifyContentWithCertificateErrorsDisplayed();
   }
 }
@@ -839,13 +842,13 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetchAutoupgrade(
       mojom::ConsoleMessageLevel::kWarning, message);
 }
 
-WebMixedContentContextType MixedContentChecker::ContextTypeForInspector(
-    LocalFrame* frame,
-    const ResourceRequest& request) {
+mojom::blink::MixedContentContextType
+MixedContentChecker::ContextTypeForInspector(LocalFrame* frame,
+                                             const ResourceRequest& request) {
   Frame* mixed_frame = InWhichFrameIsContentMixed(frame, request.Url());
   if (!mixed_frame)
-    return WebMixedContentContextType::kNotMixedContent;
-  return WebMixedContent::ContextTypeFromRequestContext(
+    return mojom::blink::MixedContentContextType::kNotMixedContent;
+  return MixedContent::ContextTypeFromRequestContext(
       request.GetRequestContext(),
       DecideCheckModeForPlugin(mixed_frame->GetSettings()));
 }
@@ -940,23 +943,23 @@ void MixedContentChecker::UpgradeInsecureRequest(
             execution_context_for_logging,
             WebFeature::kUpgradeInsecureRequestsUpgradedRequestUnknown);
       } else {
-        WebMixedContentContextType content_type =
-            WebMixedContent::ContextTypeFromRequestContext(
-                context, WebMixedContent::CheckModeForPlugin::kLax);
+        mojom::blink::MixedContentContextType content_type =
+            MixedContent::ContextTypeFromRequestContext(
+                context, MixedContent::CheckModeForPlugin::kLax);
         switch (content_type) {
-          case WebMixedContentContextType::kOptionallyBlockable:
+          case mojom::blink::MixedContentContextType::kOptionallyBlockable:
             UseCounter::Count(
                 execution_context_for_logging,
                 WebFeature::
                     kUpgradeInsecureRequestsUpgradedRequestOptionallyBlockable);
             break;
-          case WebMixedContentContextType::kBlockable:
-          case WebMixedContentContextType::kShouldBeBlockable:
+          case mojom::blink::MixedContentContextType::kBlockable:
+          case mojom::blink::MixedContentContextType::kShouldBeBlockable:
             UseCounter::Count(
                 execution_context_for_logging,
                 WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable);
             break;
-          case WebMixedContentContextType::kNotMixedContent:
+          case mojom::blink::MixedContentContextType::kNotMixedContent:
             NOTREACHED();
         }
       }
@@ -969,11 +972,11 @@ void MixedContentChecker::UpgradeInsecureRequest(
 }
 
 // static
-WebMixedContent::CheckModeForPlugin
-MixedContentChecker::DecideCheckModeForPlugin(Settings* settings) {
+MixedContent::CheckModeForPlugin MixedContentChecker::DecideCheckModeForPlugin(
+    Settings* settings) {
   if (settings && settings->GetStrictMixedContentCheckingForPlugin())
-    return WebMixedContent::CheckModeForPlugin::kStrict;
-  return WebMixedContent::CheckModeForPlugin::kLax;
+    return MixedContent::CheckModeForPlugin::kStrict;
+  return MixedContent::CheckModeForPlugin::kLax;
 }
 
 }  // namespace blink

@@ -10,9 +10,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
-#include "third_party/blink/public/platform/web_mixed_content.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/mixed_content.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -85,7 +85,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
 
   ResourceRequest not_mixed_content("https://example.test/foo.jpg");
   not_mixed_content.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
-  EXPECT_EQ(WebMixedContentContextType::kNotMixedContent,
+  EXPECT_EQ(mojom::blink::MixedContentContextType::kNotMixedContent,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), not_mixed_content));
 
@@ -95,14 +95,14 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
-  EXPECT_EQ(WebMixedContentContextType::kNotMixedContent,
+  EXPECT_EQ(mojom::blink::MixedContentContextType::kNotMixedContent,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), not_mixed_content));
 
   ResourceRequest blockable_mixed_content("http://example.test/foo.jpg");
   blockable_mixed_content.SetRequestContext(
       mojom::blink::RequestContextType::SCRIPT);
-  EXPECT_EQ(WebMixedContentContextType::kBlockable,
+  EXPECT_EQ(mojom::blink::MixedContentContextType::kBlockable,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), blockable_mixed_content));
 
@@ -110,7 +110,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
       "http://example.test/foo.jpg");
   blockable_mixed_content.SetRequestContext(
       mojom::blink::RequestContextType::IMAGE);
-  EXPECT_EQ(WebMixedContentContextType::kOptionallyBlockable,
+  EXPECT_EQ(mojom::blink::MixedContentContextType::kOptionallyBlockable,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), blockable_mixed_content));
 }
@@ -133,20 +133,20 @@ TEST(MixedContentCheckerTest, HandleCertificateError) {
   EXPECT_CALL(mock_notifier, NotifyContentWithCertificateErrorsRan()).Times(1);
   MixedContentChecker::HandleCertificateError(
       response1, mojom::blink::RequestContextType::SCRIPT,
-      WebMixedContent::CheckModeForPlugin::kLax, *notifier_remote);
+      MixedContent::CheckModeForPlugin::kLax, *notifier_remote);
 
   ResourceResponse response2(displayed_url);
   mojom::blink::RequestContextType request_context =
       mojom::blink::RequestContextType::IMAGE;
   ASSERT_EQ(
-      WebMixedContentContextType::kOptionallyBlockable,
-      WebMixedContent::ContextTypeFromRequestContext(
+      mojom::blink::MixedContentContextType::kOptionallyBlockable,
+      MixedContent::ContextTypeFromRequestContext(
           request_context, MixedContentChecker::DecideCheckModeForPlugin(
                                dummy_page_holder->GetFrame().GetSettings())));
   EXPECT_CALL(mock_notifier, NotifyContentWithCertificateErrorsDisplayed())
       .Times(1);
   MixedContentChecker::HandleCertificateError(
-      response2, request_context, WebMixedContent::CheckModeForPlugin::kLax,
+      response2, request_context, MixedContent::CheckModeForPlugin::kLax,
       *notifier_remote);
 
   notifier_remote.FlushForTesting();

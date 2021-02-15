@@ -135,6 +135,8 @@ blink_platform_sources("loader") {
     "internet_disconnected_web_url_loader.cc",
     "link_header.cc",
     "link_header.h",
+    "mixed_content.cc",
+    "mixed_content.h",
     "mixed_content_autoupgrade_status.h",
     "static_data_navigation_body_loader.cc",
     "static_data_navigation_body_loader.h",
@@ -155,12 +157,16 @@ blink_platform_sources("loader") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_blink",
+    "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform/blob:blob",
     "//third_party/blink/renderer/platform/instrumentation:instrumentation",
     "//third_party/blink/renderer/platform/network:network",
     "//third_party/blink/renderer/platform/scheduler:scheduler",
   ]
-  public_deps = [ "//third_party/blink/renderer/platform/heap:heap" ]
+  public_deps = [
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//third_party/blink/renderer/platform/heap:heap",
+  ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/platform/network:network" ]
 }

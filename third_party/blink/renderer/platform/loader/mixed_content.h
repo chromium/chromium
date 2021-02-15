@@ -28,20 +28,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MIXED_CONTENT_CONTEXT_TYPE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MIXED_CONTENT_CONTEXT_TYPE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_MIXED_CONTENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_MIXED_CONTENT_H_
+
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink-forward.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
-// Types and helper functions related to mixed content checks.
-enum class WebMixedContentContextType {
-  kNotMixedContent,
-  kBlockable,
-  kOptionallyBlockable,
-  kShouldBeBlockable,
-  kMaxValue = kShouldBeBlockable
+// Helper functions related to mixed content checks.
+class MixedContent {
+ public:
+  enum class CheckModeForPlugin { kStrict, kLax };
+
+  PLATFORM_EXPORT static mojom::blink::MixedContentContextType
+      ContextTypeFromRequestContext(mojom::RequestContextType,
+                                    CheckModeForPlugin);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MIXED_CONTENT_CONTEXT_TYPE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_MIXED_CONTENT_H_

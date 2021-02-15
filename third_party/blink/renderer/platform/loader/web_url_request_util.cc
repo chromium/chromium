@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -22,9 +23,9 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
-#include "third_party/blink/public/platform/web_mixed_content.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/platform/loader/mixed_content.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -196,10 +197,10 @@ network::mojom::blink::RequestDestination GetRequestDestinationForWebURLRequest(
       request.GetRequestDestination());
 }
 
-WebMixedContentContextType GetMixedContentContextTypeForWebURLRequest(
-    const WebURLRequest& request) {
-  return WebMixedContent::ContextTypeFromRequestContext(
-      request.GetRequestContext(), WebMixedContent::CheckModeForPlugin::kLax);
+mojom::blink::MixedContentContextType
+GetMixedContentContextTypeForWebURLRequest(const WebURLRequest& request) {
+  return MixedContent::ContextTypeFromRequestContext(
+      request.GetRequestContext(), MixedContent::CheckModeForPlugin::kLax);
 }
 
 }  // namespace blink

@@ -22,13 +22,11 @@ import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 
 [Native]
 struct Impression;
-
-[Native]
-enum MixedContentContextType;
 
 [Native]
 struct NavigationDownloadPolicy;
@@ -116,10 +114,8 @@ struct BeginNavigationParams {
       network.mojom.RequestDestination.kEmpty;
 
   // The mixed content context type for potential mixed content checks.
-  //
-  // [Native] enums are by default initialized to 0
-  // (i.e. blink::WebMixedContentContextType::kNotMixedContent below).
-  MixedContentContextType mixed_content_context_type;
+  blink.mojom.MixedContentContextType mixed_content_context_type =
+      blink.mojom.MixedContentContextType.kNotMixedContent;
 
   // Whether or not the navigation has been initiated by a form submission.
   bool is_form_submission = false;

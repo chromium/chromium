@@ -132,7 +132,6 @@ source_set("common") {
     "pepper_renderer_instance_data.cc",
     "pepper_renderer_instance_data.h",
     "process_type.cc",
-    "resource_messages.h",
     "service_worker/service_worker_loader_helpers.cc",
     "service_worker/service_worker_loader_helpers.h",
     "service_worker/service_worker_utils.cc",
@@ -598,10 +597,6 @@ mojom("mojo_bindings") {
           cpp = "::blink::Impression"
         },
         {
-          mojom = "content.mojom.MixedContentContextType"
-          cpp = "::blink::WebMixedContentContextType"
-        },
-        {
           mojom = "content.mojom.NavigationDownloadPolicy"
           cpp = "::content::NavigationDownloadPolicy"
         },
@@ -624,13 +619,9 @@ mojom("mojo_bindings") {
         "//content/public/common/navigation_policy.h",
         "//third_party/blink/public/common/navigation/impression.h",
         "//third_party/blink/public/common/page_state/page_state.h",
-        "//third_party/blink/public/platform/web_mixed_content_context_type.h",
         "//ui/base/page_transition_types.h",
       ]
-      traits_private_headers = [
-        "//content/common/frame_messages.h",
-        "//content/common/resource_messages.h",
-      ]
+      traits_private_headers = [ "//content/common/frame_messages.h" ]
     },
   ]
 

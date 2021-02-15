@@ -15,8 +15,7 @@
 namespace net {
 
 // RedirectInfo captures information about a redirect and any fields in a
-// request that change. This struct must be kept in sync with
-// content/common/resource_messages.h.
+// request that change.
 struct NET_EXPORT RedirectInfo {
   // First-party URL redirect policy: During server redirects, the first-party
   // URL for cookies normally doesn't change. However, if the request is a

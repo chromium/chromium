@@ -27,7 +27,6 @@ include_rules = [
   "+third_party/blink/public/platform/web_fullscreen_video_status.h",
   "+third_party/blink/public/platform/web_http_body.h",
   "+third_party/blink/public/platform/web_history_scroll_restoration_type.h",
-  "+third_party/blink/public/platform/web_mixed_content_context_type.h",
   "+third_party/blink/public/common/widget/screen_info.h",
   "+third_party/blink/public/platform/web_storage_area.h",
   "+third_party/blink/public/platform/web_text_autosizer_page_info.h",

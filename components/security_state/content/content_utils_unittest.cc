@@ -25,7 +25,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -831,7 +831,7 @@ TEST(SecurityStateContentUtilsTest, DefaultSecurityStyleExplanation) {
                                                 "description");
 
   EXPECT_EQ(false, !!explanation.certificate);
-  EXPECT_EQ(blink::WebMixedContentContextType::kNotMixedContent,
+  EXPECT_EQ(blink::mojom::MixedContentContextType::kNotMixedContent,
             explanation.mixed_content_type);
 }
 

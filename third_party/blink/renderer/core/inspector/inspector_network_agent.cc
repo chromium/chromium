@@ -46,10 +46,10 @@
 #include "services/network/public/mojom/websocket.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -323,14 +323,15 @@ KURL UrlWithoutFragment(const KURL& url) {
   return result;
 }
 
-String MixedContentTypeForContextType(WebMixedContentContextType context_type) {
+String MixedContentTypeForContextType(
+    mojom::blink::MixedContentContextType context_type) {
   switch (context_type) {
-    case WebMixedContentContextType::kNotMixedContent:
+    case mojom::blink::MixedContentContextType::kNotMixedContent:
       return protocol::Security::MixedContentTypeEnum::None;
-    case WebMixedContentContextType::kBlockable:
+    case mojom::blink::MixedContentContextType::kBlockable:
       return protocol::Security::MixedContentTypeEnum::Blockable;
-    case WebMixedContentContextType::kOptionallyBlockable:
-    case WebMixedContentContextType::kShouldBeBlockable:
+    case mojom::blink::MixedContentContextType::kOptionallyBlockable:
+    case mojom::blink::MixedContentContextType::kShouldBeBlockable:
       return protocol::Security::MixedContentTypeEnum::OptionallyBlockable;
   }
 

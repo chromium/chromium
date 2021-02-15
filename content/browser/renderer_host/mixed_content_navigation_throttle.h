@@ -15,8 +15,8 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 
 namespace content {
 
@@ -66,7 +66,7 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
   // is found.
   void ReportBasicMixedContentFeatures(
       blink::mojom::RequestContextType request_context_type,
-      blink::WebMixedContentContextType mixed_content_context_type);
+      blink::mojom::MixedContentContextType mixed_content_context_type);
 
   // Checks if the request has a certificate error that should adjust the page's
   // security UI, and does so if applicable.

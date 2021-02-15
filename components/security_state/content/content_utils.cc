@@ -29,7 +29,7 @@
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -111,7 +111,7 @@ void ExplainCertificateSecurity(
         l10n_util::GetStringUTF8(IDS_SHA1),
         l10n_util::GetStringUTF8(IDS_SHA1_DESCRIPTION),
         visible_security_state.certificate,
-        blink::WebMixedContentContextType::kNotMixedContent);
+        blink::mojom::MixedContentContextType::kNotMixedContent);
     // The impact of SHA1 on the certificate status depends on
     // the EnableSHA1ForLocalAnchors policy.
     if (visible_security_state.cert_status &
@@ -131,7 +131,7 @@ void ExplainCertificateSecurity(
             l10n_util::GetStringUTF8(IDS_SUBJECT_ALT_NAME_MISSING),
             l10n_util::GetStringUTF8(IDS_SUBJECT_ALT_NAME_MISSING_DESCRIPTION),
             visible_security_state.certificate,
-            blink::WebMixedContentContextType::kNotMixedContent));
+            blink::mojom::MixedContentContextType::kNotMixedContent));
   }
 
   bool is_cert_status_error =
@@ -147,7 +147,7 @@ void ExplainCertificateSecurity(
         l10n_util::GetStringFUTF8(
             IDS_CERTIFICATE_CHAIN_ERROR_DESCRIPTION_FORMAT, error_string),
         visible_security_state.certificate,
-        blink::WebMixedContentContextType::kNotMixedContent);
+        blink::mojom::MixedContentContextType::kNotMixedContent);
 
     security_style_explanations->insecure_explanations.push_back(explanation);
   } else {
@@ -175,7 +175,7 @@ void ExplainCertificateSecurity(
               l10n_util::GetStringFUTF8(
                   IDS_VALID_SERVER_CERTIFICATE_DESCRIPTION, issuer_name),
               visible_security_state.certificate,
-              blink::WebMixedContentContextType::kNotMixedContent));
+              blink::mojom::MixedContentContextType::kNotMixedContent));
     }
   }
 
@@ -351,7 +351,7 @@ void ExplainContentSecurity(
             l10n_util::GetStringUTF8(IDS_RESOURCE_SECURITY_TITLE),
             l10n_util::GetStringUTF8(IDS_MIXED_ACTIVE_CONTENT_SUMMARY),
             l10n_util::GetStringUTF8(IDS_MIXED_ACTIVE_CONTENT_DESCRIPTION),
-            nullptr, blink::WebMixedContentContextType::kBlockable));
+            nullptr, blink::mojom::MixedContentContextType::kBlockable));
   }
 
   if (visible_security_state.displayed_mixed_content) {
@@ -361,7 +361,8 @@ void ExplainContentSecurity(
             l10n_util::GetStringUTF8(IDS_RESOURCE_SECURITY_TITLE),
             l10n_util::GetStringUTF8(IDS_MIXED_PASSIVE_CONTENT_SUMMARY),
             l10n_util::GetStringUTF8(IDS_MIXED_PASSIVE_CONTENT_DESCRIPTION),
-            nullptr, blink::WebMixedContentContextType::kOptionallyBlockable));
+            nullptr,
+            blink::mojom::MixedContentContextType::kOptionallyBlockable));
   }
 
   if (visible_security_state.contained_mixed_form) {
