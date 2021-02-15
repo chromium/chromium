@@ -65079,6 +65079,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="The bookmark's GUID did not match the originator client item ID
              or client tag"/>
   <int value="10" label="Parent node is not a folder"/>
+  <int value="11" label="GUID changed for an already-tracked server ID"/>
 </enum>
 
 <enum name="RemoteCommandExecutionStatus">

@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -80,6 +81,7 @@ class SyncedBookmarkTracker {
       CHECK(metadata_);
       return metadata_.get();
     }
+
     sync_pb::EntityMetadata* metadata() {
       // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
       // Should be removed after figuring out the reason for the crash.
@@ -93,6 +95,8 @@ class SyncedBookmarkTracker {
     }
 
     void PopulateFaviconHashIfUnset(const std::string& favicon_png_bytes);
+
+    syncer::ClientTagHash GetClientTagHash() const;
 
     // Returns the estimate of dynamically allocated memory in bytes.
     size_t EstimateMemoryUsage() const;
@@ -114,6 +118,9 @@ class SyncedBookmarkTracker {
 
     DISALLOW_COPY_AND_ASSIGN(Entity);
   };
+
+  // Returns a client tag hash given a bookmark GUID.
+  static syncer::ClientTagHash GetClientTagHashFromGUID(const base::GUID& guid);
 
   // Creates an empty instance with no entities. Never returns null.
   static std::unique_ptr<SyncedBookmarkTracker> CreateEmpty(
@@ -226,11 +233,6 @@ class SyncedBookmarkTracker {
   // this tracker.
   void UpdateSyncIdForLocalCreationIfNeeded(const Entity* entity,
                                             const std::string& sync_id);
-
-  // Informs the tracker that a BookmarkNode has been replaced. It updates
-  // the internal state of the tracker accordingly.
-  void UpdateBookmarkNodePointer(const bookmarks::BookmarkNode* old_node,
-                                 const bookmarks::BookmarkNode* new_node);
 
   // Used to start tracking an entity that overwrites a previous local tombstone
   // (e.g. user-initiated bookmark deletion undo). |entity| must be owned by

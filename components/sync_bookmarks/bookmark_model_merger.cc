@@ -607,8 +607,6 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
          node->url() != remote_entity.specifics.bookmark().url())) {
       // If local node and its remote node match are conflicting in node type or
       // URL, replace local GUID with a random GUID.
-      // TODO(crbug.com/978430): Local GUIDs should also be reassigned if they
-      // match a remote originator_client_item_id.
       nodes_to_replace_guid.push_back(node);
       continue;
     }

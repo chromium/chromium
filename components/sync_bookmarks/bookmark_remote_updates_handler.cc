@@ -55,8 +55,10 @@ enum class RemoteBookmarkUpdateError {
   kUnexpectedGuid = 9,
   // Parent is not a folder.
   kParentNotFolder = 10,
+  // The GUID changed for an already-tracked server ID.
+  kGuidChangedForTrackedServerId = 11,
 
-  kMaxValue = kParentNotFolder,
+  kMaxValue = kGuidChangedForTrackedServerId,
 };
 
 void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
@@ -141,10 +143,15 @@ void ApplyRemoteUpdate(
   const syncer::EntityData& update_entity = update.entity;
   DCHECK(!update_entity.is_deleted());
   DCHECK(tracked_entity);
+  DCHECK(tracked_entity->bookmark_node());
   DCHECK(new_parent_tracked_entity);
   DCHECK(model);
   DCHECK(tracker);
   DCHECK(favicon_service);
+  DCHECK_EQ(
+      tracked_entity->bookmark_node()->guid(),
+      base::GUID::ParseLowercase(update_entity.specifics.bookmark().guid()));
+
   const bookmarks::BookmarkNode* node = tracked_entity->bookmark_node();
   const bookmarks::BookmarkNode* old_parent = node->parent();
   const bookmarks::BookmarkNode* new_parent =
@@ -157,17 +164,6 @@ void ApplyRemoteUpdate(
                 << (node->is_folder() ? "folder" : "bookmark");
     LogProblematicBookmark(RemoteBookmarkUpdateError::kConflictingTypes);
     return;
-  }
-
-  // If there is a different GUID in the specifics and it is valid, we must
-  // replace the entire node in order to use it, as GUIDs are immutable. Further
-  // updates are then applied to the new node instead.
-  base::GUID specifics_guid =
-      base::GUID::ParseLowercase(update_entity.specifics.bookmark().guid());
-  if (specifics_guid.is_valid() && specifics_guid != node->guid()) {
-    const bookmarks::BookmarkNode* old_node = node;
-    node = ReplaceBookmarkNodeGUID(node, specifics_guid, model);
-    tracker->UpdateBookmarkNodePointer(old_node, node);
   }
 
   UpdateBookmarkNodeFromSpecifics(update_entity.specifics.bookmark(), node,
@@ -255,27 +251,36 @@ void BookmarkRemoteUpdatesHandler::Process(
     const SyncedBookmarkTracker::Entity* tracked_entity =
         bookmark_tracker_->GetEntityForSyncId(update_entity.id);
 
-    // In rare cases (attributed to protocol violations) the local GUID may need
-    // updating.
-    // TODO(crbug.com/1032052): Delete this code and report an error instead.
-    bool local_guid_needs_update = false;
+    // The GUID cannot have changed, after all validation earlier, since the
+    // GUID-validation logic uses immutable properties of a sync entity at the
+    // protocol level.
+    //
+    // However, with a bad-behaving server, in theory there could be weird cases
+    // like originator_client_item_id changing, for a given sync ID.
+    // TODO(crbug.com/1143246): Switch to a DCHECK instead  once the lookup for
+    // |tracked_entity| switches to an approach that guarantees the invariant
+    // regardless of server bugs, possibly by adopting client tags.
     const base::GUID remote_guid =
         base::GUID::ParseLowercase(update_entity.specifics.bookmark().guid());
     if (tracked_entity && !update_entity.is_deleted() &&
         update_entity.server_defined_unique_tag.empty() &&
-        tracked_entity->bookmark_node() &&
-        remote_guid != tracked_entity->bookmark_node()->guid()) {
-      local_guid_needs_update = true;
+        tracked_entity->GetClientTagHash() !=
+            SyncedBookmarkTracker::GetClientTagHashFromGUID(remote_guid)) {
+      // This should be practically unreachable, but guard against misbehaving
+      // servers.
+      DLOG(ERROR) << "Ignoring remote bookmark update with protocol violation: "
+                     "GUID must be immutable";
+      LogProblematicBookmark(
+          RemoteBookmarkUpdateError::kGuidChangedForTrackedServerId);
+      continue;
     }
 
-    if (tracked_entity &&
-        tracked_entity->metadata()->server_version() >=
-            update->response_version &&
-        !local_guid_needs_update) {
+    if (tracked_entity && tracked_entity->metadata()->server_version() >=
+                              update->response_version) {
       // Seen this update before. This update may be a reflection and may have
-      // missing the final GUID in specifics. Next reupload will populate GUID
-      // in specifics and this codepath will not repeat indefinitely. This logic
-      // is needed for the case when there is only one device and hence the GUID
+      // missing the GUID in specifics. Next reupload will populate GUID in
+      // specifics and this codepath will not repeat indefinitely. This logic is
+      // needed for the case when there is only one device and hence the GUID
       // will not be set by other devices.
       ReuploadEntityIfNeeded(update_entity, tracked_entity);
       continue;
@@ -598,6 +603,8 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
   const syncer::EntityData& update_entity = update.entity;
   // Can only update existing nodes.
   DCHECK(tracked_entity);
+  DCHECK(tracked_entity->bookmark_node());
+  DCHECK(!tracked_entity->bookmark_node()->is_permanent_node());
   DCHECK_EQ(tracked_entity,
             bookmark_tracker_->GetEntityForSyncId(update_entity.id));
   // Must not be a deletion.

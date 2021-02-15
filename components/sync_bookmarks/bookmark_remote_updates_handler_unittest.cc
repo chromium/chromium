@@ -64,7 +64,8 @@ enum class ExpectedRemoteBookmarkUpdateError {
   kCreationFailure = 8,
   kUnexpectedGuid = 9,
   kParentNotFolder = 10,
-  kMaxValue = kParentNotFolder,
+  kGuidChangedForTrackedServerId = 11,
+  kMaxValue = kGuidChangedForTrackedServerId,
 };
 
 // |node| must not be nullptr.
@@ -643,7 +644,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldUpdateGUIDValueUponRemoteUpdate) {
+       ShouldIgnoreMisbehavingServerWithRemoteGuidUpdate) {
   const std::string kId = "id";
   const std::string kTitle = "title";
   const base::GUID kOldGuid = base::GUID::GenerateRandomV4();
@@ -668,7 +669,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
   ASSERT_THAT(tracker()->GetEntityForSyncId(kId), NotNull());
 
-  // Push an update for the same entity with a new GUID.
+  // Push an update for the same entity with a new GUID. Note that this is a
+  // protocol violation, because |originator_client_item_id| cannot have changed
+  // for a given server ID.
   updates.clear();
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kId,
@@ -685,20 +688,21 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
 
-  // The GUID should have been updated.
+  // The GUID should not have been updated.
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
-  EXPECT_THAT(bookmark_bar_node->children().front()->guid(), Eq(kNewGuid));
+  EXPECT_THAT(bookmark_bar_node->children().front()->guid(), Eq(kOldGuid));
 
   histogram_tester.ExpectBucketCount(
       "Sync.ProblematicServerSideBookmarks",
-      /*sample=*/ExpectedRemoteBookmarkUpdateError::kUnexpectedGuid,
-      /*expected_count=*/0);
+      /*sample=*/
+      ExpectedRemoteBookmarkUpdateError::kGuidChangedForTrackedServerId,
+      /*expected_count=*/1);
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldKeepOldGUIDUponRemoteUpdate) {
+       ShouldKeepOldGUIDUponRemoteUpdateWithoutGUID) {
   const std::string kId = "id";
   const std::string kTitle = "title";
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
@@ -722,7 +726,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
   ASSERT_THAT(tracker()->GetEntityForSyncId(kId), NotNull());
 
-  // Push an update for the same entity with a new GUID.
+  // Push an update for the same entity with no GUID.
   updates.clear();
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kId,
@@ -1285,6 +1289,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldRecommitWhenEncryptionIsOutOfDateOnConflict) {
   const std::string kId0 = "id0";
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_encryption_key_name("encryption_key_name");
@@ -1295,7 +1300,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::UpdateResponseData response_data =
       CreateUpdateResponseData(/*server_id=*/kId0,
                                /*parent_id=*/kBookmarkBarId,
-                               /*guid=*/base::GUID::GenerateRandomV4(),
+                               /*guid=*/kGuid,
                                /*is_deletion=*/false,
                                /*version=*/0);
   response_data.encryption_key_name = "encryption_key_name";
@@ -1307,6 +1312,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       tracker()->GetEntityForSyncId(kId0);
   ASSERT_THAT(entity, NotNull());
   ASSERT_THAT(entity->bookmark_node(), NotNull());
+  ASSERT_THAT(entity->bookmark_node()->guid(), Eq(kGuid));
 
   bookmark_model()->Remove(entity->bookmark_node());
   tracker()->MarkDeleted(entity);
@@ -1316,12 +1322,11 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // and the remote version must be applied. Local tombstone entity will be
   // removed during processing conflict.
   updates.clear();
-  response_data =
-      CreateUpdateResponseData(/*server_id=*/kId0,
-                               /*parent_id=*/kBookmarkBarId,
-                               /*guid=*/base::GUID::GenerateRandomV4(),
-                               /*is_deletion=*/false,
-                               /*version=*/1);
+  response_data = CreateUpdateResponseData(/*server_id=*/kId0,
+                                           /*parent_id=*/kBookmarkBarId,
+                                           /*guid=*/kGuid,
+                                           /*is_deletion=*/false,
+                                           /*version=*/1);
   response_data.encryption_key_name = "out_of_date_encryption_key_name";
   updates.push_back(std::move(response_data));
 
@@ -1571,13 +1576,14 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldResolveConflictBetweenLocalDeletionAndRemoteUpdateByRemote) {
   const std::string kId = "id";
   const std::string kTitle = "title";
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
 
   syncer::UpdateResponseDataList updates;
 
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kId,
       /*parent_id=*/kBookmarkBarId,
-      /*guid=*/base::GUID::GenerateRandomV4(),
+      /*guid=*/kGuid,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/0,
@@ -1590,6 +1596,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const SyncedBookmarkTracker::Entity* entity =
       tracker()->GetEntityForSyncId(kId);
   ASSERT_THAT(entity, NotNull());
+  ASSERT_THAT(entity->bookmark_node(), NotNull());
+  ASSERT_THAT(entity->bookmark_node()->guid(), Eq(kGuid));
   ASSERT_THAT(entity->IsUnsynced(), Eq(false));
 
   const bookmarks::BookmarkNode* bookmark_bar_node =
@@ -1610,7 +1618,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kId,
       /*parent_id=*/kBookmarkBarId,
-      /*guid=*/base::GUID::GenerateRandomV4(),
+      /*guid=*/kGuid,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/1,
