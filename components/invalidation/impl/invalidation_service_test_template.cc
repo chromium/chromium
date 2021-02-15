@@ -23,4 +23,8 @@ void BoundFakeInvalidationHandler::OnInvalidatorStateChange(
   last_retrieved_state_ = invalidator_.GetInvalidatorState();
 }
 
+// This suite is instantiated in binaries that use
+// //components/invalidation/impl:test_support.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(InvalidationServiceTest);
+
 }  // namespace invalidation
