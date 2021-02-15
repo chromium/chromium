@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -341,9 +342,10 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
 
 void AccountManagerUIHandler::HandleAddAccount(const base::ListValue* args) {
   AllowJavascript();
-  InlineLoginDialogChromeOS::ShowDeprecated(
-      ::account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsAddAccountButton);
+  ::GetAccountManagerFacade(profile_->GetPath().value())
+      ->ShowAddAccountDialog(
+          account_manager::AccountManagerFacade::AccountAdditionSource::
+              kSettingsAddAccountButton);
 }
 
 void AccountManagerUIHandler::HandleReauthenticateAccount(
@@ -353,9 +355,11 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
   CHECK(!args->GetList().empty());
   const std::string& account_email = args->GetList()[0].GetString();
 
-  InlineLoginDialogChromeOS::ShowDeprecated(
-      account_email, ::account_manager::AccountManagerFacade::
-                         AccountAdditionSource::kSettingsReauthAccountButton);
+  ::GetAccountManagerFacade(profile_->GetPath().value())
+      ->ShowReauthAccountDialog(
+          account_manager::AccountManagerFacade::AccountAdditionSource::
+              kSettingsReauthAccountButton,
+          account_email);
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(

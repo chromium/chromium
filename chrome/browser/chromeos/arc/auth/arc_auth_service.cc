@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_migrator.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -510,8 +511,9 @@ void ArcAuthService::IsAccountManagerAvailable(
 void ArcAuthService::HandleAddAccountRequest() {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-      ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
+  ::GetAccountManagerFacade(profile_->GetPath().value())
+      ->ShowAddAccountDialog(
+          account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
 }
 
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
@@ -524,9 +526,10 @@ void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
 void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-      email,
-      ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
+  ::GetAccountManagerFacade(profile_->GetPath().value())
+      ->ShowReauthAccountDialog(
+          account_manager::AccountManagerFacade::AccountAdditionSource::kArc,
+          email);
 }
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(

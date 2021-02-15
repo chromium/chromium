@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
@@ -716,9 +717,9 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
     // Chrome OS Account Manager is enabled on this Profile and hence, all
     // account management flows will go through native UIs and not through a
     // tabbed browser window.
-    chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-        account_manager::AccountManagerFacade::AccountAdditionSource::
-            kPrintPreviewDialog);
+    ::GetAccountManagerFacade(profile->GetPath().value())
+        ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
+                                   AccountAdditionSource::kPrintPreviewDialog);
     return;
   }
 #endif

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -282,9 +283,10 @@ void ProcessMirrorHeader(
     }
 
     // Display a re-authentication dialog.
-    chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-        manage_accounts_params.email, ::account_manager::AccountManagerFacade::
-                                          AccountAdditionSource::kContentArea);
+    ::GetAccountManagerFacade(profile->GetPath().value())
+        ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
+                                      AccountAdditionSource::kContentArea,
+                                  manage_accounts_params.email);
     return;
   }
 

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -58,10 +59,12 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     CHECK(!args->GetList().empty());
     const std::string& account_email = args->GetList()[0].GetString();
 
-    InlineLoginDialogChromeOS::ShowDeprecated(
-        account_email,
-        ::account_manager::AccountManagerFacade::AccountAdditionSource::
-            kAccountManagerMigrationWelcomeScreen);
+    Profile* profile = Profile::FromWebUI(web_ui());
+    ::GetAccountManagerFacade(profile->GetPath().value())
+        ->ShowReauthAccountDialog(
+            account_manager::AccountManagerFacade::AccountAdditionSource::
+                kAccountManagerMigrationWelcomeScreen,
+            account_email);
     HandleCloseDialog(args);
   }
 
