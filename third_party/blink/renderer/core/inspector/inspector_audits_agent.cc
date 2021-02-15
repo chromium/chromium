@@ -438,6 +438,8 @@ protocol::String BuildMixedContentResourceType(
       return protocol::Audits::MixedContentResourceTypeEnum::Stylesheet;
     case blink::mojom::blink::RequestContextType::SUBRESOURCE:
       return protocol::Audits::MixedContentResourceTypeEnum::Resource;
+    case blink::mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
+      return protocol::Audits::MixedContentResourceTypeEnum::Resource;
     case blink::mojom::blink::RequestContextType::TRACK:
       return protocol::Audits::MixedContentResourceTypeEnum::Track;
     case blink::mojom::blink::RequestContextType::UNSPECIFIED:

@@ -137,6 +137,8 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
       return "stylesheet";
     case mojom::blink::RequestContextType::SUBRESOURCE:
       return "resource";
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
+      return "webbundle";
     case mojom::blink::RequestContextType::TRACK:
       return "Text Track";
     case mojom::blink::RequestContextType::UNSPECIFIED:

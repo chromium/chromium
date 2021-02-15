@@ -271,17 +271,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
         auth_cert_observer.InitWithNewPipeAndPassReceiver());
   }
 
-  if (url_request.destination ==
-      network::mojom::RequestDestination::kWebBundle) {
-    DCHECK(url_request.web_bundle_token_params.has_value());
-    base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
-        context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
-            url_request.url, *url_request.web_bundle_token_params,
-            params_->process_id, params_->request_initiator_origin_lock);
-    client =
-        web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
-  }
-
   auto loader = std::make_unique<URLLoader>(
       context_->url_request_context(), network_service_client,
       context_->client(),

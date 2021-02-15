@@ -617,6 +617,7 @@ static base::Optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::PING:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
     case mojom::blink::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
       return CSPDirectiveName::ConnectSrc;
 
     case mojom::blink::RequestContextType::EMBED:

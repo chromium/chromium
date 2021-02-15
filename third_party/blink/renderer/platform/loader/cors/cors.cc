@@ -254,6 +254,7 @@ bool IsNoCorsAllowedContext(mojom::blink::RequestContextType context) {
     case mojom::blink::RequestContextType::SHARED_WORKER:
     case mojom::blink::RequestContextType::VIDEO:
     case mojom::blink::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
       return true;
     default:
       return false;

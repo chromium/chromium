@@ -78,6 +78,7 @@ WebMixedContentContextType WebMixedContent::ContextTypeFromRequestContext(
     case mojom::blink::RequestContextType::SHARED_WORKER:
     case mojom::blink::RequestContextType::STYLE:
     case mojom::blink::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
     case mojom::blink::RequestContextType::TRACK:
     case mojom::blink::RequestContextType::WORKER:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:

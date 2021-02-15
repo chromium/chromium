@@ -5483,7 +5483,7 @@ crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar
 crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
 
 # WebBundle tests which fail
-crbug.com/1168449 external/wpt/web-bundle/subresource-loading/subresource-loading-cross-origin.tentative.html [ Pass Timeout ]
+crbug.com/1168449 external/wpt/web-bundle/subresource-loading/subresource-loading-cors-error.tentative.html [ Pass Timeout ]
 
 # Sheriff 2020-11-16
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Pass Failure Timeout ]

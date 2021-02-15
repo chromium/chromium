@@ -12,6 +12,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
@@ -31,7 +32,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
  public:
   WebBundleLoader(LinkWebBundle& link_web_bundle,
                   Document& document,
-                  const KURL& url)
+                  const KURL& url,
+                  CrossOriginAttributeValue cross_origin_attribute_value)
       : link_web_bundle_(&link_web_bundle),
         url_(url),
         security_origin_(SecurityOrigin::Create(url)),
@@ -42,11 +44,25 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     // linked resource algorithm [1] for <link rel=webbundle> is defined.
     // [1]
     // https://html.spec.whatwg.org/multipage/semantics.html#fetch-and-process-the-linked-resource
-    request.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
-    // TODO(crbug.com/1149816): Set CORS mode respecting the crossorigin=
-    // attribute of the <link> element.
-    request.SetMode(network::mojom::blink::RequestMode::kCors);
-    request.SetCredentialsMode(network::mojom::blink::CredentialsMode::kOmit);
+    request.SetRequestContext(
+        mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE);
+    // Set request's mode and credentials mode. See
+    // https://html.spec.whatwg.org/multipage/#cors-settings-attribute
+    switch (cross_origin_attribute_value) {
+      case kCrossOriginAttributeNotSet:
+        request.SetMode(network::mojom::blink::RequestMode::kNoCors);
+        request.SetCredentialsMode(network::mojom::CredentialsMode::kInclude);
+        break;
+      case kCrossOriginAttributeAnonymous:
+        request.SetMode(network::mojom::blink::RequestMode::kCors);
+        request.SetCredentialsMode(
+            network::mojom::CredentialsMode::kSameOrigin);
+        break;
+      case kCrossOriginAttributeUseCredentials:
+        request.SetMode(network::mojom::blink::RequestMode::kCors);
+        request.SetCredentialsMode(network::mojom::CredentialsMode::kInclude);
+        break;
+    }
     request.SetRequestDestination(
         network::mojom::RequestDestination::kWebBundle);
     request.SetPriority(ResourceLoadPriority::kHigh);
@@ -163,6 +179,10 @@ void LinkWebBundle::Process() {
   if (!resource_fetcher)
     return;
 
+  // We don't support crossorigin= attribute's dynamic change. It seems
+  // other types of link elements doesn't support that too. See
+  // HTMLlinkElement::ParseAttribute, which doesn't call Process() for
+  // crossorigin= attribute change.
   if (!bundle_loader_ || bundle_loader_->url() != owner_->Href()) {
     if (resource_fetcher->ShouldBeLoadedFromWebBundle(owner_->Href())) {
       // This can happen when a requested bundle is a nested bundle.
@@ -182,7 +202,9 @@ void LinkWebBundle::Process() {
       return;
     }
     bundle_loader_ = MakeGarbageCollected<WebBundleLoader>(
-        *this, owner_->GetDocument(), owner_->Href());
+        *this, owner_->GetDocument(), owner_->Href(),
+        GetCrossOriginAttributeValue(
+            owner_->FastGetAttribute(html_names::kCrossoriginAttr)));
   }
 
   resource_fetcher->AddSubresourceWebBundle(*this);

@@ -35,6 +35,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/web_bundle_url_loader_factory.h"
 #include "url/origin.h"
 
 namespace network {
@@ -252,6 +253,17 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
+  }
+
+  if (resource_request.destination ==
+      network::mojom::RequestDestination::kWebBundle) {
+    DCHECK(resource_request.web_bundle_token_params.has_value());
+    base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
+        context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
+            resource_request.url, *resource_request.web_bundle_token_params,
+            process_id_, request_initiator_origin_lock_);
+    client =
+        web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
   }
 
   mojom::URLLoaderFactory* const inner_url_loader_factory =
