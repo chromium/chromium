@@ -43,7 +43,7 @@ TEST(KeyEventStructTraitsTest, Convert) {
   }
 }
 
-TEST(KeyEventStructTraitsTest, FallbackToScancode) {
+TEST(KeyEventStructTraitsTest, UseScancodeIfAvailable) {
   auto original = std::make_unique<ui::KeyEvent>(
       ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE);
   original->set_scan_code(KEY_A);
