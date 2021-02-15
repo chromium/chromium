@@ -336,7 +336,7 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
   // Grant access to this particular file to target extension. This will
   // ensure that the target extension can access only this FS entry and
   // prevent from traversing FS hierarchy upward.
-  external_backend->GrantFileAccessToExtension(extension_id(),
+  external_backend->GrantFileAccessToExtension(extension_id_or_file_app_id(),
                                                file_definition.virtual_path);
 
   // Grant access to the selected file to target extensions render view process.
@@ -344,7 +344,8 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
       render_frame_host()->GetProcess()->GetID(), full_path);
 
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
-      chrome_details.GetProfile(), extension_id(), file_definition,
+      chrome_details.GetProfile(), extension_id_or_file_app_id(),
+      file_definition,
       base::BindOnce(
           &FileBrowserHandlerInternalSelectFileFunction::RespondEntryDefinition,
           this));

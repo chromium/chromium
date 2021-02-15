@@ -801,11 +801,11 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       continue;
     }
     auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString(
-        "fileSystemRoot",
-        storage::GetExternalFileSystemRootURIString(
-            extensions::Extension::GetBaseURLFromExtensionId(extension_id()),
-            mount_name));
+    entry->SetString("fileSystemRoot",
+                     storage::GetExternalFileSystemRootURIString(
+                         extensions::Extension::GetBaseURLFromExtensionId(
+                             extension_id_or_file_app_id()),
+                         mount_name));
     entry->SetString("fileSystemName", file_system_name);
     entry->SetString("fileFullPath", full_path);
     // All shared paths should be directories.  Even if this is not true,
@@ -1043,7 +1043,8 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
 
   model->GetRecentFiles(
       file_system_context.get(),
-      Extension::GetBaseURLFromExtensionId(extension_id()), file_type,
+      Extension::GetBaseURLFromExtensionId(extension_id_or_file_app_id()),
+      file_type,
       base::BindOnce(
           &FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles,
           this, params->restriction));
@@ -1067,14 +1068,14 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     // Recent file system only lists regular files, not directories.
     file_definition.is_directory = false;
     if (file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            chrome_details_.GetProfile(), extension_id(), file.url().path(),
-            &file_definition.virtual_path)) {
+            chrome_details_.GetProfile(), extension_id_or_file_app_id(),
+            file.url().path(), &file_definition.virtual_path)) {
       file_definition_list.emplace_back(std::move(file_definition));
     }
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
-      chrome_details_.GetProfile(), extension_id(),
+      chrome_details_.GetProfile(), extension_id_or_file_app_id(),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(&FileManagerPrivateInternalGetRecentFilesFunction::
                          OnConvertFileDefinitionListToEntryDefinitionList,

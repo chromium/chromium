@@ -10,7 +10,7 @@
 namespace extensions {
 
 FilesExtensionFunction::FilesExtensionFunction()
-#if defined(OFFICAL_BUILD)
+#if defined(OFFICIAL_BUILD)
     : file_app_id_(file_manager::kFileManagerAppId) {
 }
 #else
@@ -22,7 +22,7 @@ FilesExtensionFunction::FilesExtensionFunction()
 FilesExtensionFunction::~FilesExtensionFunction() = default;
 
 const std::string& FilesExtensionFunction::extension_id_or_file_app_id() const {
-#if !defined(OFFICAL_BUILD)
+#if !defined(OFFICIAL_BUILD)
   if (!extension_) {
     CHECK(is_swa_mode());
     return file_app_id();
@@ -32,7 +32,7 @@ const std::string& FilesExtensionFunction::extension_id_or_file_app_id() const {
 }
 
 bool FilesExtensionFunction::is_swa_mode() const {
-#if defined(OFFICAL_BUILD)
+#if defined(OFFICIAL_BUILD)
   return false;
 #else
   return source_url().GetOrigin() == swa_url_ &&
