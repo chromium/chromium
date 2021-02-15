@@ -80,20 +80,16 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   void SetEduCoexistenceFlowResult(EduCoexistenceFlowResult result);
 
  protected:
-  // |is_arc_source| parameter is used to specify whether the dialog is opened
-  // from ARC. It's used to display the correct error message for Child users.
-  explicit InlineLoginDialogChromeOS(bool is_arc_source);
-  InlineLoginDialogChromeOS(const GURL& url, bool is_arc_source);
+  InlineLoginDialogChromeOS();
+  explicit InlineLoginDialogChromeOS(const GURL& url);
 
   InlineLoginDialogChromeOS(const GURL& url,
-                            bool is_arc_source,
                             base::OnceClosure close_dialog_closure);
   ~InlineLoginDialogChromeOS() override;
 
   // ui::WebDialogDelegate overrides
   void GetDialogSize(gfx::Size* size) const override;
   ui::ModalType GetDialogModalType() const override;
-  std::string GetDialogArgs() const override;
   bool ShouldShowDialogTitle() const override;
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
@@ -115,11 +111,9 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
 
   static void ShowInternal(
       const std::string& email,
-      bool is_arc_source,
       base::OnceClosure close_dialog_closure = base::DoNothing());
 
   InlineLoginHandlerModalDelegate delegate_;
-  const bool is_arc_source_;
   const GURL url_;
   base::Optional<EduCoexistenceFlowResult> edu_coexistence_flow_result_;
   base::OnceClosure close_dialog_closure_;

@@ -174,7 +174,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
     {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
-    {"family_link_logo.svg", IDR_FAMILY_LINK_LOGO_SVG},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   webui::AddResourcePathsBulk(source, kResources);
