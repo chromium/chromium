@@ -217,10 +217,25 @@ void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  const int ret =
-      HANDLE_EINTR(mprotect(address, length, GetAccessFlags(accessibility)));
-  if (ret == -1 && errno == ENOMEM)
+  int access_flags = GetAccessFlags(accessibility);
+  const int ret = HANDLE_EINTR(mprotect(address, length, access_flags));
+
+  // On Linux, man mprotect(2) states that ENOMEM is returned when (1) internal
+  // kernel data structures cannot be allocated, (2) the address range is
+  // invalid, or (3) this would split an existing mapping in a way that would
+  // exceed the maximum number of allowed mappings.
+  //
+  // Neither are very likely, but we still get a lot of crashes here. This is
+  // because setrlimit(RLIMIT_DATA)'s limit is checked and enforced here, if the
+  // access flags match a "data" mapping, which in our case would be MAP_PRIVATE
+  // | MAP_ANONYMOUS, and PROT_WRITE. see the call to may_expand_vm() in
+  // mm/mprotect.c in the kernel for details.
+  //
+  // In this case, we are almost certainly bumping into the sandbox limit, mark
+  // the crash as OOM. See SandboxLinux::LimitAddressSpace() for details.
+  if (ret == -1 && errno == ENOMEM && (access_flags & PROT_WRITE))
     OOM_CRASH(length);
+
   PA_PCHECK(0 == ret);
 }
 
