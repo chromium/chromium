@@ -14,7 +14,7 @@
 // Test methods that perform sign in actions on Chrome UI.
 @interface SigninEarlGreyUI : NSObject
 
-// Calls +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity syncing:YES].
+// Calls +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES].
 + (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
 // Signs the account for |fakeIdentity| into Chrome through the Settings screen,
