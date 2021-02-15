@@ -312,12 +312,9 @@ String SecurityOrigin::RegistrableDomain() const {
   return domain.IsEmpty() ? String() : domain;
 }
 
+// TODO(crbug.com/1153336): Remove this method and make existing call sites rely
+// on network::IsUrlPotentiallyTrustworthy() instead.
 bool SecurityOrigin::IsSecure(const KURL& url) {
-  // This method is a stricter alternative to "potentially trustworthy url":
-  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
-  // TODO(https://crbug.com/1153336): Align the behavior of this function with
-  // network::IsUrlPotentiallyTrustworthy()?
-
   GURL gurl = GURL(url);
 
   // 1. If url is "about:blank" or "about:srcdoc", return "Potentially

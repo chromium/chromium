@@ -128,6 +128,7 @@ base::Optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {
 
   // TODO(mkwst): We only have status code information for Documents. It would
   // be nice to get them for Workers as well.
+  // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
   Document* document = GetDocument();
   if (document && !SecurityOrigin::IsSecure(document->Url()) &&
       document->Loader()) {

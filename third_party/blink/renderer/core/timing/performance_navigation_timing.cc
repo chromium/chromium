@@ -55,6 +55,7 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                      info->FinalResponse().CurrentRequestUrl().GetString())
                : g_empty_atom,
           time_origin,
+          // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
           SecurityOrigin::IsSecure(window->Url()),
           std::move(server_timing),
           window),

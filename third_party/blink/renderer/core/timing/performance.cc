@@ -535,6 +535,7 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   result->encoded_body_size = final_response.EncodedBodyLength();
   result->decoded_body_size = final_response.DecodedBodyLength();
   result->did_reuse_connection = final_response.ConnectionReused();
+  // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
   result->is_secure_context =
       SecurityOrigin::IsSecure(final_response.ResponseUrl());
   result->allow_negative_values = info.NegativeAllowed();
