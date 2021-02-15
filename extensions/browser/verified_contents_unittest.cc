@@ -70,8 +70,8 @@ std::unique_ptr<VerifiedContents> CreateTestVerifiedContents(
 
   base::FilePath verified_contents_path =
       path.AppendASCII(verified_contents_filename);
-  return VerifiedContents::Create(base::as_bytes(base::make_span(public_key)),
-                                  verified_contents_path);
+  return VerifiedContents::CreateFromFile(
+      base::as_bytes(base::make_span(public_key)), verified_contents_path);
 }
 
 }  // namespace
