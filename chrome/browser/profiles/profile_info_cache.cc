@@ -35,10 +35,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
-#endif
-
 namespace {
 
 const char kIsUsingDefaultAvatarKey[] = "is_using_default_avatar";
@@ -71,17 +67,6 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
        !it.IsAtEnd(); it.Advance()) {
     base::DictionaryValue* info = nullptr;
     cache->GetDictionaryWithoutPathExpansion(it.key(), &info);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
-    std::string supervised_user_id;
-    info->GetString(ProfileAttributesEntry::kSupervisedUserId,
-                    &supervised_user_id);
-    // Silently ignore legacy supervised user profiles.
-    if (!supervised_user_id.empty() &&
-        supervised_user_id != supervised_users::kChildAccountSUID) {
-      continue;
-    }
-#endif
     base::string16 name;
     info->GetString(ProfileAttributesEntry::kNameKey, &name);
     keys_.push_back(it.key());
