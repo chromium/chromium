@@ -197,7 +197,6 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
   wtf_size_t box_order = 0;
   wtf_size_t table_column_count = 0;
   wtf_size_t table_row_index = 0;
-
   // Mark cell borders.
   bool found_multispan_cells = false;
   for (const NGBlockNode section : grouped_children) {
@@ -209,11 +208,6 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
       for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
            cell = To<NGBlockNode>(cell.NextSibling())) {
         tabulator.FindNextFreeColumn();
-        // https://stackoverflow.com/questions/18758373/why-do-the-css-property-border-collapse-and-empty-cells-conflict
-        if (hide_empty_cells && !To<NGBlockNode>(cell).FirstChild()) {
-          tabulator.ProcessCell(cell);
-          continue;
-        }
         wtf_size_t cell_colspan = cell.TableCellColspan();
         found_multispan_cells |=
             cell.TableCellRowspan() > 1 || cell_colspan > 1;
@@ -224,6 +218,11 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
             table_column_count, NGTableAlgorithmHelpers::ComputeMaxColumn(
                                     tabulator.CurrentColumn(), cell_colspan,
                                     table.Style().IsFixedTableLayout()));
+        // https://stackoverflow.com/questions/18758373/why-do-the-css-property-border-collapse-and-empty-cells-conflict
+        if (hide_empty_cells && !To<NGBlockNode>(cell).FirstChild()) {
+          tabulator.ProcessCell(cell);
+          continue;
+        }
         if (!found_multispan_cells) {
           table_borders->MergeBorders(
               table_row_index, tabulator.CurrentColumn(),
