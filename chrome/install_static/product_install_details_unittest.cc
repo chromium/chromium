@@ -9,6 +9,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -93,7 +94,9 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
       EXPECT_TRUE(PathIsInProgramFiles(path)) << path;
 
       path = base::StringPrintf(
-          valid, base::i18n::ToLower(program_files_path).c_str());
+          valid, base::AsWString(base::i18n::ToLower(
+                                     base::AsStringPiece16(program_files_path)))
+                     .c_str());
       EXPECT_TRUE(PathIsInProgramFiles(path)) << path;
     }
   }
@@ -212,11 +215,11 @@ class MakeProductDetailsTest : public testing::TestWithParam<TestData> {
         nt_root_key_(test_data_.system_level ? nt::HKLM : nt::HKCU) {}
 
   ~MakeProductDetailsTest() {
-    nt::SetTestingOverride(nt_root_key_, base::string16());
+    nt::SetTestingOverride(nt_root_key_, std::wstring());
   }
 
   void SetUp() override {
-    base::string16 path;
+    std::wstring path;
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(root_key_, &path));
     nt::SetTestingOverride(nt_root_key_, path);
