@@ -15,7 +15,7 @@ namespace chromeos {
 
 // Class responsible for handling easy unlock auth attempts (both for unlocking
 // the screen and logging in). The auth protocol is started by calling `Start`,
-// which notifies the easy unlock app about auth attempt. When the auth result
+// which creates a connection to ScreenLockBridge. When the auth result
 // is available, `FinalizeUnlock` or `FinalizeSignin` should be called,
 // depending on auth type.
 // To cancel the in progress auth attempt, delete the `EasyUnlockAuthAttempt`
@@ -28,20 +28,20 @@ class EasyUnlockAuthAttempt {
   EasyUnlockAuthAttempt(const AccountId& account_id, Type type);
   ~EasyUnlockAuthAttempt();
 
-  // Starts the auth attempt by sending screenlockPrivate.onAuthAttempted event
-  // to easy unlock app. Returns whether the event was successfully dispatched.
+  // Ensures the device is currently locked and the unlock process is being
+  // initiated by AuthType::USER_CLOCK.
   bool Start();
 
   // Finalizes an unlock attempt. It unlocks the screen if `success` is true.
-  // If `this` has TYPE_SIGNIN type, calling this method will cause signin
+  // If `type_` is not TYPE_UNLOCK, calling this method will cause unlock
   // failure equivalent to cancelling the attempt.
   void FinalizeUnlock(const AccountId& account_id, bool success);
 
   // Finalizes signin attempt. It tries to log in using the secret derived from
   // `wrapped_secret` decrypted by `session_key`. If the decryption fails, it
   // fails the signin attempt.
-  // If called on an object with TYPE_UNLOCK type, it will cause unlock failure
-  // equivalent to cancelling the request.
+  // If `type_` is not TYPE_SIGNIN, calling this method will cause signin
+  // failure equivalent to cancelling the attempt.
   void FinalizeSignin(const AccountId& account_id,
                       const std::string& wrapped_secret,
                       const std::string& session_key);
