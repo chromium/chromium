@@ -1409,7 +1409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2Error"
-    enum="GoogleServiceAuthError" expires_after="2021-02-16">
+    enum="GoogleServiceAuthError" expires_after="M95">
   <owner>igorcov@chromium.org</owner>
   <owner>asumaneev@google.com</owner>
   <summary>Service error during OAuth2 access token fetch.</summary>
