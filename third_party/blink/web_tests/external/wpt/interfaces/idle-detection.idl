@@ -1,7 +1,7 @@
-dictionary IdleOptions {
-  [EnforceRange] unsigned long threshold;
-  AbortSignal signal;
-};
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Idle Detection API (https://wicg.github.io/idle-detection/)
 
 enum UserIdleState {
     "active",
@@ -13,14 +13,19 @@ enum ScreenIdleState {
     "unlocked"
 };
 
+dictionary IdleOptions {
+  [EnforceRange] unsigned long long threshold;
+  AbortSignal signal;
+};
+
 [
   SecureContext,
-  Exposed=(Window,Worker)
+  Exposed=(Window,DedicatedWorker)
 ] interface IdleDetector : EventTarget {
   constructor();
   readonly attribute UserIdleState? userState;
   readonly attribute ScreenIdleState? screenState;
   attribute EventHandler onchange;
   [Exposed=Window] static Promise<PermissionState> requestPermission();
-  Promise<any> start(optional IdleOptions options = {});
+  Promise<void> start(optional IdleOptions options = {});
 };

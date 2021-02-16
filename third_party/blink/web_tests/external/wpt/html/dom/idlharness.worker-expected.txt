@@ -439,10 +439,6 @@ PASS PromiseRejectionEvent interface: attribute promise
 PASS PromiseRejectionEvent interface: attribute reason
 PASS DOMParser interface: existence and properties of interface object
 PASS Navigator interface: existence and properties of interface object
-PASS PluginArray interface: existence and properties of interface object
-PASS MimeTypeArray interface: existence and properties of interface object
-PASS Plugin interface: existence and properties of interface object
-PASS MimeType interface: existence and properties of interface object
 PASS ImageBitmap interface: existence and properties of interface object
 PASS ImageBitmap interface object length
 PASS ImageBitmap interface object name
@@ -793,6 +789,10 @@ PASS HTMLFrameElement interface: existence and properties of interface object
 PASS HTMLDirectoryElement interface: existence and properties of interface object
 PASS HTMLFontElement interface: existence and properties of interface object
 PASS External interface: existence and properties of interface object
+PASS PluginArray interface: existence and properties of interface object
+PASS MimeTypeArray interface: existence and properties of interface object
+PASS Plugin interface: existence and properties of interface object
+PASS MimeType interface: existence and properties of interface object
 PASS NodeList interface: existence and properties of interface object
 PASS HTMLCollection interface: existence and properties of interface object
 PASS Node interface: existence and properties of interface object
