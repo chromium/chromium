@@ -12,7 +12,6 @@ import android.test.mock.MockPackageManager;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -39,11 +37,6 @@ public class VoiceRecognitionUtilTest {
         mContextWithSpeech = new IntentTestMockContext(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
         mContextWithoutSpeech = new IntentTestMockContext(RecognizerIntent.ACTION_WEB_SEARCH);
-    }
-
-    @After
-    public void tearDown() {
-        AccountManagerFacadeProvider.resetInstanceForTests();
     }
 
     private static class IntentTestPackageManager extends MockPackageManager {
