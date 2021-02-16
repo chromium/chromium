@@ -181,6 +181,28 @@ TEST_F(LocalSessionEventHandlerImplTest, GetTabSpecificsFromDelegate) {
   EXPECT_EQ("in", session_tab.navigation(2).page_language());
 }
 
+// Verifies SessionTab.browser_type is set correctly.
+TEST_F(LocalSessionEventHandlerImplTest, BrowserTypeInTabSpecifics) {
+  // Create two windows with different browser types.
+  AddWindow(kWindowId1, sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
+  TestSyncedTabDelegate* tab1 = AddTabWithTime(kWindowId1, kFoo1, kTime1);
+  tab1->Navigate(kBar1, kTime2);
+  AddWindow(kWindowId2, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
+  TestSyncedTabDelegate* tab2 = AddTabWithTime(kWindowId2, kFoo1, kTime1);
+  tab2->Navigate(kBar1, kTime2);
+  InitHandler();
+
+  // Verify the browser types are propagated to the SessionTab.
+  const sync_pb::SessionTab session_tab1 =
+      handler_->GetTabSpecificsFromDelegateForTest(*tab1);
+  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+            session_tab1.browser_type());
+  const sync_pb::SessionTab session_tab2 =
+      handler_->GetTabSpecificsFromDelegateForTest(*tab2);
+  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB,
+            session_tab2.browser_type());
+}
+
 // Ensure the current_navigation_index gets set properly when the navigation
 // stack gets trucated to +/- 6 entries.
 TEST_F(LocalSessionEventHandlerImplTest,

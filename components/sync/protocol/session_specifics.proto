@@ -84,6 +84,8 @@ message SessionTab {
   optional string favicon_source = 11 [deprecated = true];
   // Ids of the currently assigned variations which should be sent to sync.
   repeated uint64 variation_id = 12 [deprecated = true];
+
+  optional SessionWindow.BrowserType browser_type = 13;
 }
 
 message TabNavigation {
