@@ -60,7 +60,6 @@ source_set("passwords") {
     "//components/password_manager/ios",
     "//components/prefs",
     "//components/security_state/core",
-    "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
     "//components/translate/core/browser:browser",
