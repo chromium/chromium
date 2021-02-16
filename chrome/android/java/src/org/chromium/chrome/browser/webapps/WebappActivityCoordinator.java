@@ -130,4 +130,11 @@ public class WebappActivityCoordinator
             storage.updateLastUsedTime();
         }
     }
+
+    /**
+     * @return the {@link WebappInfo} for the WebappActivity.
+     */
+    public WebappInfo getWebappInfo() {
+        return mWebappInfo;
+    }
 }

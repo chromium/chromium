@@ -617,6 +617,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/webapps/WebappActionsNotificationTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebappAuthenticatorTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebappDisplayModeTest.java",
+  "javatests/src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetricsTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebappModeTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebappNavigationTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebappSplashScreenBackgroundColorTest.java",

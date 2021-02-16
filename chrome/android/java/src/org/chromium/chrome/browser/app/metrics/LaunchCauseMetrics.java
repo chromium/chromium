@@ -77,7 +77,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
             LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
             LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU,
             LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION,
-            LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME})
+            LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME,
+            LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR,
+            LaunchCause.HOME_SCREEN_SHORTCUT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
         int OTHER = 0;
@@ -94,8 +96,11 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         int NOTIFICATION = 11;
         int EXTERNAL_VIEW_INTENT = 12;
         int OTHER_CHROME = 13;
+        int WEBAPK_CHROME_DISTRIBUTOR = 14;
+        int WEBAPK_OTHER_DISTRIBUTOR = 15;
+        int HOME_SCREEN_SHORTCUT = 16;
 
-        int NUM_ENTRIES = 14;
+        int NUM_ENTRIES = 17;
     }
 
     /**

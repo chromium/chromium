@@ -35,6 +35,8 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
@@ -269,5 +271,23 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         ++count;
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testHomescreenShortcut() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_SHORTCUT);
+        Intent intent = ShortcutHelper.createShortcutIntent(
+                "about:blank", "id", ShortcutSource.ADD_TO_HOMESCREEN_SHORTCUT);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_SHORTCUT));
     }
 }

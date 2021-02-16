@@ -49,6 +49,12 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.HOME_SCREEN_WIDGET;
         }
 
+        if (ShortcutSource.ADD_TO_HOMESCREEN_SHORTCUT
+                == IntentUtils.safeGetIntExtra(
+                        launchIntent, ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {
+            return LaunchCause.HOME_SCREEN_SHORTCUT;
+        }
+
         if (IntentUtils.safeGetBooleanExtra(
                     launchIntent, SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false)) {
             if (IntentUtils.safeGetBooleanExtra(

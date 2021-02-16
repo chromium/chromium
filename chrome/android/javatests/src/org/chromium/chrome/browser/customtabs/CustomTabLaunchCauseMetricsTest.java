@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
- * Tests basic functionality of CustomTabLaunchCauseMetricsTest.
+ * Tests basic functionality of CustomTabLaunchCauseMetrics.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)

@@ -177,10 +177,7 @@ public class ShortcutHelper {
     @CalledByNative
     public static void addShortcut(String id, String url, String userTitle, Bitmap icon,
             boolean isIconAdaptive, int source, String iconUrl) {
-        Intent shortcutIntent = createShortcutIntent(url);
-        shortcutIntent.putExtra(EXTRA_ID, id);
-        shortcutIntent.putExtra(EXTRA_SOURCE, source);
-        shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        Intent shortcutIntent = createShortcutIntent(url, id, source);
         sDelegate.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
     }
 
@@ -284,9 +281,12 @@ public class ShortcutHelper {
      * @param url Url of the shortcut.
      * @return Intent for onclick action of the shortcut.
      */
-    public static Intent createShortcutIntent(String url) {
+    public static Intent createShortcutIntent(String url, String id, int source) {
         Intent shortcutIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         shortcutIntent.putExtra(REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        shortcutIntent.putExtra(EXTRA_ID, id);
+        shortcutIntent.putExtra(EXTRA_SOURCE, source);
+        shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         return shortcutIntent;
     }
 
