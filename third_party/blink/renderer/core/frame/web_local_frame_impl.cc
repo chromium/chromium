@@ -1835,8 +1835,8 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     WebView* web_view,
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token,
-    std::unique_ptr<blink::WebPolicyContainer> policy_container,
+    const LocalFrameToken& frame_token,
+    std::unique_ptr<WebPolicyContainer> policy_container,
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
@@ -1848,7 +1848,7 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
 WebLocalFrame* WebLocalFrame::CreateProvisional(
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token,
+    const LocalFrameToken& frame_token,
     WebFrame* previous_frame,
     const FramePolicy& frame_policy,
     const WebString& name) {
@@ -1861,11 +1861,11 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     WebView* web_view,
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token,
+    const LocalFrameToken& frame_token,
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    std::unique_ptr<blink::WebPolicyContainer> policy_container) {
+    std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(),
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -1882,7 +1882,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
 WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
     WebLocalFrameClient* client,
     blink::InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token,
+    const LocalFrameToken& frame_token,
     WebFrame* previous_web_frame,
     const FramePolicy& frame_policy,
     const WebString& name) {
@@ -1941,7 +1941,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateLocalChild(
     mojom::blink::TreeScopeType scope,
     WebLocalFrameClient* client,
     blink::InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token) {
+    const LocalFrameToken& frame_token) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(), scope, client, interface_registry,
       frame_token);
@@ -1953,7 +1953,7 @@ WebLocalFrameImpl::WebLocalFrameImpl(
     mojom::blink::TreeScopeType scope,
     WebLocalFrameClient* client,
     blink::InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token)
+    const LocalFrameToken& frame_token)
     : WebNavigationControl(scope, frame_token),
       client_(client),
       local_frame_client_(MakeGarbageCollected<LocalFrameClientImpl>(this)),
@@ -1969,12 +1969,11 @@ WebLocalFrameImpl::WebLocalFrameImpl(
   client_->BindToFrame(this);
 }
 
-WebLocalFrameImpl::WebLocalFrameImpl(
-    base::PassKey<WebRemoteFrameImpl>,
-    mojom::blink::TreeScopeType scope,
-    WebLocalFrameClient* client,
-    blink::InterfaceRegistry* interface_registry,
-    const base::UnguessableToken& frame_token)
+WebLocalFrameImpl::WebLocalFrameImpl(base::PassKey<WebRemoteFrameImpl>,
+                                     mojom::blink::TreeScopeType scope,
+                                     WebLocalFrameClient* client,
+                                     InterfaceRegistry* interface_registry,
+                                     const LocalFrameToken& frame_token)
     : WebLocalFrameImpl(base::PassKey<WebLocalFrameImpl>(),
                         scope,
                         client,
@@ -2035,7 +2034,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
   SetCoreFrame(MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), page, owner, parent_frame,
-      previous_sibling_frame, insert_type, GetFrameToken(),
+      previous_sibling_frame, insert_type, GetLocalFrameToken(),
       window_agent_factory, interface_registry_, std::move(policy_container)));
   frame_->Tree().SetName(name);
 

@@ -115,7 +115,7 @@ class WebLocalFrame : public WebFrame {
       WebView*,
       WebLocalFrameClient*,
       blink::InterfaceRegistry*,
-      const base::UnguessableToken& frame_token,
+      const LocalFrameToken& frame_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),
@@ -145,8 +145,8 @@ class WebLocalFrame : public WebFrame {
   // frame.
   BLINK_EXPORT static WebLocalFrame* CreateProvisional(
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
-      const base::UnguessableToken& frame_token,
+      InterfaceRegistry*,
+      const LocalFrameToken& frame_token,
       WebFrame* previous_web_frame,
       const FramePolicy&,
       const WebString& name);
@@ -157,8 +157,8 @@ class WebLocalFrame : public WebFrame {
   virtual WebLocalFrame* CreateLocalChild(
       mojom::TreeScopeType,
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
-      const base::UnguessableToken& frame_token) = 0;
+      InterfaceRegistry*,
+      const LocalFrameToken& frame_token) = 0;
 
   // Returns the WebFrame associated with the current V8 context. This
   // function can return 0 if the context is associated with a Document that
@@ -183,7 +183,7 @@ class WebLocalFrame : public WebFrame {
   // Basic properties ---------------------------------------------------
 
   LocalFrameToken GetLocalFrameToken() const {
-    return LocalFrameToken(GetFrameToken());
+    return GetFrameToken().GetAs<LocalFrameToken>();
   }
 
   virtual WebDocument GetDocument() const = 0;
@@ -836,7 +836,7 @@ class WebLocalFrame : public WebFrame {
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,
-                         const base::UnguessableToken& frame_token)
+                         const LocalFrameToken& frame_token)
       : WebFrame(scope, frame_token) {}
 
   // Inherited from WebFrame, but intentionally hidden: it never makes sense

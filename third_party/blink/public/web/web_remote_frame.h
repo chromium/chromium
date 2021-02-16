@@ -48,14 +48,14 @@ class WebRemoteFrame : public WebFrame {
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
-      const base::UnguessableToken& frame_token);
+      const RemoteFrameToken& frame_token);
 
   BLINK_EXPORT static WebRemoteFrame* CreateMainFrame(
       WebView*,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
-      const base::UnguessableToken& frame_token,
+      const RemoteFrameToken& frame_token,
       WebFrame* opener);
 
   // Also performs core initialization to associate the created remote frame
@@ -65,7 +65,7 @@ class WebRemoteFrame : public WebFrame {
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
-      const base::UnguessableToken& frame_token,
+      const RemoteFrameToken& frame_token,
       const WebElement& portal_element);
 
   // Specialized factory methods to allow the embedder to replicate the frame
@@ -80,24 +80,23 @@ class WebRemoteFrame : public WebFrame {
       const WebString& name,
       const FramePolicy&,
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
+      InterfaceRegistry*,
       WebFrame* previous_sibling,
       const WebFrameOwnerProperties&,
       mojom::FrameOwnerElementType,
-      const base::UnguessableToken& frame_token,
+      const LocalFrameToken& frame_token,
       WebFrame* opener,
-      std::unique_ptr<blink::WebPolicyContainer> policy_container) = 0;
+      std::unique_ptr<WebPolicyContainer> policy_container) = 0;
 
-  virtual WebRemoteFrame* CreateRemoteChild(
-      mojom::TreeScopeType,
-      const WebString& name,
-      const FramePolicy&,
-      mojom::FrameOwnerElementType,
-      WebRemoteFrameClient*,
-      blink::InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
-      const base::UnguessableToken& frame_token,
-      WebFrame* opener) = 0;
+  virtual WebRemoteFrame* CreateRemoteChild(mojom::TreeScopeType,
+                                            const WebString& name,
+                                            const FramePolicy&,
+                                            mojom::FrameOwnerElementType,
+                                            WebRemoteFrameClient*,
+                                            InterfaceRegistry*,
+                                            AssociatedInterfaceProvider*,
+                                            const RemoteFrameToken& frame_token,
+                                            WebFrame* opener) = 0;
 
   // Layer for the in-process compositor.
   virtual void SetCcLayer(cc::Layer*, bool is_surface_layer) = 0;
@@ -166,7 +165,7 @@ class WebRemoteFrame : public WebFrame {
       const = 0;
 
   RemoteFrameToken GetRemoteFrameToken() const {
-    return RemoteFrameToken(GetFrameToken());
+    return GetFrameToken().GetAs<RemoteFrameToken>();
   }
 
   // Ad Tagging ---------------------------------------------------------
@@ -177,7 +176,7 @@ class WebRemoteFrame : public WebFrame {
 
  protected:
   explicit WebRemoteFrame(mojom::TreeScopeType scope,
-                          const base::UnguessableToken& frame_token)
+                          const RemoteFrameToken& frame_token)
       : WebFrame(scope, frame_token) {}
 
   // Inherited from WebFrame, but intentionally hidden: it never makes sense

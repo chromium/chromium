@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_REMOTE_FRAME_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_REMOTE_FRAME_IMPL_H_
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
@@ -39,21 +40,21 @@ class CORE_EXPORT WebRemoteFrameImpl final
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
-      const base::UnguessableToken& frame_token,
+      const RemoteFrameToken& frame_token,
       WebFrame* opener);
   static WebRemoteFrameImpl* CreateForPortal(
       mojom::blink::TreeScopeType,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
-      const base::UnguessableToken& frame_token,
+      const RemoteFrameToken& frame_token,
       const WebElement& portal_element);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
                      WebRemoteFrameClient*,
                      InterfaceRegistry*,
                      AssociatedInterfaceProvider*,
-                     const base::UnguessableToken& frame_token);
+                     const RemoteFrameToken& frame_token);
   ~WebRemoteFrameImpl() override;
 
   // WebFrame methods:
@@ -66,11 +67,11 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const WebString& name,
       const FramePolicy&,
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
+      InterfaceRegistry*,
       WebFrame* previous_sibling,
       const WebFrameOwnerProperties&,
       mojom::FrameOwnerElementType,
-      const base::UnguessableToken& frame_token,
+      const LocalFrameToken& frame_token,
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
   WebRemoteFrame* CreateRemoteChild(mojom::blink::TreeScopeType,
@@ -78,9 +79,9 @@ class CORE_EXPORT WebRemoteFrameImpl final
                                     const FramePolicy&,
                                     mojom::FrameOwnerElementType,
                                     WebRemoteFrameClient*,
-                                    blink::InterfaceRegistry*,
+                                    InterfaceRegistry*,
                                     AssociatedInterfaceProvider*,
-                                    const base::UnguessableToken& frame_token,
+                                    const RemoteFrameToken& frame_token,
                                     WebFrame* opener) override;
   void SetCcLayer(cc::Layer*, bool is_surface_layer) override;
   void SetReplicatedOrigin(

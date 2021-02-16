@@ -48,7 +48,7 @@ WebRemoteFrame* WebRemoteFrame::Create(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token) {
+    const RemoteFrameToken& frame_token) {
   return MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
       frame_token);
@@ -59,7 +59,7 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     WebFrame* opener) {
   return WebRemoteFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, associated_interface_provider,
@@ -71,7 +71,7 @@ WebRemoteFrame* WebRemoteFrame::CreateForPortal(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     const WebElement& portal_element) {
   return WebRemoteFrameImpl::CreateForPortal(scope, client, interface_registry,
                                              associated_interface_provider,
@@ -84,7 +84,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     WebFrame* opener) {
   WebRemoteFrameImpl* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -112,7 +112,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     const WebElement& portal_element) {
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
@@ -174,13 +174,13 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const WebString& name,
     const FramePolicy& frame_policy,
     WebLocalFrameClient* client,
-    blink::InterfaceRegistry* interface_registry,
+    InterfaceRegistry* interface_registry,
     WebFrame* previous_sibling,
     const WebFrameOwnerProperties& frame_owner_properties,
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
-    const base::UnguessableToken& frame_token,
+    const LocalFrameToken& frame_token,
     WebFrame* opener,
-    std::unique_ptr<blink::WebPolicyContainer> policy_container) {
+    std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
       frame_token);
@@ -252,9 +252,9 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     const FramePolicy& frame_policy,
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
     WebRemoteFrameClient* client,
-    blink::InterfaceRegistry* interface_registry,
+    InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     WebFrame* opener) {
   auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
@@ -424,7 +424,7 @@ WebRemoteFrameImpl::WebRemoteFrameImpl(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token)
+    const RemoteFrameToken& frame_token)
     : WebRemoteFrame(scope, frame_token),
       client_(client),
       frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)),

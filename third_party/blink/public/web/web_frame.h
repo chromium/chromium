@@ -171,8 +171,7 @@ class BLINK_EXPORT WebFrame {
   // This identifier represents the stable identifier between a
   // LocalFrame  <--> RenderFrameHostImpl or a
   // RemoteFrame <--> RenderFrameProxyHost in the browser process.
-  // TODO(crbug.com/1096617): Make this return a FrameToken instead.
-  const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
+  const FrameToken& GetFrameToken() const { return frame_token_; }
 
 #if INSIDE_BLINK
   static WebFrame* FromCoreFrame(Frame*);
@@ -182,8 +181,7 @@ class BLINK_EXPORT WebFrame {
 #endif
 
  protected:
-  explicit WebFrame(mojom::TreeScopeType,
-                    const base::UnguessableToken& frame_token);
+  explicit WebFrame(mojom::TreeScopeType, const FrameToken& frame_token);
   virtual ~WebFrame() = default;
 
  private:
@@ -193,7 +191,7 @@ class BLINK_EXPORT WebFrame {
   // TODO(dtapuska): Remove the need for this variable. This is stored here
   // because a WebRemote's core frame is created inside the bowels of the Swap
   // call.
-  const base::UnguessableToken frame_token_;
+  const FrameToken frame_token_;
 };
 
 }  // namespace blink
