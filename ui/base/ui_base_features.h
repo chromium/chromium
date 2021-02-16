@@ -93,6 +93,11 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUseCommonSelectPopup;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUseCommonSelectPopupEnabled();
 
+// Used to enable keyboard accessible tooltips.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kKeyboardAccessibleTooltip;
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsKeyboardAccessibleTooltipEnabled();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kHandwritingGesture;

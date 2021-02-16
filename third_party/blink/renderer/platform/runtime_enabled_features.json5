@@ -1111,6 +1111,10 @@
       status: "stable",
     },
     {
+      name: "KeyboardAccessibleTooltip",
+      status: "experimental",
+    },
+    {
       name: "KeyboardFocusableScrollers",
       status: "experimental",
     },

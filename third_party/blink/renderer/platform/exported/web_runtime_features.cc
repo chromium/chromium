@@ -187,6 +187,10 @@ void WebRuntimeFeatures::EnableScrollTopLeftInterop(bool enable) {
   RuntimeEnabledFeatures::SetScrollTopLeftInteropEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableKeyboardAccessibleTooltip(bool enable) {
+  RuntimeEnabledFeatures::SetKeyboardAccessibleTooltipEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableKeyboardFocusableScrollers(bool enable) {
   RuntimeEnabledFeatures::SetKeyboardFocusableScrollersEnabled(enable);
 }

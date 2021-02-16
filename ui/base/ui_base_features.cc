@@ -246,6 +246,16 @@ bool IsUseCommonSelectPopupEnabled() {
   return base::FeatureList::IsEnabled(features::kUseCommonSelectPopup);
 }
 
+// Enables keyboard accessible tooltip.
+const base::Feature kKeyboardAccessibleTooltip{
+    "KeyboardAccessibleTooltip", base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool IsKeyboardAccessibleTooltipEnabled() {
+  static const bool keyboard_accessible_tooltip_enabled =
+      base::FeatureList::IsEnabled(features::kKeyboardAccessibleTooltip);
+  return keyboard_accessible_tooltip_enabled;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kHandwritingGesture = {"HandwritingGesture",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

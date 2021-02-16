@@ -102,6 +102,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableCSSHexAlphaColor(bool);
   BLINK_PLATFORM_EXPORT static void EnableSameSiteByDefaultCookies(bool);
   BLINK_PLATFORM_EXPORT static void EnableScrollTopLeftInterop(bool);
+  BLINK_PLATFORM_EXPORT static void EnableKeyboardAccessibleTooltip(bool);
   BLINK_PLATFORM_EXPORT static void EnableKeyboardFocusableScrollers(bool);
   BLINK_PLATFORM_EXPORT static void EnableDatabase(bool);
   BLINK_PLATFORM_EXPORT static void EnableDecodeJpeg420ImagesToYUV(bool);

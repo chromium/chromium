@@ -330,6 +330,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebXRPlaneDetection, features::kWebXrIncubations},
     {wf::EnableWebXRViewportScale, features::kWebXrIncubations},
     {wf::EnableWheelEventRegions, features::kWheelEventRegions},
+    {wf::EnableKeyboardAccessibleTooltip, features::kKeyboardAccessibleTooltip},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
