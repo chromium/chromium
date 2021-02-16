@@ -40,6 +40,7 @@ arm32_asm_sources = [
   "libdav1d/src/arm/32/cdef16.S",
   "libdav1d/src/arm/32/cdef_tmpl.S",
   "libdav1d/src/arm/32/ipred.S",
+  "libdav1d/src/arm/32/ipred16.S",
   "libdav1d/src/arm/32/itx.S",
   "libdav1d/src/arm/32/loopfilter.S",
   "libdav1d/src/arm/32/loopfilter16.S",
