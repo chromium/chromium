@@ -115,6 +115,12 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @private {boolean} */
+    isLoggedIn_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('isLoggedIn'),
+    },
   },
 
   observers: ['routineStatusChanged_(executionStatus_, currentTestName_)'],
@@ -216,7 +222,7 @@ Polymer({
 
   /** @protected */
   isLearnMoreHidden_() {
-    return this.isPowerRoutine === false ||
+    return this.isPowerRoutine === false || this.isLoggedIn_ === false ||
         this.executionStatus_ !== ExecutionProgress.kCompleted;
   },
 

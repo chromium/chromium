@@ -88,7 +88,7 @@
       <routine-result-list id="resultList"></routine-result-list>
     </div>
     <cr-button id="learnMoreButton" class="learn-more-button"
-        on-click="onLearnMoreClicked_">
+        on-click="onLearnMoreClicked_" hidden$="[[!isLoggedIn_]]">
         [[i18n('learnMore')]]
     </cr-button>
   </iron-collapse>
