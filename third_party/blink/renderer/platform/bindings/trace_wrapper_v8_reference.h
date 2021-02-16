@@ -154,7 +154,7 @@ struct TraceTrait<blink::TraceWrapperV8Reference<T>> {
 
   static cppgc::TraceDescriptor GetTraceDescriptor(
       const blink::TraceWrapperV8Reference<T>* ref) {
-    return {ref, Trace};
+    return {nullptr, Trace};
   }
 
   static void Trace(Visitor* visitor, const void* self) {
