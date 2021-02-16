@@ -122,24 +122,11 @@ struct ToV8Traits<IDLIntegerTypeBase<uint64_t, mode>> {
   }
 };
 
-// Float
-template <typename T>
-struct ToV8Traits<T,
-                  typename std::enable_if_t<
-                      std::is_base_of<IDLBaseHelper<float>, T>::value>> {
+// Floating Point Number
+template <typename T, bindings::IDLFloatingPointNumberConvMode mode>
+struct ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        float value) WARN_UNUSED_RESULT {
-    return v8::Number::New(script_state->GetIsolate(), value);
-  }
-};
-
-// Double
-template <typename T>
-struct ToV8Traits<T,
-                  typename std::enable_if_t<
-                      std::is_base_of<IDLBaseHelper<double>, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        double value) WARN_UNUSED_RESULT {
+                                        T value) WARN_UNUSED_RESULT {
     return v8::Number::New(script_state->GetIsolate(), value);
   }
 };
@@ -322,31 +309,16 @@ struct ToV8Traits<IDLNullable<IDLIntegerTypeBase<T, mode>>> {
   }
 };
 
-// Nullable Float
-template <typename T>
-struct ToV8Traits<IDLNullable<T>,
-                  typename std::enable_if_t<
-                      std::is_base_of<IDLBaseHelper<float>, T>::value>> {
+// Nullable Floating Point Number
+template <typename T, bindings::IDLFloatingPointNumberConvMode mode>
+struct ToV8Traits<IDLNullable<IDLFloatingPointNumberTypeBase<T, mode>>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const base::Optional<float>& value)
+                                        const base::Optional<T>& value)
       WARN_UNUSED_RESULT {
     if (!value)
       return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<T>::ToV8(script_state, *value);
-  }
-};
-
-// Nullable Double
-template <typename T>
-struct ToV8Traits<IDLNullable<T>,
-                  typename std::enable_if_t<
-                      std::is_base_of<IDLBaseHelper<double>, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const base::Optional<double>& value)
-      WARN_UNUSED_RESULT {
-    if (!value)
-      return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<T>::ToV8(script_state, *value);
+    return ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>>::ToV8(
+        script_state, *value);
   }
 };
 

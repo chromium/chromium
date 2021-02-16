@@ -95,13 +95,33 @@ using IDLLongLongEnforceRange =
 using IDLUnsignedLongLongEnforceRange =
     IDLIntegerTypeBase<uint64_t, bindings::IDLIntegerConvMode::kEnforceRange>;
 
+// Floating point number types
+
+namespace bindings {
+
+enum class IDLFloatingPointNumberConvMode {
+  kDefault,
+  kUnrestricted,
+};
+
+}  // namespace bindings
+
+template <typename T,
+          bindings::IDLFloatingPointNumberConvMode mode =
+              bindings::IDLFloatingPointNumberConvMode::kDefault>
+struct IDLFloatingPointNumberTypeBase final : public IDLBaseHelper<T> {};
+
 // float
-struct IDLFloat final : public IDLBaseHelper<float> {};
-struct IDLUnrestrictedFloat final : public IDLBaseHelper<float> {};
+using IDLFloat = IDLFloatingPointNumberTypeBase<float>;
+using IDLUnrestrictedFloat = IDLFloatingPointNumberTypeBase<
+    float,
+    bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
 
 // double
-struct IDLDouble final : public IDLBaseHelper<double> {};
-struct IDLUnrestrictedDouble final : public IDLBaseHelper<double> {};
+using IDLDouble = IDLFloatingPointNumberTypeBase<double>;
+using IDLUnrestrictedDouble = IDLFloatingPointNumberTypeBase<
+    double,
+    bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
 
 // Strings
 // The "Base" classes are always templatized and require users to specify how JS
