@@ -28,11 +28,6 @@ const UiElement = {
   SCAN_SUCCESS: 5,
   SCAN_FAILURE: 6,
 };
-/**
- * barcode format used by |BarcodeDetector|
- * @private {string}
- */
-const QR_CODE_FORMAT = 'qr_code';
 
 /**
  * Page in eSIM Setup flow that accepts activation code. User has option for
@@ -121,19 +116,11 @@ Polymer({
    */
   qrCodeDetector_: null,
 
-  /**
-   *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
-   *  becomes available
-   *  @suppress {undefinedVars|missingProperties}
-   *  @private
-   */
-  barcodeDetectorClass_: BarcodeDetector,
-
 
   /** @override */
   ready() {
     this.setMediaDevices(navigator.mediaDevices);
-    this.initBarcodeDetector();
+    this.initBarcodeDetector_();
     this.state_ = PageState.INITIAL;
   },
 
@@ -163,19 +150,12 @@ Polymer({
    * @suppress {undefinedVars|missingProperties}
    * @private
    */
-  async initBarcodeDetector() {
-    const formats = await this.barcodeDetectorClass_.getSupportedFormats();
-
-    if (!formats || formats.length === 0) {
-      this.qrCodeDetector_ = null;
-      return;
-    }
-
-    const qrCodeFormat = formats.find(format => format === QR_CODE_FORMAT);
-    if (qrCodeFormat) {
-      this.qrCodeDetector_ =
-          new this.barcodeDetectorClass_({formats: [QR_CODE_FORMAT]});
-    }
+  initBarcodeDetector_() {
+    this.qrCodeDetector_ = new BarcodeDetector({
+      formats: [
+        'qr_code',
+      ]
+    });
   },
 
   /**
@@ -300,10 +280,6 @@ Polymer({
    * @private
    */
   async detectActivationCode_(frame) {
-    if (!this.qrCodeDetector_) {
-      return null;
-    }
-
     const qrCodes = await this.qrCodeDetector_.detect(frame);
     if (qrCodes.length > 0) {
       return qrCodes[0].rawValue;
