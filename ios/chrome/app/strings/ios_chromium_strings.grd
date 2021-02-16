@@ -184,6 +184,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE" desc="Title of the default browser promotion modal. [iOS only]">
         Make Chromium Your Default
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_OPEN_LINKS" desc="Title of the default browser promotion modal. [iOS only]">
+        Use Chromium to Open Links
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
+        Switch to Chromium
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser promotion modal. [iOS only]">
           To make Chromium your default, Open Settings, tap Default Browser App, and select Chromium.
       </message>
@@ -195,6 +201,9 @@ locale.  The strings in this file are specific to iOS.
 1. Open Settings
 2. Tap Default Browser App
 3. Select Chromium.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
+        You can now use Chromium any time you tap on links in messages, documents, and other apps.
       </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chromium?
