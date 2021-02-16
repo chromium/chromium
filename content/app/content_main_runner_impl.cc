@@ -641,6 +641,8 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
+  internal::PartitionAllocSupport::Get()->ReconfigureEarlyish(process_type);
+
 #if defined(OS_WIN)
   if (command_line.HasSwitch(switches::kDeviceScaleFactor)) {
     std::string scale_factor_string =
@@ -687,8 +689,6 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   // overriding logic is working correctly. If not causes a hard crash, as its
   // unexpected absence has security implications.
   CHECK(base::allocator::IsAllocatorInitialized());
-
-  internal::PartitionAllocSupport::Get()->ReconfigureEarlyish(process_type);
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   if (!process_type.empty()) {
