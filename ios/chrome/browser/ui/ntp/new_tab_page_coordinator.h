@@ -80,6 +80,10 @@ class WebState;
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
 
+// Handles device rotation logic.
+// TODO(crbug.com/1177953): Detect device rotation in NewTabPageViewController.
+- (void)handleDeviceRotation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

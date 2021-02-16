@@ -22,7 +22,6 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"

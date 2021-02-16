@@ -10,6 +10,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/search_engines/default_search_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -133,6 +134,9 @@
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
+    _prefObserverBridge->ObserveChangesForPreference(
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+        _prefChangeRegistrar.get());
   }
   return self;
 }
@@ -367,6 +371,10 @@
   [self updateVisible];
 }
 
+- (void)handleDeviceRotation {
+  [self.ntpViewController handleDeviceRotation];
+}
+
 #pragma mark - NewTabPageCommands
 
 - (void)updateDiscoverFeedVisibility {
@@ -480,6 +488,11 @@
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kArticlesForYouEnabled && IsRefactoredNTP()) {
     [self updateDiscoverFeedVisibility];
+  }
+  if ([self isNTPRefactoredAndFeedVisible] &&
+      preferenceName ==
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
+    [self updateDiscoverFeedLayout];
   }
 }
 

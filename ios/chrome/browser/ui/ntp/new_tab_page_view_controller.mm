@@ -191,10 +191,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
             fromSavedState:NO];
   }
 
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.contentSuggestionsViewController.collectionView
-          .collectionViewLayout invalidateLayout];
+  [self updateContentSuggestionForCurrentLayout];
+  [self updateHeaderSynchronizerOffset];
+  [self.headerSynchronizer updateConstraints];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -222,7 +221,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
   [self updateHeaderSynchronizerOffset];
   [self.headerSynchronizer updateConstraints];
-  [self updateContentSuggestionForCurrentLayout];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -281,6 +279,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (CGFloat)contentSuggestionsContentHeight {
   return self.contentSuggestionsViewController.collectionView.contentSize
       .height;
+}
+
+- (void)handleDeviceRotation {
+  [self.headerSynchronizer unfocusOmnibox];
+  [self.contentSuggestionsViewController.collectionView
+          .collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - UIScrollViewDelegate

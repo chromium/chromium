@@ -1709,6 +1709,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   crash_keys::SetCurrentOrientation(GetInterfaceOrientation(),
                                     [[UIDevice currentDevice] orientation]);
+
+  // TODO(crbug.com/1177953): Detect device rotation in
+  // NewTabPageViewController.
+  if (self.currentWebState && self.isNTPActiveForCurrentWebState) {
+    [_ntpCoordinatorsForWebStates[self.currentWebState] handleDeviceRotation];
+  }
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag
