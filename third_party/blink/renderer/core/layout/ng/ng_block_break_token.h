@@ -132,6 +132,33 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
 
   explicit NGBlockBreakToken(PassKey, NGLayoutInputNode node);
 
+  // This exposes a mutable part of the break token for |NGOutOfFlowLayoutPart|.
+  class MutableForOutOfFlow final {
+    STACK_ALLOCATED();
+
+   protected:
+    friend class NGOutOfFlowLayoutPart;
+    // Replace the child break token at the provided |index|.
+    void ReplaceChildBreakToken(const NGBreakToken* child_break_token,
+                                wtf_size_t index) {
+      DCHECK_LT(index, break_token_->num_children_);
+      break_token_->child_break_tokens_[index]->Release();
+      break_token_->child_break_tokens_[index] = child_break_token;
+      break_token_->child_break_tokens_[index]->AddRef();
+    }
+
+   private:
+    friend class NGBlockBreakToken;
+    explicit MutableForOutOfFlow(const NGBlockBreakToken* break_token)
+        : break_token_(const_cast<NGBlockBreakToken*>(break_token)) {}
+
+    NGBlockBreakToken* break_token_;
+  };
+
+  MutableForOutOfFlow GetMutableForOutOfFlow() const {
+    return MutableForOutOfFlow(this);
+  }
+
  private:
   LayoutUnit consumed_block_size_;
   unsigned sequence_number_ = 0;

@@ -12,31 +12,30 @@
   }
   #outer {
     height: 100px;
-    width: 300px;
+    width: 100px;
   }
   #inner {
-    width: 100px;
+    width: 50px;
     background-color: red;
-    position: relative;
-    left: -150px;
   }
   .rel {
     position: relative;
-    height: 200px;
+    height: 360px;
   }
   .abs {
     position: absolute;
-    height: 200px;
-    width: 50px;
+    bottom: 0px;
     top: 0px;
+    width: 25px;
     background-color: green;
   }
 </style>
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <div class="multicol" id="outer">
   <div class="multicol" id="inner">
-    <div style="height: 200px;"></div>
     <div class="rel">
+      <div style="height: 180px;"></div>
+      <div style="column-span: all; height: 20px; background-color: green;"></div>
       <div class="abs"></div>
     </div>
   </div>

@@ -86,6 +86,23 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     LogicalRect rect;
   };
 
+  // TODO(almaher): Move this to the multicol algorithm in upcoming refactor.
+  // This stores the information needed to update a multicol child inside an
+  // existing multicol fragment. This is used during nested fragmentation of an
+  // OOF positioned element.
+  struct MulticolChildInfo {
+    // The mutable link of a multicol child.
+    NGLink* mutable_link;
+
+    // The multicol break token that stores a reference to |mutable_link|'s
+    // break token in its list of child break tokens.
+    const NGBlockBreakToken* parent_break_token;
+
+    explicit MulticolChildInfo(NGLink* mutable_link,
+                               NGBlockBreakToken* parent_break_token = nullptr)
+        : mutable_link(mutable_link), parent_break_token(parent_break_token) {}
+  };
+
   bool SweepLegacyCandidates(HashSet<const LayoutObject*>* placed_objects);
 
   const ContainingBlockInfo GetContainingBlockInfo(
@@ -106,11 +123,11 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void LayoutOOFsInMulticol(const NGBlockNode& multicol);
 
   // Layout the OOF nodes that are descendants of a fragmentation context root.
-  // |mutable_multicol_children| holds the children of an inner multicol if
+  // |multicol_children| holds the children of an inner multicol if
   // we are laying out OOF elements inside a nested fragmentation context.
   void LayoutFragmentainerDescendants(
       Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
-      Vector<NGLink*>* mutable_multicol_children = nullptr);
+      Vector<MulticolChildInfo>* multicol_children = nullptr);
 
   scoped_refptr<const NGLayoutResult> LayoutFragmentainerDescendant(
       const NGLogicalOutOfFlowPositionedNode&);
@@ -139,7 +156,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void AddOOFResultsToFragmentainer(
       const Vector<scoped_refptr<const NGLayoutResult>>& results,
       wtf_size_t index,
-      Vector<NGLink*>* mutable_multicol_children = nullptr);
+      Vector<MulticolChildInfo>* multicol_children = nullptr);
   const NGConstraintSpace& GetFragmentainerConstraintSpace(wtf_size_t index);
   void AddOOFResultToFragmentainerResults(
       const scoped_refptr<const NGLayoutResult> result,

@@ -1348,68 +1348,6 @@ TEST_F(NGOutOfFlowLayoutPartTest, SimpleAbsposNestedFragmentation) {
   EXPECT_EQ(expectation, dump);
 }
 
-// Fragmented OOF element inside a nested multi-column.
-// TODO(almaher): Re-enable once the crash is fixed.
-TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposNestedFragmentation) {
-  SetBodyInnerHTML(
-      R"HTML(
-      <style>
-        .multicol {
-          columns:2; column-fill:auto; column-gap:0px;
-        }
-        .rel {
-          position: relative; width:55px;
-        }
-        .abs {
-          position:absolute; top:0px; bottom:0px; width:5px;
-        }
-      </style>
-      <div id="container">
-        <div class="multicol" id="outer" style="height:100px;">
-          <div style="height:40px; width:40px;"></div>
-          <div class="multicol" id="inner">
-            <div class="rel">
-              <div class="abs"></div>
-              <div style="height:250px; width:25px;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      )HTML");
-  String dump = DumpFragmentTree(GetElementById("container"));
-
-  // TODO(almaher): The abspos element should be placed in the inner multicol
-  // rather than the outer multicol. The offset is also incorrectly computed due
-  // to the fact that the containing block offset is now relative to the inner
-  // multicol rather than the outer.
-  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x100
-    offset:0,0 size:1000x100
-      offset:0,0 size:500x100
-        offset:0,0 size:40x40
-        offset:0,40 size:500x60
-          offset:0,0 size:250x60
-            offset:0,0 size:55x60
-              offset:0,0 size:25x60
-          offset:250,0 size:250x60
-            offset:0,0 size:55x60
-              offset:0,0 size:25x60
-        offset:0,0 size:5x100
-      offset:500,0 size:500x100
-        offset:0,0 size:500x100
-          offset:0,0 size:250x100
-            offset:0,0 size:55x100
-              offset:0,0 size:25x100
-          offset:250,0 size:250x100
-            offset:0,0 size:55x30
-              offset:0,0 size:25x30
-        offset:0,0 size:5x100
-      offset:1000,0 size:500x100
-        offset:0,0 size:5x50
-)DUMP";
-  EXPECT_EQ(expectation, dump);
-}
-
 // Fragmented OOF with `height: auto` and positioned with the bottom property.
 TEST_F(NGOutOfFlowLayoutPartTest,
        PositionedFragmentationWithBottomPropertyAndHeightAuto) {

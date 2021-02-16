@@ -643,7 +643,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
 // TODO(almaher): Look into moving this to NGColumnLayoutAlgorithm instead.
 void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
-  Vector<NGLink*> mutable_multicol_children;
+  Vector<MulticolChildInfo> multicol_children;
   const NGBlockBreakToken* previous_column_break_token = nullptr;
 
   NGConstraintSpace multicol_constraint_space =
@@ -666,6 +666,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
                                          multicol_box_fragment->Size());
     const NGBlockBreakToken* current_column_break_token =
         previous_column_break_token;
+    wtf_size_t current_column_index = 0;
 
     // Collect the children of the multicol fragments.
     for (auto& child :
@@ -676,10 +677,30 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
       if (fragment->IsFragmentainerBox()) {
         current_column_break_token =
             To<NGBlockBreakToken>(fragment->BreakToken());
+        current_column_index = multicol_children.size();
       }
 
       multicol_container_builder.AddChild(*fragment, offset);
-      mutable_multicol_children.emplace_back(&child);
+      multicol_children.emplace_back(MulticolChildInfo(&child));
+    }
+
+    // If a column fragment is updated with OOF children, we may need to update
+    // the reference to its break token in its parent's break token. There
+    // should be at most one column break token per parent break token
+    // (representing the last column laid out in that fragment). Thus, search
+    // for |current_column_break_token| in |multicol_box_fragment|'s list of
+    // child break tokens and update the stored MulticolChildInfo if found.
+    if (const NGBlockBreakToken* break_token =
+            To<NGBlockBreakToken>(multicol_box_fragment->BreakToken())) {
+      // If there is a column break token, it will be the last item in its
+      // parent's list of break tokens.
+      const auto children = break_token->ChildBreakTokens();
+      const NGBlockBreakToken* child_token =
+          To<NGBlockBreakToken>(children[children.size() - 1]);
+      if (child_token == current_column_break_token) {
+        MulticolChildInfo& child_info = multicol_children[current_column_index];
+        child_info.parent_break_token = break_token;
+      }
     }
 
     // Convert the OOF fragmentainer descendants to the logical coordinate space
@@ -732,13 +753,12 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   // Layout the OOF positioned elements inside the inner multicol.
   NGOutOfFlowLayoutPart(multicol, multicol_constraint_space,
                         &multicol_container_builder)
-      .LayoutFragmentainerDescendants(&oof_nodes_to_layout,
-                                      &mutable_multicol_children);
+      .LayoutFragmentainerDescendants(&oof_nodes_to_layout, &multicol_children);
 }
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
-    Vector<NGLink*>* mutable_multicol_children) {
+    Vector<MulticolChildInfo>* multicol_children) {
   original_column_block_size_ =
       ShrinkLogicalSize(container_builder_->InitialBorderBoxSize(),
                         container_builder_->BorderScrollbarPadding())
@@ -768,7 +788,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     wtf_size_t index = descendant_result.key - 1;
     const Vector<scoped_refptr<const NGLayoutResult>>& results =
         descendant_result.value;
-    AddOOFResultsToFragmentainer(results, index, mutable_multicol_children);
+    AddOOFResultsToFragmentainer(results, index, multicol_children);
   }
 }
 
@@ -1191,7 +1211,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
     const Vector<scoped_refptr<const NGLayoutResult>>& results,
     wtf_size_t index,
-    Vector<NGLink*>* mutable_multicol_children) {
+    Vector<MulticolChildInfo>* multicol_children) {
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
 
@@ -1283,12 +1303,18 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
     const NGPhysicalContainerFragment* new_fragment =
         &new_result->PhysicalFragment();
 
-    if (mutable_multicol_children) {
+    if (multicol_children) {
       // We are in a nested fragmentation context. Replace the column entry
-      // directly in the existing multicol fragment.
-      NGLink* link = (*mutable_multicol_children)[index];
-      link->fragment->Release();
-      new (&link->fragment)
+      // and break token directly in the existing multicol fragment.
+      MulticolChildInfo& column_info = (*multicol_children)[index];
+      if (auto* parent_break_token = column_info.parent_break_token) {
+        DCHECK_GT(parent_break_token->ChildBreakTokens().size(), 0u);
+        parent_break_token->GetMutableForOutOfFlow().ReplaceChildBreakToken(
+            new_fragment->BreakToken(),
+            parent_break_token->ChildBreakTokens().size() - 1);
+      }
+      column_info.mutable_link->fragment->Release();
+      new (&column_info.mutable_link->fragment)
           scoped_refptr<const NGPhysicalFragment>(std::move(new_fragment));
     } else {
       // We are not in a nested context, so replace the column entry in the
