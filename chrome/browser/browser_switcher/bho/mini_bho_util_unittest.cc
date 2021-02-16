@@ -173,8 +173,8 @@ TEST(MiniBhoUtil, wcs_replace_s) {
 }
 
 TEST(MiniBhoUtil, utf_conversions) {
-  base::string16 expected_utf16 = STRING16_LITERAL("홍길동");
-  std::string expected_utf8 = base::UTF16ToUTF8(expected_utf16);
+  std::wstring expected_utf16 = L"홍길동";
+  std::string expected_utf8 = base::WideToUTF8(expected_utf16);
 
   util::string utf8 = util::utf16_to_utf8(expected_utf16.c_str());
   util::wstring utf16 = util::utf8_to_utf16(expected_utf8.c_str());
