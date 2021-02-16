@@ -46,8 +46,9 @@ void WebViewApkProcess::CreatePrefService() {
 
   base::FilePath app_data_dir;
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &app_data_dir);
-  pref_service_factory.set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
-      app_data_dir.Append(FILE_PATH_LITERAL("Preferences"))));
+  pref_service_factory.set_user_prefs(
+      base::MakeRefCounted<JsonPrefStore>(app_data_dir.Append(
+          FILE_PATH_LITERAL("WebView Nonembedded Preferences"))));
   pref_service_ = pref_service_factory.Create(pref_registry);
 }
 
