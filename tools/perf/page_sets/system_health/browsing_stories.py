@@ -1438,7 +1438,7 @@ class GmailSearchStory2020(_GmailBrowsingStory):
   TAGS = [story_tags.YEAR_2020]
   SKIP_LOGIN = False
 
-  _SEARCH_SELECTOR = 'input[aria-label="Search mail"]'
+  _SEARCH_SELECTOR = 'input[aria-label="Search mail and chat"]'
 
   # Page event queries.
   SEARCH_BEGIN_EVENT = '''
