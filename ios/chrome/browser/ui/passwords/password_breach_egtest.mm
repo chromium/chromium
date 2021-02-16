@@ -6,7 +6,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_app_interface.h"
-#import "ios/chrome/browser/ui/passwords/password_breach_constants.h"
+#import "ios/chrome/browser/ui/passwords/password_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
+#import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
@@ -91,6 +93,7 @@
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
+                                  PasswordProtectionCommands,
                                   PolicySignoutPromptCommands,
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
@@ -148,6 +151,10 @@
 // Coordinator for the password breach UI presentation.
 @property(nonatomic, strong)
     PasswordBreachCoordinator* passwordBreachCoordinator;
+
+// Coordinator for the password protection UI presentation.
+@property(nonatomic, strong)
+    PasswordProtectionCoordinator* passwordProtectionCoordinator;
 
 // Used to display the Print UI. Nil if not visible.
 // TODO(crbug.com/910017): Convert to coordinator.
@@ -229,8 +236,9 @@
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
     @protocol(FindInPageCommands), @protocol(PageInfoCommands),
-    @protocol(PasswordBreachCommands), @protocol(TextZoomCommands),
-    @protocol(WhatsNewCommands), @protocol(PolicySignoutPromptCommands)
+    @protocol(PasswordBreachCommands), @protocol(PasswordProtectionCommands),
+    @protocol(TextZoomCommands), @protocol(WhatsNewCommands),
+    @protocol(PolicySignoutPromptCommands)
   ];
 
   for (Protocol* protocol in protocols) {
@@ -292,6 +300,9 @@
 
   [self.passwordBreachCoordinator stop];
   self.passwordBreachCoordinator = nil;
+
+  [self.passwordProtectionCoordinator stop];
+  self.passwordProtectionCoordinator = nil;
 
   [self.pageInfoCoordinator stop];
 
@@ -386,6 +397,8 @@
 
   /* passwordBreachCoordinator is created and started by a BrowserCommand */
 
+  /* passwordProtectionCoordinator is created and started by a BrowserCommand */
+
   /* ReadingListCoordinator is created and started by a BrowserCommand */
 
   /* RecentTabsCoordinator is created and started by a BrowserCommand */
@@ -442,6 +455,9 @@
 
   [self.passwordBreachCoordinator stop];
   self.passwordBreachCoordinator = nil;
+
+  [self.passwordProtectionCoordinator stop];
+  self.passwordProtectionCoordinator = nil;
 
   self.printController = nil;
 
@@ -974,6 +990,16 @@
                         leakType:leakType
                              URL:URL];
   [self.passwordBreachCoordinator start];
+}
+
+#pragma mark - PasswordProtectionCommands
+
+- (void)showPasswordProtectionWarning:(NSString*)warningText {
+  self.passwordProtectionCoordinator = [[PasswordProtectionCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                     warningText:warningText];
+  [self.passwordProtectionCoordinator start];
 }
 
 #pragma mark - PolicySignoutPromptCommands

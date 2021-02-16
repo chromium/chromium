@@ -5,8 +5,6 @@
 source_set("passwords") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "password_breach_constants.h",
-    "password_breach_constants.mm",
     "password_breach_consumer.h",
     "password_breach_coordinator.h",
     "password_breach_coordinator.mm",
@@ -15,6 +13,12 @@ source_set("passwords") {
     "password_breach_presenter.h",
     "password_breach_view_controller.h",
     "password_breach_view_controller.mm",
+    "password_constants.h",
+    "password_constants.mm",
+    "password_protection_coordinator.h",
+    "password_protection_coordinator.mm",
+    "password_protection_view_controller.h",
+    "password_protection_view_controller.mm",
   ]
   deps = [
     "resources",
@@ -66,8 +70,8 @@ source_set("test_support+eg2") {
   testonly = true
   sources = [
     "password_breach_app_interface.h",
-    "password_breach_constants.h",
-    "password_breach_constants.mm",
+    "password_constants.h",
+    "password_constants.mm",
   ]
   deps = [ "//base" ]
 }

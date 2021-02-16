@@ -98,6 +98,9 @@
   </message>
 
   <!-- Password Protection strings shared with iOS -->
+  <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if user has reuse their google password on current website.">
+    Your password may be compromised
+  </message>
   <if expr="_google_chrome">
     <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website.">
       You just entered your password on a deceptive site. Chrome recommends changing your password now.
@@ -124,6 +127,16 @@
     </message>
     <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on three domains.">
       You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="In Title Case: The string used in the page info check passwords button.">
+      Check Passwords
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="The string used in the page info check passwords button.">
+      Check passwords
     </message>
   </if>
 
@@ -501,9 +514,6 @@
     </if>
 
     <!-- Password Protection -->
-    <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if user has reuse their google password on current website.">
-      Your password may be compromised
-    </message>
     <if expr="_google_chrome">
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
         You could lose access to your Google Account. Chrome recommends changing your password now. You'll be asked to sign in.
@@ -561,9 +571,6 @@
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="In Title Case: The string used in the page info change password button.">
         Change Password
       </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="In Title Case: The string used in the page info check passwords button.">
-        Check Passwords
-      </message>
       <message name="IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON" desc="In Title Case: The string used in the page info protect account button.">
         Protect Account
       </message>
@@ -574,9 +581,6 @@
     <if expr="not use_titlecase">
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="The string used in the page info change password button.">
         Change password
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="The string used in the page info check passwords button.">
-        Check passwords
       </message>
       <message name="IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON" desc="The string used in the page info protect account button.">
         Protect account

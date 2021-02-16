@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
 
-#import "ios/chrome/browser/ui/passwords/password_breach_constants.h"
+#import "ios/chrome/browser/ui/passwords/password_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
