@@ -478,7 +478,9 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingCamera) {
   web_app::CloseAndWait(browser());
 }
 
-IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingMicrophone) {
+// TODO(crbug.com/1178664) Disabled due to flake.
+IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
+                       DISABLED_RequestAccessingMicrophone) {
   std::string app_id = CreateWebApp(GetUrl1());
 
   // Launch |app_id| in a new tab.
