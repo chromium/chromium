@@ -493,8 +493,7 @@ class LoginPasswordView::DisplayPasswordButton
                               palette.button_enabled_color);
     const gfx::ImageSkia visible_icon_disabled = gfx::CreateVectorIcon(
         kLockScreenPasswordVisibleIcon, kIconSizeDp,
-        SkColorSetA(palette.button_enabled_color,
-                    login_constants::kButtonDisabledAlpha));
+        AshColorProvider::GetDisabledColor(palette.button_enabled_color));
     SetImage(views::Button::STATE_NORMAL, visible_icon);
     SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
     SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
@@ -967,7 +966,7 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
   is_capslock_higlight_for_testing_ = highlight;
   SkColor color = palette_.button_enabled_color;
   if (!highlight)
-    color = SkColorSetA(color, login_constants::kButtonDisabledAlpha);
+    color = AshColorProvider::GetDisabledColor(color);
   capslock_icon_->SetImage(
       gfx::CreateVectorIcon(kLockScreenCapsLockIcon, kIconSizeDp, color));
 }
