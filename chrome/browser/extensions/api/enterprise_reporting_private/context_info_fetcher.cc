@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/context_info_fetcher.h"
 
 #include <memory>
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
 #include "base/callback_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -94,9 +95,14 @@ std::vector<std::string> ContextInfoFetcher::GetAnalysisConnectorProviders(
 
 api::enterprise_reporting_private::RealtimeUrlCheckMode
 ContextInfoFetcher::GetRealtimeUrlCheckMode() {
-  // TODO(crbug.com/1169214): Add code here and in ConnectorsService to obtain
-  // the state of real time URL checks.
-  return api::enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED;
+  switch (connectors_service_->GetAppliedRealTimeUrlCheck()) {
+    case safe_browsing::REAL_TIME_CHECK_DISABLED:
+      return api::enterprise_reporting_private::
+          REALTIME_URL_CHECK_MODE_DISABLED;
+    case safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
+      return api::enterprise_reporting_private::
+          REALTIME_URL_CHECK_MODE_ENABLED_MAIN_FRAME;
+  }
 }
 
 std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {

@@ -4,14 +4,18 @@
 
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
+#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -305,20 +309,28 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
 #endif
 }
 
-using EnterpriseReportingPrivateGetContextInfoTest = ExtensionApiUnittest;
+class EnterpriseReportingPrivateGetContextInfoTest
+    : public ExtensionApiUnittest {
+ public:
+  enterprise_reporting_private::ContextInfo GetContextInfo() {
+    auto function = base::MakeRefCounted<
+        EnterpriseReportingPrivateGetContextInfoFunction>();
+    std::unique_ptr<base::Value> context_info_value =
+        RunFunctionAndReturnValue(function.get(), "[]");
+    EXPECT_TRUE(context_info_value.get());
+
+    enterprise_reporting_private::ContextInfo info;
+    EXPECT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+        *context_info_value, &info));
+
+    return info;
+  }
+};
 
 TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   // This tests the data returned by the API is correct when no special context
   // is present, ie no policies are set, the browser is unamanaged, etc.
-  auto function =
-      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
-  std::unique_ptr<base::Value> context_info_value =
-      RunFunctionAndReturnValue(function.get(), "[]");
-  ASSERT_TRUE(context_info_value.get());
-
-  enterprise_reporting_private::ContextInfo info;
-  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
-      *context_info_value, &info));
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
   EXPECT_TRUE(info.browser_affiliation_ids.empty());
   EXPECT_TRUE(info.profile_affiliation_ids.empty());
@@ -327,6 +339,52 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
             info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+}
+
+class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
+    : public EnterpriseReportingPrivateGetContextInfoTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest() {
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting("fake-token"));
+  }
+
+  bool url_check_enabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest,
+    testing::Bool());
+
+TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      url_check_enabled() ? safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
+                          : safe_browsing::REAL_TIME_CHECK_DISABLED);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  if (url_check_enabled()) {
+    EXPECT_EQ(enterprise_reporting_private::
+                  REALTIME_URL_CHECK_MODE_ENABLED_MAIN_FRAME,
+              info.realtime_url_check_mode);
+  } else {
+    EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+              info.realtime_url_check_mode);
+  }
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
 }

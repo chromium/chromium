@@ -243,6 +243,19 @@ base::Optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
   return base::nullopt;
 }
 
+safe_browsing::EnterpriseRealTimeUrlCheckMode
+ConnectorsService::GetAppliedRealTimeUrlCheck() const {
+  if (!ConnectorsEnabled() ||
+      !GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope)
+           .has_value()) {
+    return safe_browsing::REAL_TIME_CHECK_DISABLED;
+  }
+
+  return static_cast<safe_browsing::EnterpriseRealTimeUrlCheckMode>(
+      Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode));
+}
+
 ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {
   return connectors_manager_.get();
 }

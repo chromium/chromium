@@ -286,26 +286,37 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   auto maybe_dm_token =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetDMTokenForRealTimeUrlCheck();
+  safe_browsing::EnterpriseRealTimeUrlCheckMode url_check_pref =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetAppliedRealTimeUrlCheck();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
+    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
   } else {
     ASSERT_TRUE(maybe_dm_token.has_value());
     ASSERT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
+    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+              url_check_pref);
   }
 #else
   switch (management_status()) {
     case ManagementStatus::AFFILIATED:
       ASSERT_TRUE(maybe_dm_token.has_value());
       ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
+      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+                url_check_pref);
       break;
     case ManagementStatus::UNAFFILIATED:
       ASSERT_FALSE(maybe_dm_token.has_value());
+      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
       break;
     case ManagementStatus::UNMANAGED:
       ASSERT_TRUE(maybe_dm_token.has_value());
       ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
+      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+                url_check_pref);
       break;
   }
 #endif
@@ -377,13 +388,22 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
   auto maybe_dm_token =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetDMTokenForRealTimeUrlCheck();
+  safe_browsing::EnterpriseRealTimeUrlCheckMode url_check_pref =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetAppliedRealTimeUrlCheck();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(management_status() != ManagementStatus::UNMANAGED,
             maybe_dm_token.has_value());
-  if (maybe_dm_token.has_value())
+  if (maybe_dm_token.has_value()) {
     EXPECT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
+    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+              url_check_pref);
+  } else {
+    EXPECT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
+  }
 #else
   EXPECT_FALSE(maybe_dm_token.has_value());
+  EXPECT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
 #endif
 }
 
