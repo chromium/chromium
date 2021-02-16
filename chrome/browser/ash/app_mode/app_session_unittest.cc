@@ -93,6 +93,7 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
   service->RegisterInternalPlugin(info2, true);
   service->RegisterInternalPlugin(info3, true);
   service->Init();
+  service->RefreshPlugins();
 
   // Force plugins to load and wait for completion.
   base::RunLoop run_loop;
