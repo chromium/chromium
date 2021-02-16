@@ -124,6 +124,11 @@ extern const char kDefaultToDesktopOnIPadDescription[];
 extern const char kDelayThresholdMinutesToUpdateGaiaCookieName[];
 extern const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[];
 
+// Title and description for the flag to detect change password form
+// submisison when the form is cleared by the website.
+extern const char kDetectFormSubmissionOnFormClearIOSName[];
+extern const char kDetectFormSubmissionOnFormClearIOSDescription[];
+
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
 extern const char kDetectMainThreadFreezeName[];

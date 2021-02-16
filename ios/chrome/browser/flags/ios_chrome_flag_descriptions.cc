@@ -142,6 +142,12 @@ const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[] =
     "Used for testing purposes to reduce the amount of delay between polling "
     "intervals.";
 
+const char kDetectFormSubmissionOnFormClearIOSName[] =
+    "Detect form submission when the form is cleared.";
+const char kDetectFormSubmissionOnFormClearIOSDescription[] =
+    "Detect form submissions for change password forms that are cleared and "
+    "not removed from the page.";
+
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
