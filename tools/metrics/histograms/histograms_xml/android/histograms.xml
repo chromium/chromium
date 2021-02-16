@@ -2175,6 +2175,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The number of bytes written for the tab metadata file.</summary>
 </histogram>
 
+<histogram name="Android.ThemeColor" enum="Android.ThemeColor"
+    expires_after="M95">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records whether a page defined theme color is available and applied to top
+    UI. Recorded in didFirstVisuallyNonEmptyPaint while a web page is being
+    loaded.
+  </summary>
+</histogram>
+
 <histogram name="Android.ThumbnailDiskStorage.CachedBitmap.Found"
     enum="BooleanFound" expires_after="2020-01-30">
   <owner>shaktisahu@chromium.org</owner>

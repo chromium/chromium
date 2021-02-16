@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.theme;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -15,7 +19,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.util.ColorUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Manages the theme color used on the top part of the UI based on Tab's theme color and other
@@ -31,6 +39,16 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     @FunctionalInterface
     public interface PreviewChecker {
         boolean inPreview(Tab tab);
+    }
+
+    @IntDef({ThemeColorUma.NO_COLOR_SET, ThemeColorUma.COLOR_SET_AND_APPLIED,
+            ThemeColorUma.COLOR_SET_BUT_NOT_APPLIED, ThemeColorUma.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ThemeColorUma {
+        int NO_COLOR_SET = 0;
+        int COLOR_SET_AND_APPLIED = 1;
+        int COLOR_SET_BUT_NOT_APPLIED = 2;
+        int NUM_ENTRIES = 3;
     }
 
     private final CurrentTabObserver mTabObserver;
@@ -57,6 +75,11 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
             @Override
             public void onDidChangeThemeColor(Tab tab, int themeColor) {
                 updateColor(tab, themeColor, true);
+            }
+
+            @Override
+            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                recordMetaThemeHistogramForTab(tab);
             }
         });
         tabSupplier.addObserver((tab) -> {
@@ -165,6 +188,27 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
                 : LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA;
         NativePage nativePage = tab.getNativePage();
         return nativePage != null ? nativePage.getToolbarTextBoxAlpha(alpha) : alpha;
+    }
+
+    private void recordMetaThemeHistogramForTab(@NonNull Tab tab) {
+        // We're only interested in tabs where a meta theme tag is possible, i.e. websites.
+        if (tab.isNativePage() || tab.getWebContents() == null
+                || UrlUtilities.isInternalScheme(tab.getUrl())) {
+            return;
+        }
+
+        final String histogramName = "Android.ThemeColor";
+        final int themeColor = tab.getWebContents().getThemeColor();
+        @ThemeColorUma
+        int bucket;
+        if (themeColor == TabState.UNSPECIFIED_THEME_COLOR) {
+            bucket = ThemeColorUma.NO_COLOR_SET;
+        } else if (!isUsingDefaultColor(tab, themeColor)) {
+            bucket = ThemeColorUma.COLOR_SET_AND_APPLIED;
+        } else {
+            bucket = ThemeColorUma.COLOR_SET_BUT_NOT_APPLIED;
+        }
+        RecordHistogram.recordEnumeratedHistogram(histogramName, bucket, ThemeColorUma.NUM_ENTRIES);
     }
 
     @Override
