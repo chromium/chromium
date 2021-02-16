@@ -313,10 +313,11 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void Navigate(bool same_document) {
+  void Navigate(bool same_document, bool from_bfcache = false) {
     content::MockNavigationHandle navigation_handle(GURL(), main_rfh());
     navigation_handle.set_has_committed(true);
     navigation_handle.set_is_same_document(same_document);
+    navigation_handle.set_is_served_from_bfcache(from_bfcache);
     driver_->DidNavigateFrame(&navigation_handle);
   }
 
@@ -335,6 +336,11 @@ TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
   EXPECT_CALL(*driver_->mock_autofill_manager(), Reset()).Times(0);
   Navigate(/*same_document=*/true);
+}
+
+TEST_F(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
+  EXPECT_CALL(*driver_->mock_autofill_manager(), Reset()).Times(0);
+  Navigate(/*same_document=*/false, /*from_bfcache=*/true);
 }
 
 TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
