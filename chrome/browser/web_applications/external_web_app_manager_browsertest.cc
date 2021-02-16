@@ -18,7 +18,9 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/extension_registry.h"
@@ -252,6 +254,40 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
   scoped_refptr<const extensions::Extension> uninstalled_app =
       uninstall_observer.WaitForExtensionUninstalled();
   EXPECT_EQ(app, uninstalled_app.get());
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       DefaultAppsPrefInstall) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  profile()->GetPrefs()->SetString(prefs::kDefaultApps, "install");
+
+  EXPECT_EQ(
+      SyncDefaultAppConfig(GetAppUrl(), base::ReplaceStringPlaceholders(
+                                            R"({
+                "app_url": "$1",
+                "launch_container": "window",
+                "user_type": ["unmanaged"]
+              })",
+                                            {GetAppUrl().spec()}, nullptr)),
+      InstallResultCode::kSuccessNewInstall);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       DefaultAppsPrefNoinstall) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  profile()->GetPrefs()->SetString(prefs::kDefaultApps, "noinstall");
+
+  EXPECT_EQ(
+      SyncDefaultAppConfig(GetAppUrl(), base::ReplaceStringPlaceholders(
+                                            R"({
+                "app_url": "$1",
+                "launch_container": "window",
+                "user_type": ["unmanaged"]
+              })",
+                                            {GetAppUrl().spec()}, nullptr)),
+      base::nullopt);
 }
 
 // The offline manifest JSON config functionality is only available on Chrome
