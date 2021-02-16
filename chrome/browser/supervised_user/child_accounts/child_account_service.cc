@@ -246,6 +246,21 @@ void ChildAccountService::SetIsChildAccount(bool is_child_account) {
   status_received_callback_list_.clear();
 }
 
+void ChildAccountService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kNotRequired) ==
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    auto account_info =
+        identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
+            event_details.GetCurrentState().primary_account);
+    if (account_info.has_value()) {
+      OnExtendedAccountInfoUpdated(account_info.value());
+    }
+    // Otherwise OnExtendedAccountInfoUpdated will be notified once
+    // the account info is available.
+  }
+}
+
 void ChildAccountService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   // This method may get called when the account info isn't complete yet.
