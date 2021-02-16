@@ -22,25 +22,34 @@ import sys
 import common
 import wpt_common
 
+SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+WEB_TESTS_DIR = os.path.join(SRC_DIR, "third_party", "blink", "web_tests")
+# OUT_DIR is a format string that will later be substituted into for the
+# specific output directory.
+OUT_DIR = os.path.join(SRC_DIR, "out", "{}")
+
 # The checked-in manifest is copied to a temporary working directory so it can
 # be mutated by wptrunner
-WPT_CHECKED_IN_MANIFEST = (
-    "../../third_party/blink/web_tests/external/WPT_BASE_MANIFEST_8.json")
-WPT_WORKING_COPY_MANIFEST = "../../out/{}/MANIFEST.json"
+WPT_CHECKED_IN_MANIFEST = os.path.join(
+    WEB_TESTS_DIR, "external", "WPT_BASE_MANIFEST_8.json")
+WPT_WORKING_COPY_MANIFEST = os.path.join(OUT_DIR, "MANIFEST.json")
 
-WPT_CHECKED_IN_METADATA_DIR = "../../third_party/blink/web_tests/external/wpt"
-WPT_METADATA_OUTPUT_DIR = "../../out/{}/wpt_expectations_metadata/"
-WPT_OVERRIDE_EXPECTATIONS_PATH = (
-    "../../third_party/blink/web_tests/WPTOverrideExpectations")
+WPT_CHECKED_IN_METADATA_DIR = os.path.join(WEB_TESTS_DIR, "external", "wpt")
+WPT_METADATA_OUTPUT_DIR = os.path.join(OUT_DIR, "wpt_expectations_metadata")
+WPT_OVERRIDE_EXPECTATIONS_PATH = os.path.join(
+    WEB_TESTS_DIR, "WPTOverrideExpectations")
 
-CHROME_BINARY = "../../out/{}/chrome"
-CHROME_BINARY_MAC = "../../out/{}/Chromium.app/Contents/MacOS/Chromium"
-CHROMEDRIVER_BINARY = "../../out/{}/chromedriver"
+CHROME_BINARY = os.path.join(OUT_DIR, "chrome")
+CHROME_BINARY_MAC = os.path.join(
+    OUT_DIR, "Chromium.app", "Contents", "MacOS", "Chromium")
+CHROMEDRIVER_BINARY = os.path.join(OUT_DIR, "chromedriver")
 
-DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = "../../out/{}/results.json"
-MOJO_JS_PATH = "../../out/{}/gen/"
+DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
+MOJO_JS_PATH = os.path.join(OUT_DIR, "gen")
 
-TESTS_ROOT_DIR = "../../third_party/blink/web_tests/external/wpt"
+TESTS_ROOT_DIR = os.path.join(WEB_TESTS_DIR, "external", "wpt")
+
+WPT_BINARY = os.path.join(SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
 
 class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
@@ -61,8 +70,8 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
         # Here we add all of the arguments required to run WPT tests on Chrome.
         rest_args.extend([
-            "../../third_party/wpt_tools/wpt/wpt",
-            "--venv=../../",
+            WPT_BINARY,
+            "--venv=" + SRC_DIR,
             "--skip-venv-setup",
             # TODO(crbug.com/1166741): We should be running WPT under Python 3.
             "--py2",
