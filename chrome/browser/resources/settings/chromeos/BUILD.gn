@@ -207,6 +207,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
     "os_settings_v3.html",
+    "images/computer_and_bluetooth_switch.svg",
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
     "images/icon_add_cellular.svg",
