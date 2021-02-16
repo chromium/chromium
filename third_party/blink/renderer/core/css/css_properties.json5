@@ -1070,9 +1070,13 @@
     {
       name: "alignment-baseline",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      svg: true,
-      keywords: ["baseline", "alphabetic", "ideographic", "middle", "central", "mathematical"],
-      typedom_types: ["Keyword"]
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "baseline", "alphabetic", "ideographic", "middle",
+                 "central", "mathematical", "before-edge", "text-before-edge",
+                 "after-edge", "text-after-edge", "hanging"],
+      typedom_types: ["Keyword"],
+      default_value: "auto",
     },
     {
       name: "align-self",
@@ -1749,7 +1753,10 @@
     {
       name: "buffered-rendering",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      svg: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "dynamic", "static"],
+      default_value: "auto",
     },
     {
       name: "caption-side",
@@ -2599,9 +2606,11 @@
     {
       name: "mask-type",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      svg: true,
+      field_group: "*",
+      field_template: "keyword",
       keywords: ["luminance", "alpha"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      default_value: "luminance",
     },
     {
       name: "math-shift",
@@ -4083,9 +4092,11 @@
     {
       name: "vector-effect",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      svg: true,
+      field_group: "*",
+      field_template: "keyword",
       keywords: ["none", "non-scaling-stroke"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      default_value: "none",
     },
     {
       name: "vertical-align",

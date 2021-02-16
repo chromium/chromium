@@ -1100,13 +1100,6 @@ class ComputedStyle : public ComputedStyleBase,
   const SVGComputedStyle& SvgStyle() const { return *svg_style_.Get(); }
   SVGComputedStyle& AccessSVGStyle() { return *svg_style_.Access(); }
 
-  EAlignmentBaseline AlignmentBaseline() const {
-    return SvgStyle().AlignmentBaseline();
-  }
-  EBufferedRendering BufferedRendering() const {
-    return SvgStyle().BufferedRendering();
-  }
-
   // baseline-shift
   EBaselineShift BaselineShift() const { return SvgStyle().BaselineShift(); }
   const Length& BaselineShiftValue() const {
@@ -1164,7 +1157,6 @@ class ComputedStyle : public ComputedStyleBase,
   float FloodOpacity() const { return SvgStyle().FloodOpacity(); }
   void SetFloodOpacity(float f) { AccessSVGStyle().SetFloodOpacity(f); }
 
-  EMaskType MaskType() const { return SvgStyle().MaskType(); }
   StyleSVGResource* MaskerResource() const {
     return SvgStyle().MaskerResource();
   }
@@ -1240,7 +1232,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   ETextAnchor TextAnchor() const { return SvgStyle().TextAnchor(); }
-  EVectorEffect VectorEffect() const { return SvgStyle().VectorEffect(); }
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.

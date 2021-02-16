@@ -68,7 +68,7 @@ ColorFilter CSSMaskPainter::MaskColorFilter(const LayoutObject& object) {
       *client, object.StyleRef().MaskerResource());
   if (!masker)
     return kColorFilterNone;
-  return masker->StyleRef().MaskType() == MT_LUMINANCE
+  return masker->StyleRef().MaskType() == EMaskType::kLuminance
              ? kColorFilterLuminanceToAlpha
              : kColorFilterNone;
 }

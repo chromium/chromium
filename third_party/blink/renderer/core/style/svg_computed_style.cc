@@ -143,8 +143,6 @@ bool SVGComputedStyle::DiffNeedsLayoutAndPaintInvalidation(
           other.svg_inherited_flags.text_anchor ||
       svg_inherited_flags.dominant_baseline !=
           other.svg_inherited_flags.dominant_baseline ||
-      svg_noninherited_flags.f.alignment_baseline !=
-          other.svg_noninherited_flags.f.alignment_baseline ||
       svg_noninherited_flags.f.baseline_shift !=
           other.svg_noninherited_flags.f.baseline_shift)
     return true;
@@ -156,11 +154,6 @@ bool SVGComputedStyle::DiffNeedsLayoutAndPaintInvalidation(
   // These properties affect the cached stroke bounding box rects.
   if (svg_inherited_flags.cap_style != other.svg_inherited_flags.cap_style ||
       svg_inherited_flags.join_style != other.svg_inherited_flags.join_style)
-    return true;
-
-  // vector-effect changes require a re-layout.
-  if (svg_noninherited_flags.f.vector_effect !=
-      other.svg_noninherited_flags.f.vector_effect)
     return true;
 
   // Some stroke properties require relayouts as the cached stroke boundaries
@@ -230,10 +223,6 @@ bool SVGComputedStyle::DiffNeedsPaintInvalidation(
       svg_inherited_flags.color_interpolation_filters !=
           other.svg_inherited_flags.color_interpolation_filters ||
       svg_inherited_flags.paint_order != other.svg_inherited_flags.paint_order)
-    return true;
-
-  if (svg_noninherited_flags.f.mask_type !=
-      other.svg_noninherited_flags.f.mask_type)
     return true;
 
   return false;

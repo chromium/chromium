@@ -75,7 +75,7 @@ SVGTextLayoutEngineBaseline::DominantBaselineToAlignmentBaseline(
       // TODO(fs): The dominant-baseline and the baseline-table components
       // are set by determining the predominant script of the character data
       // content.
-      return AB_ALPHABETIC;
+      return EAlignmentBaseline::kAlphabetic;
     case DB_NO_CHANGE:
       DCHECK(text_line_layout.Parent());
       return DominantBaselineToAlignmentBaseline(is_vertical_text,
@@ -85,24 +85,24 @@ SVGTextLayoutEngineBaseline::DominantBaselineToAlignmentBaseline(
       return DominantBaselineToAlignmentBaseline(is_vertical_text,
                                                  text_line_layout.Parent());
     case DB_IDEOGRAPHIC:
-      return AB_IDEOGRAPHIC;
+      return EAlignmentBaseline::kIdeographic;
     case DB_ALPHABETIC:
-      return AB_ALPHABETIC;
+      return EAlignmentBaseline::kAlphabetic;
     case DB_HANGING:
-      return AB_HANGING;
+      return EAlignmentBaseline::kHanging;
     case DB_MATHEMATICAL:
-      return AB_MATHEMATICAL;
+      return EAlignmentBaseline::kMathematical;
     case DB_CENTRAL:
-      return AB_CENTRAL;
+      return EAlignmentBaseline::kCentral;
     case DB_MIDDLE:
-      return AB_MIDDLE;
+      return EAlignmentBaseline::kMiddle;
     case DB_TEXT_AFTER_EDGE:
-      return AB_TEXT_AFTER_EDGE;
+      return EAlignmentBaseline::kTextAfterEdge;
     case DB_TEXT_BEFORE_EDGE:
-      return AB_TEXT_BEFORE_EDGE;
+      return EAlignmentBaseline::kTextBeforeEdge;
     default:
       NOTREACHED();
-      return AB_AUTO;
+      return EAlignmentBaseline::kAuto;
   }
 }
 
@@ -117,11 +117,12 @@ float SVGTextLayoutEngineBaseline::CalculateAlignmentBaselineShift(
   DCHECK(text_line_layout_parent);
 
   EAlignmentBaseline baseline = text_line_layout.StyleRef().AlignmentBaseline();
-  if (baseline == AB_AUTO || baseline == AB_BASELINE) {
+  if (baseline == EAlignmentBaseline::kAuto ||
+      baseline == EAlignmentBaseline::kBaseline) {
     baseline = DominantBaselineToAlignmentBaseline(is_vertical_text,
                                                    text_line_layout_parent);
-    DCHECK_NE(baseline, AB_AUTO);
-    DCHECK_NE(baseline, AB_BASELINE);
+    DCHECK_NE(baseline, EAlignmentBaseline::kAuto);
+    DCHECK_NE(baseline, EAlignmentBaseline::kBaseline);
   }
 
   const SimpleFontData* font_data = font_.PrimaryFont();
@@ -136,24 +137,24 @@ float SVGTextLayoutEngineBaseline::CalculateAlignmentBaselineShift(
 
   // Note: http://wiki.apache.org/xmlgraphics-fop/LineLayout/AlignmentHandling
   switch (baseline) {
-    case AB_BEFORE_EDGE:
-    case AB_TEXT_BEFORE_EDGE:
+    case EAlignmentBaseline::kBeforeEdge:
+    case EAlignmentBaseline::kTextBeforeEdge:
       return ascent;
-    case AB_MIDDLE:
+    case EAlignmentBaseline::kMiddle:
       return xheight / 2;
-    case AB_CENTRAL:
+    case EAlignmentBaseline::kCentral:
       return (ascent - descent) / 2;
-    case AB_AFTER_EDGE:
-    case AB_TEXT_AFTER_EDGE:
-    case AB_IDEOGRAPHIC:
+    case EAlignmentBaseline::kAfterEdge:
+    case EAlignmentBaseline::kTextAfterEdge:
+    case EAlignmentBaseline::kIdeographic:
       return -descent;
-    case AB_ALPHABETIC:
+    case EAlignmentBaseline::kAlphabetic:
       return 0;
-    case AB_HANGING:
+    case EAlignmentBaseline::kHanging:
       return ascent * 8 / 10.f;
-    case AB_MATHEMATICAL:
+    case EAlignmentBaseline::kMathematical:
       return ascent / 2;
-    case AB_BASELINE:
+    case EAlignmentBaseline::kBaseline:
     default:
       NOTREACHED();
       return 0;

@@ -360,10 +360,10 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
                                  kApplyToStrokeMode, stroke_flags))
             break;
           stroke_flags.setAntiAlias(true);
-          float stroke_scale_factor =
-              decoration_style.VectorEffect() == VE_NON_SCALING_STROKE
-                  ? 1 / scaling_factor
-                  : 1;
+          float stroke_scale_factor = decoration_style.VectorEffect() ==
+                                              EVectorEffect::kNonScalingStroke
+                                          ? 1 / scaling_factor
+                                          : 1;
           StrokeData stroke_data;
           SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
               stroke_data, decoration_style, *decoration_layout_object,
@@ -424,7 +424,9 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
   if (resource_mode == kApplyToStrokeMode) {
     // The stroke geometry needs be generated based on the scaled font.
     float stroke_scale_factor =
-        style.VectorEffect() != VE_NON_SCALING_STROKE ? scaling_factor : 1;
+        style.VectorEffect() != EVectorEffect::kNonScalingStroke
+            ? scaling_factor
+            : 1;
     StrokeData stroke_data;
     SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
         stroke_data, style, ParentInlineLayoutObject(), stroke_scale_factor);

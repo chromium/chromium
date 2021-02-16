@@ -57,21 +57,6 @@ enum EShapeRendering {
   SR_GEOMETRICPRECISION
 };
 
-enum EAlignmentBaseline {
-  AB_AUTO,
-  AB_BASELINE,
-  AB_BEFORE_EDGE,
-  AB_TEXT_BEFORE_EDGE,
-  AB_MIDDLE,
-  AB_CENTRAL,
-  AB_AFTER_EDGE,
-  AB_TEXT_AFTER_EDGE,
-  AB_IDEOGRAPHIC,
-  AB_ALPHABETIC,
-  AB_HANGING,
-  AB_MATHEMATICAL
-};
-
 enum EDominantBaseline {
   DB_AUTO,
   DB_USE_SCRIPT,
@@ -86,12 +71,6 @@ enum EDominantBaseline {
   DB_TEXT_AFTER_EDGE,
   DB_TEXT_BEFORE_EDGE
 };
-
-enum EVectorEffect { VE_NONE, VE_NON_SCALING_STROKE };
-
-enum EBufferedRendering { BR_AUTO, BR_DYNAMIC, BR_STATIC };
-
-enum EMaskType { MT_LUMINANCE, MT_ALPHA };
 
 enum EPaintOrderType {
   PT_NONE = 0,

@@ -1008,117 +1008,6 @@ inline WindRule CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(EAlignmentBaseline e)
-    : CSSValue(kIdentifierClass) {
-  switch (e) {
-    case AB_AUTO:
-      value_id_ = CSSValueID::kAuto;
-      break;
-    case AB_BASELINE:
-      value_id_ = CSSValueID::kBaseline;
-      break;
-    case AB_BEFORE_EDGE:
-      value_id_ = CSSValueID::kBeforeEdge;
-      break;
-    case AB_TEXT_BEFORE_EDGE:
-      value_id_ = CSSValueID::kTextBeforeEdge;
-      break;
-    case AB_MIDDLE:
-      value_id_ = CSSValueID::kMiddle;
-      break;
-    case AB_CENTRAL:
-      value_id_ = CSSValueID::kCentral;
-      break;
-    case AB_AFTER_EDGE:
-      value_id_ = CSSValueID::kAfterEdge;
-      break;
-    case AB_TEXT_AFTER_EDGE:
-      value_id_ = CSSValueID::kTextAfterEdge;
-      break;
-    case AB_IDEOGRAPHIC:
-      value_id_ = CSSValueID::kIdeographic;
-      break;
-    case AB_ALPHABETIC:
-      value_id_ = CSSValueID::kAlphabetic;
-      break;
-    case AB_HANGING:
-      value_id_ = CSSValueID::kHanging;
-      break;
-    case AB_MATHEMATICAL:
-      value_id_ = CSSValueID::kMathematical;
-      break;
-  }
-}
-
-template <>
-inline EAlignmentBaseline CSSIdentifierValue::ConvertTo() const {
-  switch (value_id_) {
-    case CSSValueID::kAuto:
-      return AB_AUTO;
-    case CSSValueID::kBaseline:
-      return AB_BASELINE;
-    case CSSValueID::kBeforeEdge:
-      return AB_BEFORE_EDGE;
-    case CSSValueID::kTextBeforeEdge:
-      return AB_TEXT_BEFORE_EDGE;
-    case CSSValueID::kMiddle:
-      return AB_MIDDLE;
-    case CSSValueID::kCentral:
-      return AB_CENTRAL;
-    case CSSValueID::kAfterEdge:
-      return AB_AFTER_EDGE;
-    case CSSValueID::kTextAfterEdge:
-      return AB_TEXT_AFTER_EDGE;
-    case CSSValueID::kIdeographic:
-      return AB_IDEOGRAPHIC;
-    case CSSValueID::kAlphabetic:
-      return AB_ALPHABETIC;
-    case CSSValueID::kHanging:
-      return AB_HANGING;
-    case CSSValueID::kMathematical:
-      return AB_MATHEMATICAL;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return AB_AUTO;
-}
-
-template <>
-inline CSSIdentifierValue::CSSIdentifierValue(EBufferedRendering e)
-    : CSSValue(kIdentifierClass) {
-  switch (e) {
-    case BR_AUTO:
-      value_id_ = CSSValueID::kAuto;
-      break;
-    case BR_DYNAMIC:
-      value_id_ = CSSValueID::kDynamic;
-      break;
-    case BR_STATIC:
-      value_id_ = CSSValueID::kStatic;
-      break;
-  }
-}
-
-template <>
-inline EBufferedRendering CSSIdentifierValue::ConvertTo() const {
-  switch (value_id_) {
-    case CSSValueID::kAuto:
-      return BR_AUTO;
-    case CSSValueID::kDynamic:
-      return BR_DYNAMIC;
-    case CSSValueID::kStatic:
-      return BR_STATIC;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return BR_AUTO;
-}
-
-template <>
 inline CSSIdentifierValue::CSSIdentifierValue(EColorInterpolation e)
     : CSSValue(kIdentifierClass) {
   switch (e) {
@@ -1334,34 +1223,6 @@ inline ETextAnchor CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(EVectorEffect e)
-    : CSSValue(kIdentifierClass) {
-  switch (e) {
-    case VE_NONE:
-      value_id_ = CSSValueID::kNone;
-      break;
-    case VE_NON_SCALING_STROKE:
-      value_id_ = CSSValueID::kNonScalingStroke;
-      break;
-  }
-}
-
-template <>
-inline EVectorEffect CSSIdentifierValue::ConvertTo() const {
-  switch (value_id_) {
-    case CSSValueID::kNone:
-      return VE_NONE;
-    case CSSValueID::kNonScalingStroke:
-      return VE_NON_SCALING_STROKE;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return VE_NONE;
-}
-
-template <>
 inline CSSIdentifierValue::CSSIdentifierValue(EPaintOrderType e)
     : CSSValue(kIdentifierClass) {
   switch (e) {
@@ -1396,34 +1257,6 @@ inline EPaintOrderType CSSIdentifierValue::ConvertTo() const {
 
   NOTREACHED();
   return PT_NONE;
-}
-
-template <>
-inline CSSIdentifierValue::CSSIdentifierValue(EMaskType e)
-    : CSSValue(kIdentifierClass) {
-  switch (e) {
-    case MT_LUMINANCE:
-      value_id_ = CSSValueID::kLuminance;
-      break;
-    case MT_ALPHA:
-      value_id_ = CSSValueID::kAlpha;
-      break;
-  }
-}
-
-template <>
-inline EMaskType CSSIdentifierValue::ConvertTo() const {
-  switch (value_id_) {
-    case CSSValueID::kLuminance:
-      return MT_LUMINANCE;
-    case CSSValueID::kAlpha:
-      return MT_ALPHA;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return MT_LUMINANCE;
 }
 
 template <>

@@ -103,7 +103,7 @@
                 "column-gap", "column-width", "column-rule-style",
                 "column-rule-width", "column-rule-color", "-internal-visited-column-rule-color",
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
-                "cx", "cy", "d", "rx", "ry", "x", "y", "r",],
+                "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
@@ -237,7 +237,7 @@
         name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
                 "-webkit-user-drag", "object-fit", "object-position",
-                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage"],
+                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask-type"],
         methods_to_diff: [
           {
             method: "Visibility()",

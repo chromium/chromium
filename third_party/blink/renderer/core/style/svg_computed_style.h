@@ -64,12 +64,9 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   bool operator!=(const SVGComputedStyle& o) const { return !(*this == o); }
 
   // Initial values for all the properties
-  static EAlignmentBaseline InitialAlignmentBaseline() { return AB_AUTO; }
   static EDominantBaseline InitialDominantBaseline() { return DB_AUTO; }
   static EBaselineShift InitialBaselineShift() { return BS_LENGTH; }
   static Length InitialBaselineShiftValue() { return Length::Fixed(); }
-  static EVectorEffect InitialVectorEffect() { return VE_NONE; }
-  static EBufferedRendering InitialBufferedRendering() { return BR_AUTO; }
   static LineCap InitialCapStyle() { return kButtCap; }
   static WindRule InitialClipRule() { return RULE_NONZERO; }
   static EColorInterpolation InitialColorInterpolation() { return CI_SRGB; }
@@ -100,24 +97,14 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   static StyleSVGResource* InitialMarkerStartResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerMidResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerEndResource() { return nullptr; }
-  static EMaskType InitialMaskType() { return MT_LUMINANCE; }
   static EPaintOrder InitialPaintOrder() { return kPaintOrderNormal; }
 
   // SVG CSS Property setters
-  void SetAlignmentBaseline(EAlignmentBaseline val) {
-    svg_noninherited_flags.f.alignment_baseline = val;
-  }
   void SetDominantBaseline(EDominantBaseline val) {
     svg_inherited_flags.dominant_baseline = val;
   }
   void SetBaselineShift(EBaselineShift val) {
     svg_noninherited_flags.f.baseline_shift = val;
-  }
-  void SetVectorEffect(EVectorEffect val) {
-    svg_noninherited_flags.f.vector_effect = val;
-  }
-  void SetBufferedRendering(EBufferedRendering val) {
-    svg_noninherited_flags.f.buffered_rendering = val;
   }
   void SetCapStyle(LineCap val) { svg_inherited_flags.cap_style = val; }
   void SetClipRule(WindRule val) { svg_inherited_flags.clip_rule = val; }
@@ -136,7 +123,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
     svg_inherited_flags.shape_rendering = val;
   }
   void SetTextAnchor(ETextAnchor val) { svg_inherited_flags.text_anchor = val; }
-  void SetMaskType(EMaskType val) { svg_noninherited_flags.f.mask_type = val; }
   void SetPaintOrder(EPaintOrder val) {
     svg_inherited_flags.paint_order = (int)val;
   }
@@ -231,20 +217,11 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   void SetMarkerEndResource(scoped_refptr<StyleSVGResource> resource);
 
   // Read accessors for all the properties
-  EAlignmentBaseline AlignmentBaseline() const {
-    return (EAlignmentBaseline)svg_noninherited_flags.f.alignment_baseline;
-  }
   EDominantBaseline DominantBaseline() const {
     return (EDominantBaseline)svg_inherited_flags.dominant_baseline;
   }
   EBaselineShift BaselineShift() const {
     return (EBaselineShift)svg_noninherited_flags.f.baseline_shift;
-  }
-  EVectorEffect VectorEffect() const {
-    return (EVectorEffect)svg_noninherited_flags.f.vector_effect;
-  }
-  EBufferedRendering BufferedRendering() const {
-    return (EBufferedRendering)svg_noninherited_flags.f.buffered_rendering;
   }
   LineCap CapStyle() const { return (LineCap)svg_inherited_flags.cap_style; }
   WindRule ClipRule() const { return (WindRule)svg_inherited_flags.clip_rule; }
@@ -292,9 +269,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   }
   StyleSVGResource* MarkerEndResource() const {
     return inherited_resources->marker_end.get();
-  }
-  EMaskType MaskType() const {
-    return (EMaskType)svg_noninherited_flags.f.mask_type;
   }
   EPaintOrder PaintOrder() const {
     return (EPaintOrder)svg_inherited_flags.paint_order;
@@ -354,12 +328,7 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
 
     union {
       struct {
-        unsigned alignment_baseline : 4;  // EAlignmentBaseline
         unsigned baseline_shift : 2;      // EBaselineShift
-        unsigned vector_effect : 1;       // EVectorEffect
-        unsigned buffered_rendering : 2;  // EBufferedRendering
-        unsigned mask_type : 1;           // EMaskType
-                                          // 18 bits unused
       } f;
       uint32_t niflags;
     };
@@ -401,11 +370,7 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
     svg_inherited_flags.dominant_baseline = InitialDominantBaseline();
 
     svg_noninherited_flags.niflags = 0;
-    svg_noninherited_flags.f.alignment_baseline = InitialAlignmentBaseline();
     svg_noninherited_flags.f.baseline_shift = InitialBaselineShift();
-    svg_noninherited_flags.f.vector_effect = InitialVectorEffect();
-    svg_noninherited_flags.f.buffered_rendering = InitialBufferedRendering();
-    svg_noninherited_flags.f.mask_type = InitialMaskType();
   }
 };
 
