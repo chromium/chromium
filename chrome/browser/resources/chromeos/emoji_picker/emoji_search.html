@@ -1,0 +1,62 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    width: 100%;
+  }
+
+  #search {
+    margin-bottom: 10px;
+    --cr-search-field-input-width: calc(100% - 24px);
+  }
+
+  #container {
+    flex-grow: 1;
+    overflow-y: scroll;
+  }
+
+  .result {
+    display: flex;
+  }
+
+  emoji-button {
+    margin-inline-end: 12px;
+  }
+
+  .name {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    line-height: var(--emoji-size);
+  }
+
+  .sr-only {
+    color: transparent;
+    position: absolute;
+    z-index: -2;
+  }
+</style>
+
+<cr-search-field id="search" autofocus="true"></cr-search-field>
+
+<div id="container">
+
+  <template is="dom-if" if="[[search]]">
+
+    <div class="sr-only" role="heading" aria-level="1">
+      Emoji Search Results
+    </div>
+
+    <template is="dom-repeat" items="[[results]]">
+      <div class="result">
+        <emoji-button
+            emoji="[[item.item.base.string]]"
+            variants="[[item.item.alternates]]">
+        </emoji-button>
+        <div class="name">[[item.item.base.name]]</div>
+      </div>
+    </template>
+
+  </template>
+
+</div>

@@ -35,6 +35,10 @@ export class EmojiButton extends PolymerElement {
     super();
   }
 
+  getButton() {
+    return this.$.button;
+  }
+
   focusButton(options) {
     this.$.button.focus(options);
   }
