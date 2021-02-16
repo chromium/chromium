@@ -3909,6 +3909,11 @@ const char kCrosLanguageSettingsUpdateName[] = "Language Settings Update";
 const char kCrosLanguageSettingsUpdateDescription[] =
     "Enable this flag to see the new language settings update.";
 
+const char kCrosLanguageSettingsUpdate2Name[] = "Language Settings Update 2";
+const char kCrosLanguageSettingsUpdate2Description[] =
+    "Enables the second language settings update. Requires "
+    "#enable-cros-language-settings-update to be enabled.";
+
 const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";
