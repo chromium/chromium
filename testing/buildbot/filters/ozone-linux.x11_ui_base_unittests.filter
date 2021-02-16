@@ -1,3 +1,0 @@
-# TODO(https://crbug.com/1178386): These tests fail in Ozone/X11.
--ClipboardTest/TestClipboardTest.ReadAvailablePlatformSpecificFormatNamesTest
--ClipboardTest/TestClipboardTest.TextTest

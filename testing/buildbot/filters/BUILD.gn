@@ -23,7 +23,6 @@ source_set("cc_unittests_filters") {
     "//testing/buildbot/filters/android.emulator.cc_unittests.filter",
     "//testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter",
     "//testing/buildbot/filters/gpu.skiarenderer_dawn_cc_unittests.filter",
-    "//testing/buildbot/filters/ozone-linux.x11_cc_unittests.filter",
   ]
 }
 
@@ -189,13 +188,6 @@ source_set("ozone_unittests_filters") {
 
 source_set("sandbox_linux_unittests_filters") {
   data = [ "//testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter" ]
-}
-
-source_set("ui_base_unittests_filters") {
-  testonly = true
-
-  data =
-      [ "//testing/buildbot/filters/ozone-linux.x11_ui_base_unittests.filter" ]
 }
 
 source_set("unit_tests_filters") {
