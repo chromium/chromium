@@ -18,6 +18,7 @@
 #include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -40,7 +41,6 @@ namespace {
 
 using base::TimeDelta;
 using testing::ElementsAre;
-using ActionRequestResult = FeedNetwork::ActionRequestResult;
 using QueryRequestResult = FeedNetwork::QueryRequestResult;
 
 feedwire::Request GetTestFeedRequest(feedwire::FeedQuery::RequestReason reason =
@@ -163,7 +163,7 @@ class FeedNetworkTest : public testing::Test {
     return resource_request;
   }
 
-  network::ResourceRequest RespondToActionRequest(
+  network::ResourceRequest RespondToDiscoverRequest(
       const std::string& response_string,
       net::HttpStatusCode code) {
     task_environment_.RunUntilIdle();
@@ -189,7 +189,7 @@ class FeedNetworkTest : public testing::Test {
       net::HttpStatusCode code) {
     std::string binary_proto;
     response_message.SerializeToString(&binary_proto);
-    return RespondToActionRequest(binary_proto, code);
+    return RespondToDiscoverRequest(binary_proto, code);
   }
 
  protected:
@@ -454,22 +454,27 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
             receiver.GetResult()->response_info.bless_nonce);
 }
 
-TEST_F(FeedNetworkTest, SendActionRequest) {
-  CallbackReceiver<ActionRequestResult> receiver;
-  feed_network()->SendActionRequest(GetTestActionRequest(), receiver.Bind());
+TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), receiver.Bind());
   RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
-  const ActionRequestResult& result = *receiver.GetResult();
+  const FeedNetwork::ApiResult<feedwire::UploadActionsResponse>& result =
+      *receiver.GetResult();
   EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
   EXPECT_TRUE(result.response_body);
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions", 200, 1);
 }
 
-TEST_F(FeedNetworkTest, SendActionRequestSendsValidRequest) {
-  CallbackReceiver<ActionRequestResult> receiver;
-  feed_network()->SendActionRequest(GetTestActionRequest(), receiver.Bind());
+TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
@@ -501,21 +506,40 @@ TEST_F(FeedNetworkTest, SendActionRequestSendsValidRequest) {
   EXPECT_EQ(expected_body, sent_body_uncompressed);
 }
 
-TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectActionUpload) {
+TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UnfollowWebFeedResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({},
+                                                             receiver.Bind());
+  RespondToDiscoverRequest("", net::HTTP_OK);
+
+  ASSERT_TRUE(receiver.GetResult());
+  const FeedNetwork::ApiResult<feedwire::UnfollowWebFeedResponse>& result =
+      *receiver.GetResult();
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+  EXPECT_TRUE(result.response_body);
+  histogram().ExpectBucketCount(
+      "ContentSuggestions.Feed.Network.ResponseStatus.UnfollowWebFeed", 200, 1);
+}
+
+TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
-  feed_network()->SendActionRequest(GetTestActionRequest(), base::DoNothing());
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), base::DoNothing());
 
   EXPECT_EQ(GURL("https://discover-pa.googleapis.com/v1/actions:upload"),
             GetPendingRequestURL());
 }
 
-TEST_F(FeedNetworkTest, TestOverrideActionsEndpoint) {
-  profile_prefs().SetString(feed::prefs::kActionsEndpointOverride,
+TEST_F(FeedNetworkTest, TestOverrideDiscoverEndpoint) {
+  profile_prefs().SetString(feed::prefs::kDiscoverAPIEndpointOverride,
                             "http://www.newhost.com/");
-  feed_network()->SendActionRequest(GetTestActionRequest(), base::DoNothing());
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), base::DoNothing());
 
-  EXPECT_EQ(GURL("http://www.newhost.com/"), GetPendingRequestURL());
+  EXPECT_EQ(GURL("http://www.newhost.com/v1/actions:upload"),
+            GetPendingRequestURL());
 }
 
 }  // namespace

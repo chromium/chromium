@@ -62,6 +62,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace feed {
 namespace {
@@ -344,28 +345,43 @@ class TestFeedNetwork : public FeedNetwork {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   }
-  void SendActionRequest(
-      const feedwire::UploadActionsRequest& request,
-      base::OnceCallback<void(ActionRequestResult)> callback) override {
-    action_request_sent = request;
-    ++action_request_call_count;
 
-    ActionRequestResult result;
-    if (injected_action_result != base::nullopt) {
-      result = std::move(*injected_action_result);
-    } else {
-      auto response = std::make_unique<feedwire::UploadActionsResponse>();
-      response->mutable_consistency_token()->set_token(consistency_token);
+  void SendDiscoverApiRequest(
+      base::StringPiece api_path,
+      base::StringPiece method,
+      std::string request_bytes,
+      base::OnceCallback<void(RawResponse)> callback) override {
+    api_requests_sent_[api_path.as_string()] = request_bytes;
+    ++api_request_count_[api_path.as_string()];
+    std::vector<RawResponse>& injected_responses =
+        injected_api_responses_[api_path.as_string()];
 
-      result.response_body = std::move(response);
+    // If there is no injected response, create a default response.
+    if (injected_responses.empty()) {
+      if (api_path == UploadActionsDiscoverApi::RequestPath()) {
+        feedwire::UploadActionsRequest request;
+        ASSERT_TRUE(request.ParseFromString(request_bytes));
+        feedwire::UploadActionsResponse response_message;
+        response_message.mutable_consistency_token()->set_token(
+            consistency_token);
+        InjectApiResponse<UploadActionsDiscoverApi>(response_message);
+      }
     }
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+    if (!injected_responses.empty()) {
+      RawResponse response = injected_responses[0];
+      injected_responses.erase(injected_responses.begin());
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+      return;
+    }
+    ASSERT_TRUE(false)
+        << "No API response injected, and no default is available:" << api_path;
   }
+
   void CancelRequests() override { NOTIMPLEMENTED(); }
 
-  void InjectRealResponse() {
+  void InjectRealFeedQueryResponse() {
     base::FilePath response_file_path;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &response_file_path));
     response_file_path = response_file_path.AppendASCII(
@@ -379,25 +395,70 @@ class TestFeedNetwork : public FeedNetwork {
     injected_response_ = response;
   }
 
+  template <typename API>
+  void InjectApiRawResponse(RawResponse result) {
+    injected_api_responses_[API::RequestPath().as_string()].push_back(result);
+  }
+
+  template <typename API>
+  void InjectApiResponse(const typename API::Response& response_message) {
+    RawResponse response;
+    response.response_info.status_code = 200;
+    response.response_bytes = response_message.SerializeAsString();
+    response.response_info.response_body_bytes = response.response_bytes.size();
+    InjectApiRawResponse<API>(std::move(response));
+  }
+
+  void InjectEmptyActionRequestResult() {
+    InjectApiRawResponse<UploadActionsDiscoverApi>({});
+  }
+
+  template <typename API>
+  base::Optional<typename API::Request> GetApiRequestSent() {
+    base::Optional<typename API::Request> result;
+    auto iter = api_requests_sent_.find(API::RequestPath().as_string());
+    if (iter != api_requests_sent_.end()) {
+      typename API::Request message;
+      if (!iter->second.empty()) {
+        if (!message.ParseFromString(iter->second)) {
+          LOG(ERROR) << "Failed to parse API request.";
+          return base::nullopt;
+        }
+      }
+      result = message;
+    }
+    return result;
+  }
+
+  base::Optional<feedwire::UploadActionsRequest> GetActionRequestSent() {
+    return GetApiRequestSent<UploadActionsDiscoverApi>();
+  }
+
+  template <typename API>
+  int GetApiRequestCount() const {
+    auto iter = api_request_count_.find(API::RequestPath().as_string());
+    return iter == api_request_count_.end() ? 0 : iter->second;
+  }
+  int GetActionRequestCount() const {
+    return GetApiRequestCount<UploadActionsDiscoverApi>();
+  }
+  void ClearTestData() {
+    injected_api_responses_.clear();
+    api_requests_sent_.clear();
+    api_request_count_.clear();
+    injected_response_.reset();
+  }
+
   base::Optional<feedwire::Request> query_request_sent;
   int send_query_call_count = 0;
-
-  void InjectActionRequestResult(ActionRequestResult result) {
-    injected_action_result = std::move(result);
-  }
-  void InjectEmptyActionRequestResult() {
-    ActionRequestResult result;
-    result.response_body = nullptr;
-    InjectActionRequestResult(std::move(result));
-  }
-  base::Optional<feedwire::UploadActionsRequest> action_request_sent;
-  int action_request_call_count = 0;
   std::string consistency_token;
   bool forced_signed_out_request = false;
 
  private:
+  std::map<std::string, std::vector<RawResponse>> injected_api_responses_;
+  std::map<std::string, std::string> api_requests_sent_;
+  std::map<std::string, int> api_request_count_;
   base::Optional<feedwire::Response> injected_response_;
-  base::Optional<ActionRequestResult> injected_action_result;
 };
 
 // Forwards to |FeedStream::WireResponseTranslator| unless a response is
@@ -1710,7 +1771,7 @@ TEST_F(FeedStreamTest, LoadMoreBeforeLoad) {
 
 TEST_F(FeedStreamTest, ReadNetworkResponse) {
   base::HistogramTester histograms;
-  network_.InjectRealResponse();
+  network_.InjectRealFeedQueryResponse();
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -1831,7 +1892,7 @@ TEST_F(FeedStreamTest, SignOutWhileUploadActionDoesNotUpload) {
 
   EXPECT_EQ(UploadActionsStatus::kAbortUploadForSignedOutUser,
             metrics_reporter_->upload_action_status);
-  EXPECT_EQ(0, network_.action_request_call_count);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
 }
 
 TEST_F(FeedStreamTest, StorePendingActionAndUploadNow) {
@@ -1847,7 +1908,7 @@ TEST_F(FeedStreamTest, StorePendingActionAndUploadNow) {
   WaitForIdleTaskQueue();
 
   // Verify the action was uploaded.
-  EXPECT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(1, network_.GetActionRequestCount());
   std::vector<feedstore::StoredAction> result =
       ReadStoredActions(stream_->GetStore());
   ASSERT_EQ(0ul, result.size());
@@ -1859,14 +1920,14 @@ TEST_F(FeedStreamTest, ProcessViewActionResultsInDelayedUpload) {
   stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString());
   WaitForIdleTaskQueue();
   // Verify it's not uploaded immediately.
-  ASSERT_EQ(0, network_.action_request_call_count);
+  ASSERT_EQ(0, network_.GetActionRequestCount());
 
   // Trigger a network refresh.
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   // Verify the action was uploaded.
-  EXPECT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(1, network_.GetActionRequestCount());
 }
 
 TEST_F(FeedStreamTest, ActionsUploadWithoutConditionsWhenFeatureDisabled) {
@@ -1882,8 +1943,8 @@ TEST_F(FeedStreamTest, ActionsUploadWithoutConditionsWhenFeatureDisabled) {
   WaitForIdleTaskQueue();
 
   // Verify the actions were uploaded.
-  ASSERT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(2, network_.action_request_sent->feed_actions_size());
+  ASSERT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(2, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
@@ -1916,7 +1977,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
   // Verify that no upload is done because the conditions aren't reached.
-  EXPECT_EQ(0, network_.action_request_call_count);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
 
   // Reach conditions.
   stream_->ReportSliceViewed(
@@ -1935,8 +1996,8 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
   // Verify that the ThereAndBackAgain action was uploaded but not the view
   // action.
-  ASSERT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  ASSERT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
@@ -1964,8 +2025,8 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
   WaitForIdleTaskQueue();
 
   // Verify that the ThereAndBackAgain action was uploaded.
-  ASSERT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  ASSERT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
@@ -1987,8 +2048,8 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
   WaitForIdleTaskQueue();
 
   // Verify that the ThereAndBackAgain action was uploaded.
-  ASSERT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  ASSERT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
@@ -2012,8 +2073,8 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   WaitForIdleTaskQueue();
 
   // Verify the ThereAndBackAgain action and the view action were uploaded.
-  ASSERT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(2, network_.action_request_sent->feed_actions_size());
+  ASSERT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(2, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
@@ -2118,14 +2179,14 @@ TEST_F(FeedStreamTest, LoadStreamFromNetworkUploadsActions) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 
   // Uploaded action should have been erased from store.
   stream_->UploadAction(MakeFeedAction(100ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(2, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(2, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamTest, UploadedActionsHaveSequentialNumbers) {
@@ -2134,14 +2195,14 @@ TEST_F(FeedStreamTest, UploadedActionsHaveSequentialNumbers) {
   stream_->UploadAction(MakeFeedAction(2ul), false, base::DoNothing());
   stream_->UploadAction(MakeFeedAction(3ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
-  ASSERT_EQ(1, network_.action_request_call_count);
-  feedwire::UploadActionsRequest request1 = *network_.action_request_sent;
+  ASSERT_EQ(1, network_.GetActionRequestCount());
+  feedwire::UploadActionsRequest request1 = *network_.GetActionRequestSent();
 
   // Send another action in a new request.
   stream_->UploadAction(MakeFeedAction(4ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
-  ASSERT_EQ(2, network_.action_request_call_count);
-  feedwire::UploadActionsRequest request2 = *network_.action_request_sent;
+  ASSERT_EQ(2, network_.GetActionRequestCount());
+  feedwire::UploadActionsRequest request2 = *network_.GetActionRequestSent();
 
   // Verify that sent actions have sequential numbers.
   ASSERT_EQ(3, request1.feed_actions_size());
@@ -2166,16 +2227,16 @@ TEST_F(FeedStreamTest, LoadMoreUploadsActions) {
   stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
   EXPECT_EQ("token-12", stream_->GetMetadata()->GetConsistencyToken());
 
   // Uploaded action should have been erased from the store.
-  network_.action_request_sent.reset();
+  network_.ClearTestData();
   stream_->UploadAction(MakeFeedAction(100ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
   EXPECT_EQ(100ul,
-            network_.action_request_sent->feed_actions(0).content_id().id());
+            network_.GetActionRequestSent()->feed_actions(0).content_id().id());
 }
 
 TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
@@ -2240,7 +2301,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   WaitForIdleTaskQueue();
 
   // Verify that there were no uploads.
-  EXPECT_EQ(0, network_.action_request_call_count);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
 
   // Verify that the notice card fulfillment histogram isn't recorded for load
   // more.
@@ -2252,9 +2313,9 @@ TEST_F(FeedStreamTest, BackgroundingAppUploadsActions) {
   stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
   EXPECT_EQ(1ul,
-            network_.action_request_sent->feed_actions(0).content_id().id());
+            network_.GetActionRequestSent()->feed_actions(0).content_id().id());
 }
 
 TEST_F(FeedStreamTest, BackgroundingAppDoesNotUploadActions) {
@@ -2262,22 +2323,21 @@ TEST_F(FeedStreamTest, BackgroundingAppDoesNotUploadActions) {
   config.upload_actions_on_enter_background = false;
   SetFeedConfigForTesting(config);
 
-  network_.action_request_call_count = 0;
   stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
-  EXPECT_EQ(0, network_.action_request_call_count);
+  EXPECT_EQ(0, network_.GetActionRequestCount());
 }
 
 TEST_F(FeedStreamTest, UploadedActionsAreNotSentAgain) {
   stream_->UploadAction(MakeFeedAction(1ul), false, base::DoNothing());
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
-  ASSERT_EQ(1, network_.action_request_call_count);
+  ASSERT_EQ(1, network_.GetActionRequestCount());
 
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
-  EXPECT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(1, network_.GetActionRequestCount());
 }
 
 TEST_F(FeedStreamTest, UploadActionsOneBatch) {
@@ -2285,13 +2345,13 @@ TEST_F(FeedStreamTest, UploadActionsOneBatch) {
       {MakeFeedAction(97ul), MakeFeedAction(98ul), MakeFeedAction(99ul)});
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(3, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(3, network_.GetActionRequestSent()->feed_actions_size());
 
   stream_->UploadAction(MakeFeedAction(99ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(2, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(2, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamTest, UploadActionsMultipleBatches) {
@@ -2308,12 +2368,12 @@ TEST_F(FeedStreamTest, UploadActionsMultipleBatches) {
   });
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ(3, network_.action_request_call_count);
+  EXPECT_EQ(3, network_.GetActionRequestCount());
 
   stream_->UploadAction(MakeFeedAction(99ul), true, base::DoNothing());
   WaitForIdleTaskQueue();
-  EXPECT_EQ(4, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(4, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
 }
 
 TEST_F(FeedStreamTest, UploadActionsSkipsStaleActionsByTimestamp) {
@@ -2327,10 +2387,10 @@ TEST_F(FeedStreamTest, UploadActionsSkipsStaleActionsByTimestamp) {
   WaitForIdleTaskQueue();
 
   // Just one action should have been uploaded.
-  EXPECT_EQ(1, network_.action_request_call_count);
-  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(1, network_.GetActionRequestCount());
+  EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
   EXPECT_EQ(3ul,
-            network_.action_request_sent->feed_actions(0).content_id().id());
+            network_.GetActionRequestSent()->feed_actions(0).content_id().id());
 
   ASSERT_TRUE(cr.GetResult());
   EXPECT_EQ(1ul, cr.GetResult()->upload_attempt_count);
@@ -2351,8 +2411,8 @@ TEST_F(FeedStreamTest, UploadActionsErasesStaleActionsByAttempts) {
   WaitForIdleTaskQueue();
 
   // Four requests, three pending actions in the last request.
-  EXPECT_EQ(4, network_.action_request_call_count);
-  EXPECT_EQ(3, network_.action_request_sent->feed_actions_size());
+  EXPECT_EQ(4, network_.GetActionRequestCount());
+  EXPECT_EQ(3, network_.GetActionRequestSent()->feed_actions_size());
 
   // Action 0 should have been erased.
   ASSERT_TRUE(cr.GetResult());

@@ -9,10 +9,13 @@
 
 namespace feed {
 
+// One value for each network API method used by the feed.
 enum class NetworkRequestType : int {
   kFeedQuery = 0,
   kUploadActions = 1,
   kNextPage = 2,
+  kListFollowedWebFeeds = 3,
+  kUnfollowWebFeed = 4,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.

@@ -142,10 +142,10 @@ void FeedV2InternalsPageHandler::OverrideFeedHost(const GURL& host) {
       feed::prefs::kHostOverrideHost,
       host.is_valid() ? host.spec() : std::string());
 }
-void FeedV2InternalsPageHandler::OverrideActionUploadEndpoint(
+void FeedV2InternalsPageHandler::OverrideDiscoverApiEndpoint(
     const GURL& endpoint_url) {
   return pref_service_->SetString(
-      feed::prefs::kActionsEndpointOverride,
+      feed::prefs::kDiscoverAPIEndpointOverride,
       endpoint_url.is_valid() ? endpoint_url.spec() : std::string());
 }
 

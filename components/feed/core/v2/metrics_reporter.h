@@ -13,8 +13,9 @@
 #include "base/time/time.h"
 #include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/types.h"
 
+class PrefService;
 namespace feed {
 
 // Reports UMA metrics for feed.

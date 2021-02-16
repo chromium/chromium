@@ -123,10 +123,11 @@ interface PageHandler {
   // This allows for testing the Feed against a development server.
   OverrideFeedHost(url.mojom.Url host);
 
-  // Overrides the URL used to upload actions.
+  // Overrides the scheme, host, and port used to make Discover API requests.
+  // Other URL components, like the path, are ignored.
   // Empty to clear override.
   // This allows for testing the Feed against a development server.
-  OverrideActionUploadEndpoint(url.mojom.Url endpoint_url);
+  OverrideDiscoverApiEndpoint(url.mojom.Url endpoint_url);
 
   // Overrides the feed stream data with the payload inside a feedui::Slice for
   // testing purpose. See go/feed-stream-data-testing for more details.

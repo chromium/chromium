@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -428,6 +429,16 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
     case NetworkRequestType::kNextPage:
       base::UmaHistogramSparse(
           "ContentSuggestions.Feed.Network.ResponseStatus.NextPage",
+          http_status_code);
+      return;
+    case NetworkRequestType::kListFollowedWebFeeds:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.ListFollowedWebFeeds",
+          http_status_code);
+      return;
+    case NetworkRequestType::kUnfollowWebFeed:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.UnfollowWebFeed",
           http_status_code);
       return;
   }

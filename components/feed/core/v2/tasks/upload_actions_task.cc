@@ -257,7 +257,7 @@ void UploadActionsTask::OnUpdateActionsFinished(
   FeedNetwork* network = stream_->GetNetwork();
   DCHECK(network);
 
-  network->SendActionRequest(
+  network->SendApiRequest<UploadActionsDiscoverApi>(
       *request,
       base::BindOnce(&UploadActionsTask::OnUploadFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(batch)));
@@ -265,9 +265,8 @@ void UploadActionsTask::OnUpdateActionsFinished(
 
 void UploadActionsTask::OnUploadFinished(
     std::unique_ptr<UploadActionsTask::Batch> batch,
-    FeedNetwork::ActionRequestResult result) {
+    FeedNetwork::ApiResult<feedwire::UploadActionsResponse> result) {
   last_network_response_info_ = result.response_info;
-
   if (!result.response_body)
     return BatchComplete(UploadActionsBatchStatus::kFailedToUpload);
 

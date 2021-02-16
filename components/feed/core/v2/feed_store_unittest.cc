@@ -102,7 +102,7 @@ class FeedStoreTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FeedStore> store_;
   std::map<std::string, feedstore::Record> db_entries_;
   leveldb_proto::test::FakeDB<feedstore::Record>* fake_db_;

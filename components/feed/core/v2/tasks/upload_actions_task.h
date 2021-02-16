@@ -87,8 +87,9 @@ class UploadActionsTask : public offline_pages::Task {
   void UploadPendingActions();
   void UpdateAndUploadNextBatch();
   void OnUpdateActionsFinished(std::unique_ptr<Batch> batch, bool update_ok);
-  void OnUploadFinished(std::unique_ptr<Batch> batch,
-                        FeedNetwork::ActionRequestResult result);
+  void OnUploadFinished(
+      std::unique_ptr<Batch> batch,
+      FeedNetwork::ApiResult<feedwire::UploadActionsResponse> result);
   void OnUploadedActionsRemoved(bool remove_ok);
   void UpdateTokenAndFinish();
   void BatchComplete(UploadActionsBatchStatus status);

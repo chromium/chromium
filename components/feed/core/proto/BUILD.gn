@@ -47,6 +47,7 @@ proto_library("proto_v2") {
     "v2/wire/there_and_back_again_data.proto",
     "v2/wire/token.proto",
     "v2/wire/version.proto",
+    "v2/wire/web_feeds.proto",
     "v2/xsurface.proto",
   ]
 }
