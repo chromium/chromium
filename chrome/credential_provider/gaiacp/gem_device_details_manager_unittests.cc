@@ -46,17 +46,17 @@ GemDeviceDetailsExtensionTest::GemDeviceDetailsExtensionTest() {
 }
 
 TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
-  const base::string16 device_resource_id(std::get<0>(GetParam()));
+  const std::wstring device_resource_id(std::get<0>(GetParam()));
   bool has_valid_sid = std::get<1>(GetParam());
-  const base::string16 dm_token(std::get<2>(GetParam()));
+  const std::wstring dm_token(std::get<2>(GetParam()));
 
-  base::string16 user_sid = L"invalid-user-sid";
+  std::wstring user_sid = L"invalid-user-sid";
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
     CComBSTR sid_str;
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         kDefaultUsername, L"password", L"Full Name", L"comment",
-                        base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                        base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
                         &sid_str));
     user_sid = OLE2W(sid_str);
   }

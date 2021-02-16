@@ -41,7 +41,7 @@ namespace {
 HRESULT GetDomainControllerServerForDomain(const wchar_t* domain,
                                            LPBYTE* server) {
   DCHECK(domain);
-  base::string16 local_domain = OSUserManager::GetLocalDomain();
+  std::wstring local_domain = OSUserManager::GetLocalDomain();
   // If the domain is the local domain, then there is no domain controller.
   if (wcsicmp(local_domain.c_str(), domain) == 0) {
     return S_OK;
@@ -78,14 +78,14 @@ bool OSUserManager::IsDeviceDomainJoined() {
 }
 
 // static
-base::string16 OSUserManager::GetLocalDomain() {
+std::wstring OSUserManager::GetLocalDomain() {
   // If the domain is the current computer, then there is no domain controller.
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1];
   DWORD length = base::size(computer_name);
   if (!::GetComputerNameW(computer_name, &length))
-    return base::string16();
+    return std::wstring();
 
-  return base::string16(computer_name, length);
+  return std::wstring(computer_name, length);
 }
 
 OSUserManager::~OSUserManager() {}
@@ -204,7 +204,7 @@ HRESULT OSUserManager::GenerateRandomPassword(wchar_t* password, int length) {
 
 HRESULT OSUserManager::GetUserFullname(const wchar_t* domain,
                                        const wchar_t* username,
-                                       base::string16* fullname) {
+                                       std::wstring* fullname) {
   DCHECK(fullname);
   LPBYTE domain_server_buffer = nullptr;
   HRESULT hr =
@@ -240,7 +240,7 @@ HRESULT OSUserManager::AddUser(const wchar_t* username,
                                DWORD* error) {
   DCHECK(sid);
 
-  base::string16 local_users_group_name;
+  std::wstring local_users_group_name;
   // If adding to the local users group, make sure we can get the localized
   // name for the group before proceeding.
   if (add_to_users_group) {
@@ -377,7 +377,7 @@ HRESULT OSUserManager::ChangeUserPassword(const wchar_t* domain,
     flags_changed = true;
   }
 
-  base::string16 password_domain = base::StringPrintf(L"%ls", domain);
+  std::wstring password_domain = base::StringPrintf(L"%ls", domain);
 
   NET_API_STATUS changepassword_nsts = ::NetUserChangePassword(
       password_domain.c_str(), username, old_password, new_password);
@@ -511,7 +511,7 @@ HRESULT OSUserManager::CreateLogonToken(const wchar_t* domain,
 
 HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
                                   const wchar_t* username,
-                                  base::string16* sid_string) {
+                                  std::wstring* sid_string) {
   DCHECK(sid_string);
   sid_string->clear();
 
@@ -544,8 +544,7 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
   wchar_t user_domain_buffer[kWindowsDomainBufferLength];
   DWORD domain_length = base::size(user_domain_buffer);
   SID_NAME_USE use;
-  base::string16 username_with_domain =
-      base::string16(domain) + L"\\" + username;
+  std::wstring username_with_domain = std::wstring(domain) + L"\\" + username;
 
   if (!::LookupAccountName(nullptr, username_with_domain.c_str(), sid_buffer,
                            &sid_length, user_domain_buffer, &domain_length,
@@ -605,7 +604,7 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
   return hr;
 }
 
-bool OSUserManager::IsUserDomainJoined(const base::string16& sid) {
+bool OSUserManager::IsUserDomainJoined(const std::wstring& sid) {
   wchar_t username[kWindowsUsernameBufferLength];
   wchar_t domain[kWindowsDomainBufferLength];
 
@@ -630,7 +629,7 @@ HRESULT OSUserManager::RemoveUser(const wchar_t* username,
   base::win::ScopedHandle token;
   wchar_t profiledir[MAX_PATH + 1];
 
-  base::string16 local_domain = OSUserManager::GetLocalDomain();
+  std::wstring local_domain = OSUserManager::GetLocalDomain();
 
   // Get the user's profile directory.  Try a batch logon first, and if that
   // fails then try an interactive logon.

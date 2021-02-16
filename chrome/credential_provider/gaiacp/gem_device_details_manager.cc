@@ -155,7 +155,7 @@ bool GemDeviceDetailsManager::UploadDeviceDetailsFromEsaFeatureEnabled() const {
 // entry in GEM database.
 HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
     const extension::UserDeviceContext& context) {
-  base::string16 obfuscated_user_id;
+  std::wstring obfuscated_user_id;
   HRESULT status = GetIdFromSid(context.user_sid.c_str(), &obfuscated_user_id);
   if (FAILED(status)) {
     LOGFN(ERROR) << "Could not get user id from sid " << context.user_sid;
@@ -174,9 +174,9 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
 // entry in GEM database.
 HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
     const std::string& access_token,
-    const base::string16& sid,
-    const base::string16& username,
-    const base::string16& domain) {
+    const std::wstring& sid,
+    const std::wstring& username,
+    const std::wstring& domain) {
   return UploadDeviceDetailsInternal(access_token,
                                      /* obfuscated_user_id= */ L"",
                                      /* dm_token= */ L"", sid,
@@ -186,14 +186,14 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
 
 HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     const std::string access_token,
-    const base::string16 obfuscated_user_id,
-    const base::string16 dm_token,
-    const base::string16 sid,
-    const base::string16 device_resource_id,
-    const base::string16 username,
-    const base::string16 domain) {
-  base::string16 serial_number = GetSerialNumber();
-  base::string16 machine_guid;
+    const std::wstring obfuscated_user_id,
+    const std::wstring dm_token,
+    const std::wstring sid,
+    const std::wstring device_resource_id,
+    const std::wstring username,
+    const std::wstring domain) {
+  std::wstring serial_number = GetSerialNumber();
+  std::wstring machine_guid;
   HRESULT hr = GetMachineGuid(&machine_guid);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "Failed fetching machine guid. hr=" << putHR(hr);
@@ -207,7 +207,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
 
   // Extract built-in administrator and administrator group name
   // in device locale.
-  base::string16 admin_group_name = L"";
+  std::wstring admin_group_name = L"";
   hr = LookupLocalizedNameForWellKnownSid(WinBuiltinAdministratorsSid,
                                           &admin_group_name);
   if (FAILED(hr)) {
@@ -215,7 +215,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     hr = S_OK;
   }
 
-  base::string16 built_in_admin_name = L"";
+  std::wstring built_in_admin_name = L"";
   hr = GetLocalizedNameBuiltinAdministratorAccount(&built_in_admin_name);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "GetLocalizedNameBuiltinAdministratorAccount  hr="
@@ -227,7 +227,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
   for (const std::string& mac_address : mac_addresses)
     mac_address_value_list.Append(base::Value(mac_address));
 
-  base::string16 dm_token_value = dm_token;
+  std::wstring dm_token_value = dm_token;
   if (dm_token_value.empty()) {
     hr = GetGCPWDmToken(sid, &dm_token_value);
     if (FAILED(hr)) {
@@ -239,22 +239,22 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
   request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
   request_dict_->SetStringKey(
       kUploadDeviceDetailsRequestSerialNumberParameterName,
-      base::UTF16ToUTF8(serial_number));
+      base::WideToUTF8(serial_number));
   request_dict_->SetStringKey(
       kUploadDeviceDetailsRequestMachineGuidParameterName,
-      base::UTF16ToUTF8(machine_guid));
+      base::WideToUTF8(machine_guid));
   request_dict_->SetStringKey(kUploadDeviceDetailsRequestUserSidParameterName,
-                              base::UTF16ToUTF8(sid));
+                              base::WideToUTF8(sid));
 
   if (!username.empty()) {
     request_dict_->SetStringKey(
         kUploadDeviceDetailsRequestUsernameParameterName,
-        base::UTF16ToUTF8(username));
+        base::WideToUTF8(username));
   }
 
   if (!domain.empty()) {
     request_dict_->SetStringKey(kUploadDeviceDetailsRequestDomainParameterName,
-                                base::UTF16ToUTF8(domain));
+                                base::WideToUTF8(domain));
   }
 
   request_dict_->SetBoolKey(kIsAdJoinedUserParameterName,
@@ -263,21 +263,23 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
                         std::move(mac_address_value_list));
   request_dict_->SetStringKey(kOsVersion, version);
   request_dict_->SetStringKey(kBuiltInAdminNameParameterName,
-                              built_in_admin_name);
-  request_dict_->SetStringKey(kAdminGroupNameParameterName, admin_group_name);
-  request_dict_->SetStringKey(kDmToken, base::UTF16ToUTF8(dm_token_value));
+                              base::WideToUTF8(built_in_admin_name));
+  request_dict_->SetStringKey(kAdminGroupNameParameterName,
+                              base::WideToUTF8(admin_group_name));
+  request_dict_->SetStringKey(kDmToken, base::WideToUTF8(dm_token_value));
 
   if (!obfuscated_user_id.empty()) {
-    request_dict_->SetStringKey(kObfuscatedGaiaId, obfuscated_user_id);
+    request_dict_->SetStringKey(kObfuscatedGaiaId,
+                                base::WideToUTF8(obfuscated_user_id));
   }
 
-  base::string16 known_resource_id = device_resource_id.empty()
-                                         ? GetUserDeviceResourceId(sid)
-                                         : device_resource_id;
+  std::wstring known_resource_id = device_resource_id.empty()
+                                       ? GetUserDeviceResourceId(sid)
+                                       : device_resource_id;
   if (!known_resource_id.empty()) {
     request_dict_->SetStringKey(
         kUploadDeviceDetailsRequestDeviceResourceIdParameterName,
-        base::UTF16ToUTF8(known_resource_id));
+        base::WideToUTF8(known_resource_id));
   }
 
   base::Optional<base::Value> request_result;
@@ -297,7 +299,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
       kUploadDeviceDetailsResponseDeviceResourceIdParameterName);
   if (resource_id) {
     hr = SetUserProperty(sid, kRegUserDeviceResourceId,
-                         base::UTF8ToUTF16(*resource_id));
+                         base::UTF8ToWide(*resource_id));
   } else {
     LOGFN(ERROR) << "Server response does not contain "
                  << kUploadDeviceDetailsResponseDeviceResourceIdParameterName;

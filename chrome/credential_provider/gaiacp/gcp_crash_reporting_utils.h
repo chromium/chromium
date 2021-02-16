@@ -5,8 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_CRASH_REPORTING_UTILS_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_CRASH_REPORTING_UTILS_H_
 
-#include "base/strings/string16.h"
-
 namespace base {
 class CommandLine;
 class FilePath;

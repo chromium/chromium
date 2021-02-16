@@ -5,7 +5,8 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_OS_USER_MANAGER_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_OS_USER_MANAGER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 
@@ -69,7 +70,7 @@ class [[clang::lto_visibility_public]] OSUserManager {
                              PSID* sid);
   // Gets the SID in string format of the given OS user.
   HRESULT GetUserSID(const wchar_t* domain, const wchar_t* username,
-                     base::string16* sid_string);
+                     std::wstring* sid_string);
 
   // Finds a user created from a gaia account by its SID.  Returns S_OK if a
   // user with the given SID exists, HRESULT_FROM_WIN32(ERROR_NONE_MAPPED)
@@ -82,14 +83,14 @@ class [[clang::lto_visibility_public]] OSUserManager {
                                 DWORD domain_size);
 
   // Verify if a user with provided sid is domain joined.
-  virtual bool IsUserDomainJoined(const base::string16& sid);
+  virtual bool IsUserDomainJoined(const std::wstring& sid);
 
   // Removes the user from the machine.
   virtual HRESULT RemoveUser(const wchar_t* username, const wchar_t* password);
 
   // Gets the full name of the user from their user info.
   virtual HRESULT GetUserFullname(
-      const wchar_t* domain, const wchar_t* username, base::string16* fullname);
+      const wchar_t* domain, const wchar_t* username, std::wstring* fullname);
 
   // Sets restrictive password change policies for the end user account.
   virtual HRESULT SetDefaultPasswordChangePolicies(const wchar_t* domain,
@@ -101,7 +102,7 @@ class [[clang::lto_visibility_public]] OSUserManager {
   // user is allowed to sign on at any time of day.
   virtual HRESULT ModifyUserAccessWithLogonHours(
       const wchar_t* domain, const wchar_t* username, bool allow);
-  static base::string16 GetLocalDomain();
+  static std::wstring GetLocalDomain();
 
   // This method is called from dllmain.cc when setting fakes from one modul
   // to another.
