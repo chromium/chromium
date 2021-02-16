@@ -49,11 +49,11 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
   // If a start event name is specified, the process waits for an event from the
   // tester telling it that it can start running.
   if (command_line->HasSwitch(switches::kStartGlsEventName)) {
-    base::string16 start_event_name =
+    std::wstring start_event_name =
         command_line->GetSwitchValueNative(switches::kStartGlsEventName);
     if (!start_event_name.empty()) {
-      base::win::ScopedHandle start_event_handle(::CreateEvent(
-          nullptr, false, false, base::UTF16ToWide(start_event_name).c_str()));
+      base::win::ScopedHandle start_event_handle(
+          ::CreateEvent(nullptr, false, false, start_event_name.c_str()));
       if (start_event_handle.IsValid()) {
         base::WaitableEvent start_event(std::move(start_event_handle));
         start_event.Wait();
@@ -534,14 +534,14 @@ HRESULT GlsRunnerTestBase::GetFakeGlsCommandline(
     const std::string& gaia_id_override,
     const std::string& gaia_password,
     const std::string& full_name_override,
-    const base::string16& start_gls_event_name,
+    const std::wstring& start_gls_event_name,
     bool ignore_expected_gaia_id,
     base::CommandLine* command_line) {
   *command_line = base::GetMultiProcessTestChildBaseCommandLine();
   command_line->AppendSwitchASCII(::switches::kTestChildProcess, "gls_main");
   command_line->AppendSwitchASCII(switches::kGlsUserEmail, gls_email);
   command_line->AppendSwitchNative(switches::kDefaultExitCode,
-                                   base::NumberToString16(default_exit_code));
+                                   base::NumberToWString(default_exit_code));
 
   if (ignore_expected_gaia_id)
     command_line->AppendSwitch(switches::kIgnoreExpectedGaiaId);
@@ -581,7 +581,7 @@ HRESULT GlsRunnerTestBase::FinishLogonProcess(
 HRESULT GlsRunnerTestBase::FinishLogonProcess(
     bool expected_success,
     bool expected_credentials_change_fired,
-    const base::string16& expected_error_message) {
+    const std::wstring& expected_error_message) {
   // If no logon process was started, there is nothing to finish.
   if (!logon_process_started_successfully_)
     return S_OK;
@@ -628,7 +628,7 @@ HRESULT GlsRunnerTestBase::FinishLogonProcessWithCred(
 HRESULT GlsRunnerTestBase::FinishLogonProcessWithCred(
     bool expected_success,
     bool expected_credentials_change_fired,
-    const base::string16& expected_error_message,
+    const std::wstring& expected_error_message,
     const Microsoft::WRL::ComPtr<ICredentialProviderCredential>&
         local_testing_cred) {
   // If no logon process was started, there is nothing to finish.

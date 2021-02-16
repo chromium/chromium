@@ -11,6 +11,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -21,8 +22,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -53,19 +54,19 @@ class GcpSetupTest : public ::testing::Test {
   ~GcpSetupTest() override;
 
   const base::FilePath& module_path() const { return module_path_; }
-  const base::string16& product_version() const { return product_version_; }
+  const std::wstring& product_version() const { return product_version_; }
 
-  void CreateSentinelFileToSimulateCrash(const base::string16& product_version);
+  void CreateSentinelFileToSimulateCrash(const std::wstring& product_version);
 
-  void ExpectAllFilesToExist(bool exist, const base::string16& product_version);
-  void ExpectSentinelFileToNotExist(const base::string16& product_version);
+  void ExpectAllFilesToExist(bool exist, const std::wstring& product_version);
+  void ExpectSentinelFileToNotExist(const std::wstring& product_version);
   void ExpectCredentialProviderToBeRegistered(
       bool registered,
-      const base::string16& product_version);
+      const std::wstring& product_version);
   void ExpectRequiredRegistryEntriesToBePresent();
 
   base::FilePath installed_path_for_version(
-      const base::string16& product_version) {
+      const std::wstring& product_version) {
     return scoped_temp_prog_dir_.GetPath()
         .Append(GetInstallParentDirectoryName())
         .Append(FILE_PATH_LITERAL("Credential Provider"))
@@ -73,7 +74,7 @@ class GcpSetupTest : public ::testing::Test {
   }
 
   base::FilePath sentinel_path_for_version(
-      const base::string16& product_version) {
+      const std::wstring& product_version) {
     return scoped_temp_progdata_dir_.GetPath()
         .Append(GetInstallParentDirectoryName())
         .Append(FILE_PATH_LITERAL("Credential Provider"))
@@ -114,16 +115,16 @@ class GcpSetupTest : public ::testing::Test {
     ASSERT_EQ(ERROR_SUCCESS,
               uninstall_key.Open(HKEY_LOCAL_MACHINE,
                                  uninstall_reg_key().c_str(), KEY_ALL_ACCESS));
-    base::string16 uninstall_args;
-    base::string16 display_name;
-    base::string16 install_location;
-    base::string16 display_icon;
-    base::string16 install_date;
+    std::wstring uninstall_args;
+    std::wstring display_name;
+    std::wstring install_location;
+    std::wstring display_icon;
+    std::wstring install_date;
     DWORD no_modify;
     DWORD no_repair;
-    base::string16 publisher_name;
-    base::string16 version_str;
-    base::string16 display_version;
+    std::wstring publisher_name;
+    std::wstring version_str;
+    std::wstring display_version;
     DWORD version_major;
     DWORD version_minor;
     ASSERT_EQ(ERROR_SUCCESS,
@@ -167,8 +168,8 @@ class GcpSetupTest : public ::testing::Test {
     ASSERT_EQ(no_repair, (DWORD)1);
 
     base::Version version(CHROME_VERSION_STRING);
-    ASSERT_EQ(version_str, base::ASCIIToUTF16(version.GetString()));
-    ASSERT_EQ(display_version, base::ASCIIToUTF16(version.GetString()));
+    ASSERT_EQ(version_str, base::ASCIIToWide(version.GetString()));
+    ASSERT_EQ(display_version, base::ASCIIToWide(version.GetString()));
 
     const std::vector<uint32_t>& version_components = version.components();
     ASSERT_EQ(version_major, static_cast<DWORD>(version_components[2]));
@@ -178,7 +179,7 @@ class GcpSetupTest : public ::testing::Test {
   void SetUp() override;
 
  private:
-  base::string16 GetCurrentDateForTesting() {
+  std::wstring GetCurrentDateForTesting() {
     static const wchar_t kDateFormat[] = L"yyyyMMdd";
     wchar_t date_str[base::size(kDateFormat)] = {0};
     int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat,
@@ -189,11 +190,11 @@ class GcpSetupTest : public ::testing::Test {
       return L"";
     }
 
-    return base::string16(date_str, len);
+    return std::wstring(date_str, len);
   }
 
   void GetModulePathAndProductVersion(base::FilePath* module_path,
-                                      base::string16* product_version);
+                                      std::wstring* product_version);
 
   base::win::ScopedCOMInitializer com_initializer_{
       base::win::ScopedCOMInitializer::kMTA};
@@ -207,7 +208,7 @@ class GcpSetupTest : public ::testing::Test {
   std::unique_ptr<base::ScopedPathOverride> programdata_override_;
   std::unique_ptr<base::ScopedPathOverride> dll_path_override_;
   base::FilePath module_path_;
-  base::string16 product_version_;
+  std::wstring product_version_;
   FakeGCPWFiles fake_gcpw_files_;
   FakeOSUserManager fake_os_user_manager_;
   FakeOSProcessManager fake_os_process_manager_;
@@ -222,7 +223,7 @@ GcpSetupTest::~GcpSetupTest() {
 
 void GcpSetupTest::GetModulePathAndProductVersion(
     base::FilePath* module_path,
-    base::string16* product_version) {
+    std::wstring* product_version) {
   // Pass null module handle to get path for the executable file of the
   // current process.
   wchar_t module[MAX_PATH];
@@ -232,13 +233,13 @@ void GcpSetupTest::GetModulePathAndProductVersion(
   *module_path = base::FilePath(module);
   ASSERT_FALSE(module_path->empty());
 
-  *product_version =
-      FileVersionInfo::CreateFileVersionInfo(*module_path)->product_version();
+  *product_version = base::AsWString(
+      FileVersionInfo::CreateFileVersionInfo(*module_path)->product_version());
   ASSERT_FALSE(product_version->empty());
 }
 
 void GcpSetupTest::CreateSentinelFileToSimulateCrash(
-    const base::string16& product_version) {
+    const std::wstring& product_version) {
   base::FilePath sentinel_file = sentinel_path_for_version(product_version);
 
   // Create the destination folder
@@ -250,14 +251,13 @@ void GcpSetupTest::CreateSentinelFileToSimulateCrash(
 }
 
 void GcpSetupTest::ExpectSentinelFileToNotExist(
-    const base::string16& product_version) {
+    const std::wstring& product_version) {
   base::FilePath sentinel_file = sentinel_path_for_version(product_version);
   EXPECT_EQ(false, base::PathExists(sentinel_file));
 }
 
-void GcpSetupTest::ExpectAllFilesToExist(
-    bool exist,
-    const base::string16& product_version) {
+void GcpSetupTest::ExpectAllFilesToExist(bool exist,
+                                         const std::wstring& product_version) {
   base::FilePath root = installed_path_for_version(product_version);
   EXPECT_EQ(exist, base::PathExists(root));
 
@@ -276,11 +276,11 @@ void GcpSetupTest::ExpectAllFilesToExist(
 
 void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
     bool registered,
-    const base::string16& product_version) {
+    const std::wstring& product_version) {
   auto guid_string = base::win::WStringFromGUID(CLSID_GaiaCredentialProvider);
 
   // Make sure COM object is registered.
-  base::string16 register_key_path =
+  std::wstring register_key_path =
       base::StringPrintf(L"CLSID\\%ls\\InprocServer32", guid_string.c_str());
   base::win::RegKey clsid_key(HKEY_CLASSES_ROOT, register_key_path.c_str(),
                               KEY_READ);
@@ -289,12 +289,12 @@ void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
   if (registered) {
     base::FilePath path = installed_path_for_version(product_version)
                               .Append(FILE_PATH_LITERAL("Gaia1_0.dll"));
-    base::string16 value;
+    std::wstring value;
     EXPECT_EQ(ERROR_SUCCESS, clsid_key.ReadValue(L"", &value));
     EXPECT_EQ(path.value(), value);
   }
 
-  base::string16 cp_key_path = base::StringPrintf(
+  std::wstring cp_key_path = base::StringPrintf(
       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
       L"Authentication\\Credential Providers\\%ls",
       guid_string.c_str());
@@ -314,7 +314,7 @@ void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
     base::FilePath path =
         installed_path_for_version(product_version)
             .Append(FILE_PATH_LITERAL("gcp_eventlog_provider.dll"));
-    base::string16 value;
+    std::wstring value;
     EXPECT_EQ(ERROR_SUCCESS, el_key.ReadValue(L"EventMessageFile", &value));
     EXPECT_EQ(path.value(), value);
   }
@@ -453,18 +453,18 @@ TEST_P(GcpInstallOverOldInstallTest, DoInstallOverOldInstall) {
   SetInstallerConfig(GetParam());
 
   // Install using some old version.
-  const base::string16 old_version(L"1.0.0.0");
+  const std::wstring old_version(L"1.0.0.0");
   ASSERT_EQ(S_OK, DoInstall(module_path(), old_version, fakes_for_testing()));
   ExpectAllFilesToExist(true, old_version);
   CreateSentinelFileToSimulateCrash(old_version);
 
   FakeOSUserManager::UserInfo old_user_info =
       fake_os_user_manager()->GetUserInfo(kDefaultGaiaAccountName);
-  base::string16 old_password =
+  std::wstring old_password =
       fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaPassword];
   EXPECT_FALSE(old_password.empty());
 
-  base::string16 old_username =
+  std::wstring old_username =
       fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaUsername];
   EXPECT_EQ(old_username, kDefaultGaiaAccountName);
 
@@ -509,7 +509,7 @@ TEST_F(GcpSetupTest, DoInstallOverOldLockedInstall) {
   logging::ResetEventSourceForTesting();
 
   // Install using some old version.
-  const base::string16 old_version(L"1.0.0.0");
+  const std::wstring old_version(L"1.0.0.0");
   ASSERT_EQ(S_OK, DoInstall(module_path(), old_version, fakes_for_testing()));
   ExpectAllFilesToExist(true, old_version);
 
@@ -542,7 +542,7 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
   logging::ResetEventSourceForTesting();
 
   // Install using some old version.
-  const base::string16 old_version(L"1.0.0.0");
+  const std::wstring old_version(L"1.0.0.0");
   ASSERT_EQ(S_OK, DoInstall(module_path(), old_version, fakes_for_testing()));
   ExpectAllFilesToExist(true, old_version);
 
@@ -693,8 +693,8 @@ TEST_F(GcpSetupTest, ValidLsaWithNoExistingUser) {
   EXPECT_FALSE(fake_scoped_lsa_policy_factory()
                    ->private_data()[kLsaKeyGaiaPassword]
                    .empty());
-  base::string16 expected_gaia_username =
-      L"gaia" + base::NumberToString16(kInitialDuplicateUsernameIndex);
+  std::wstring expected_gaia_username =
+      L"gaia" + base::NumberToWString(kInitialDuplicateUsernameIndex);
   EXPECT_FALSE(fake_os_user_manager()
                    ->GetUserInfo(expected_gaia_username.c_str())
                    .sid.empty());
@@ -774,12 +774,12 @@ TEST_F(GcpSetupTest, WriteUninstallStringsForMSI) {
   ASSERT_EQ(S_OK, WriteUninstallRegistryValues(file_path));
 
   // Verify uninstall strings.
-  base::string16 uninstall_string;
+  std::wstring uninstall_string;
   ASSERT_EQ(ERROR_SUCCESS,
             key.ReadValue(kRegUninstallStringField, &uninstall_string));
   EXPECT_EQ(uninstall_string, file_path.value());
 
-  base::string16 uninstall_arguments;
+  std::wstring uninstall_arguments;
   ASSERT_EQ(ERROR_SUCCESS,
             key.ReadValue(kRegUninstallArgumentsField, &uninstall_arguments));
 
@@ -833,13 +833,13 @@ TEST_F(GcpSetupTest, DoInstallWritesUninstallStrings) {
                        KEY_ALL_ACCESS | KEY_WOW64_32KEY));
 
   // Verify uninstall strings.
-  base::string16 uninstall_string;
+  std::wstring uninstall_string;
   ASSERT_EQ(ERROR_SUCCESS,
             key.ReadValue(kRegUninstallStringField, &uninstall_string));
   EXPECT_EQ(uninstall_string,
             installed_path().Append(kCredentialProviderSetupExe).value());
 
-  base::string16 uninstall_arguments;
+  std::wstring uninstall_arguments;
   ASSERT_EQ(ERROR_SUCCESS,
             key.ReadValue(kRegUninstallArgumentsField, &uninstall_arguments));
 
@@ -869,9 +869,9 @@ TEST_P(GcpGaiaUserCreationTest, ExistingGaiaUserTest) {
 
   int last_user_index = std::get<0>(GetParam());
   for (int i = 0; i < last_user_index; ++i) {
-    base::string16 existing_gaia_username = kDefaultGaiaAccountName;
+    std::wstring existing_gaia_username = kDefaultGaiaAccountName;
     existing_gaia_username +=
-        base::NumberToString16(i + kInitialDuplicateUsernameIndex);
+        base::NumberToWString(i + kInitialDuplicateUsernameIndex);
     EXPECT_EQ(S_OK, fake_os_user_manager()->AddUser(
                         existing_gaia_username.c_str(), L"password",
                         L"fullname", L"comment", true, &sid, &error));
@@ -889,9 +889,9 @@ TEST_P(GcpGaiaUserCreationTest, ExistingGaiaUserTest) {
     EXPECT_FALSE(fake_scoped_lsa_policy_factory()
                      ->private_data()[kLsaKeyGaiaPassword]
                      .empty());
-    base::string16 expected_gaia_username = kDefaultGaiaAccountName;
-    expected_gaia_username += base::NumberToString16(
-        last_user_index + kInitialDuplicateUsernameIndex);
+    std::wstring expected_gaia_username = kDefaultGaiaAccountName;
+    expected_gaia_username +=
+        base::NumberToWString(last_user_index + kInitialDuplicateUsernameIndex);
     EXPECT_FALSE(fake_os_user_manager()
                      ->GetUserInfo(expected_gaia_username.c_str())
                      .sid.empty());

@@ -124,8 +124,8 @@ TEST_F(TaskManagerTest, PeriodicDelay) {
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
 
-  base::string16 fake_task_reg_name =
-      extension::GetLastSyncRegNameForTask(base::UTF8ToUTF16(fake_task_name));
+  std::wstring fake_task_reg_name =
+      extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
@@ -135,11 +135,11 @@ TEST_F(TaskManagerTest, PeriodicDelay) {
 TEST_F(TaskManagerTest, PreviouslyExecuted) {
   std::string fake_task_name = "fake_task";
 
-  base::string16 fake_task_reg_name =
-      extension::GetLastSyncRegNameForTask(base::UTF8ToUTF16(fake_task_name));
+  std::wstring fake_task_reg_name =
+      extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
 
   const base::Time sync_time = base::Time::Now();
-  const base::string16 sync_time_millis = base::NumberToString16(
+  const std::wstring sync_time_millis = base::NumberToWString(
       (sync_time.ToDeltaSinceWindowsEpoch() - base::TimeDelta::FromHours(1))
           .InMilliseconds());
 
@@ -168,18 +168,18 @@ TEST_F(TaskManagerTest, PreviouslyExecuted) {
 }
 
 TEST_F(TaskManagerTest, TaskExecuted) {
-  base::string16 serial_number = L"1234";
+  std::wstring serial_number = L"1234";
   GoogleRegistrationDataForTesting g_registration_data(serial_number);
-  base::string16 machine_guid = L"machine_guid";
+  std::wstring machine_guid = L"machine_guid";
   SetMachineGuidForTesting(machine_guid);
 
   // Create a fake user associated to a gaia id.
   CComBSTR sid1;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo@gmail.com", L"password", L"Full Name", L"comment",
-                      L"test-gaia-id", base::string16(), L"domain", &sid1));
+                      L"test-gaia-id", std::wstring(), L"domain", &sid1));
 
-  base::string16 device_resource_id1 = L"foo_resource_id";
+  std::wstring device_resource_id1 = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid1), L"device_resource_id",
                                   device_resource_id1));
 
@@ -189,7 +189,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
 
-  base::string16 dm_token1;
+  std::wstring dm_token1;
   ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid1, &dm_token1));
 
   std::string fake_task_name = "fake_task";
@@ -207,22 +207,22 @@ TEST_F(TaskManagerTest, TaskExecuted) {
                                      machine_guid, OLE2W(sid1), dm_token1};
   ASSERT_TRUE(FakeTask::user_device_context_[0] == c1);
 
-  base::string16 fake_task_reg_name =
-      extension::GetLastSyncRegNameForTask(base::UTF8ToUTF16(fake_task_name));
+  std::wstring fake_task_reg_name =
+      extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   // Create another user associated to a gaia id.
   CComBSTR sid2;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"bar@gmail.com", L"password", L"Full Name", L"comment",
-                      L"test-gaia-id2", base::string16(), L"domain", &sid2));
-  base::string16 device_resource_id2 = L"foo_resource_id";
+                      L"test-gaia-id2", std::wstring(), L"domain", &sid2));
+  std::wstring device_resource_id2 = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid2), L"device_resource_id",
                                   device_resource_id2));
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid2));
 
-  base::string16 dm_token2;
+  std::wstring dm_token2;
   ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid2, &dm_token2));
 
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
@@ -254,13 +254,13 @@ TEST_F(TaskManagerTest, TasksWithDifferentPeriods) {
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(fake_task_name), 2);
   ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(another_fake_task_name), 5);
 
-  base::string16 fake_task_reg_name =
-      extension::GetLastSyncRegNameForTask(base::UTF8ToUTF16(fake_task_name));
+  std::wstring fake_task_reg_name =
+      extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
-  base::string16 another_fake_task_reg_name =
+  std::wstring another_fake_task_reg_name =
       extension::GetLastSyncRegNameForTask(
-          base::UTF8ToUTF16(another_fake_task_name));
+          base::UTF8ToWide(another_fake_task_name));
   ASSERT_NE(GetGlobalFlagOrDefault(another_fake_task_reg_name, L""), L"");
 
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
@@ -269,18 +269,18 @@ TEST_F(TaskManagerTest, TasksWithDifferentPeriods) {
 }
 
 TEST_F(TaskManagerTest, BackOff) {
-  base::string16 serial_number = L"1234";
+  std::wstring serial_number = L"1234";
   GoogleRegistrationDataForTesting g_registration_data(serial_number);
-  base::string16 machine_guid = L"machine_guid";
+  std::wstring machine_guid = L"machine_guid";
   SetMachineGuidForTesting(machine_guid);  // IN-TEST
 
   // Create a fake user associated to a gaia id.
   CComBSTR sid1;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo@gmail.com", L"password", L"Full Name", L"comment",
-                      L"test-gaia-id", base::string16(), L"domain", &sid1));
+                      L"test-gaia-id", std::wstring(), L"domain", &sid1));
 
-  base::string16 device_resource_id1 = L"foo_resource_id";
+  std::wstring device_resource_id1 = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid1), L"device_resource_id",
                                   device_resource_id1));
 
@@ -302,8 +302,8 @@ TEST_F(TaskManagerTest, BackOff) {
   // Starts running registered tasks for all associated GCPW users.
   RunTasks();
 
-  base::string16 fake_task_reg_name =
-      extension::GetLastSyncRegNameForTask(base::UTF8ToUTF16(fake_task_name));
+  std::wstring fake_task_reg_name =
+      extension::GetLastSyncRegNameForTask(base::UTF8ToWide(fake_task_name));
 
   // Seconds 10 - 1st execution failure
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));

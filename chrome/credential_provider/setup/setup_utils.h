@@ -70,7 +70,7 @@ class StandaloneInstallerConfigurator {
   // Returns the storage used for the instance pointer.
   static StandaloneInstallerConfigurator** GetInstanceStorage();
 
-  base::string16 GetCurrentDate();
+  std::wstring GetCurrentDate();
 
   // Parse the provided installer data argument and load into
   // |installer_data_dictionary_|.

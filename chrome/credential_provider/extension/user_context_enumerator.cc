@@ -36,14 +36,14 @@ UserContextEnumerator::~UserContextEnumerator() {}
 
 HRESULT UserContextEnumerator::PerformTask(const std::string& task_name,
                                            Task& task) {
-  base::string16 serial_number = GetSerialNumber();
+  std::wstring serial_number = GetSerialNumber();
 
-  base::string16 machine_guid = L"";
+  std::wstring machine_guid = L"";
   HRESULT hr = GetMachineGuid(&machine_guid);
   if (FAILED(hr))
     LOGFN(WARNING) << "GetMachineGuid failed hr=" << putHR(hr);
 
-  std::map<base::string16, UserTokenHandleInfo> sid_to_gaia_id;
+  std::map<std::wstring, UserTokenHandleInfo> sid_to_gaia_id;
   hr = GetUserTokenHandles(&sid_to_gaia_id);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "GetUserTokenHandles failed hr=" << putHR(hr);
@@ -57,7 +57,7 @@ HRESULT UserContextEnumerator::PerformTask(const std::string& task_name,
 
   std::vector<UserDeviceContext> context_info;
   for (auto const& entry : sid_to_gaia_id) {
-    base::string16 dm_token = L"";
+    std::wstring dm_token = L"";
     hr = credential_provider::GetGCPWDmToken(entry.first, &dm_token);
     if (FAILED(hr))
       LOGFN(WARNING) << "GetGCPWDmToken failed hr=" << putHR(hr);

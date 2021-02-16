@@ -148,7 +148,7 @@ bool IsGCPWExtensionEnabled() {
   return GetGlobalFlagOrDefault(extension::kEnableGCPWExtension, 1);
 }
 
-base::string16 GetLastSyncRegNameForTask(const base::string16& task_name) {
+std::wstring GetLastSyncRegNameForTask(const std::wstring& task_name) {
   return base::ToLowerASCII(task_name) + L"_last_sync_time";
 }
 

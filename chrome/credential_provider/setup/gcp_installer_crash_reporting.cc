@@ -4,11 +4,12 @@
 
 #include "chrome/credential_provider/setup/gcp_installer_crash_reporting.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"

@@ -140,7 +140,7 @@ bool AppInventoryManager::UploadAppInventoryFromEsaFeatureEnabled() const {
 // |resource_id| for identifying the device entry in GEM database.
 HRESULT AppInventoryManager::UploadAppInventory(
     const extension::UserDeviceContext& context) {
-  base::string16 obfuscated_user_id;
+  std::wstring obfuscated_user_id;
   HRESULT status = GetIdFromSid(context.user_sid.c_str(), &obfuscated_user_id);
   if (FAILED(status)) {
     LOGFN(ERROR) << "Could not get user id from sid " << context.user_sid;
@@ -152,7 +152,7 @@ HRESULT AppInventoryManager::UploadAppInventory(
     return E_FAIL;
   }
 
-  base::string16 dm_token_value = context.dm_token;
+  std::wstring dm_token_value = context.dm_token;
   HRESULT hr;
   if (dm_token_value.empty()) {
     hr = GetGCPWDmToken(context.user_sid, &dm_token_value);
@@ -164,10 +164,11 @@ HRESULT AppInventoryManager::UploadAppInventory(
 
   request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
   request_dict_->SetStringKey(kUploadAppInventoryRequestUserSidParameterName,
-                              base::UTF16ToUTF8(context.user_sid));
-  request_dict_->SetStringKey(kDmToken, base::UTF16ToUTF8(dm_token_value));
-  request_dict_->SetStringKey(kObfuscatedGaiaId, obfuscated_user_id);
-  base::string16 known_resource_id =
+                              base::WideToUTF8(context.user_sid));
+  request_dict_->SetStringKey(kDmToken, base::WideToUTF8(dm_token_value));
+  request_dict_->SetStringKey(kObfuscatedGaiaId,
+                              base::WideToUTF8(obfuscated_user_id));
+  std::wstring known_resource_id =
       context.device_resource_id.empty()
           ? GetUserDeviceResourceId(context.user_sid)
           : context.device_resource_id;
@@ -180,7 +181,7 @@ HRESULT AppInventoryManager::UploadAppInventory(
   }
   request_dict_->SetStringKey(
       kUploadAppInventoryRequestDeviceResourceIdParameterName,
-      base::UTF16ToUTF8(known_resource_id));
+      base::WideToUTF8(known_resource_id));
 
   request_dict_->SetKey(kUploadAppInventoryRequestWin32AppsParameterName,
                         GetInstalledWin32Apps());
@@ -201,56 +202,53 @@ HRESULT AppInventoryManager::UploadAppInventory(
 }
 
 base::Value AppInventoryManager::GetInstalledWin32Apps() {
-  std::vector<base::string16> app_name_list;
-  std::vector<base::string16> app_path_list;
+  std::vector<std::wstring> app_name_list;
+  std::vector<std::wstring> app_path_list;
 
   GetChildrenAtPath(kInstalledWin32AppsRegistryPath, app_name_list);
-  for (base::string16 a : app_name_list) {
-    app_path_list.push_back(base::string16(kInstalledWin32AppsRegistryPath)
-                                .append(base::string16(kDelimiter))
+  for (std::wstring a : app_name_list) {
+    app_path_list.push_back(std::wstring(kInstalledWin32AppsRegistryPath)
+                                .append(std::wstring(kDelimiter))
                                 .append(a));
   }
   app_name_list.clear();
   GetChildrenAtPath(kInstalledWin32AppsRegistryPathWOW6432, app_name_list);
-  for (base::string16 a : app_name_list) {
-    app_path_list.push_back(
-        base::string16(kInstalledWin32AppsRegistryPathWOW6432)
-            .append(base::string16(kDelimiter))
-            .append(a));
+  for (std::wstring a : app_name_list) {
+    app_path_list.push_back(std::wstring(kInstalledWin32AppsRegistryPathWOW6432)
+                                .append(std::wstring(kDelimiter))
+                                .append(a));
   }
 
   base::Value app_info_value_list(base::Value::Type::LIST);
-  for (base::string16 regPath : app_path_list) {
+  for (std::wstring regPath : app_path_list) {
     std::unique_ptr<base::Value> request_dict_;
     request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
 
     wchar_t display_name[256];
     ULONG display_length = base::size(display_name);
     HRESULT hr =
-        GetMachineRegString(regPath, base::string16(kAppDisplayNameRegistryKey),
+        GetMachineRegString(regPath, std::wstring(kAppDisplayNameRegistryKey),
                             display_name, &display_length);
     if (hr == S_OK) {
       request_dict_->SetStringKey(kAppDisplayName,
-                                  base::UTF16ToUTF8(display_name));
+                                  base::WideToUTF8(display_name));
 
       wchar_t display_version[256];
       ULONG version_length = base::size(display_version);
       hr = GetMachineRegString(regPath,
-                               base::string16(kAppDisplayVersionRegistryKey),
+                               std::wstring(kAppDisplayVersionRegistryKey),
                                display_version, &version_length);
       if (hr == S_OK) {
         request_dict_->SetStringKey(kAppDisplayVersion,
-                                    base::UTF16ToUTF8(display_version));
+                                    base::WideToUTF8(display_version));
       }
 
       wchar_t publisher[256];
       ULONG publisher_length = base::size(publisher);
-      hr =
-          GetMachineRegString(regPath, base::string16(kAppPublisherRegistryKey),
-                              publisher, &publisher_length);
+      hr = GetMachineRegString(regPath, std::wstring(kAppPublisherRegistryKey),
+                               publisher, &publisher_length);
       if (hr == S_OK) {
-        request_dict_->SetStringKey(kAppPublisher,
-                                    base::UTF16ToUTF8(publisher));
+        request_dict_->SetStringKey(kAppPublisher, base::WideToUTF8(publisher));
       }
 
       app_info_value_list.Append(

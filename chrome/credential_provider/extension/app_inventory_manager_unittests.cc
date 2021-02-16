@@ -25,7 +25,7 @@ namespace testing {
 class AppInventoryManagerBaseTest : public GlsRunnerTestBase {
  protected:
   void SetUp() override;
-  base::string16 CreateUser();
+  std::wstring CreateUser();
 };
 
 void AppInventoryManagerBaseTest::SetUp() {
@@ -37,12 +37,12 @@ void AppInventoryManagerBaseTest::SetUp() {
   AppInventoryManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
 }
 
-base::string16 AppInventoryManagerBaseTest::CreateUser() {
+std::wstring AppInventoryManagerBaseTest::CreateUser() {
   // Create a fake user associated to a gaia id.
   CComBSTR sid_str;
   EXPECT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                      base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
                       &sid_str));
   return OLE2W(sid_str);
 }
@@ -70,10 +70,10 @@ AppInventoryManagerTest::AppInventoryManagerTest() {
 }
 
 TEST_P(AppInventoryManagerTest, uploadAppInventory) {
-  const base::string16 device_resource_id(std::get<0>(GetParam()));
+  const std::wstring device_resource_id(std::get<0>(GetParam()));
   bool has_valid_sid = std::get<1>(GetParam());
   bool has_app_data = std::get<2>(GetParam());
-  const base::string16 dm_token(std::get<3>(GetParam()));
+  const std::wstring dm_token(std::get<3>(GetParam()));
 
   const char kAppDisplayName[] = "name";
   const char kAppDisplayVersion[] = "version";
@@ -100,13 +100,13 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   const wchar_t kAppDisplayVersionRegistryKey[] = L"DisplayVersion";
   const wchar_t kAppPublisherRegistryKey[] = L"Publisher";
 
-  base::string16 user_sid = L"invalid-user-sid";
+  std::wstring user_sid = L"invalid-user-sid";
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
     CComBSTR sid_str;
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         kDefaultUsername, L"password", L"Full Name", L"comment",
-                        base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                        base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
                         &sid_str));
     user_sid = OLE2W(sid_str);
   }
@@ -114,9 +114,9 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   if (has_app_data) {
     // Set valid app data at
     // SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall.
-    base::string16 app_path_1 = base::string16(kInstalledWin32AppsRegistryPath)
-                                    .append(base::string16(kDelimiter))
-                                    .append(kApp1);
+    std::wstring app_path_1 = std::wstring(kInstalledWin32AppsRegistryPath)
+                                  .append(std::wstring(kDelimiter))
+                                  .append(kApp1);
     SetMachineRegString(app_path_1, kAppDisplayNameRegistryKey,
                         kAppDisplayName1);
     SetMachineRegString(app_path_1, kAppDisplayVersionRegistryKey,
@@ -125,9 +125,9 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
 
     // Set valid app data at
     // SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall.
-    base::string16 app_path_2 =
-        base::string16(kInstalledWin32AppsRegistryPathWOW6432)
-            .append(base::string16(kDelimiter))
+    std::wstring app_path_2 =
+        std::wstring(kInstalledWin32AppsRegistryPathWOW6432)
+            .append(std::wstring(kDelimiter))
             .append(kApp2);
     SetMachineRegString(app_path_2, kAppDisplayNameRegistryKey,
                         kAppDisplayName2);
@@ -135,9 +135,9 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
                         kAppDisplayVersion2);
 
     // Set app data without display name.
-    base::string16 app_path_3 = base::string16(kInstalledWin32AppsRegistryPath)
-                                    .append(base::string16(kDelimiter))
-                                    .append(kApp3);
+    std::wstring app_path_3 = std::wstring(kInstalledWin32AppsRegistryPath)
+                                  .append(std::wstring(kDelimiter))
+                                  .append(kApp3);
     SetMachineRegString(app_path_3, kAppDisplayVersionRegistryKey,
                         kAppDisplayVersion3);
   }
@@ -147,7 +147,8 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   ASSERT_TRUE(app_inventory_url.is_valid());
 
   base::Value expected_response_value(base::Value::Type::DICTIONARY);
-  expected_response_value.SetStringKey("deviceResourceId", device_resource_id);
+  expected_response_value.SetStringKey("deviceResourceId",
+                                       base::WideToUTF8(device_resource_id));
   std::string expected_response;
   base::JSONWriter::Write(expected_response_value, &expected_response);
 
@@ -189,20 +190,20 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
       std::unique_ptr<base::Value> request_dict_1;
       request_dict_1.reset(new base::Value(base::Value::Type::DICTIONARY));
       request_dict_1->SetStringKey(kAppDisplayName,
-                                   base::UTF16ToUTF8(kAppDisplayName1));
+                                   base::WideToUTF8(kAppDisplayName1));
       request_dict_1->SetStringKey(kAppDisplayVersion,
-                                   base::UTF16ToUTF8(kAppDisplayVersion1));
+                                   base::WideToUTF8(kAppDisplayVersion1));
       request_dict_1->SetStringKey(kAppPublisher,
-                                   base::UTF16ToUTF8(kAppPublisher1));
+                                   base::WideToUTF8(kAppPublisher1));
       app_info_value_list.Append(
           base::Value::FromUniquePtrValue(std::move(request_dict_1)));
 
       std::unique_ptr<base::Value> request_dict_2;
       request_dict_2.reset(new base::Value(base::Value::Type::DICTIONARY));
       request_dict_2->SetStringKey(kAppDisplayName,
-                                   base::UTF16ToUTF8(kAppDisplayName2));
+                                   base::WideToUTF8(kAppDisplayName2));
       request_dict_2->SetStringKey(kAppDisplayVersion,
-                                   base::UTF16ToUTF8(kAppDisplayVersion2));
+                                   base::WideToUTF8(kAppDisplayVersion2));
       app_info_value_list.Append(
           base::Value::FromUniquePtrValue(std::move(request_dict_2)));
     }
