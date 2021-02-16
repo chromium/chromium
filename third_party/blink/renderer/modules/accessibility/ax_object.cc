@@ -1324,6 +1324,8 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   if (IsScrollableContainer())
     SerializeScrollAttributes(node_data);
 
+  SerializeChooserPopupAttributes(node_data);
+
   if (GetElement()) {
     SerializeElementAttributes(node_data);
     if (accessibility_mode.has_mode(ui::AXMode::kHTML)) {
@@ -1595,6 +1597,19 @@ void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) {
 
 void AXObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   // Implemented in subclasses.
+}
+
+void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
+  AXObject* chooser_popup = ChooserPopup();
+  if (!chooser_popup)
+    return;
+
+  int32_t chooser_popup_id = chooser_popup->AXObjectID();
+  auto controls_ids = node_data->GetIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kControlsIds);
+  controls_ids.push_back(chooser_popup_id);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kControlsIds, controls_ids);
 }
 
 void AXObject::TruncateAndAddStringAttribute(

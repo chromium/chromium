@@ -1310,6 +1310,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeTableAttributes(ui::AXNodeData* node_data);
   void SerializeListAttributes(ui::AXNodeData* node_data);
   void SerializeScrollAttributes(ui::AXNodeData* node_data);
+  void SerializeChooserPopupAttributes(ui::AXNodeData* node_data);
   void SerializeElementAttributes(ui::AXNodeData* dst);
   void SerializeHTMLAttributes(ui::AXNodeData* dst);
 

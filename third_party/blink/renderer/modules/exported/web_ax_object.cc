@@ -773,15 +773,6 @@ WebURL WebAXObject::Url() const {
   return private_->Url();
 }
 
-WebAXObject WebAXObject::ChooserPopup() const {
-  if (IsDetached())
-    return WebAXObject();
-  AXObject* target = private_->ChooserPopup();
-  if (!target || target->IsDetached())
-    return WebAXObject();
-  return WebAXObject(target);
-}
-
 WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
                                WebVector<WebAXObject>& out_name_objects) const {
   out_name_from = ax::mojom::blink::NameFrom::kUninitialized;

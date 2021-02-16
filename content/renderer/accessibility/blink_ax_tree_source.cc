@@ -492,8 +492,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   SerializeBoundingBoxAttributes(src, dst);
   cached_bounding_boxes_[dst->id] = dst->relative_bounds;
 
-  SerializeChooserPopupAttributes(src, dst);
-
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
     if (src.IsInLiveRegion())
       SerializeLiveRegionAttributes(src, dst);
@@ -627,20 +625,6 @@ void BlinkAXTreeSource::SerializeLiveRegionAttributes(
   TruncateAndAddStringAttribute(
       dst, ax::mojom::StringAttribute::kContainerLiveRelevant,
       src.ContainerLiveRegionRelevant().Utf8());
-}
-
-void BlinkAXTreeSource::SerializeChooserPopupAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  WebAXObject chooser_popup = src.ChooserPopup();
-  if (!chooser_popup.IsNull()) {
-    int32_t chooser_popup_id = chooser_popup.AxID();
-    auto controls_ids =
-        dst->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
-    controls_ids.push_back(chooser_popup_id);
-    dst->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
-                             controls_ids);
-  }
 }
 
 void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
