@@ -42,4 +42,8 @@ interface CartHandler {
   RestoreRemovedCart(url.mojom.Url cart_url) => (bool success);
   // Returns whether to show welcome surface in the module.
   GetWarmWelcomeVisible() => (bool visible);
+  // Logs that cart at position |index| has been clicked.
+  OnCartItemClicked(uint32 index);
+  // Logs the number of carts when module is created.
+  OnModuleCreated(uint32 count);
 };

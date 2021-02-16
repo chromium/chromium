@@ -90,6 +90,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Carts.CartCount" units="count"
+    expires_after="2021-08-01">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when the cart module is created. The value is equal to the initial
+    number of carts within the module (could be zero).
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Carts.ClickCart" units="index"
+    expires_after="2021-08-01">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when a user clicks on a cart in the cart module. The value is equal
+    to the index of the cart.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ContentSuggestions.ArticlesListVisible"
     enum="BooleanVisible" expires_after="2021-07-01">
   <owner>freedjm@chromium.org</owner>

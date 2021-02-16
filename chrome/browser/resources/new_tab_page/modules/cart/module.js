@@ -231,9 +231,12 @@ class ChromeCartModuleElement extends PolymerElement {
             loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
         restoreCallback: () => {
           ChromeCartProxy.getInstance().handler.restoreHiddenCartModule();
+          chrome.metricsPrivate.recordUserAction(
+              'NewTabPage.Carts.UndoHideModule');
         },
       },
     }));
+    chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.HideModule');
   }
 
   /** @private */
@@ -247,9 +250,12 @@ class ChromeCartModuleElement extends PolymerElement {
             loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
         restoreCallback: () => {
           ChromeCartProxy.getInstance().handler.restoreRemovedCartModule();
+          chrome.metricsPrivate.recordUserAction(
+              'NewTabPage.Carts.UndoRemoveModule');
         },
       },
     }));
+    chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.RemoveModule');
   }
 
   /**
@@ -266,6 +272,7 @@ class ChromeCartModuleElement extends PolymerElement {
       }
     }
     this.scrollToIndex_(lastVisibleIndex + 1);
+    chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.RightScrollClick');
   }
 
   /**
@@ -283,6 +290,7 @@ class ChromeCartModuleElement extends PolymerElement {
       }
     }
     this.scrollToIndex_(Math.max(0, firstVisibleIndex - visibleRange));
+    chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.LeftScrollClick');
   }
 
   /**
@@ -317,6 +325,16 @@ class ChromeCartModuleElement extends PolymerElement {
         (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
         (cart.offsetLeft + cart.offsetWidth);
   }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onCartItemClick_(e) {
+    const index = this.$.cartItemRepeat.indexForElement(e.target);
+    ChromeCartProxy.getInstance().handler.onCartItemClicked(index);
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+  }
 }
 
 customElements.define(ChromeCartModuleElement.is, ChromeCartModuleElement);
@@ -327,6 +345,7 @@ async function createCartElement() {
       await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
   const {carts} =
       await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+  ChromeCartProxy.getInstance().handler.onModuleCreated(carts.length);
   if (carts.length === 0) {
     return null;
   }

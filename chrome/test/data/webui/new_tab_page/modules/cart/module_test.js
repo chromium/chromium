@@ -15,6 +15,25 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
    */
   let testProxy;
 
+  /**
+   * A mock to intercept User Action logging calls and verify how many times
+   * they were called.
+   */
+  class MetricsPrivateMock {
+    constructor() {
+      this.userActionMap = new Map();
+    }
+
+    getUserActionCount(metricName) {
+      return this.userActionMap.get(metricName) || 0;
+    }
+
+    recordUserAction(metricName) {
+      this.userActionMap.set(
+          metricName, this.getUserActionCount(metricName) + 1);
+    }
+  }
+
   setup(() => {
     PolymerTest.clearBody();
 
@@ -22,6 +41,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     testProxy.handler =
         TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
     ChromeCartProxy.instance_ = testProxy;
+    chrome.metricsPrivate = new MetricsPrivateMock();
     // Not show welcome surface by default.
     testProxy.handler.setResultFor(
         'getWarmWelcomeVisible', Promise.resolve({visible: false}));
@@ -198,12 +218,19 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
         hideToastMessage);
     assertEquals(1, testProxy.handler.getCallCount('hideCartModule'));
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount('NewTabPage.Carts.HideModule'),
+        1);
 
     // Act.
     hideRestoreCallback();
 
     // Assert.
     assertEquals(1, testProxy.handler.getCallCount('restoreHiddenCartModule'));
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.UndoHideModule'),
+        1);
 
     // Act.
     waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
@@ -217,12 +244,20 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
         removeToastMessage);
     assertEquals(1, testProxy.handler.getCallCount('removeCartModule'));
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.RemoveModule'),
+        1);
 
     // Act.
     removeRestoreCallback();
 
     // Assert.
     assertEquals(1, testProxy.handler.getCallCount('restoreRemovedCartModule'));
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.UndoRemoveModule'),
+        1);
   });
 
   test('dismiss and undo single cart item in module', async () => {
@@ -373,6 +408,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     checkScrollButtonVisibility(moduleElement, true, true);
     checkVisibleRange(moduleElement, 4, 7);
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.RightScrollClick'),
+        1);
 
     // Act.
     waitForRightScrollVisibilityChange =
@@ -385,6 +424,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     checkScrollButtonVisibility(moduleElement, true, false);
     checkVisibleRange(moduleElement, 6, 9);
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.RightScrollClick'),
+        2);
 
     // Act.
     waitForRightScrollVisibilityChange =
@@ -397,6 +440,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     checkScrollButtonVisibility(moduleElement, true, true);
     checkVisibleRange(moduleElement, 2, 5);
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.LeftScrollClick'),
+        1);
 
     // Act.
     waitForLeftScrollVisibilityChange =
@@ -409,6 +456,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     checkScrollButtonVisibility(moduleElement, false, true);
     checkVisibleRange(moduleElement, 0, 3);
+    assertEquals(
+        chrome.metricsPrivate.getUserActionCount(
+            'NewTabPage.Carts.LeftScrollClick'),
+        2);
 
     // Remove the observer.
     cartCarousel.removeEventListener('scroll', onScroll);

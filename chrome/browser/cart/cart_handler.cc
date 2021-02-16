@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -90,4 +91,14 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
 void CartHandler::GetWarmWelcomeVisible(
     GetWarmWelcomeVisibleCallback callback) {
   std::move(callback).Run(cart_service_->ShouldShowWelcomSurface());
+}
+
+// TODO(crbug.com/1174281): Below metrics collection can be moved to JS to avoid
+// cross-process calls.
+void CartHandler::OnCartItemClicked(uint32_t index) {
+  base::UmaHistogramCounts100("NewTabPage.Carts.ClickCart", index);
+}
+
+void CartHandler::OnModuleCreated(uint32_t count) {
+  base::UmaHistogramCounts100("NewTabPage.Carts.CartCount", count);
 }
