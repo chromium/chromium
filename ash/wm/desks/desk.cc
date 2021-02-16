@@ -141,6 +141,7 @@ class DeskContainerObserver : public aura::WindowObserver {
     // this window addition here. Consider ignoring these windows if they cause
     // problems.
     owner_->AddWindowToDesk(new_window);
+    MaybeNotifyAllDesksOfContentChange(new_window);
   }
 
   void OnWindowRemoved(aura::Window* removed_window) override {
@@ -148,6 +149,7 @@ class DeskContainerObserver : public aura::WindowObserver {
     // since we want to refresh the mini_views only after the window has been
     // removed from the window tree hierarchy.
     owner_->RemoveWindowFromDesk(removed_window);
+    MaybeNotifyAllDesksOfContentChange(removed_window);
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
@@ -158,6 +160,16 @@ class DeskContainerObserver : public aura::WindowObserver {
   }
 
  private:
+  void MaybeNotifyAllDesksOfContentChange(aura::Window* window) {
+    // If a visible on all desks window is added/removed from a desk, only the
+    // desks directly involved will know about their contents changing since it
+    // only resides on the active desk. Since visible on all desks windows
+    // appear in each desks' preview view, we need to notify each desk.
+    auto* desks_controller = DesksController::Get();
+    if (desks_controller->visible_on_all_desks_windows().contains(window))
+      desks_controller->NotifyAllDesksForContentChanged();
+  }
+
   Desk* const owner_;
   aura::Window* const container_;
 
@@ -234,9 +246,12 @@ void Desk::AddWindowToDesk(aura::Window* window) {
   DCHECK(!base::Contains(windows_, window));
   windows_.push_back(window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
-  // there in the first place.
-  if (!window->GetProperty(kHideInDeskMiniViewKey))
+  // there in the first place. Also don't refresh for visible on all desks
+  // windows since they're already refreshed in OnWindowAdded().
+  if (!window->GetProperty(kHideInDeskMiniViewKey) &&
+      !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
     NotifyContentChanged();
+  }
 
   // Update the window's workspace to this parent desk.
   if ((features::IsBentoEnabled() || features::IsFullRestoreEnabled()) &&
@@ -251,9 +266,12 @@ void Desk::RemoveWindowFromDesk(aura::Window* window) {
   DCHECK(base::Contains(windows_, window));
   base::Erase(windows_, window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
-  // there in the first place.
-  if (!window->GetProperty(kHideInDeskMiniViewKey))
+  // there in the first place. Also don't refresh for visible on all desks
+  // windows since they're already refreshed in OnWindowRemoved().
+  if (!window->GetProperty(kHideInDeskMiniViewKey) &&
+      !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
     NotifyContentChanged();
+  }
 }
 
 base::AutoReset<bool> Desk::GetScopedNotifyContentChangedDisabler() {

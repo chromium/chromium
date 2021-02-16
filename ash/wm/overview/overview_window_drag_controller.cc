@@ -634,12 +634,13 @@ OverviewWindowDragController::CompleteNormalDrag(
 
   aura::Window* target_root = GetRootWindowBeingDraggedIn();
   const bool is_dragged_to_other_display = target_root != item_->root_window();
+  auto* current_grid = GetCurrentGrid();
   if (virtual_desks_bar_enabled_) {
     item_->SetOpacity(original_opacity_);
 
     // Attempt to move a window to a different desk.
-    if (GetCurrentGrid()->MaybeDropItemOnDeskMiniView(rounded_screen_point,
-                                                      item_)) {
+    if (current_grid->MaybeDropItemOnDeskMiniView(rounded_screen_point,
+                                                  item_)) {
       // Window was successfully moved to another desk, and |item_| was
       // removed from the grid. It may never be accessed after this.
       item_ = nullptr;
@@ -657,9 +658,21 @@ OverviewWindowDragController::CompleteNormalDrag(
     return DragResult::kSnap;
   }
 
-  // Drop a window into overview because we have not done anything else with it.
   DCHECK(item_);
-  if (is_dragged_to_other_display) {
+  const bool dragged_item_is_visible_on_all_desks =
+      DraggedItemIsVisibleOnAllDesks(item_);
+  const bool item_intersects_other_display_desk_bar =
+      virtual_desks_bar_enabled_ &&
+      current_grid->IntersectsWithDesksBar(
+          gfx::ToRoundedPoint(location_in_screen),
+          /*update_desks_bar_drag_details=*/false, /*for_drop=*/false);
+
+  // Drop a window into overview because we have not done anything else with it.
+  // If the window is visible on all desks, only move it to another display if
+  // it doesn't intersect the other grid's desk bar.
+  if (is_dragged_to_other_display &&
+      !(dragged_item_is_visible_on_all_desks &&
+        item_intersects_other_display_desk_bar)) {
     // Get the window and bounds from |item_| before removing it from its grid.
     aura::Window* window = item_->GetWindow();
     const gfx::RectF target_item_bounds = item_->target_bounds();

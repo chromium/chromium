@@ -579,10 +579,12 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 
   const bool added = visible_on_all_desks_windows_.emplace(window).second;
   DCHECK(added);
+  NotifyAllDesksForContentChanged();
 }
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
-  visible_on_all_desks_windows_.erase(window);
+  if (visible_on_all_desks_windows_.erase(window))
+    NotifyAllDesksForContentChanged();
 }
 
 void DesksController::RevertDeskNameToDefault(Desk* desk) {
@@ -996,6 +998,11 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
                                       *closest_window_below_iter);
     }
   }
+}
+
+void DesksController::NotifyAllDesksForContentChanged() {
+  for (const auto& desk : desks_)
+    desk->NotifyContentChanged();
 }
 
 const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
