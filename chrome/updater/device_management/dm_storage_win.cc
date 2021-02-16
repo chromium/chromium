@@ -14,19 +14,18 @@ namespace updater {
 namespace {
 
 // Registry for device ID.
-constexpr base::char16 kRegKeyCryptographyKey[] =
+constexpr wchar_t kRegKeyCryptographyKey[] =
     L"SOFTWARE\\Microsoft\\Cryptography\\";
-constexpr base::char16 kRegValueMachineGuid[] = L"MachineGuid";
+constexpr wchar_t kRegValueMachineGuid[] = L"MachineGuid";
 
 // Registry for enrollment token.
-constexpr base::char16 kRegKeyCompanyCloudManagement[] =
+constexpr wchar_t kRegKeyCompanyCloudManagement[] =
     COMPANY_POLICIES_KEY L"CloudManagement\\";
-constexpr base::char16 kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
+constexpr wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
 
 // Registry for DM token.
-constexpr base::char16 kRegKeyCompanyEnrollment[] =
-    COMPANY_KEY L"Enrollment\\";
-constexpr base::char16 kRegValueDmToken[] = L"dmtoken";
+constexpr wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
+constexpr wchar_t kRegValueDmToken[] = L"dmtoken";
 
 class TokenService : public TokenServiceInterface {
  public:
@@ -42,7 +41,7 @@ class TokenService : public TokenServiceInterface {
 };
 
 std::string TokenService::GetDeviceID() const {
-  base::string16 device_id;
+  std::wstring device_id;
   base::win::RegKey key;
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCryptographyKey,
            KEY_READ | KEY_WOW64_64KEY);
@@ -60,7 +59,7 @@ bool TokenService::StoreEnrollmentToken(const std::string& token) {
 }
 
 std::string TokenService::GetEnrollmentToken() const {
-  base::string16 token;
+  std::wstring token;
   base::win::RegKey key;
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement, KEY_READ);
   if (key.ReadValue(kRegValueEnrollmentToken, &token) != ERROR_SUCCESS)
@@ -77,7 +76,7 @@ bool TokenService::StoreDmToken(const std::string& token) {
 }
 
 std::string TokenService::GetDmToken() const {
-  base::string16 token;
+  std::wstring token;
   base::win::RegKey key;
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment, KEY_READ);
   if (key.ReadValue(kRegValueDmToken, &token) != ERROR_SUCCESS)

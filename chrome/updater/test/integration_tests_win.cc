@@ -35,7 +35,7 @@ namespace updater {
 namespace test {
 namespace {
 
-constexpr base::char16 kDidRun[] = L"dr";
+constexpr wchar_t kDidRun[] = L"dr";
 
 base::FilePath GetInstallerPath() {
   base::FilePath test_executable;
@@ -53,8 +53,8 @@ base::FilePath GetProductPath() {
       .AppendASCII(UPDATER_VERSION_STRING);
 }
 
-base::string16 GetAppClientStateKey(const std::string& id) {
-  return base::ASCIIToUTF16(base::StrCat({CLIENT_STATE_KEY, id}));
+std::wstring GetAppClientStateKey(const std::string& id) {
+  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
 }
 
 }  // namespace
@@ -183,7 +183,7 @@ void ExpectActive(const std::string& id) {
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                      KEY_READ | KEY_WOW64_32KEY),
             ERROR_SUCCESS);
-  base::string16 value;
+  std::wstring value;
   ASSERT_EQ(key.ReadValue(kDidRun, &value), ERROR_SUCCESS);
   EXPECT_EQ(value, L"1");
 }
@@ -193,7 +193,7 @@ void ExpectNotActive(const std::string& id) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-    base::string16 value;
+    std::wstring value;
     if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS)
       EXPECT_EQ(value, L"0");
   }
