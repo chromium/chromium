@@ -160,6 +160,7 @@ void InitializeCrashpadImpl(bool initial_client,
 
   crashpad::AnnotationList::Register();
 
+#if !defined(OS_IOS)
   static crashpad::StringAnnotation<24> ptype_key("ptype");
   ptype_key.Set(browser_process ? base::StringPiece("browser")
                                 : base::StringPiece(process_type));
@@ -173,6 +174,11 @@ void InitializeCrashpadImpl(bool initial_client,
 
   static crashpad::StringAnnotation<24> osarch_key("osarch");
   osarch_key.Set(base::SysInfo::OperatingSystemArchitecture());
+#else
+  // "platform" is used to determine device_model on the crash server.
+  static crashpad::StringAnnotation<24> platform("platform");
+  platform.Set(base::SysInfo::OperatingSystemArchitecture());
+#endif  // OS_IOS
 
   logging::SetLogMessageHandler(LogMessageHandler);
 
