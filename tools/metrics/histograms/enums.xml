@@ -16155,6 +16155,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="kOffByWorkaround">
     Video decoder off by GPU workaround.
   </int>
+  <int value="9" label="kUnsupportedOsVersion">
+    The current operating system is unsupported
+  </int>
 </enum>
 
 <enum name="D3D12FeatureLevel">
