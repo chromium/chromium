@@ -102,14 +102,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
-// This test is flaky on linux. https://crbug.com/1172891
-#if defined(OS_LINUX)
-#define MAYBE_OmniboxPasteAndGo DISABLED_OmniboxPasteAndGo
-#else
-#define MAYBE_OmniboxPasteAndGo OmniboxPasteAndGo
-#endif
+// Flaky test https://crbug.com/1172891
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       MAYBE_OmniboxPasteAndGo) {
+                       DISABLED_OmniboxPasteAndGo) {
   WaitForTestSystemAppInstall();
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();
