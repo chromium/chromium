@@ -140,7 +140,7 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
     // Use ANGLE if it is requested and it is statically linked
     if (!InitializeStaticANGLEEGL())
       return false;
-  } else if (!InitializeStaticEGLInternalFromLibrary(implementation))
+  } else if (!InitializeStaticEGLInternalFromLibrary(implementation)) {
     return false;
   }
 #else
