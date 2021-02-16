@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -71,14 +72,17 @@ def SetupWindowsCrossCompileToolchain(target_arch):
 
   target_env = os.environ
 
+  # Each path is of the form:
+  # "/I../depot_tools/win_toolchain/vs_files/20d5f2553f/Windows Kits/10/Include/10.0.19041.0/winrt"
+  #
+  # Since there's a space in the include path, inputs are quoted in |flags|, we
+  # can helpfully use shlex to split on spaces while preserving quoted strings.
   include_paths = []
-  for cflag in flags['include_flags_imsvc'].split(' '):
+  for include_path in shlex.split(flags['include_flags_I']):
     # Apparently setup_toolchain prefers relative include paths, which
-    # may work for chrome, but it does not work for ffmpeg, so let's make
+    # may work for chrome, but it does not work for dav1d, so let's make
     # them asbolute again.
-    include_path = cflag.strip('"')
-    if include_path.startswith('-imsvc'):
-      include_path = os.path.abspath(os.path.join(cwd, include_path[6:]))
+    include_path = os.path.abspath(os.path.join(cwd, include_path[2:]))
     include_paths.append(include_path)
 
   # TODO(dalecurtis): Why isn't the ucrt path printed?
