@@ -18,6 +18,7 @@ crbug.com/993384 images/color-profile-background-image-space.html [ Skip ]
 crbug.com/993384 media/video-layer-crash.html [ Skip ]
 crbug.com/993384 transforms/transformed-document-element.html [ Skip ]
 crbug.com/993384 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
+transforms/shadows.html [ Skip ]
 
 # Alpha Blending Video Failures
 crbug.com/1094635 fast/canvas/canvas-pattern-video.html [ Skip ]
