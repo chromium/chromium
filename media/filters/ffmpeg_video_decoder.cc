@@ -161,6 +161,13 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
     if (codec_context->color_range == AVCOL_RANGE_JPEG) {
       video_frame->set_color_space(gfx::ColorSpace::CreateJpeg());
     }
+  } else if (codec_context->codec_id == AV_CODEC_ID_H264 &&
+             codec_context->colorspace == AVCOL_SPC_RGB &&
+             format == PIXEL_FORMAT_I420) {
+    // Some H.264 videos contain a VUI that specifies a color matrix of GBR,
+    // when they are actually ordinary YUV. Only 4:2:0 formats are checked,
+    // because GBR is reasonable for 4:4:4 content. See crbug.com/1067377.
+    video_frame->set_color_space(gfx::ColorSpace::CreateREC709());
   } else if (codec_context->color_primaries != AVCOL_PRI_UNSPECIFIED ||
              codec_context->color_trc != AVCOL_TRC_UNSPECIFIED ||
              codec_context->colorspace != AVCOL_SPC_UNSPECIFIED) {
