@@ -46,6 +46,9 @@ CC_BASE_EXPORT extern const base::Feature kWheelEventRegions;
 // display.
 CC_BASE_EXPORT extern const base::Feature kHudDisplayForPerformanceMetrics;
 
+// When enabled, some jank is injected to the animation/scrolling pipeline.
+CC_BASE_EXPORT extern const base::Feature kJankInjectionAblationFeature;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

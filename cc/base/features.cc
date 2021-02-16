@@ -63,4 +63,7 @@ const base::Feature kWheelEventRegions{"WheelEventRegions",
 
 const base::Feature kHudDisplayForPerformanceMetrics{
     "HudDisplayForPerformanceMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kJankInjectionAblationFeature{
+    "JankInjectionAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
