@@ -3034,7 +3034,10 @@ NOINLINE void FreeForTest(void* data) {
 
 }  // namespace
 
-TEST_F(PartitionAllocTest, PreforkHandler) {
+// Disabled because executing it causes Gtest to show a warning in the output,
+// which confuses the runner on some platforms, making the test report an
+// "UNKNOWN" status even though it succeeded.
+TEST_F(PartitionAllocTest, DISABLED_PreforkHandler) {
   std::atomic<bool> please_stop;
   std::atomic<int> started_threads{0};
 
