@@ -14,17 +14,15 @@
 
 namespace cloud_print {
 
-void DisplayWindowsMessage(HWND hwnd,
-                           HRESULT hr,
-                           const base::string16& caption) {
+void DisplayWindowsMessage(HWND hwnd, HRESULT hr, const std::wstring& caption) {
   ::MessageBox(hwnd, GetErrorMessage(hr).c_str(), caption.c_str(), MB_OK);
 }
 
-base::string16 GetPortMonitorDllName() {
+std::wstring GetPortMonitorDllName() {
   if (IsSystem64Bit()) {
-    return base::string16(L"gcp_portmon64.dll");
+    return std::wstring(L"gcp_portmon64.dll");
   } else {
-    return base::string16(L"gcp_portmon.dll");
+    return std::wstring(L"gcp_portmon.dll");
   }
 }
 

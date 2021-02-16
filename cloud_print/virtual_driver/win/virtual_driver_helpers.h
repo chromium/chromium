@@ -18,10 +18,10 @@ namespace cloud_print {
 // Convert an HRESULT to a localized string and display it in a message box.
 void DisplayWindowsMessage(HWND hwnd,
                            HRESULT hr,
-                           const base::string16& caption);
+                           const std::wstring& caption);
 
 // Returns the correct port monitor DLL file name for the current machine.
-base::string16 GetPortMonitorDllName();
+std::wstring GetPortMonitorDllName();
 
 // Gets the standard install path for "version 3" print drivers.
 HRESULT GetPrinterDriverDir(base::FilePath* path);

@@ -20,7 +20,7 @@ base::FilePath GetChromeExePath();
 base::FilePath GetChromeProfilePath();
 
 // Returns the print command to launch, if set, instead of Chrome.
-base::string16 GetPrintCommandTemplate();
+std::wstring GetPrintCommandTemplate();
 
 // Implementations for the function pointers in the MONITOR2 structure
 // returned by InitializePrintMonitor2.  The prototypes and behaviors

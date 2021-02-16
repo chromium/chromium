@@ -112,7 +112,7 @@ TEST_F(PortMonitorTest, GetChromeExePathTest) {
 }
 
 TEST_F(PortMonitorTest, GetPrintCommandTemplateTest) {
-  base::string16 print_command = cloud_print::GetPrintCommandTemplate();
+  std::wstring print_command = cloud_print::GetPrintCommandTemplate();
   EXPECT_FALSE(print_command.empty());
   EXPECT_EQ(print_command, kTestPrintCommand);
   DeleteChromeExeRegistry();

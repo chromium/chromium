@@ -24,7 +24,7 @@ HRESULT GetLastHResult() {
   return error_code ? HRESULT_FROM_WIN32(error_code) : E_FAIL;
 }
 
-base::string16 LoadLocalString(DWORD id) {
+std::wstring LoadLocalString(DWORD id) {
   static wchar_t dummy = L'\0';
   HMODULE module = NULL;
   ::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT |
@@ -35,21 +35,21 @@ base::string16 LoadLocalString(DWORD id) {
   // LPCWSTR* and assign pointer to read-only memory with resource.
   int count = ::LoadString(module, id, reinterpret_cast<LPWSTR>(&buffer), 0);
   if (!buffer)
-    return base::string16();
-  return base::string16(buffer, buffer + count);
+    return std::wstring();
+  return std::wstring(buffer, buffer + count);
 }
 
-base::string16 GetErrorMessage(HRESULT hr) {
+std::wstring GetErrorMessage(HRESULT hr) {
   LPWSTR buffer = NULL;
   ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
                       FORMAT_MESSAGE_ALLOCATE_BUFFER,
                   0, hr, 0, reinterpret_cast<LPWSTR>(&buffer), 0, NULL);
-  base::string16 result(buffer);
+  std::wstring result(buffer);
   ::LocalFree(buffer);
   return result;
 }
 
-void SetGoogleUpdateUsage(const base::string16& product_id) {
+void SetGoogleUpdateUsage(const std::wstring& product_id) {
   // Set appropriate key to 1 to let Omaha record usage.
   base::win::RegKey key;
   if (key.Create(HKEY_CURRENT_USER, (kClientStateKey + product_id).c_str(),

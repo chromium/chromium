@@ -15,14 +15,14 @@ namespace cloud_print {
 HRESULT GetLastHResult();
 
 // Convert an HRESULT to a localized string.
-base::string16 GetErrorMessage(HRESULT hr);
+std::wstring GetErrorMessage(HRESULT hr);
 
 // Retrieves a string from the string table of the module that contains the
 // calling code.
-base::string16 LoadLocalString(DWORD id);
+std::wstring LoadLocalString(DWORD id);
 
 // Sets registry value to notify Google Update that product was used.
-void SetGoogleUpdateUsage(const base::string16& product_id);
+void SetGoogleUpdateUsage(const std::wstring& product_id);
 
 }  // namespace cloud_print
 
