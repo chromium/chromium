@@ -37,9 +37,9 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 POLL_DELAY_SECONDS = 2 * 60
 TIMEOUT_SECONDS = 210 * 60
 
-# Sheriff calendar URL, used for getting the ecosystem infra sheriff to TBR.
+# Sheriff calendar URL, used for getting the ecosystem infra sheriff to cc.
 ROTATIONS_URL = 'https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-ecosystem-infra'
-TBR_FALLBACK = 'robertma@google.com'
+SHERIFF_EMAIL_FALLBACK = 'smcgruer@google.com'
 RUBBER_STAMPER_BOT = 'rubber-stamper@appspot.gserviceaccount.com'
 
 _log = logging.getLogger(__file__)
@@ -268,17 +268,21 @@ class TestImporter(object):
             self.git_cl.run(['set-close'])
             return False
 
-        _log.info('CQ appears to have passed; trying to commit.')
+        _log.info(
+            'CQ appears to have passed; sending to the rubber-stamper bot for '
+            'CR+1 and commit.')
+        _log.info(
+            'If the rubber-stamper bot rejects the CL, you either need to '
+            'modify the benign file patterns, or manually CR+1 and land the '
+            'import yourself if it touches code files. See https://chromium.'
+            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'appengine/rubber-stamper/README.md')
 
-        # As an intermediary step in the migration from TBR to the rubber
-        # stamper bot, we add it as a reviewer here but still land the CL
-        # ourselves. The goal is to validate that the rubber-stamper would have
-        # CR+1'd our import had we been using it for real.
-        #
         # `--send-mail` is required to take the CL out of WIP mode.
-        self.git_cl.run(
-            ['upload', '-f', '--send-mail', '--reviewers', RUBBER_STAMPER_BOT])
-        self.git_cl.run(['set-commit'])
+        self.git_cl.run([
+            'upload', '-f', '--send-mail', '--enable-auto-submit',
+            '--reviewers', RUBBER_STAMPER_BOT
+        ])
 
         if self.git_cl.wait_for_closed_status():
             _log.info('Update completed.')
@@ -511,7 +515,7 @@ class TestImporter(object):
         _log.info('Uploading change list.')
         directory_owners = self.get_directory_owners()
         description = self._cl_description(directory_owners)
-        sheriff_email = self.tbr_reviewer()
+        sheriff_email = self.sheriff_email()
 
         temp_file, temp_path = self.fs.open_text_tempfile()
         temp_file.write(description)
@@ -522,12 +526,8 @@ class TestImporter(object):
             '-f',
             '--message-file',
             temp_path,
-            '--tbrs',
-            sheriff_email,
-            # Note: we used to CC all the directory owners, but have stopped
-            # in search of a better notification mechanism. (crbug.com/765334)
             '--cc',
-            'robertma@chromium.org',
+            sheriff_email,
         ])
 
         self.fs.remove(temp_path)
@@ -586,8 +586,8 @@ class TestImporter(object):
             message_lines.extend('  ' + d for d in directories)
         return '\n'.join(message_lines)
 
-    def tbr_reviewer(self):
-        """Returns the email address to use as the reviewer.
+    def sheriff_email(self):
+        """Returns the sheriff email address to cc.
 
         This tries to fetch the current ecosystem infra sheriff, but falls back
         in case of error.
@@ -597,10 +597,7 @@ class TestImporter(object):
             email = self._fetch_ecosystem_infra_sheriff_email()
         except (IOError, KeyError, ValueError) as error:
             _log.error('Exception while fetching current sheriff: %s', error)
-        if email in ['kyleju@google.com']:
-            _log.warning('Cannot TBR by %s: not a committer', email)
-            email = ''
-        return email or TBR_FALLBACK
+        return email or SHERIFF_EMAIL_FALLBACK
 
     def _fetch_ecosystem_infra_sheriff_email(self):
         try:

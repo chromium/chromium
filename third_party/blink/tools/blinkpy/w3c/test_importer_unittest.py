@@ -18,7 +18,7 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
-from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, TBR_FALLBACK, RUBBER_STAMPER_BOT
+from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
@@ -135,16 +135,21 @@ class TestImporterTest(LoggingTestCase):
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
             'INFO: All jobs finished.\n',
-            'INFO: CQ appears to have passed; trying to commit.\n',
+            'INFO: CQ appears to have passed; sending to the rubber-stamper '
+            'bot for CR+1 and commit.\n',
+            'INFO: If the rubber-stamper bot rejects the CL, you either need '
+            'to modify the benign file patterns, or manually CR+1 and land the '
+            'import yourself if it touches code files. See https://chromium.'
+            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'appengine/rubber-stamper/README.md\n',
             'INFO: Update completed.\n',
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
             [
-                'git', 'cl', 'upload', '-f', '--send-mail', '--reviewers',
-                RUBBER_STAMPER_BOT
+                'git', 'cl', 'upload', '-f', '--send-mail',
+                '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
-            ['git', 'cl', 'set-commit'],
         ])
 
     def test_run_commit_queue_for_cl_fail_cq(self):
@@ -197,16 +202,21 @@ class TestImporterTest(LoggingTestCase):
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
             'INFO: All jobs finished.\n',
-            'INFO: CQ appears to have passed; trying to commit.\n',
+            'INFO: CQ appears to have passed; sending to the rubber-stamper '
+            'bot for CR+1 and commit.\n',
+            'INFO: If the rubber-stamper bot rejects the CL, you either need '
+            'to modify the benign file patterns, or manually CR+1 and land the '
+            'import yourself if it touches code files. See https://chromium.'
+            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'appengine/rubber-stamper/README.md\n',
             'ERROR: Cannot submit CL; aborting.\n',
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
             [
-                'git', 'cl', 'upload', '-f', '--send-mail', '--reviewers',
-                RUBBER_STAMPER_BOT
+                'git', 'cl', 'upload', '-f', '--send-mail',
+                '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
-            ['git', 'cl', 'set-commit'],
             ['git', 'cl', 'set-close'],
         ])
 
@@ -281,17 +291,22 @@ class TestImporterTest(LoggingTestCase):
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
             'INFO: All jobs finished.\n',
-            'INFO: CQ appears to have passed; trying to commit.\n',
+            'INFO: CQ appears to have passed; sending to the rubber-stamper '
+            'bot for CR+1 and commit.\n',
+            'INFO: If the rubber-stamper bot rejects the CL, you either need '
+            'to modify the benign file patterns, or manually CR+1 and land the '
+            'import yourself if it touches code files. See https://chromium.'
+            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'appengine/rubber-stamper/README.md\n',
             'ERROR: Cannot submit CL; aborting.\n',
             'ERROR: CL is already merged; treating as success.\n',
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
             [
-                'git', 'cl', 'upload', '-f', '--send-mail', '--reviewers',
-                RUBBER_STAMPER_BOT
+                'git', 'cl', 'upload', '-f', '--send-mail',
+                '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
-            ['git', 'cl', 'set-commit'],
             ['git', 'cl', 'set-close'],
         ])
 
@@ -442,27 +457,27 @@ class TestImporterTest(LoggingTestCase):
             'x@chromium.org, y@chromium.org:\n'
             '  external/wpt/baz\n\n', description)
 
-    def test_tbr_reviewer_no_response_uses_backup(self):
+    def test_sheriff_email_no_response_uses_backup(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        self.assertEqual(TBR_FALLBACK, importer.tbr_reviewer())
+        self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
         self.assertLog([
             'ERROR: Exception while fetching current sheriff: '
             'No JSON object could be decoded\n'
         ])
 
-    def test_tbr_reviewer_no_emails_field(self):
+    def test_sheriff_email_no_emails_field(self):
         host = self.mock_host()
         host.web.urls[ROTATIONS_URL] = json.dumps(
             {'updated_unix_timestamp': '1591108191'})
         importer = self._get_test_importer(host)
-        self.assertEqual(TBR_FALLBACK, importer.tbr_reviewer())
+        self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
         self.assertLog([
             'ERROR: No email found for current sheriff. Retrieved content: %s\n'
             % host.web.urls[ROTATIONS_URL]
         ])
 
-    def test_tbr_reviewer_nobody_on_rotation(self):
+    def test_sheriff_email_nobody_on_rotation(self):
         host = self.mock_host()
         host.web.urls[ROTATIONS_URL] = json.dumps({
             'emails': [],
@@ -470,23 +485,23 @@ class TestImporterTest(LoggingTestCase):
             '1591108191'
         })
         importer = self._get_test_importer(host)
-        self.assertEqual(TBR_FALLBACK, importer.tbr_reviewer())
+        self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
         self.assertLog([
             'ERROR: No email found for current sheriff. Retrieved content: %s\n'
             % host.web.urls[ROTATIONS_URL]
         ])
 
-    def test_tbr_reviewer_rotations_url_unavailable(self):
+    def test_sheriff_email_rotations_url_unavailable(self):
         def raise_exception(*_):
             raise NetworkTimeout
 
         host = self.mock_host()
         host.web.get_binary = raise_exception
         importer = self._get_test_importer(host)
-        self.assertEqual(TBR_FALLBACK, importer.tbr_reviewer())
+        self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
         self.assertLog(['ERROR: Cannot fetch %s\n' % ROTATIONS_URL])
 
-    def test_tbr_reviewer(self):
+    def test_sheriff_email(self):
         host = self.mock_host()
         host.web.urls[ROTATIONS_URL] = json.dumps({
             'emails': ['current-sheriff@chromium.org'],
@@ -495,16 +510,8 @@ class TestImporterTest(LoggingTestCase):
         })
         importer = self._get_test_importer(host)
         self.assertEqual('current-sheriff@chromium.org',
-                         importer.tbr_reviewer())
+                         importer.sheriff_email())
         self.assertLog([])
-
-    def test_tbr_reviewer_skips_non_committer(self):
-        host = self.mock_host()
-        importer = self._get_test_importer(host)
-        importer._fetch_ecosystem_infra_sheriff_email = lambda: 'kyleju@google.com'
-        self.assertEqual(TBR_FALLBACK, importer.tbr_reviewer())
-        self.assertLog(
-            ['WARNING: Cannot TBR by kyleju@google.com: not a committer\n'])
 
     def test_generate_manifest_successful_run(self):
         # This test doesn't test any aspect of the real manifest script, it just
