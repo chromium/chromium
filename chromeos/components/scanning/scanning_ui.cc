@@ -32,7 +32,7 @@ namespace {
 // TODO(jschettler): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
-                          base::span<const GritResourceMap> resources,
+                          base::span<const webui::ResourcePath> resources,
                           int default_resource) {
   for (const auto& resource : resources) {
     source->AddResourcePath(resource.path, resource.id);

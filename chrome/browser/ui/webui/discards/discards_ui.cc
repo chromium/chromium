@@ -218,7 +218,7 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://test 'self';");
   source->DisableTrustedTypesCSP();
 
-  const GritResourceMap kResources[] = {
+  const webui::ResourcePath kResources[] = {
       {"discards.js", IDR_DISCARDS_JS},
       {"discards_main.js", IDR_DISCARDS_DISCARDS_MAIN_JS},
       {"database_tab.js", IDR_DISCARDS_DATABASE_TAB_JS},

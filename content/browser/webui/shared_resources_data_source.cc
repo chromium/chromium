@@ -170,7 +170,7 @@ void AddResourcesToMap(ResourcesMap* resources_map) {
 // alias. Note that resources which do not have an alias will not be added.
 void AddAliasedResourcesToMap(
     const std::map<int, std::string>& resource_aliases,
-    const GritResourceMap resources[],
+    const webui::ResourcePath resources[],
     size_t resources_size,
     ResourcesMap* resources_map) {
   for (size_t i = 0; i < resources_size; ++i) {
@@ -186,9 +186,9 @@ void AddAliasedResourcesToMap(
 
 // Adds |resources| to |resources_map| using the path given by resource_path in
 // each GRD entry.
-void AddGritResourcesToMap(base::span<const GritResourceMap> resources,
+void AddGritResourcesToMap(base::span<const webui::ResourcePath> resources,
                            ResourcesMap* resources_map) {
-  for (const GritResourceMap& entry : resources)
+  for (const webui::ResourcePath& entry : resources)
     AddResource(entry.path, entry.id, resources_map);
 }
 

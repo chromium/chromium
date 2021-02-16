@@ -48,8 +48,8 @@ class IncludeNode(base.Node):
     """Attributes:
        translateable:         False if the node has contents that should not be
                               translated.
-       resource_path:         If provided, is used to populate the |name|
-                              property of the generated GritResourceMap struct.
+       resource_path:         If provided, is used to populate the |path|
+                              property of the generated ResourcePath struct.
        preprocess:            Takes the same code path as flattenhtml, but it
                               disables any  processing/inlining outside of <if>
                               and <include>.

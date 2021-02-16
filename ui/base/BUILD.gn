@@ -171,6 +171,7 @@ component("base") {
     "webui/i18n_source_stream.h",
     "webui/jstemplate_builder.cc",
     "webui/jstemplate_builder.h",
+    "webui/resource_path.h",
     "webui/web_ui_util.cc",
     "webui/web_ui_util.h",
     "window_open_disposition.cc",

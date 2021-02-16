@@ -54,15 +54,9 @@ def _FormatHeader(root, lang='en', output_dir='.'):
 
 #include <stddef.h>
 
-#ifndef GRIT_RESOURCE_MAP_STRUCT_
-#define GRIT_RESOURCE_MAP_STRUCT_
-struct GritResourceMap {
-  const char* const path;
-  int id;
-};
-#endif // GRIT_RESOURCE_MAP_STRUCT_
+#include "ui/base/webui/resource_path.h"
 
-extern const GritResourceMap %(map_name)s[];
+extern const webui::ResourcePath %(map_name)s[];
 extern const size_t %(map_name)sSize;
 ''' % {
       'map_name': GetMapName(root)
@@ -95,11 +89,12 @@ def _FormatSourceHeader(root, output_dir):
 
 #include "%(rc_header_file)s"
 
-const GritResourceMap %(map_name)s[] = {
-''' % { 'map_header_file': map_header_file,
-        'rc_header_file': rc_header_file,
-        'map_name': GetMapName(root),
-      }
+const webui::ResourcePath %(map_name)s[] = {
+''' % {
+      'map_header_file': map_header_file,
+      'rc_header_file': rc_header_file,
+      'map_name': GetMapName(root),
+  }
 
 
 def _FormatSourceFooter(root):
@@ -140,8 +135,8 @@ def _GetItemPath(item):
 
   # For the case of generated files such as
   # out/gchrome/${root_gen_dir}/ui/webui/resources/js/foo.js
-  # |resource_path| must be provided. It will be used as the ID in the
-  # generated GritResourceMap entry. For WebUI files, it will also be used as
+  # |resource_path| must be provided. It will be used as the |path| in the
+  # generated ResourcePath entry. For WebUI files, it will also be used as
   # the URL subpath under which a file will be served at runtime.
   assert item.attrs.get('use_base_dir', 'true') == 'true', \
       'resource_path attribute missing for %s. Generated files must specify' \

@@ -16,11 +16,11 @@ namespace keyboard {
 const char kKeyboardURL[] = "chrome://keyboard";
 const char kKeyboardHost[] = "keyboard";
 
-const GritResourceMap* GetKeyboardExtensionResources(size_t* size) {
+const webui::ResourcePath* GetKeyboardExtensionResources(size_t* size) {
   // This looks a lot like the contents of a resource map; however it is
   // necessary to have a custom path for the extension path, so the resource
   // map cannot be used directly.
-  static const GritResourceMap kKeyboardResources[] = {
+  static const webui::ResourcePath kKeyboardResources[] = {
       {"keyboard/locales/en.js", IDR_KEYBOARD_LOCALES_EN},
       {"keyboard/config/emoji.js", IDR_KEYBOARD_CONFIG_EMOJI},
       {"keyboard/config/hwt.js", IDR_KEYBOARD_CONFIG_HWT},

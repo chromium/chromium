@@ -22,7 +22,7 @@ namespace chromeos {
 namespace file_manager {
 
 void AddFilesAppResources(content::WebUIDataSource* source,
-                          const GritResourceMap* entries,
+                          const webui::ResourcePath* entries,
                           size_t size) {
   for (size_t i = 0; i < size; ++i) {
     std::string path(entries[i].path);
