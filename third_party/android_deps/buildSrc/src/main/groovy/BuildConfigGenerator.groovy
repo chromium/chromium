@@ -73,11 +73,6 @@ class BuildConfigGenerator extends DefaultTask {
     String cipdBucket
 
     /**
-     * Prefix of path to strip before uploading to CIPD.
-     */
-    String stripFromCipdPath
-
-    /**
      * Skips license file import.
      */
     boolean skipLicenses
@@ -138,7 +133,6 @@ class BuildConfigGenerator extends DefaultTask {
 
             new File("${absoluteDepDir}/README.chromium").write(makeReadme(dependency))
             new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket,
-                                                                       stripFromCipdPath,
                                                                        repositoryPath))
             new File("${absoluteDepDir}/OWNERS").write(makeOwners())
             if (!skipLicenses) {
@@ -169,7 +163,7 @@ class BuildConfigGenerator extends DefaultTask {
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath)
         if (!ignoreDEPS) {
-            updateDepsDeclaration(graph, cipdBucket, stripFromCipdPath, repositoryPath,
+            updateDepsDeclaration(graph, cipdBucket, repositoryPath,
                                   "${normalisedRepoPath}/../../DEPS")
         }
         dependencyDirectories.sort { path1, path2 -> return path1.compareTo(path2) }
@@ -574,8 +568,7 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
-                                              String stripFromCipdPath, String repoPath,
-                                              String depsFilePath) {
+                                       String repoPath, String depsFilePath) {
         File depsFile = new File(depsFilePath)
         def sb = new StringBuilder()
         // Note: The string we're inserting is nested 1 level, hence the 2 leading spaces. Same
@@ -593,13 +586,7 @@ class BuildConfigGenerator extends DefaultTask {
                 return
             }
             def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
-            def cipdPath = "${cipdBucket}/"
-            if (stripFromCipdPath) {
-                assert repoPath.startsWith(stripFromCipdPath)
-                cipdPath += repoPath.substring(stripFromCipdPath.length() + 1)
-            } else {
-                cipdPath += repoPath
-            }
+            def cipdPath = "${cipdBucket}/${repoPath}"
             // CIPD does not allow uppercase in names.
             cipdPath += "/${depPath}".toLowerCase()
             sb.append("""\
@@ -718,18 +705,9 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     static String makeCipdYaml(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket,
-                               String stripFromCipdPath, String repoPath) {
-        if (!stripFromCipdPath) {
-            stripFromCipdPath = ''
-        }
+                               String repoPath) {
         def cipdVersion = "${dependency.version}-${dependency.cipdSuffix}"
-        def cipdPath = "${cipdBucket}/"
-        if (stripFromCipdPath) {
-            assert repoPath.startsWith(stripFromCipdPath)
-            cipdPath += repoPath.substring(stripFromCipdPath.length() + 1)
-        } else {
-            cipdPath += repoPath
-        }
+        def cipdPath = "${cipdBucket}/${repoPath}"
         // CIPD does not allow uppercase in names.
         cipdPath += "/${DOWNLOAD_DIRECTORY_NAME}/" + dependency.id.toLowerCase()
 
