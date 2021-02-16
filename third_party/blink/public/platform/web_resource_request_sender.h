@@ -213,9 +213,6 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnRequestComplete(
       const network::URLLoaderCompletionStatus& status) override;
-  void EvictFromBackForwardCache(mojom::RendererEvictionReason reason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void ToLocalURLResponseHead(
       const PendingRequestInfo& request_info,

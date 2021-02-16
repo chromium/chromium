@@ -60,11 +60,6 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClientObserver {
   virtual void OnRequestComplete(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  virtual void EvictFromBackForwardCache(
-      mojom::RendererEvictionReason reason) = 0;
-  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
-  virtual bool CanContinueBufferingWhileInBackForwardCache() = 0;
-
  protected:
   virtual ~WebMojoURLLoaderClientObserver() = default;
 };

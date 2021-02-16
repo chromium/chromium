@@ -104,10 +104,6 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
-
   void OnFinishCreatingBlob(mojom::SerializedBlobPtr blob);
 
   void OnBodyReadable(MojoResult, const mojo::HandleSignalsState&);

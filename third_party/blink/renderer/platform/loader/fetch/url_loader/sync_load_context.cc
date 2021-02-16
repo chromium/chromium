@@ -186,17 +186,6 @@ bool SyncLoadContext::OnReceivedRedirect(
   return true;
 }
 
-void SyncLoadContext::EvictFromBackForwardCache(
-    mojom::RendererEvictionReason reason) {
-  return;
-}
-
-void SyncLoadContext::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
-
-bool SyncLoadContext::CanContinueBufferingWhileInBackForwardCache() {
-  return true;
-}
-
 void SyncLoadContext::FollowRedirect() {
   if (!signals_->RestartAfterRedirect()) {
     CancelRedirect();

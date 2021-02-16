@@ -58,8 +58,6 @@ class ResourceLoadObserverForWorker final : public ResourceLoadObserver {
                       const ResourceError&,
                       int64_t encoded_data_length,
                       IsInternalRequest) override;
-  void EvictFromBackForwardCache(
-      mojom::blink::RendererEvictionReason) override {}
   void Trace(Visitor*) const override;
 
  private:

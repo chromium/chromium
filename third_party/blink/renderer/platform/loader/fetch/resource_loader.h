@@ -152,9 +152,6 @@ class PLATFORM_EXPORT ResourceLoader final
                int64_t encoded_data_length,
                int64_t encoded_body_length,
                int64_t decoded_body_length) override;
-  void EvictFromBackForwardCache(mojom::RendererEvictionReason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   blink::mojom::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(mojo_base::BigBuffer data);

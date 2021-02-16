@@ -537,29 +537,6 @@ void WebResourceRequestSender::OnRequestComplete(
   peer->OnCompletedRequest(renderer_status);
 }
 
-void WebResourceRequestSender::EvictFromBackForwardCache(
-    mojom::RendererEvictionReason reason) {
-  if (!request_info_)
-    return;
-
-  return request_info_->peer->EvictFromBackForwardCache(reason);
-}
-
-void WebResourceRequestSender::DidBufferLoadWhileInBackForwardCache(
-    size_t num_bytes) {
-  if (!request_info_)
-    return;
-
-  request_info_->peer->DidBufferLoadWhileInBackForwardCache(num_bytes);
-}
-
-bool WebResourceRequestSender::CanContinueBufferingWhileInBackForwardCache() {
-  if (!request_info_)
-    return true;
-
-  return request_info_->peer->CanContinueBufferingWhileInBackForwardCache();
-}
-
 void WebResourceRequestSender::ToLocalURLResponseHead(
     const PendingRequestInfo& request_info,
     network::mojom::URLResponseHead& response_head) const {

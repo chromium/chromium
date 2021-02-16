@@ -85,11 +85,6 @@ class ResponseBodyLoaderTest : public testing::Test {
       DCHECK(!failed_);
       cancelled_ = true;
     }
-    void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {}
-
-    void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-
-    bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
 
     void SetLoader(ResponseBodyLoader& loader) { loader_ = loader; }
     void Trace(Visitor* visitor) const override { visitor->Trace(loader_); }

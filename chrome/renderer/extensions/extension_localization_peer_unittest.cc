@@ -89,10 +89,6 @@ class MockRequestPeer : public blink::WebRequestPeer {
   MOCK_METHOD1(OnTransferSizeUpdated, void(int transfer_size_diff));
   MOCK_METHOD1(OnCompletedRequest,
                void(const network::URLLoaderCompletionStatus& status));
-  MOCK_METHOD1(EvictFromBackForwardCache,
-               void(blink::mojom::RendererEvictionReason));
-  MOCK_METHOD1(DidBufferLoadWhileInBackForwardCache, void(size_t num_bytes));
-  MOCK_METHOD0(CanContinueBufferingWhileInBackForwardCache, bool());
 
   void RunUntilBodyBecomesReady() {
     base::RunLoop loop;

@@ -113,9 +113,6 @@ class TestResourceRequestSenderDelegate
       original_peer_->OnStartLoadingResponseBody(std::move(body_handle_));
       original_peer_->OnCompletedRequest(status);
     }
-    void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {}
-    void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-    bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
 
    private:
     scoped_refptr<WebRequestPeer> original_peer_;
@@ -168,10 +165,6 @@ class MockRequestPeer : public WebRequestPeer {
     completion_status_ = status;
     complete_ = true;
   }
-  void EvictFromBackForwardCache(
-      mojom::RendererEvictionReason reason) override {}
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-  bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
 
   std::string data() { return data_; }
   bool received_response() { return received_response_; }

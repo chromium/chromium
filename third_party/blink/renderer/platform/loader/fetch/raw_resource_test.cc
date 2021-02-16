@@ -67,9 +67,6 @@ class RawResourceTest : public testing::Test {
     void DidFinishLoadingBody() override {}
     void DidFailLoadingBody() override {}
     void DidCancelLoadingBody() override {}
-    void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {}
-    void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-    bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
   };
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>

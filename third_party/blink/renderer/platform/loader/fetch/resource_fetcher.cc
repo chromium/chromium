@@ -2276,28 +2276,6 @@ void ResourceFetcher::RemoveSubresourceWebBundle(
   subresource_web_bundles_.erase(&subresource_web_bundle);
 }
 
-void ResourceFetcher::EvictFromBackForwardCache(
-    mojom::RendererEvictionReason reason) {
-  if (!resource_load_observer_)
-    return;
-
-  resource_load_observer_->EvictFromBackForwardCache(reason);
-}
-
-void ResourceFetcher::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
-  if (!resource_load_observer_)
-    return;
-
-  resource_load_observer_->DidBufferLoadWhileInBackForwardCache(num_bytes);
-}
-
-bool ResourceFetcher::CanContinueBufferingWhileInBackForwardCache() {
-  if (!resource_load_observer_)
-    return true;
-
-  return resource_load_observer_->CanContinueBufferingWhileInBackForwardCache();
-}
-
 void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   visitor->Trace(properties_);

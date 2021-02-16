@@ -131,9 +131,9 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   void DidFinishLoadingBody() override;
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;
-  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason);
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  bool CanContinueBufferingWhileInBackForwardCache();
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;

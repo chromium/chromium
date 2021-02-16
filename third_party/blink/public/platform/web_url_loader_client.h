@@ -125,16 +125,6 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
                        int64_t total_encoded_body_length,
                        int64_t total_decoded_body_length) {}
 
-  // Called when redirect or upload happens when the page is in
-  // BackForwardCache.
-  // TODO(yuzus): ResponseBodyLoader should implement the eviction logic instead
-  // of client. Move the capability to the loader.
-  virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason) {}
-
-  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
-
-  virtual bool CanContinueBufferingWhileInBackForwardCache() { return true; }
-
   // Value passed to DidFinishLoading when total encoded data length isn't
   // known.
   static const int64_t kUnknownEncodedDataLength = -1;

@@ -420,9 +420,6 @@ class WebURLLoaderImpl::Context : public blink::WebRequestPeer {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void SetResourceRequestSenderForTesting(  // IN-TEST
       std::unique_ptr<blink::WebResourceRequestSender> resource_request_sender);
@@ -1215,20 +1212,6 @@ void WebURLLoaderImpl::Context::AppendVariationsThrottles(
   if (frame)
     origin = frame->Top()->GetSecurityOrigin();
   VariationsRenderThreadObserver::AppendThrottleIfNeeded(origin, throttles);
-}
-
-void WebURLLoaderImpl::Context::EvictFromBackForwardCache(
-    blink::mojom::RendererEvictionReason reason) {
-  client()->EvictFromBackForwardCache(reason);
-}
-
-void WebURLLoaderImpl::Context::DidBufferLoadWhileInBackForwardCache(
-    size_t num_bytes) {
-  client()->DidBufferLoadWhileInBackForwardCache(num_bytes);
-}
-
-bool WebURLLoaderImpl::Context::CanContinueBufferingWhileInBackForwardCache() {
-  return client()->CanContinueBufferingWhileInBackForwardCache();
 }
 
 void WebURLLoaderImpl::Context::SetResourceRequestSenderForTesting(

@@ -1270,19 +1270,6 @@ void ResourceLoader::HandleError(const ResourceError& error) {
                               inflight_keepalive_bytes_);
 }
 
-void ResourceLoader::EvictFromBackForwardCache(
-    mojom::RendererEvictionReason reason) {
-  fetcher_->EvictFromBackForwardCache(reason);
-}
-
-void ResourceLoader::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
-  fetcher_->DidBufferLoadWhileInBackForwardCache(num_bytes);
-}
-
-bool ResourceLoader::CanContinueBufferingWhileInBackForwardCache() {
-  return fetcher_->CanContinueBufferingWhileInBackForwardCache();
-}
-
 void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   DCHECK(loader_);
   DCHECK_EQ(request.Priority(), ResourceLoadPriority::kHighest);

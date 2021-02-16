@@ -108,13 +108,6 @@ class MockWebURLLoaderClientObserver
     context_->completion_status = status;
   }
 
-  void EvictFromBackForwardCache(
-      mojom::RendererEvictionReason reason) override {}
-
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-
-  bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
-
   Context* context() { return context_.get(); }
 
   struct Context final {
