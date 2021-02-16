@@ -29,6 +29,7 @@ source_set("coordinator") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/search_engines",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
