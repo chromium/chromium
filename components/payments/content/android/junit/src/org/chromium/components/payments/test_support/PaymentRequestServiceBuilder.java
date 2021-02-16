@@ -69,7 +69,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
         mWebContents = Mockito.mock(WebContents.class);
         setTopLevelOrigin(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
-        setFrameOrigin("https://frame.origin");
+        setFrameOrigin(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
         Origin origin = Mockito.mock(Origin.class);
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
         mJourneyLogger = journeyLogger;
@@ -139,8 +139,8 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     @Override
-    public String formatUrlForSecurityDisplay(String url) {
-        return url;
+    public String formatUrlForSecurityDisplay(GURL url) {
+        return url.getSpec();
     }
 
     @Override
@@ -175,7 +175,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
         return this;
     }
 
-    public PaymentRequestServiceBuilder setRenderFrameHostLastCommittedURL(String url) {
+    public PaymentRequestServiceBuilder setRenderFrameHostLastCommittedURL(GURL url) {
         Mockito.doReturn(url).when(mRenderFrameHost).getLastCommittedURL();
         return this;
     }
@@ -240,7 +240,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
         return this;
     }
 
-    public PaymentRequestServiceBuilder setFrameOrigin(String frameOrigin) {
+    public PaymentRequestServiceBuilder setFrameOrigin(GURL frameOrigin) {
         Mockito.doReturn(frameOrigin).when(mRenderFrameHost).getLastCommittedURL();
         return this;
     }

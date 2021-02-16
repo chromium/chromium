@@ -355,11 +355,11 @@ public class Fido2CredentialRequestTest {
     }
 
     private static class MockAuthenticatorRenderFrameHost extends MockRenderFrameHost {
-        private String mLastUrl;
+        private GURL mLastUrl;
         private MockOrigin mLastOrigin;
 
         @Override
-        public String getLastCommittedURL() {
+        public GURL getLastCommittedURL() {
             return mLastUrl;
         }
 
@@ -368,10 +368,10 @@ public class Fido2CredentialRequestTest {
             return mLastOrigin;
         }
 
-        public void setLastCommittedURL(String url) {
+        public void setLastCommittedURL(GURL url) {
             mLastUrl = url;
             mLastOrigin = new MockOrigin();
-            mLastOrigin.setUrl(url);
+            mLastOrigin.setUrl(url.getSpec());
         }
     }
 
@@ -384,7 +384,7 @@ public class Fido2CredentialRequestTest {
                 "subdomain.example.test", "/content/test/data/android/authenticator.html");
         sActivityTestRule.loadUrl(mUrl);
         mFrameHost = new MockAuthenticatorRenderFrameHost();
-        mFrameHost.setLastCommittedURL(mUrl);
+        mFrameHost.setLastCommittedURL(new GURL(mUrl));
         mOrigin = mFrameHost.getLastCommittedOrigin();
         mRequest = new Fido2CredentialRequest();
         mRequest.setWebContentsForTesting(new MockWebContents());

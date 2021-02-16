@@ -76,7 +76,10 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
                 .when(mWebContents)
                 .getLastCommittedUrl();
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
-        Mockito.doReturn("https://frame.origin").when(mRenderFrameHost).getLastCommittedURL();
+        // subframe
+        Mockito.doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2))
+                .when(mRenderFrameHost)
+                .getLastCommittedURL();
         Origin origin = Mockito.mock(Origin.class);
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
         mMethodData = new PaymentMethodData[1];
@@ -169,8 +172,8 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public String formatUrlForSecurityDisplay(String uri) {
-        return uri;
+    public String formatUrlForSecurityDisplay(GURL uri) {
+        return uri.getSpec();
     }
 
     @Override

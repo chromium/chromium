@@ -32,7 +32,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Methods called from Java
-  base::android::ScopedJavaLocalRef<jstring> GetLastCommittedURL(
+  base::android::ScopedJavaLocalRef<jobject> GetLastCommittedURL(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;
 

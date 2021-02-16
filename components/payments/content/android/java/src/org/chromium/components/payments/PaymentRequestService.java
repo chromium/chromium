@@ -15,6 +15,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -246,8 +247,8 @@ public class PaymentRequestService
          * @return Stripped-down String containing the essential bits of the URL, or the original
          *         URL if it fails to parse it.
          */
-        default String formatUrlForSecurityDisplay(String uri) {
-            return UrlFormatter.formatUrlForSecurityDisplay(uri);
+        default String formatUrlForSecurityDisplay(GURL uri) {
+            return UrlFormatter.formatUrlForSecurityDisplay(uri, SchemeDisplay.SHOW);
         }
 
         /**
@@ -429,8 +430,7 @@ public class PaymentRequestService
             return false;
         }
         // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
-        mTopLevelOrigin =
-                mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl().getSpec());
+        mTopLevelOrigin = mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = mDelegate.getCertificateChain(mWebContents);

@@ -21,6 +21,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
+#include "url/android/gurl_android.h"
 #include "url/origin.h"
 
 using base::android::AttachCurrentThread;
@@ -35,13 +36,15 @@ namespace {
 void OnGetCanonicalUrlForSharing(
     const base::android::JavaRef<jobject>& jcallback,
     const base::Optional<GURL>& url) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   if (!url) {
     base::android::RunObjectCallbackAndroid(jcallback,
-                                            ScopedJavaLocalRef<jstring>());
+                                            url::GURLAndroid::EmptyGURL(env));
     return;
   }
 
-  base::android::RunStringCallbackAndroid(jcallback, url->spec());
+  base::android::RunObjectCallbackAndroid(
+      jcallback, url::GURLAndroid::FromNativeGURL(env, url.value()));
 }
 }  // namespace
 
@@ -94,11 +97,11 @@ RenderFrameHostAndroid::GetJavaObject() {
   return obj_.get(env);
 }
 
-ScopedJavaLocalRef<jstring> RenderFrameHostAndroid::GetLastCommittedURL(
+ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedURL(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) const {
-  return ConvertUTF8ToJavaString(
-      env, render_frame_host_->GetLastCommittedURL().spec());
+  return url::GURLAndroid::FromNativeGURL(
+      env, render_frame_host_->GetLastCommittedURL());
 }
 
 ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedOrigin(

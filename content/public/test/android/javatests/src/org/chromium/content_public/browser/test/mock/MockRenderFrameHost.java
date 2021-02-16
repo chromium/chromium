@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.bindings.Interface;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -15,7 +16,7 @@ import org.chromium.url.Origin;
  */
 public class MockRenderFrameHost implements RenderFrameHost {
     @Override
-    public String getLastCommittedURL() {
+    public GURL getLastCommittedURL() {
         return null;
     }
 
@@ -25,7 +26,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
-    public void getCanonicalUrlForSharing(Callback<String> callback) {}
+    public void getCanonicalUrlForSharing(Callback<GURL> callback) {}
 
     @Override
     public boolean isFeatureEnabled(@FeaturePolicyFeature int feature) {

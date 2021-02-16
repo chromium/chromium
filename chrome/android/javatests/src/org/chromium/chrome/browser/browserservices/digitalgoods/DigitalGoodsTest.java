@@ -46,6 +46,7 @@ import org.chromium.net.test.ServerCertificate;
 import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -206,7 +207,7 @@ public class DigitalGoodsTest {
 
         // To work around this, we create our own DigitalGoodsImpl with a custom Delegate that
         // provides the URL we want to see.
-        DigitalGoodsImpl.Delegate delegate = () -> TWA_SERVICE_SCOPE;
+        DigitalGoodsImpl.Delegate delegate = () -> new GURL(TWA_SERVICE_SCOPE);
         DigitalGoodsAdapter adapter = new DigitalGoodsAdapter(mClient);
         return new DigitalGoodsImpl(adapter, delegate);
     }

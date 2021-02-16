@@ -351,7 +351,7 @@ public class WebContentsTest {
                 Assert.assertNotNull(frameHost);
 
                 Assert.assertEquals("RenderFrameHost has incorrect last committed URL", TEST_URL_2,
-                        frameHost.getLastCommittedURL());
+                        frameHost.getLastCommittedURL().getSpec());
 
                 WebContents associatedWebContents =
                         WebContentsStatics.fromRenderFrameHost(frameHost);

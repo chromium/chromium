@@ -13,6 +13,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentRequestSpec;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 
@@ -46,7 +47,8 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
 
         assert delegate.getParams().getPaymentRequestOrigin().equals(
                 UrlFormatter.formatUrlForSecurityDisplay(
-                        delegate.getParams().getRenderFrameHost().getLastCommittedURL()));
+                        delegate.getParams().getRenderFrameHost().getLastCommittedURL(),
+                        SchemeDisplay.SHOW));
 
         PaymentAppServiceCallback callback = new PaymentAppServiceCallback(delegate);
 

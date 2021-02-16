@@ -24,9 +24,8 @@ public class InstalledAppProviderFactory implements InterfaceFactory<InstalledAp
 
         @Override
         public GURL getUrl() {
-            String url = mRenderFrameHost.getLastCommittedURL();
-            if (url == null) return GURL.emptyGURL();
-            return new GURL(url);
+            GURL url = mRenderFrameHost.getLastCommittedURL();
+            return (url != null) ? url : GURL.emptyGURL();
         }
 
         @Override

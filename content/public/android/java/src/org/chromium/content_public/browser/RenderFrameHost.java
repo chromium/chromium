@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.mojo.bindings.Interface;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -20,7 +21,7 @@ public interface RenderFrameHost {
      * @return The last committed URL of the frame or null when being destroyed.
      */
     @Nullable
-    String getLastCommittedURL();
+    GURL getLastCommittedURL();
 
     /**
      * Get the last committed Origin of the frame. This is not always the same as scheme/host/port
@@ -37,7 +38,7 @@ public interface RenderFrameHost {
      *
      * @param callback The callback to be notified once the canonical URL has been fetched.
      */
-    void getCanonicalUrlForSharing(Callback<String> callback);
+    void getCanonicalUrlForSharing(Callback<GURL> callback);
 
     /**
      * Returns whether the feature policy allows the feature in this frame.

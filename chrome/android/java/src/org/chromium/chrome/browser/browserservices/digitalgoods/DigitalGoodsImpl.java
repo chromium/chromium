@@ -13,6 +13,7 @@ import org.chromium.payments.mojom.DigitalGoods;
 import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
 import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
+import org.chromium.url.GURL;
 
 /**
  * An implementation of the {@link DigitalGoods} mojo interface that communicates with Trusted Web
@@ -26,7 +27,7 @@ public class DigitalGoodsImpl implements DigitalGoods {
     public interface Delegate {
         /** @return The current URL or null when the frame is being destroyed. */
         @Nullable
-        String getUrl();
+        GURL getUrl();
     }
 
     /** Constructs the object with a given adapter and delegate. */
@@ -37,23 +38,24 @@ public class DigitalGoodsImpl implements DigitalGoods {
 
     @Override
     public void getDetails(String[] itemIds, GetDetailsResponse callback) {
-        String url = mDelegate.getUrl();
-        if (url != null) mAdapter.getDetails(Uri.parse(url), itemIds, callback);
+        GURL url = mDelegate.getUrl();
+        if (url != null) mAdapter.getDetails(Uri.parse(url.getSpec()), itemIds, callback);
     }
 
     @Override
     public void acknowledge(
             String purchaseToken, boolean makeAvailableAgain, AcknowledgeResponse callback) {
-        String url = mDelegate.getUrl();
+        GURL url = mDelegate.getUrl();
         if (url != null) {
-            mAdapter.acknowledge(Uri.parse(url), purchaseToken, makeAvailableAgain, callback);
+            mAdapter.acknowledge(
+                    Uri.parse(url.getSpec()), purchaseToken, makeAvailableAgain, callback);
         }
     }
 
     @Override
     public void listPurchases(ListPurchasesResponse callback) {
-        String url = mDelegate.getUrl();
-        if (url != null) mAdapter.listPurchases(Uri.parse(mDelegate.getUrl()), callback);
+        GURL url = mDelegate.getUrl();
+        if (url != null) mAdapter.listPurchases(Uri.parse(url.getSpec()), callback);
     }
 
     @Override
