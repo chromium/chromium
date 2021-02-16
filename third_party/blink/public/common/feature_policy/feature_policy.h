@@ -39,9 +39,13 @@ namespace blink {
 //
 // Allowlists
 // ----------
-// Allowlists are collections of origins, although two special terms can be used
-// when declaring them:
+// Allowlists are collections of origins, although several special terms can be
+// used when declaring them:
+//   "none" indicates that no origins should be included in the allowlist.
 //   "self" refers to the origin of the frame which is declaring the policy.
+//   "src" refers to the origin specified by the attributes of the iframe
+//   element which embeds the document. This incorporates the src, srcdoc, and
+//   sandbox attributes.
 //   "*" refers to all origins; any origin will match an allowlist which
 //   contains it.
 //
@@ -67,19 +71,19 @@ namespace blink {
 // Defaults
 // --------
 // Each defined feature has a default policy, which determines whether the
-// feature is available when no policy has been declared, ans determines how the
+// feature is available when no policy has been declared, and determines how the
 // feature is inherited across origin boundaries.
 //
 // If the default policy is in effect for a frame, then it controls how the
 // feature is inherited by any cross-origin iframes embedded by the frame. (See
 // the comments in |FeaturePolicyFeatureDefault| in feature_policy_features.h
-// for specifics)
+// for specifics.)
 //
 // Policy Inheritance
 // ------------------
 // Policies in effect for a frame are inherited by any child frames it embeds.
 // Unless another policy is declared in the child, all same-origin children will
-// receive the same set of enables features as the parent frame. Whether or not
+// receive the same set of enabled features as the parent frame. Whether or not
 // features are inherited by cross-origin iframes without an explicit policy is
 // determined by the feature's default policy. (Again, see the comments in
 // |FeaturePolicyFeatureDefault| in feature_policy_features.h for details)
@@ -88,7 +92,6 @@ namespace blink {
 // between a RenderFrame and any of its associated RenderFrameProxies. A list of
 // these form a ParsedFeaturePolicy.
 // NOTE: These types are used for replication frame state between processes.
-
 struct BLINK_COMMON_EXPORT ParsedFeaturePolicyDeclaration {
   ParsedFeaturePolicyDeclaration();
   explicit ParsedFeaturePolicyDeclaration(mojom::FeaturePolicyFeature feature);
