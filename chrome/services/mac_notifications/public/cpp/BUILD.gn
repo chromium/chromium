@@ -4,6 +4,8 @@
 
 source_set("cpp") {
   sources = [
+    "notification_category_manager.h",
+    "notification_category_manager.mm",
     "notification_constants_mac.h",
     "notification_constants_mac.mm",
     "notification_utils_mac.cc",
@@ -12,7 +14,11 @@ source_set("cpp") {
 
   frameworks = [ "Foundation.framework" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//ui/base",
+  ]
 }
 
 source_set("test_support") {
@@ -26,4 +32,18 @@ source_set("test_support") {
   deps = [ "//base" ]
 
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "notification_category_manager_unittest.mm" ]
+
+  deps = [
+    ":cpp",
+    ":test_support",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }

@@ -20,7 +20,6 @@ extern NSString* const kNotificationIdentifier;
 extern NSString* const kNotificationCloseButtonTag;
 extern NSString* const kNotificationOptionsButtonTag;
 extern NSString* const kNotificationSettingsButtonTag;
-extern NSString* const kNotificationCategoryIdentifier;
 
 extern NSString* const kNotificationOrigin;
 extern NSString* const kNotificationId;

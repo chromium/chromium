@@ -33,7 +33,8 @@ MacNotificationServiceUN::MacNotificationServiceUN(
     : binding_(this, std::move(service)),
       delegate_([[AlertUNNotificationCenterDelegate alloc]
           initWithActionHandler:std::move(handler)]),
-      notification_center_([notification_center retain]) {
+      notification_center_([notification_center retain]),
+      category_manager_(notification_center) {
   [notification_center_ setDelegate:delegate_.get()];
   // TODO(crbug.com/1129366): Determine when to ask for permissions.
   RequestPermission();
