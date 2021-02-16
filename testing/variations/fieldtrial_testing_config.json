@@ -3011,7 +3011,21 @@
                     ]
                 },
                 {
-                    "name": "ContextMenuPerformanceInfoUiDisabled",
+                    "name": "ContextMenuPerformanceInfoLinkPerformance",
+                    "params": {
+                        "use_link_performance_hints": "true"
+                    },
+                    "enable_features": [
+                        "ContextMenuPerformanceInfo",
+                        "OptimizationHintsFetchingAnonymousDataConsent",
+                        "PerformanceHintsObserver"
+                    ]
+                },
+                {
+                    "name": "ContextMenuPerformanceInfoLinkPerformanceUiDisabled",
+                    "params": {
+                        "use_link_performance_hints": "true"
+                    },
                     "enable_features": [
                         "OptimizationHintsFetchingAnonymousDataConsent",
                         "PerformanceHintsObserver"
