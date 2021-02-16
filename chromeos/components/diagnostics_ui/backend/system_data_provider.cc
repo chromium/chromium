@@ -346,6 +346,8 @@ void SystemDataProvider::OnSystemInfoProbeResponse(
     GetSystemInfoCallback callback,
     healthd::TelemetryInfoPtr info_ptr) {
   mojom::SystemInfoPtr system_info = mojom::SystemInfo::New();
+  system_info->version_info = mojom::VersionInfo::New();
+  system_info->device_capabilities = mojom::DeviceCapabilities::New();
 
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
