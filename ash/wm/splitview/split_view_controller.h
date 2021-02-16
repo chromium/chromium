@@ -143,8 +143,14 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // overview window grid first before snapping it if |window| is currently
   // showing in the overview window grid. We'll add a finishing touch to the
   // snap animation of |window| if split view mode is not already active, and if
-  // |window| is not minimized and has an non-identity transform.
-  void SnapWindow(aura::Window* window, SnapPosition snap_position);
+  // |window| is not minimized and has an non-identity transform. If
+  // |activate_window| is true, |window| will be activated after being snapped
+  // in splitview. Please note if |activate_window| is false, it's still
+  // possible that |window| will be activated after being snapped, see
+  // |to_be_activated_window_| for details.
+  void SnapWindow(aura::Window* window,
+                  SnapPosition snap_position,
+                  bool activate_window = false);
 
   // Swaps the left and right windows. This will do nothing if one of the
   // windows is not snapped.
@@ -512,11 +518,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;
 
-  // A pointer to the to-be-snapped window that's from overview and is about to
-  // snap in split view. If not nullptr then this window should be the active
-  // window after it's snapped in split screen as well.
-  // TODO(xdai): Remove this variable. This is meant to be temporary. Removed it
-  // after we introduce a callback function in SnapWindow().
+  // A pointer to the to-be-snapped window that will be activated after it's
+  // snapped in splitview. There can be two cases when this value can be
+  // non-nullptr, when SnapWindow() explicitly specifies the window needs to be
+  // activated, or when the to-be-snapped is from overview and was the active
+  // window before entering overview, so when it's snapped in splitview, it
+  // should remain to be the active window.
   aura::Window* to_be_activated_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SplitViewController);

@@ -620,7 +620,8 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
 }
 
 void SplitViewController::SnapWindow(aura::Window* window,
-                                     SnapPosition snap_position) {
+                                     SnapPosition snap_position,
+                                     bool activate_window) {
   DCHECK(window && CanSnapWindow(window));
   DCHECK_NE(snap_position, NONE);
   DCHECK(!is_resizing_);
@@ -630,8 +631,9 @@ void SplitViewController::SnapWindow(aura::Window* window,
   UpdateSnappingWindowTransformedBounds(window);
 
   OverviewSession* overview_session = GetOverviewSession();
-  if (overview_session &&
-      overview_session->IsWindowActiveWindowBeforeOverview(window)) {
+  if (activate_window ||
+      (overview_session &&
+       overview_session->IsWindowActiveWindowBeforeOverview(window))) {
     to_be_activated_window_ = window;
   }
   RemoveSnappingWindowFromOverviewIfApplicable(overview_session, window);
@@ -1151,8 +1153,8 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
   // Start overview mode if we aren't already in it.
   overview_controller->StartOverview(OverviewEnterExitType::kImmediateEnter);
 
-  SnapWindow(target_window, SplitViewController::LEFT);
-  wm::ActivateWindow(target_window);
+  SnapWindow(target_window, SplitViewController::LEFT,
+             /*activate_window=*/true);
   base::RecordAction(
       base::UserMetricsAction("Tablet_LongPressOverviewButtonEnterSplitView"));
 }
@@ -2110,8 +2112,8 @@ void SplitViewController::EndWindowDragImpl(
       // Calculate the expected snap position based on the last event
       // location. Note if there is already a window at |desired_snap_postion|,
       // SnapWindow() will put the previous snapped window in overview.
-      SnapWindow(window, ComputeSnapPosition(last_location_in_screen));
-      wm::ActivateWindow(window);
+      SnapWindow(window, ComputeSnapPosition(last_location_in_screen),
+                 /*activate_window=*/true);
     } else {
       // Restore the dragged window's transform first if it's not identity. It
       // needs to be called before the transformed window's bounds change so
@@ -2144,8 +2146,7 @@ void SplitViewController::EndWindowDragImpl(
         window->GetProperty(kTabDraggingSourceWindowKey);
     // Note SnapWindow() might put the previous window that was snapped at the
     // |desired_snap_position| in overview.
-    SnapWindow(window, desired_snap_position);
-    wm::ActivateWindow(window);
+    SnapWindow(window, desired_snap_position, /*activate_window=*/true);
 
     if (!was_splitview_active && initiator_window &&
         initiator_window != window) {

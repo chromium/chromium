@@ -760,9 +760,9 @@ void OverviewWindowDragController::SnapWindow(
   DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
               ->IsDividerAnimating());
   aura::Window* window = item_->GetWindow();
-  split_view_controller->SnapWindow(window, snap_position);
+  split_view_controller->SnapWindow(window, snap_position,
+                                    /*activate_window=*/true);
   item_ = nullptr;
-  wm::ActivateWindow(window);
 }
 
 OverviewGrid* OverviewWindowDragController::GetCurrentGrid() const {

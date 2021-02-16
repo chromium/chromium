@@ -143,7 +143,8 @@ void TabDragDropDelegate::Drop(const gfx::Point& location_in_screen,
 
   SplitViewController* const split_view_controller =
       SplitViewController::Get(new_window);
-  split_view_controller->SnapWindow(new_window, snap_position);
+  split_view_controller->SnapWindow(new_window, snap_position,
+                                    /*activate_window=*/true);
 
   // The tab drag source window is the last window the user was
   // interacting with. When dropping into split view, it makes the most
