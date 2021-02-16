@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_PROCESSOR_IMPL_DELEGATE_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_PROCESSOR_IMPL_DELEGATE_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_PROCESSOR_IMPL_DELEGATE_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_PROCESSOR_IMPL_DELEGATE_H_
 
 namespace content {
 class BrowserContext;
@@ -13,9 +13,9 @@ namespace prerender {
 
 class NoStatePrefetchLinkManager;
 
-class PrerenderProcessorImplDelegate {
+class NoStatePrefetchProcessorImplDelegate {
  public:
-  virtual ~PrerenderProcessorImplDelegate() = default;
+  virtual ~NoStatePrefetchProcessorImplDelegate() = default;
 
   // Gets the NoStatePrefetchLinkManager associated with |browser_context|.
   virtual NoStatePrefetchLinkManager* GetNoStatePrefetchLinkManager(
@@ -24,4 +24,4 @@ class PrerenderProcessorImplDelegate {
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_PROCESSOR_IMPL_DELEGATE_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_PROCESSOR_IMPL_DELEGATE_H_

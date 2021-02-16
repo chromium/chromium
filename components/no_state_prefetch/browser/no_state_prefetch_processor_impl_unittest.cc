@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_processor_impl.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
-#include "components/no_state_prefetch/browser/prerender_processor_impl_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl_delegate.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -53,10 +53,10 @@ class MockNoStatePrefetchLinkManager final : public NoStatePrefetchLinkManager {
   bool is_abandon_called_ = false;
 };
 
-class MockPrerenderProcessorImplDelegate final
-    : public PrerenderProcessorImplDelegate {
+class MockNoStatePrefetchProcessorImplDelegate final
+    : public NoStatePrefetchProcessorImplDelegate {
  public:
-  explicit MockPrerenderProcessorImplDelegate(
+  explicit MockNoStatePrefetchProcessorImplDelegate(
       MockNoStatePrefetchLinkManager* link_manager)
       : link_manager_(link_manager) {}
 
@@ -69,15 +69,17 @@ class MockPrerenderProcessorImplDelegate final
   MockNoStatePrefetchLinkManager* link_manager_;
 };
 
-class PrerenderProcessorImplTest : public content::RenderViewHostTestHarness {};
+class NoStatePrefetchProcessorImplTest
+    : public content::RenderViewHostTestHarness {};
 
-TEST_F(PrerenderProcessorImplTest, StartCancelAbandon) {
+TEST_F(NoStatePrefetchProcessorImplTest, StartCancelAbandon) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
   mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
-  PrerenderProcessorImpl::Create(
+  NoStatePrefetchProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
-      std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
+      std::make_unique<MockNoStatePrefetchProcessorImplDelegate>(
+          link_manager.get()));
 
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = GURL("https://example.com/prefetch");
@@ -103,13 +105,14 @@ TEST_F(PrerenderProcessorImplTest, StartCancelAbandon) {
   EXPECT_TRUE(link_manager->is_abandon_called());
 }
 
-TEST_F(PrerenderProcessorImplTest, StartAbandon) {
+TEST_F(NoStatePrefetchProcessorImplTest, StartAbandon) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
   mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
-  PrerenderProcessorImpl::Create(
+  NoStatePrefetchProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
-      std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
+      std::make_unique<MockNoStatePrefetchProcessorImplDelegate>(
+          link_manager.get()));
 
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = GURL("https://example.com/prefetch");
@@ -129,13 +132,14 @@ TEST_F(PrerenderProcessorImplTest, StartAbandon) {
   EXPECT_TRUE(link_manager->is_abandon_called());
 }
 
-TEST_F(PrerenderProcessorImplTest, StartTwice) {
+TEST_F(NoStatePrefetchProcessorImplTest, StartTwice) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
   mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
-  PrerenderProcessorImpl::Create(
+  NoStatePrefetchProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
-      std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
+      std::make_unique<MockNoStatePrefetchProcessorImplDelegate>(
+          link_manager.get()));
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
@@ -163,16 +167,17 @@ TEST_F(PrerenderProcessorImplTest, StartTwice) {
   ASSERT_TRUE(bad_message_error.empty());
   remote->Start(std::move(attributes2));
   remote.FlushForTesting();
-  EXPECT_EQ(bad_message_error, "PPI_START_TWICE");
+  EXPECT_EQ(bad_message_error, "NSPPI_START_TWICE");
 }
 
-TEST_F(PrerenderProcessorImplTest, Cancel) {
+TEST_F(NoStatePrefetchProcessorImplTest, Cancel) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
   mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
-  PrerenderProcessorImpl::Create(
+  NoStatePrefetchProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
-      std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
+      std::make_unique<MockNoStatePrefetchProcessorImplDelegate>(
+          link_manager.get()));
 
   // Call Cancel() before Start().
   EXPECT_FALSE(link_manager->is_cancel_called());
@@ -182,13 +187,14 @@ TEST_F(PrerenderProcessorImplTest, Cancel) {
   EXPECT_FALSE(link_manager->is_cancel_called());
 }
 
-TEST_F(PrerenderProcessorImplTest, Abandon) {
+TEST_F(NoStatePrefetchProcessorImplTest, Abandon) {
   auto link_manager = std::make_unique<MockNoStatePrefetchLinkManager>();
 
   mojo::Remote<blink::mojom::NoStatePrefetchProcessor> remote;
-  PrerenderProcessorImpl::Create(
+  NoStatePrefetchProcessorImpl::Create(
       main_rfh(), remote.BindNewPipeAndPassReceiver(),
-      std::make_unique<MockPrerenderProcessorImplDelegate>(link_manager.get()));
+      std::make_unique<MockNoStatePrefetchProcessorImplDelegate>(
+          link_manager.get()));
 
   // Disconnect before Start().
   EXPECT_FALSE(link_manager->is_abandon_called());

@@ -59,8 +59,8 @@ void PrerenderProcessor::Start(
   }
 
   // TODO(https://crbug.com/1132746): Validate the origin, etc and send
-  // mojo::ReportBadMessage() if necessary like the legacy prerender
-  // `prerender::PrerenderProcessorImpl::Start()`.
+  // mojo::ReportBadMessage() if necessary like
+  // `NoStatePrefetchProcessorImpl::Start()`.
 
   // TODO(https://crbug.com/1138711, https://crbug.com/1138723): Abort if the
   // initiator frame is not the main frame (i.e., iframe or pop-up window).

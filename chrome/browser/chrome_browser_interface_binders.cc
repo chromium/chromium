@@ -21,7 +21,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/network_hints_handler_impl.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_processor_impl_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/insecure_sensitive_input_driver_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -46,7 +46,7 @@
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/feed/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/browser/prerender_processor_impl.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_service.h"
@@ -352,9 +352,10 @@ void BindPrerenderCanceler(
 void BindNoStatePrefetchProcessor(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver) {
-  prerender::PrerenderProcessorImpl::Create(
+  prerender::NoStatePrefetchProcessorImpl::Create(
       frame_host, std::move(receiver),
-      std::make_unique<prerender::ChromePrerenderProcessorImplDelegate>());
+      std::make_unique<
+          prerender::ChromeNoStatePrefetchProcessorImplDelegate>());
 }
 
 #if defined(OS_ANDROID)

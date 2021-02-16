@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/browser/prerender_processor_impl.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -18,7 +18,7 @@
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
-#include "weblayer/browser/no_state_prefetch/prerender_processor_impl_delegate_impl.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_processor_impl_delegate_impl.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/webui/weblayer_internals.mojom.h"
@@ -75,9 +75,9 @@ void BindPageHandler(
 void BindNoStatePrefetchProcessor(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver) {
-  prerender::PrerenderProcessorImpl::Create(
+  prerender::NoStatePrefetchProcessorImpl::Create(
       frame_host, std::move(receiver),
-      std::make_unique<PrerenderProcessorImplDelegateImpl>());
+      std::make_unique<NoStatePrefetchProcessorImplDelegateImpl>());
 }
 
 void BindPrerenderCanceler(

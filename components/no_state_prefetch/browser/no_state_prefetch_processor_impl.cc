@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_processor_impl.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -13,48 +13,48 @@
 
 namespace prerender {
 
-PrerenderProcessorImpl::PrerenderProcessorImpl(
+NoStatePrefetchProcessorImpl::NoStatePrefetchProcessorImpl(
     int render_process_id,
     int render_frame_id,
     const url::Origin& initiator_origin,
     mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver,
-    std::unique_ptr<PrerenderProcessorImplDelegate> delegate)
+    std::unique_ptr<NoStatePrefetchProcessorImplDelegate> delegate)
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id),
       initiator_origin_(initiator_origin),
       delegate_(std::move(delegate)) {
   receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&PrerenderProcessorImpl::Abandon, base::Unretained(this)));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &NoStatePrefetchProcessorImpl::Abandon, base::Unretained(this)));
 }
 
-PrerenderProcessorImpl::~PrerenderProcessorImpl() = default;
+NoStatePrefetchProcessorImpl::~NoStatePrefetchProcessorImpl() = default;
 
 // static
-void PrerenderProcessorImpl::Create(
+void NoStatePrefetchProcessorImpl::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::NoStatePrefetchProcessor> receiver,
-    std::unique_ptr<PrerenderProcessorImplDelegate> delegate) {
-  // PrerenderProcessorImpl is a self-owned object. This deletes itself on the
-  // mojo disconnect handler.
-  new PrerenderProcessorImpl(frame_host->GetProcess()->GetID(),
-                             frame_host->GetRoutingID(),
-                             frame_host->GetLastCommittedOrigin(),
-                             std::move(receiver), std::move(delegate));
+    std::unique_ptr<NoStatePrefetchProcessorImplDelegate> delegate) {
+  // NoStatePrefetchProcessorImpl is a self-owned object. This deletes itself on
+  // the mojo disconnect handler.
+  new NoStatePrefetchProcessorImpl(frame_host->GetProcess()->GetID(),
+                                   frame_host->GetRoutingID(),
+                                   frame_host->GetLastCommittedOrigin(),
+                                   std::move(receiver), std::move(delegate));
 }
 
-void PrerenderProcessorImpl::Start(
+void NoStatePrefetchProcessorImpl::Start(
     blink::mojom::PrerenderAttributesPtr attributes) {
   if (!initiator_origin_.opaque() &&
       !content::ChildProcessSecurityPolicy::GetInstance()
            ->CanAccessDataForOrigin(render_process_id_, initiator_origin_)) {
-    mojo::ReportBadMessage("PPI_INVALID_INITIATOR_ORIGIN");
+    mojo::ReportBadMessage("NSPPI_INVALID_INITIATOR_ORIGIN");
     return;
   }
 
   // Start() must be called only one time.
   if (link_trigger_id_) {
-    mojo::ReportBadMessage("PPI_START_TWICE");
+    mojo::ReportBadMessage("NSPPI_START_TWICE");
     return;
   }
 
@@ -74,7 +74,7 @@ void PrerenderProcessorImpl::Start(
       std::move(attributes), initiator_origin_);
 }
 
-void PrerenderProcessorImpl::Cancel() {
+void NoStatePrefetchProcessorImpl::Cancel() {
   if (!link_trigger_id_)
     return;
   auto* link_manager = GetNoStatePrefetchLinkManager();
@@ -82,7 +82,7 @@ void PrerenderProcessorImpl::Cancel() {
     link_manager->OnCancelLinkTrigger(*link_trigger_id_);
 }
 
-void PrerenderProcessorImpl::Abandon() {
+void NoStatePrefetchProcessorImpl::Abandon() {
   if (link_trigger_id_) {
     auto* link_manager = GetNoStatePrefetchLinkManager();
     if (link_manager)
@@ -92,7 +92,7 @@ void PrerenderProcessorImpl::Abandon() {
 }
 
 NoStatePrefetchLinkManager*
-PrerenderProcessorImpl::GetNoStatePrefetchLinkManager() {
+NoStatePrefetchProcessorImpl::GetNoStatePrefetchLinkManager() {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host)
