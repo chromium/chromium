@@ -356,6 +356,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                        const base::Optional<bool>& by_user) {
     last_operation_ = operation;
     last_action_index_ = action_index;
+    last_reply_ = reply;
   }
 
  protected:
@@ -400,6 +401,11 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                   DoConnectToSignal(kFreedesktopNotificationsName,
                                     "NotificationClosed", _, _))
           .WillOnce(RegisterSignalCallback(&notification_closed_callback_));
+
+      EXPECT_CALL(*mock_notification_proxy_.get(),
+                  DoConnectToSignal(kFreedesktopNotificationsName,
+                                    "NotificationReplied", _, _))
+          .WillOnce(RegisterSignalCallback(&notification_replied_callback_));
     }
 
     EXPECT_CALL(*this, MockableNotificationBridgeReadyCallback(_))
@@ -424,6 +430,14 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                        base::Unretained(this), dbus_id, action));
   }
 
+  void ReplyToNotification(uint32_t dbus_id, const std::string& message) {
+    dbus_thread_linux::GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &NotificationPlatformBridgeLinuxTest::DoReplyToNotification,
+            base::Unretained(this), dbus_id, message));
+  }
+
   MOCK_METHOD1(MockableNotificationBridgeReadyCallback, void(bool));
 
   scoped_refptr<dbus::MockBus> mock_bus_;
@@ -432,12 +446,14 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
 
   base::OnceCallback<void(dbus::Signal*)> action_invoked_callback_;
   base::OnceCallback<void(dbus::Signal*)> notification_closed_callback_;
+  base::OnceCallback<void(dbus::Signal*)> notification_replied_callback_;
 
   std::unique_ptr<NotificationPlatformBridgeLinux> notification_bridge_linux_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   base::Optional<NotificationCommon::Operation> last_operation_;
   base::Optional<int> last_action_index_;
+  base::Optional<base::string16> last_reply_;
 
  private:
   void DoInvokeAction(uint32_t dbus_id, const std::string& action) {
@@ -446,6 +462,14 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     writer.AppendUint32(dbus_id);
     writer.AppendString(action);
     std::move(action_invoked_callback_).Run(&signal);
+  }
+
+  void DoReplyToNotification(uint32_t dbus_id, const std::string& message) {
+    dbus::Signal signal(kFreedesktopNotificationsName, "NotificationReplied");
+    dbus::MessageWriter writer(&signal);
+    writer.AppendUint32(dbus_id);
+    writer.AppendString(message);
+    std::move(notification_replied_callback_).Run(&signal);
   }
 };
 
@@ -914,4 +938,28 @@ TEST_F(NotificationPlatformBridgeLinuxTest, CloseButtonForwards) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(NotificationCommon::OPERATION_CLOSE, last_operation_);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
+  EXPECT_CALL(*mock_notification_proxy_.get(),
+              CallMethodAndBlock(Calls("Notify"), _))
+      .WillOnce(OnNotify([](const NotificationRequest&) {}, 1));
+
+  CreateNotificationBridgeLinux(TestParams().SetCapabilities(
+      std::vector<std::string>{"actions", "body", "inline-reply"}));
+
+  ButtonInfo replyButton(base::ASCIIToUTF16("button0"));
+  replyButton.placeholder = base::ASCIIToUTF16("Reply...");
+
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("1").AddButton(replyButton).GetResult(), nullptr);
+
+  ReplyToNotification(1, "Hello");
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(false, last_action_index_.has_value());
+  EXPECT_EQ(base::ASCIIToUTF16("Hello"), last_reply_);
 }
