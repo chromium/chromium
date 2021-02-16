@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
@@ -42,6 +43,36 @@
 
 namespace content {
 
+namespace {
+
+// Test observer which waits for a visual properties update from a
+// `RenderWidgetHost`.
+class TestRenderWidgetHostObserver : public RenderWidgetHostObserver {
+ public:
+  explicit TestRenderWidgetHostObserver(RenderWidgetHost* widget_host)
+      : widget_host_(widget_host) {
+    widget_host_->AddObserver(this);
+  }
+
+  ~TestRenderWidgetHostObserver() override {
+    widget_host_->RemoveObserver(this);
+  }
+
+  // RenderWidgetHostObserver:
+  void RenderWidgetHostDidUpdateVisualProperties(
+      RenderWidgetHost* widget_host) override {
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  RenderWidgetHost* widget_host_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
 // For tests that just need a browser opened/navigated to a simple web page.
 class RenderWidgetHostBrowserTest : public ContentBrowserTest {
  public:
@@ -63,10 +94,7 @@ class RenderWidgetHostBrowserTest : public ContentBrowserTest {
 
   void WaitForVisualPropertiesAck() {
     while (host()->visual_properties_ack_pending_for_testing()) {
-      WindowedNotificationObserver(
-          NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
-          Source<RenderWidgetHost>(host()))
-          .Wait();
+      TestRenderWidgetHostObserver(host()).Wait();
     }
   }
 };

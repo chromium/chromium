@@ -2431,9 +2431,8 @@ void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
 
   visual_properties_ack_pending_ = false;
 
-  NotificationService::current()->Notify(
-      NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
-      Source<RenderWidgetHost>(this), NotificationService::NoDetails());
+  for (auto& observer : observers_)
+    observer.RenderWidgetHostDidUpdateVisualProperties(this);
 
   if (!view_)
     return;
