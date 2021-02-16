@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/bits.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -383,8 +384,8 @@ void CastAudioOutputStream::Close() {
     mixer_service_wrapper_->SetRunning(false);
     POST_TO_MIXER_SERVICE_WRAPPER(
         Close,
-        BindToTaskRunner(audio_manager_->audio_manager()->GetTaskRunner(),
-                         std::move(finish_callback)));
+        base::BindPostTask(audio_manager_->audio_manager()->GetTaskRunner(),
+                           std::move(finish_callback)));
   } else if (cma_wrapper_) {
     // Synchronously set running to false to guarantee that
     // AudioSourceCallback::OnMoreData() will not be called anymore.

@@ -163,7 +163,6 @@ cast_source_set("test_support") {
 test("cast_base_unittests") {
   sources = [
     "alarm_manager_unittest.cc",
-    "bind_to_task_runner_unittest.cc",
     "cast_features_unittest.cc",
     "device_capabilities_impl_unittest.cc",
     "error_codes_unittest.cc",

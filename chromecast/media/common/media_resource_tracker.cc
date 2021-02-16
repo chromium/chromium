@@ -5,9 +5,10 @@
 #include "chromecast/media/common/media_resource_tracker.h"
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "chromecast/base/bind_to_task_runner.h"
+#include "base/single_thread_task_runner.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/volume_control.h"
 
@@ -101,7 +102,7 @@ void MediaResourceTracker::MaybeCallFinalizeOnMediaThread(
   DCHECK(!finalize_completion_cb_);
 
   finalize_completion_cb_ =
-      BindToTaskRunner(ui_task_runner_, std::move(completion_cb));
+      base::BindPostTask(ui_task_runner_, std::move(completion_cb));
   if (!media_lib_initialized_) {
     if (finalize_completion_cb_)
       std::move(finalize_completion_cb_).Run();
