@@ -864,24 +864,44 @@
                     "name": "AutofillFixFillableFieldTypes_2021-02-12",
                     "enable_features": [
                         "AutofillFixFillableFieldTypes"
+                    ],
+                    "disable_features": [
+                        "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                        "AutofillSectionUponRedundantNameInfo"
                     ]
                 },
                 {
                     "name": "EnableAutofillSectionUponRedundantNameInfo_2021-02-12",
                     "enable_features": [
                         "AutofillSectionUponRedundantNameInfo"
+                    ],
+                    "disable_features": [
+                        "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                        "AutofillFixFillableFieldTypes"
                     ]
                 },
                 {
                     "name": "AutofillEnableLabelPrecedenceForTurkishAddresses_2021-02-12",
                     "enable_features": [
                         "AutofillEnableLabelPrecedenceForTurkishAddresses"
+                    ],
+                    "disable_features": [
+                        "AutofillEnableDependentLocalityParsing",
+                        "AutofillFixFillableFieldTypes",
+                        "AutofillSectionUponRedundantNameInfo"
                     ]
                 },
                 {
                     "name": "AutofillEnableDependentLocalityParsing_2021-02-12",
                     "enable_features": [
                         "AutofillEnableDependentLocalityParsing"
+                    ],
+                    "disable_features": [
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                        "AutofillFixFillableFieldTypes",
+                        "AutofillSectionUponRedundantNameInfo"
                     ]
                 }
             ]
