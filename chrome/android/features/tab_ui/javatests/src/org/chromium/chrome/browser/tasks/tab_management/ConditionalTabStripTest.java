@@ -58,6 +58,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabsTest.SimulateClickOnMainThread;
@@ -534,7 +535,7 @@ public class ConditionalTabStripTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1094998")
+    @FlakyTest(message = "https://crbug.com/1169672")
     public void testStrip_InfoBarOptIn() throws Exception {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         for (int i = 0; i < 3; i++) {
