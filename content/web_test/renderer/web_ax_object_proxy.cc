@@ -1247,6 +1247,13 @@ std::string WebAXObjectProxy::BoundsForRange(int start, int end) {
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ChildAtIndex(int index) {
+  // Scripts can sometimes provide bad input.
+  // Return undefined object in case of range error, rather than passing a bad
+  // index into the a11y core, where it would trigger a DCHECK.
+  int num_children = ChildrenCount();
+  if (index < 0 || index >= num_children)
+    return v8::Local<v8::Object>();
+
   return GetChildAtIndex(index);
 }
 
