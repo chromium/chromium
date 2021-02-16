@@ -5679,3 +5679,6 @@ crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infini
 # Sheriff 2021-02-15
 crbug.com/1177996 [ Linux ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
 crbug.com/1178018 [ Win7 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html [ Failure Pass ]
+
+# Sheriff 2021-02-16
+crbug.com/1178899 http/tests/devtools/console/console-log-syntax-error.js [ Pass Failure ]
