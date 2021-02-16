@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -151,7 +152,15 @@ TEST_F(LocationIconViewTest, ShouldNotAnimateWarningToDangerous) {
 // Whenever InkDropMode is set a new InkDrop is created, which will reset any
 // animations on the drop, so we should only set the InkDropMode when it has
 // actually changed.
-TEST_F(LocationIconViewTest, ShouldNotRecreateInkDropNeedlessly) {
+// TODO(https://crbug.com/1178786) flaky on mac
+#if defined(OS_MAC)
+#define MAYBE_ShouldNotRecreateInkDropNeedlessly \
+  DISABLED_ShouldNotRecreateInkDropNeedlessly
+#else
+#define MAYBE_ShouldNotRecreateInkDropNeedlessly \
+  ShouldNotRecreateInkDropNeedlessly
+#endif
+TEST_F(LocationIconViewTest, MAYBE_ShouldNotRecreateInkDropNeedlessly) {
   delegate()->set_is_editing_or_empty(false);
   view()->Update(false);
 
