@@ -962,6 +962,9 @@ crbug.com/591099 external/wpt/html/links/manifest/mime-type-none-manual.html [ F
 crbug.com/591099 external/wpt/html/links/manifest/mime-type-text-json-manual.html [ Failure ]
 crbug.com/591099 external/wpt/html/links/manifest/wrong-mime-type-text-plain-manual.html [ Failure ]
 
+### external/wpt/html/semantics/interactive-elements/the-popup-element/
+crbug.com/1178754 external/wpt/html/semantics/interactive-elements/the-popup-element/popup-light-dismiss.tentative.html [ Crash ]
+
 ### virtual/stable/compositing/filters/
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 
