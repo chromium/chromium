@@ -113,6 +113,13 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
 
   TestingProfile* GetTestingProfile() { return testing_profile_.get(); }
 
+ protected:
+  // This needs to be declared before |task_environment_|, so that it will be
+  // destroyed after |task_environment_|. This avoids tsan race errors with
+  // tasks running on other threads checking if features are enabled while
+  // |feature_list_| is being destroyed.
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
@@ -135,9 +142,6 @@ class AbusiveOriginPermissionRevocationRequestTest
   }
 
   ~AbusiveOriginPermissionRevocationRequestTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AbusiveOriginPermissionRevocationRequestTest,
