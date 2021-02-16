@@ -4,12 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
-  ]
-}
-
 android_library("java") {
   deps = [
     "$google_play_services_package:google_play_services_auth_base_java",
@@ -30,7 +24,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/AccountManagerDelegateException.java",
     "java/src/org/chromium/components/signin/AccountManagerFacade.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
-    "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/AccountManagerResult.java",
     "java/src/org/chromium/components/signin/AccountUtils.java",
     "java/src/org/chromium/components/signin/AccountsChangeObserver.java",
@@ -45,6 +38,4 @@ android_library("java") {
     "java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/util/PatternMatcher.java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

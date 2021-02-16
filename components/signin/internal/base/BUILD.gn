@@ -12,7 +12,7 @@ source_set("base") {
     ]
     deps = [
       "//base",
-      "//components/signin/core/browser/android:jni_headers",
+      "//components/signin/public/android:jni_headers",
     ]
   }
 }

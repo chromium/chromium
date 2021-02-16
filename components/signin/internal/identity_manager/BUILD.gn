@@ -73,7 +73,6 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_android.h",
     ]
     deps += [
-      "//components/signin/core/browser/android:jni_headers",
       "//components/signin/internal/base",
       "//components/signin/public/android:jni_headers",
     ]

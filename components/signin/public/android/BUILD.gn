@@ -16,6 +16,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
@@ -34,6 +35,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
+    "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
@@ -50,6 +52,7 @@ generate_jni("jni_headers") {
 android_library("signin_java_test_support") {
   testonly = true
   deps = [
+    ":java",
     ":signin_test_resources",
     "//base:base_java",
     "//components/signin/core/browser/android:java",
@@ -100,6 +103,7 @@ java_library("junit") {
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
   ]
   deps = [
+    ":java",
     ":signin_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
