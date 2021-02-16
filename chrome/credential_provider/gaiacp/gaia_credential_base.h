@@ -10,8 +10,8 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -60,7 +60,7 @@ class ATL_NO_VTABLE CGaiaCredentialBase
   // Allocates a BSTR from a DLL string resource given by |id| replacing the
   // placeholders in the string by the provided replacements.
   static BSTR AllocErrorString(UINT id,
-                               const std::vector<base::string16>& replacements);
+                               const std::vector<std::wstring>& replacements);
 
   // Gets the directory where the credential provider is installed.
   static HRESULT GetInstallDirectory(base::FilePath* path);
@@ -263,9 +263,9 @@ class ATL_NO_VTABLE CGaiaCredentialBase
   // |sid| matches the domain\username and sid stored in the credential. If
   // these verifications fail then the function should return an error code
   // which will cause sign in to fail.
-  virtual HRESULT ValidateExistingUser(const base::string16& username,
-                                       const base::string16& domain,
-                                       const base::string16& sid,
+  virtual HRESULT ValidateExistingUser(const std::wstring& username,
+                                       const std::wstring& domain,
+                                       const std::wstring& sid,
                                        BSTR* error_text);
 
   // Checks the information given in |result| to determine if a user can be
@@ -281,7 +281,7 @@ class ATL_NO_VTABLE CGaiaCredentialBase
                                BSTR* sid,
                                BSTR* error_text);
 
-  HRESULT RecoverWindowsPasswordIfPossible(base::string16* recovered_password);
+  HRESULT RecoverWindowsPasswordIfPossible(std::wstring* recovered_password);
 
   // Sets the error message in the password field based on the HRESULT returned
   // by NetUserChangePassword win32 function.

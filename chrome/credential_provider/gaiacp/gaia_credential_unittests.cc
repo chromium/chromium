@@ -117,12 +117,11 @@ TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated_DiffPassword) {
       S_OK,
       fake_os_user_manager()->CreateTestOSUser(
           L"foo_bar",
-          base::UTF8ToUTF16(test_data_storage.GetSuccessPassword()).c_str(),
-          base::UTF8ToUTF16(test_data_storage.GetSuccessFullName()).c_str(),
+          base::UTF8ToWide(test_data_storage.GetSuccessPassword()).c_str(),
+          base::UTF8ToWide(test_data_storage.GetSuccessFullName()).c_str(),
           L"comment",
-          base::UTF8ToUTF16(test_data_storage.GetSuccessId()).c_str(),
-          base::UTF8ToUTF16(test_data_storage.GetSuccessEmail()).c_str(),
-          &sid));
+          base::UTF8ToWide(test_data_storage.GetSuccessId()).c_str(),
+          base::UTF8ToWide(test_data_storage.GetSuccessEmail()).c_str(), &sid));
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
   ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
@@ -221,11 +220,11 @@ TEST_F(GcpGaiaCredentialGlsRunnerTest,
   // Create a fake user that has the same username but a different gaia id
   // as the test gaia id.
   CComBSTR sid;
-  base::string16 base_username(L"foo1234567890abcdefg");
-  base::string16 base_gaia_id(L"other-gaia-id");
+  std::wstring base_username(L"foo1234567890abcdefg");
+  std::wstring base_gaia_id(L"other-gaia-id");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       base_username.c_str(), L"password", L"name", L"comment",
-                      base_gaia_id, base::string16(), &sid));
+                      base_gaia_id, std::wstring(), &sid));
 
   ASSERT_EQ(2u, fake_os_user_manager()->GetUserCount());
 
@@ -239,14 +238,14 @@ TEST_F(GcpGaiaCredentialGlsRunnerTest,
 
   Microsoft::WRL::ComPtr<ITestCredential> test;
   ASSERT_EQ(S_OK, cred.As(&test));
-  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(base::UTF16ToUTF8(base_username) +
+  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(base::WideToUTF8(base_username) +
                                            "@gmail.com"));
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
   // New username should be truncated at the end and have the last character
   // replaced with a new index
   EXPECT_STREQ((base_username.substr(0, base_username.size() - 1) +
-                base::NumberToString16(kInitialDuplicateUsernameIndex))
+                base::NumberToWString(kInitialDuplicateUsernameIndex))
                    .c_str(),
                test->GetFinalUsername());
   // New user should be created.
@@ -277,23 +276,23 @@ TEST_P(GcpAssociatedUserRunnableGaiaCredentialTest,
   // Create many fake users that has the same username but a different gaia id
   // as the test gaia id.
   CComBSTR sid;
-  base::string16 base_username(L"foo");
-  base::string16 base_gaia_id(L"other-gaia-id");
+  std::wstring base_username(L"foo");
+  std::wstring base_gaia_id(L"other-gaia-id");
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       base_username.c_str(), L"password", L"name", L"comment",
-                      should_associate ? base_gaia_id : base::string16(),
-                      base::string16(), &sid));
+                      should_associate ? base_gaia_id : std::wstring(),
+                      std::wstring(), &sid));
   ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid), kUserId, base_gaia_id));
 
   for (int i = 0; i < last_user_index; ++i) {
-    base::string16 user_suffix =
-        base::NumberToString16(i + kInitialDuplicateUsernameIndex);
+    std::wstring user_suffix =
+        base::NumberToWString(i + kInitialDuplicateUsernameIndex);
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         (base_username + user_suffix).c_str(), L"password",
                         L"name", L"comment",
                         should_associate ? base_gaia_id + user_suffix
-                                         : base::string16(),
-                        base::string16(), &sid));
+                                         : std::wstring(),
+                        std::wstring(), &sid));
   }
 
   ASSERT_EQ(static_cast<size_t>(1 + last_user_index + 1),
@@ -314,8 +313,8 @@ TEST_P(GcpAssociatedUserRunnableGaiaCredentialTest,
 
   if (should_succeed) {
     EXPECT_STREQ(
-        (base_username + base::NumberToString16(last_user_index +
-                                                kInitialDuplicateUsernameIndex))
+        (base_username + base::NumberToWString(last_user_index +
+                                               kInitialDuplicateUsernameIndex))
             .c_str(),
         OLE2CW(test->GetFinalUsername()));
     // New user should be created.
