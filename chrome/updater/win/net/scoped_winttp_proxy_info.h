@@ -54,16 +54,16 @@ class ScopedWinHttpProxyInfo {
     proxy_info_.dwAccessType = access_type;
   }
 
-  base::char16* proxy() const { return proxy_info_.lpszProxy; }
+  wchar_t* proxy() const { return proxy_info_.lpszProxy; }
 
-  void set_proxy(const base::string16& proxy) {
+  void set_proxy(const std::wstring& proxy) {
     if (proxy.empty())
       return;
 
     proxy_info_.lpszProxy = GlobalAlloc(proxy);
   }
 
-  void set_proxy_bypass(const base::string16& proxy_bypass) {
+  void set_proxy_bypass(const std::wstring& proxy_bypass) {
     if (proxy_bypass.empty())
       return;
 
@@ -76,10 +76,10 @@ class ScopedWinHttpProxyInfo {
   WINHTTP_PROXY_INFO* receive() { return &proxy_info_; }
 
  private:
-  base::char16* GlobalAlloc(const base::string16& str) {
-    const size_t size_in_bytes = (str.length() + 1) * sizeof(base::char16);
-    base::char16* string_mem =
-        reinterpret_cast<base::char16*>(::GlobalAlloc(GPTR, size_in_bytes));
+  wchar_t* GlobalAlloc(const std::wstring& str) {
+    const size_t size_in_bytes = (str.length() + 1) * sizeof(wchar_t);
+    wchar_t* string_mem =
+        reinterpret_cast<wchar_t*>(::GlobalAlloc(GPTR, size_in_bytes));
 
     if (!string_mem) {
       PLOG(ERROR) << "GlobalAlloc failed to allocate " << size_in_bytes

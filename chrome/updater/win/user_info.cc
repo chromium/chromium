@@ -13,13 +13,13 @@ namespace updater {
 namespace {
 
 // Sid of NT AUTHORITY\SYSTEM user.
-constexpr base::char16 kSystemPrincipalSid[] = L"S-1-5-18";
+constexpr wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 
 }  // namespace
 
-HRESULT GetProcessUser(base::string16* name,
-                       base::string16* domain,
-                       base::string16* sid) {
+HRESULT GetProcessUser(std::wstring* name,
+                       std::wstring* domain,
+                       std::wstring* sid) {
   CSid current_sid;
 
   HRESULT hr = GetProcessUserSid(&current_sid);
@@ -42,7 +42,7 @@ HRESULT GetProcessUserSid(CSid* sid) {
   CAccessToken token;
   if (!token.GetProcessToken(TOKEN_QUERY) || !token.GetUser(sid)) {
     HRESULT hr = HRESULTFromLastError();
-    base::string16 thread_sid;
+    std::wstring thread_sid;
     DCHECK(FAILED(GetThreadUserSid(&thread_sid)));
     return hr;
   }
@@ -51,12 +51,12 @@ HRESULT GetProcessUserSid(CSid* sid) {
 }
 
 bool IsLocalSystemUser() {
-  base::string16 user_sid;
+  std::wstring user_sid;
   HRESULT hr = GetProcessUser(nullptr, nullptr, &user_sid);
   return SUCCEEDED(hr) && user_sid.compare(kSystemPrincipalSid) == 0;
 }
 
-HRESULT GetThreadUserSid(base::string16* sid) {
+HRESULT GetThreadUserSid(std::wstring* sid) {
   DCHECK(sid);
   CAccessToken access_token;
   CSid user_sid;

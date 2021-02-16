@@ -30,8 +30,8 @@ class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
   YesNoDialog& operator=(const YesNoDialog&) = delete;
   ~YesNoDialog() override;
 
-  HRESULT Initialize(const base::string16& yes_no_title,
-                     const base::string16& yes_no_text);
+  HRESULT Initialize(const std::wstring& yes_no_title,
+                     const std::wstring& yes_no_text);
   HRESULT Show();
 
   bool yes_clicked() const { return yes_clicked_; }

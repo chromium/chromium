@@ -56,7 +56,7 @@ class TaskScheduler {
   struct TaskExecAction {
     base::FilePath application_path;
     base::FilePath working_dir;
-    base::string16 arguments;
+    std::wstring arguments;
   };
 
   // Detailed description of a scheduled task. This type is returned by the
@@ -69,10 +69,10 @@ class TaskScheduler {
     TaskInfo& operator=(const TaskInfo&);
     TaskInfo& operator=(TaskInfo&&);
 
-    base::string16 name;
+    std::wstring name;
 
     // Description of the task.
-    base::string16 description;
+    std::wstring description;
 
     // A scheduled task can have more than one action associated with it and
     // actions can be of types other than executables (for example, sending
@@ -110,7 +110,7 @@ class TaskScheduler {
   virtual bool IsTaskEnabled(const wchar_t* task_name) = 0;
 
   // List all currently registered scheduled tasks.
-  virtual bool GetTaskNameList(std::vector<base::string16>* task_names) = 0;
+  virtual bool GetTaskNameList(std::vector<std::wstring>* task_names) = 0;
 
   // Return detailed information about a task. Return true if no errors were
   // encountered. On error, the struct is left unmodified.

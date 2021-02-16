@@ -6,6 +6,7 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/util.h"
@@ -106,26 +107,26 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
   return S_OK;
 }
 
-base::string16 GetInstallerDisplayName(const base::string16& bundle_name) {
-  base::string16 display_name = bundle_name;
+std::wstring GetInstallerDisplayName(const base::string16& bundle_name) {
+  std::wstring display_name = base::AsWString(bundle_name);
   if (display_name.empty())
     LoadString(IDS_FRIENDLY_COMPANY_NAME, &display_name);
-  base::string16 installer_name;
+  std::wstring installer_name;
   LoadString(IDS_INSTALLER_DISPLAY_NAME, &installer_name);
-  return base::i18n::MessageFormatter::FormatWithNumberedArgs(installer_name,
-                                                              display_name);
+  return base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      base::AsString16(installer_name), base::AsString16(display_name)));
 }
 
 // TODO(sorin): use resource bundles and remove the dependency on ATL::CString.
 // https://crbug.com/1015602
-bool LoadString(int id, base::string16* s) {
+bool LoadString(int id, std::wstring* s) {
   CString tmp;
   auto result = tmp.LoadString(id);
   *s = tmp;
   return result;
 }
 
-bool GetDlgItemText(HWND dlg, int item_id, base::string16* text) {
+bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
   text->clear();
   auto* item = ::GetDlgItem(dlg, item_id);
   if (!item)
@@ -133,7 +134,7 @@ bool GetDlgItemText(HWND dlg, int item_id, base::string16* text) {
   const auto num_chars = ::GetWindowTextLength(item);
   if (!num_chars)
     return false;
-  std::vector<base::char16> tmp(num_chars + 1);
+  std::vector<wchar_t> tmp(num_chars + 1);
   if (!::GetWindowText(item, &tmp.front(), tmp.size()))
     return false;
   text->assign(tmp.begin(), tmp.end());

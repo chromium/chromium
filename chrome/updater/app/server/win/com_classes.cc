@@ -104,15 +104,15 @@ HRESULT UpdaterImpl::GetVersion(BSTR* version) {
   return S_OK;
 }
 
-HRESULT UpdaterImpl::CheckForUpdate(const base::char16* app_id) {
+HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id) {
   return E_NOTIMPL;
 }
 
-HRESULT UpdaterImpl::Register(const base::char16* app_id,
-                              const base::char16* brand_code,
-                              const base::char16* tag,
-                              const base::char16* version,
-                              const base::char16* existence_checker_path) {
+HRESULT UpdaterImpl::Register(const wchar_t* app_id,
+                              const wchar_t* brand_code,
+                              const wchar_t* tag,
+                              const wchar_t* version,
+                              const wchar_t* existence_checker_path) {
   return E_NOTIMPL;
 }
 
@@ -122,8 +122,7 @@ HRESULT UpdaterImpl::Register(const base::char16* app_id,
 // callbacks involves issuing outgoing COM RPC calls, which block, such COM
 // calls must be done through a task runner, bound to the closures provided
 // as parameters for the UpdateService::Update call.
-HRESULT UpdaterImpl::Update(const base::char16* app_id,
-                            IUpdaterObserver* observer) {
+HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
 
@@ -175,7 +174,7 @@ HRESULT UpdaterImpl::Update(const base::char16* app_id,
                     },
                     task_runner, observer));
           },
-          com_server->update_service(), task_runner, base::UTF16ToUTF8(app_id),
+          com_server->update_service(), task_runner, base::WideToUTF8(app_id),
           IUpdaterObserverPtr(observer)));
 
   // Always return S_OK from this function. Errors must be reported using the

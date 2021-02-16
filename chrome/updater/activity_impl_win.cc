@@ -16,10 +16,10 @@
 
 namespace updater {
 namespace {
-constexpr base::char16 kDidRun[] = L"dr";
+constexpr wchar_t kDidRun[] = L"dr";
 
-base::string16 GetAppClientStateKey(const std::string& id) {
-  return base::ASCIIToUTF16(base::StrCat({CLIENT_STATE_KEY, id}));
+std::wstring GetAppClientStateKey(const std::string& id) {
+  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
 }
 
 }  // namespace
@@ -34,7 +34,7 @@ bool GetActiveBit(const std::string& id, bool is_machine_) {
     base::win::RegKey key;
     if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                  KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-      base::string16 value;
+      std::wstring value;
       if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS && value == L"1")
         return true;
     }

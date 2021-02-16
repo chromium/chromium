@@ -98,7 +98,7 @@ HRESULT SplashScreen::Initialize() {
 
   EnableSystemButtons(false);
 
-  base::string16 text;
+  std::wstring text;
   LoadString(IDS_SPLASH_SCREEN_MESSAGE, &text);
   CWindow text_wnd = GetDlgItem(IDC_INSTALLER_STATE_TEXT);
   text_wnd.SetWindowText(text.c_str());

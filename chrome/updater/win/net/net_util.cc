@@ -10,8 +10,8 @@ namespace updater {
 
 HRESULT QueryHeadersString(HINTERNET request_handle,
                            uint32_t info_level,
-                           const base::char16* name,
-                           base::string16* value) {
+                           const wchar_t* name,
+                           std::wstring* value) {
   DWORD num_bytes = 0;
   ::WinHttpQueryHeaders(request_handle, info_level, name,
                         WINHTTP_NO_OUTPUT_BUFFER, &num_bytes,
@@ -19,7 +19,7 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
   auto hr = HRESULTFromLastError();
   if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
     return hr;
-  std::vector<base::char16> buffer(num_bytes / sizeof(base::char16));
+  std::vector<wchar_t> buffer(num_bytes / sizeof(base::char16));
   if (!::WinHttpQueryHeaders(request_handle, info_level, name, &buffer.front(),
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
@@ -32,7 +32,7 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
 
 HRESULT QueryHeadersInt(HINTERNET request_handle,
                         uint32_t info_level,
-                        const base::char16* name,
+                        const wchar_t* name,
                         int* value) {
   info_level |= WINHTTP_QUERY_FLAG_NUMBER;
   DWORD num_bytes = sizeof(*value);

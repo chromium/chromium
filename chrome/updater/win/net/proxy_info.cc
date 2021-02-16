@@ -9,9 +9,9 @@ namespace updater {
 ProxyInfo::ProxyInfo() = default;
 ProxyInfo::~ProxyInfo() = default;
 ProxyInfo::ProxyInfo(bool auto_detect,
-                     const base::string16& auto_config_url,
-                     const base::string16& proxy,
-                     const base::string16& proxy_bypass)
+                     const std::wstring& auto_config_url,
+                     const std::wstring& proxy,
+                     const std::wstring& proxy_bypass)
     : auto_detect(auto_detect),
       auto_config_url(auto_config_url),
       proxy(proxy),

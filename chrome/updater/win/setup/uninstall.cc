@@ -53,7 +53,7 @@ void DeleteComService() {
                                  GetComServiceAppidRegistryPath(),
                                  WorkItem::kWow64Default);
   if (!installer::InstallServiceWorkItem::DeleteService(
-          kWindowsServiceName, base::ASCIIToUTF16(UPDATER_KEY),
+          kWindowsServiceName, base::ASCIIToWide(UPDATER_KEY),
           {__uuidof(UpdaterServiceClass)}, {}))
     LOG(WARNING) << "DeleteService failed.";
 }
@@ -81,7 +81,7 @@ int RunUninstallScript(bool uninstall_all) {
     return -1;
   }
 
-  base::char16 cmd_path[MAX_PATH] = {0};
+  wchar_t cmd_path[MAX_PATH] = {0};
   DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
                                         cmd_path, base::size(cmd_path));
   if (!size || size >= MAX_PATH)
@@ -89,7 +89,7 @@ int RunUninstallScript(bool uninstall_all) {
 
   base::FilePath script_path = versioned_dir.AppendASCII(kUninstallScript);
 
-  base::string16 cmdline = cmd_path;
+  std::wstring cmdline = cmd_path;
   base::StringAppendF(&cmdline, L" /Q /C \"%ls\" %ls",
                       script_path.value().c_str(),
                       uninstall_all ? L"all" : L"local");
@@ -126,7 +126,7 @@ int Uninstall(bool is_machine) {
   updater::UnregisterWakeTask();
 
   std::unique_ptr<WorkItemList> uninstall_list(WorkItem::CreateWorkItemList());
-  uninstall_list->AddDeleteRegKeyWorkItem(key, base::ASCIIToUTF16(UPDATER_KEY),
+  uninstall_list->AddDeleteRegKeyWorkItem(key, base::ASCIIToWide(UPDATER_KEY),
                                           WorkItem::kWow64Default);
   if (!uninstall_list->Do()) {
     LOG(ERROR) << "Failed to delete the registry keys.";

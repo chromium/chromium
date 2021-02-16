@@ -14,9 +14,9 @@ namespace updater {
 
 // Gets the user name, domain, and the SID associated with the access token
 // of the current process.
-HRESULT GetProcessUser(base::string16* name,
-                       base::string16* domain,
-                       base::string16* sid);
+HRESULT GetProcessUser(std::wstring* name,
+                       std::wstring* domain,
+                       std::wstring* sid);
 
 // Gets SID associated with the access token of the current process.
 HRESULT GetProcessUserSid(CSid* sid);
@@ -27,7 +27,7 @@ bool IsLocalSystemUser();
 // Gets the user SID associated with the access token of the current thread if
 // the thread is impersonating. If the thread is not impersonating, the API
 // fails with ERROR_NO_TOKEN.
-HRESULT GetThreadUserSid(base::string16* sid);
+HRESULT GetThreadUserSid(std::wstring* sid);
 
 }  // namespace updater
 

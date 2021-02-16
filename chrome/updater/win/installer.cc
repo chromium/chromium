@@ -32,12 +32,12 @@ namespace {
 base::Optional<base::win::RegKey> ClientStateAppKeyOpen(
     const std::string& app_id,
     REGSAM regsam) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey))
+  std::wstring subkey;
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
     return base::nullopt;
   regsam = regsam | KEY_WOW64_32KEY;
   base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), regsam);
+                        base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), regsam);
   if (key.OpenKey(subkey.c_str(), regsam) != ERROR_SUCCESS)
     return base::nullopt;
   return key;
@@ -49,12 +49,12 @@ base::Optional<base::win::RegKey> ClientStateAppKeyOpen(
 base::Optional<base::win::RegKey> ClientStateAppKeyCreate(
     const std::string& app_id,
     REGSAM regsam) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey))
+  std::wstring subkey;
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
     return base::nullopt;
   regsam = regsam | KEY_WOW64_32KEY;
   base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), regsam);
+                        base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), regsam);
   if (key.CreateKey(subkey.c_str(), regsam) != ERROR_SUCCESS)
     return base::nullopt;
   return key;
@@ -67,12 +67,12 @@ InstallerOutcome::InstallerOutcome(const InstallerOutcome&) = default;
 InstallerOutcome::~InstallerOutcome() = default;
 
 bool ClientStateAppKeyDelete(const std::string& app_id) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey))
+  std::wstring subkey;
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
     return false;
   constexpr REGSAM kRegSam = KEY_WRITE | KEY_WOW64_32KEY;
   base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), kRegSam);
+                        base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), kRegSam);
   return key.DeleteKey(subkey.c_str()) == ERROR_SUCCESS;
 }
 
@@ -107,7 +107,7 @@ bool DeleteInstallerOutput(const std::string& app_id) {
       ClientStateAppKeyOpen(app_id, KEY_SET_VALUE | KEY_QUERY_VALUE);
   if (!key)
     return false;
-  auto delete_value = [&key](const base::char16* value) {
+  auto delete_value = [&key](const wchar_t* value) {
     return key->HasValue(value) ? key->DeleteValue(value) == ERROR_SUCCESS
                                 : true;
   };
@@ -144,7 +144,7 @@ base::Optional<InstallerOutcome> GetInstallerOutcome(
     }
   }
   {
-    base::string16 val;
+    std::wstring val;
     if (key->ReadValue(kRegValueInstallerResultUIString, &val) ==
         ERROR_SUCCESS) {
       std::string installer_text;
@@ -211,13 +211,13 @@ bool SetInstallerOutcomeForTesting(const std::string& app_id,
 }
 
 std::string GetTextForSystemError(int error) {
-  base::char16* system_allocated_buffer = nullptr;
+  wchar_t* system_allocated_buffer = nullptr;
   constexpr DWORD kFormatOptions =
       FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
       FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK;
   const DWORD chars_written = ::FormatMessage(
       kFormatOptions, nullptr, error, 0,
-      reinterpret_cast<base::char16*>(&system_allocated_buffer), 0, nullptr);
+      reinterpret_cast<wchar_t*>(&system_allocated_buffer), 0, nullptr);
   auto free_buffer = base::ScopedClosureRunner(
       base::BindOnce(base::IgnoreResult(&LocalFree), system_allocated_buffer));
   return chars_written > 0 ? base::WideToUTF8(system_allocated_buffer)

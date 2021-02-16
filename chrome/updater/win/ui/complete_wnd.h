@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
@@ -32,7 +34,7 @@ class CompleteWnd : public OmahaWnd {
   void SetEventSink(CompleteWndEvents* ev);
 
   void DisplayCompletionDialog(bool is_success,
-                               const base::string16& text,
+                               const std::wstring& text,
                                const base::string16& help_url);
   BEGIN_MSG_MAP(CompleteWnd)
     MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

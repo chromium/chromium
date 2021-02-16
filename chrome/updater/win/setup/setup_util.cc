@@ -57,8 +57,8 @@ namespace updater {
 
 namespace {
 
-constexpr base::char16 kTaskName[] = L"UpdateApps";
-constexpr base::char16 kTaskDescription[] = L"Update all applications.";
+constexpr wchar_t kTaskName[] = L"UpdateApps";
+constexpr wchar_t kTaskDescription[] = L"Update all applications.";
 
 }  // namespace
 
@@ -107,8 +107,8 @@ void AddInstallComInterfaceWorkItems(HKEY root,
                                      const base::FilePath& typelib_path,
                                      GUID iid,
                                      WorkItemList* list) {
-  const base::string16 iid_reg_path = GetComIidRegistryPath(iid);
-  const base::string16 typelib_reg_path = GetComTypeLibRegistryPath(iid);
+  const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
+  const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
 
   // Delete any old registrations first.
   for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
@@ -149,7 +149,7 @@ void AddInstallServerWorkItems(HKEY root,
                                CLSID clsid,
                                const base::FilePath& com_server_path,
                                WorkItemList* list) {
-  const base::string16 clsid_reg_path = GetComServerClsidRegistryPath(clsid);
+  const std::wstring clsid_reg_path = GetComServerClsidRegistryPath(clsid);
 
   // Delete any old registrations first.
   for (const auto& reg_path : {clsid_reg_path}) {
@@ -158,7 +158,7 @@ void AddInstallServerWorkItems(HKEY root,
   }
 
   list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);
-  const base::string16 local_server32_reg_path =
+  const std::wstring local_server32_reg_path =
       base::StrCat({clsid_reg_path, L"\\LocalServer32"});
   list->AddCreateRegKeyWorkItem(root, local_server32_reg_path,
                                 WorkItem::kWow64Default);
@@ -188,45 +188,45 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       kWindowsServiceName, kWindowsServiceName,
-      base::CommandLine(com_service_path), base::ASCIIToUTF16(UPDATER_KEY),
+      base::CommandLine(com_service_path), base::ASCIIToWide(UPDATER_KEY),
       {__uuidof(UpdaterServiceClass)}, {}));
 }
 
-base::string16 GetComServerClsidRegistryPath(REFCLSID clsid) {
+std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {
   return base::StrCat(
       {L"Software\\Classes\\CLSID\\", base::win::WStringFromGUID(clsid)});
 }
 
-base::string16 GetComServiceClsid() {
+std::wstring GetComServiceClsid() {
   return base::win::WStringFromGUID(__uuidof(UpdaterServiceClass));
 }
 
-base::string16 GetComServiceClsidRegistryPath() {
+std::wstring GetComServiceClsidRegistryPath() {
   return base::StrCat({L"Software\\Classes\\CLSID\\", GetComServiceClsid()});
 }
 
-base::string16 GetComServiceAppidRegistryPath() {
+std::wstring GetComServiceAppidRegistryPath() {
   return base::StrCat({L"Software\\Classes\\AppID\\", GetComServiceClsid()});
 }
 
-base::string16 GetComIidRegistryPath(REFIID iid) {
+std::wstring GetComIidRegistryPath(REFIID iid) {
   return base::StrCat(
       {L"Software\\Classes\\Interface\\", base::win::WStringFromGUID(iid)});
 }
 
-base::string16 GetComTypeLibRegistryPath(REFIID iid) {
+std::wstring GetComTypeLibRegistryPath(REFIID iid) {
   return base::StrCat(
       {L"Software\\Classes\\TypeLib\\", base::win::WStringFromGUID(iid)});
 }
 
-base::string16 GetComTypeLibResourceIndex(REFIID iid) {
+std::wstring GetComTypeLibResourceIndex(REFIID iid) {
   // These values must be kept in sync with the numeric typelib resource
   // indexes in the resource file.
-  constexpr base::char16 kUpdaterIndex[] = L"1";
-  constexpr base::char16 kUpdaterInternalIndex[] = L"2";
-  constexpr base::char16 kUpdaterLegacyIndex[] = L"3";
+  constexpr wchar_t kUpdaterIndex[] = L"1";
+  constexpr wchar_t kUpdaterInternalIndex[] = L"2";
+  constexpr wchar_t kUpdaterLegacyIndex[] = L"3";
 
-  static const std::unordered_map<IID, const base::char16*> kTypeLibIndexes = {
+  static const std::unordered_map<IID, const wchar_t*> kTypeLibIndexes = {
       // Updater typelib.
       {__uuidof(ICompleteStatus), kUpdaterIndex},
       {__uuidof(IUpdater), kUpdaterIndex},
@@ -252,15 +252,15 @@ std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
   std::string contents;
   if (!base::ReadFileToStringWithMaxSize(deps, &contents, kDepsFileSizeMax))
     return {};
-  const base::flat_set<const base::char16*,
-                       CaseInsensitiveASCIICompare<base::string16>>
+  const base::flat_set<const wchar_t*,
+                       CaseInsensitiveASCIICompare<std::wstring>>
       exclude_extensions = {L".pdb", L".js"};
   std::vector<base::FilePath> result;
   for (const auto& line :
        base::SplitString(contents, "\r\n", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY)) {
     const auto filename =
-        base::FilePath(base::ASCIIToUTF16(line)).NormalizePathSeparators();
+        base::FilePath(base::ASCIIToWide(line)).NormalizePathSeparators();
     if (!base::Contains(exclude_extensions,
                         filename.FinalExtension().c_str())) {
       result.push_back(filename);

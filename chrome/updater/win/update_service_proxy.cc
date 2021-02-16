@@ -432,7 +432,7 @@ void UpdateServiceProxy::UpdateOnSTA(const std::string& app_id,
 
   auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater, state_update,
                                                         std::move(callback));
-  hr = updater->Update(base::UTF8ToUTF16(app_id).c_str(), observer.Get());
+  hr = updater->Update(base::UTF8ToWide(app_id).c_str(), observer.Get());
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
 

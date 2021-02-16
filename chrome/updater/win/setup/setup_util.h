@@ -7,9 +7,9 @@
 
 #include <guiddef.h>
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/win/windows_types.h"
 
 class WorkItemList;
@@ -24,12 +24,12 @@ namespace updater {
 bool RegisterWakeTask(const base::CommandLine& run_command);
 void UnregisterWakeTask();
 
-base::string16 GetComServerClsidRegistryPath(REFCLSID clsid);
-base::string16 GetComServiceClsid();
-base::string16 GetComServiceClsidRegistryPath();
-base::string16 GetComServiceAppidRegistryPath();
-base::string16 GetComIidRegistryPath(REFIID iid);
-base::string16 GetComTypeLibRegistryPath(REFIID iid);
+std::wstring GetComServerClsidRegistryPath(REFCLSID clsid);
+std::wstring GetComServiceClsid();
+std::wstring GetComServiceClsidRegistryPath();
+std::wstring GetComServiceAppidRegistryPath();
+std::wstring GetComIidRegistryPath(REFIID iid);
+std::wstring GetComTypeLibRegistryPath(REFIID iid);
 
 // Returns the resource index for the type library where the interface specified
 // by the `iid` is defined. For encapsulation reasons, the updater interfaces
@@ -39,7 +39,7 @@ base::string16 GetComTypeLibRegistryPath(REFIID iid);
 // suffix of the path to where the type library exists, such as
 // `...\updater.exe\\1`. See the Windows SDK documentation for LoadTypeLib for
 // details.
-base::string16 GetComTypeLibResourceIndex(REFIID iid);
+std::wstring GetComTypeLibResourceIndex(REFIID iid);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can be installed side-by-side with other instances of the updater.

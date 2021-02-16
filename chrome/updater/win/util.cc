@@ -168,12 +168,12 @@ HMODULE GetCurrentModuleHandle() {
 
 // The event name saved to the environment variable does not contain the
 // decoration added by GetNamedObjectAttributes.
-HRESULT CreateUniqueEventInEnvironment(const base::string16& var_name,
+HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
                                        bool is_machine,
                                        HANDLE* unique_event) {
   DCHECK(unique_event);
 
-  const base::string16 event_name = base::ASCIIToUTF16(base::GenerateGUID());
+  const std::wstring event_name = base::ASCIIToWide(base::GenerateGUID());
   NamedObjectAttributes attr;
   GetNamedObjectAttributes(event_name.c_str(), is_machine, &attr);
 
@@ -189,12 +189,12 @@ HRESULT CreateUniqueEventInEnvironment(const base::string16& var_name,
   return S_OK;
 }
 
-HRESULT OpenUniqueEventFromEnvironment(const base::string16& var_name,
+HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
                                        bool is_machine,
                                        HANDLE* unique_event) {
   DCHECK(unique_event);
 
-  base::char16 event_name[MAX_PATH] = {0};
+  wchar_t event_name[MAX_PATH] = {0};
   if (!::GetEnvironmentVariable(var_name.c_str(), event_name,
                                 base::size(event_name))) {
     DWORD error = ::GetLastError();
@@ -230,7 +230,7 @@ HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle) {
   return S_OK;
 }
 
-void GetNamedObjectAttributes(const base::char16* base_name,
+void GetNamedObjectAttributes(const wchar_t* base_name,
                               bool is_machine,
                               NamedObjectAttributes* attr) {
   DCHECK(base_name);
@@ -239,7 +239,7 @@ void GetNamedObjectAttributes(const base::char16* base_name,
   attr->name = kGlobalPrefix;
 
   if (!is_machine) {
-    base::string16 user_sid;
+    std::wstring user_sid;
     GetProcessUser(nullptr, nullptr, &user_sid);
     attr->name += user_sid;
     GetCurrentUserDefaultSecurityAttributes(&attr->sa);
@@ -307,12 +307,12 @@ void GetAdminDaclSecurityAttributes(CSecurityAttributes* sec_attr,
   sec_attr->Set(sd);
 }
 
-base::string16 GetRegistryKeyClientsUpdater() {
-  return base::ASCIIToUTF16(base::StrCat({CLIENTS_KEY, kUpdaterAppId}));
+std::wstring GetRegistryKeyClientsUpdater() {
+  return base::ASCIIToWide(base::StrCat({CLIENTS_KEY, kUpdaterAppId}));
 }
 
-base::string16 GetRegistryKeyClientStateUpdater() {
-  return base::ASCIIToUTF16(base::StrCat({CLIENT_STATE_KEY, kUpdaterAppId}));
+std::wstring GetRegistryKeyClientStateUpdater() {
+  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, kUpdaterAppId}));
 }
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {

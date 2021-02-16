@@ -25,8 +25,8 @@ BOOL YesNoDialog::PreTranslateMessage(MSG* msg) {
   return CWindow::IsDialogMessage(msg);
 }
 
-HRESULT YesNoDialog::Initialize(const base::string16& yes_no_title,
-                                const base::string16& yes_no_text) {
+HRESULT YesNoDialog::Initialize(const std::wstring& yes_no_title,
+                                const std::wstring& yes_no_text) {
   DCHECK(!IsWindow());
 
   if (!Create(parent_))
@@ -37,11 +37,11 @@ HRESULT YesNoDialog::Initialize(const base::string16& yes_no_title,
   SetWindowText(yes_no_title.c_str());
   SetDlgItemText(IDC_YES_NO_TEXT, yes_no_text.c_str());
 
-  base::string16 text_yes;
+  std::wstring text_yes;
   LoadString(IDS_YES, &text_yes);
   SetDlgItemText(IDOK, text_yes.c_str());
 
-  base::string16 text_no;
+  std::wstring text_no;
   LoadString(IDS_NO, &text_no);
   SetDlgItemText(IDCANCEL, text_no.c_str());
 

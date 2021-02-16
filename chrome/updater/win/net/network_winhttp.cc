@@ -272,7 +272,7 @@ HRESULT NetworkFetcherWinHTTP::SendRequest(const std::string& data) {
 void NetworkFetcherWinHTTP::SendRequestComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::string16 all;
+  std::wstring all;
   QueryHeadersString(
       request_handle_.get(),
       WINHTTP_QUERY_RAW_HEADERS_CRLF | WINHTTP_QUERY_FLAG_REQUEST_HEADERS,
@@ -294,7 +294,7 @@ HRESULT NetworkFetcherWinHTTP::ReceiveResponse() {
 void NetworkFetcherWinHTTP::HeadersAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::string16 all;
+  std::wstring all;
   QueryHeadersString(request_handle_.get(), WINHTTP_QUERY_RAW_HEADERS_CRLF,
                      WINHTTP_HEADER_NAME_BY_INDEX, &all);
   VLOG(3) << "response headers: " << all;
@@ -316,13 +316,13 @@ void NetworkFetcherWinHTTP::HeadersAvailable() {
     return;
   }
 
-  base::string16 etag;
+  std::wstring etag;
   if (SUCCEEDED(QueryHeadersString(request_handle_.get(), WINHTTP_QUERY_ETAG,
                                    WINHTTP_HEADER_NAME_BY_INDEX, &etag))) {
     header_etag_ = base::SysWideToUTF8(etag);
   }
 
-  base::string16 xheader_cup_server_proof;
+  std::wstring xheader_cup_server_proof;
   if (SUCCEEDED(QueryHeadersString(
           request_handle_.get(), WINHTTP_QUERY_CUSTOM,
           base::SysUTF8ToWide(
@@ -472,7 +472,7 @@ void NetworkFetcherWinHTTP::StatusCallback(HINTERNET handle,
                                            uint32_t info_len) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::StringPiece status_string;
-  base::string16 info_string;
+  std::wstring info_string;
   switch (status) {
     case WINHTTP_CALLBACK_STATUS_HANDLE_CREATED:
       status_string = "handle created";
@@ -482,14 +482,14 @@ void NetworkFetcherWinHTTP::StatusCallback(HINTERNET handle,
       break;
     case WINHTTP_CALLBACK_STATUS_RESOLVING_NAME:
       status_string = "resolving";
-      info_string.assign(static_cast<base::char16*>(info), info_len);  // host.
+      info_string.assign(static_cast<wchar_t*>(info), info_len);  // host.
       break;
     case WINHTTP_CALLBACK_STATUS_NAME_RESOLVED:
       status_string = "resolved";
       break;
     case WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER:
       status_string = "connecting";
-      info_string.assign(static_cast<base::char16*>(info), info_len);  // IP.
+      info_string.assign(static_cast<wchar_t*>(info), info_len);  // IP.
       break;
     case WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER:
       status_string = "connected";

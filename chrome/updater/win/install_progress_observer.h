@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_WIN_INSTALL_PROGRESS_OBSERVER_H_
 #define CHROME_UPDATER_WIN_INSTALL_PROGRESS_OBSERVER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/notreached.h"
@@ -68,7 +69,7 @@ struct AppCompletionInfo {
   uint32_t installer_result_code = 0;
   bool is_canceled = false;
   bool is_noupdate = false;  // |noupdate| response from server.
-  base::string16 post_install_launch_command_line;
+  std::wstring post_install_launch_command_line;
   base::string16 post_install_url;
 
   AppCompletionInfo();
@@ -78,7 +79,7 @@ struct AppCompletionInfo {
 
 struct ObserverCompletionInfo {
   CompletionCodes completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS;
-  base::string16 completion_text;
+  std::wstring completion_text;
   base::string16 help_url;
   std::vector<AppCompletionInfo> apps_info;
 

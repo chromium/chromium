@@ -153,10 +153,10 @@ int Setup(bool is_machine) {
                                           WorkItem::kWow64Default);
     install_list->AddSetRegValueWorkItem(
         key, key_path, WorkItem::kWow64Default, kRegValuePV,
-        base::ASCIIToUTF16(UPDATER_VERSION_STRING), true);
+        base::ASCIIToWide(UPDATER_VERSION_STRING), true);
     install_list->AddSetRegValueWorkItem(
         key, key_path, WorkItem::kWow64Default, kRegValueName,
-        base::ASCIIToUTF16(PRODUCT_FULLNAME_STRING), true);
+        base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
   static constexpr base::FilePath::StringPieceType kUpdaterExe =

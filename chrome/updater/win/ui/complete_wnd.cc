@@ -85,12 +85,12 @@ bool CompleteWnd::MaybeCloseWindow() {
 }
 
 void CompleteWnd::DisplayCompletionDialog(bool is_success,
-                                          const base::string16& text,
+                                          const std::wstring& text,
                                           const base::string16& help_url) {
   if (!OmahaWnd::OnComplete())
     return;
 
-  base::string16 s;
+  std::wstring s;
   LoadString(IDS_CLOSE, &s);
   SetDlgItemText(IDC_CLOSE, s.c_str());
 
@@ -98,7 +98,7 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
 
   // FormatMessage() converts all LFs to CRLFs, which are rendered as little
   // squares in UI. To avoid this, convert all CRLFs to LFs.
-  base::string16 display_text;
+  std::wstring display_text;
   base::ReplaceChars(text, L"\r\n", L"\n", &display_text);
 
   if (is_success) {

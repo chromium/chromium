@@ -7,10 +7,10 @@
 namespace updater {
 namespace ui {
 
-const base::char16 kLegacyUiDisplayedEventEnvironmentVariableName[] =
+const wchar_t kLegacyUiDisplayedEventEnvironmentVariableName[] =
     L"GOOGLE_UPDATE_UI_DISPLAYED_EVENT_NAME";
 
-const base::char16 kDialogFont[] = L"Segoe UI";
+const wchar_t kDialogFont[] = L"Segoe UI";
 
 }  // namespace ui
 }  // namespace updater

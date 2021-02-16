@@ -56,7 +56,7 @@ const size_t kNumDeleteTaskRetry = 3;
 const size_t kDeleteRetryDelayInMs = 100;
 
 // Return |timestamp| in the following string format YYYY-MM-DDTHH:MM:SS.
-base::string16 GetTimestampString(const base::Time& timestamp) {
+std::wstring GetTimestampString(const base::Time& timestamp) {
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
@@ -264,7 +264,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return is_enabled == VARIANT_TRUE;
   }
 
-  bool GetTaskNameList(std::vector<base::string16>* task_names) override {
+  bool GetTaskNameList(std::vector<std::wstring>* task_names) override {
     DCHECK(task_names);
     if (!task_folder_)
       return false;
@@ -699,7 +699,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
         Next();
         return;
       }
-      name_ = base::string16(task_name_bstr.Get() ? task_name_bstr.Get() : L"");
+      name_ = std::wstring(task_name_bstr.Get() ? task_name_bstr.Get() : L"");
     }
 
     // Detach the currently active task and pass ownership to the caller.
@@ -714,13 +714,13 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return result;
     }
 
-    const base::string16& name() const { return name_; }
+    const std::wstring& name() const { return name_; }
     bool done() const { return done_; }
 
    private:
     Microsoft::WRL::ComPtr<IRegisteredTaskCollection> tasks_;
     Microsoft::WRL::ComPtr<IRegisteredTask> task_;
-    base::string16 name_;
+    std::wstring name_;
     long task_index_ = -1;  // NOLINT, API requires a long.
     long num_tasks_ = 0;    // NOLINT, API requires a long.
     bool done_ = false;
@@ -740,15 +740,14 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   // Return the description of the task.
-  HRESULT GetTaskDescription(IRegisteredTask* task,
-                             base::string16* description) {
+  HRESULT GetTaskDescription(IRegisteredTask* task, std::wstring* description) {
     DCHECK(task);
     DCHECK(description);
 
     base::win::ScopedBstr task_name_bstr;
     HRESULT hr = task->get_Name(task_name_bstr.Receive());
-    base::string16 task_name =
-        base::string16(task_name_bstr.Get() ? task_name_bstr.Get() : L"");
+    std::wstring task_name =
+        std::wstring(task_name_bstr.Get() ? task_name_bstr.Get() : L"");
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get task name";
     }
@@ -777,7 +776,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return hr;
     }
     *description =
-        base::string16(raw_description.Get() ? raw_description.Get() : L"");
+        std::wstring(raw_description.Get() ? raw_description.Get() : L"");
     return ERROR_SUCCESS;
   }
 
@@ -877,7 +876,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
           {base::FilePath(application_path.Get() ? application_path.Get()
                                                  : L""),
            base::FilePath(working_dir.Get() ? working_dir.Get() : L""),
-           base::string16(parameters.Get() ? parameters.Get() : L"")});
+           std::wstring(parameters.Get() ? parameters.Get() : L"")});
     }
     return success;
   }
