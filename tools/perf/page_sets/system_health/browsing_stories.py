@@ -15,6 +15,7 @@ from page_sets.system_health import system_health_story
 
 from page_sets.login_helpers import autocad_login
 from page_sets.login_helpers import facebook_login
+from page_sets.login_helpers import google_login
 from page_sets.login_helpers import pinterest_login
 from page_sets.login_helpers import tumblr_login
 
@@ -1318,6 +1319,7 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
         performance_mark_and_measure=self.PERFOMANCE_MARK_AND_MEASURE)
 
   def _Login(self, action_runner):
+    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
     # Navigating to http://mail.google.com immediately leads to an infinite
     # redirection loop due to a bug in WPR (see
