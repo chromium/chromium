@@ -55,6 +55,14 @@ bool ShouldRestore(const AccountId& account_id) {
   return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
 }
 
+void SetActiveProfilePath(const base::FilePath& profile_path) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return;
+
+  FullRestoreSaveHandler::GetInstance()->SetActiveProfilePath(profile_path);
+  FullRestoreReadHandler::GetInstance()->SetActiveProfilePath(profile_path);
+}
+
 bool HasWindowInfo(int32_t restore_window_id) {
   if (!ash::features::IsFullRestoreEnabled())
     return false;

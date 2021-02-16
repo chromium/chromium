@@ -1,6 +1,6 @@
 specific_include_rules = {
   "multi_profile_support\.cc": [
-    "+components/full_restore/full_restore_save_handler.h",
+    "+components/full_restore/full_restore_utils.h",
   ],
   "multi_profile_support_unittest\.cc": [
     "+ash/multi_user/user_switch_animator.h",

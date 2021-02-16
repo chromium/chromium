@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -57,6 +56,11 @@ void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
   DCHECK(SessionID::IsValidValue(restore_window_id));
 
   RemoveAppRestoreData(restore_window_id);
+}
+
+void FullRestoreReadHandler::SetActiveProfilePath(
+    const base::FilePath& profile_path) {
+  active_profile_path_ = profile_path;
 }
 
 void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,

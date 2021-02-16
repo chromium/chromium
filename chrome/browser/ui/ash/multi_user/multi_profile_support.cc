@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/client/aura_constants.h"
@@ -226,7 +226,7 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
 
 void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
   if (ash::features::IsFullRestoreEnabled()) {
-    full_restore::FullRestoreSaveHandler::GetInstance()->SetActiveProfilePath(
+    full_restore::SetActiveProfilePath(
         ProfileManager::GetActiveUserProfile()->GetPath());
   }
 

@@ -10,15 +10,12 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace full_restore {
 
@@ -51,6 +48,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override;
 
+  void SetActiveProfilePath(const base::FilePath& profile_path);
+
   // Reads the restore data from |profile_path| on a background task runner, and
   // calls |callback| when the reading operation is done.
   void ReadFromFile(const base::FilePath& profile_path, Callback callback);
@@ -72,6 +71,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
 
   // Removes AppRestoreData for |restore_window_id|.
   void RemoveAppRestoreData(int restore_window_id);
+
+  // The current active user profile path.
+  base::FilePath active_profile_path_;
 
   // The restore data read from the full restore files.
   std::map<base::FilePath, std::unique_ptr<RestoreData>>

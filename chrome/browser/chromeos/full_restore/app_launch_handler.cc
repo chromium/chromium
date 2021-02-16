@@ -20,6 +20,7 @@
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -103,8 +104,7 @@ void AppLaunchHandler::OnGetRestoreData(
       user_manager::UserManager::Get()->GetPrimaryUser()) {
     // In Multi-Profile mode, only set for the primary user. For other users,
     // active profile path is set when switch users.
-    ::full_restore::FullRestoreSaveHandler::GetInstance()->SetActiveProfilePath(
-        profile_->GetPath());
+    ::full_restore::SetActiveProfilePath(profile_->GetPath());
   }
 
   MaybePostRestore();

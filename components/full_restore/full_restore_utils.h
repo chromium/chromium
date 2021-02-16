@@ -57,6 +57,10 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 // and the user's choice from the notification. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);
 
+// Sets the current active profile path.
+COMPONENT_EXPORT(FULL_RESTORE)
+void SetActiveProfilePath(const base::FilePath& profile_path);
+
 // Returns true if there is a window info for |restore_window_id| from the full
 // restore file. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE)

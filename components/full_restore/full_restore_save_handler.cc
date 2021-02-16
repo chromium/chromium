@@ -22,7 +22,6 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
-#include "ui/aura/window.h"
 
 namespace full_restore {
 
@@ -71,8 +70,9 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     // to save the app launch info for |app_id| and |window_id|.
     auto it = app_id_to_app_launch_info_.find(*app_id_str);
     if (it == app_id_to_app_launch_info_.end() ||
-        it->second.first != active_profile_path_)
+        it->second.first != active_profile_path_) {
       return;
+    }
 
     it->second.second->window_id = window_id;
     app_launch_info = std::move(it->second.second);
