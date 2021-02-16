@@ -8,6 +8,7 @@ from core import platforms
 import page_sets
 from page_sets.system_health import story_tags
 from telemetry import benchmark
+from telemetry import story
 from telemetry.web_perf import timeline_based_measurement
 
 
@@ -18,6 +19,7 @@ class PowerMobile(perf_benchmark.PerfBenchmark):
   """A benchmark for power measurements using on-device power monitor (ODPM).
   """
 
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
   SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID]
 
   def CreateStorySet(self, options):
