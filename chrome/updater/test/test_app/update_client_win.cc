@@ -176,7 +176,7 @@ void UpdateClientWin::UpdateCheckInternal(
   auto observer =
       Microsoft::WRL::Make<UpdaterObserver>(updater_, std::move(callback));
   HRESULT hr =
-      updater_->Update(base::ASCIIToUTF16(kTestAppId).c_str(), observer.Get());
+      updater_->Update(base::ASCIIToWide(kTestAppId).c_str(), observer.Get());
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to call IUpdater::UpdateAll " << std::hex << hr;
     UpdateService::UpdateState state;
