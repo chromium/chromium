@@ -523,7 +523,7 @@ BaseFetchContext::CanRequestInternal(
 
   if (SendConversionRequestInsteadOfRedirecting(url, redirect_info,
                                                 reporting_disposition)) {
-    return ResourceRequestBlockedReason::kOther;
+    return ResourceRequestBlockedReason::kConversionRequest;
   }
 
   // Let the client have the final say into whether or not the load should

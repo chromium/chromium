@@ -390,6 +390,11 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
           CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case blink::ResourceRequestBlockedReason::kCorpNotSameSite:
       return protocol::Network::BlockedReasonEnum::CorpNotSameSite;
+    case ResourceRequestBlockedReason::kConversionRequest:
+      // This is actually never reached, as the conversion request
+      // is marked as successful and no blocking reason is reported.
+      NOTREACHED();
+      return protocol::Network::BlockedReasonEnum::Other;
   }
   NOTREACHED();
   return protocol::Network::BlockedReasonEnum::Other;
@@ -980,6 +985,19 @@ void InspectorNetworkAgent::DidBlockRequest(
                           ResourceResponse(), initiator_info, type);
 
   String request_id = IdentifiersFactory::RequestId(loader, identifier);
+
+  // Conversion Measurement API triggers recording of conversions
+  // as redirects to a `/.well-known/register-conversion` url.
+  // The redirect request is not actually executed
+  // but stored internally and then aborted. As the redirect is blocked using
+  // the ResourceRequestBlockedReason::kConversionRequest even when everything
+  // worked out fine, we mark the request as successful, as to not confuse devs.
+  if (reason == ResourceRequestBlockedReason::kConversionRequest) {
+    GetFrontend()->loadingFinished(
+        request_id, base::TimeTicks::Now().since_origin().InSecondsF(), 0);
+    return;
+  }
+
   String protocol_reason = BuildBlockedReason(reason);
   GetFrontend()->loadingFailed(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),

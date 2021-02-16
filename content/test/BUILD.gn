@@ -1015,6 +1015,7 @@ test("content_browsertests") {
     "../browser/data_decoder_browsertest.cc",
     "../browser/database_browsertest.cc",
     "../browser/device_sensors/device_sensor_browsertest.cc",
+    "../browser/devtools/devtools_conversion_browsertest.cc",
     "../browser/devtools/devtools_issue_storage_browsertest.cc",
     "../browser/devtools/devtools_trust_token_browsertest.cc",
     "../browser/devtools/devtools_video_consumer_browsertest.cc",

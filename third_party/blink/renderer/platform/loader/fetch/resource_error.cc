@@ -301,6 +301,9 @@ String DescriptionForBlockedByClientOrResponse(int error, int extended_error) {
     case ResourceRequestBlockedReason::kCorpNotSameSite:
       detail = "NotSameSite";
       break;
+    case ResourceRequestBlockedReason::kConversionRequest:
+      detail = "ConversionRequest";
+      break;
   }
   return WebString::FromASCII(net::ErrorToString(error) + "." + detail);
 }
