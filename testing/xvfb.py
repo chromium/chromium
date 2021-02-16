@@ -263,7 +263,7 @@ def _run_with_weston(cmd, env, stdoutfile):
       # of windows.
       weston_proc = subprocess.Popen(
          ('./weston', '--backend=headless-backend.so', '--idle-time=0',
-          '--width=1024', '--height=768'),
+          '--width=1024', '--height=768', '--modules=test-plugin.so'),
          stderr=subprocess.STDOUT, env=env)
 
       # Get the $WAYLAND_DISPLAY set by Weston and pass it to the test launcher.

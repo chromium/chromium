@@ -34,3 +34,25 @@
 -IconLoaderBrowserTest.LoadGroup
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable
 -LocalNTPTest.EmbeddedSearchAPIOnlyAvailableOnNTP
+
+# These tests fail when run either with weston's test-plugin module or with
+# normal Wayland compositor. The reason is that weston with headless backend
+# and without test-plugin doesn't create a wl_seat and as a consequence any
+# input devices. This affects the way how menus and other children windows
+# are created.
+# TODO(https://crbug.com/1176174): figure out what exactly is wrong and fix
+# the problems.
+-All/HostedAppProcessModelTest.BackgroundPageWithAppCoveringDifferentSites/0
+-All/HostedOrWebAppTest.CtrlClickLink/HostedApp
+-All/HostedOrWebAppTest.CtrlClickLink/WebApp
+-All/HostedOrWebAppTest.OpenLinkInNewTab/HostedApp
+-All/HostedOrWebAppTest.OpenLinkInNewTab/WebApp
+-AppBackgroundPageApiTest.OpenPopupFromBGPage
+-AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
+-CustomTabBarViewBrowserTest.RightClickMenuShowsCopyUrl
+-PopupTrackerBrowserTest.ShiftClick_HasTracker
+-RemoteCopyBrowserTest.ImageUrl
+-RemoteCopyBrowserTest.Text
+-RemoteCopyBrowserTest.TextThenImageUrl
+-WebAppBrowserTest.CopyURL
+-BrowserNavigatorTest.SwitchToTabLatestWindow

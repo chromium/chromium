@@ -4,6 +4,7 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//third_party/wayland/wayland_protocol.gni")
@@ -338,6 +339,7 @@ shared_library("compositor") {
   sources = [
     "src/compositor/executable.c",
     "src/compositor/main.c",
+    "src/compositor/testsuite-util.c",
     "src/compositor/text-backend.c",
     "src/compositor/weston-screenshooter.c",
   ]
@@ -379,6 +381,32 @@ static_library("toytoolkit") {
     ":weston_config",
     ":xkbcommon",
   ]
+}
+
+shared_library("weston_test") {
+  output_prefix_override = true
+  output_name = "test-plugin"
+
+  sources = [ "src/tests/weston-test.c" ]
+
+  deps = [
+    ":compositor",
+    ":libweston",
+    "//third_party/wayland-protocols:weston_test",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":weston_config",
+  ]
+
+  include_dirs = [
+    "src/libweston",
+    "src/compositor",
+  ]
+
+  public_configs = [ ":pixman" ]
 }
 
 executable("weston_keyboard") {
@@ -485,6 +513,7 @@ executable("weston") {
     ":weston_desktop_shell",
     ":weston_keyboard",
     ":weston_screenshooter",
+    ":weston_test",
   ]
 
   configs += [ ":weston_config" ]

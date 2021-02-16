@@ -132,3 +132,7 @@ wayland_protocol("xdg_foreign") {
 wayland_protocol("extended_drag") {
   sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
 }
+
+wayland_protocol("weston_test") {
+  sources = [ "unstable/weston-test/weston-test.xml" ]
+}
