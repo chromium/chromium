@@ -121,6 +121,28 @@ TEST_F(PageFreezingPolicyTest, PageHoldingIndexedDBLockGetsCannotFreezeVote) {
           PageFreezingPolicyAccess::CannotFreezeReason::kHoldingIndexedDBLock));
 }
 
+TEST_F(PageFreezingPolicyTest, CannotFreezeIsConnectedToUSBDevice) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToUSBDeviceForTesting(true);
+  EXPECT_EQ(page_node()->freezing_vote()->value(),
+            freezing::FreezingVoteValue::kCannotFreeze);
+  EXPECT_EQ(
+      page_node()->freezing_vote()->reason(),
+      PageFreezingPolicyAccess::CannotFreezeReasonToString(
+          PageFreezingPolicyAccess::CannotFreezeReason::kConnectedToUsbDevice));
+}
+
+TEST_F(PageFreezingPolicyTest, CannotFreezePageConnectedToBluetoothDevice) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToBluetoothDeviceForTesting(true);
+  EXPECT_EQ(page_node()->freezing_vote()->value(),
+            freezing::FreezingVoteValue::kCannotFreeze);
+  EXPECT_EQ(page_node()->freezing_vote()->reason(),
+            PageFreezingPolicyAccess::CannotFreezeReasonToString(
+                PageFreezingPolicyAccess::CannotFreezeReason::
+                    kConnectedToBluetoothDevice));
+}
+
 TEST_F(PageFreezingPolicyTest, CannotFreezePageCapturingVideo) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingVideoForTesting(true);
@@ -167,28 +189,6 @@ TEST_F(PageFreezingPolicyTest, CannotFreezePageCapturingDisplay) {
       page_node()->freezing_vote()->reason(),
       PageFreezingPolicyAccess::CannotFreezeReasonToString(
           PageFreezingPolicyAccess::CannotFreezeReason::kCapturingDisplay));
-}
-
-TEST_F(PageFreezingPolicyTest, CannotFreezePageConnectedToBluetoothDevice) {
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
-      ->SetIsConnectedToBluetoothDeviceForTesting(true);
-  EXPECT_EQ(page_node()->freezing_vote()->value(),
-            freezing::FreezingVoteValue::kCannotFreeze);
-  EXPECT_EQ(page_node()->freezing_vote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::
-                    kConnectedToBluetoothDevice));
-}
-
-TEST_F(PageFreezingPolicyTest, CannotFreezeIsConnectedToUSBDevice) {
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
-      ->SetIsConnectedToUSBDeviceForTesting(true);
-  EXPECT_EQ(page_node()->freezing_vote()->value(),
-            freezing::FreezingVoteValue::kCannotFreeze);
-  EXPECT_EQ(
-      page_node()->freezing_vote()->reason(),
-      PageFreezingPolicyAccess::CannotFreezeReasonToString(
-          PageFreezingPolicyAccess::CannotFreezeReason::kConnectedToUsbDevice));
 }
 
 TEST_F(PageFreezingPolicyTest, FreezingVotes) {

@@ -23,60 +23,139 @@ bool IsPageNodeFrozen(const PageNode* page_node) {
          performance_manager::mojom::LifecycleState::kFrozen;
 }
 
+bool IsPageConnectedToUSBDevice(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsConnectedToUSBDevice();
+}
+
+bool IsPageConnectedToBluetoothDevice(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsConnectedToBluetoothDevice();
+}
+
+bool IsPageCapturingVideo(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsCapturingVideo();
+}
+
+bool IsPageCapturingAudio(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsCapturingAudio();
+}
+
+bool IsPageBeingMirrored(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsBeingMirrored();
+}
+
+bool IsPageCapturingWindow(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsCapturingWindow();
+}
+
+bool IsPageCapturingDisplay(const PageNode* page_node) {
+  return PageLiveStateDecorator::Data::FromPageNode(page_node)
+      ->IsCapturingDisplay();
+}
+
 }  // namespace
 
 PageFreezingPolicy::PageFreezingPolicy()
     : page_freezer_(std::make_unique<mechanism::PageFreezer>()) {}
 PageFreezingPolicy::~PageFreezingPolicy() = default;
 
-void PageFreezingPolicy::OnPassedToGraph(Graph* graph) {
-  graph_ = graph;
-  graph->AddPageNodeObserver(this);
+void PageFreezingPolicy::OnBeforeGraphDestroyed(Graph* graph) {
+  graph->RemovePageNodeObserver(this);
+  graph->RemoveGraphObserver(this);
+
+  // Clean up voting channels here as it must be done before the aggregator is
+  // torn down, which may happen before our OnTakenFromGraph() would be called.
+  for (int i = 0; i < CannotFreezeReason::kCount; ++i)
+    voting_channels_[i] = freezing::FreezingVotingChannelWrapper();
 }
 
-void PageFreezingPolicy::OnTakenFromGraph(Graph* graph) {
-  graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
+void PageFreezingPolicy::OnPassedToGraph(Graph* graph) {
+  for (int i = 0; i < CannotFreezeReason::kCount; ++i) {
+    voting_channels_[i].SetVotingChannel(
+        graph->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>()
+            ->GetVotingChannel());
+  }
+
+  graph->AddGraphObserver(this);
+  graph->AddPageNodeObserver(this);
 }
 
 void PageFreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)->AddObserver(
       this);
-  negative_vote_for_pages_.emplace(page_node, PageCannotFreezeVoteMap());
 
   if (page_node->IsAudible())
-    OnIsAudibleChanged(page_node);
+    SubmitNegativeFreezingVote(page_node, kAudible);
+
+  DCHECK(!page_node->IsHoldingWebLock());
+  DCHECK(!page_node->IsHoldingIndexedDBLock());
+  DCHECK(!IsPageConnectedToUSBDevice(page_node));
+  DCHECK(!IsPageConnectedToBluetoothDevice(page_node));
+  DCHECK(!IsPageCapturingVideo(page_node));
+  DCHECK(!IsPageCapturingAudio(page_node));
+  DCHECK(!IsPageBeingMirrored(page_node));
+  DCHECK(!IsPageCapturingWindow(page_node));
+  DCHECK(!IsPageCapturingDisplay(page_node));
 }
 
 void PageFreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
   page_node_being_removed_ = page_node;
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->RemoveObserver(this);
-  negative_vote_for_pages_.erase(page_node);
+
+  if (page_node->IsAudible())
+    InvalidateNegativeFreezingVote(page_node, kAudible);
+
+  if (page_node->IsHoldingWebLock())
+    InvalidateNegativeFreezingVote(page_node, kHoldingWebLock);
+
+  if (page_node->IsHoldingIndexedDBLock())
+    InvalidateNegativeFreezingVote(page_node, kHoldingIndexedDBLock);
+
+  if (IsPageConnectedToUSBDevice(page_node))
+    InvalidateNegativeFreezingVote(page_node, kConnectedToUsbDevice);
+
+  if (IsPageConnectedToBluetoothDevice(page_node))
+    InvalidateNegativeFreezingVote(page_node, kConnectedToBluetoothDevice);
+
+  if (IsPageCapturingVideo(page_node))
+    InvalidateNegativeFreezingVote(page_node, kCapturingVideo);
+
+  if (IsPageCapturingAudio(page_node))
+    InvalidateNegativeFreezingVote(page_node, kCapturingAudio);
+
+  if (IsPageBeingMirrored(page_node))
+    InvalidateNegativeFreezingVote(page_node, kBeingMirrored);
+
+  if (IsPageCapturingWindow(page_node))
+    InvalidateNegativeFreezingVote(page_node, kCapturingWindow);
+
+  if (IsPageCapturingDisplay(page_node))
+    InvalidateNegativeFreezingVote(page_node, kCapturingDisplay);
+
   page_node_being_removed_ = nullptr;
 }
 
 void PageFreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
-  UpdateNegativeFreezingVote(page_node, CannotFreezeReason::kAudible,
-                             page_node->IsAudible()
-                                 ? NegativeVoteAction::kEmit
-                                 : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, page_node->IsAudible(),
+                    CannotFreezeReason::kAudible);
 }
 
 void PageFreezingPolicy::OnPageIsHoldingWebLockChanged(
     const PageNode* page_node) {
-  UpdateNegativeFreezingVote(page_node, CannotFreezeReason::kHoldingWebLock,
-                             page_node->IsHoldingWebLock()
-                                 ? NegativeVoteAction::kEmit
-                                 : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, page_node->IsHoldingWebLock(),
+                    CannotFreezeReason::kHoldingWebLock);
 }
 
 void PageFreezingPolicy::OnPageIsHoldingIndexedDBLockChanged(
     const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kHoldingIndexedDBLock,
-      page_node->IsHoldingIndexedDBLock() ? NegativeVoteAction::kEmit
-                                          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, page_node->IsHoldingIndexedDBLock(),
+                    CannotFreezeReason::kHoldingIndexedDBLock);
 }
 
 void PageFreezingPolicy::OnFreezingVoteChanged(
@@ -124,64 +203,50 @@ void PageFreezingPolicy::OnLoadingStateChanged(const PageNode* page_node) {
 
 void PageFreezingPolicy::OnIsConnectedToUSBDeviceChanged(
     const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kConnectedToUsbDevice,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)
-              ->IsConnectedToUSBDevice()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageConnectedToUSBDevice(page_node),
+                    CannotFreezeReason::kConnectedToUsbDevice);
 }
 
 void PageFreezingPolicy::OnIsConnectedToBluetoothDeviceChanged(
     const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kConnectedToBluetoothDevice,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)
-              ->IsConnectedToBluetoothDevice()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageConnectedToBluetoothDevice(page_node),
+                    CannotFreezeReason::kConnectedToBluetoothDevice);
 }
 
 void PageFreezingPolicy::OnIsCapturingVideoChanged(const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kCapturingVideo,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)->IsCapturingVideo()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageCapturingVideo(page_node),
+                    CannotFreezeReason::kCapturingVideo);
 }
 
 void PageFreezingPolicy::OnIsCapturingAudioChanged(const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kCapturingAudio,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)->IsCapturingAudio()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageCapturingAudio(page_node),
+                    CannotFreezeReason::kCapturingAudio);
 }
 
 void PageFreezingPolicy::OnIsBeingMirroredChanged(const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kBeingMirrored,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)->IsBeingMirrored()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageBeingMirrored(page_node),
+                    CannotFreezeReason::kBeingMirrored);
 }
 
 void PageFreezingPolicy::OnIsCapturingWindowChanged(const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kCapturingWindow,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)->IsCapturingWindow()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageCapturingWindow(page_node),
+                    CannotFreezeReason::kCapturingWindow);
 }
 
 void PageFreezingPolicy::OnIsCapturingDisplayChanged(
     const PageNode* page_node) {
-  UpdateNegativeFreezingVote(
-      page_node, CannotFreezeReason::kCapturingDisplay,
-      PageLiveStateDecorator::Data::FromPageNode(page_node)
-              ->IsCapturingDisplay()
-          ? NegativeVoteAction::kEmit
-          : NegativeVoteAction::kRemove);
+  OnPropertyChanged(page_node, IsPageCapturingDisplay(page_node),
+                    CannotFreezeReason::kCapturingDisplay);
+}
+
+void PageFreezingPolicy::OnPropertyChanged(const PageNode* page_node,
+                                           bool submit_vote,
+                                           CannotFreezeReason reason) {
+  if (submit_vote) {
+    SubmitNegativeFreezingVote(page_node, reason);
+  } else {
+    InvalidateNegativeFreezingVote(page_node, reason);
+  }
 }
 
 // static
@@ -190,10 +255,10 @@ const char* PageFreezingPolicy::CannotFreezeReasonToString(
   switch (reason) {
     case CannotFreezeReason::kAudible:
       return "Page is audible";
-    case CannotFreezeReason::kHoldingIndexedDBLock:
-      return "Page is holding an IndexedDB lock";
     case CannotFreezeReason::kHoldingWebLock:
       return "Page is holding a Web Lock";
+    case CannotFreezeReason::kHoldingIndexedDBLock:
+      return "Page is holding an IndexedDB lock";
     case CannotFreezeReason::kConnectedToUsbDevice:
       return "Page is connected to a USB device";
     case CannotFreezeReason::kConnectedToBluetoothDevice:
@@ -208,45 +273,23 @@ const char* PageFreezingPolicy::CannotFreezeReasonToString(
       return "Page is capturing window";
     case CannotFreezeReason::kCapturingDisplay:
       return "Page is capturing display";
+    case CannotFreezeReason::kCount:
+      NOTREACHED();
+      return "";
   }
 }
 
-void PageFreezingPolicy::UpdateNegativeFreezingVote(const PageNode* page_node,
-                                                    CannotFreezeReason reason,
-                                                    NegativeVoteAction action) {
-  auto negative_vote_for_pages_iter = negative_vote_for_pages_.find(page_node);
-  CHECK(negative_vote_for_pages_iter != negative_vote_for_pages_.end());
-  auto& negative_votes = negative_vote_for_pages_iter->second;
+void PageFreezingPolicy::SubmitNegativeFreezingVote(const PageNode* page_node,
+                                                    CannotFreezeReason reason) {
+  freezing::FreezingVote vote(freezing::FreezingVoteValue::kCannotFreeze,
+                              CannotFreezeReasonToString(reason));
+  voting_channels_[reason].SubmitVote(page_node, vote);
+}
 
-  if (action == NegativeVoteAction::kEmit) {
-    // Check if we already have a vote for this reason, if so this vote should
-    // be in an invalid state.
-    auto iter = negative_votes.find(reason);
-    if (iter == negative_votes.end()) {
-      // Add the vote for |reason| if not already present.
-      iter =
-          negative_votes
-              .insert(std::make_pair(
-                  reason,
-                  std::make_unique<freezing::FreezingVotingChannelWrapper>()))
-              .first;
-      iter->second->SetVotingChannel(
-          page_node->GetGraph()
-              ->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>()
-              ->GetVotingChannel());
-    } else {
-      DCHECK(!iter->second->HasVoteForContext(page_node));
-    }
-    // Submit the negative freezing vote.
-    iter->second->SubmitVote(page_node,
-                             {freezing::FreezingVoteValue::kCannotFreeze,
-                              CannotFreezeReasonToString(reason)});
-  } else {
-    // Invalidate the vote rather than removing it to avoid having to recreate
-    // it multiple times.
-    DCHECK(base::Contains(negative_votes, reason));
-    negative_votes[reason]->InvalidateVote(page_node);
-  }
+void PageFreezingPolicy::InvalidateNegativeFreezingVote(
+    const PageNode* page_node,
+    CannotFreezeReason reason) {
+  voting_channels_[reason].InvalidateVote(page_node);
 }
 
 }  // namespace policies
