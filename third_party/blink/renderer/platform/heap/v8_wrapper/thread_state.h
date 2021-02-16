@@ -47,8 +47,7 @@ enum ThreadAffinity {
   kMainThreadOnly,
 };
 
-// TODO(mlippautz): Provide specializations.
-template <typename T>
+template <typename T, typename = void>
 struct ThreadingTrait {
   STATIC_ONLY(ThreadingTrait);
   static constexpr ThreadAffinity kAffinity = kAnyThread;
@@ -146,7 +145,9 @@ class ThreadStateFor<kMainThreadOnly> {
   STATIC_ONLY(ThreadStateFor);
 
  public:
-  static ThreadState* GetState() { return ThreadState::MainThreadState(); }
+  static ALWAYS_INLINE ThreadState* GetState() {
+    return ThreadState::MainThreadState();
+  }
 };
 
 template <>
@@ -154,7 +155,9 @@ class ThreadStateFor<kAnyThread> {
   STATIC_ONLY(ThreadStateFor);
 
  public:
-  static ThreadState* GetState() { return ThreadState::Current(); }
+  static ALWAYS_INLINE ThreadState* GetState() {
+    return ThreadState::Current();
+  }
 };
 
 }  // namespace blink

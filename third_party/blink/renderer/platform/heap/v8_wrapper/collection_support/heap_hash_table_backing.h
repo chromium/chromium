@@ -8,6 +8,7 @@
 #include <type_traits>
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
@@ -45,6 +46,28 @@ void HeapHashTableBacking<Table>::Finalize() {
       table[i].~Value();
   }
 }
+
+template <typename Table>
+struct ThreadingTrait<HeapHashTableBacking<Table>> {
+  STATIC_ONLY(ThreadingTrait);
+  using Key = typename Table::KeyType;
+  using Value = typename Table::ValueType;
+  static constexpr ThreadAffinity kAffinity =
+      (ThreadingTrait<Key>::kAffinity == kMainThreadOnly) &&
+              (ThreadingTrait<Value>::kAffinity == kMainThreadOnly)
+          ? kMainThreadOnly
+          : kAnyThread;
+};
+
+template <typename First, typename Second>
+struct ThreadingTrait<WTF::KeyValuePair<First, Second>> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity =
+      (ThreadingTrait<First>::kAffinity == kMainThreadOnly) &&
+              (ThreadingTrait<Second>::kAffinity == kMainThreadOnly)
+          ? kMainThreadOnly
+          : kAnyThread;
+};
 
 }  // namespace blink
 

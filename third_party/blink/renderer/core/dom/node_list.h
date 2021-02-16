@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 namespace blink {
 
@@ -50,6 +52,15 @@ class CORE_EXPORT NodeList : public ScriptWrappable {
  protected:
   NodeList() = default;
 };
+
+#if BUILDFLAG(USE_V8_OILPAN)
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<std::is_base_of<blink::NodeList, T>::value>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+#endif  // USE_V8_OILPAN
 
 }  // namespace blink
 

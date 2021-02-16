@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -70,6 +71,12 @@ void HeapVectorBacking<T, Traits>::Finalize() {
       buffer[i].~T();
   }
 }
+
+template <typename T, typename Traits>
+struct ThreadingTrait<HeapVectorBacking<T, Traits>> {
+  STATIC_ONLY(ThreadingTrait);
+  static constexpr ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
+};
 
 }  // namespace blink
 
