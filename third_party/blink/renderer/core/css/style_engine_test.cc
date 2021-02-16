@@ -4126,4 +4126,27 @@ TEST_F(StyleEngineTest, CounterContentNameCase) {
   EXPECT_EQ(String(u"\u3042"), counter->GetText());
 }
 
+TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="host">
+      <span id="slotted"></span>
+    </div>
+  )HTML");
+
+  auto* host = GetDocument().getElementById("host");
+  auto* slotted = GetDocument().getElementById("slotted");
+
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML("<slot></slot>");
+  UpdateAllLifecyclePhases();
+
+  slotted->remove();
+  GetDocument().body()->appendChild(slotted);
+  host->remove();
+  auto* recalc_root = GetStyleRecalcRoot();
+  ASSERT_TRUE(recalc_root);
+  EXPECT_TRUE(recalc_root->NeedsStyleRecalc());
+}
+
 }  // namespace blink

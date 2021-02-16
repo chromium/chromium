@@ -357,9 +357,20 @@ void HTMLSlotElement::AttachLayoutTree(AttachContext& context) {
 
 void HTMLSlotElement::DetachLayoutTree(bool performing_reattach) {
   if (SupportsAssignment()) {
+    auto* host = OwnerShadowHost();
     const HeapVector<Member<Node>>& flat_tree_children = assigned_nodes_;
     for (auto& node : flat_tree_children) {
-      if (node->GetDocument() == GetDocument())
+      // Don't detach the assigned node if the node is no longer a child of the
+      // host.
+      //
+      // 1. It's no long a direct flat-tree child of this slot.
+      // 2. It was already detached when removed from the host.
+      // 3. It might already have been inserted in a different part of the DOM,
+      //    or a new document tree and been attached.
+      // 4. It might have been marked style-dirty in its new location and
+      //    calling DetachLayoutTree here would have incorrectly cleared those
+      //    dirty bits.
+      if (host == node->parentNode())
         node->DetachLayoutTree(performing_reattach);
     }
   }
