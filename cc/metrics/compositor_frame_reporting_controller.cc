@@ -440,10 +440,12 @@ void CompositorFrameReportingController::SetThreadAffectsSmoothness(
   }
 
   // keep the history for the last 3 seconds.
-  auto expired_smooth_thread = smooth_thread_history_.lower_bound(
-      Now() - base::TimeDelta::FromSeconds(3))--;
-  smooth_thread_history_.erase(smooth_thread_history_.begin(),
-                               expired_smooth_thread);
+  if (!smooth_thread_history_.empty()) {
+    auto expired_smooth_thread = smooth_thread_history_.lower_bound(
+        Now() - base::TimeDelta::FromSeconds(3))--;
+    smooth_thread_history_.erase(smooth_thread_history_.begin(),
+                                 expired_smooth_thread);
+  }
 
   // Only trackes the history if there is a change in smooth_thread_
   if (current_smooth_thread != GetSmoothThread()) {
