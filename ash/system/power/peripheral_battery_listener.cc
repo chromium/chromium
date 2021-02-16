@@ -130,6 +130,13 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
     return;
   }
 
+  if (!ui::DeviceDataManager::HasInstance() ||
+      !ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
+    LOG(ERROR) << "Discarding peripheral battery notification before devices "
+                  "are enumerated";
+    return;
+  }
+
   std::string map_key = GetBatteryMapKey(path);
   base::Optional<uint8_t> opt_level;
   if (level != -1)
@@ -140,7 +147,7 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
       map_key,
       base::ASCIIToUTF16(name),
       opt_level,
-      base::TimeTicks(),  // TODO(crbug/1153985): should be clock_->NowTicks()
+      base::TimeTicks::Now(),
       IsStylusDevice(path, name),
       ExtractBluetoothAddressFromHIDBatteryPath(path)};
   UpdateBattery(battery);
@@ -154,13 +161,12 @@ void PeripheralBatteryListener::DeviceBatteryChanged(
   if (new_battery_percentage)
     DCHECK_LE(new_battery_percentage.value(), 100);
 
-  BatteryInfo battery{
-      GetBatteryMapKey(device),
-      device->GetNameForDisplay(),
-      new_battery_percentage,
-      base::TimeTicks(),  // TODO(crbug/1153985): should be clock_->NowTicks()
-      false,
-      device->GetAddress()};
+  BatteryInfo battery{GetBatteryMapKey(device),
+                      device->GetNameForDisplay(),
+                      new_battery_percentage,
+                      base::TimeTicks::Now(),
+                      false,
+                      device->GetAddress()};
   UpdateBattery(battery);
 }
 

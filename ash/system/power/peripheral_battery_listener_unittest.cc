@@ -15,11 +15,12 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -57,14 +58,21 @@ namespace ash {
 
 class PeripheralBatteryListenerTest : public AshTestBase {
  public:
-  PeripheralBatteryListenerTest() = default;
+  PeripheralBatteryListenerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   PeripheralBatteryListenerTest(const PeripheralBatteryListenerTest&) = delete;
   PeripheralBatteryListenerTest& operator=(
       const PeripheralBatteryListenerTest&) = delete;
   ~PeripheralBatteryListenerTest() override = default;
 
   void SetUp() override {
+    ui::DeviceDataManager::CreateInstance();
+
     AshTestBase::SetUp();
+
+    // Simulate the complete listing of input devices, required by the listener.
+    if (complete_devices_)
+      ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
 
     mock_adapter_ =
         base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
@@ -81,15 +89,13 @@ class PeripheralBatteryListenerTest : public AshTestBase {
   void TearDown() override {
     battery_listener_.reset();
     AshTestBase::TearDown();
+    ui::DeviceDataManager::DeleteInstance();
   }
 
-  void SetTestingClock(base::SimpleTestTickClock* clock) {
-    battery_listener_->clock_ = clock;
-  }
+  base::TimeTicks GetTestingClock() { return base::TimeTicks::Now(); }
 
-  base::TimeTicks GetTestingClock() {
-    // TODO(crbug/1153985): the next line should use clock_->NowTicks()
-    return base::TimeTicks();
+  void ClockAdvance(base::TimeDelta delta) {
+    task_environment()->AdvanceClock(delta);
   }
 
  protected:
@@ -97,6 +103,13 @@ class PeripheralBatteryListenerTest : public AshTestBase {
   std::unique_ptr<device::MockBluetoothDevice> mock_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> mock_device_2_;
   std::unique_ptr<PeripheralBatteryListener> battery_listener_;
+
+  void set_complete_devices(bool complete_devices) {
+    complete_devices_ = complete_devices;
+  }
+
+  // SetUp() doesn't complete devices if this is set to false.
+  bool complete_devices_ = true;
 };
 
 TEST_F(PeripheralBatteryListenerTest, Basic) {
@@ -106,11 +119,8 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
       scoped_listener_obs{&listener_observer_mock};
   scoped_listener_obs.Observe(battery_listener_.get());
 
-  base::SimpleTestTickClock clock;
-  SetTestingClock(&clock);
-
   // Level 50 at time 100, listener should be notified.
-  clock.Advance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
 
   testing::InSequence sequence;
 
@@ -131,7 +141,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
                                                      kTestDeviceName, 50);
 
   // Level 5 at time 110, listener should be notified.
-  clock.Advance(base::TimeDelta::FromSeconds(10));
+  ClockAdvance(base::TimeDelta::FromSeconds(10));
 
   EXPECT_CALL(
       listener_observer_mock,
@@ -146,7 +156,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
                                                      kTestDeviceName, 5);
 
   // Level -1 at time 115, listener should be notified.
-  clock.Advance(base::TimeDelta::FromSeconds(5));
+  ClockAdvance(base::TimeDelta::FromSeconds(5));
 
   EXPECT_CALL(
       listener_observer_mock,
@@ -162,7 +172,7 @@ TEST_F(PeripheralBatteryListenerTest, Basic) {
                                                      kTestDeviceName, -1);
 
   // Level 50 at time 120, listener should be notified.
-  clock.Advance(base::TimeDelta::FromSeconds(5));
+  ClockAdvance(base::TimeDelta::FromSeconds(5));
 
   EXPECT_CALL(
       listener_observer_mock,
@@ -612,9 +622,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
       scoped_listener_obs{&listener_observer_mock};
   scoped_listener_obs.Observe(battery_listener_.get());
 
-  base::SimpleTestTickClock clock;
-  SetTestingClock(&clock);
-  clock.Advance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
 
   testing::InSequence sequence;
 
@@ -634,7 +642,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
   battery_listener_->DeviceBatteryChanged(mock_adapter_.get(),
                                           mock_device_1_.get(),
                                           /*new_battery_percentage=*/1);
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  ClockAdvance(base::TimeDelta::FromSeconds(1));
 
   EXPECT_CALL(
       listener_observer_mock,
@@ -649,7 +657,7 @@ TEST_F(PeripheralBatteryListenerTest, EnsureUpdatesWithinSmallTimeIntervals) {
       mock_adapter_.get(), mock_device_1_.get(),
       /*new_battery_percentage=*/base::nullopt);
 
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  ClockAdvance(base::TimeDelta::FromSeconds(1));
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(
@@ -674,9 +682,7 @@ TEST_F(PeripheralBatteryListenerTest,
       scoped_listener_obs{&listener_observer_mock};
   scoped_listener_obs.Observe(battery_listener_.get());
 
-  base::SimpleTestTickClock clock;
-  SetTestingClock(&clock);
-  clock.Advance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
 
   testing::InSequence sequence;
 
@@ -696,7 +702,7 @@ TEST_F(PeripheralBatteryListenerTest,
                                           mock_device_1_.get(),
                                           /*new_battery_percentage=*/1);
 
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  ClockAdvance(base::TimeDelta::FromSeconds(1));
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(
@@ -710,7 +716,7 @@ TEST_F(PeripheralBatteryListenerTest,
       mock_adapter_.get(), mock_device_1_.get(),
       /*new_battery_percentage=*/base::nullopt);
 
-  clock.Advance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(
@@ -733,12 +739,9 @@ TEST_F(PeripheralBatteryListenerTest, UpdateNotificationIfVisible) {
       scoped_listener_obs{&listener_observer_mock};
   scoped_listener_obs.Observe(battery_listener_.get());
 
-  base::SimpleTestTickClock clock;
-  SetTestingClock(&clock);
-
   testing::InSequence sequence;
 
-  clock.Advance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
 
   EXPECT_CALL(
       listener_observer_mock,
@@ -757,7 +760,7 @@ TEST_F(PeripheralBatteryListenerTest, UpdateNotificationIfVisible) {
                                           /*new_battery_percentage=*/5);
 
   // The battery level remains low, should update the notification.
-  clock.Advance(base::TimeDelta::FromSeconds(100));
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
   EXPECT_CALL(
       listener_observer_mock,
       OnUpdatedBatteryLevel(AllOf(
@@ -797,16 +800,12 @@ TEST_F(PeripheralBatteryListenerTest, MultipleObserversCoexist) {
       OnUpdatedBatteryLevel(AllOf(
           Field(&PeripheralBatteryListener::BatteryInfo::key,
                 Eq(kTestBatteryId)),
-          Field(&PeripheralBatteryListener::BatteryInfo::last_update_timestamp,
-                Eq(GetTestingClock())),
           Field(&PeripheralBatteryListener::BatteryInfo::level, Eq(50)))));
   EXPECT_CALL(
       listener_observer_mock_2,
       OnUpdatedBatteryLevel(AllOf(
           Field(&PeripheralBatteryListener::BatteryInfo::key,
                 Eq(kTestBatteryId)),
-          Field(&PeripheralBatteryListener::BatteryInfo::last_update_timestamp,
-                Eq(GetTestingClock())),
           Field(&PeripheralBatteryListener::BatteryInfo::level, Eq(50)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(kTestBatteryPath,

@@ -96,7 +96,9 @@ PeripheralBatteryNotifier::NotificationInfo::NotificationInfo() = default;
 PeripheralBatteryNotifier::NotificationInfo::NotificationInfo(
     base::Optional<uint8_t> level,
     base::TimeTicks last_notification_timestamp)
-    : level(level), last_notification_timestamp(last_notification_timestamp) {}
+    : level(level),
+      last_notification_timestamp(last_notification_timestamp),
+      ever_notified(false) {}
 
 PeripheralBatteryNotifier::NotificationInfo::~NotificationInfo() = default;
 
@@ -104,12 +106,12 @@ PeripheralBatteryNotifier::NotificationInfo::NotificationInfo(
     const NotificationInfo& info) {
   level = info.level;
   last_notification_timestamp = info.last_notification_timestamp;
+  ever_notified = info.ever_notified;
 }
 
 PeripheralBatteryNotifier::PeripheralBatteryNotifier(
     PeripheralBatteryListener* listener)
-    : peripheral_battery_listener_(listener),
-      clock_(base::DefaultTickClock::GetInstance()) {
+    : peripheral_battery_listener_(listener) {
   peripheral_battery_listener_->AddObserver(this);
 }
 
@@ -148,6 +150,7 @@ void PeripheralBatteryNotifier::UpdateBattery(
     new_notification_info.level = battery_info.level;
     new_notification_info.last_notification_timestamp =
         battery_info.last_update_timestamp;
+    new_notification_info.ever_notified = false;
     battery_notifications_[map_key] = new_notification_info;
   } else {
     NotificationInfo& existing_notification_info = it->second;
@@ -186,11 +189,13 @@ void PeripheralBatteryNotifier::ShowNotification(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
   const std::string& map_key = battery_info.key;
   NotificationInfo& notification_info = battery_notifications_[map_key];
-  base::TimeTicks now = clock_->NowTicks();
-  if (now - notification_info.last_notification_timestamp >=
-      kNotificationInterval) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!notification_info.ever_notified ||
+      (now - notification_info.last_notification_timestamp >=
+       kNotificationInterval)) {
     ShowOrUpdateNotification(battery_info);
-    notification_info.last_notification_timestamp = clock_->NowTicks();
+    notification_info.last_notification_timestamp = base::TimeTicks::Now();
+    notification_info.ever_notified = true;
   }
 }
 
