@@ -4,14 +4,27 @@
 
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 
+#include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
+#include "chromeos/components/phonehub/notification_interaction_handler.h"
+#include "chromeos/components/phonehub/phone_hub_manager.h"
+
 namespace chromeos {
 namespace eche_app {
 
-EcheAppManager::EcheAppManager() = default;
+EcheAppManager::EcheAppManager(
+    phonehub::PhoneHubManager* phone_hub_manager,
+    const EcheNotificationClickHandler::LaunchEcheAppFunction&
+        launch_eche_app_function)
+    : eche_notification_click_handler_(
+          std::make_unique<EcheNotificationClickHandler>(
+              phone_hub_manager,
+              launch_eche_app_function)) {}
 
 EcheAppManager::~EcheAppManager() = default;
 
-void EcheAppManager::Shutdown() {}
+void EcheAppManager::Shutdown() {
+  eche_notification_click_handler_.reset();
+}
 
 }  // namespace eche_app
 }  // namespace chromeos

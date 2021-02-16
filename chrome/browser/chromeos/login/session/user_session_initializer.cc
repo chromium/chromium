@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
@@ -217,8 +218,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
 
-    // Ensure that PhoneHubManager is created for the primary profile.
+    // Ensure that PhoneHubManager and EcheAppManager are created for the
+    // primary profile.
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+    eche_app::EcheAppManagerFactory::GetForProfile(profile);
 
     plugin_vm::PluginVmManager* plugin_vm_manager =
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
