@@ -60,7 +60,7 @@ PASS SanitizerAPI with config: scripts for default configs, sanitize from docume
 PASS SanitizerAPI with config: onclick scripts, sanitize from document function for onclick scripts
 PASS SanitizerAPI with config: plaintext, sanitize from document function for plaintext
 PASS SanitizerAPI with config: xmp, sanitize from document function for xmp
-PASS SanitizerAPI with config: malformed HTML, sanitize from document function for malformed HTML
+FAIL SanitizerAPI with config: malformed HTML, sanitize from document function for malformed HTML assert_equals: expected "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>" but got "<p>Some text</p><p>Some more text</p>"
 PASS SanitizerAPI with config: invalid config_input, sanitize from document function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from document function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document function for test html without close tag with dropElements list ['div']
@@ -102,7 +102,7 @@ PASS SanitizerAPI with config: scripts for default configs, sanitize from docume
 PASS SanitizerAPI with config: onclick scripts, sanitize from document fragment function for onclick scripts
 PASS SanitizerAPI with config: plaintext, sanitize from document fragment function for plaintext
 PASS SanitizerAPI with config: xmp, sanitize from document fragment function for xmp
-FAIL SanitizerAPI with config: malformed HTML, sanitize from document fragment function for malformed HTML assert_equals: expected "<p>Some text</p><p>Some more text</p>" but got "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>"
+PASS SanitizerAPI with config: malformed HTML, sanitize from document fragment function for malformed HTML
 PASS SanitizerAPI with config: invalid config_input, sanitize from document fragment function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from document fragment function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document fragment function for test html without close tag with dropElements list ['div']

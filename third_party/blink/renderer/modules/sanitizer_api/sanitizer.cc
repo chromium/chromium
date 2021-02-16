@@ -12,15 +12,16 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
-#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
@@ -141,13 +142,16 @@ DocumentFragment* Sanitizer::SanitizeImpl(
     fragment = input.GetAsDocumentFragment();
   } else if (window && (input.IsString() || input.IsNull())) {
     Document* document =
-        DOMParser::Create(script_state)
-            ->parseFromString("<!DOCTYPE html><body>" + input.GetAsString(),
-                              "text/html", ParseFromStringOptions::Create());
-    DCHECK(document->body());
-    fragment = document->createDocumentFragment();
-    fragment->CloneChildNodesFrom(*(document->body()),
-                                  CloneChildrenFlag::kClone);
+        window->document()
+            ? window->document()->implementation().createHTMLDocument()
+            : DOMParser::Create(script_state)
+                  ->parseFromString("<!DOCTYPE html><html><body></body></html>",
+                                    "text/html",
+                                    ParseFromStringOptions::Create());
+    // TODO(https://crbug.com/1178774): Behavior difference need further
+    // investgate.
+    fragment = document->createRange()->createContextualFragment(
+        input.GetAsString(), exception_state);
   } else if (input.IsDocument()) {
     fragment = input.GetAsDocument()->createDocumentFragment();
     fragment->CloneChildNodesFrom(*(input.GetAsDocument()->body()),

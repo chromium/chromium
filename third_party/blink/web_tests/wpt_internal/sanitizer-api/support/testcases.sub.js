@@ -14,7 +14,7 @@ const testcases = [
   {config_input: {}, value: "<p onclick='a= 123'>Click.</p>", result: "<p>Click.</p>", message: "onclick scripts"},
   {config_input: {}, value: "<plaintext><p>text</p>", result: "", message: "plaintext"},
   {config_input: {}, value: "<xmp>TEXT</xmp>", result: "", message: "xmp"},
-  {config_input: {}, value: "<p>Some text</p></body><!-- 1 --></html><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><p>Some more text</p>", message: "malformed HTML"},
+  {config_input: {}, value: "<p>Some text</p></body><!-- 1 --></html><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", message: "malformed HTML"},
   {config_input: {test: 123}, value: "test", result: "test", message: "invalid config_input"},
   {config_input: {dropElements: []}, value: "test", result: "test", message: "empty dropElements list"},
   {config_input: {dropElements: ["div"]}, value: "<div>test</div><p>bla", result: "<p>bla</p>", message: "test html without close tag with dropElements list ['div']"},
