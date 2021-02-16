@@ -139,7 +139,13 @@ class WebFramesManagerImplTest : public PlatformTest,
 };
 
 // Tests main web frame construction/destruction.
-TEST_F(WebFramesManagerImplTest, MainWebFrame) {
+// TODO(crbug.com/1178807): Re-enable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_MainWebFrame MainWebFrame
+#else
+#define MAYBE_MainWebFrame DISABLED_MainWebFrame
+#endif  // TARGET_OS_SIMULATOR
+TEST_F(WebFramesManagerImplTest, MAYBE_MainWebFrame) {
   SendFrameBecameAvailableMessage(main_frame_);
 
   EXPECT_EQ(1ul, frames_manager_.GetAllWebFrames().size());
@@ -159,7 +165,13 @@ TEST_F(WebFramesManagerImplTest, MainWebFrame) {
 }
 
 // Tests that a WebFrame can not be registered with a malformed frame id.
-TEST_F(WebFramesManagerImplTest, WebFrameWithInvalidId) {
+// TODO(crbug.com/1178807): Re-enable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_WebFrameWithInvalidId WebFrameWithInvalidId
+#else
+#define MAYBE_WebFrameWithInvalidId DISABLED_WebFrameWithInvalidId
+#endif  // TARGET_OS_SIMULATOR
+TEST_F(WebFramesManagerImplTest, MAYBE_WebFrameWithInvalidId) {
   FakeWebFrame frame_with_invalid_id(kInvalidFrameId,
                                      /*is_main_frame=*/true,
                                      GURL("https://www.main.test"));
@@ -169,7 +181,13 @@ TEST_F(WebFramesManagerImplTest, WebFrameWithInvalidId) {
 }
 
 // Tests multiple web frames construction/destruction.
-TEST_F(WebFramesManagerImplTest, MultipleWebFrame) {
+// TODO(crbug.com/1178807): Re-enable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_MultipleWebFrame MultipleWebFrame
+#else
+#define MAYBE_MultipleWebFrame DISABLED_MultipleWebFrame
+#endif  // TARGET_OS_SIMULATOR
+TEST_F(WebFramesManagerImplTest, MAYBE_MultipleWebFrame) {
   // Add main frame.
   SendFrameBecameAvailableMessage(main_frame_);
   EXPECT_EQ(1ul, frames_manager_.GetAllWebFrames().size());
@@ -272,7 +290,13 @@ TEST_F(WebFramesManagerImplTest, MultipleWebFrame) {
 }
 
 // Tests WebFramesManagerImpl::RemoveAllWebFrames.
-TEST_F(WebFramesManagerImplTest, RemoveAllWebFrames) {
+// TODO(crbug.com/1178807): Re-enable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_RemoveAllWebFrames RemoveAllWebFrames
+#else
+#define MAYBE_RemoveAllWebFrames DISABLED_RemoveAllWebFrames
+#endif  // TARGET_OS_SIMULATOR
+TEST_F(WebFramesManagerImplTest, MAYBE_RemoveAllWebFrames) {
   SendFrameBecameAvailableMessage(main_frame_);
   SendFrameBecameAvailableMessage(frame_1_);
   SendFrameBecameAvailableMessage(frame_2_);
@@ -292,7 +316,13 @@ TEST_F(WebFramesManagerImplTest, RemoveAllWebFrames) {
 // Tests that WebFramesManagerImpl will ignore JS messages from previous
 // WKWebView after WebFramesManagerImpl::OnWebViewUpdated is called with a new
 // WKWebView, and that all web frames of previous WKWebView are removed.
-TEST_F(WebFramesManagerImplTest, OnWebViewUpdated) {
+// TODO(crbug.com/1178807): Re-enable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_OnWebViewUpdated OnWebViewUpdated
+#else
+#define MAYBE_OnWebViewUpdated DISABLED_OnWebViewUpdated
+#endif  // TARGET_OS_SIMULATOR
+TEST_F(WebFramesManagerImplTest, MAYBE_OnWebViewUpdated) {
   SendFrameBecameAvailableMessage(main_frame_);
   SendFrameBecameAvailableMessage(frame_1_);
   EXPECT_EQ(2ul, frames_manager_.GetAllWebFrames().size());
