@@ -123,3 +123,4 @@ Modifications:
 - Precompute the pointer mask for doubly linked free lists instead of computing it on each access.
 - Move spinlock to function static variable to fix static initializer check error.
 - Enable ASLR support on both Linux and ChromeOS
+- Remove unused base::subtle::Acquire_Store/Release_Load (https://github.com/gperftools/gperftools/pull/1249)

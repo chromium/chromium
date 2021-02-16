@@ -137,11 +137,6 @@ inline void NoBarrier_Store(volatile Atomic32* ptr, Atomic32 value) {
   *ptr = value;
 }
 
-inline void Acquire_Store(volatile Atomic32* ptr, Atomic32 value) {
-  *ptr = value;
-  MemoryBarrier();
-}
-
 inline void Release_Store(volatile Atomic32* ptr, Atomic32 value) {
   MemoryBarrier();
   *ptr = value;
@@ -155,11 +150,6 @@ inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
   Atomic32 value = *ptr;
   MemoryBarrier();
   return value;
-}
-
-inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
-  MemoryBarrier();
-  return *ptr;
 }
 
 // 64-bit versions are only available if LDREXD and STREXD instructions
@@ -289,11 +279,6 @@ inline Atomic64 NoBarrier_Load(volatile const Atomic64* ptr) {
 
 #endif // BASE_ATOMICOPS_HAS_LDREXD_AND_STREXD
 
-inline void Acquire_Store(volatile Atomic64* ptr, Atomic64 value) {
-  NoBarrier_Store(ptr, value);
-  MemoryBarrier();
-}
-
 inline void Release_Store(volatile Atomic64* ptr, Atomic64 value) {
   MemoryBarrier();
   NoBarrier_Store(ptr, value);
@@ -303,11 +288,6 @@ inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
   Atomic64 value = NoBarrier_Load(ptr);
   MemoryBarrier();
   return value;
-}
-
-inline Atomic64 Release_Load(volatile const Atomic64* ptr) {
-  MemoryBarrier();
-  return NoBarrier_Load(ptr);
 }
 
 inline Atomic64 Acquire_CompareAndSwap(volatile Atomic64* ptr,

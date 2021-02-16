@@ -189,10 +189,6 @@ inline void NoBarrier_Store(volatile Atomic32* ptr, Atomic32 value) {
   *ptr = value;
 }
 
-inline void Acquire_Store(volatile Atomic32* ptr, Atomic32 value) {
-  Acquire_AtomicExchange(ptr, value);
-}
-
 inline void Release_Store(volatile Atomic32* ptr, Atomic32 value) {
   *ptr = value; // works w/o barrier for current Intel chips as of June 2005
   // See comments in Atomic64 version of Release_Store() below.
@@ -205,11 +201,6 @@ inline Atomic32 NoBarrier_Load(volatile const Atomic32* ptr) {
 inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
   Atomic32 value = *ptr;
   return value;
-}
-
-inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
-  MemoryBarrier();
-  return *ptr;
 }
 
 // 64-bit operations
@@ -299,11 +290,6 @@ inline void NoBarrier_Store(volatile Atomic64* ptr, Atomic64 value) {
   *ptr = value;
 }
 
-inline void Acquire_Store(volatile Atomic64* ptr, Atomic64 value) {
-  NoBarrier_AtomicExchange(ptr, value);
-              // acts as a barrier in this implementation
-}
-
 inline void Release_Store(volatile Atomic64* ptr, Atomic64 value) {
   *ptr = value; // works w/o barrier for current Intel chips as of June 2005
 
@@ -322,11 +308,6 @@ inline Atomic64 NoBarrier_Load(volatile const Atomic64* ptr) {
 inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
   Atomic64 value = *ptr;
   return value;
-}
-
-inline Atomic64 Release_Load(volatile const Atomic64* ptr) {
-  MemoryBarrier();
-  return *ptr;
 }
 
 #else  // defined(_WIN64) || defined(__MINGW64__)
@@ -394,11 +375,6 @@ inline void NoBarrier_Store(volatile Atomic64* ptrValue, Atomic64 value)
   	}
 }
 
-inline void Acquire_Store(volatile Atomic64* ptr, Atomic64 value) {
-  NoBarrier_AtomicExchange(ptr, value);
-              // acts as a barrier in this implementation
-}
-
 inline void Release_Store(volatile Atomic64* ptr, Atomic64 value) {
   NoBarrier_Store(ptr, value);
 }
@@ -418,11 +394,6 @@ inline Atomic64 NoBarrier_Load(volatile const Atomic64* ptrValue)
 inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
   Atomic64 value = NoBarrier_Load(ptr);
   return value;
-}
-
-inline Atomic64 Release_Load(volatile const Atomic64* ptr) {
-  MemoryBarrier();
-  return NoBarrier_Load(ptr);
 }
 
 #endif  // defined(_WIN64) || defined(__MINGW64__)
