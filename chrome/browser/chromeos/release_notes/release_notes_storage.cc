@@ -62,6 +62,7 @@ ReleaseNotesStorage::ReleaseNotesStorage(Profile* profile)
 ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
+  // TODO(b/174514401): Make this server controlled.
   if (!base::FeatureList::IsEnabled(
           chromeos::features::kReleaseNotesNotification))
     return false;
@@ -84,10 +85,10 @@ bool ReleaseNotesStorage::ShouldNotify() {
         ChromeVersionService::GetVersion(profile_->GetPrefs()));
     last_milestone = profile_version.components()[0];
   }
-  if (last_milestone >= GetMilestone()) {
-    return false;
-  }
-  return true;
+  // Hardcoding this to M89 as that should be the last release notes update that
+  // the current chrome version should see. There is not an update every
+  // milestone.
+  return last_milestone < 89;
 }
 
 void ReleaseNotesStorage::MarkNotificationShown() {
