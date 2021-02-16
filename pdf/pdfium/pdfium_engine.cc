@@ -71,6 +71,10 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "v8/include/v8.h"
 
+#if defined(PDF_ENABLE_XFA)
+#include "v8/include/cppgc/platform.h"
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "pdf/pdfium/pdfium_font_linux.h"
 #endif
@@ -244,9 +248,15 @@ void SetUpV8() {
       base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
       gin::IsolateHolder::IsolateType::kUtility);
   g_isolate_holder->isolate()->Enter();
+#if defined(PDF_ENABLE_XFA)
+  cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator());
+#endif
 }
 
 void TearDownV8() {
+#if defined(PDF_ENABLE_XFA)
+  cppgc::ShutdownProcess();
+#endif
   g_isolate_holder->isolate()->Exit();
   delete g_isolate_holder;
   g_isolate_holder = nullptr;
