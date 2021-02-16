@@ -258,6 +258,10 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
 
   const bool is_normal = state_ == PlatformWindowState::kNormal;
 
+  bool did_send_delegate_notification = !!requested_window_show_state_count_;
+  if (requested_window_show_state_count_)
+    requested_window_show_state_count_--;
+
   const bool did_window_show_state_change = old_state != state_;
 
   // Update state before notifying delegate.
@@ -293,7 +297,7 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
   // Thus, we must store previous bounds to restore later.
   SetOrResetRestoredBounds();
 
-  if (did_window_show_state_change) {
+  if (did_window_show_state_change && !did_send_delegate_notification) {
     previous_state_ = old_state;
     delegate()->OnWindowStateChanged(state_);
   }
@@ -418,6 +422,10 @@ void WaylandToplevelWindow::SetWindowState(PlatformWindowState state) {
   if (state_ != state) {
     previous_state_ = state_;
     state_ = state;
+
+    // Tracks this window show state change request, coming from the Browser.
+    requested_window_show_state_count_++;
+
     TriggerStateChanges();
   }
 }

@@ -163,6 +163,16 @@ class WaylandToplevelWindow : public WaylandWindow,
     uint32_t serial;
   };
   base::circular_deque<PendingConfigure> pending_configures_;
+
+  // Tracks how many the window show state requests by made by the Browser
+  // are currently being processed by the Wayland Compositor. In practice,
+  // each individual increment corresponds to an explicit window show state
+  // change request, and gets a response by the Compositor.
+  //
+  // This mechanism allows Ozone/Wayland to filter out notifying the delegate
+  // (PlatformWindowDelegate) more than once, for the same window show state
+  // change.
+  uint32_t requested_window_show_state_count_ = 0;
 };
 
 }  // namespace ui

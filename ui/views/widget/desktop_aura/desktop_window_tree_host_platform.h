@@ -137,6 +137,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
     return desktop_native_widget_aura_;
   }
 
+  ui::PlatformWindowState window_show_state() { return old_state_; }
+
   // These are not general purpose methods and must be used with care. Please
   // make sure you understand the rounding direction before using.
   gfx::Rect ToDIPRect(const gfx::Rect& rect_in_pixels) const;
