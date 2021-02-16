@@ -255,7 +255,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
     return;
   }
 
-  DCHECK(UserManager::Get()->GetLoggedInUsers().size() >=
+  DCHECK(UserManager::Get()->GetLoggedInUsers().size() <
          session_manager::kMaximumNumberOfUserSessions);
 
   // Launch sign in screen to add another user to current session.
