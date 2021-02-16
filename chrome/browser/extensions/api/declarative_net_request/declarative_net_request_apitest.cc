@@ -71,14 +71,19 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyAPItest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// Flaky on MSAN: https://crbug.com/1167168
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_DynamicRules DISABLED_DynamicRules
-#else
-#define MAYBE_DynamicRules DynamicRules
-#endif
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, MAYBE_DynamicRules) {
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, DynamicRules) {
   ASSERT_TRUE(RunTest("dynamic_rules")) << message_;
+}
+
+// Flaky on ASAN/MSAN: https://crbug.com/1167168
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_DynamicRulesLimits DISABLED_DynamicRulesLimits
+#else
+#define MAYBE_DynamicRulesLimits DynamicRulesLimits
+#endif
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest,
+                       MAYBE_DynamicRulesLimits) {
+  ASSERT_TRUE(RunTest("dynamic_rules_limits")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, OnRulesMatchedDebug) {
