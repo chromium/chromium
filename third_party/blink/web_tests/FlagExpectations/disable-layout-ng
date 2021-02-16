@@ -536,6 +536,8 @@ crbug.com/591099 virtual/plz-dedicated-worker/external/wpt/service-workers/servi
 
 crbug.com/591099 external/wpt/css/css-counter-styles/cjk-decimal/css3-counter-styles-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-counter-styles/cjk-decimal/css3-counter-styles-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/cssom/cssom-name-setter-invalid.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-counter-styles/cssom/cssom-name-setter.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-counter-styles/hebrew/css3-counter-styles-016.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-counter-styles/hiragana/css3-counter-styles-030.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-counter-styles/hiragana/css3-counter-styles-031.html [ Failure ]
@@ -963,7 +965,11 @@ crbug.com/591099 external/wpt/html/links/manifest/wrong-mime-type-text-plain-man
 ### virtual/stable/compositing/filters/
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 
-### webcodecs/
+### wpt_internal/css/css-counter-styles/
+crbug.com/591099 wpt_internal/css/css-counter-styles/counter-style-fallbacks-in-shadow-dom.html [ Failure ]
+crbug.com/591099 wpt_internal/css/css-counter-styles/counter-styles-override-in-shadow-dom.html [ Failure ]
+
+### wpt_internal/webcodecs/
 crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.worker.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.any.html [ Failure ]
