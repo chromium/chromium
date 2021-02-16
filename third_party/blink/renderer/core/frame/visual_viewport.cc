@@ -499,8 +499,15 @@ double VisualViewport::VisibleHeightCSSPx() const {
 bool VisualViewport::DidSetScaleOrLocation(float scale,
                                            bool is_pinch_gesture_active,
                                            const FloatPoint& location) {
-  if (!LocalMainFrame())
+  if (!LocalMainFrame()) {
+    is_pinch_gesture_active_ = is_pinch_gesture_active;
+    // The VisualViewport for a remote mainframe must always be 1.0 or else
+    // event targeting will fail.
+    DCHECK(scale == 1.f);
+    scale_ = scale;
+    offset_ = ScrollOffset();
     return false;
+  }
 
   bool values_changed = false;
 
