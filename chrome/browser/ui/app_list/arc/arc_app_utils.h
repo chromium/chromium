@@ -49,6 +49,7 @@ extern const char kPlayStoreAppId[];
 extern const char kSettingsAppId[];
 extern const char kYoutubeAppId[];
 extern const char kYoutubeMusicAppId[];
+extern const char kYoutubeMusicWebApkAppId[];
 
 // Represents unparsed intent.
 class Intent {

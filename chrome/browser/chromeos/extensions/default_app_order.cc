@@ -74,6 +74,7 @@ const char* const kDefaultAppOrder[] = {
 
     arc::kYoutubeMusicAppId,
     web_app::kYoutubeMusicAppId,
+    arc::kYoutubeMusicWebApkAppId,
 
     arc::kPlayMoviesAppId,
     extension_misc::kGooglePlayMoviesAppId,

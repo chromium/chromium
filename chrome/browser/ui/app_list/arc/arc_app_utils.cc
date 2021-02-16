@@ -237,6 +237,7 @@ const char kPlayStoreAppId[] = "cnbgggchhmkkdmeppjobngjoejnihlei";
 const char kSettingsAppId[] = "mconboelelhjpkbdhhiijkgcimoangdj";
 const char kYoutubeAppId[] = "aniolghapcdkoolpkffememnhpphmjkl";
 const char kYoutubeMusicAppId[] = "hpdkdmlckojaocbedhffglopeafcgggc";
+const char kYoutubeMusicWebApkAppId[] = "jcmmigapnpnikbmnjknhcoageaeinihi";
 
 bool ShouldShowInLauncher(const std::string& app_id) {
   for (auto* const id : kAppIdsHiddenInLauncher) {
