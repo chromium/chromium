@@ -70,7 +70,10 @@ class {{struct.name}}DataView {
     if (data_->header_.version < {{pf.min_version}})
       return {{kind|cpp_data_view_type}}{};
 {%-     endif %}
-    return static_cast<{{kind|cpp_data_view_type}}>(data_->{{name}});
+    // TODO(dcheng): This seems incorrect, as it bypasses enum traits.
+    return static_cast<{{kind|cpp_data_view_type}}>(
+        ::mojo::internal::ToKnownEnumValueHelper(
+            static_cast<{{kind|unmapped_type_for_serializer}}>(data_->{{name}})));
   }
 
 {%-   elif kind|is_any_handle_kind %}

@@ -64,16 +64,17 @@ class ArrayDataViewImpl<
     typename std::enable_if<
         BelongsTo<T, MojomTypeCategory::kEnum>::value>::type> {
  public:
-  static_assert(sizeof(T) == sizeof(int32_t), "Unexpected enum size");
+  static_assert(std::is_same<std::underlying_type_t<T>, int32_t>::value,
+                "Unexpected enum type");
 
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
   ArrayDataViewImpl(Data_* data, Message* message)
       : data_(data), message_(message) {}
 
-  T operator[](size_t index) const { return static_cast<T>(data_->at(index)); }
-
-  const T* data() const { return reinterpret_cast<const T*>(data_->storage()); }
+  T operator[](size_t index) const {
+    return ToKnownEnumValueHelper(static_cast<T>(data_->at(index)));
+  }
 
   template <typename U>
   bool Read(size_t index, U* output) {
@@ -221,7 +222,6 @@ class ArrayDataView : public internal::ArrayDataViewImpl<T> {
 
   // Enums:
   //   T operator[](size_t index) const;
-  //   const T* data() const;
   //   template <typename U>
   //   bool Read(size_t index, U* output);
 

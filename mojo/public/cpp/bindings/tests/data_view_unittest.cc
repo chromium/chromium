@@ -158,7 +158,6 @@ TEST_F(DataViewTest, EnumArray) {
   ASSERT_EQ(2u, array_data_view.size());
   EXPECT_EQ(TestEnum::VALUE_1, array_data_view[0]);
   EXPECT_EQ(TestEnum::VALUE_0, array_data_view[1]);
-  EXPECT_EQ(TestEnum::VALUE_0, *(array_data_view.data() + 1));
 
   TestEnum output;
   ASSERT_TRUE(array_data_view.Read(0, &output));

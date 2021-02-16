@@ -5,10 +5,13 @@
   {{enum_name}}.{{field.name}} = {{field.numeric_value}};
 {%-   endfor %}
 {%-   if enum.min_value is not none %}
-  {{enum_name}}.MIN_VALUE = {{enum.min_value}},
+  {{enum_name}}.MIN_VALUE = {{enum.min_value}};
 {%-   endif %}
 {%-   if enum.max_value is not none %}
-  {{enum_name}}.MAX_VALUE = {{enum.max_value}},
+  {{enum_name}}.MAX_VALUE = {{enum.max_value}};
+{%-   endif %}
+{%-   if enum.default_field %}
+  {{enum_name}}.DEFAULT_VALUE = {{enum.default_field.numeric_value}};
 {%-   endif %}
 
   {{enum_name}}.isKnownEnumValue = function(value) {
@@ -23,8 +26,18 @@
     return false;
   };
 
+  {{enum_name}}.toKnownEnumValue = function(value) {
+{%-   if enum.extensible and enum.default_field %}
+    if (this.isKnownEnumValue(value))
+      return value;
+    return this.DEFAULT_VALUE;
+{%-   else %}
+    return value;
+{%-   endif %}
+  };
+
   {{enum_name}}.validate = function(enumValue) {
-    var isExtensible = {% if enum.extensible %}true{% else %}false{% endif %};
+    const isExtensible = {% if enum.extensible %}true{% else %}false{% endif %};
     if (isExtensible || this.isKnownEnumValue(enumValue))
       return validator.validationError.NONE;
 

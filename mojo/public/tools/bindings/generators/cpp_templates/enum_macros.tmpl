@@ -29,6 +29,9 @@ enum class {{enum_name}} : int32_t {
 {%-   if enum.max_value is not none %}
   kMaxValue = {{enum.max_value}},
 {%-   endif %}
+{%-   if enum.default_field %}
+  kDefaultValue = {{enum.default_field.numeric_value}}
+{%-   endif %}
 };
 
 {{export_attribute}} std::ostream& operator<<(std::ostream& os, {{enum_name}} value);
@@ -39,6 +42,15 @@ inline bool IsKnownEnumValue({{enum_name}} value) {
                                   flatten_nested_kind=True)}}::IsKnownValue(
       static_cast<int32_t>(value));
 }
+
+{%-   if enum.extensible and enum.default_field %}
+inline {{enum_name}} ToKnownEnumValue({{enum_name}} value) {
+  if (IsKnownEnumValue(value)) {
+    return value;
+  }
+  return {{enum_name}}::kDefaultValue;
+}
+{%-   endif %}
 {%- endmacro %}
 
 {%- macro enum_stream(enum) %}

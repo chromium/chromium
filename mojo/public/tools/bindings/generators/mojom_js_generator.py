@@ -898,7 +898,7 @@ class Generator(generator.Generator):
     if mojom.IsUnionKind(kind):
       return "decodeUnion(%s)" % self._CodecType(kind)
     if mojom.IsEnumKind(kind):
-      return self._JavaScriptDecodeSnippet(mojom.INT32)
+      return "decodeStruct(%s)" % self._CodecType(kind)
     raise Exception("No decode snippet for %s" % kind)
 
   def _JavaScriptEncodeSnippet(self, kind):

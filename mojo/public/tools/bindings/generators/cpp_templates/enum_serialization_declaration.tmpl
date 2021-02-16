@@ -13,7 +13,8 @@ struct Serializer<{{mojom_type}}, MaybeConstUserType> {
   }
 
   static bool Deserialize(int32_t input, UserType* output) {
-    return Traits::FromMojom(static_cast<{{mojom_type}}>(input), output);
+    return Traits::FromMojom(::mojo::internal::ToKnownEnumValueHelper(
+        static_cast<{{mojom_type}}>(input)), output);
   }
 };
 

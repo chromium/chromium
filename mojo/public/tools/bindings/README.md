@@ -379,59 +379,68 @@ Mojom definitions may have their meaning altered by **attributes**, specified
 with a syntax similar to Java or C# attributes. There are a handle of
 interesting attributes supported today.
 
-**`[Sync]`**
-:   The `Sync` attribute may be specified for any interface method which expects
-    a response. This makes it so that callers of the method can wait
-    synchronously for a response. See
-    [Synchronous Calls](/mojo/public/cpp/bindings/README.md#Synchronous-Calls)
-    in the C++ bindings documentation. Note that sync methods are only actually
-    synchronous when called from C++.
+* **`[Sync]`**:
+  The `Sync` attribute may be specified for any interface method which expects a
+  response. This makes it so that callers of the method can wait synchronously
+  for a response. See [Synchronous
+  Calls](/mojo/public/cpp/bindings/README.md#Synchronous-Calls) in the C++
+  bindings documentation. Note that sync methods are only actually synchronous
+  when called from C++.
 
-**`[Extensible]`**
-:   The `Extensible` attribute may be specified for any enum definition. This
-    essentially disables builtin range validation when receiving values of the
-    enum type in a message, allowing older bindings to tolerate unrecognized
-    values from newer versions of the enum.
+* **`[Default]`**:
+  The `Default` attribute may be used to specify an enumerator value that
+  will be used if an `Extensible` enumeration does not deserialize to a known
+  value on the receiver side, i.e. the sender is using a newer version of the
+  enum. This allows unknown values to be mapped to a well-defined value that can
+  be appropriately handled.
 
-**`[Native]`**
-:   The `Native` attribute may be specified for an empty struct declaration to
-    provide a nominal bridge between Mojo IPC and legacy `IPC::ParamTraits` or
-    `IPC_STRUCT_TRAITS*` macros.
-    See
-    [Repurposing Legacy IPC Traits](/docs/mojo_ipc_conversion.md#repurposing-and-invocations)
-    for more details. Note support for this attribute is strictly limited to C++
-    bindings generation.
+* **`[Extensible]`**:
+  The `Extensible` attribute may be specified for any enum definition. This
+  essentially disables builtin range validation when receiving values of the
+  enum type in a message, allowing older bindings to tolerate unrecognized
+  values from newer versions of the enum.
 
-**`[MinVersion=N]`**
-:   The `MinVersion` attribute is used to specify the version at which a given
-    field, enum value, interface method, or method parameter was introduced.
-    See [Versioning](#Versioning) for more details.
+  Note: in the future, an `Extensible` enumeration will require that a `Default`
+  enumerator value also be specified.
 
-**`[Stable]`**
-:   The `Stable` attribute specifies that a given mojom type or interface
-    definition can be considered stable over time, meaning it is safe to use for
-    things like persistent storage or communication between independent
-    version-skewed binaries. Stable definitions may only depend on builtin mojom
-    types or other stable definitions, and changes to such definitions MUST
-    preserve backward-compatibility through appropriate use of versioning.
-    Backward-compatibility of changes is enforced in the Chromium tree using a
-    strict presubmit check. See [Versioning](#Versioning) for more details on
-    backward-compatibility constraints.
+* **`[Native]`**:
+  The `Native` attribute may be specified for an empty struct declaration to
+  provide a nominal bridge between Mojo IPC and legacy `IPC::ParamTraits` or
+  `IPC_STRUCT_TRAITS*` macros. See [Repurposing Legacy IPC
+  Traits](/docs/mojo_ipc_conversion.md#repurposing-and-invocations) for more
+  details. Note support for this attribute is strictly limited to C++ bindings
+  generation.
 
-**`[Uuid=<UUID>]`**
-:  Specifies a UUID to be associated with a given interface. The UUID is
-   intended to remain stable across all changes to the interface definition,
-   including name changes. The value given for this attribute should be a
-   standard UUID string representation as specified by RFC 4122. New UUIDs can
-   be generated with common tools such as `uuidgen`.
+* **`[MinVersion=N]`**:
+  The `MinVersion` attribute is used to specify the version at which a given
+  field, enum value, interface method, or method parameter was introduced.
+  See [Versioning](#Versioning) for more details.
 
-**`[EnableIf=value]`**
-:   The `EnableIf` attribute is used to conditionally enable definitions when
-    the mojom is parsed. If the `mojom` target in the GN file does not include
-    the matching `value` in the list of `enabled_features`, the definition
-    will be disabled. This is useful for mojom definitions that only make
-    sense on one platform. Note that the `EnableIf` attribute can only be set
-    once per definition.
+* **`[Stable]`**:
+  The `Stable` attribute specifies that a given mojom type or interface
+  definition can be considered stable over time, meaning it is safe to use for
+  things like persistent storage or communication between independent
+  version-skewed binaries. Stable definitions may only depend on builtin mojom
+  types or other stable definitions, and changes to such definitions MUST
+  preserve backward-compatibility through appropriate use of versioning.
+  Backward-compatibility of changes is enforced in the Chromium tree using a
+  strict presubmit check. See [Versioning](#Versioning) for more details on
+  backward-compatibility constraints.
+
+* **`[Uuid=<UUID>]`**:
+  Specifies a UUID to be associated with a given interface. The UUID is intended
+  to remain stable across all changes to the interface definition, including
+  name changes. The value given for this attribute should be a standard UUID
+  string representation as specified by RFC 4122. New UUIDs can be generated
+  with common tools such as `uuidgen`.
+
+* **`[EnableIf=value]`**:
+  The `EnableIf` attribute is used to conditionally enable definitions when the
+  mojom is parsed. If the `mojom` target in the GN file does not include the
+  matching `value` in the list of `enabled_features`, the definition will be
+  disabled. This is useful for mojom definitions that only make sense on one
+  platform. Note that the `EnableIf` attribute can only be set once per
+  definition.
 
 ## Generated Code For Target Languages
 
