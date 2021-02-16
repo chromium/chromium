@@ -249,18 +249,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (ViewAccessibility::IsAccessibilityFocusable())
     data->AddState(ax::mojom::State::kFocusable);
 
-  if (is_enabled_) {
-    if (*is_enabled_) {
-      // Take into account the possibility that the View is marked as readonly
-      // but enabled. In other words, we can't just remove all restrictions,
-      // unless the View is explicitly marked as disabled. Note that readonly is
-      // another restriction state in addition to enabled and disabled, (see
-      // ax::mojom::Restriction).
-      if (data->GetRestriction() == ax::mojom::Restriction::kDisabled)
-        data->SetRestriction(ax::mojom::Restriction::kNone);
-    } else {
-      data->SetRestriction(ax::mojom::Restriction::kDisabled);
-    }
+  if (custom_data_.HasIntAttribute(ax::mojom::IntAttribute::kRestriction)) {
+    data->SetRestriction(custom_data_.GetRestriction());
   } else if (!view_->GetEnabled()) {
     data->SetRestriction(ax::mojom::Restriction::kDisabled);
   }
@@ -298,21 +288,16 @@ bool ViewAccessibility::IsAccessibilityFocusable() const {
   // be focusable, if there is test coverage, such a situation will cause a test
   // failure.
   return view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         ViewAccessibility::IsAccessibilityEnabled() && view_->IsDrawn() &&
-         !is_ignored_;
+         view_->GetEnabled() && view_->IsDrawn() && !is_ignored_;
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
   return view_->HasFocus() && !focused_virtual_child_;
 }
 
-void ViewAccessibility::SetPopupFocusOverride() {
-  NOTIMPLEMENTED();
-}
+void ViewAccessibility::SetPopupFocusOverride() {}
 
-void ViewAccessibility::EndPopupFocusOverride() {
-  NOTIMPLEMENTED();
-}
+void ViewAccessibility::EndPopupFocusOverride() {}
 
 void ViewAccessibility::FireFocusAfterMenuClose() {
   NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose);
@@ -368,27 +353,25 @@ void ViewAccessibility::OverrideIsIgnored(bool value) {
   is_ignored_ = value;
 }
 
+void ViewAccessibility::OverrideViewEnablingState(bool enabled) {
+  // Cannot use `AXNodeData::SetRestriction()` which does not store
+  // `ax::mojom::Restriction::kNone`.
+
+  if (custom_data_.HasIntAttribute(ax::mojom::IntAttribute::kRestriction))
+    custom_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kRestriction);
+
+  custom_data_.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      enabled ? static_cast<int>(ax::mojom::Restriction::kNone)
+              : static_cast<int>(ax::mojom::Restriction::kDisabled));
+}
+
 bool ViewAccessibility::IsIgnored() const {
   // TODO(nektar): Make this method non-virtual and implement as follows:
   // ui::AXNodeData out_data;
   // GetAccessibleNodeData(&out_data);
   // return out_data.IsIgnored();
   return is_ignored_;
-}
-
-void ViewAccessibility::OverrideIsEnabled(bool enabled) {
-  // Cannot store this value in `custom_data_` because
-  // `AXNodeData::AddIntAttribute` will DCHECK if you add an IntAttribute that
-  // is equal to kNone. Adding an IntAttribute that is equal to kNone is
-  // ambiguous, since it is unclear what would be the difference between doing
-  // this and not adding the attribute at all.
-  is_enabled_ = enabled;
-}
-
-bool ViewAccessibility::IsAccessibilityEnabled() const {
-  if (is_enabled_)
-    return *is_enabled_;
-  return view_->GetEnabled();
 }
 
 void ViewAccessibility::OverrideBounds(const gfx::RectF& bounds) {

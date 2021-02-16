@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -83,7 +82,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // needs to be turned on.
   virtual bool IsAccessibilityFocusable() const;
 
-  // Used for testing. Returns true if this view is considered focused.
+  // Returns true if this view is considered focused.
   virtual bool IsFocusedForTesting() const;
 
   // Call when this is the active descendant of a popup view that temporarily
@@ -122,18 +121,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // Hides this View from the accessibility tree that is exposed to platform
   // APIs.
   void OverrideIsIgnored(bool value);
+  void OverrideViewEnablingState(bool enabled);
   virtual bool IsIgnored() const;
-
-  // Marks this View either as enabled or disabled (grayed out) in the
-  // accessibility tree and ignores the View's real enabled state. Does not
-  // affect the View's focusable state (see "IsAccessibilityFocusable()").
-  // Screen readers make a special announcement when an item is disabled.
-  //
-  // It might not be advisable to mark a View as enabled in the accessibility
-  // tree, whilst the real View is actually disabled, because such a View will
-  // not respond to user actions.
-  void OverrideIsEnabled(bool enabled);
-  virtual bool IsAccessibilityEnabled() const;
 
   void OverrideBounds(const gfx::RectF& bounds);
   void OverrideDescribedBy(View* described_by_view);
@@ -254,10 +243,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // Similar to setting the role of an ARIA widget to "none" or
   // "presentational".
   bool is_ignored_;
-
-  // Used to override the View's enabled state in case we need to mark the View
-  // as enabled or disabled only in the accessibility tree.
-  base::Optional<bool> is_enabled_ = base::nullopt;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.

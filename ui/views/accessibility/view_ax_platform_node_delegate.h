@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -51,7 +50,6 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   void EndPopupFocusOverride() override;
   void FireFocusAfterMenuClose() override;
   bool IsIgnored() const override;
-  bool IsAccessibilityEnabled() const override;
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 #if defined(OS_APPLE)
