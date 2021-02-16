@@ -339,7 +339,6 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
 
   int tab_id = extensions::ExtensionTabUtil::GetTabId(
       browser2()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_CALL(page_, TabsChanged()).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
   handler()->CloseTab(tab_id);

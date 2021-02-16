@@ -72,14 +72,19 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   if (!optional_details)
     return;
 
-  const TabDetails& details = optional_details.value();
-  bool tab_closed = details.tab_strip_model->CloseWebContentsAt(
-      details.index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
-
   ++num_tabs_closed_;
 
-  if (tab_closed)
-    NotifyTabsChanged();
+  // CloseTab() can target the WebContents hosting Tab Search if the Tab Search
+  // WebUI is open in a chrome browser tab rather than its bubble. In this case
+  // CloseWebContentsAt() closes the WebContents hosting this
+  // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
+  // that no further actions are performed following the call to
+  // CloseWebContentsAt(). See (https://crbug.com/1175507).
+  auto* tab_strip_model = optional_details->tab_strip_model;
+  const int tab_index = optional_details->index;
+  tab_strip_model->CloseWebContentsAt(
+      tab_index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+  // Do not add code past this point.
 }
 
 void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
