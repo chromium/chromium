@@ -37,6 +37,7 @@
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
@@ -131,6 +132,12 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
   else
     builder->Add("welcomeScreenGreeting", IDS_WELCOME_SCREEN_GREETING);
+
+  builder->AddF("newWelcomeScreenGreeting", IDS_NEW_WELCOME_SCREEN_GREETING,
+                ui::GetChromeOSDeviceTypeResourceId());
+  builder->Add("newWelcomeScreenGreetingSubtitle",
+               IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
+  builder->Add("welcomeScreenGetStarted", IDS_OOBE_WELCOME_NEXT_BUTTON_TEXT);
 
   // MD-OOBE (oobe-welcome-element)
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
@@ -48,7 +49,11 @@ void WaitForWelcomeScreen() {
 }
 
 void TapWelcomeNext() {
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  if (features::IsNewOobeLayoutEnabled()) {
+    test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
+  } else {
+    test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  }
 }
 
 void WaitForNetworkSelectionScreen() {

@@ -95,24 +95,30 @@ std::string ArcStateToString(ArcState arc_state) {
 }
 
 void RunWelcomeScreenChecks() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  constexpr int kNumberOfVideosPlaying = 1;
-#else
-  constexpr int kNumberOfVideosPlaying = 0;
-#endif
   test::OobeJS().ExpectVisiblePath({"connect", "welcomeScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "accessibilityScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "languageScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "timezoneScreen"});
 
-  test::OobeJS().ExpectFocused(
-      {"connect", "welcomeScreen", "welcomeNextButton"});
+  if (features::IsNewOobeLayoutEnabled()) {
+    test::OobeJS().ExpectFocused({"connect", "welcomeScreen", "getStarted"});
+  } else {
+    test::OobeJS().ExpectFocused(
+        {"connect", "welcomeScreen", "welcomeNextButton"});
+  }
 
-  test::OobeJS().ExpectEQ(
-      "(() => {let cnt = 0; for (let v of "
-      "$('connect').$.welcomeScreen.root.querySelectorAll('video')) "
-      "{  cnt += v.paused ? 0 : 1; }; return cnt; })()",
-      kNumberOfVideosPlaying);
+  if (!features::IsNewOobeLayoutEnabled()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    constexpr int kNumberOfVideosPlaying = 1;
+#else
+    constexpr int kNumberOfVideosPlaying = 0;
+#endif
+    test::OobeJS().ExpectEQ(
+        "(() => {let cnt = 0; for (let v of "
+        "$('connect').$.welcomeScreen.root.querySelectorAll('video')) "
+        "{  cnt += v.paused ? 0 : 1; }; return cnt; })()",
+        kNumberOfVideosPlaying);
+  }
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());

@@ -105,8 +105,24 @@ class TextFieldApi extends PolymerElementApi {
 class WelcomeScreen extends ScreenElementApi {
   constructor() {
     super('connect');
-    let mainStep = new PolymerElementApi(this, '#welcomeScreen');
-    this.nextButton = new PolymerElementApi(mainStep, '#welcomeNextButton');
+  }
+
+  /** @override */
+  clickNext() {
+    if (!this.nextButton) {
+      let mainStep = new PolymerElementApi(this, '#welcomeScreen');
+      const newLayout = loadTimeData.valueExists('newLayoutEnabled') &&
+          loadTimeData.getBoolean('newLayoutEnabled');
+
+      if (newLayout) {
+        this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
+      } else {
+        this.nextButton = new PolymerElementApi(mainStep, '#welcomeNextButton');
+      }
+    }
+
+    assert(this.nextButton);
+    this.nextButton.click();
   }
 }
 

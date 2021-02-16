@@ -55,8 +55,7 @@ void MarketingOptInScreenHandler::DeclareLocalizedValues(
   builder->Add(
       "marketingOptInGetChromebookUpdates",
       IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_CHROMEBOOK_UPDATES_SIGN_ME_UP);
-  builder->Add("marketingOptInScreenAllSet",
-               IDS_LOGIN_MARKETING_OPT_IN_SCREEN_ALL_SET);
+  builder->Add("marketingOptInScreenAllSet", IDS_LOGIN_GET_STARTED);
   builder->Add("marketingOptInScreenUnsubscribeShort",
                IDS_LOGIN_MARKETING_OPT_IN_SCREEN_UNSUBSCRIBE_SHORT);
   builder->Add("marketingOptInScreenUnsubscribeLong",
