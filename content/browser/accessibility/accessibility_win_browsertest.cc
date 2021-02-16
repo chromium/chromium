@@ -4871,13 +4871,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, IA2ElementToUIAElement) {
     // Verify we can find the button's UIA element based on its unique id.
     Microsoft::WRL::ComPtr<IRawElementProviderSimple> button_uia;
     ASSERT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
-        nullptr, ui::UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        nullptr, ui::UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         ia2_unique_id, &button_uia));
 
     // UIA and IA2 elements should have the same unique id.
     base::win::ScopedVariant uia_unique_id;
     ASSERT_HRESULT_SUCCEEDED(button_uia->GetPropertyValue(
-        ui::UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        ui::UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         uia_unique_id.Receive()));
     ASSERT_STREQ(ia2_unique_id.ptr()->bstrVal, uia_unique_id.ptr()->bstrVal);
 
@@ -4925,13 +4925,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, IA2ElementToUIAElement) {
     // Verify we can find the listbox's UIA element based on its unique id.
     Microsoft::WRL::ComPtr<IRawElementProviderSimple> listbox_uia;
     ASSERT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
-        nullptr, ui::UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        nullptr, ui::UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         ia2_unique_id, &listbox_uia));
 
     // UIA and IA2 elements should have the same unique id.
     base::win::ScopedVariant uia_unique_id;
     ASSERT_HRESULT_SUCCEEDED(listbox_uia->GetPropertyValue(
-        ui::UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        ui::UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         uia_unique_id.Receive()));
     ASSERT_STREQ(ia2_unique_id.ptr()->bstrVal, uia_unique_id.ptr()->bstrVal);
 
@@ -4975,7 +4975,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, UIAElementToIA2Element) {
   // Retrieve the UIA element's unique id.
   base::win::ScopedVariant uia_unique_id;
   ASSERT_HRESULT_SUCCEEDED(button_uia->GetPropertyValue(
-      ui::UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+      ui::UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
       uia_unique_id.Receive()));
 
   int32_t unique_id_value;

@@ -13,12 +13,16 @@
 
 namespace ui {
 
+// UIA custom events.
+
 // {3761326A-34B2-465A-835D-7A3D8F4EFB92}
 static const GUID kUiaEventTestCompleteSentinelGuid = {
     0x3761326a,
     0x34b2,
     0x465a,
     {0x83, 0x5d, 0x7a, 0x3d, 0x8f, 0x4e, 0xfb, 0x92}};
+
+// UIA custom properties.
 
 // {cc7eeb32-4b62-4f4c-aff6-1c2e5752ad8e}
 static const GUID kUiaPropertyUniqueIdGuid = {
@@ -39,15 +43,21 @@ class AX_EXPORT UiaRegistrarWin {
   UiaRegistrarWin();
   ~UiaRegistrarWin();
 
-  PROPERTYID GetUiaUniqueIdPropertyId() const;
-  EVENTID GetUiaTestCompleteEventId() const;
+  // UIA custom events.
+  EVENTID GetTestCompleteEventId() const;
+
+  // UIA custom properties.
+  PROPERTYID GetUniqueIdPropertyId() const;
   PROPERTYID GetVirtualContentPropertyId() const;
 
   static const UiaRegistrarWin& GetInstance();
 
  private:
-  PROPERTYID uia_unique_id_property_id_ = 0;
-  EVENTID uia_test_complete_event_id_ = 0;
+  // UIA custom events.
+  EVENTID test_complete_event_id_ = 0;
+
+  // UIA custom properties.
+  PROPERTYID unique_id_property_id_ = 0;
   PROPERTYID virtual_content_property_id_ = 0;
 };
 

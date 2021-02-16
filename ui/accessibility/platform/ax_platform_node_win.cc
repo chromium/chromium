@@ -4435,7 +4435,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       //
       // Custom UIA Property Ids.
       if (property_id ==
-          UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId()) {
+          UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId()) {
         // We want to negate the unique id for it to be consistent across
         // different Windows accessiblity APIs. The negative unique id
         // convention originated from ::NotifyWinEvent() takes an hwnd and a

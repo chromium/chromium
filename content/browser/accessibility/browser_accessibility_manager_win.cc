@@ -133,7 +133,7 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(
     case ax::mojom::Event::kEndOfTest:
       // Event tests use kEndOfTest as a sentinel to mark the end of the test.
       FireUiaAccessibilityEvent(
-          ui::UiaRegistrarWin::GetInstance().GetUiaTestCompleteEventId(), node);
+          ui::UiaRegistrarWin::GetInstance().GetTestCompleteEventId(), node);
       break;
     case ax::mojom::Event::kLocationChanged:
       FireWinAccessibilityEvent(IA2_EVENT_VISIBLE_DATA_CHANGED, node);

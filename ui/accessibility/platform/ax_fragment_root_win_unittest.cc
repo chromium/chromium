@@ -103,7 +103,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
 
     EXPECT_HRESULT_FAILED(item_container_provider->FindItemByProperty(
         invalid_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     result.Reset();
     unique_id_variant.Release();
@@ -119,7 +119,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // When |start_after_element| of FindItemByProperty() is nullptr, we should
     // be able to find "text1".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
-        nullptr, UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        nullptr, UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"root");
     result.Reset();
@@ -129,7 +129,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // looking for.
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         text1_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_EQ(nullptr, result.Get());
     result.Reset();
@@ -139,7 +139,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // looking for.
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         button_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_EQ(nullptr, result.Get());
 
@@ -157,7 +157,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // When |start_after_element| of FindItemByProperty() is nullptr, we should
     // be able to find "text1".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
-        nullptr, UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        nullptr, UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"text1");
     result.Reset();
@@ -167,7 +167,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // looking for.
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         text1_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_EQ(nullptr, result.Get());
     result.Reset();
@@ -177,7 +177,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // looking for.
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         button_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_EQ(nullptr, result.Get());
     result.Reset();
@@ -194,7 +194,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // When |start_after_element| of FindItemByProperty() is nullptr, we should
     // be able to find "button".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
-        nullptr, UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        nullptr, UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"button");
     result.Reset();
@@ -203,7 +203,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // be able to find "button".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         text1_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"button");
     result.Reset();
@@ -213,7 +213,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // looking for.
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         button_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_EQ(nullptr, result.Get());
     result.Reset();
@@ -231,7 +231,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // When |start_after_element| of FindItemByProperty() is nullptr, we should
     // be able to find "text2".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
-        nullptr, UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        nullptr, UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"text2");
 
@@ -239,7 +239,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // be able to find "text2".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         root_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"text2");
 
@@ -247,7 +247,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // be able to find "text2".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         text1_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"text2");
 
@@ -255,7 +255,7 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     // be able to find "text2".
     EXPECT_HRESULT_SUCCEEDED(item_container_provider->FindItemByProperty(
         button_raw_element_provider_simple.Get(),
-        UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId(),
+        UiaRegistrarWin::GetInstance().GetUniqueIdPropertyId(),
         unique_id_variant, &result));
     EXPECT_UIA_BSTR_EQ(result, UIA_NamePropertyId, L"text2");
   }
