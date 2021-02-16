@@ -7,6 +7,7 @@
 
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+#include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <memory>
 
 #include "base/component_export.h"
@@ -27,7 +28,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
       public fuchsia::ui::input::InputMethodEditorClient {
  public:
   InputMethodFuchsia(internal::InputMethodDelegate* delegate,
-                     gfx::AcceleratedWidget widget);
+                     fuchsia::ui::views::ViewRef view_ref);
   ~InputMethodFuchsia() override;
 
   fuchsia::ui::input::ImeService* ime_service() const {

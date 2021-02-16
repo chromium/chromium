@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // causing its contents to be displayed in this window.
   void AttachSurfaceView(fuchsia::ui::views::ViewHolderToken token);
 
+  // Returns a ViewRef associated with this window.
+  fuchsia::ui::views::ViewRef CloneViewRef();
+
   // PlatformWindow implementation.
   gfx::Rect GetBounds() const override;
   void SetBounds(const gfx::Rect& bounds) override;
@@ -106,6 +109,11 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
 
   // Scenic session used for all drawing operations in this View.
   scenic::Session scenic_session_;
+
+  // Handle to a kernel object which identifies this window's View
+  // across the system. ViewRef consumers can access the handle by
+  // calling CloneViewRef().
+  fuchsia::ui::views::ViewRef view_ref_;
 
   // The view resource in |scenic_session_|.
   scenic::View view_;

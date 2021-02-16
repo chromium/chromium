@@ -29,10 +29,11 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
       scenic_session_(manager_->GetScenic()),
+      view_ref_(std::move(properties.view_ref_pair.view_ref)),
       view_(&scenic_session_,
             std::move(std::move(properties.view_token)),
             std::move(properties.view_ref_pair.control_ref),
-            std::move(properties.view_ref_pair.view_ref),
+            CloneViewRef(),
             "chromium window"),
       node_(&scenic_session_),
       input_node_(&scenic_session_),
@@ -243,6 +244,14 @@ void ScenicWindow::UpdateSize() {
       [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
 
   delegate_->OnBoundsChanged(bounds_);
+}
+
+fuchsia::ui::views::ViewRef ScenicWindow::CloneViewRef() {
+  fuchsia::ui::views::ViewRef dup;
+  zx_status_t status =
+      view_ref_.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
+  return dup;
 }
 
 void ScenicWindow::OnScenicError(zx_status_t status) {
