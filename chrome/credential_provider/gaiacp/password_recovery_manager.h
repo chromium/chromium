@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
 #include "url/gurl.h"
@@ -30,18 +29,18 @@ class PasswordRecoveryManager {
 
   // Clear the password recovery information stored in the LSA for user with SID
   // |sid|.
-  HRESULT ClearUserRecoveryPassword(const base::string16& sid);
+  HRESULT ClearUserRecoveryPassword(const std::wstring& sid);
 
   // Attempts to recover the password for user with SID |sid| using the EMM
   // escrow service.
-  HRESULT RecoverWindowsPasswordIfPossible(const base::string16& sid,
+  HRESULT RecoverWindowsPasswordIfPossible(const std::wstring& sid,
                                            const std::string& access_token,
-                                           base::string16* recovered_password);
+                                           std::wstring* recovered_password);
   // Attempts to store encryped passwod information for user with SID |sid| in
   // the LSA.
-  HRESULT StoreWindowsPasswordIfNeeded(const base::string16& sid,
+  HRESULT StoreWindowsPasswordIfNeeded(const std::wstring& sid,
                                        const std::string& access_token,
-                                       const base::string16& password);
+                                       const std::wstring& password);
 
   // Calculates the full url of various escrow service requests based on
   // the registry setting for the escrow server url.

@@ -65,7 +65,7 @@ HRESULT CReauthCredential::GetUserGlsCommandline(
 
   // If this is an existing user with an SID, try to get its gaia id and pass
   // it to the GLS for verification.
-  base::string16 gaia_id;
+  std::wstring gaia_id;
   if (GetIdFromSid(OLE2CW(os_user_sid_), &gaia_id) == S_OK &&
       !gaia_id.empty()) {
     command_line->AppendSwitchNative(kGaiaIdSwitch, gaia_id);
@@ -110,9 +110,9 @@ HRESULT CReauthCredential::GetUserGlsCommandline(
   }
 }
 
-HRESULT CReauthCredential::ValidateExistingUser(const base::string16& username,
-                                                const base::string16& domain,
-                                                const base::string16& sid,
+HRESULT CReauthCredential::ValidateExistingUser(const std::wstring& username,
+                                                const std::wstring& domain,
+                                                const std::wstring& sid,
                                                 BSTR* error_text) {
   DCHECK(os_username_.Length());
   DCHECK(os_user_sid_.Length());
@@ -136,7 +136,7 @@ HRESULT CReauthCredential::ValidateExistingUser(const base::string16& username,
 
 HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
   if (field_id == FID_PROVIDER_LABEL) {
-    base::string16 label(
+    std::wstring label(
         GetStringResource(IDS_EXISTING_AUTH_FID_PROVIDER_LABEL_BASE));
     return ::SHStrDupW(label.c_str(), value);
   } else if (field_id == FID_DESCRIPTION) {
@@ -144,9 +144,9 @@ HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
     HRESULT hr = GetUserSid(&sid_buffer);
     if (FAILED(hr)) {
       LOGFN(ERROR) << "GetUserSid: Empty sid found";
-      return ::SHStrDupW(base::string16().c_str(), value);
+      return ::SHStrDupW(std::wstring().c_str(), value);
     }
-    base::string16 sid = sid_buffer;
+    std::wstring sid = sid_buffer;
     ::CoTaskMemFree(sid_buffer);
 
     int description_label_id;
@@ -189,7 +189,7 @@ HRESULT CReauthCredential::GetStringValueImpl(DWORD field_id, wchar_t** value) {
       }
     }
 
-    base::string16 label(GetStringResource(description_label_id));
+    std::wstring label(GetStringResource(description_label_id));
     return ::SHStrDupW(label.c_str(), value);
   }
 

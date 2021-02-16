@@ -24,7 +24,7 @@ namespace testing {
 class GcpUserPoliciesBaseTest : public GlsRunnerTestBase {
  protected:
   void SetUp() override;
-  base::string16 CreateUser();
+  std::wstring CreateUser();
 };
 
 void GcpUserPoliciesBaseTest::SetUp() {
@@ -36,12 +36,12 @@ void GcpUserPoliciesBaseTest::SetUp() {
   UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
 }
 
-base::string16 GcpUserPoliciesBaseTest::CreateUser() {
+std::wstring GcpUserPoliciesBaseTest::CreateUser() {
   // Create a fake user associated to a gaia id.
   CComBSTR sid_str;
   EXPECT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                      base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
                       &sid_str));
   return OLE2W(sid_str);
 }
@@ -55,7 +55,7 @@ TEST_F(GcpUserPoliciesBaseTest, NonExistentUser) {
 }
 
 TEST_F(GcpUserPoliciesBaseTest, NoAccessToken) {
-  base::string16 sid = CreateUser();
+  std::wstring sid = CreateUser();
 
   ASSERT_TRUE(FAILED(
       UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(sid, "")));
@@ -64,7 +64,7 @@ TEST_F(GcpUserPoliciesBaseTest, NoAccessToken) {
 }
 
 TEST_F(GcpUserPoliciesBaseTest, DetectMissingAndStalePolicies) {
-  base::string16 sid = CreateUser();
+  std::wstring sid = CreateUser();
   ASSERT_TRUE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
 
   UserPolicies policies;
@@ -83,7 +83,7 @@ TEST_F(GcpUserPoliciesBaseTest, DetectMissingAndStalePolicies) {
 
   ASSERT_FALSE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
 
-  base::string16 fetch_time_millis = base::NumberToString16(
+  std::wstring fetch_time_millis = base::NumberToWString(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
       kMaxTimeDeltaSinceLastUserPolicyRefresh.InMilliseconds() - 1);
 
@@ -110,7 +110,7 @@ class GcpUserPoliciesFetchAndReadTest
                          DWORD validity_days);
 
   UserPolicies policies_;
-  base::string16 sid_;
+  std::wstring sid_;
 };
 
 void GcpUserPoliciesFetchAndReadTest::SetUp() {
@@ -141,7 +141,7 @@ void GcpUserPoliciesFetchAndReadTest::SetRegistryValues(bool dm_enrollment,
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmSupportsMultiUser,
                                           multi_user ? 1 : 0));
   ASSERT_EQ(S_OK,
-            SetGlobalFlagForTesting(base::UTF8ToUTF16(kKeyValidityPeriodInDays),
+            SetGlobalFlagForTesting(base::UTF8ToWide(kKeyValidityPeriodInDays),
                                     validity_days));
 }
 
@@ -256,20 +256,20 @@ GcpUserPoliciesExtensionTest::GcpUserPoliciesExtensionTest() {
 }
 
 TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
-  const base::string16 device_resource_id(std::get<0>(GetParam()));
+  const std::wstring device_resource_id(std::get<0>(GetParam()));
   bool has_valid_sid = std::get<1>(GetParam());
-  const base::string16 dm_token(std::get<2>(GetParam()));
+  const std::wstring dm_token(std::get<2>(GetParam()));
 
   const bool request_can_succeed =
       has_valid_sid && !device_resource_id.empty() && !dm_token.empty();
 
-  base::string16 user_sid = L"invalid-user-sid";
+  std::wstring user_sid = L"invalid-user-sid";
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
     CComBSTR sid_str;
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         kDefaultUsername, L"password", L"Full Name", L"comment",
-                        base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                        base::UTF8ToWide(kDefaultGaiaId), L"user@company.com",
                         &sid_str));
     user_sid = OLE2W(sid_str);
   }
@@ -290,9 +290,9 @@ TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
     ASSERT_TRUE(user_policies_url.is_valid());
     ASSERT_NE(std::string::npos, user_policies_url.spec().find(kDefaultGaiaId));
     ASSERT_NE(std::string::npos, user_policies_url.spec().find(
-                                     base::UTF16ToUTF8(device_resource_id)));
+                                     base::WideToUTF8(device_resource_id)));
     ASSERT_NE(std::string::npos,
-              user_policies_url.spec().find(base::UTF16ToUTF8(dm_token)));
+              user_policies_url.spec().find(base::WideToUTF8(dm_token)));
   } else {
     ASSERT_FALSE(user_policies_url.is_valid());
   }

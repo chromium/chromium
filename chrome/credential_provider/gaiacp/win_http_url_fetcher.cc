@@ -11,6 +11,7 @@
 #include <process.h>
 
 #include <set>
+#include <string>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -18,7 +19,6 @@
 #include "base/json/json_writer.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
@@ -347,7 +347,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   for (const auto& kv : request_headers_) {
     const wchar_t* key = A2CW(kv.first.c_str());
     const wchar_t* value = A2CW(kv.second.c_str());
-    base::string16 header = base::StringPrintf(L"%ls: %ls", key, value);
+    std::wstring header = base::StringPrintf(L"%ls: %ls", key, value);
     if (!::WinHttpAddRequestHeaders(
             request_.Get(), header.c_str(), header.length(),
             WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {

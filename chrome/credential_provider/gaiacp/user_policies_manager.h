@@ -5,8 +5,9 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_USER_POLICIES_MANAGER_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_USER_POLICIES_MANAGER_H_
 
+#include <string>
+
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/extension/task_manager.h"
@@ -33,7 +34,7 @@ class COMPONENT_EXPORT(GCPW_POLICIES) UserPoliciesManager {
   // |access_token| for authentication and authorization and saves it in file
   // storage replacing any previously fetched versions.
   virtual HRESULT FetchAndStoreCloudUserPolicies(
-      const base::string16& sid,
+      const std::wstring& sid,
       const std::string& access_token);
 
   // Fetch the policies for the user-device |context| provided by the GCPW
@@ -44,22 +45,22 @@ class COMPONENT_EXPORT(GCPW_POLICIES) UserPoliciesManager {
 
   // Get the URL of GCPW service for HTTP request for fetching user policies
   // when the caller has a valid OAuth token for authentication.
-  GURL GetGcpwServiceUserPoliciesUrl(const base::string16& sid);
+  GURL GetGcpwServiceUserPoliciesUrl(const std::wstring& sid);
 
   // Get the URL of GCPW service for HTTP request for fetching user policies
   // when the caller only has a DM token.
-  GURL GetGcpwServiceUserPoliciesUrl(const base::string16& sid,
-                                     const base::string16& device_resource_id,
-                                     const base::string16& dm_token);
+  GURL GetGcpwServiceUserPoliciesUrl(const std::wstring& sid,
+                                     const std::wstring& device_resource_id,
+                                     const std::wstring& dm_token);
 
   // Retrieves the policies for the user with |sid| from local storage. Returns
   // the default user policy if policy not fetched or on any error.
-  virtual bool GetUserPolicies(const base::string16& sid,
+  virtual bool GetUserPolicies(const std::wstring& sid,
                                UserPolicies* user_policies) const;
 
   // Returns true if the policies are missing for the user with |sid| or if
   // they haven't been refreshed recently.
-  virtual bool IsUserPolicyStaleOrMissing(const base::string16& sid) const;
+  virtual bool IsUserPolicyStaleOrMissing(const std::wstring& sid) const;
 
   // For testing only return the status of the last policy fetch.
   HRESULT GetLastFetchStatusForTesting() const;
@@ -76,7 +77,7 @@ class COMPONENT_EXPORT(GCPW_POLICIES) UserPoliciesManager {
 
   // Fetch the user policies using the given backend url and access token if
   // specified.
-  HRESULT FetchAndStorePolicies(const base::string16& sid,
+  HRESULT FetchAndStorePolicies(const std::wstring& sid,
                                 GURL user_policies_url,
                                 const std::string& access_token);
 
