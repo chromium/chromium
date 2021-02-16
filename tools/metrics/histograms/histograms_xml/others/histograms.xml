@@ -12553,7 +12553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.TimeToReadPersistedMessages" units="ms"
-    expires_after="2021-02-28">
+    expires_after="M94">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -12618,7 +12618,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.VisibleNotificationCount" units="notifications"
-    expires_after="M89">
+    expires_after="M94">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
