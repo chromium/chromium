@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">Web <ph name="SITE" /> žádá o spárování</translation>
 <translation id="2000419248597011803">Odesílá soubory cookie a vyhledávací dotazy z adresního řádku a vyhledávacího pole a několik souborů cookie vašemu výchozímu vyhledávači</translation>
 <translation id="2002537628803770967">Platební karty a adresy pomocí služby Google Pay</translation>
-<translation id="2010780124464321179">Odkaz na text nelze vytvořit. Sdílet odkaz na stránku.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="2017836877785168846">Vymaže historii a automatická dokončení v adresním řádku.</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
@@ -625,7 +624,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5524843473235508879">Bylo zablokováno přesměrování.</translation>
 <translation id="5527082711130173040">K vyhledání zařízení potřebuje Chrome přístup k informacím o poloze. <ph name="BEGIN_LINK1" />Aktualizujte oprávnění<ph name="END_LINK1" />. V tomto zařízení je také <ph name="BEGIN_LINK2" />vypnut přístup k poloze<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zavřít anonymní karty</translation>
-<translation id="5530920986376047241">Stránky si můžete uložit na seznam četby, abyste je znovu našli</translation>
 <translation id="5534640966246046842">Web byl zkopírován</translation>
 <translation id="5548606607480005320">Bezpečnostní kontrola</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
@@ -707,8 +705,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5982307838673692400">Otevřít anonymní kartu</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stránku}few{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stránky}many{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stránky}other{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stránek}}</translation>
-<translation id="6014293228235665243">Nepřečtené</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
 <translation id="6040143037577758943">Zavřít</translation>
@@ -865,7 +861,6 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="702463548815491781">Doporučeno, když je zapnuta funkce TalkBack nebo přístup pomocí přepínačů</translation>
 <translation id="7027549951530753705">Obnoveno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hesla</translation>
-<translation id="7030675613184250187">Stránky si můžete uložit do seznamu četby, abyste je znovu našli nebo si je mohli přečíst offline</translation>
 <translation id="7054588988317389591">Zobrazovat popisy obrázků?</translation>
 <translation id="7055152154916055070">Bylo zablokováno přesměrování:</translation>
 <translation id="7063006564040364415">K synchronizačnímu serveru se nelze připojit.</translation>

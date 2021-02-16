@@ -659,6 +659,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6715542151869432661">Không tìm thấy thiết bị di động nào.</translation>
 <translation id="6723839937902243910">Nguồn</translation>
 <translation id="6727969043791803658">Đã kết nối, <ph name="BATTERY_PERCENTAGE" />% pin</translation>
+<translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Do quản trị viên thực thi</translation>
 <translation id="6751826523481687655">Tính năng theo dõi hiệu suất đang bật</translation>
 <translation id="6752912906630585008">Đã xóa và hợp nhất Không gian làm việc <ph name="REMOVED_DESK" /> với Không gian làm việc <ph name="RECEIVE_DESK" /></translation>

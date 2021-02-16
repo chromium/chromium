@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Ta bort ...</translation>
 <translation id="1976150099241323601">Logga in på säkerhetsenhet</translation>
 <translation id="1977965994116744507">Håll mobilen närmare om du vill låsa upp din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Framtida programvara och säkerhetsuppdateringar installeras automatiskt.</translation>
 <translation id="1978057560491495741">Ta bort adress</translation>
 <translation id="1979095679518582070">Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.</translation>
 <translation id="1979280758666859181">Du byter till en kanal med en äldre version av <ph name="PRODUCT_NAME" />. Kanalen byts när kanalversionen matchar den version som är installerad på din enhet.</translation>
@@ -4336,7 +4335,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5941343993301164315">Logga in på <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimera</translation>
 <translation id="5942779427914696408">Enhetens synlighet</translation>
-<translation id="5942964813783878922">Din <ph name="DEVICE_TYPE" /> startas om efter uppdateringen. Framtida programvara och säkerhetsuppdateringar installeras automatiskt.</translation>
 <translation id="5944869793365969636">Skanna QR-kod</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Det gick inte att analysera filen</translation>

@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> dorește să se asocieze</translation>
 <translation id="2000419248597011803">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit</translation>
 <translation id="2002537628803770967">Carduri de credit și adrese care folosesc Google Pay</translation>
-<translation id="2010780124464321179">Nu s-a putut crea linkul spre text. Trimite linkul spre pagină.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="2017836877785168846">Șterge istoricul și completările automate din bara de adrese.</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
@@ -625,7 +624,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5524843473235508879">Redirecționarea a fost blocată.</translation>
 <translation id="5527082711130173040">Chrome necesită accesul la locație pentru a căuta dispozitive. <ph name="BEGIN_LINK1" />Actualizează permisiunile<ph name="END_LINK1" />. Accesul la locație este <ph name="BEGIN_LINK2" />dezactivat pentru acest dispozitiv<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Închide filele incognito</translation>
-<translation id="5530920986376047241">Poți să salvezi pagini în lista de lectură ca să le regăsești</translation>
 <translation id="5534640966246046842">Site-ul a fost copiat</translation>
 <translation id="5548606607480005320">Verificare de siguranță</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
@@ -707,8 +705,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5982307838673692400">Deschide o filă incognito</translation>
 <translation id="6000066717592683814">Păstrează Google</translation>
 <translation id="6005538289190791541">Parola sugerată</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Ai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagină}few{Ai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagini}other{Ai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> de pagini}}</translation>
-<translation id="6014293228235665243">Necitite</translation>
 <translation id="6036057147555329831">ICU suplimentar</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
 <translation id="6040143037577758943">Închide</translation>
@@ -865,7 +861,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="702463548815491781">Recomandat atunci când este activată opțiunea TalkBack sau Acces prin comutare</translation>
 <translation id="7027549951530753705">S-a restabilit <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Parole</translation>
-<translation id="7030675613184250187">Poți să salvezi pagini în lista de lectură ca să le regăsești sau să le citești offline</translation>
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
 <translation id="7055152154916055070">Redirecționarea a fost blocată:</translation>
 <translation id="7063006564040364415">Nu s-a putut stabili conexiunea cu serverul de sincronizare.</translation>

@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">कुनै पनि मोबाइल यन्त्र भेटिएन।</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6727969043791803658">जोडियो, ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">तपाईंका प्रशासकले लागू गर्नुभएको</translation>
 <translation id="6751826523481687655">प्रदर्शन ट्रेस गरिँदै छ</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>

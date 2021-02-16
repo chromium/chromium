@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">მობილური მოწყობილობები ვერ მოიძებნა.</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="6727969043791803658">დაკავშირებულია, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">იძულებით გააქტიურებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6751826523481687655">ეფექტურობის ტრასირება ჩართულია</translation>
 <translation id="6752912906630585008">სამუშაო მაგიდა <ph name="REMOVED_DESK" /> ამოიშალა და გაერთიანდა სამუშაო მაგიდასთან <ph name="RECEIVE_DESK" /></translation>

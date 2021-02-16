@@ -11,6 +11,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> blev tilføjet</translation>
 <translation id="1047017786576569492">afgrænset</translation>
 <translation id="1047773237499189053">Nye funktioner er tilgængelige. Tryk på pil op for at få flere oplysninger.</translation>
+<translation id="1052916631016577720">Scan elementer</translation>
 <translation id="1056775291175587022">Ingen netværk</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4351433414020964307">Assistenten indlæses...</translation>
 <translation id="4356930093361201197">tilstanden Høj kontrast</translation>
 <translation id="4371348193907997655">Cast-indstillinger</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="4378551569595875038">Tilslutter...</translation>
 <translation id="4379531060876907730">Dette er dine styluspenværktøjer</translation>
 <translation id="4389184120735010762">Du trykkede på tastaturgenvejen for det fastgjorte lupvindue. Vil du aktivere indstillingen?</translation>
@@ -586,6 +588,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6043212731627905357">Denne skærm fungerer ikke sammen med <ph name="DEVICE_TYPE" /> (skærmen understøttes ikke).</translation>
 <translation id="6043994281159824495">Log ud nu</translation>
 <translation id="6047696787498798094">Skærmdeling ophører, når du skifter til en anden bruger. Vil du fortsætte?</translation>
+<translation id="6050368268239407309">Præsentationsværktøjer</translation>
 <translation id="6054305421211936131">Log ind med chipkort</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -659,6 +662,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6715542151869432661">Der blev ikke fundet nogen mobilenheder.</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6727969043791803658">Tilsluttet, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Håndhæves af din administrator</translation>
 <translation id="6751826523481687655">Sporing af effektivitet er slået til</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> blev fjernet og slået sammen med Skrivebord <ph name="RECEIVE_DESK" /></translation>

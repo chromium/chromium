@@ -659,6 +659,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6715542151869432661">No s'ha trobat cap dispositiu mòbil.</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Funció aplicada per l'administrador</translation>
 <translation id="6751826523481687655">La traça del rendiment està activada</translation>
 <translation id="6752912906630585008">L'escriptori <ph name="REMOVED_DESK" /> s'ha suprimit i s'ha fusionat amb l'escriptori <ph name="RECEIVE_DESK" /></translation>

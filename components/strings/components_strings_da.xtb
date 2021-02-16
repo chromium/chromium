@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Accepterede kort</translation>
 <translation id="1021753677514347426">Dette problem opstår på grund af et certifikat, som du eller en anden har installeret på din enhed. Certifikatet anvendes ofte til at overvåge og opfange netværk, og Chromium har ikke tillid til det. Der findes legitime årsager til at overvåge, f.eks. på skole- og virksomhedsnetværk, men Chromium vil sikre, at du er bevidst om det, når det sker, også selvom du ikke kan stoppe det. Overvågning kan finde sted i enhver browser eller app, der har adgang til nettet.</translation>
 <translation id="1024111578869940408">Hackere efterligner nogle gange websites ved at foretage små ændringer af webadressen, som er svære at se.</translation>
+<translation id="1028781062521375153">Få flere oplysninger</translation>
 <translation id="1030706264415084469"><ph name="URL" /> anmoder om at gemme store datamængder permanent på din enhed</translation>
 <translation id="1032854598605920125">Rotér med uret</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
@@ -146,6 +147,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1462951478840426066">Brug skrifttyperne på din computer, så du kan oprette indhold i høj kvalitet</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Venstre</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="EMBEDDED_ORIGIN" />, som giver tilladelse til at fortsætte på <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Vis mere</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1640180200866533862">Brugerpolitikker</translation>
 <translation id="1640244768702815859">Prøv at <ph name="BEGIN_LINK" />gå til websitets startside<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Forsink output indtil</translation>
+<translation id="164212631332220697">Betal med <ph name="CARD_DETAIL" /> ved kassen.</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1645368109819982629">Ikke-understøttet protokol</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4879725228911483934">Åbne og placere vinduer på dine skærme</translation>
 <translation id="4880827082731008257">Søg i historikken</translation>
 <translation id="4881695831933465202">Åbn</translation>
+<translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> ved kassen</translation>
 <translation id="4889420713887366944">Knappen Åbn inkognitovindue – tryk på Enter for at åbne et nyt inkognitovindue og browse privat</translation>
 <translation id="4892518386797173871">Bagest</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1980,6 +1984,7 @@ Yderligere oplysninger:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Tilføj denne fane som bogmærke</translation>
 <translation id="8751426954251315517">Prøv igen næste gang</translation>
+<translation id="8757526089434340176">Der er et tilgængeligt Google Pay-tilbud</translation>
 <translation id="8759274551635299824">Kortet er udløbet</translation>
 <translation id="87601671197631245">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder, meddelelser eller betalingskort), når de sendes til dette website.</translation>
 <translation id="8761567432415473239">Beskyttet browsing i Google har for nylig <ph name="BEGIN_LINK" />fundet skadelige programmer<ph name="END_LINK" /> på <ph name="SITE" />.</translation>

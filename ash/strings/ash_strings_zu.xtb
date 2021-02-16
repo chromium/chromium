@@ -11,6 +11,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> kungeziwe</translation>
 <translation id="1047017786576569492">okuyingxenye</translation>
 <translation id="1047773237499189053">Isici esisha siyatholakala, sebenzisa ukhiye Womcibisholo waphezulu ukuze ufunde kabanzi.</translation>
+<translation id="1052916631016577720">Iskeni sento</translation>
 <translation id="1056775291175587022">Akuna-network</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Iselula: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4351433414020964307">Umsizi uyalayisha...</translation>
 <translation id="4356930093361201197">Imodi yokugqama okuphezulu</translation>
 <translation id="4371348193907997655">Izilungiselelo Zokusakaza</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, iphesenti lamandla wesiginali ngu-<ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="4378551569595875038">Iyaxhuma...</translation>
 <translation id="4379531060876907730">Lawa amathuluzi akho e-stylus</translation>
 <translation id="4389184120735010762">Ucindezele isinqamuleli sekhibhodi sesikhulisi esidokhiwe. Uyafuna ukusivula?</translation>
@@ -586,6 +588,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6043212731627905357">Imonitha ayihambisani ne-<ph name="DEVICE_TYPE" /> yakho (imonitha ayisekelwe).</translation>
 <translation id="6043994281159824495">Phuma ngemvume manje</translation>
 <translation id="6047696787498798094">Ukwabelana ngesikwini kuzomiswa uma ushintshela komunye umsebenzisi. Ingabe ufuna ukuqhubeka?</translation>
+<translation id="6050368268239407309">Amathuluzi wephrezentheshini</translation>
 <translation id="6054305421211936131">Ngena ngekhadi elisebenza ngobuchwepheshe besimanje</translation>
 <translation id="6059276912018042191">Amathebhu we-Chrome wakamuva</translation>
 <translation id="6062360702481658777">Uzokhishwa ngemvume ngokuzenzakalela ku-<ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -659,6 +662,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6715542151869432661">Awekho amadivayisi eselula atholakele.</translation>
 <translation id="6723839937902243910">Amandla</translation>
 <translation id="6727969043791803658">Ixhunyiwe, ibhethri ngu-<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Kulawulwa umphathi wakho</translation>
 <translation id="6751826523481687655">Ukulandelela kokusebenza kuvuliwe</translation>
 <translation id="6752912906630585008">Ideski <ph name="REMOVED_DESK" /> lisusiwe futhi lahlanganiswa nedeski <ph name="RECEIVE_DESK" /></translation>

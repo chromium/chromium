@@ -11,6 +11,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> aggiunto</translation>
 <translation id="1047017786576569492">parziale</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
+<translation id="1052916631016577720">Scansione elementi</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4351433414020964307">L'assistente è in fase di caricamento…</translation>
 <translation id="4356930093361201197">modalità ad alto contrasto</translation>
 <translation id="4371348193907997655">Impostazioni di trasmissione</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensità segnale: <ph name="SIGNAL_STRENGTH" /> percento</translation>
 <translation id="4378551569595875038">Connessione...</translation>
 <translation id="4379531060876907730">Ecco gli strumenti per il tuo stilo</translation>
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
@@ -587,6 +589,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6043212731627905357">Questo monitor non è compatibile con il tuo dispositivo <ph name="DEVICE_TYPE" /> (il monitor non è supportato).</translation>
 <translation id="6043994281159824495">Esci ora</translation>
 <translation id="6047696787498798094">La condivisione dello schermo verrà interrotta se cambi utente. Vuoi continuare?</translation>
+<translation id="6050368268239407309">Strumenti Presentazione</translation>
 <translation id="6054305421211936131">Accedi con la smart card</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
 <translation id="6062360702481658777">Verrai disconnesso automaticamente tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -660,6 +663,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6715542151869432661">Nessun dispositivo mobile trovato.</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="6727969043791803658">Dispositivo connesso. Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Applicata dall'amministratore</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
 <translation id="6752912906630585008">Scrivania <ph name="REMOVED_DESK" /> rimossa e unita alla scrivania <ph name="RECEIVE_DESK" /></translation>

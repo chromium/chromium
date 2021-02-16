@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Nepodporované vo verzii Chromium Canary</translation>
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
+<translation id="3946918322491238254">Vaše záložky, história, heslá a ďalšie nastavenia zostanú v tomto zariadení zachované. Ak ich zmeníte, tieto zmeny nebudú synchronizované do vášho účtu.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
 <translation id="4166206055865952171">Nastavte si Chromium ako predvolený prehliadač</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5521125884468363740">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, prihláste sa a zapnite synchronizáciu</translation>
+<translation id="5544795779875591523">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať.</translation>
 <translation id="5573014823074921752">Tip pre Chromium: ďalšie možnosti karty získate pridržaním tlačidla „Zobraziť karty“ na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
 <translation id="5700709190537129682">Chromium nemôže skontrolovať heslá</translation>
 <translation id="5777187867430702742">Stránka prehliadača Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
+<translation id="894437814105052438">Keď sa odhlásite, Chromium prestane synchronizovať nové údaje do vášho účtu Google. Údaje, ktoré boli synchronizované predtým, v účte zostanú.</translation>
 <translation id="9022552996538154597">Prihlásiť sa do prehliadača Chromium</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="921174536258924340">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
+<translation id="994708389219151914">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané.</translation>
 </translationbundle>

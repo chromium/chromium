@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 더 가까이 가져오세요.</translation>
-<translation id="1978006917103730774">향후 소프트웨어 및 보안 업데이트는 자동 설치됩니다.</translation>
 <translation id="1978057560491495741">주소 삭제</translation>
 <translation id="1979095679518582070">기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" />의 이전 버전으로 채널을 변경하려 합니다. 채널 버전이 현재 기기에 설치되어 있는 버전과 일치할 때 채널 변경이 적용됩니다.</translation>
@@ -4334,7 +4333,6 @@
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />에 로그인하세요.</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5942779427914696408">내 기기 공개 범위</translation>
-<translation id="5942964813783878922">업데이트 후 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다. 향후 소프트웨어 및 보안 업데이트는 자동 설치됩니다.</translation>
 <translation id="5944869793365969636">QR 코드 스캔</translation>
 <translation id="5946591249682680882">보고서 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">파일을 파싱할 수 없습니다.</translation>

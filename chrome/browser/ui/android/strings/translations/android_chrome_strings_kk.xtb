@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> сайты жұптасқысы келеді</translation>
 <translation id="2000419248597011803">Мекенжай жолағына және іздеу өрісіне енгізілген сұрауларды, сонымен қатар кейбір cookie файлдарын әдепкі іздеу жүйесіне жібереді</translation>
 <translation id="2002537628803770967">Google Pay қызметін пайдаланатын несиелік карталар мен мекенжайлар</translation>
-<translation id="2010780124464321179">Мәтіннің сілтемесін жасау мүмкін емес. Беттің сілтемесін бөлісіңіз.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файл}}</translation>
 <translation id="2017836877785168846">Мекенжай жолағындағы тарихты және автотолтыруларды өшіреді.</translation>
 <translation id="2021896219286479412">Толық экран режимін басқару</translation>
@@ -625,7 +624,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5524843473235508879">Баcқа бетке бағыттау бөгелді.</translation>
 <translation id="5527082711130173040">Құрылғыларды іздеу үшін Chrome жүйесіне орналасу орны деректеріне кіру рұқсаты қажет. <ph name="BEGIN_LINK1" />Рұқсаттарды жаңартыңыз<ph name="END_LINK1" />. Орналасу орны деректеріне кіру рұқсаты <ph name="BEGIN_LINK2" />бұл құрылғы үшін өшірулі<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Жасырын қойындыларды жабу</translation>
-<translation id="5530920986376047241">Беттерді тізімге сақтап қойып, кейін тауып алуыңызға болады.</translation>
 <translation id="5534640966246046842">Сайт көшірілді</translation>
 <translation id="5548606607480005320">Қауіпсіздік шарасы</translation>
 <translation id="5556459405103347317">Қайта жүктеу</translation>
@@ -707,8 +705,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5982307838673692400">Инкогнито қойындысын ашу</translation>
 <translation id="6000066717592683814">Google қызметін әдепкісінше пайдалану</translation>
 <translation id="6005538289190791541">Ұсынылған құпия сөз</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> бет бар.}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> бет бар.}}</translation>
-<translation id="6014293228235665243">Оқылмаған</translation>
 <translation id="6036057147555329831">Қосымша ICU</translation>
 <translation id="6039379616847168523">Келесі қойындыға өту</translation>
 <translation id="6040143037577758943">Жабу</translation>
@@ -865,7 +861,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="702463548815491781">TalkBack не Ауыстырғышпен кіру қосулы кезде пайдалануға ұсынылады</translation>
 <translation id="7027549951530753705">Қалпына келтірілген <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Құпия сөздер</translation>
-<translation id="7030675613184250187">Беттерді оқу тізіміне сақтап, кейін оларды сол жерден табуыңызға не офлайн режимде оқуыңызға болады.</translation>
 <translation id="7054588988317389591">Сурет сипаттамаларын аласыз ба?</translation>
 <translation id="7055152154916055070">Бағыттау функциясына тыйым салынды.</translation>
 <translation id="7063006564040364415">Синхрондау серверіне қосылу мүмкін емес.</translation>

@@ -896,7 +896,6 @@
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijava na bezbednosni uređaj</translation>
 <translation id="1977965994116744507">Približite telefon da biste otključali <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Buduća softverska i bezbednosna ažuriranja će se instalirati automatski.</translation>
 <translation id="1978057560491495741">Uklonite adresu</translation>
 <translation id="1979095679518582070">Isključivanje ove funkcije ne utiče na mogućnost ovog uređaja da šalje informacije potrebne za osnovne usluge, na primer, ažuriranja sistema i bezbednost.</translation>
 <translation id="1979280758666859181">Prelazite na kanal sa starijom verzijom <ph name="PRODUCT_NAME" />-a. Promena kanala će se primeniti kada se verzija kanala bude podudarala sa verzijom koja je trenutno instalirana na uređaju.</translation>
@@ -4336,7 +4335,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5941343993301164315">Prijavite se na <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Umanji</translation>
 <translation id="5942779427914696408">Vidljivost uređaja</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> će se restartovati posle ovog ažuriranja. Buduća softverska i bezbednosna ažuriranja će se instalirati automatski.</translation>
 <translation id="5944869793365969636">Skenirajte QR kôd</translation>
 <translation id="5946591249682680882">ID izveštaja <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Raščlanjivanje datoteke nije uspelo</translation>

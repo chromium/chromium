@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Verwijderen...</translation>
 <translation id="1976150099241323601">Inloggen bij beveiligingsapparaat</translation>
 <translation id="1977965994116744507">Plaats je telefoon dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
-<translation id="1978006917103730774">Toekomstige software- en beveiligingsupdates worden automatisch geïnstalleerd.</translation>
 <translation id="1978057560491495741">Adres verwijderen</translation>
 <translation id="1979095679518582070">Als je deze functie uitschakelt, heeft dit geen gevolgen voor de mogelijkheid van dit apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.</translation>
 <translation id="1979280758666859181">Je wijzigt naar een kanaal met een oudere versie van <ph name="PRODUCT_NAME" />. De wijziging van kanaal wordt toegepast wanneer de versie van het kanaal overeenkomt met de versie die momenteel op het apparaat is geïnstalleerd.</translation>
@@ -4336,7 +4335,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5941343993301164315">Log in bij <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5942779427914696408">Zichtbaarheid van apparaat</translation>
-<translation id="5942964813783878922">Na deze update wordt je <ph name="DEVICE_TYPE" /> opnieuw opgestart. Toekomstige software- en beveiligingsupdates worden automatisch geïnstalleerd.</translation>
 <translation id="5944869793365969636">QR-code scannen</translation>
 <translation id="5946591249682680882">Rapport-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Kan bestand niet parseren</translation>

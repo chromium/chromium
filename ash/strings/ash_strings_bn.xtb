@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> যোগ করা হয়েছে</translation>
 <translation id="1047017786576569492">আংশিক</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
+<translation id="1052916631016577720">আইটেম স্ক্যান</translation>
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">সেলুলার: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">সহায়ক লোড হচ্ছে...</translation>
 <translation id="4356930093361201197">উচ্চ-কনট্রাস্ট মোড</translation>
 <translation id="4371348193907997655">কাস্ট সেটিংস</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4379531060876907730">এগুলি হল আপনার স্টাইলাস টুল</translation>
 <translation id="4389184120735010762">ডক করা ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">এই মনিটরটি আপনার <ph name="DEVICE_TYPE" /> এর সাথে তাল মেলাতে পারছে না (মনিটরটি সমর্থিত নয়)।</translation>
 <translation id="6043994281159824495">এখনই সাইন-আউট করুন</translation>
 <translation id="6047696787498798094">আপনি ব্যবহারকারী পাল্টালে স্ক্রিন শেয়ার করা বন্ধ হবে৷ আপনি কি চালিয়ে যেতে চান?</translation>
+<translation id="6050368268239407309">উপস্থাপনা টুল</translation>
 <translation id="6054305421211936131">স্মার্ট কার্ড দিয়ে সাইন-ইন করুন</translation>
 <translation id="6059276912018042191">Chrome-এ সম্প্রতি খোলা ট্যাবগুলি</translation>
 <translation id="6062360702481658777">আপনি <ph name="LOGOUT_TIME_LEFT" /> এর মধ্যে স্বয়ংক্রিয়ভাবে প্রস্থান করুন হবেন৷</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">কোনও মোবাইল ডিভাইস খুঁজে পাওয়া যায়নি।</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
 <translation id="6727969043791803658">কানেক্ট করা আছে, ব্যাটারিতে <ph name="BATTERY_PERCENTAGE" />% চার্জ আছে</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" />টি</translation>
 <translation id="6751052314767925245">আপনার অ্যাডমিনিস্ট্রেটর প্রয়োগ করেছেন</translation>
 <translation id="6751826523481687655">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
 <translation id="6752912906630585008">ডেস্ক <ph name="REMOVED_DESK" />-কে সরিয়ে দিয়ে <ph name="RECEIVE_DESK" />-এর সাথে মার্জ করা হয়েছে</translation>

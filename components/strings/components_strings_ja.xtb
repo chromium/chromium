@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">利用可能なカード</translation>
 <translation id="1021753677514347426">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chromium では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chromium ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
 <translation id="1024111578869940408">不正なユーザーが、ウェブアドレスを一目ではわからないように改変してサイトを偽装している可能性があります。</translation>
+<translation id="1028781062521375153">詳細を表示</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1032854598605920125">時計回りに回転</translation>
 <translation id="1036348656032585052">オフにする</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">パソコンのフォントを使用して高品質のコンテンツを作成できます</translation>
 <translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">左</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> は、<ph name="EMBEDDED_ORIGIN" /> が <ph name="TOP_ORIGIN" /> で動作するのに必要なコードです</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">ユーザー ポリシー</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />サイトのホームページにアクセス<ph name="END_LINK" />してみてください。</translation>
 <translation id="1641976391427233992">出力のタイミング</translation>
+<translation id="164212631332220697">ご購入手続きの際に <ph name="CARD_DETAIL" /> で支払います。</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1645368109819982629">サポートされていないプロトコルです</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -999,6 +1002,7 @@
 <translation id="4879725228911483934">画面上にウィンドウを開いて配置する</translation>
 <translation id="4880827082731008257">履歴を検索</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="4885256590493466218">ご購入手続きの際に <ph name="CARD_DETAIL" /> で支払います</translation>
 <translation id="4889420713887366944">シークレット ウィンドウを開くボタンです。Enter キーを押すと、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングします</translation>
 <translation id="4892518386797173871">背面</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
@@ -1969,6 +1973,7 @@
 <translation id="8742371904523228557"><ph name="ORIGIN" /> のコードは「<ph name="ONE_TIME_CODE" />」です</translation>
 <translation id="874918643257405732">このタブをブックマークに追加します</translation>
 <translation id="8751426954251315517">後でもう一度お試しください。</translation>
+<translation id="8757526089434340176">Google Pay のクーポンをご利用いただけます</translation>
 <translation id="8759274551635299824">このカードは有効期限が切れています</translation>
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
 <translation id="8761567432415473239"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なプログラムが検出<ph name="END_LINK" />されました。</translation>

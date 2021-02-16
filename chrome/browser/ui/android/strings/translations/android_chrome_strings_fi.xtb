@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> haluaa muodostaa laiteparin</translation>
 <translation id="2000419248597011803">Lähettää joitakin osoitekentän ja hakukentän kautta tehtyjä hakuja sekä joitakin evästeitä oletushakukoneellesi</translation>
 <translation id="2002537628803770967">Luottokortit ja osoitteet Google Paysta</translation>
-<translation id="2010780124464321179">Tekstiin linkittäminen ei onnistu. Jaa linkki sivulle.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tiedosto}other{# tiedostoa}}</translation>
 <translation id="2017836877785168846">Tyhjentää historian ja osoitepalkin automaattiset täydennykset.</translation>
 <translation id="2021896219286479412">Ohjaimet koko näytön tilassa</translation>
@@ -625,7 +624,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5524843473235508879">Uudelleenohjaus estetty</translation>
 <translation id="5527082711130173040">Chrome tarvitsee sijaintitietoja hakeakseen laitteita. <ph name="BEGIN_LINK1" />Päivitä käyttöoikeudet<ph name="END_LINK1" />. Sijaintitiedot on lisäksi <ph name="BEGIN_LINK2" />poistettu käytöstä tällä laitteella<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Sulje incognito-välilehdet</translation>
-<translation id="5530920986376047241">Voit tallentaa sivuja lukulistallesi myöhempää käyttöä varten</translation>
 <translation id="5534640966246046842">Sivusto kopioitu</translation>
 <translation id="5548606607480005320">Turvatarkistus</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
@@ -707,8 +705,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5982307838673692400">Avaa incognito-välilehti</translation>
 <translation id="6000066717592683814">Käytä Googlea</translation>
 <translation id="6005538289190791541">Salasanaehdotus</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sinulla on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> sivu}other{Sinulla on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sivua}}</translation>
-<translation id="6014293228235665243">Lukematta</translation>
 <translation id="6036057147555329831">Ylimääräinen ICU</translation>
 <translation id="6039379616847168523">Siirry seuraavalle välilehdelle</translation>
 <translation id="6040143037577758943">Sulje</translation>
@@ -865,7 +861,6 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="702463548815491781">Suositellaan käytettäväksi, kun TalkBack tai Kytkimen käyttö on päällä</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> palautettu</translation>
 <translation id="7029809446516969842">Salasanat</translation>
-<translation id="7030675613184250187">Voit tallentaa sivuja lukulistallesi myöhempää käyttöä tai offline-tilassa lukemista varten</translation>
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>
 <translation id="7055152154916055070">Uudelleenohjaus estetty:</translation>
 <translation id="7063006564040364415">Synkronointipalvelimeen ei saada yhteyttä.</translation>

@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Websites viser tekst på dit foretrukne sprog, når det er muligt.</translation>
 <translation id="1952728750904661634">Log ind med en managerstyret konto</translation>
 <translation id="1965935827552890526">Gør det færdigt, du var i gang med i dit andet åbne Chrome-vindue.</translation>
+<translation id="1973912524893600642">Behold data</translation>
 <translation id="1974060860693918893">Avanceret</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
@@ -299,6 +300,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4038354071007134711">Ingen apps på denne enhed, der kan åbne filen.</translation>
 <translation id="4042870976416480368">Find på siden</translation>
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
+<translation id="4079195788735381731">Din organisation loggede dig ud</translation>
 <translation id="4082688844002261427">Bestem, hvordan din browserhistorik anvendes til at tilpasse søgeresultater, annoncer og meget mere</translation>
 <translation id="408404951701638773">Nu er det nemmere at bruge søgefeltet</translation>
 <translation id="411254640334432676">Download mislykkedes.</translation>
@@ -411,9 +413,9 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
+<translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
 <translation id="5407969256130905701">Kassér ændringer</translation>
-<translation id="5409365236829784218">Der er ingen installerede apps, der kan åbne denne fil.</translation>
 <translation id="5416022985862681400">De seneste syv dage</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5433691172869980887">Brugernavnet er kopieret</translation>
@@ -497,6 +499,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6254066287920239840">Åbn links i appen i stedet for i browseren.</translation>
 <translation id="6255097610484507482">Rediger kreditkort</translation>
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6308436439357671616">Dette giver dig mulighed for at tage og uploade billeder.</translation>
 <translation id="6324528485781869530">Skift synkroniseringskonto</translation>

@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Prijímané karty</translation>
 <translation id="1021753677514347426">Tento problém je spôsobený certifikátom, ktorý bol v zariadení nainštalovaný vami alebo niekým iným. O tomto certifikáte je známe, že sa pomocou neho sledujú a narúšajú siete. Chromium mu nedôveruje. Niekedy existujú legitímne prípady sledovania, napríklad v školskej alebo firemnej sieti. Chromium sa však chce uistiť, či viete, že k tomu dochádza (aj keď to nemôžete zastaviť). Sledovanie môže prebiehať v ktoromkoľvek prehliadači alebo aplikácii s prístupom na internet.</translation>
 <translation id="1024111578869940408">Útočníci niekedy weby napodobňujú tak, že vo webovej adrese vykonajú ťažko odhaliteľné zmeny.</translation>
+<translation id="1028781062521375153">Zobraziť podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom zariadení</translation>
 <translation id="1032854598605920125">Otočiť v smere hodinových ručičiek</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
@@ -146,6 +147,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1462951478840426066">Používať písma vo vašom počítači, aby ste mohli vytvárať obsah, ktorý sa bude zobrazovať s vysokou presnosťou</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Doľava</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> je váš kód pre <ph name="EMBEDDED_ORIGIN" /> na pokračovanie na <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Zobraziť viac</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1640180200866533862">Pravidlá pre používateľa</translation>
 <translation id="1640244768702815859">Skúste <ph name="BEGIN_LINK" />navštíviť domovskú stránku webu<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Odložiť výstup do</translation>
+<translation id="164212631332220697">Zaplaťte za nákup kartou <ph name="CARD_DETAIL" />.</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1645368109819982629">Nepodporovaný protokol</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -995,6 +998,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4879725228911483934">otvárať a umiestňovať okná na vaše obrazovky</translation>
 <translation id="4880827082731008257">Hľadať v histórii</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
+<translation id="4885256590493466218">Zaplaťte za nákup kartou <ph name="CARD_DETAIL" /></translation>
 <translation id="4889420713887366944">Tlačidlo Otvoriť okno inkognito. Stlačením klávesa Enter otvoríte nové okno inkognito a môžete prehliadať v súkromí.</translation>
 <translation id="4892518386797173871">Vzadu</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1964,6 +1968,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je kód pre <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Pridať kartu medzi záložky</translation>
 <translation id="8751426954251315517">Skúste to neskôr</translation>
+<translation id="8757526089434340176">K dispozícii je ponuka Google Pay</translation>
 <translation id="8759274551635299824">Platnosť tejto karty vypršala</translation>
 <translation id="87601671197631245">Tento web používa zastaranú konfiguráciu zabezpečenia, ktorá môže odhaliť vaše informácie (napríklad heslá, správy alebo kreditné karty), keď ich naň odošlete.</translation>
 <translation id="8761567432415473239">Bezpečné prehliadanie Google nedávno <ph name="BEGIN_LINK" />zistilo škodlivé programy<ph name="END_LINK" /> na webe <ph name="SITE" />.</translation>

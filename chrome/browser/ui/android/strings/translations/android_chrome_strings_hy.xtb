@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" />-ն ուզում է զուգակցվել</translation>
 <translation id="2000419248597011803">Ձեր կանխադրված որոնիչին է ուղարկում հասցեագոտու և որոնման դաշտի հարցումները, ինչպես նաև որոշ քուքիներ</translation>
 <translation id="2002537628803770967">Բանկային քարտեր ու հասցեներ Google Pay-ից</translation>
-<translation id="2010780124464321179">Չհաջողվեց ստեղծել տեքստի հղում։ Կիսվեք հղումով էջում։</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="2017836877785168846">Մաքրում է պատմությունն ու հասցեագոտու ինքնալրացումները:</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">Վերահասցեավորումն արգելափակված է:</translation>
 <translation id="5527082711130173040">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: <ph name="BEGIN_LINK1" />Թարմացնել թույլտվությունները<ph name="END_LINK1" />: Տեղադրության հասանելիությունն <ph name="BEGIN_LINK2" />այս սարքում ևս անջատված է<ph name="END_LINK2" />:</translation>
 <translation id="5530766185686772672">Փակել ինկոգնիտո ներդիրները</translation>
-<translation id="5530920986376047241">Դուք կարող եք ձեր ընթերցանության ցանկում պահել էջեր՝ դրանք նորից գտնելու համար</translation>
 <translation id="5534640966246046842">Կայքը պատճենվեց</translation>
 <translation id="5548606607480005320">Անվտանգության ստուգում</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> էջ}one{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> էջ}other{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> էջ}}</translation>
-<translation id="6014293228235665243">Չկարդացված</translation>
 <translation id="6036057147555329831">Լրացուցիչ ICU մոդուլ</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
 <translation id="6040143037577758943">Փակել</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">Խորհուրդ է տրվում, երբ TalkBack-ը կամ Switch Access-ը միացված են</translation>
 <translation id="7027549951530753705">Վերականգնման ամսաթիվը՝ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
-<translation id="7030675613184250187">Դուք կարող եք ձեր ընթերցանության ցանկում պահել էջեր՝ դրանք նորից գտնելու և անցանց ռեժիմում կարդալու համար։</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>

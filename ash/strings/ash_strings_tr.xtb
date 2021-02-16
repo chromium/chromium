@@ -660,6 +660,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6715542151869432661">Mobil cihaz bulunamadı.</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6727969043791803658">Bağlandı, %<ph name="BATTERY_PERCENTAGE" /> pil</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Yöneticiniz tarafınızdan zorunlu tutuldu</translation>
 <translation id="6751826523481687655">Performans izleme açık</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> kaldırılarak Masa <ph name="RECEIVE_DESK" /> ile birleştirildi</translation>

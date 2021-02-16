@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Suprimeix...</translation>
 <translation id="1976150099241323601">Inici de sessió al dispositiu de seguretat</translation>
 <translation id="1977965994116744507">Acosta el telèfon per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Les properes actualitzacions de seguretat i de programari s'instal·laran automàticament.</translation>
 <translation id="1978057560491495741">Suprimeix l'adreça</translation>
 <translation id="1979095679518582070">Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.</translation>
 <translation id="1979280758666859181">Esteu a punt de canviar a un canal amb una versió més antiga de <ph name="PRODUCT_NAME" />. El canvi de canal s'aplicarà quan la versió del canal coincideixi amb la versió qui hi ha instal·lada actualment en el vostre dispositiu.</translation>
@@ -4336,7 +4335,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5941343993301164315">Inicieu la sessió a <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5942779427914696408">Visibilitat del dispositiu</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> es reiniciarà després d'aquesta actualització. Les properes actualitzacions de seguretat i de programari s'instal·laran automàticament.</translation>
 <translation id="5944869793365969636">Escaneja un codi QR</translation>
 <translation id="5946591249682680882">Identificador de l'informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">No es pot analitzar el fitxer</translation>

@@ -107,6 +107,7 @@
 <translation id="357889014807611375">Wi-Fi me matje</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
+<translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">Shpejtësia e CPU-së aktualisht është e kufizuar për të kursyer baterinë ose për të reduktuar temperaturën</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Printeri</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
+<translation id="4155551848414053977">Sigurohu që skaneri të jetë i ndezur dhe i disponueshëm përmes rrjetit tënd ose një lidhjeje të drejtpërdrejtë</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
@@ -210,7 +212,7 @@
 <translation id="5760715441271661976">Gjendja e portalit</translation>
 <translation id="5797428682393400134">ME SUKSES</translation>
 <translation id="5832805196449965646">Shto person</translation>
-<translation id="5844247382766192936">Testi <ph name="TEST_NAME" /> është anuluar</translation>
+<translation id="583281660410589416">E panjohur</translation>
 <translation id="5849570051105887917">Kodi i ofruesit të rrjetit bazë</translation>
 <translation id="5866840822086176774">Shumë i fortë</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
+<translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Dështoi</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>

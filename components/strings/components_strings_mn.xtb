@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Зөвшөөрсөн карт</translation>
 <translation id="1021753677514347426">Та эсвэл өөр хэн нэгэн таны төхөөрөмж дээр суулгасан сертификатын улмаас ийм асуудал гардаг. Сертификатыг сүлжээнд хяналт хийх болон дундаас нь өгөгдөл цуглуулахад ашигладаг гэж мэдэгдсэн бөгөөд Chromium түүнд итгэхгүй байна. Сургууль эсвэл компанийн сүлжээнд хяналт хийх зэрэг хууль ёсны зарим тохиолдол байдаг бөгөөд Chromium нь та хяналтыг зогсоож чадахгүй байсан ч хяналт хийгдэж байгаа тухай таныг мэдэж байгаа эсэхийг шалгах хүсэлтэй байна. Вэбэд ханддаг аливаа хөтөч эсвэл аппликэйшн дээр хяналт хийж болзошгүй.</translation>
 <translation id="1024111578869940408">Халдагч этгээдүүд заримдаа харахад хэцүү өөрчлөлтийг веб хаягт оруулах замаар сайтуудыг дуурайдаг.</translation>
+<translation id="1028781062521375153">Дэлгэрэнгүйг харах</translation>
 <translation id="1030706264415084469"><ph name="URL" /> таны төхөөрөмжид том хэмжээний өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="1032854598605920125">Цагийн зүүний дагуу эргүүлэх</translation>
 <translation id="1036348656032585052">Унтраа</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">Компьютер дээрээ фонтыг ашигласнаар та дуу авиаг яг таг шилжүүлэх контент үүсгэх боломжтой болно</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Зүүн</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> нь <ph name="TOP_ORIGIN" /> дээр үргэлжлүүлэх таны <ph name="EMBEDDED_ORIGIN" />-н код юм</translation>
 <translation id="1472675084647422956">Дэлгэрэнгүй харуулах</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">Хэрэглэгчийн журам</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайтын нүүр хуудаст зочилно уу<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Дараах хугацаа хүртэл гаралтыг хойшлуулах</translation>
+<translation id="164212631332220697">Тооцоо хийхдээ <ph name="CARD_DETAIL" />-р төлөөрэй.</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1645368109819982629">Дэмжигдээгүй протокол</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1011,6 +1014,7 @@
 <translation id="4879725228911483934">Дэлгэц дээрээ цонх нээж, байрлуулах</translation>
 <translation id="4880827082731008257">Түүхийг хайх</translation>
 <translation id="4881695831933465202">Нээх</translation>
+<translation id="4885256590493466218">Тооцоо хийхдээ <ph name="CARD_DETAIL" />-р төлөөрэй</translation>
 <translation id="4889420713887366944">Нууцлалтай цонхыг нээх товч, нууцлалтайгаар үзэхдээ Нууцлалтай цонх шинээр нээхийн тулд Enter дарна уу</translation>
 <translation id="4892518386797173871">Ар талын</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> бол <ph name="ORIGIN" />-д зориулсан таны код</translation>
 <translation id="874918643257405732">Энэ табыг тэмдэглэх</translation>
 <translation id="8751426954251315517">Дараагийн удаа дахин оролдоно уу</translation>
+<translation id="8757526089434340176">Google Pay-н санал боломжтой</translation>
 <translation id="8759274551635299824">Энэ картны хугацаа дууссан байна</translation>
 <translation id="87601671197631245">Энэ сайт аюулгүй байдлын хуучирсан тохируулга ашиглаж байгаа тул таны мэдээллийг (жишээлбэл нууц үг, мессеж эсвэл кредит карт) энэ сайт руу илгээх үед задруулж болзошгүй.</translation>
 <translation id="8761567432415473239">Google-ийн Аюулгүй хайлт нь саяхан <ph name="SITE" /> дээр <ph name="BEGIN_LINK" />гэмтэл үүсгэж болох программ илрүүллээ<ph name="END_LINK" />.</translation>

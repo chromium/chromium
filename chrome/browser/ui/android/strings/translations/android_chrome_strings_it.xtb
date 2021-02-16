@@ -41,6 +41,13 @@
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1258753120186372309">Doodle di Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Elenco di lettura</translation>
+<translation id="1265432434921422324">Privacy Sandbox è un'iniziativa in corso per preservare il Web aperto che contribuirà a proteggerti dai meccanismi di tracciamento.
+
+Al giorno d'oggi, i siti web si affidano a tante tecnologie, come i cookie di terze parti, per servizi importanti quali la visualizzazione di annunci pertinenti e la valutazione delle prestazioni di un sito.
+
+Privacy Sandbox preserva la vitalità del Web aperto offrendo metodi migliori per eseguire questi servizi, senza interrompere il funzionamento dei siti, impedendo allo stesso tempo il tuo tracciamento furtivo sul Web.
+
+Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto in alcune aree geografiche. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti.</translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
 <translation id="1285310382777185058">Cambia lingua</translation>
@@ -96,6 +103,7 @@
 <translation id="1692118695553449118">La sincronizzazione è attiva</translation>
 <translation id="1697284962337958118">Aggiungi a</translation>
 <translation id="1718835860248848330">Ultima ora</translation>
+<translation id="173522743738009831">Informazioni su Privacy Sandbox</translation>
 <translation id="1736419249208073774">Esplora</translation>
 <translation id="1749561566933687563">Sincronizza i tuoi preferiti</translation>
 <translation id="17513872634828108">Schede aperte</translation>
@@ -136,14 +144,15 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> pulsante <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658">Il sito <ph name="SITE" /> desidera accoppiarsi</translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
+<translation id="2001360696084428949">Prova a collegare il telefono con un cavo USB</translation>
 <translation id="2002537628803770967">Carte di credito e indirizzi che utilizzano Google Pay</translation>
-<translation id="2010780124464321179">Impossibile creare il link al testo. Condividi il link alla pagina.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}other{# file}}</translation>
 <translation id="2017836877785168846">Consente di cancellare la cronologia e i completamenti automatici nella barra degli indirizzi.</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
 <translation id="2039379262107991683">Aggiungi pagine al tuo Elenco di lettura per ricevere un promemoria</translation>
 <translation id="204321170514947529">Anche <ph name="APP_NAME" /> presenta dati in Chrome</translation>
+<translation id="2046634576464120978">Registrazione non riuscita</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Cercare su Internet</translation>
 <translation id="2056878612599315956">Sito in pausa</translation>
@@ -187,6 +196,11 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2321958826496381788">Trascina il cursore finché leggi il testo senza problemi. Il testo dovrebbe avere queste dimensioni minime quando tocchi due volte un paragrafo.</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
 <translation id="2328985652426384049">Impossibile eseguire l'accesso</translation>
+<translation id="2336549603503100420">Se attivi questa funzionalità, i siti potrebbero usare le tecniche che garantiscono la tutela della privacy mostrate qui per fornire i loro contenuti e servizi. Sono incluse alternative al tracciamento tra siti. Nel tempo potrebbero essere aggiunte altre prove.
+
+<ph name="BEGIN_LIST_ITEM1" />Gli inserzionisti possono sapere quando migliaia di utenti hanno in comune un interesse simile, come la folla a un concerto, e selezionare annunci attinenti alla folla anziché a una singola persona.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Gli inserzionisti possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="234265804618409743">Impossibile aprire la fotocamera. Si è verificato un problema.</translation>
 <translation id="2345671828921229300">Per eseguire una ricerca, tocca e tieni premuta una parola</translation>
 <translation id="2349710944427398404">Dati totali utilizzati da Chrome, tra cui account, preferiti e impostazioni salvate</translation>
@@ -258,6 +272,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2833452327385637152">Per cercare una parola o una frase, toccala e tienila premuta anziché toccarla</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Eseguito 1 giorno fa}other{Eseguito # giorni fa}}</translation>
 <translation id="2842985007712546952">Cartella principale</translation>
+<translation id="2856503607207334158">Accesso non riuscito</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2876369937070532032">Invia a Google gli URL di alcune pagine che visiti quando la tua sicurezza è a rischio</translation>
@@ -273,6 +288,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2923908459366352541">Nome non valido</translation>
 <translation id="2932150158123903946">Spazio di archiviazione di Google <ph name="APP_NAME" /></translation>
 <translation id="2942036813789421260">La scheda di anteprima è chiusa</translation>
+<translation id="2946377063371973287">Sembra che il collegamento richieda molto tempo…</translation>
 <translation id="2956410042958133412">Questo account è gestito da <ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" /></translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagina da leggere}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagine da leggere}}</translation>
 <translation id="2962095958535813455">Schede in incognito attivate</translation>
@@ -343,6 +359,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
 <translation id="3398320232533725830">Apri Gestione Preferiti</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
+<translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
 <translation id="3492207499832628349">Nuova scheda in incognito</translation>
@@ -481,8 +498,10 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4532845899244822526">Scegli cartella</translation>
 <translation id="4538018662093857852">Attiva la modalità Lite</translation>
 <translation id="4550003330909367850">Per visualizzare o copiare la password qui, imposta il blocco schermo sul dispositivo.</translation>
+<translation id="4554077758708533499">Collegamento tramite cavo USB effettuato</translation>
 <translation id="4557685098773234337">Per accedervi più rapidamente, aggiungi questa pagina alla schermata Home</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
+<translation id="4561730552726921821">Registrazione effettuata</translation>
 <translation id="4561979708150884304">Nessuna connessione</translation>
 <translation id="4565377596337484307">Nascondi password</translation>
 <translation id="4572422548854449519">Accedi all'account gestito</translation>
@@ -625,7 +644,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5524843473235508879">Reindirizzamento bloccato.</translation>
 <translation id="5527082711130173040">Chrome ha bisogno dell'accesso alla posizione per cercare dispositivi. <ph name="BEGIN_LINK1" />Aggiorna le autorizzazioni<ph name="END_LINK1" />. L'accesso alla posizione è <ph name="BEGIN_LINK2" />disattivato su questo dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Chiudi schede in incognito</translation>
-<translation id="5530920986376047241">Puoi salvare le pagine nell'elenco di lettura in modo da ritrovarle in un secondo momento</translation>
 <translation id="5534640966246046842">Sito copiato</translation>
 <translation id="5548606607480005320">Controllo di sicurezza</translation>
 <translation id="5556459405103347317">Ricarica</translation>
@@ -707,8 +725,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5982307838673692400">Apri una scheda di navigazione in incognito</translation>
 <translation id="6000066717592683814">Mantieni Google</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagina}other{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagine}}</translation>
-<translation id="6014293228235665243">Da leggere</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
@@ -728,6 +744,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6138832295072039549">Cambia qui le impostazioni del sito</translation>
 <translation id="6140709049082532940">Protezione avanzata:</translation>
 <translation id="6140912465461743537">Paese/regione</translation>
+<translation id="6142002709876620371">Attiva Privacy Sandbox</translation>
 <translation id="614940544461990577">Prova a:</translation>
 <translation id="6154478581116148741">Attiva il blocco schermo in Impostazioni per esportare le tue password da questo dispositivo</translation>
 <translation id="6159335304067198720">Riduzioni dei dati: <ph name="PERCENT" /></translation>
@@ -853,6 +870,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 
 I dati della sessione in incognito vengono cancellati da Chrome soltanto quando <ph name="BEGIN_BOLD2" />chiudi tutte le schede di navigazione in incognito<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Modifica in qualsiasi momento il percorso di download predefinito utilizzando l'opzione del menu Impostazioni</translation>
+<translation id="694267552845942083">Stai personalizzando le impostazioni di sincronizzazione. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6955535239952325894">Questa impostazione è disattivata sui browser gestiti</translation>
 <translation id="6963766334940102469">Elimina Preferiti</translation>
@@ -865,7 +883,6 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="702463548815491781">Consigliata quando TalkBack o Switch Access sono attivi</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ripristinato</translation>
 <translation id="7029809446516969842">Password</translation>
-<translation id="7030675613184250187">Puoi salvare pagine nel tuo elenco di lettura per ritrovarle o leggerle offline</translation>
 <translation id="7054588988317389591">Vuoi recuperare le descrizioni delle immagini?</translation>
 <translation id="7055152154916055070">Reindirizzamento bloccato:</translation>
 <translation id="7063006564040364415">Impossibile collegarsi al server di sincronizzazione.</translation>
@@ -900,6 +917,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7304873321153398381">Offline. Chrome non può controllare le tue password.</translation>
 <translation id="7313188324932846546">Tocca per configurare la sincronizzazione</translation>
 <translation id="7328017930301109123">Nella modalità Lite, Chrome carica le pagine più rapidamente e utilizza fino al 60 percento di dati in meno.</translation>
+<translation id="7332075081379534664">Accesso eseguito</translation>
 <translation id="7333031090786104871">Aggiunta del sito precedente ancora in corso</translation>
 <translation id="7340958967809483333">Opzioni per Discover</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
@@ -931,6 +949,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7507207699631365376">Vedi le <ph name="BEGIN_LINK" />norme sulla privacy<ph name="END_LINK" /> del fornitore di servizi</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="751961395872307827">Impossibile connettersi al sito</translation>
+<translation id="752220631458524187">Scollegati quando hai finito</translation>
 <translation id="753225086557513863">Programmato più tardi</translation>
 <translation id="7559975015014302720">La modalità Lite non è attiva</translation>
 <translation id="7562080006725997899">Cancellazione dei dati di navigazione in corso</translation>
@@ -986,6 +1005,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7882131421121961860">Nessuna cronologia trovata</translation>
 <translation id="7886917304091689118">In esecuzione in Chrome</translation>
 <translation id="789763218334337857">Come usare Chrome</translation>
+<translation id="7903184275147100332">L'operazione potrebbe richiedere un minuto</translation>
 <translation id="7919123827536834358">Traduci queste lingue automaticamente</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Download del file.}other{Download di # file.}}</translation>
 <translation id="7926975587469166629">Nickname carta</translation>
@@ -1019,6 +1039,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8073388330009372546">Immagine in nuova scheda</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8084114998886531721">Password salvata</translation>
+<translation id="808747664143081553">Collegamento al dispositivo effettuato</translation>
 <translation id="8103578431304235997">Scheda di navigazione in incognito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi</translation>
@@ -1050,6 +1071,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8274165955039650276">Visualizza i download</translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8284326494547611709">Sottotitoli</translation>
+<translation id="829672787777123339">Collegamento al dispositivo in corso…</translation>
 <translation id="8310344678080805313">Schede standard</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> e altri siti</translation>
 <translation id="8327155640814342956">Per un'esperienza di navigazione ottimale, apri per aggiornare Chrome</translation>
@@ -1069,6 +1091,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8445448999790540984">Impossibile esportare le password</translation>
 <translation id="8461694314515752532">Cripta i dati sincronizzati con la tua passphrase di sincronizzazione</translation>
 <translation id="8466613982764129868">Assicurati che il dispositivo <ph name="TARGET_DEVICE_NAME" /> sia connesso a Internet</translation>
+<translation id="8481980314595922412">Funzionalità di prova attive</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="8489271220582375723">Apri la pagina Cronologia</translation>
@@ -1110,6 +1133,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8748850008226585750">Contenuti nascosti</translation>
+<translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
 <translation id="8798449543960971550">Leggi</translation>

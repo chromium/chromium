@@ -896,7 +896,6 @@
 <translation id="1975841812214822307">Eliminar...</translation>
 <translation id="1976150099241323601">Iniciar sesión no dispositivo de seguranza</translation>
 <translation id="1977965994116744507">Achega o teléfono para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">As futuras actualizacións de software e de seguranza instalaranse automaticamente.</translation>
 <translation id="1978057560491495741">Quitar enderezo</translation>
 <translation id="1979095679518582070">A desactivación desta función non afecta á capacidade deste dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.</translation>
 <translation id="1979280758666859181">Estás cambiando a unha canle cunha versión anterior de <ph name="PRODUCT_NAME" />. O cambio de canle aplicarase cando a versión da canle coincida coa versión que está instalada actualmente no teu dispositivo.</translation>
@@ -4335,7 +4334,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5941343993301164315">Inicia sesión en <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5942779427914696408">Visibilidade do dispositivo</translation>
-<translation id="5942964813783878922">O dispositivo <ph name="DEVICE_TYPE" /> reiniciarase despois desta actualización. As futuras actualizacións de software e de seguranza instalaranse automaticamente.</translation>
 <translation id="5944869793365969636">Escanear o código QR</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Non se pode analizar o ficheiro</translation>

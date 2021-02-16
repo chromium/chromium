@@ -1416,6 +1416,11 @@
       指定する URL は HTTPS スキームを使用したものでなければなりません（例: 「https://example.com」）。
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
+<translation id="2972531017545674240">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
+
+      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と 3 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます）で構成されるオブジェクトとなります。
+
+      <ph name="PRODUCT_OS_NAME" /> シェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> ポリシーをご覧ください。</translation>
 <translation id="2976429807269247880">Cookie に関する以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作の設定</translation>
 <translation id="2985927503455169394">アシスタントのオンボーディング エクスペリエンスでデフォルトのモードを使用する</translation>
 <translation id="2987155890997901449">ARC を有効にする</translation>

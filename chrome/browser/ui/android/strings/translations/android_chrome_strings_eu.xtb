@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> webguneak parekatu egin nahi du</translation>
 <translation id="2000419248597011803">Helbide-barrako zein bilaketa-koadroko bilaketak eta cookie batzuk bidaltzen ditu bilatzaile lehenetsira</translation>
 <translation id="2002537628803770967">Google Pay-n erabiltzen dituzun kreditu-txartelak eta helbideak</translation>
-<translation id="2010780124464321179">Ezin da sortu testurako esteka. Partekatu orrira daraman esteka.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxategi}other{# fitxategi}}</translation>
 <translation id="2017836877785168846">Helbide-barrako historia eta osatze automatikoak garbitzen ditu.</translation>
 <translation id="2021896219286479412">Webgunearen pantaila osoko aukerak</translation>
@@ -625,7 +624,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5524843473235508879">Birbideratzea blokeatu da.</translation>
 <translation id="5527082711130173040">Chrome-k kokapenerako sarbidea izan behar du gailuak bilatzeko. <ph name="BEGIN_LINK1" />Eguneratu baimenak<ph name="END_LINK1" />. Kokapenerako sarbidea <ph name="BEGIN_LINK2" />desaktibatuta dago gailu honetan<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Itxi ezkutuko moduko fitxak</translation>
-<translation id="5530920986376047241">Orriak irakurketa-zerrendan gorde ditzakezu, geroago aurkitu ahal izateko</translation>
 <translation id="5534640966246046842">Kopiatu da webgunea</translation>
 <translation id="5548606607480005320">Segurtasun-egiaztapena</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
@@ -707,8 +705,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5982307838673692400">Ireki ezkutuko moduko fitxa bat</translation>
 <translation id="6000066717592683814">Jarraitu Google erabiltzen</translation>
 <translation id="6005538289190791541">Iradokitako pasahitza</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> orri duzu}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> orri dituzu}}</translation>
-<translation id="6014293228235665243">Irakurri gabe</translation>
 <translation id="6036057147555329831">ICU osagai gehigarriak</translation>
 <translation id="6039379616847168523">Saltatu hurrengo fitxara</translation>
 <translation id="6040143037577758943">Itxi</translation>
@@ -865,7 +861,6 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="702463548815491781">TalkBack edo Erabilerraztasun-osagarria aktibatuta daudenean gomendatua</translation>
 <translation id="7027549951530753705">Leheneratu da <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
-<translation id="7030675613184250187">Orriak irakurketa-zerrendan gorde ditzakezu, hurrengo batean erraz aurkitzeko edo konexiorik ez duzunean irakurtzeko</translation>
 <translation id="7054588988317389591">Irudi-deskribapenak lortu nahi dituzu?</translation>
 <translation id="7055152154916055070">Birbideratze hau blokeatu da:</translation>
 <translation id="7063006564040364415">Ezin izan da sinkronizazio-zerbitzarira konektatu</translation>

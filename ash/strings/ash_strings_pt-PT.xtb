@@ -659,6 +659,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6715542151869432661">Não foram encontrados dispositivos móveis.</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6727969043791803658">Ligado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Aplicada pelo seu administrador.</translation>
 <translation id="6751826523481687655">O rastreio do desempenho está ativado.</translation>
 <translation id="6752912906630585008">O espaço de trabalho <ph name="REMOVED_DESK" /> foi removido e unido ao espaço de trabalho <ph name="RECEIVE_DESK" /></translation>

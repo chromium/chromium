@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">لم يتم العثور على أي أجهزة جوّال.</translation>
 <translation id="6723839937902243910">الطاقة</translation>
 <translation id="6727969043791803658">البلوتوث متصل، ومستوى شحن البطارية: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">ينفّذها المشرف</translation>
 <translation id="6751826523481687655">تتبّع الأداء قيْد التفعيل</translation>
 <translation id="6752912906630585008">تمت إزالة سطح المكتب <ph name="REMOVED_DESK" /> ودمجه مع سطح المكتب <ph name="RECEIVE_DESK" />.</translation>

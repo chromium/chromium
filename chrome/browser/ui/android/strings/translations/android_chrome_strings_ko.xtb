@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" />에서 페어링하려고 함</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="2002537628803770967">Google Pay에 저장된 신용카드 및 주소</translation>
-<translation id="2010780124464321179">텍스트 링크를 생성할 수 없습니다. 페이지 링크를 공유해 주세요.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
 <translation id="2017836877785168846">검색주소창의 검색 기록 및 자동 완성 항목을 삭제합니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">리디렉션이 차단되었습니다.</translation>
 <translation id="5527082711130173040">기기를 스캔하려면 Chrome에서 위치 정보에 액세스해야 합니다. <ph name="BEGIN_LINK1" />권한을 업데이트<ph name="END_LINK1" />하세요. 또한 <ph name="BEGIN_LINK2" />이 기기에서도 위치 정보 액세스 권한이 사용 중지<ph name="END_LINK2" />되어 있습니다.</translation>
 <translation id="5530766185686772672">시크릿 탭 닫기</translation>
-<translation id="5530920986376047241">다시 찾을 수 있도록 읽기 목록에 페이지를 저장할 수 있습니다.</translation>
 <translation id="5534640966246046842">사이트 복사됨</translation>
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5556459405103347317">새로고침</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">시크릿 탭 열기</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
 <translation id="6005538289190791541">추천 비밀번호</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />개 있습니다.}other{페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />개 있습니다.}}</translation>
-<translation id="6014293228235665243">읽지 않음</translation>
 <translation id="6036057147555329831">추가 ICU</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">음성 안내 지원 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
 <translation id="7029809446516969842">비밀번호</translation>
-<translation id="7030675613184250187">읽기 목록에 페이지를 저장하여 다시 찾아보거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="7054588988317389591">이미지 설명을 표시하시겠습니까?</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7063006564040364415">동기화 서버에 연결할 수 없습니다.</translation>

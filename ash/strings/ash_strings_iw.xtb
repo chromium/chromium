@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">לא נמצאו מכשירים ניידים.</translation>
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6727969043791803658">‏מחובר, ‎<ph name="BATTERY_PERCENTAGE" />%‎ סוללה</translation>
+<translation id="6732800389263199929">‎+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">התכונה הזו נאכפת על ידי מנהל המערכת</translation>
 <translation id="6751826523481687655">מעקב הביצועים פועל</translation>
 <translation id="6752912906630585008">שולחן העבודה <ph name="REMOVED_DESK" /> הוסר ושולב עם שולחן העבודה <ph name="RECEIVE_DESK" /></translation>

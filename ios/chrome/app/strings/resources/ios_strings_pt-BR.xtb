@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Os sites exibirão textos no idioma de sua preferência, quando for possível.</translation>
 <translation id="1952728750904661634">Fazer login com uma conta gerenciada</translation>
 <translation id="1965935827552890526">Termine o que você estava fazendo na outra janela aberta no Chrome.</translation>
+<translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
@@ -299,6 +300,7 @@ Siga estas etapas:</translation>
 <translation id="4038354071007134711">Nenhum app deste dispositivo pode abrir o arquivo.</translation>
 <translation id="4042870976416480368">Buscar na página</translation>
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
+<translation id="4079195788735381731">Sua conta foi desconectada pela organização</translation>
 <translation id="4082688844002261427">Controle como o histórico de navegação é usado para personalizar a Pesquisa, os anúncios e muito mais</translation>
 <translation id="408404951701638773">Ficou mais fácil acessar a barra de pesquisa</translation>
 <translation id="411254640334432676">Falha no download.</translation>
@@ -411,9 +413,9 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Ativar a sincronização</translation>
+<translation id="5360976571138293719">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Abrir imagem</translation>
 <translation id="5407969256130905701">Descartar alterações</translation>
-<translation id="5409365236829784218">Nenhum aplicativo instalado pode abrir este arquivo.</translation>
 <translation id="5416022985862681400">Últimos sete dias</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
@@ -497,6 +499,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
 <translation id="6303969859164067831">Sair e desativar a sincronização</translation>
 <translation id="6308436439357671616">Isso permite que você tire fotos e faça upload delas.</translation>
 <translation id="6324528485781869530">Mudar conta de sincronização</translation>

@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">Προστέθηκε η συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">μερική</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
+<translation id="1052916631016577720">Σάρωση στοιχείου</translation>
 <translation id="1056775291175587022">Κανένα δίκτυο</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Κινητό: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Γίνεται φόρτωση του Βοηθού…</translation>
 <translation id="4356930093361201197">λειτουργία υψηλής αντίθεσης</translation>
 <translation id="4371348193907997655">Ρυθμίσεις μετάδοσης</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" /> τοις εκατό</translation>
 <translation id="4378551569595875038">Σύνδεση…</translation>
 <translation id="4379531060876907730">Αυτά είναι τα εργαλεία γραφίδας σας</translation>
 <translation id="4389184120735010762">Πατήσατε τη συντόμευση πληκτρολογίου για τον μεγεθυντικό φακό σε παράθυρο. Θέλετε να τον ενεργοποιήσετε;</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">Αυτή η οθόνη δεν είναι συμβατή με τη συσκευή σας <ph name="DEVICE_TYPE" /> (η οθόνη δεν υποστηρίζεται).</translation>
 <translation id="6043994281159824495">Έξοδος τώρα</translation>
 <translation id="6047696787498798094">Η κοινή χρήση οθόνης θα διακοπεί κατά την εναλλαγή σε άλλον χρήστη. Θέλετε να συνεχίσετε;</translation>
+<translation id="6050368268239407309">Εργαλεία παρουσίασης</translation>
 <translation id="6054305421211936131">Σύνδεση με έξυπνη κάρτα</translation>
 <translation id="6059276912018042191">Πρόσφατες καρτέλες Chrome</translation>
 <translation id="6062360702481658777">Θα αποσυνδεθείτε αυτόματα σε <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">Δεν βρέθηκαν κινητές συσκευές.</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
 <translation id="6727969043791803658">Συνδεδεμένη, μπαταρία <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Επιβάλλεται από τον διαχειριστή σας</translation>
 <translation id="6751826523481687655">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
 <translation id="6752912906630585008">Η επιφάνεια εργασίας <ph name="REMOVED_DESK" /> καταργήθηκε και συγχωνεύτηκε με την επιφάνεια εργασίας <ph name="RECEIVE_DESK" />.</translation>

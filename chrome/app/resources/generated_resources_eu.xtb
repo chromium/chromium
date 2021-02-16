@@ -897,7 +897,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1975841812214822307">Kendu…</translation>
 <translation id="1976150099241323601">Hasi saioa segurtasun-gailuan</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> gailua desblokeatzeko, hurbildu telefonoa.</translation>
-<translation id="1978006917103730774">Aurrerantzean, automatikoki instalatuko dira software- eta segurtasun-eguneratzeak.</translation>
 <translation id="1978057560491495741">Kendu helbidea</translation>
 <translation id="1979095679518582070">Eginbidea desaktibatuta ere, gailu honek beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasuna.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" /> sistemaren bertsio zaharragoa duen kanal batera aldatzen ari zara. Kanalaren bertsioa gailuan instalatutakoarekin bat datorrenean aldatuko da kanala.</translation>
@@ -1049,7 +1048,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2154484045852737596">Editatu txartela</translation>
 <translation id="2154710561487035718">Kopiatu URLa</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> × <ph name="HEIGHT" /> dirudi</translation>
-<translation id="2156294658807918600">Zerbitzuko langilea: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Egin segurtasun-egiaztapena berriro</translation>
 <translation id="2157474325782140681">Eginbide gehiago lortzeko, erabili Chromebook honekin funtzionatzeko diseinatu den Dell-eko oinarri bat.</translation>
 <translation id="215753907730220065">Irten pantaila osoko modutik</translation>
@@ -4336,7 +4335,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5941343993301164315">Hasi saioa <ph name="TOKEN_NAME" /> gailuan.</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5942779427914696408">Gailuaren ikusgaitasuna</translation>
-<translation id="5942964813783878922">Eguneratzen amaitutakoan, berrabiarazi egingo da <ph name="DEVICE_TYPE" />. Aurrerantzean, automatikoki instalatuko dira software- eta segurtasun-eguneratzeak.</translation>
 <translation id="5944869793365969636">Eskaneatu QR kodea</translation>
 <translation id="5946591249682680882">Txostenaren IDa: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Ezin da analizatu fitxategia</translation>

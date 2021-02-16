@@ -107,6 +107,7 @@
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
+<translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">Rýchlosť procesora je momentálne obmedzená, aby sa šetrila batéria alebo znížila teplota</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (počet recenzií: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepripojené</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Tlačiareň</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
+<translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
@@ -211,7 +213,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5797428682393400134">PODARILO SA</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
-<translation id="5844247382766192936"><ph name="TEST_NAME" /> Test bol zrušený</translation>
+<translation id="583281660410589416">Neznáme</translation>
 <translation id="5849570051105887917">Kód poskytovateľa domácej siete</translation>
 <translation id="5866840822086176774">Veľmi silné</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
@@ -237,6 +239,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
+<translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>

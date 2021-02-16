@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> መጣመር ይፈልጋል</translation>
 <translation id="2000419248597011803">ፍለጋዎችን ከአድራሻ አሞሌው እና ከፍለጋ ሳጥኑ እና አንዳንድ ኩኪዎችን ወደ ነባሪው የፍለጋ ፕሮግራምዎ ይልካል</translation>
 <translation id="2002537628803770967">Google Payን የሚጠቀሙ ክሬዲት ካርዶች እና አድራሻዎች</translation>
-<translation id="2010780124464321179">ወደ ጽሑፍ አገናኝ መፍጠር አልተቻለም። አገናኝን ወደ ገጽ ያጋሩ።</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ፋይል}one{# ፋይሎች}other{# ፋይሎች}}</translation>
 <translation id="2017836877785168846">በአድራሻ አሞሌው ውስጥ ታሪክን እና ራስ-ሰር ማጠናቀቆችን ያጸዳል።</translation>
 <translation id="2021896219286479412">የሙሉ ማያ ገጽ ጣቢያ መቆጣጠሪያዎች</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">አቅጣጫ ማዞር ታግዷል።</translation>
 <translation id="5527082711130173040">Chrome መሣሪያዎችን መቃኘት እንዲችል የአካባቢ መዳረሻ ያስፈልገዋል። <ph name="BEGIN_LINK1" />ፈቃዶችን ያዘምኑ<ph name="END_LINK1" />። የአካባቢ መዳረሻ እንዲሁም <ph name="BEGIN_LINK2" />ለዚህ መዳረሻ ጠፍቷል<ph name="END_LINK2" />።</translation>
 <translation id="5530766185686772672">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
-<translation id="5530920986376047241">እነሱን እንደገና ለማግኘት ገጾችን በንባብ ዝርዝርዎ ውስጥ ማስቀመጥ ይችላሉ</translation>
 <translation id="5534640966246046842">ጣቢያ ተቀድቷል</translation>
 <translation id="5548606607480005320">የደህንነት ፍተሻ</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">ማንነት የማያሳውቅ ትር ክፈት</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ገጽ አለዎት}one{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ገጾች አሉዎት}other{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ገጾች አሉዎት}}</translation>
-<translation id="6014293228235665243">ያልተነበበ</translation>
 <translation id="6036057147555329831">ተጨማሪ አይሲዩ</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">TalkBack ወይም መዳረሻ ቀይር ሲበሩ የሚመከር</translation>
 <translation id="7027549951530753705">ወደነበረበት የተመለሰው በ<ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
-<translation id="7030675613184250187">የእርስዎን ገጾች እንደገና ማግኘት ወይም ከመስመር ውጭ ማንበብ እንዲችሉ በንባብ ዝርዝርዎ ውስጥ ሊያስቀምጧቸው ይችላሉ</translation>
 <translation id="7054588988317389591">የምስል መግለጫዎችን ያግኙ?</translation>
 <translation id="7055152154916055070">አቅጣጫ ማዞር ታግዷል፦</translation>
 <translation id="7063006564040364415">ከማመሳሰያ አገልጋዩ ጋር መገናኘት አልተቻለም።</translation>

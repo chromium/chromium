@@ -895,7 +895,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1975841812214822307">Usuń...</translation>
 <translation id="1976150099241323601">Zaloguj się do urządzenia zabezpieczającego</translation>
 <translation id="1977965994116744507">Aby odblokować system, <ph name="DEVICE_TYPE" /> i telefon muszą być bliżej siebie.</translation>
-<translation id="1978006917103730774">Przyszłe aktualizacje oprogramowania i zabezpieczeń będą instalowane automatycznie.</translation>
 <translation id="1978057560491495741">Usuń adres</translation>
 <translation id="1979095679518582070">Wyłączenie tej funkcji nie ogranicza wysyłania przez to urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu czy zabezpieczenia.</translation>
 <translation id="1979280758666859181">Przechodzisz na kanał, w którym <ph name="PRODUCT_NAME" /> jest w starszej wersji. Zmiana nastąpi wtedy, gdy wersja na wybranym kanale będzie zgodna z tą zainstalowaną na Twoim urządzeniu.</translation>
@@ -4334,7 +4333,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5941343993301164315">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimalizuj</translation>
 <translation id="5942779427914696408">Widoczność urządzenia</translation>
-<translation id="5942964813783878922">Po zainstalowaniu tej aktualizacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie. Przyszłe aktualizacje oprogramowania i zabezpieczeń będą instalowane automatycznie.</translation>
 <translation id="5944869793365969636">Zeskanuj kod QR</translation>
 <translation id="5946591249682680882">Identyfikator raportu: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Nie można przeanalizować pliku</translation>

@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">ምንም ተንቀሳቃሽ መሣሪያዎች አልተገኙም።</translation>
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="6727969043791803658">ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">በእርስዎ አስተዳዳሪ ተፈጻሚ የተደረገ</translation>
 <translation id="6751826523481687655">የአፈጻጸም ክትትል በርቷል</translation>
 <translation id="6752912906630585008">ዴስክ <ph name="REMOVED_DESK" /> ተወግዶ ከዴስክ <ph name="RECEIVE_DESK" /> ጋር ተዋህዷል</translation>

@@ -146,7 +146,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="2001360696084428949">Try connecting your phone with a USB cable</translation>
 <translation id="2002537628803770967">Credit cards and addresses using Google Pay</translation>
-<translation id="2010780124464321179">Can't create link to text. Share link to page.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
 <translation id="2017836877785168846">Clears history and autocompletions in the address bar.</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
@@ -645,7 +644,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5524843473235508879">Redirect blocked.</translation>
 <translation id="5527082711130173040">Chrome needs location access to scan for devices. <ph name="BEGIN_LINK1" />Update permissions<ph name="END_LINK1" />. Location access is also <ph name="BEGIN_LINK2" />turned off for this device<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Close incognito tabs</translation>
-<translation id="5530920986376047241">You can save pages to your reading list to find them again</translation>
 <translation id="5534640966246046842">Site copied</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -727,8 +725,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5982307838673692400">Open an Incognito tab</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6005538289190791541">Suggested password</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}other{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
-<translation id="6014293228235665243">Unread</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
 <translation id="6040143037577758943">Close</translation>
@@ -887,7 +883,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passwords</translation>
-<translation id="7030675613184250187">You can save pages to your reading list to find them again or read offline</translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
 <translation id="7063006564040364415">Could not connect to the sync server.</translation>

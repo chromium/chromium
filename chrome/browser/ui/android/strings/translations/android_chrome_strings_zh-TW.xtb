@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> 要求配對</translation>
 <translation id="2000419248597011803">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送給你的預設搜尋引擎</translation>
 <translation id="2002537628803770967">使用 Google Pay 儲存的信用卡和地址資訊</translation>
-<translation id="2010780124464321179">無法建立文字連結。請分享頁面連結。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2017836877785168846">將歷史記錄和自動即時查詢從網址列中清除。</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">已禁止重新導向。</translation>
 <translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。此外，<ph name="BEGIN_LINK2" />這個裝置的位置資訊存取權已關閉<ph name="END_LINK2" />。</translation>
 <translation id="5530766185686772672">關閉無痕式分頁</translation>
-<translation id="5530920986376047241">你可以將頁面儲存至閱讀清單，以便再次查看</translation>
 <translation id="5534640966246046842">已複製網站</translation>
 <translation id="5548606607480005320">安全檢查</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">開啟無痕分頁</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{你有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個網頁}other{你有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個網頁}}</translation>
-<translation id="6014293228235665243">未讀取</translation>
 <translation id="6036057147555329831">其他 ICU</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">建議在 TalkBack 或開關功能開啟時使用</translation>
 <translation id="7027549951530753705">已還原 <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">密碼</translation>
-<translation id="7030675613184250187">你可以將頁面儲存至閱讀清單，以便再次查看或離線閱讀</translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>

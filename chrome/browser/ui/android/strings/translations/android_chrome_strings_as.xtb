@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" />এ যোৰা লগাব বিচাৰে</translation>
 <translation id="2000419248597011803">আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনলৈ ঠিকনা বাৰ আৰু সন্ধান বাকছৰ পৰা কিছুমান কুকি আৰু সন্ধান পঠিয়ায়</translation>
 <translation id="2002537628803770967">Google Pay ব্যৱহাৰ কৰা ক্ৰেডিট কাৰ্ড আৰু ঠিকনা</translation>
-<translation id="2010780124464321179">পাঠৰ লিংক সৃষ্টি কৰিব নোৱাৰি। পৃষ্ঠাৰ লিংকটো শ্বেয়াৰ কৰক।</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টা ফাইল}one{#টা ফাইল}other{#টা ফাইল}}</translation>
 <translation id="2017836877785168846">ঠিকনাৰ বাৰত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পুৰ হোৱা তথ্য মচে।</translation>
 <translation id="2021896219286479412">সম্পূর্ণ স্ক্ৰীণ ছাইটৰ নিয়ন্ত্ৰণ</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">পুনর্নির্দেশক অৱৰোধ কৰা হৈছে।</translation>
 <translation id="5527082711130173040">ডিভাইচ স্কেন কৰিবলৈ Chromeএ অৱস্থান এক্সেছ কৰাটো প্ৰয়োজনীয়। <ph name="BEGIN_LINK1" />অনুমতি আপডে’ট কৰক<ph name="END_LINK1" />। অৱস্থান ইতিহাস <ph name="BEGIN_LINK2" />এই ডিভাইচটোৰ বাবেও অফ কৰি থোৱা হৈছে<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ইনক’গনিট’ টেবসমূহ বন্ধ কৰক</translation>
-<translation id="5530920986376047241">পৃষ্ঠাসমূহ পুনৰ বিচাৰি পাবলৈ আপুনি সেইসমূহ পঢ়াৰ সূচীত ছেভ কৰিব পাৰে</translation>
 <translation id="5534640966246046842">ছাইটৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="5548606607480005320">সুৰক্ষা পৰীক্ষা</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">এটা ইনক’গনিট’ টেবত খোলক</translation>
 <translation id="6000066717592683814">Google ৰাখক</translation>
 <translation id="6005538289190791541">পৰামর্শ হিচাপে পোৱা পাছৱর্ড</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> খন পৃষ্ঠা আছে}one{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> খন পৃষ্ঠা আছে}other{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> খন পৃষ্ঠা আছে}}</translation>
-<translation id="6014293228235665243">নপঢ়া</translation>
 <translation id="6036057147555329831">অতিৰিক্ত ICU</translation>
 <translation id="6039379616847168523">পৰৱৰ্তী টেবলৈ যাওক</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
@@ -864,7 +860,6 @@
 <translation id="702463548815491781">টকবেক বা ছুইচৰ দ্বাৰা ব্যৱহাৰ কৰা অনুমতি অন থকা অৱস্থান এয়া চুপাৰিছ কৰা হয়</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
-<translation id="7030675613184250187">পৃষ্ঠাসমূহ পুনৰ বিচাৰি পাবলৈ অথবা অফলাইনত পঢ়িবলৈ আপুনি সেইসমূহ নিজৰ পঢ়াৰ সূচীখনত ছেভ কৰিব পাৰে</translation>
 <translation id="7054588988317389591">প্ৰতিচ্ছবিৰ বিৱৰণ লাভ কৰিবনে?</translation>
 <translation id="7055152154916055070">পুনৰ নির্দেশ কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7063006564040364415">ছিংক ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ'ল।</translation>

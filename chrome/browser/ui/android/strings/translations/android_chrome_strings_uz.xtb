@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> qurilmangizga ulanmoqchi</translation>
 <translation id="2000419248597011803">Manzillar qatori va qidiruv oynasida kiritilgan so‘rovlar va ba’zi cookie ma’lumotlarni standart qidiruv tizimiga yuboradi</translation>
 <translation id="2002537628803770967">Google Pay xizmatidagi kredit kartalar va manzillar</translation>
-<translation id="2010780124464321179">Matnga havola yaratilmadi. Sahifa havolasini ulashish.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ta fayl}other{# ta fayl}}</translation>
 <translation id="2017836877785168846">Manzil qatoridan tarix va avtoto‘ldirishlarni tozalaydi.</translation>
 <translation id="2021896219286479412">To‘liq ekranli rejim sozlamalari</translation>
@@ -625,7 +624,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5524843473235508879">Yo‘naltirish bloklandi.</translation>
 <translation id="5527082711130173040">Qurilmalarni tekshirish uchun Chrome brauzeriga joylashuv ma’lumotlarini ko‘rish ruxsati zarur. <ph name="BEGIN_LINK1" />Ruxsatlarni yangilang<ph name="END_LINK1" />. <ph name="BEGIN_LINK2" />Ushbu qurilma uchun joylashuv ma’lumotlariga ruxsat ham o‘chirib qo‘yilgan<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognito oynalarini yopish</translation>
-<translation id="5530920986376047241">Sahifalarni keyinroq topish uchun ularni saqlab olish mumkin</translation>
 <translation id="5534640966246046842">Sayt nusxalandi</translation>
 <translation id="5548606607480005320">Xavfsizlik tekshiruvi</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
@@ -707,8 +705,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5982307838673692400">Inkognito rejimida ochish</translation>
 <translation id="6000066717592683814">Google qolaversin</translation>
 <translation id="6005538289190791541">Taklif qilingan parol</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ta sahifa bor}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ta sahifa bor}}</translation>
-<translation id="6014293228235665243">Oʻqilmagan</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Keyingi varaqqa o‘tish</translation>
 <translation id="6040143037577758943">Yopish</translation>
@@ -865,7 +861,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="702463548815491781">TalkBack yoki Switch Access yoniq holatda tavsiya etiladi</translation>
 <translation id="7027549951530753705">Tiklandi: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Parollar</translation>
-<translation id="7030675613184250187">Sahifalarni Mutolaa roʻyxatiga saqlash va keyinroq oflayn oʻqish mumkin</translation>
 <translation id="7054588988317389591">Rasm tavsiflari chiqsinmi?</translation>
 <translation id="7055152154916055070">Yo‘naltirish bloklandi:</translation>
 <translation id="7063006564040364415">Sinxronlash serveriga ulanib bo‘lmadi.</translation>

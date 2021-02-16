@@ -107,6 +107,7 @@
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ</translation>
 <translation id="3712633734921637892">ಬ್ಯಾಟರಿಯನ್ನು ಉಳಿಸಲು ಅಥವಾ ತಾಪಮಾನವನ್ನು ಕಡಿಮೆ ಮಾಡಲು CPU ವೇಗವನ್ನು ಪ್ರಸ್ತುತ ಸೀಮಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ಅಭಿಪ್ರಾಯಗಳು)</translation>
 <translation id="3748026146096797577">ಸಂಪರ್ಕಗೊಳಿಸಿಲ್ಲ</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">ಪ್ರಿಂಟರ್</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
+<translation id="4155551848414053977">ಸ್ಕ್ಯಾನರ್ ಆನ್ ಆಗಿದೆಯೆ ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ ನೇರ ಕನೆಕ್ಷನ್ ಮೂಲಕ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4170700058716978431">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ನ ಅವಧಿ ಮುಗಿಯಲಿದೆ</translation>
@@ -210,7 +212,7 @@
 <translation id="5760715441271661976">ಪೋರ್ಟಲ್ ಸ್ಥಿತಿ</translation>
 <translation id="5797428682393400134">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
-<translation id="5844247382766192936"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆಯನ್ನು ರದ್ದುಪಡಿಸಲಾಗಿದೆ</translation>
+<translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5849570051105887917">ಹೋಮ್ ಪೂರೈಕೆದಾರರ ಕೋಡ್</translation>
 <translation id="5866840822086176774">ತುಂಬಾ ಪ್ರಬಲವಾಗಿದೆ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6189418609903030344">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
+<translation id="6223752125779001553">ಯಾವುದೇ ಸ್ಕ್ಯಾನರ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>

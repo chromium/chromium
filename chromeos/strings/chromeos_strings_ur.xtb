@@ -107,6 +107,7 @@
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="3712633734921637892">‏بیٹری بچانے یا درجۂ حرارت کم کرنے کیلئے، فی الوقت CPU کی رفتار محدود ہے</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> جائزے)</translation>
 <translation id="3748026146096797577">منسلک نہیں ہے</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">پرنٹر</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
+<translation id="4155551848414053977">یقینی بنائیں کہ اسکینر آن ہے اور آپ کے نیٹ ورک یا براہ راست کنکشن کے ذریعے دستیاب ہے</translation>
 <translation id="4170700058716978431">ناکام</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
@@ -210,7 +212,7 @@
 <translation id="5760715441271661976">پورٹل صورت حال</translation>
 <translation id="5797428682393400134">کامیاب</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
-<translation id="5844247382766192936"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
+<translation id="583281660410589416">نامعلوم</translation>
 <translation id="5849570051105887917">گھر فراہم کرنے والے کا کوڈ</translation>
 <translation id="5866840822086176774">کافی مضبوط</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6189418609903030344">استعمال کے ساتھ بیٹری کی صلاحیت کم ہوتی ہے</translation>
 <translation id="6191293864534840972">نام سرورز غلط ہے</translation>
+<translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
 <translation id="6232017090690406397">بیٹری</translation>
 <translation id="6325525973963619867">ناکام</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>

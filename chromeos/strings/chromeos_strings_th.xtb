@@ -107,6 +107,7 @@
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
+<translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">จำกัดความเร็ว CPU อยู่ในขณะนี้เพื่อประหยัดแบตเตอรี่หรือลดอุณหภูมิ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
+<translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
 <translation id="4170700058716978431">ไม่สำเร็จ</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
@@ -211,7 +213,7 @@
 <translation id="5760715441271661976">สถานะพอร์ทัล</translation>
 <translation id="5797428682393400134">สำเร็จ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
-<translation id="5844247382766192936">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
+<translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5849570051105887917">รหัสผู้ให้บริการหน้าแรก</translation>
 <translation id="5866840822086176774">แรงมาก</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -237,6 +239,7 @@
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6189418609903030344">ความจุแบตเตอรี่จะลดลงเมื่อใช้ไปเรื่อยๆ</translation>
 <translation id="6191293864534840972">เนมเซิร์ฟเวอร์มีรูปแบบไม่ถูกต้อง</translation>
+<translation id="6223752125779001553">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
 <translation id="6232017090690406397">แบตเตอรี่</translation>
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>

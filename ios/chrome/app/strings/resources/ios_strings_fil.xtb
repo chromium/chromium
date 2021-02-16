@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Magpapakita ang mga website ng text sa iyong gustong wika, kung posible.</translation>
 <translation id="1952728750904661634">Mag-sign in gamit ang isang pinamamahalaang account</translation>
 <translation id="1965935827552890526">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chrome.</translation>
+<translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
@@ -299,6 +300,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4038354071007134711">Walang application sa device ang makakabukas nito.</translation>
 <translation id="4042870976416480368">Hanapin sa Page</translation>
 <translation id="4049507953662678203">Tiyaking mayroon kang koneksyon sa network, at subukang muli.</translation>
+<translation id="4079195788735381731">Na-sign out ka ng iyong organisasyon</translation>
 <translation id="4082688844002261427">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap, mga ad, at higit pa</translation>
 <translation id="408404951701638773">Mas madali nang puntahan ang search bar</translation>
 <translation id="411254640334432676">Hindi na-download.</translation>
@@ -411,9 +413,9 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5327248766486351172">Pangalan</translation>
 <translation id="5339316356165661760">I-on ang Pag-sync</translation>
+<translation id="5360976571138293719">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Buksan ang Larawan</translation>
 <translation id="5407969256130905701">I-discard ang Mga Pagbabago</translation>
-<translation id="5409365236829784218">Walang naka-install na app na makakapagbukas ng file na ito.</translation>
 <translation id="5416022985862681400">Huling 7 Araw</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
 <translation id="5433691172869980887">Nakopya ang username</translation>
@@ -497,6 +499,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6254066287920239840">Buksan ang mga link sa app sa halip na sa browser.</translation>
 <translation id="6255097610484507482">I-edit ang Credit Card</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Para i-on ang Ligtas na Pag-browse, buksan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" /> at i-tap ang Ligtas na Pag-browse.</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6308436439357671616">Binibigyang-daan ka nito upang makakuha at makapag-upload ng mga larawan.</translation>
 <translation id="6324528485781869530">Magpalit ng Account sa Pag-sync</translation>

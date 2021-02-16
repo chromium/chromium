@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">A(z) <ph name="SITE" /> párosítást szeretne végrehajtani</translation>
 <translation id="2000419248597011803">Bizonyos cookie-kat és kereséseket küld a címsávból és a keresőmezőből az alapértelmezett keresőmotornak</translation>
 <translation id="2002537628803770967">A Google Pay szolgáltatást használó hitelkártyák és címek</translation>
-<translation id="2010780124464321179">Nem lehet linket létrehozni a szöveghez. Ossza meg az oldalra mutató linket.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fájl}other{# fájl}}</translation>
 <translation id="2017836877785168846">Törli a címsávban található előzményeket és automatikus kiegészítéseket.</translation>
 <translation id="2021896219286479412">Teljes képernyős oldal vezérlői</translation>
@@ -625,7 +624,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5524843473235508879">Átirányítás letiltva.</translation>
 <translation id="5527082711130173040">A Chrome-nak hozzá kell férnie a tartózkodási helyhez, hogy eszközöket kereshessen. <ph name="BEGIN_LINK1" />Frissítse az engedélyeket<ph name="END_LINK1" />. A helyadatokhoz való hozzáférés is <ph name="BEGIN_LINK2" />ki van kapcsolva ezen az eszközön<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognitó lapok bezárása</translation>
-<translation id="5530920986376047241">Oldalakat menthet az olvasólistájára, hogy később újra megtalálhassa őket.</translation>
 <translation id="5534640966246046842">Webhely vágólapra másolva</translation>
 <translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
@@ -707,8 +705,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5982307838673692400">Inkognitó lap megnyitása</translation>
 <translation id="6000066717592683814">A Google megtartása</translation>
 <translation id="6005538289190791541">Javasolt jelszó</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> oldal van a listán}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> oldal van a listán}}</translation>
-<translation id="6014293228235665243">Olvasatlan</translation>
 <translation id="6036057147555329831">További ICU</translation>
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -865,7 +861,6 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="702463548815491781">Ajánlott, amikor a TalkBack vagy a Kapcsolóalapú hozzáférés be van kapcsolva</translation>
 <translation id="7027549951530753705">Visszaállítás dátuma: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Jelszavak</translation>
-<translation id="7030675613184250187">Oldalakat menthet az olvasólistájára, hogy később újra megtalálhassa, illetve offline elolvashassa őket.</translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
 <translation id="7055152154916055070">Átirányítás letiltva:</translation>
 <translation id="7063006564040364415">Nem sikerült csatlakozni a szinkronizálószerverhez.</translation>

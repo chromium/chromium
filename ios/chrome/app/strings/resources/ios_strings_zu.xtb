@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Amawebhusayithi azobonisa umbhalo ngolwimi lwakho oluthandayo, uma kwenzeka.</translation>
 <translation id="1952728750904661634">Ngena ngemvume nge-akhawunti ephethwe</translation>
 <translation id="1965935827552890526">Qedelela obukade ukwenza kwelinye iwindi lakho le-Chrome elivuliwe.</translation>
+<translation id="1973912524893600642">Gcina idatha</translation>
 <translation id="1974060860693918893">Okuthuthukisiwe</translation>
 <translation id="1989112275319619282">Dlulisa amehlo</translation>
 <translation id="2015722694326466240">Ukuze ubone amaphasiwedi, kufanele uqale ngokusetha ikhodi yokudlula kudivayisi yakho.</translation>
@@ -299,6 +300,7 @@ Landela lezi zinyathelo ezingezansi:</translation>
 <translation id="4038354071007134711">Alukho uhlelo lokusebenza kule divayisi olungavula ifayela.</translation>
 <translation id="4042870976416480368">Thola ekhasini</translation>
 <translation id="4049507953662678203">Qiniseksa ukuthi unoxhumo lenethiwekhi, bese uyazama futhi.</translation>
+<translation id="4079195788735381731">Inhlangano yakho ikukhiphe ngemvume</translation>
 <translation id="4082688844002261427">Lawula ukuthi umlando wakho wokuphequlula usetshenziswa kanjani ukuze kwenziwe kube ngokwakho usesho, izikhangiso nokuningi</translation>
 <translation id="408404951701638773">Ibha losesho manje lifinyeleleka kalula</translation>
 <translation id="411254640334432676">Ukulanda kuhlulekile.</translation>
@@ -411,9 +413,9 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5327248766486351172">Igama</translation>
 <translation id="5339316356165661760">Vula ukuvumelanisa</translation>
+<translation id="5360976571138293719">Ukuze uthole amasethingi angeziwe ahlobene nobumfihlo, ukuvikeleka nokuqoqwa kwedatha, bona okuthi <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Vula isithombe</translation>
 <translation id="5407969256130905701">Lahla izinguquko</translation>
-<translation id="5409365236829784218">Azikho izinhlelo zokusebenza ezingafakwa ezingavula leli fayela.</translation>
 <translation id="5416022985862681400">Izinsuku ezingu-7 zokugcina</translation>
 <translation id="543338862236136125">Hlela iphasiwedi</translation>
 <translation id="5433691172869980887">Igama lomsebenzisi likopishiwe</translation>
@@ -497,6 +499,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6254066287920239840">Vula izixhumanisi kuhlelo lokusebenza esikhundleni sesiphequluli.</translation>
 <translation id="6255097610484507482">Hlela ikhadi lesikweletu</translation>
 <translation id="6284652193729350524">Nikeza ukuhumusha isi-<ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Ukuze uvule Ukuphequlula Ngokuphepha, vula <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" /> bese uthepha okuthi Ukuphequlula ngokuphepha.</translation>
 <translation id="6303969859164067831">Phuma bese uvale ukuvumelanisa</translation>
 <translation id="6308436439357671616">Lokhu kukuvumela ukuthi uthathe uphinde wabelane ngezithombe.</translation>
 <translation id="6324528485781869530">Shintsha i-akhawunti yokuvumelanisa</translation>

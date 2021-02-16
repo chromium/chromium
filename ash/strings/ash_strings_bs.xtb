@@ -659,6 +659,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6715542151869432661">Nije pronađen nijedan mobilni uređaj.</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6727969043791803658">Povezano, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
+<translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Nametnuo vaš administrator</translation>
 <translation id="6751826523481687655">Uključeno je praćenje performansi</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena s radnom površinom <ph name="RECEIVE_DESK" /></translation>

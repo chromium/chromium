@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Carte di credito accettate</translation>
 <translation id="1021753677514347426">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chromium. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chromium vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
 <translation id="1024111578869940408">A volte gli utenti malintenzionati imitano i siti modificando l'indirizzo web in modo poco evidente.</translation>
+<translation id="1028781062521375153">Scopri i dettagli</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vuole memorizzare in modo definitivo grandi quantità di dati sul dispositivo</translation>
 <translation id="1032854598605920125">Ruota in senso orario</translation>
 <translation id="1036348656032585052">Disattiva</translation>
@@ -146,6 +147,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1462951478840426066">Usare i caratteri installati sul computer per consentirti di creare contenuti ad alta fedeltà</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Sinistra</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> è il tuo codice di <ph name="EMBEDDED_ORIGIN" /> per continuare su <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostra altro</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1640180200866533862">Criteri utente</translation>
 <translation id="1640244768702815859">Prova a <ph name="BEGIN_LINK" />visitare la home page del sito<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Ritarda uscita fino a</translation>
+<translation id="164212631332220697">Paga con <ph name="CARD_DETAIL" /> al momento del pagamento.</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1645368109819982629">Protocollo non supportato</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1007,6 +1010,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4879725228911483934">Aprire finestre e posizionarle sugli schermi</translation>
 <translation id="4880827082731008257">Cerca nella cronologia</translation>
 <translation id="4881695831933465202">Apri</translation>
+<translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> al momento del pagamento</translation>
 <translation id="4889420713887366944">Pulsante Apri finestra di navigazione in incognito, premi Invio per aprire una nuova finestra di navigazione in incognito per navigare in privato</translation>
 <translation id="4892518386797173871">Posteriore</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1975,6 +1979,7 @@ Ulteriori dettagli:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> è il tuo codice per <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Aggiungi questa scheda ai preferiti</translation>
 <translation id="8751426954251315517">Riprova la prossima volta</translation>
+<translation id="8757526089434340176">Offerta Google Pay disponibile</translation>
 <translation id="8759274551635299824">La carta è scaduta</translation>
 <translation id="87601671197631245">Le tue informazioni (ad esempio password, messaggi o numeri di carte di credito) inviate a questo sito potrebbero essere a rischio, poiché il sito utilizza una configurazione di sicurezza obsoleta.</translation>
 <translation id="8761567432415473239">La funzione Navigazione sicura di Google <ph name="BEGIN_LINK" />ha trovato di recente programmi dannosi<ph name="END_LINK" /> su <ph name="SITE" />.</translation>

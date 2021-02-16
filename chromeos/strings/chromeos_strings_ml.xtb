@@ -107,6 +107,7 @@
 <translation id="357889014807611375">മീറ്റർ ചെയ്‌ത വൈഫൈ</translation>
 <translation id="3595596368722241419">ബാറ്ററി നിറഞ്ഞു</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> പരിശോധന</translation>
 <translation id="3712633734921637892">ബാറ്ററി സംരക്ഷിക്കാനോ താപനില കുറയ്‌ക്കാനോ CPU വേഗത നിലവിൽ പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> റിവ്യൂകൾ)</translation>
 <translation id="3748026146096797577">കണക്റ്റുചെയ്‌തിട്ടില്ല</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">പ്രിന്റർ</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
+<translation id="4155551848414053977">സ്‌കാനർ ഓണാക്കിയിട്ടുണ്ടെന്നും നിങ്ങളുടെ നെറ്റ്‌വർക്കോ നേരിട്ടുള്ള കണക്ഷനോ വഴി അത് ലഭ്യമാണെന്നും ഉറപ്പാക്കുക</translation>
 <translation id="4170700058716978431">പരാജയപ്പെട്ടു</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
@@ -210,7 +212,7 @@
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
 <translation id="5797428682393400134">വിജയകരം</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
-<translation id="5844247382766192936"><ph name="TEST_NAME" /> പരിശോധന റദ്ദാക്കി</translation>
+<translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5849570051105887917">ഹോം ദാതാവിന്റെ കോഡ്</translation>
 <translation id="5866840822086176774">വളരെ ദൃഢമാണ്</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6189418609903030344">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററി ശേഷി കുറയുന്നു</translation>
 <translation id="6191293864534840972">തകരാറുള്ള നെയിം സെർവറുകൾ</translation>
+<translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
 <translation id="636850387210749493">സംരംഭ വിവരപ്പട്ടിക</translation>

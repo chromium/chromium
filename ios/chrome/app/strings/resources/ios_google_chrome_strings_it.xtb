@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1282031177488366470">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
+<translation id="1314663809820920746">Puoi trovare ancora tutti i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo Account Google.</translation>
 <translation id="1479202195792305274">Chrome può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="1504372625950710826">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
 <translation id="1682483655351012182">Sincronizza i tuoi dati di Chrome</translation>
@@ -37,6 +38,7 @@
 <translation id="417201473131094001">Non supportata su Chrome Canary</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4249068189593983585">Suggerimento per Chrome. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
+<translation id="4354293865557736921">Vuoi cancellare i tuoi dati di Chrome da questo dispositivo o vuoi conservarli?</translation>
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
 <translation id="4633328489441962921">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="4698415050768537821">Chrome non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
@@ -54,6 +56,7 @@
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
 <translation id="6573431926118603307">Le schede aperte in Chrome sugli altri dispositivi verranno visualizzate qui.</translation>
 <translation id="6600954340915313787">Copiata in Chrome</translation>
+<translation id="6634107063912726160">Se esci, Chrome non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
 <translation id="6648150602980899529">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="6676840375528380067">Eliminare i dati di Chrome dal dispositivo?</translation>
 <translation id="6822673484890854830">Chrome non ha potuto controllare tutte le password. Riprova più tardi.</translation>
@@ -73,6 +76,7 @@
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="8045508249136869751">Per impostare Chrome come browser predefinito, apri le Impostazioni, tocca App browser predefinita e seleziona Chrome.</translation>
+<translation id="8109233255338845204">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chrome verranno cancellati da questo dispositivo.</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>

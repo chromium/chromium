@@ -659,6 +659,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6715542151869432661">Inga mobila enheter hittades.</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6727969043791803658">Ansluten, <ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Har ställts in som obligatorisk av administratören</translation>
 <translation id="6751826523481687655">Prestandaspårning har aktiverats</translation>
 <translation id="6752912906630585008">Skrivbordet <ph name="REMOVED_DESK" /> har tagits bort och slagits samman med skrivbordet <ph name="RECEIVE_DESK" /></translation>

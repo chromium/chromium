@@ -900,7 +900,6 @@
 <translation id="1975841812214822307">Pašalinti...</translation>
 <translation id="1976150099241323601">Prisijungti prie apsaugos įrenginio</translation>
 <translation id="1977965994116744507">Kad atrakintumėte „<ph name="DEVICE_TYPE" />“, arčiau padėkite telefoną.</translation>
-<translation id="1978006917103730774">Būsimi programinės įrangos ir saugos naujiniai bus įdiegti automatiškai.</translation>
 <translation id="1978057560491495741">Pašalinti adresą</translation>
 <translation id="1979095679518582070">Išjungus šią funkciją vis tiek galima siųsti šio įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.</translation>
 <translation id="1979280758666859181">Keičiate į kanalą, kuriame naudojama senesnė „<ph name="PRODUCT_NAME" />“ versija. Kanalo pakeitimas bus pritaikytas, kai kanalo versija atitiks šiuo metu įrenginyje įdiegtą versiją.</translation>
@@ -4340,7 +4339,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5941343993301164315">Prisijunkite prie <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Sumažinti</translation>
 <translation id="5942779427914696408">Įrenginio matomumas</translation>
-<translation id="5942964813783878922">Įdiegus šį naujinį „<ph name="DEVICE_TYPE" />“ įrenginys bus paleistas iš naujo. Būsimi programinės įrangos ir saugos naujiniai bus įdiegti automatiškai.</translation>
 <translation id="5944869793365969636">QR kodo nuskaitymas</translation>
 <translation id="5946591249682680882">Ataskaitos ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Nepavyksta išanalizuoti failo</translation>

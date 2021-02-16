@@ -123,6 +123,7 @@
 <translation id="1137673463384776352"><ph name="APP" /> でリンクを開く</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新しい通知}other{# 件の新しい通知}}</translation>
 <translation id="1139343347646843679">Linux の設定中にエラーが発生しました。管理者にお問い合わせください。</translation>
+<translation id="1139923033416533844">メモリ使用状況</translation>
 <translation id="1140351953533677694">Bluetooth デバイスとシリアル デバイスへのアクセス</translation>
 <translation id="114036956334641753">音声、字幕</translation>
 <translation id="1140746652461896221">アクセスするあらゆるページのコンテンツをブロックする</translation>
@@ -677,6 +678,7 @@
 <translation id="1734212868489994726">明るい青</translation>
 <translation id="1734230530703461088">制限時間内に拡張機能を読み込めませんでした。管理者にお問い合わせください。</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> を最新の状態に維持できない場合があります</translation>
+<translation id="173522743738009831">プライバシー サンドボックスについて</translation>
 <translation id="173628468822554835">今後、新しくアクセスしたサイトでは、デフォルトで通知が表示されなくなります。</translation>
 <translation id="1736419249208073774">詳しく見る</translation>
 <translation id="1737968601308870607">バグを報告</translation>
@@ -897,7 +899,6 @@
 <translation id="1975841812214822307">削除...</translation>
 <translation id="1976150099241323601">セキュリティ デバイスへのログイン</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> のロックを解除するにはスマートフォンを近づけます。</translation>
-<translation id="1978006917103730774">今後はソフトウェアとセキュリティに関するアップデートが自動的にインストールされます。</translation>
 <translation id="1978057560491495741">住所を削除</translation>
 <translation id="1979095679518582070">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
@@ -1000,6 +1001,7 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
 <translation id="2111670510994270194">右隣に新しいタブを開く</translation>
+<translation id="2111810003053064883">広告主は、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。</translation>
 <translation id="21133533946938348">タブを固定</translation>
 <translation id="2113479184312716848">ファイルを開く（&amp;F）...</translation>
 <translation id="2113921862428609753">認証局アクセス情報</translation>
@@ -1029,6 +1031,7 @@
 <translation id="2138398485845393913">「<ph name="DEVICE_NAME" />」に接続中です</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="2139919072249842737">設定ボタン</translation>
+<translation id="2140788884185208305">電池の状態</translation>
 <translation id="214169863967063661">表示設定を開く</translation>
 <translation id="2142328300403846845">別のユーザーとしてリンクを開く</translation>
 <translation id="2142582065325732898">最近使った Chrome タブを表示するには、<ph name="LINK1_BEGIN" />Chrome 同期<ph name="LINK1_END" />を有効にします。<ph name="LINK2_BEGIN" />詳細<ph name="LINK2_END" /></translation>
@@ -1543,6 +1546,7 @@
 <translation id="2712173769900027643">許可をリクエスト</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2714393097308983682">Google Play ストア</translation>
+<translation id="2715640894224696481">セキュリティ キーのリクエスト</translation>
 <translation id="2715751256863167692">このアップグレードを行うと、Chromebook がリセットされ、現在のユーザーデータは削除されます。</translation>
 <translation id="2716986496990888774">この設定は保護者によって管理されています。</translation>
 <translation id="2718395828230677721">夜間モード</translation>
@@ -2002,6 +2006,7 @@
 <translation id="3238192140106069382">接続と認証を行っています</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> の使用時間制限が削除されました</translation>
 <translation id="3241680850019875542">パッケージ化する拡張機能のルート ディレクトリを選択します。拡張機能を更新するには、再使用する秘密鍵ファイルも選択してください。</translation>
+<translation id="3242905690080165035">プライバシー サンドボックスはまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
 <translation id="3246107497225150582">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
@@ -2162,6 +2167,7 @@
 <translation id="3428419049384081277">ログインしました</translation>
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3428800329481094896">Linux コンテナの SSH 認証鍵を取得しています</translation>
+<translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
 <translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
@@ -3145,6 +3151,7 @@
 <translation id="4541662893742891060">このプロファイルに接続できません。テクニカル サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="4541810033354695636">拡張現実</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> と <ph name="WEBSITE_2" /> でのユーザーデータの読み取り</translation>
+<translation id="454331522350252598">広告主は、コンサートの観客のように、数千のユーザーが同様の興味を持っていることを把握し、個人ではなく、その数千のユーザーに対して広告を表示するよう選択できます。</translation>
 <translation id="4543778593405494224">証明書マネージャー</translation>
 <translation id="4544174279960331769">デフォルトの青のアバター</translation>
 <translation id="4545028762441890696">再度有効にするには次の新しい権限を許可してください。</translation>
@@ -3193,6 +3200,7 @@
 <translation id="4582563038311694664">すべての設定をリセット</translation>
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
+<translation id="4587645918878093912">現在、ウェブサイトでは関連性の高い広告を表示し、サイトのパフォーマンスを測定するなど、重要なサービスを可能にするうえで多くの技術（サードパティ Cookie など）に依存しています。</translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
 <translation id="4590324241397107707">データベース ストレージ</translation>
 <translation id="4592891116925567110">タッチペンの描画アプリ</translation>
@@ -4336,7 +4344,6 @@
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5942779427914696408">デバイスの公開設定</translation>
-<translation id="5942964813783878922">この更新が行われた後、<ph name="DEVICE_TYPE" /> は再起動します。今後はソフトウェアとセキュリティに関するアップデートが自動的にインストールされます。</translation>
 <translation id="5944869793365969636">QR コードのスキャン</translation>
 <translation id="5946591249682680882">レポート ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">ファイルを解析できません</translation>
@@ -4620,6 +4627,7 @@
 <translation id="6271348838875430303">修正を元に戻しました</translation>
 <translation id="6272643420381259437">プラグインのダウンロード中にエラー（<ph name="ERROR" />）が発生しました。</translation>
 <translation id="6273677812470008672">品質</translation>
+<translation id="6275846828483490454">プライバシー サンドボックスは、トラッキング メカニズムからユーザーを保護して、オープンウェブの理念を支える開発中の取り組みです。</translation>
 <translation id="6276210637549544171">プロキシ <ph name="PROXY_SERVER" /> に接続するには、ユーザー名とパスワードが必要です。</translation>
 <translation id="6277105963844135994">ネットワークがタイムアウトしました</translation>
 <translation id="6277518330158259200">スクリーンショットを撮る(&amp;A)</translation>
@@ -5274,6 +5282,7 @@
 <translation id="7018275672629230621">閲覧履歴の読み取りと変更</translation>
 <translation id="7019805045859631636">速い</translation>
 <translation id="7022562585984256452">ホームページが設定されました。</translation>
+<translation id="7023206482239788111">プライバシー サンドボックスは、サイトの機能を損なったり、ユーザーが同意なくウェブ上でトラッキングされたりすることがないよう、より優れた方法でこうしたサービスを実現して、オープンウェブの理念を支える取り組みです。</translation>
 <translation id="7025082428878635038">ジェスチャーによる新しい操作方法</translation>
 <translation id="7025190659207909717">モバイル データ サービスの管理</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
@@ -5452,6 +5461,7 @@
 <translation id="7234010996000898150">Linux の復元をキャンセルしています</translation>
 <translation id="7235716375204803342">アクティビティを取得しています...</translation>
 <translation id="7235737137505019098">セキュリティ キーに空き容量がないため、これ以上アカウントを追加できません。</translation>
+<translation id="7238640585329759787">有効にすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />、詳細</translation>
 <translation id="7240339475467890413">新しいアクセス ポイントに接続しますか？</translation>
 <translation id="7241389281993241388">クライアント証明書をインポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
@@ -6112,6 +6122,7 @@
 <translation id="7968833647796919681">パフォーマンス データの収集を有効にする</translation>
 <translation id="7968982339740310781">詳細を表示</translation>
 <translation id="7969046989155602842">コマンド</translation>
+<translation id="7970618607181090249">タッチスクリーンが検出されました</translation>
 <translation id="7970673414865679092">イーサネットの詳細</translation>
 <translation id="7970882136539140748">現在、カードを保存できません</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>
@@ -6550,6 +6561,7 @@
 <translation id="8480082892550707549">以前ファイルをダウンロードしたサイトでも、一時的に安全でなくなっている（ハッキングされている）可能性があります。しばらくしてからファイルをダウンロードしてみてください。</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> 製の不明なデバイス</translation>
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
+<translation id="8481980314595922412">試用版機能はオンになっています</translation>
 <translation id="8487678622945914333">拡大</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>
 <translation id="8490896350101740396">キオスクアプリ「<ph name="UPDATED_APPS" />」を更新しました。更新処理を完了するためにデバイスを再起動してください。</translation>
@@ -7059,6 +7071,7 @@
 <translation id="9031549947500880805">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。</translation>
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
+<translation id="903386633044383289">デバイスの接続</translation>
 <translation id="9037818663270399707">この接続ではすべてのネットワーク トラフィックのプライバシーが保護されません</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{あと 1 回試行できます。}other{あと # 回試行できます。}}</translation>
@@ -7191,6 +7204,7 @@
 <translation id="9180281769944411366">この処理には数分かかることがあります。Linux コンテナを起動します。</translation>
 <translation id="9180380851667544951">サイトに画面の共有が許可されています</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
+<translation id="9185818139207739329">プライバシー サンドボックス（試用版）を有効にする</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
 <translation id="9188732951356337132">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android スマートフォンをセキュリティ キーとして使用する</translation>

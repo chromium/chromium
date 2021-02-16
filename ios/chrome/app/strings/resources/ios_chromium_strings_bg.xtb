@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Не се поддържа от Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium може да проверява паролите ви, когато влизате с профила си в Google.</translation>
 <translation id="3805899903892079518">Chromium няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
+<translation id="3946918322491238254">Пак можете да преглеждате отметките, историята, паролите и другите си настройки на това устройство. В случай че направите промени, те няма да се синхронизират с профила ви.</translation>
 <translation id="4099085513035183040">Не се поддържа от Chromium бета</translation>
 <translation id="4166206055865952171">Задаване на Chromium като браузъра ви по подразбиране</translation>
 <translation id="4555020257205549924">Когато тази функция е включена, Chromium ще предлага да преведе страниците, написани на други езици, посредством Google Преводач. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Няма запазени пароли. Chromium може да проверява паролите ви, когато ги запазите.</translation>
 <translation id="5308226104666789935">Chromium не може да провери за актуализации</translation>
 <translation id="5521125884468363740">Влезте в профила си и включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
+<translation id="5544795779875591523">Изберете дали данните ви в Chromium да бъдат изчистени от това устройство, или запазени.</translation>
 <translation id="5573014823074921752">Съвет за Chromium. За да видите още опции за разделите, докоснете и задръжте бутона „Показване на разделите“ в лентата с инструменти в долната или горната част на екрана.</translation>
 <translation id="5700709190537129682">Chromium не може да провери паролите ви</translation>
 <translation id="5777187867430702742">Страница на Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
 <translation id="8663480472502753423">Поддържане на браузъра Chromium актуален</translation>
 <translation id="8776843108004031667">Този профил и всички незапазени данни ще бъдат премахнати от Chromium.</translation>
+<translation id="894437814105052438">Когато излезете от профила си, Chromium няма да синхронизира новите данни с профила ви в Google. Синхронизираните по-рано данни продължават да се съхраняват в профила ви.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
+<translation id="994708389219151914">Тъй като профилът ви се управлява от <ph name="HOSTED_DOMAIN" />, данните ви в Chromium ще бъдат изчистени от това устройство.</translation>
 </translationbundle>

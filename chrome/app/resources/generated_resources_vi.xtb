@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Xóa...</translation>
 <translation id="1976150099241323601">Đăng nhập vào thiết bị bảo mật</translation>
 <translation id="1977965994116744507">Mang điện thoại tới gần hơn để mở khóa <ph name="DEVICE_TYPE" /> của bạn.</translation>
-<translation id="1978006917103730774">Các bản cập nhật bảo mật và phần mềm trong tương lai sẽ tự động cài đặt.</translation>
 <translation id="1978057560491495741">Xóa địa chỉ</translation>
 <translation id="1979095679518582070">Việc tắt tính năng này sẽ không ảnh hưởng đến khả năng thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.</translation>
 <translation id="1979280758666859181">Bạn đang thay đổi sang kênh có phiên bản <ph name="PRODUCT_NAME" /> cũ hơn. Sẽ áp dụng thay đổi kênh khi phiên bản kênh khớp với phiên bản hiện được cài đặt trên thiết bị của bạn.</translation>
@@ -4336,7 +4335,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5941343993301164315">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
 <translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> sẽ khởi động lại sau quá trình cập nhật này. Các bản cập nhật bảo mật và phần mềm trong tương lai sẽ tự động cài đặt.</translation>
 <translation id="5944869793365969636">Quét mã QR</translation>
 <translation id="5946591249682680882">ID báo cáo <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Không thể phân tích cú pháp tệp</translation>

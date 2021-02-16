@@ -901,7 +901,6 @@
 <translation id="1975841812214822307">إزالة...</translation>
 <translation id="1976150099241323601">تسجيل الدخول إلى جهاز الأمان</translation>
 <translation id="1977965994116744507">اجعل هاتفك قريبًا منك لإلغاء قفل جهاز <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">سيتم تثبيت تحديثات البرامج والأمان المستقبلية تلقائيًا.</translation>
 <translation id="1978057560491495741">إزالة العنوان</translation>
 <translation id="1979095679518582070">لن يؤثر إيقاف هذه الميزة في قدرة هذا الجهاز على إرسال المعلومات اللازمة للحصول على خدمات ضرورية مثل تحديثات النظام والأمان.</translation>
 <translation id="1979280758666859181">أنت الآن تُجري تغييرًا إلى قناة ذات إصدار سابق من <ph name="PRODUCT_NAME" />. وسيسري تغيير القناة عند تطابق إصدار القناة مع الإصدار المثبت حاليًا على الجهاز.</translation>
@@ -4339,7 +4338,6 @@
 <translation id="5941343993301164315">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">تصغير</translation>
 <translation id="5942779427914696408">مستوى ظهور الجهاز</translation>
-<translation id="5942964813783878922">ستتم إعادة تشغيل <ph name="DEVICE_TYPE" /> بعد هذا التحديث. سيتم تثبيت تحديثات البرامج والأمان المستقبلية تلقائيًا.</translation>
 <translation id="5944869793365969636">مسح رمز الاستجابة السريعة</translation>
 <translation id="5946591249682680882">معرف التقرير: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">تعذَّر تحليل الملف</translation>

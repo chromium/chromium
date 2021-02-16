@@ -894,7 +894,6 @@
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
 <translation id="1977965994116744507">需将您的手机靠近您的 <ph name="DEVICE_TYPE" />，才能为其解锁。</translation>
-<translation id="1978006917103730774">后续的软件更新和安全更新将会自动安装。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
 <translation id="1979280758666859181">您正将版本更改为较旧版的 <ph name="PRODUCT_NAME" />。该版本的版本号必须与您设备上目前所安装版本的版本号相符，版本变更才会生效。</translation>
@@ -4331,7 +4330,6 @@
 <translation id="5941343993301164315">请登录 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5942779427914696408">设备公开范围</translation>
-<translation id="5942964813783878922">安装此更新之后，您的 <ph name="DEVICE_TYPE" /> 将会重启。后续的软件更新和安全更新将会自动安装。</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5946591249682680882">报告ID：<ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">无法解析文件</translation>

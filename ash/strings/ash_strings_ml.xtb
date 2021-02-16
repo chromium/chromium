@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ചേർത്തു</translation>
 <translation id="1047017786576569492">ഭാഗികം</translation>
 <translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
+<translation id="1052916631016577720">ഇനം സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="1056775291175587022">നെറ്റ്‌വർക്കില്ല</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">സെല്ലുലാര്‍‌: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">സഹായി ലോഡുചെയ്യുന്നു...</translation>
 <translation id="4356930093361201197">ഉയർന്ന ദൃശ്യതീവ്രതാ മോഡ്</translation>
 <translation id="4371348193907997655">കാസ്‌റ്റ് ക്രമീകരണം</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /> ശതമാനം</translation>
 <translation id="4378551569595875038">കണക്റ്റിംഗ്...</translation>
 <translation id="4379531060876907730">ഇവയാണ് നിങ്ങളുടെ സ്‌റ്റൈലസ് ടൂളുകൾ</translation>
 <translation id="4389184120735010762">നിങ്ങൾ ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയറിനായി കീബോഡ് കുറുക്കുവഴി അമർത്തി. അത് ഓണാക്കണോ?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">ഈ മോണിറ്റർ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ പ്രവർത്തിക്കുന്നില്ല (മോണിറ്റർ ഇതിൽ പ്രവർത്തിക്കില്ല).</translation>
 <translation id="6043994281159824495">ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="6047696787498798094">മറ്റൊരു ഉപയോക്താവിലേക്ക് മാറുമ്പോൾ സ്ക്രീൻ പങ്കിടൽ നിർത്തും. നിങ്ങൾക്ക് തുടരണോ?</translation>
+<translation id="6050368268239407309">അവതരണ ടൂളുകൾ</translation>
 <translation id="6054305421211936131">സ്‌മാർട്ട് കാർഡ് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6059276912018042191">അടുത്തിടെയുള്ള Chrome ടാബുകൾ</translation>
 <translation id="6062360702481658777">നിങ്ങൾ <ph name="LOGOUT_TIME_LEFT" />-നുള്ളിൽ സ്വയമേവ സൈൻ ഔട്ട് ചെയ്യും.</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">മൊബൈലുകളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="6723839937902243910">പവർ</translation>
 <translation id="6727969043791803658">കണക്റ്റ് ചെയ്‌തു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /> എണ്ണം</translation>
 <translation id="6751052314767925245">നിങ്ങളുടെ അഡ്‌മിൻ നടപ്പിലാക്കിയതാണ്</translation>
 <translation id="6751826523481687655">പ്രകടനം പിന്തുടരൽ ഓണാണ്</translation>
 <translation id="6752912906630585008">ഡെസ്‌ക് <ph name="REMOVED_DESK" /> നീക്കം ചെയ്‌ത്, ഡെസ്‌ക് <ph name="RECEIVE_DESK" />-മായി ലയിപ്പിച്ചു</translation>

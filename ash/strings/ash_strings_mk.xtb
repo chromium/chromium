@@ -660,6 +660,7 @@
 <translation id="6715542151869432661">Не се најдени мобилни уреди.</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6727969043791803658">Поврзан, <ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
+<translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Наметнато од администраторот</translation>
 <translation id="6751826523481687655">Следењето на изведбата е вклучено</translation>
 <translation id="6752912906630585008">Работниот простор <ph name="REMOVED_DESK" /> е отстранет и споен со работниот простор <ph name="RECEIVE_DESK" /></translation>

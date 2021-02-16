@@ -659,6 +659,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6715542151869432661">Aucun appareil mobile détecté.</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6727969043791803658">Connecté, batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6732800389263199929">et <ph name="COUNT" /> autre(s)</translation>
 <translation id="6751052314767925245">Cette fonctionnalité est appliquée par votre administrateur</translation>
 <translation id="6751826523481687655">Le suivi des performances est activé</translation>
 <translation id="6752912906630585008">Bureau <ph name="REMOVED_DESK" /> supprimé et fusionné avec le Bureau <ph name="RECEIVE_DESK" /></translation>

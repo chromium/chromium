@@ -659,6 +659,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6715542151869432661">Perangkat seluler tidak ditemukan.</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6727969043791803658">Terhubung, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Diterapkan oleh administrator Anda</translation>
 <translation id="6751826523481687655">Pelacakan performa diaktifkan</translation>
 <translation id="6752912906630585008">Desktop <ph name="REMOVED_DESK" /> dihapus dan digabung dengan Desktop <ph name="RECEIVE_DESK" /></translation>

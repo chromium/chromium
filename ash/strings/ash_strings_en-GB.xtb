@@ -662,6 +662,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6715542151869432661">No mobile devices found.</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Enforced by your administrator</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>

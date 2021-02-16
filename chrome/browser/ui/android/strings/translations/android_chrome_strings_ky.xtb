@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> сайты жупташканы жатат</translation>
 <translation id="2000419248597011803">Дарек тилкесиндеги жана издөө кутучасындагы издөөлөрдү жана айрым cookie файлдарын демейки издөө тутумуна жөнөтөт</translation>
 <translation id="2002537628803770967">Google Pay'ди колдонгон насыя карталары жана даректер</translation>
-<translation id="2010780124464321179">Текстке шилтеме түзүлгөн жок. Барактын шилтемесин бөлүшүңүз.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файл}}</translation>
 <translation id="2017836877785168846">Дарек тилкесиндеги таржымалды жана сөздү автоматтык түрдө бүтүрүүнү тазалайт.</translation>
 <translation id="2021896219286479412">Сайтты толук экран режиминде көзөмөлдөө</translation>
@@ -625,7 +624,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5524843473235508879">Багыттоо бөгөттөлгөн.</translation>
 <translation id="5527082711130173040">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. <ph name="BEGIN_LINK1" />Уруксаттарды жаңыртыңыз<ph name="END_LINK1" />. Жайгашкан жерди колдонуу функциясы да <ph name="BEGIN_LINK2" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Жашыруун кыстармаларды жабуу</translation>
-<translation id="5530920986376047241">Барактарды кайра табуу үчүн аларды окуу тизмеңизге сактап койсоңуз болот</translation>
 <translation id="5534640966246046842">Сайт көчүрүлдү</translation>
 <translation id="5548606607480005320">Коопсуздукту текшерүү</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
@@ -707,8 +705,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5982307838673692400">Жашыруун өтмөктү ачуу</translation>
 <translation id="6000066717592683814">Google калсын</translation>
 <translation id="6005538289190791541">Сунушталган сырсөз</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Сизде <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> бет бар}other{Сизде <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> бет бар}}</translation>
-<translation id="6014293228235665243">Окулбагандар</translation>
 <translation id="6036057147555329831">Кошумча ICU</translation>
 <translation id="6039379616847168523">Кийинки өтмөккө секирүү</translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -865,7 +861,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="702463548815491781">TalkBack же Switch Access функциялары күйүк кезде сунушталат</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> калыбына келтирилди</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
-<translation id="7030675613184250187">Барактарды кийин кайра таап же оффлайн режиминде окуу үчүн окула тургандардын тизмесине кошуп койсоңуз болот</translation>
 <translation id="7054588988317389591">Сүрөттүн сүрөттөмөлөрүн аласызбы?</translation>
 <translation id="7055152154916055070">Багыттоо бөгөттөлгөн:</translation>
 <translation id="7063006564040364415">Шайкештештирүү серверине туташкан жок.</translation>

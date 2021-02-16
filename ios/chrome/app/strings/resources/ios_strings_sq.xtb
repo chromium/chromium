@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Sajtet e uebit do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
 <translation id="1952728750904661634">Identifikohu me llogari të menaxhuar</translation>
 <translation id="1965935827552890526">Përfundo atë që po bën në dritaren tjetër të hapur të Chrome.</translation>
+<translation id="1973912524893600642">Mbaj të dhënat</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1989112275319619282">Shfleto</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
@@ -299,6 +300,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4038354071007134711">Asnjë aplikim në këtë pajisje nuk mund ta hapë skedarin.</translation>
 <translation id="4042870976416480368">Gjej brenda faqes</translation>
 <translation id="4049507953662678203">Sigurohu që ke një lidhje interneti dhe provo përsëri.</translation>
+<translation id="4079195788735381731">Organizata jote të nxori nga llogaria</translation>
 <translation id="4082688844002261427">Kontrollo se si përdoret historiku i shfletimit për të personalizuar "Kërkimin", reklamat dhe shumë të tjera</translation>
 <translation id="408404951701638773">Shiriti i kërkimit mund të arrihet tani më lehtë</translation>
 <translation id="411254640334432676">Shkarkimi dështoi.</translation>
@@ -411,9 +413,9 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5339316356165661760">Aktivizo sinkronizimin</translation>
+<translation id="5360976571138293719">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Hape imazhin</translation>
 <translation id="5407969256130905701">Hiq ndryshimet</translation>
-<translation id="5409365236829784218">Nuk ka aplikacione të instaluara që mund të hapin këtë skedar.</translation>
 <translation id="5416022985862681400">7 ditët e fundit</translation>
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
@@ -497,6 +499,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6254066287920239840">Hapi lidhjet në aplikacion në vend të shfletuesit.</translation>
 <translation id="6255097610484507482">Modifiko kartën e kreditit</translation>
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
 <translation id="6303969859164067831">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6308436439357671616">Kjo të lejon të nxjerrësh dhe të ngarkosh fotografitë.</translation>
 <translation id="6324528485781869530">Ndërro llogarinë e sinkronizimit</translation>

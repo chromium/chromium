@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">找不到行動裝置。</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6727969043791803658">已連線，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">由系統管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>

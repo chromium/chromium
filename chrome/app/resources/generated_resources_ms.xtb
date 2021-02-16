@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Alih keluar...</translation>
 <translation id="1976150099241323601">Log masuk ke Peranti Keselamatan</translation>
 <translation id="1977965994116744507">Rapatkan telefon anda untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
-<translation id="1978006917103730774">Kemas kini perisian dan keselamatan pada masa hadapan akan dipasang secara automatik.</translation>
 <translation id="1978057560491495741">Alih keluar alamat</translation>
 <translation id="1979095679518582070">Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti ini untuk menghantar maklumat yang diperlukan untuk perkhidmatan penting seperti kemas kini sistem dan keselamatan.</translation>
 <translation id="1979280758666859181">Anda sedang beralih kepada saluran dengan versi <ph name="PRODUCT_NAME" /> yang lebih lama. Perubahan saluran akan dilaksanakan apabila versi saluran sepadan dengan versi yang sedang terpasang pada peranti anda.</translation>
@@ -4336,7 +4335,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5941343993301164315">Sila log masuk ke <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimumkan</translation>
 <translation id="5942779427914696408">Keterlihatan peranti</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> anda akan dimulakan semula selepas kemas kini ini. Kemas kini perisian dan keselamatan pada masa hadapan akan dipasang secara automatik.</translation>
 <translation id="5944869793365969636">Imbas kod QR</translation>
 <translation id="5946591249682680882">ID Laporan <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Tidak dapat menghurai fail</translation>

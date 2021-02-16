@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">පිළි ගත් කාඩ්පත්</translation>
 <translation id="1021753677514347426">මෙම ගැටලුව සිදු වන්නේ ඔබ හෝ වෙනත් කෙනෙක් ඔබේ උපාංගය මත ස්ථාපන කර ඇති සහතිකයක් හේතුවෙනි. එම සහතිකය ජාල නිරීක්‍ෂණ කිරීමටත් අතුරු ඇරීමටත් භාවිත වන බවට දන්නා අතර, Chromium විසින් විශ්වාස නොකෙරේ. පාසල් හෝ සමාගම් ජාලයක් මත වැනි නිරීක්‍ෂණ කිරීම සඳහා යම් නීත්‍යානුකූල සංදර්භ පවතින අතරතුර, ඔබට එය නැවැත්විය නොහැකි නමුත් ඔබ එය සිදු වන බවට දැන සිටීම ගැන Chromium කැමති වෙයි. වෙබයට ප්‍රවේශ වන ඕනෑම බ්‍රවුසරයක් හෝ යෙදුමක් තුළ නිරීක්‍ෂණය සිදු විය හැක.</translation>
 <translation id="1024111578869940408">ප්‍රහාරකයින් සමහර විට වෙබ් ලිපිනයට බැලීමට අපහසු වෙනස් කිරීම් සිදු කිරීමෙන් අඩවි අනුකරණය කරයි.</translation>
+<translation id="1028781062521375153">විස්තර බලන්න</translation>
 <translation id="1030706264415084469"><ph name="URL" /> හට ඔබේ උපාංගය මත විශාල දත්ත ස්ථිරව ගබඩා කිරීමට අවශ්‍යයි</translation>
 <translation id="1032854598605920125">දක්ෂිණාවර්තව කරකවන්න</translation>
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">ඔබේ පරිගණකයේ ෆොන්ට භාවිත කරන්න එවිට ඔබට ඉහළ විශ්වාසදායක අන්තර්ගතයක් නිර්මාණය කළ හැකිය</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">වම</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> යනු <ph name="EMBEDDED_ORIGIN" /> සඳහා <ph name="TOP_ORIGIN" /> හි ඉදිරියට යාමට ඇති ඔබගේ කේතයයි</translation>
 <translation id="1472675084647422956">තවත් පෙන්වන්න</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">පරිශීලක ප්‍රතිපත්ති</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />අඩවියෙහි මුල් පිටුවට පිවිසීම<ph name="END_LINK" /> උත්සාහ කරන්න.</translation>
 <translation id="1641976391427233992">මේ දක්වා දෛනික ප්‍රතිදානය</translation>
+<translation id="164212631332220697">ගෙවීමේදී <ph name="CARD_DETAIL" /> සමගින් ගෙවන්න.</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
 <translation id="1645368109819982629">සහාය නොදක්වන ප්‍රොටොකෝලය</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1005,6 +1008,7 @@
 <translation id="4879725228911483934">ඔබේ තිරය මත කවුළු විවෘත කරන්න සහ තබන්න</translation>
 <translation id="4880827082731008257">ඉතිහාසය සොයන්න</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
+<translation id="4885256590493466218">ගෙවීමේදී <ph name="CARD_DETAIL" /> සමගින් ගෙවන්න</translation>
 <translation id="4889420713887366944">අප්‍රසිද්ධ කවුළුව විවෘත කිරීමේ බොත්තම, පුද්ගලිකව බ්‍රවුස් කිරීමට නව Chrome අප්‍රසිද්ධ කවුළුව විවෘත කිරීමට Enter ඔබන්න</translation>
 <translation id="4892518386797173871">පසුපස</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1974,6 +1978,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> යනු <ph name="ORIGIN" /> සඳහා ඔබේ කේතය වෙයි</translation>
 <translation id="874918643257405732">මෙම පටිත්ත පිටුසන් කරන්න</translation>
 <translation id="8751426954251315517">මීළඟ වරට නැවත උත්සාහ කරන්න</translation>
+<translation id="8757526089434340176">Google Pay දීමනාව ලබා ගත හැකිය</translation>
 <translation id="8759274551635299824">මෙම කාඩ්පත කල් ඉකුත් වී ඇත</translation>
 <translation id="87601671197631245">මෙම වෙබ් අඩවිය යල් පැන ගිය ආරක්‍ෂක වින්‍යාසයක් භාවිත කරයි, එමඟින් ඔබේ තොරතුරු (උදාහරණයක් වශයෙන් මුරපද, පණිවුඩ, හෝ ණය කාඩ්පත්) මෙම වෙබ් අඩවියට යවන විට හෙළි කළ හැක.</translation>
 <translation id="8761567432415473239">Google ආරක්ෂිත පිරික්සීම මෑතදී <ph name="SITE" /> මත <ph name="BEGIN_LINK" />දූෂිත ක්‍රමලේඛ සොයා ගත්තේය<ph name="END_LINK" />.</translation>

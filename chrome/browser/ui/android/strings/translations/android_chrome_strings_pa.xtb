@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> ਜੋੜਾਬੱਧ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="2000419248597011803">ਪਤਾ ਬਾਰ ਅਤੇ ਖੋਜ ਬਾਕਸ ਤੋਂ ਕੁਝ ਕੁਕੀਜ਼ ਅਤੇ ਖੋਜਾਂ ਤੁਹਾਡੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਨੂੰ ਭੇਜਦੀ ਹੈ</translation>
 <translation id="2002537628803770967">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਅਤੇ ਪਤੇ</translation>
-<translation id="2010780124464321179">ਲਿਖਤ ਲਈ ਲਿੰਕ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ। ਪੰਨੇ ਦਾ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ।</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="2017836877785168846">ਪਤਾ ਪੱਟੀ ਵਿੱਚੋਂ ਇਤਿਹਾਸ ਅਤੇ ਸਵੈ-ਪੂਰਨਤਾਵਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰਦੀ ਹੈ।</translation>
 <translation id="2021896219286479412">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇ ਸਾਈਟ ਕੰਟਰੋਲ</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5527082711130173040">Chrome ਨੂੰ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰਨ ਵਾਸਤੇ ਟਿਕਾਣਾ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ। <ph name="BEGIN_LINK1" />ਇਜਾਜ਼ਤਾਂ ਅੱਪਡੇਟ ਕਰੋ<ph name="END_LINK1" />। ਟਿਕਾਣਾ ਪਹੁੰਚ ਵੀ <ph name="BEGIN_LINK2" />ਇਸ ਡੀਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤੀ ਹੋਈ ਹੈ<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ਗੁਮਨਾਮ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
-<translation id="5530920986376047241">ਪੰਨਿਆਂ ਨੂੰ ਦੁਬਾਰਾ ਲੱਭਣ ਲਈ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="5534640966246046842">ਸਾਈਟ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="5548606607480005320">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
 <translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="6000066717592683814">Google ਰੱਖੋ</translation>
 <translation id="6005538289190791541">ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ਪੰਨਾ ਹੈ}one{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਪੰਨਾ ਹੈ}other{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਪੰਨੇ ਹਨ}}</translation>
-<translation id="6014293228235665243">ਨਾ-ਪੜ੍ਹੇ</translation>
 <translation id="6036057147555329831">ਵਾਧੂ ICU</translation>
 <translation id="6039379616847168523">ਅਗਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">TalkBack ਜਾਂ 'ਸਵਿੱਚ ਪਹੁੰਚ' ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
-<translation id="7030675613184250187">ਪੰਨਿਆਂ ਨੂੰ ਦੁਬਾਰਾ ਲੱਭਣ ਜਾਂ ਆਫ਼ਲਾਈਨ ਪੜ੍ਹਨ ਲਈ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="7054588988317389591">ਕੀ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
 <translation id="7063006564040364415">ਸਿੰਕ ਸਰਵਰ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>

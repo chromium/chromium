@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> သည် တွဲချိတ်လိုပါသည်</translation>
 <translation id="2000419248597011803">လိပ်စာဘားနှင့် ရှာဖွေမှုအကွက်ထဲရှိ အချို့သော ကွတ်ကီးများနှင့် ရှာဖွေမှုများကို သင်၏မူရင်းရှာဖွေမှုအင်ဂျင်သို့ ပို့သည်</translation>
 <translation id="2002537628803770967">Google Pay ကို အသုံးပြုသည့် ခရက်ဒစ်ကတ်နှင့် လိပ်စာများ</translation>
-<translation id="2010780124464321179">စာသားသို့ လင့်ခ်ကို ပြုလုပ်၍မရပါ။ လင့်ခ်ကို စာမျက်နှာသို့ မျှဝေပါ။</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ဖိုင်}other{# ဖိုင်}}</translation>
 <translation id="2017836877785168846">လိပ်စာဘားရှိ မှတ်တမ်းနှင့် အလိုအလျောက်ဖြည့်ခြင်းများကို ရှင်းလင်းရန်</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်။</translation>
 <translation id="5527082711130173040">Chrome သည် စက်ပစ္စည်းများကို ရှာဖွေနိုင်ရန်အတွက် တည်နေရာအားအသုံးပြုခွင့်ရှိရန် လိုအပ်ပါသည်။ <ph name="BEGIN_LINK1" />ခွင့်ပြုချက်များကို အပ်ဒိတ်လုပ်ပါ<ph name="END_LINK1" />။ တည်နေရာအသုံးပြုခွင့်ကို <ph name="BEGIN_LINK2" />ဤစက်ပစ္စည်းအတွက်လည်း ပိတ်ထားပါသည်<ph name="END_LINK2" />။</translation>
 <translation id="5530766185686772672">လျှို့ဝှက်သုံးတဘ်များပိတ်ပါ</translation>
-<translation id="5530920986376047241">စာမျက်နှာများကို နောက်တစ်ကြိမ်ရှာတွေ့ရန် သင့်ဖတ်ရန်စာရင်းတွင် သိမ်းနိုင်သည်</translation>
 <translation id="5534640966246046842">ဝဘ်ဆိုက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="5548606607480005320">လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">ရုပ်ဖျက်တဘ်တွင် ဖွင့်ရန်</translation>
 <translation id="6000066717592683814">Google ကို ဆက်သုံးရန်</translation>
 <translation id="6005538289190791541">အကြံပြုထားသည့် စကားဝှက်</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> မျက်နှာ ရှိသည်}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> မျက်နှာ ရှိသည်}}</translation>
-<translation id="6014293228235665243">မဖတ်ရသေးသည်များ</translation>
 <translation id="6036057147555329831">အပိုဆောင်း ICU</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
@@ -864,7 +860,6 @@
 <translation id="702463548815491781">TalkBack သို့မဟုတ် 'ခလုတ်အသုံးပြုခွင့်' ဖွင့်ထားသည့်အခါ အကြံပြုသည်</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ကို ပြန်ယူပြီးပြီ</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
-<translation id="7030675613184250187">စာမျက်နှာများကို ပြန်ရှာရန် သို့မဟုတ် အော့ဖ်လိုင်းဖတ်ရန် သင့်ဖတ်ရန်စာရင်းတွင် သိမ်းနိုင်သည်</translation>
 <translation id="7054588988317389591">ပုံရှင်းလင်းချက်များ ရယူမလား။</translation>
 <translation id="7055152154916055070">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်−</translation>
 <translation id="7063006564040364415">စင့်ခ်ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။</translation>

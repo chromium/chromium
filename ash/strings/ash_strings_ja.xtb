@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> が追加されました</translation>
 <translation id="1047017786576569492">画面の一部</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
+<translation id="1052916631016577720">アイテムのスキャン</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">携帯電話: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">アシスタントを読み込んでいます...</translation>
 <translation id="4356930093361201197">ハイ コントラスト モード</translation>
 <translation id="4371348193907997655">キャスト設定</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />、電波強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4379531060876907730">タッチペン ツール</translation>
 <translation id="4389184120735010762">ドッキング拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>
 <translation id="6043994281159824495">ログアウト</translation>
 <translation id="6047696787498798094">別のユーザーに切り替えると画面の共有は解除されます。続行してもよろしいですか？</translation>
+<translation id="6050368268239407309">プレゼンテーション ツール</translation>
 <translation id="6054305421211936131">スマートカードでログイン</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">モバイル デバイスが見つかりませんでした。</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6727969043791803658">接続済み、<ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">管理者によって適用</translation>
 <translation id="6751826523481687655">パフォーマンス追跡機能が有効になっています</translation>
 <translation id="6752912906630585008">デスク <ph name="REMOVED_DESK" /> が削除されデスク <ph name="RECEIVE_DESK" /> に統合されました</translation>

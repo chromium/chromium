@@ -660,6 +660,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6715542151869432661">No se encontraron dispositivos móviles.</translation>
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6727969043791803658">Conectado (batería: <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">El administrador controla la función</translation>
 <translation id="6751826523481687655">Se activó el registro del rendimiento</translation>
 <translation id="6752912906630585008">Se quitó el escritorio <ph name="REMOVED_DESK" /> y se combinó con el <ph name="RECEIVE_DESK" /></translation>

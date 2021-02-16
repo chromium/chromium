@@ -11,6 +11,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1037492556044956303">Pridali ste zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">čiastočná</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
+<translation id="1052916631016577720">Naskenovanie položky</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilné zariadenie: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4351433414020964307">Asistent sa načítava...</translation>
 <translation id="4356930093361201197">režim s vysokým kontrastom</translation>
 <translation id="4371348193907997655">Nastavenia prenosu</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="4378551569595875038">Pripája sa...</translation>
 <translation id="4379531060876907730">Toto sú vaše nástroje pre dotykové pero</translation>
 <translation id="4389184120735010762">Stlačili ste klávesovú skratku ukotvenej lupy. Chcete ju zapnúť?</translation>
@@ -586,6 +588,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6043212731627905357">Tento monitor nie je kompatibilný s vaším zariadením <ph name="DEVICE_TYPE" /> (monitor nie je podporovaný).</translation>
 <translation id="6043994281159824495">Odhlásiť sa</translation>
 <translation id="6047696787498798094">Keď prepnete na iného používateľa, zdieľanie obrazovky sa ukončí. Chcete pokračovať?</translation>
+<translation id="6050368268239407309">Nástroje na prezentáciu</translation>
 <translation id="6054305421211936131">Prihlásiť sa pomocou inteligentnej karty</translation>
 <translation id="6059276912018042191">Nedávne karty Chromu</translation>
 <translation id="6062360702481658777">Odhlásenie prebehne automaticky o <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -659,6 +662,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6715542151869432661">Nenašli sa žiadne mobilné zariadenia.</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="6727969043791803658">Pripojené, <ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Presadzuje váš správca</translation>
 <translation id="6751826523481687655">Trasovanie výkonnosti je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> bola odstránená a zlúčená s plochou <ph name="RECEIVE_DESK" /></translation>

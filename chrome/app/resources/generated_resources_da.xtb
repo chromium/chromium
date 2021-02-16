@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Åbn linket i <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny notifikation}one{# ny notifikation}other{# nye notifikationer}}</translation>
 <translation id="1139343347646843679">Der opstod en fejl under konfigurationen af Linux. Kontakt din administrator.</translation>
+<translation id="1139923033416533844">Hukommelsesforbrug</translation>
 <translation id="1140351953533677694">Få adgang til dine Bluetooth- og serieenheder</translation>
 <translation id="114036956334641753">Lyd og undertekster</translation>
 <translation id="1140746652461896221">Bloker indhold på en hvilken som helst side, du besøger</translation>
@@ -678,6 +679,7 @@
 <translation id="1734212868489994726">Lyseblå</translation>
 <translation id="1734230530703461088">Udvidelserne blev ikke indlæst inden for tidsgrænsen. Kontakt din administrator.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> kan muligvis ikke holdes opdateret af sig selv</translation>
+<translation id="173522743738009831">Om Privacy Sandbox</translation>
 <translation id="173628468822554835">OK. Som standard vil de nye websites, du besøger, ikke sende dig notifikationer.</translation>
 <translation id="1736419249208073774">Mere</translation>
 <translation id="1737968601308870607">Indgiv fejl</translation>
@@ -898,7 +900,6 @@
 <translation id="1975841812214822307">Fjern...</translation>
 <translation id="1976150099241323601">Log ind på sikkerhedsenhed</translation>
 <translation id="1977965994116744507">Flyt din telefon tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
-<translation id="1978006917103730774">Fremtidige software- og sikkerhedsopdateringer installeres automatisk.</translation>
 <translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.</translation>
 <translation id="1979280758666859181">Du er ved at skifte til en kanal med en ældre version af <ph name="PRODUCT_NAME" />. Kanalskiftet træder i kraft, når kanalversionen matcher den version, der i øjeblikket er installeret på din enhed.</translation>
@@ -1001,6 +1002,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
 <translation id="211144231511833662">Ryd typer</translation>
 <translation id="2111670510994270194">Ny fane i højre side</translation>
+<translation id="2111810003053064883">Annoncører kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.</translation>
 <translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2113479184312716848">Åbn &amp;fil...</translation>
 <translation id="2113921862428609753">Adgang til autoritetsoplysninger</translation>
@@ -1030,6 +1032,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2138398485845393913">Forbindelsen til "<ph name="DEVICE_NAME" />" er stadig aktiv</translation>
 <translation id="2139545522194199494">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, opret forbindelse</translation>
 <translation id="2139919072249842737">Knappen Konfigurer</translation>
+<translation id="2140788884185208305">Batteriets tilstand</translation>
 <translation id="214169863967063661">Åbn indstillingerne for udseende</translation>
 <translation id="2142328300403846845">Åbn linket som</translation>
 <translation id="2142582065325732898">Aktivér <ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for at se de seneste Chrome-faner. <ph name="LINK2_BEGIN" />Få flere oplysninger<ph name="LINK2_END" /></translation>
@@ -1544,6 +1547,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2712173769900027643">Spørg om tilladelse</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2714393097308983682">Google Play Butik</translation>
+<translation id="2715640894224696481">anmodningen om sikkerhedsnøgle</translation>
 <translation id="2715751256863167692">Denne opgradering nulstiller din Chromebook og fjerner aktuelle brugerdata.</translation>
 <translation id="2716986496990888774">Denne indstilling administreres af en forælder.</translation>
 <translation id="2718395828230677721">Nattelys</translation>
@@ -2003,6 +2007,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3238192140106069382">Opretter forbindelse og verificerer</translation>
 <translation id="3239373508713281971">Tidsgrænsen blev fjernet for <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Vælg rodmappen for udvidelsen, der skal pakkes. Opdater en udvidelse ved også at vælge den private nøglefil til genbrug.</translation>
+<translation id="3242905690080165035">Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. Indtil videre kan websites afprøve Privacy Sandbox, samtidig med at de anvender aktuelle webteknologier som f.eks. tredjepartscookies. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Lad lyden forblive slået fra</translation>
 <translation id="3246107497225150582">{0,plural, =1{Genstart enheden inden for en dag}one{Genstart enheden inden for # dag}other{Genstart enheden inden for # dage}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – netværksfejl</translation>
@@ -2163,6 +2168,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3428419049384081277">Du er logget ind</translation>
 <translation id="3428747202529429621">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind</translation>
 <translation id="3428800329481094896">Henter SSH-nøgler til Linux-containeren</translation>
+<translation id="3429160811076349561">Prøvefunktioner er slået fra</translation>
 <translation id="3429271624041785769">Sprog for webindhold</translation>
 <translation id="3429275422858276529">Tilføj denne side som bogmærke, så du nemt kan finde den igen</translation>
 <translation id="3432227430032737297">Fjern alle viste</translation>
@@ -3146,6 +3152,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4541662893742891060">Der kunne ikke oprettes forbindelse til denne profil. Kontakt dit mobilselskab for at få teknisk support.</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542520061254486227">Læs dine data på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Annoncører kan se, når tusindvis af brugere har en lignende interesse – ligesom publikummet til en koncert – og udvælge annoncer til gruppen af brugere frem for til en enkelt bruger.</translation>
 <translation id="4543778593405494224">Certifikatadministrator</translation>
 <translation id="4544174279960331769">Blå standardavatar</translation>
 <translation id="4545028762441890696">Acceptér de nye tilladelser for at aktivere den igen:</translation>
@@ -3194,6 +3201,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4582563038311694664">Nulstil alle indstillinger</translation>
 <translation id="4585793705637313973">Rediger side</translation>
 <translation id="4586275095964870617"><ph name="URL" /> kunne ikke åbnes i en alternativ browser. Kontakt din systemadministrator.</translation>
+<translation id="4587645918878093912">Websites er i dag afhængige af mange teknologier som f.eks. tredjepartscookies til at levere vigtige tjenester såsom visning af relevante annoncer og måling af effektiviteten på et website.</translation>
 <translation id="4589713469967853491">Logs blev skrevet til mappen Downloads.</translation>
 <translation id="4590324241397107707">Lagring i database</translation>
 <translation id="4592891116925567110">App til tegning med styluspen</translation>
@@ -4214,7 +4222,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5798301976526354562">Tekststørrelse (gælder også for Livetekstning)</translation>
 <translation id="579907812742603813">beskyttet indhold</translation>
 <translation id="579915268381781820">Din sikkerhedsnøgle blev fjernet.</translation>
-<translation id="5799478978078236781">Få tips, tilbud og opdateringer i forbindelse med <ph name="DEVICE_TYPE" />, og giv feedback.</translation>
+<translation id="5799478978078236781">Få tips, tilbud og opdateringer vedrørende <ph name="DEVICE_TYPE" />, og giv feedback.</translation>
 <translation id="5799508265798272974">Virtuel Linux-maskine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Destinationsfilen er blevet forkortet eller fjernet siden sidste download.</translation>
 <translation id="5801568494490449797">Præferencer</translation>
@@ -4337,7 +4345,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5941343993301164315">Log ind på <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5942779427914696408">Enhedens synlighed</translation>
-<translation id="5942964813783878922">Din <ph name="DEVICE_TYPE" /> genstarter efter denne opdatering. Fremtidige software- og sikkerhedsopdateringer installeres automatisk.</translation>
 <translation id="5944869793365969636">Scan QR-kode</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Filen kan ikke parses</translation>
@@ -4621,6 +4628,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6271348838875430303">rettelsen blev fortrudt</translation>
 <translation id="6272643420381259437">Der opstod en fejl (<ph name="ERROR" />) under download af pluginnet</translation>
 <translation id="6273677812470008672">Kvalitet</translation>
+<translation id="6275846828483490454">Privacy Sandbox er et igangværende initiativ, der hjælper med at bevare det åbne net og beskytte dig mod sporingsmekanismer.</translation>
 <translation id="6276210637549544171">Proxyserveren <ph name="PROXY_SERVER" /> kræver et brugernavn og en adgangskode.</translation>
 <translation id="6277105963844135994">Netværkstimeout</translation>
 <translation id="6277518330158259200">T&amp;ag screenshot</translation>
@@ -5275,6 +5283,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7018275672629230621">Læs og rediger din browserhistorik</translation>
 <translation id="7019805045859631636">Hurtig</translation>
 <translation id="7022562585984256452">Din startside er blevet konfigureret.</translation>
+<translation id="7023206482239788111">Privacy Sandbox holder det åbne net kørende ved at udvikle bedre metoder til at udføre disse tjenester – uden at forringe websitene eller udsætte dig for skjult sporing på tværs af nettet.</translation>
 <translation id="7025082428878635038">En ny måde at navigere på ved hjælp af bevægelser</translation>
 <translation id="7025190659207909717">Administration af mobildatatjeneste</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Åbn alle i &amp;inkognitovindue}=1{Åbn i &amp;inkognitovindue}one{Åbn ({COUNT}) i &amp;inkognitovindue}other{Åbn alle ({COUNT}) i &amp;inkognitovindue}}</translation>
@@ -5453,6 +5462,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7234010996000898150">Annullerer Linux-gendannelse</translation>
 <translation id="7235716375204803342">Henter aktiviteter...</translation>
 <translation id="7235737137505019098">Din sikkerhedsnøgle har ikke nok plads til flere konti.</translation>
+<translation id="7238640585329759787">Når Privacy Sandbox er aktiveret, kan websites levere deres indhold og tjenester via den teknologi til beskyttelse af personlige oplysninger, som vises her. Denne teknologi omfatter alternative metoder til sporing på tværs af websites. Der kan blive tilføjet flere prøveperioder over tid.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, oplysninger</translation>
 <translation id="7240339475467890413">Vil du oprette forbindelse til et nyt hotspot?</translation>
 <translation id="7241389281993241388">Log ind på <ph name="TOKEN_NAME" /> for at importere klientcertifikatet.</translation>
@@ -6112,6 +6122,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7968833647796919681">Aktivér registrering af data om ydeevne</translation>
 <translation id="7968982339740310781">Se info</translation>
 <translation id="7969046989155602842">Kommando</translation>
+<translation id="7970618607181090249">En touchskærm blev registreret</translation>
 <translation id="7970673414865679092">Info om Ethernet</translation>
 <translation id="7970882136539140748">Kortet kan ikke gemmes lige nu</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
@@ -6550,6 +6561,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8480082892550707549">Selvom du tidligere har downloadet filer fra dette website, kan det stadig være midlertidigt usikkert (hacket). Prøv at downloade denne fil på et senere tidspunkt.</translation>
 <translation id="8480869669560681089">Ukendt enhed fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekræft USB-tilladelse</translation>
+<translation id="8481980314595922412">Prøvefunktioner er slået til</translation>
 <translation id="8487678622945914333">Zoom ind</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på din konto</translation>
 <translation id="8490896350101740396">Følgende terminalapps "<ph name="UPDATED_APPS" />" er opdateret. Genstart din enhed for at fuldføre opdateringsprocessen.</translation>
@@ -7061,6 +7073,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9031549947500880805">Sikkerhedskopiér i Google Drev. Gendan nemt dine data, eller skift enhed når som helst. Din backup omfatter appdata.</translation>
 <translation id="9033765790910064284">Fortsæt alligevel</translation>
 <translation id="9033857511263905942">&amp;Indsæt</translation>
+<translation id="903386633044383289">Opret forbindelse til enheder</translation>
 <translation id="9037818663270399707">Din forbindelse er ikke privat for al netværkstrafik</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Du har ét forsøg tilbage.}one{Du har # forsøg tilbage.}other{Du har # forsøg tilbage.}}</translation>
@@ -7193,6 +7206,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9180281769944411366">Denne proces kan tage et par minutter. Linux-containeren startes.</translation>
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
+<translation id="9185818139207739329">Aktivér prøveperioder til Privacy Sandbox</translation>
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9188732951356337132">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Brug din Android-telefon som sikkerhedsnøgle</translation>

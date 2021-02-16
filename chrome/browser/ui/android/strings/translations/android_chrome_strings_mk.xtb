@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> сака да се спари</translation>
 <translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
 <translation id="2002537628803770967">Кредитни картички и адреси преку Google Pay</translation>
-<translation id="2010780124464321179">Не може да се создаде линк до текстот. Споделете го линкот до страницата.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="2017836877785168846">Ги брише историјата и автоматските довршувања во лентата за адреси.</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">Пренасочувањето е блокирано.</translation>
 <translation id="5527082711130173040">На Chrome му треба пристап до локацијата за да скенира уреди. <ph name="BEGIN_LINK1" />Ажурирајте ги дозволите<ph name="END_LINK1" />. Пристапот до локацијата е исто така <ph name="BEGIN_LINK2" />исклучен за овој уред<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Затвори инкогнито-картички</translation>
-<translation id="5530920986376047241">Може да зачувувате страници во списокот за читање за да ги наоѓате повторно</translation>
 <translation id="5534640966246046842">Сајтот е копиран</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">Отвори картичка „Инкогнито“</translation>
 <translation id="6000066717592683814">Задржи го Google</translation>
 <translation id="6005538289190791541">Предложена лозинка</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> страница}one{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страници}}</translation>
-<translation id="6014293228235665243">Непрочитано</translation>
 <translation id="6036057147555329831">Дополнителен ICU</translation>
 <translation id="6039379616847168523">Скокнете на следната картичка</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
 <translation id="7029809446516969842">Лозинки</translation>
-<translation id="7030675613184250187">Може да зачувувате страници во списокот за читање за да ги наоѓате повторно или да ги читате офлајн</translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>

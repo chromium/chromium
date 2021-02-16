@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> želi opraviti seznanitev</translation>
 <translation id="2000419248597011803">Pošilja nekatere piškotke in iskanja iz naslovne vrstice ter iskalnega polja privzetemu iskalniku</translation>
 <translation id="2002537628803770967">Kreditne kartice in naslovi z Googlom Pay</translation>
-<translation id="2010780124464321179">Povezave do besedila ni mogoče ustvariti. Delite z drugimi povezavo do strani.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="2017836877785168846">Izbriše zgodovino in samodokončanja v naslovni vrstici.</translation>
 <translation id="2021896219286479412">Kontrol. za mesto v celo. načinu</translation>
@@ -625,7 +624,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5524843473235508879">Preusmeritev je bila blokirana.</translation>
 <translation id="5527082711130173040">Chrome za iskanje naprav potrebuje dostop do lokacije. <ph name="BEGIN_LINK1" />Posodobite dovoljenja<ph name="END_LINK1" />. Dostop do lokacije je prav tako <ph name="BEGIN_LINK2" />izklopljen za to napravo<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zapri zavih. brez bel. zgo.</translation>
-<translation id="5530920986376047241">Strani lahko shranite na seznam za branje, če jih želite poiskati znova.</translation>
 <translation id="5534640966246046842">Spletno mesto kopirano</translation>
 <translation id="5548606607480005320">Varnostno preverjanje</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
@@ -707,8 +705,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5982307838673692400">Odpiranje zavihka brez beleženja dejavnosti</translation>
 <translation id="6000066717592683814">Ohrani Google</translation>
 <translation id="6005538289190791541">Predlagano geslo</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stran}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stran}two{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strani}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strani}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strani}}</translation>
-<translation id="6014293228235665243">Neprebrano</translation>
 <translation id="6036057147555329831">Dodatni modul ICU</translation>
 <translation id="6039379616847168523">Premik na naslednji zavihek</translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -865,7 +861,6 @@ Podatki seje brez beleženja dejavnosti se iz Chroma izbrišejo šele, ko <ph na
 <translation id="702463548815491781">Priporočljivo, ko je vklopljena aplikacija TalkBack ali funkcija dostopa s stikalom</translation>
 <translation id="7027549951530753705">Obnovljeno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Gesla</translation>
-<translation id="7030675613184250187">Strani lahko shranite na seznam za branje, če jih želite poiskati znova ali brati brez povezave.</translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>

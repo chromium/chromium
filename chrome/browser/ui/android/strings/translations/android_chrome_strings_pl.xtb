@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> chce się sparować</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="2002537628803770967">Karty kredytowe i adresy z Google Pay</translation>
-<translation id="2010780124464321179">Nie udało się utworzyć linku do tekstu. Udostępnij link do strony.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="2017836877785168846">Usuwa historię i wpisy autouzupełniania w pasku adresu.</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
@@ -625,7 +624,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
 <translation id="5527082711130173040">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. <ph name="BEGIN_LINK1" />Zwiększ uprawnienia<ph name="END_LINK1" />. Dostęp do lokalizacji jest <ph name="BEGIN_LINK2" />wyłączony na tym urządzeniu<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zamknij karty incognito</translation>
-<translation id="5530920986376047241">Na liście Do przeczytania możesz zapisywać strony, do których chcesz wrócić później</translation>
 <translation id="5534640966246046842">Strona została skopiowana</translation>
 <translation id="5548606607480005320">Potwierdzenie bezpieczeństwa</translation>
 <translation id="5556459405103347317">Odśwież</translation>
@@ -707,8 +705,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5982307838673692400">Otwórz kartę w trybie incognito</translation>
 <translation id="6000066717592683814">Zachowaj Google</translation>
 <translation id="6005538289190791541">Proponowane hasło</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stronę}few{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strony}many{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stron}other{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strony}}</translation>
-<translation id="6014293228235665243">Nieprzeczytane</translation>
 <translation id="6036057147555329831">Dodatkowy moduł ICU</translation>
 <translation id="6039379616847168523">Przejdź do następnej karty</translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -865,7 +861,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7027549951530753705">Przywrócono: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Hasła</translation>
-<translation id="7030675613184250187">Na liście Do przeczytania możesz zapisywać strony, które chcesz przeczytać ponownie lub do których chcesz mieć dostęp offline</translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
 <translation id="7063006564040364415">Nie udało się nawiązać połączenia z serwerem synchronizacji.</translation>

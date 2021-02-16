@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> युग्मित करना चाहता है</translation>
 <translation id="2000419248597011803">'पता बार' और 'खोज बॉक्स' की कुछ कुकी और खोजों को आपके डिफ़ॉल्ट खोज इंजन पर भेजा जाता है</translation>
 <translation id="2002537628803770967">Google Pay का इस्तेमाल करने वाले क्रेडिट कार्ड और पते</translation>
-<translation id="2010780124464321179">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता. पेज का लिंक शेयर करें.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फ़ाइल}one{# फ़ाइलें}other{# फ़ाइलें}}</translation>
 <translation id="2017836877785168846">इतिहास साफ़ करता है और पता बार मेंअपने-आपपूर्णता को साफ़ करता है.</translation>
 <translation id="2021896219286479412">पूरी स्क्रीन के साइट नियंत्रण</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">रीडायरेक्ट ब्लॉक किया गया.</translation>
 <translation id="5527082711130173040">डिवाइस स्कैन करने के लिए Chrome को जगह की जानकारी का एक्सेस की ज़रूरत होती है. <ph name="BEGIN_LINK1" />अनुमतियां अपडेट करें<ph name="END_LINK1" />. जगह की जानकारी का एक्सेस <ph name="BEGIN_LINK2" />इस डिवाइस के लिए भी बंद<ph name="END_LINK2" /> है.</translation>
 <translation id="5530766185686772672">गुप्त टैब बंद करें</translation>
-<translation id="5530920986376047241">आप पेजों को अपनी 'पढ़ने की सूची' में सेव कर सकते हैं, ताकि उन्हें बाद में पढ़ सकें</translation>
 <translation id="5534640966246046842">साइट की कॉपी की गई</translation>
 <translation id="5548606607480005320">सुरक्षा जांच</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">गुप्त टैब खोलें</translation>
 <translation id="6000066717592683814">Google को डिफ़ॉल्ट बनाए रखें</translation>
 <translation id="6005538289190791541">सुझाया गया पासवर्ड</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
-<translation id="6014293228235665243">नहीं पढ़ा गया</translation>
 <translation id="6036057147555329831">कुछ और ICU</translation>
 <translation id="6039379616847168523">सीधे अगले टैब पर जाएं</translation>
 <translation id="6040143037577758943">बंद करें</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'टॉकबैक' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
-<translation id="7030675613184250187">आप पेजों को, पढ़ने की चीज़ों की सूची में सेव कर सकते हैं, ताकि आप उन्हें आसानी से दोबारा खोज सकें या उन्हें ऑफ़लाइन पढ़ सकें</translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
 <translation id="7063006564040364415">समन्‍वयन सर्वर से कनेक्‍ट नहीं किया जा सका.</translation>

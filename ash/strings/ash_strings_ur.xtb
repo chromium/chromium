@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> کو شامل کیا گیا</translation>
 <translation id="1047017786576569492">جزوی</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
+<translation id="1052916631016577720">آئٹم اسکین کریں</translation>
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">سیلولر: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">اسسٹنٹ لوڈ ہو رہا ہے...</translation>
 <translation id="4356930093361201197">اعلی تناسب امتزاج وضع</translation>
 <translation id="4371348193907997655">کاسٹ کی ترتیبات</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /> فیصد</translation>
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4379531060876907730">یہ آپ کے اسٹائلس ٹولز ہیں</translation>
 <translation id="4389184120735010762">آپ نے ڈاک کردہ مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">یہ مانیٹر آپ کے <ph name="DEVICE_TYPE" /> کے ساتھ ٹھیک طرح سے کام نہیں کر رہا (مانیٹر تعاون یافتہ نہیں ہے)۔</translation>
 <translation id="6043994281159824495">ابھی سائن آؤٹ کریں</translation>
 <translation id="6047696787498798094">جب آپ کسی دوسرے صارف پر سوئچ کریں گے تو اسکرین کا اشتراک رک جائے گا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
+<translation id="6050368268239407309">پیشکش کے ٹولز</translation>
 <translation id="6054305421211936131">اپنے اسمارٹ کارڈ سے سائن ان کریں</translation>
 <translation id="6059276912018042191">‏حالیہ Chrome ٹیبز</translation>
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">کوئی موبائل آلہ نہیں ملا۔</translation>
 <translation id="6723839937902243910">پاور</translation>
 <translation id="6727969043791803658">منسلک ہے، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">آپ کے منتظم کے ذریعے نافذ کیا گیا</translation>
 <translation id="6751826523481687655">کارکردگی کا پتا لگانا آن ہے</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ڈیسک ہٹا دیے گئے اور <ph name="RECEIVE_DESK" /> ڈیسک کے ساتھ ضم ہو گئے</translation>

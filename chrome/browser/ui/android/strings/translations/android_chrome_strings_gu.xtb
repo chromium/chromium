@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" />, જોડી કરવા માગે છે</translation>
 <translation id="2000419248597011803">ઍડ્રેસ બાર અને શોધ બૉક્સમાંથી કેટલીક કુકી અને શોધને તમારા ડિફૉલ્ટ શોધ એંજિન પર મોકલે છે</translation>
 <translation id="2002537628803770967">Google Payનો ઉપયોગ કરતા ક્રેડિટ કાર્ડ અને સરનામાં</translation>
-<translation id="2010780124464321179">આ ટેક્સ્ટની લિંક બનાવી શકાતી નથી. પેજની લિંક શેર કરો.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ફાઇલ}one{# ફાઇલો}other{# ફાઇલો}}</translation>
 <translation id="2017836877785168846">ઍડ્રેસ બારમાં ઇતિહાસ અને સ્વતઃપૂર્ણ કરવું સાફ કરો.</translation>
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">રીડાયરેક્ટ કરવાનું અવરોધિત.</translation>
 <translation id="5527082711130173040">ઉપકરણો માટે સ્કેન કરવા Chrome ને સ્થાન ઍક્સેસની જરૂર છે. <ph name="BEGIN_LINK1" />પરવાનગીઓ અપડેટ કરો<ph name="END_LINK1" />. સ્થાન ઍક્સેસ પણ <ph name="BEGIN_LINK2" />આ ઉપકરણ માટે બંધ કરેલ છે<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">છુપા ટેબ્સ બંધ કરો</translation>
-<translation id="5530920986376047241">તમે તમારી વાંચન સૂચિમાં પેજ સાચવી શકો છો, જેથી તે ફરીથી મેળવી શકાય</translation>
 <translation id="5534640966246046842">સાઇટ કૉપિ કરી</translation>
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
 <translation id="5556459405103347317">ફરિથી લોડ કરો</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">છૂપી ટૅબમાં ખોલો</translation>
 <translation id="6000066717592683814">Google રાખો</translation>
 <translation id="6005538289190791541">સૂચવેલ પાસવર્ડ</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{તમારી પાસે <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> પેજ છે}one{તમારી પાસે <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> પેજ છે}other{તમારી પાસે <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> પેજ છે}}</translation>
-<translation id="6014293228235665243">વાંચ્યા વગરના</translation>
 <translation id="6036057147555329831">અતિરિક્ત ICU</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">જ્યારે ટૉકબૅક અથવા સ્વિચ ઍક્સેસ ચાલુ હોય ત્યારે આપેલ સુઝાવ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> રિસ્ટોર કર્યું</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
-<translation id="7030675613184250187">તમે પેજને ફરીથી શોધવા અથવા ઑફલાઇન વાંચવા માટે તેને તમારી વાંચન સૂચિમાં સાચવી શકો છો</translation>
 <translation id="7054588988317389591">છબીના વર્ણનો મેળવીએ?</translation>
 <translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
 <translation id="7063006564040364415">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>

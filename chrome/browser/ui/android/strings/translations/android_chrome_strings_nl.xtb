@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> wil koppelen</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
 <translation id="2002537628803770967">Creditcards en adressen die Google Pay gebruiken</translation>
-<translation id="2010780124464321179">Kan geen link naar tekst maken. Deel link met pagina.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# bestand}other{# bestanden}}</translation>
 <translation id="2017836877785168846">Wist de geschiedenis en automatische aanvullingen in de adresbalk.</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
@@ -625,7 +624,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5524843473235508879">Omleiding geblokkeerd.</translation>
 <translation id="5527082711130173040">Chrome heeft locatietoegang nodig om naar apparaten te scannen. <ph name="BEGIN_LINK1" />Rechten updaten<ph name="END_LINK1" />. Locatietoegang is ook <ph name="BEGIN_LINK2" />uitgeschakeld voor dit apparaat<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Incognitotabbladen sluiten</translation>
-<translation id="5530920986376047241">Je kunt pagina's opslaan in je leeslijst zodat je ze later kunt terugvinden</translation>
 <translation id="5534640966246046842">Site gekopieerd</translation>
 <translation id="5548606607480005320">Veiligheidscheck</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
@@ -707,8 +705,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5982307838673692400">Incognitotabblad openen</translation>
 <translation id="6000066717592683814">Google blijven gebruiken</translation>
 <translation id="6005538289190791541">Voorgesteld wachtwoord</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Je hebt <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagina}other{Je hebt <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagina's}}</translation>
-<translation id="6014293228235665243">Ongelezen</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Naar het volgende tabblad gaan</translation>
 <translation id="6040143037577758943">Sluiten</translation>
@@ -865,7 +861,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="702463548815491781">Aanbevolen wanneer TalkBack of 'Toegang via schakelaar' is ingeschakeld</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> is hersteld</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
-<translation id="7030675613184250187">Je kunt pagina's opslaan in je leeslijst zodat je ze later kunt terugvinden of offline kunt lezen</translation>
 <translation id="7054588988317389591">Afbeeldingsbeschrijvingen ophalen?</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7063006564040364415">Kan geen verbinding maken met synchronisatieserver.</translation>

@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> želi da se upari</translation>
 <translation id="2000419248597011803">Podrazumevanom pretraživaču šalje neke kolačiće i pretrage iz trake za adresu i okvira za pretragu</translation>
 <translation id="2002537628803770967">Kreditne kartice i adrese iz Google Pay-a</translation>
-<translation id="2010780124464321179">Pravljenje linka do teksta nije uspelo. Delite link do stranice.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="2017836877785168846">Briše istoriju i automatska dovršavanja u traci za adresu.</translation>
 <translation id="2021896219286479412">Kontrole sajta na celom ekranu</translation>
@@ -625,7 +624,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
 <translation id="5527082711130173040">Chrome-u je potreban pristup lokaciji da bi tražio uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dozvole<ph name="END_LINK1" />. Pristup lokaciji je takođe <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zatvori kartice bez arhiv.</translation>
-<translation id="5530920986376047241">Možete da čuvate stranice na listi za čitanje da biste ih ponovo pronašli</translation>
 <translation id="5534640966246046842">Sajt je kopiran</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
@@ -707,8 +705,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5982307838673692400">Otvori karticu bez arhiviranja</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stranicu}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranicu}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranice}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranica}}</translation>
-<translation id="6014293228235665243">Nepročitano</translation>
 <translation id="6036057147555329831">Dodatni ICU modul</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -865,7 +861,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="702463548815491781">Preporučujemo vam kada uključite TalkBack ili pristup pomoću prekidača</translation>
 <translation id="7027549951530753705">Vraćena je stavka <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Lozinke</translation>
-<translation id="7030675613184250187">Možete da sačuvate stranice na listi za čitanje da biste ih ponovo pronašli ili čitali oflajn</translation>
 <translation id="7054588988317389591">Želite da dobijate opise slika?</translation>
 <translation id="7055152154916055070">Blokirano je preusmeravanje:</translation>
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>

@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> vill kopplas</translation>
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
 <translation id="2002537628803770967">Kreditkort och adresser som används med Google Pay</translation>
-<translation id="2010780124464321179">Det gick inte att länka till text. Dela en länk till sidan.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2017836877785168846">Rensar historik och autoslutföranden i adressfältet.</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
@@ -625,7 +624,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5524843473235508879">Omdirigeringen blockerades.</translation>
 <translation id="5527082711130173040">Chrome behöver tillgång till platsinformation för att kunna söka efter enheter. <ph name="BEGIN_LINK1" />Uppdatera behörigheter<ph name="END_LINK1" />. Platsåtkomst är dessutom <ph name="BEGIN_LINK2" />inaktiverat för enheten<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Stäng inkognitoflikar</translation>
-<translation id="5530920986376047241">Du kan spara sidor i läslistan så att du kan hitta dem igen</translation>
 <translation id="5534640966246046842">Webbplatsen har kopierats</translation>
 <translation id="5548606607480005320">Säkerhetskontroll</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
@@ -707,8 +705,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5982307838673692400">Öppna en inkognitoflik</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Det finns <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> sida i listan}other{Det finns <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sidor i listan}}</translation>
-<translation id="6014293228235665243">Olästa</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -865,7 +861,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
 <translation id="7029809446516969842">Lösenord</translation>
-<translation id="7030675613184250187">Du kan spara sidor i läslistan så att du kan hitta dem igen eller läsa dem offline</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
 <translation id="7063006564040364415">Det gick inte att ansluta till synkroniseringsservern.</translation>

@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Mga tinatanggap na card</translation>
 <translation id="1021753677514347426">Nangyayari ang problemang ito dahil sa isang certificate na na-install mo o ng ibang tao sa iyong device. Kilala ang certificate sa pagsubaybay at pag-intercept ng mga network, at hindi ito pinagkakatiwalaan ng Chromium. Bagama't mayroong mga lehitimong kaso ng pagsubaybay, gaya sa network sa paaralan o kumpanya, gustong tiyakin ng Chromium na alam mong nangyayari ito, kahit na hindi mo ito mapipigilan. Posibleng mangyari ang pagsubaybay sa anumang browser o application na nag-a-access ng web.</translation>
 <translation id="1024111578869940408">Kung minsan, ginagaya ng mga attacker ang mga site sa pamamagitan ng paggawa ng mga mahirap makitang pagbabago sa address sa web.</translation>
+<translation id="1028781062521375153">Tingnan ang mga detalye</translation>
 <translation id="1030706264415084469">Gusto ng <ph name="URL" /> na permanenteng mag-store ng malaking data sa iyong device</translation>
 <translation id="1032854598605920125">I-rotate pakanan</translation>
 <translation id="1036348656032585052">I-off</translation>
@@ -146,6 +147,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1462951478840426066">Gamitin ang mga font sa iyong computer para makagawa ka ng lubos na tumpak na content</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="EMBEDDED_ORIGIN" /> para makapagpatuloy sa <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Magpakita ng higit pa</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1640180200866533862">Mga patakaran ng user</translation>
 <translation id="1640244768702815859">Subukang <ph name="BEGIN_LINK" />bisitahin ang homepage ng site<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Iantala ang output hanggang</translation>
+<translation id="164212631332220697">Magbayad gamit ang <ph name="CARD_DETAIL" /> sa pag-checkout.</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1645368109819982629">Hindi sinusuportahang protocol</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4879725228911483934">Magbukas at maglagay ng mga window sa iyong mga screen</translation>
 <translation id="4880827082731008257">History ng paghahanap</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="4885256590493466218">Magbayad gamit ang <ph name="CARD_DETAIL" /> sa pag-checkout</translation>
 <translation id="4889420713887366944">Button na Magbukas ng Incognito Window, pindutin ang Enter para magbukas ng bagong Incognito window para makapag-browse nang pribado</translation>
 <translation id="4892518386797173871">Likod</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@ Mga karagdagang detalye:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">I-bookmark ang tab na ito</translation>
 <translation id="8751426954251315517">Pakisubukang muli sa susunod</translation>
+<translation id="8757526089434340176">Available ang alok ng Google Pay</translation>
 <translation id="8759274551635299824">Nag-expire na ang card na ito</translation>
 <translation id="87601671197631245">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password, mensahe, o credit card) kapag ipinadala ito sa site na ito.</translation>
 <translation id="8761567432415473239">Ang Google Safe Browsing ay may <ph name="BEGIN_LINK" />natagpuang mga nakakasirang program<ph name="END_LINK" /> sa <ph name="SITE" /> kamakailan.</translation>

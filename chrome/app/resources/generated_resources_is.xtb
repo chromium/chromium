@@ -898,7 +898,6 @@
 <translation id="1975841812214822307">Fjarlægja...</translation>
 <translation id="1976150099241323601">Innskráning á öryggistæki</translation>
 <translation id="1977965994116744507">Færðu símann nær til að taka <ph name="DEVICE_TYPE" /> úr lás.</translation>
-<translation id="1978006917103730774">Nýjar hugbúnaðar- og öryggisuppfærslur verða settar upp sjálfkrafa.</translation>
 <translation id="1978057560491495741">Fjarlægja heimilisfang</translation>
 <translation id="1979095679518582070">Þótt slökkt sé á þessum eiginleika hefur það ekki áhrif á getu þessa tækis til að senda mikilvægar upplýsingar fyrir nauðsynlega þjónustu á borð við kerfisuppfærslur og öryggisþjónustu.</translation>
 <translation id="1979280758666859181">Þú ert að skipta yfir á rás með eldri útgáfu af <ph name="PRODUCT_NAME" />. Rásabreytingin öðlast gildi þegar rásarútgáfan samsvarar útgáfunni sem uppsett er í tækni þínu núna.</translation>
@@ -4337,7 +4336,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5941343993301164315">Skráðu þig inn á <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5942779427914696408">Sýnileiki tækis</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> endurræsist eftir þessa uppfærslu. Nýjar hugbúnaðar- og öryggisuppfærslur verða settar upp sjálfkrafa.</translation>
 <translation id="5944869793365969636">Skanna QR-kóða</translation>
 <translation id="5946591249682680882">Auðkenni tilkynningar <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Ekki er hægt að þátta skrá</translation>

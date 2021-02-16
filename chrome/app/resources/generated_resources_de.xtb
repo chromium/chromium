@@ -894,7 +894,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
 <translation id="1977965994116744507">Verringern Sie den Abstand zwischen Smartphone und <ph name="DEVICE_TYPE" />, um das Gerät zu entsperren.</translation>
-<translation id="1978006917103730774">Künftige Software- und Sicherheitsupdates werden automatisch installiert.</translation>
 <translation id="1978057560491495741">Adresse entfernen</translation>
 <translation id="1979095679518582070">Wenn Sie diese Funktion deaktivieren, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
 <translation id="1979280758666859181">Sie möchten zu einem Kanal mit einer älteren Version von <ph name="PRODUCT_NAME" /> wechseln. Die Änderung erfolgt, sobald die Kanalversion der aktuell auf Ihrem Gerät installierten Version entspricht.</translation>
@@ -4332,7 +4331,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5941343993301164315">Melden Sie sich in <ph name="TOKEN_NAME" /> an.</translation>
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5942779427914696408">Gerätesichtbarkeit</translation>
-<translation id="5942964813783878922">Ihr <ph name="DEVICE_TYPE" /> wird nach diesem Update neu gestartet. Künftige Software- und Sicherheitsupdates werden automatisch installiert.</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
 <translation id="5946591249682680882">Bericht-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Datei kann nicht geparst werden</translation>

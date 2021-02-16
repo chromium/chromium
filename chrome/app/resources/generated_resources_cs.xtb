@@ -899,7 +899,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1975841812214822307">Odebrat...</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
 <translation id="1977965994116744507">Chcete-li odemknout své zařízení <ph name="DEVICE_TYPE" />, umístěte telefon blíže k němu.</translation>
-<translation id="1978006917103730774">Budoucí aktualizace softwaru a zabezpečení se nainstalují automaticky.</translation>
 <translation id="1978057560491495741">Odstranění adresy</translation>
 <translation id="1979095679518582070">Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.</translation>
 <translation id="1979280758666859181">Přepínáte na kanál s nižší verzí <ph name="PRODUCT_NAME" />. Změna kanálu bude použita, až bude verze v nově zvoleném kanálu odpovídat verzi nainstalované v zařízení.</translation>
@@ -4336,7 +4335,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5941343993301164315">Přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
 <translation id="5942779427914696408">Viditelnost zařízení</translation>
-<translation id="5942964813783878922">Po této aktualizaci se zařízení <ph name="DEVICE_TYPE" /> restartuje. Budoucí aktualizace softwaru a zabezpečení se nainstalují automaticky.</translation>
 <translation id="5944869793365969636">Naskenovat QR kód</translation>
 <translation id="5946591249682680882">ID hlášení <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Soubor nelze analyzovat</translation>

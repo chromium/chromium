@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">Мобилдик түзмөктөр табылган жок.</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6727969043791803658">Туташып турат, батареянын деңгээли – <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">дагы <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Администраторуңуз ишке киргизди</translation>
 <translation id="6751826523481687655">Майнаптуулукка көз салуу күйгүзүлгөн</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> иш тактасы өчүрүлдү жана <ph name="RECEIVE_DESK" /> иш тактасы менен бириктирилди</translation>

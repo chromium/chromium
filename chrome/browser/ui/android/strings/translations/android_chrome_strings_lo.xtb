@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> ຕ້ອງການຈັບຄູ່</translation>
 <translation id="2000419248597011803">ສົ່ງບາງຄຸກກີ້ ແລະ ການຊອກຫາຈາກແຖບທີ່ຢູ່ ແລະ ກ່ອງຊອກຫາໄປໃຫ້ໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="2002537628803770967">ບັດເຄຣດິດ ແລະ ທີ່ຢູ່ທີ່ໃຊ້ Google Pay</translation>
-<translation id="2010780124464321179">ບໍ່ສາມາດສ້າງລິ້ງຫາຂໍ້ຄວາມໄດ້. ແບ່ງປັນລິ້ງຫາໜ້າ.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="2017836877785168846">ລຶບລ້າງປະຫວັດ ແລະ ການເຮັດສຳເລັດອັດຕະໂນມັດໃນແຖບທີ່ຢູ່.</translation>
 <translation id="2021896219286479412">ການຄວບຄຸມເວັບໄຊແບບເຕັມຈໍ</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ.</translation>
 <translation id="5527082711130173040">Chrome ຈຳເປັນຕ້ອງເຂົ້າເຖິງສະຖານທີ່ເພື່ອສະແກນຫາອຸປະກອນ. ກະລຸນາ <ph name="BEGIN_LINK1" />ອັບເດດການອະນຸຍາດ<ph name="END_LINK1" />. ນອກນັ້ນ, ການເຂົ້າເຖິງສະຖານທີ່ແມ່ນ <ph name="BEGIN_LINK2" />ປິດຢູ່ສຳລັບອຸປະກອນນີ້<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">ປິດແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
-<translation id="5530920986376047241">ທ່ານສາມາດບັນທຶກໜ້າໄວ້ໃນລາຍການທີ່ຈະອ່ານຂອງທ່ານເພື່ອຊອກເຫັນພວກມັນໄດ້ອີກ</translation>
 <translation id="5534640966246046842">ສຳເນົາເວັບໄຊແລ້ວ</translation>
 <translation id="5548606607480005320">ການກວດສອບຄວາມປອດໄພ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">ເປີດແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6000066717592683814">ດຳເນີນການໃຊ້ Google</translation>
 <translation id="6005538289190791541">ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ທ່ານມີ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ໜ້າ}other{ທ່ານມີ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ໜ້າ}}</translation>
-<translation id="6014293228235665243">ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="6036057147555329831">ICU ເພີ່ມເຕີມ</translation>
 <translation id="6039379616847168523">ໂດດໄປຫາແຖບຕໍ່ໄປ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">ແນະນຳເມື່ອ TalkBack ຫຼື ການເຂົ້າເຖິງດ້ວຍປຸ່ມເປີດຢູ່</translation>
 <translation id="7027549951530753705">ກູ້ຂໍ້ມູນເມື່ອ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
-<translation id="7030675613184250187">ທ່ານສາມາດບັນທຶກໜ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານເພື່ອຊອກເຫັນພວກມັນອີກຄັ້ງ ຫຼື ອ່ານແບບອອບລາຍໄດ້</translation>
 <translation id="7054588988317389591">ຮັບຄຳອະທິບາຍຮູບບໍ?</translation>
 <translation id="7055152154916055070">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ:</translation>
 <translation id="7063006564040364415">ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ເຊີບເວີຊິງຄ໌ໄດ້​.</translation>

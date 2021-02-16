@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> దీనితో జత చేయాలనుకుంటోంది</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="2002537628803770967">Google Pay ఉపయోగిస్తున్న క్రెడిట్ కార్డ్‌లు,చిరునామాలు</translation>
-<translation id="2010780124464321179">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు. పేజీకి లింక్‌ను షేర్ చేయండి.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైల్‌లు}}</translation>
 <translation id="2017836877785168846">చిరునామా బార్‌లో చరిత్రను మరియు స్వీయ పూరణలను క్లియర్ చేస్తుంది.</translation>
 <translation id="2021896219286479412">పూర్తి స్క్రీన్ సైట్ నియంత్రణలు</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">మళ్లింపు బ్లాక్ చేయబడింది.</translation>
 <translation id="5527082711130173040">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. <ph name="BEGIN_LINK1" />అనుమతులను అప్‌డేట్ చేయండి<ph name="END_LINK1" />. అలాగే స్థాన యాక్సెస్ <ph name="BEGIN_LINK2" />ఈ పరికరానికి ఆఫ్ చేయబడింది<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">అజ్ఞాత ట్యాబ్‌లను మూసివేయి</translation>
-<translation id="5530920986376047241">పేజీలను తిరిగి కనుగొనడానికి మీరు వాటిని మీ చదవాల్సిన లిస్ట్‌కు సేవ్ చేయవచ్చు</translation>
 <translation id="5534640966246046842">సైట్ కాపీ చేయబడింది</translation>
 <translation id="5548606607480005320">భద్రతా తనిఖీ</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{మీ వద్ద <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> పేజీ ఉంది}other{మీ వద్ద <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> పేజీలు ఉన్నాయి}}</translation>
-<translation id="6014293228235665243">చదవనివి</translation>
 <translation id="6036057147555329831">అదనపు ICU</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">TalkBack లేదా స్విచ్ యాక్సెస్ ఆన్‌లో ఉన్నప్పుడు సిఫార్సు చేయబడింది</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> రీస్టోర్ చేయబడింది</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
-<translation id="7030675613184250187">మీ చదివే జాబితాకు పేజీలను సేవ్ చేయడం ద్వారా మీరు వాటిని మళ్లీ చూడగలరు లేదా ఆఫ్‌లైన్‌లో చదవగలరు.</translation>
 <translation id="7054588988317389591">ఇమేజ్ వివరణలను పొందాలనుకుంటున్నారా?</translation>
 <translation id="7055152154916055070">మళ్లింపు బ్లాక్ చేయబడింది:</translation>
 <translation id="7063006564040364415">సింక్ సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>

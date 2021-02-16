@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">‏Chromium Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="3639997914391704523">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان کرتے ہیں تو Chromium آپ کے پاس ورڈز کو چیک کر سکتا ہے۔</translation>
 <translation id="3805899903892079518">‏Chromium کو آپ کی تصاویر یا ویڈیوز تک رسائی حاصل نہیں ہے۔ iOS ترتیبات &gt; رازداری &gt; تصاویر میں رسائی کو فعال کریں۔</translation>
+<translation id="3946918322491238254">آپ ابھی بھی اپنے تمام بک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلے پر دیکھ سکتے ہیں۔ اگر آپ تبدیلیاں کرتے ہیں تو وہ آپ کے اکاؤنٹ کے ساتھ سینک نہیں ہوں گی۔</translation>
 <translation id="4099085513035183040">‏Chromium بی ٹا پر تعاون یافتہ نہیں ہے</translation>
 <translation id="4166206055865952171">‏Chromium کو اپنا ڈیفالٹ بنائیں</translation>
 <translation id="4555020257205549924">‏یہ خصوصیت آن کیے جانے پر، Chromium دوسری زبانوں میں لکھے ہوئے صفحات کا Google ترجمہ استعمال کر کے ترجمہ کرنے کی پیشکش کرے گا۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5308226104666789935">‏Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="5521125884468363740">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں کہیں بھی آپ Chromium استعمال کرتے ہیں، سائن ان کریں اور سِنک کو آن کریں</translation>
+<translation id="5544795779875591523">‏منتخب کریں کہ آیا اپنے Chromium ڈیٹا کو اس آلے سے صاف کرنا ہے یا اسے رکھنا ہے؟</translation>
 <translation id="5573014823074921752">‏Chromium تجویز۔ ٹیب کے مزید اختیارات کیلئے، ٹول بار میں اس "ٹیبز دکھائيں" بٹن کو ٹچ کریں اور دبائے رکھیں جو آپ کی اسکرین کے نیچے یا اوپر ہوتا ہے۔</translation>
 <translation id="5700709190537129682">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
 <translation id="5777187867430702742">‏Chromium صفحہ</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">‏کاپی رائٹ ‎<ph name="YEAR" /> The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="8663480472502753423">‏Chromium کو اپ ٹو ڈیٹ رکھیں</translation>
 <translation id="8776843108004031667">‏اس اکاؤنٹ اور کسی بھی غیر محفوظ ڈیٹا کو Chromium سے ہٹا دیا جائے گا۔</translation>
+<translation id="894437814105052438">‏آپ کے سائن آؤٹ کرنے پر، Chromium کوئی بھی نیا ڈیٹا آپ کے Google اکاؤنٹ کے ساتھ سِنک نہیں کرے گا۔ پہلے کا سِنک کردہ ڈیٹا اکاؤنٹ میں باقی رہے گا۔</translation>
 <translation id="9022552996538154597">‏Chromium میں سائن ان کریں</translation>
 <translation id="9089354809943900324">‏Chromium پرانا ہے</translation>
 <translation id="921174536258924340">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">‏Chromium مصنّفین</translation>
+<translation id="994708389219151914">‏آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے اس لئے آپ کا Chromium ڈیٹا اس آلہ سے صاف کر دیا جائے گا۔</translation>
 </translationbundle>

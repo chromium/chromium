@@ -900,7 +900,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1975841812214822307">Odstrani ...</translation>
 <translation id="1976150099241323601">Prijava v varnostno napravo</translation>
 <translation id="1977965994116744507">Približajte telefon, če želite odkleniti napravo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Prihodnje posodobitve programske opreme in varnostne posodobitve bodo nameščene samodejno.</translation>
 <translation id="1978057560491495741">Odstrani naslov</translation>
 <translation id="1979095679518582070">Izklop te funkcije ne vpliva na zmožnost te naprave, da pošilja podatke, potrebne za ključne storitve, kot so posodobitve in varnost sistema.</translation>
 <translation id="1979280758666859181">Preklapljate na kanal s starejšo različico brskalnika <ph name="PRODUCT_NAME" />. Sprememba kanala bo uporabljena, ko se različica kanala ujema z različico, ki je trenutno nameščena v vaši napravi.</translation>
@@ -4341,7 +4340,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5941343993301164315">Prijavite se v <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5942779427914696408">Vidnost naprave</translation>
-<translation id="5942964813783878922">Naprava <ph name="DEVICE_TYPE" /> se bo po tej posodobitvi znova zagnala. Prihodnje posodobitve programske opreme in varnostne posodobitve bodo nameščene samodejno.</translation>
 <translation id="5944869793365969636">Branje kode QR</translation>
 <translation id="5946591249682680882">ID poročila: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Datoteke ni mogoče razčleniti</translation>

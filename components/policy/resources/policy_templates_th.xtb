@@ -1426,6 +1426,14 @@
       URL ต้องมีรูปแบบ HTTPS เช่น "https://example.com"
 
       ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns</translation>
+<translation id="2972531017545674240">การตั้งค่านโยบายนี้จะเป็นการระบุรายการเว็บแอปที่ติดตั้งโดยผู้ใช้ไม่ต้องดำเนินการ และจะถอนการติดตั้งหรือปิดไม่ได้ 
+
+      รายการย่อยแต่ละรายการในนโยบายคือออบเจ็กต์ที่มีสมาชิกที่จำเป็นซึ่งก็คือ <ph name="URL_LABEL" /> (URL ของเว็บแอปที่จะติดตั้ง) และสมาชิกที่ไม่บังคับ 3 รายการคือ <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (สำหรับการเปิดเว็บแอป ค่าเริ่มต้นคือแท็บใหม่) และ <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (เป็น "จริง" หากคุณต้องการสร้างทางลัดบนเดสก์ท็อปสำหรับ <ph name="LINUX_OS_NAME" /> และ <ph name="MS_WIN_NAME" />)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (ตั้งแต่ <ph name="PRODUCT_NAME" /> เวอร์ชัน 90 เป็นต้นไปจะอนุญาตให้ลบล้างชื่อแอปได้หากไม่ใช่ Progressive Web App (PWA) หรือชื่อแอปที่ติดตั้งชั่วคราวหากเป็น PWA แต่ต้องมีการตรวจสอบสิทธิ์ก่อนที่จะติดตั้งเสร็จสมบูรณ์)
+
+      ดูการปักหมุดแอปไว้ที่แถบ <ph name="PRODUCT_OS_NAME" /> ที่ <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /></translation>
 <translation id="2976429807269247880">การตั้งค่าลักษณะการทำงานของคุกกี้ <ph name="ATTRIBUTE_SAMESITE_NAME" /> เดิม</translation>
 <translation id="2985927503455169394">ใช้โหมดเริ่มต้นของการเริ่มต้นใช้งาน Assistant</translation>
 <translation id="2987155890997901449">เปิดใช้ ARC</translation>

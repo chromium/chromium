@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">Web lokacija <ph name="SITE" /> se želi upariti</translation>
 <translation id="2000419248597011803">Šalje neke kolačiće i pretraživanja s trake za adresu i iz okvira za pretraživanje vašem zadanom pretraživaču</translation>
 <translation id="2002537628803770967">Kreditne kartice i adrese koje koriste uslugu Google Pay</translation>
-<translation id="2010780124464321179">Nije moguće kreirati link za tekst. Dijelite link za stranicu.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="2017836877785168846">Briše historiju i automatsko dovršavanje na traci za adresu.</translation>
 <translation id="2021896219286479412">Kontr. web lok. na cijelom ekr.</translation>
@@ -625,7 +624,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5524843473235508879">Preusmjeravanje je blokirano.</translation>
 <translation id="5527082711130173040">Chrome treba pristup lokaciji kako bi skenirao uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dopuštenja<ph name="END_LINK1" />. Pristup lokaciji također je <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zatvori anonimne kartice</translation>
-<translation id="5530920986376047241">Možete sačuvati stranice na listu za čitanje da ih kasnije možete pronaći</translation>
 <translation id="5534640966246046842">Web lokacija je kopirana</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
@@ -707,8 +705,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5982307838673692400">Otvori anonimnu karticu</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6005538289190791541">Prijedlog za lozinku</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stranicu}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranicu}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranice}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranica}}</translation>
-<translation id="6014293228235665243">Nepročitano</translation>
 <translation id="6036057147555329831">Dodatni ICU</translation>
 <translation id="6039379616847168523">Pređite na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -865,7 +861,6 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="702463548815491781">Preporučeno kada je uključena funkcija TalkBack ili prekidač za pristup.</translation>
 <translation id="7027549951530753705">Vraćeno: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Lozinke</translation>
-<translation id="7030675613184250187">Možete sačuvati stranice na listu za čitanje da ih ponovo pronađete kasnije ili čitate van mreže</translation>
 <translation id="7054588988317389591">Preuzeti opise slika?</translation>
 <translation id="7055152154916055070">Preusmjeravanje je blokirano:</translation>
 <translation id="7063006564040364415">Povezivanje na server za sinhronizaciju nije uspjelo.</translation>

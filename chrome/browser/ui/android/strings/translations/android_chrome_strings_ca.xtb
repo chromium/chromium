@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> es vol vincular</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="2002537628803770967">Targetes de crèdit i adreces que fan servir Google Pay</translation>
-<translation id="2010780124464321179">No es pot crear un enllaç al text. Comparteix un enllaç a la pàgina.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
 <translation id="2017836877785168846">Esborra l'historial i les complecions automàtiques a la barra d'adreces.</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
@@ -625,7 +624,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5524843473235508879">S'ha bloquejat la redirecció.</translation>
 <translation id="5527082711130173040">Chrome necessita accedir a la ubicació per poder cercar dispositius. <ph name="BEGIN_LINK1" />Actualitza els permisos<ph name="END_LINK1" />. L'accés a la ubicació també està <ph name="BEGIN_LINK2" />desactivat en aquest dispositiu<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Tanca pestanyes d'incògnit</translation>
-<translation id="5530920986376047241">Pots desar pàgines a la llista de lectura per trobar-les de nou</translation>
 <translation id="5534640966246046842">S'ha copiat el lloc web</translation>
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
@@ -707,8 +705,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5982307838673692400">Obre una pestanya d'incògnit</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pàgina}other{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pàgines}}</translation>
-<translation id="6014293228235665243">No llegits</translation>
 <translation id="6036057147555329831">ICU addicional</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -865,7 +861,6 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="702463548815491781">Es recomana quan TalkBack o l'accés amb interruptors estan activats</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> s'ha restaurat</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
-<translation id="7030675613184250187">Pots desar pàgines a la llista de lectura per accedir-hi més endavant o llegir-les sense connexió</translation>
 <translation id="7054588988317389591">Vols obtenir descripcions de les imatges?</translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
 <translation id="7063006564040364415">No s'ha pogut connectar amb el servidor de sincronització.</translation>

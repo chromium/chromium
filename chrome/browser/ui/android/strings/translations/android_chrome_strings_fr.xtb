@@ -44,7 +44,7 @@
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
-<translation id="1291207594882862231">Effacer l'historique, vider le cache, supprimer les cookies et les données de site…</translation>
+<translation id="1291207594882862231">Effacer l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> tente de s'associer</translation>
 <translation id="2000419248597011803">Envoie des cookies et des recherches effectuées à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="2002537628803770967">Cartes de crédit et adresses utilisées dans Google Pay</translation>
-<translation id="2010780124464321179">Impossible de créer un lien vers le texte en surbrillance. Partagez le lien vers la page.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="2017836877785168846">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse.</translation>
 <translation id="2021896219286479412">Commandes du site en plein écran</translation>
@@ -221,7 +220,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
 <translation id="2537178555904266562">Erreur lors de la synchronisation des mots de passe</translation>
-<translation id="2546283357679194313">Cookies et données de sites</translation>
+<translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2581165646603367611">Cette action aura pour effet de vider le cache et de supprimer les cookies, ainsi que d'autres données de site que Chrome ne considère pas comme importantes.</translation>
@@ -625,7 +624,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5524843473235508879">Redirection bloquée.</translation>
 <translation id="5527082711130173040">Chrome doit avoir accès aux données de localisation pour rechercher des appareils. <ph name="BEGIN_LINK1" />Modifiez les autorisations.<ph name="END_LINK1" /> De plus, l'accès aux données de localisation est <ph name="BEGIN_LINK2" />désactivé pour cet appareil<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Fermer onglets navig. privée</translation>
-<translation id="5530920986376047241">Vous pouvez enregistrer des pages dans votre liste de lecture pour les lire plus tard</translation>
 <translation id="5534640966246046842">Site copié</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -707,8 +705,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
-<translation id="6014293228235665243">Non lu</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -865,7 +861,6 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="702463548815491781">Recommandé quand TalkBack ou Switch Access sont activés</translation>
 <translation id="7027549951530753705">Téléchargement <ph name="ITEM_TITLE" /> restauré</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
-<translation id="7030675613184250187">Vous pouvez enregistrer des pages dans votre liste de lecture pour les retrouver facilement plus tard ou les consulter hors connexion</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images ?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Impossible de se connecter au serveur de synchronisation.</translation>

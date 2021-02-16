@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Quitar...</translation>
 <translation id="1976150099241323601">Iniciar sesión en al dispositivo de seguridad</translation>
 <translation id="1977965994116744507">Acerca el teléfono para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Las futuras actualizaciones de software y seguridad se instalarán automáticamente.</translation>
 <translation id="1978057560491495741">Quitar dirección</translation>
 <translation id="1979095679518582070">Aunque esta opción esté desactivada, el dispositivo seguirá pudiendo enviar la información necesaria para realizar los servicios esenciales relacionados, por ejemplo, con la seguridad y las actualizaciones del sistema.</translation>
 <translation id="1979280758666859181">Vas a cambiar a un canal con una versión anterior de <ph name="PRODUCT_NAME" />. El cambio de canal se aplicará cuando la versión del canal coincida con la versión que esté instalada en ese momento en tu dispositivo.</translation>
@@ -4335,7 +4334,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5941343993301164315">Inicia sesión en <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5942779427914696408">Visibilidad del dispositivo</translation>
-<translation id="5942964813783878922">Tu <ph name="DEVICE_TYPE" /> se reiniciará después de esta actualización. Las futuras actualizaciones de software y seguridad se instalarán automáticamente.</translation>
 <translation id="5944869793365969636">Escanear código QR</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">No se ha podido analizar el archivo</translation>
@@ -4984,7 +4982,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6701535245008341853">No se ha podido obtener el perfil.</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6703966911896067184">Ilustración de error de registro</translation>
-<translation id="6706210727756204531">Alcance</translation>
+<translation id="6706210727756204531">Ámbito</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> y 1 pestaña más}other{<ph name="PAGE_TITLE" /> y # pestañas más}}</translation>
 <translation id="6709133671862442373">Noticias</translation>

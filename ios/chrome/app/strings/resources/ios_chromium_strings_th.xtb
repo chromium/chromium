@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">ไม่รองรับใน Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
+<translation id="3946918322491238254">คุณจะยังคงเห็นบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ทั้งหมดในอุปกรณ์นี้ หากทำการเปลี่ยนแปลง ระบบจะไม่ซิงค์การเปลี่ยนแปลงนั้นกับบัญชี</translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
 <translation id="4166206055865952171">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="5308226104666789935">Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5521125884468363740">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
+<translation id="5544795779875591523">เลือกว่าจะล้างข้อมูล Chromium จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="5573014823074921752">เคล็ดลับสำหรับ Chromium ถ้าต้องการดูตัวเลือกแท็บเพิ่มเติม ให้แตะปุ่ม "แสดงแท็บ" ค้างไว้ในแถบเครื่องมือ ซึ่งอยู่ที่ด้านล่างหรือด้านบนของหน้าจอ</translation>
 <translation id="5700709190537129682">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="5777187867430702742">หน้า Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="8663480472502753423">อัปเดต Chromium อยู่เสมอ</translation>
 <translation id="8776843108004031667">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chromium</translation>
+<translation id="894437814105052438">Chromium จะไม่ซิงค์ข้อมูลใหม่กับบัญชี Google ของคุณเมื่อออกจากระบบ แต่ข้อมูลที่ซิงค์ไว้ก่อนหน้านี้จะยังอยู่ในบัญชี</translation>
 <translation id="9022552996538154597">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="9089354809943900324">Chromium ล้าสมัย</translation>
 <translation id="921174536258924340">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">บัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะล้างข้อมูล Chromium จากอุปกรณ์นี้</translation>
 </translationbundle>

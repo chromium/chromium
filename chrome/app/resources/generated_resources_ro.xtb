@@ -898,7 +898,6 @@
 <translation id="1975841812214822307">Elimină...</translation>
 <translation id="1976150099241323601">Conectează-te la dispozitivul de securitate</translation>
 <translation id="1977965994116744507">Pentru a debloca dispozitivul <ph name="DEVICE_TYPE" />, apropie mai mult telefonul.</translation>
-<translation id="1978006917103730774">Actualizările de software și de securitate ulterioare se vor instala automat.</translation>
 <translation id="1978057560491495741">Elimină adresa</translation>
 <translation id="1979095679518582070">Dezactivarea acestei funcții nu afectează capacitatea dispozitivului de a trimite informațiile necesare pentru servicii esențiale, cum ar fi actualizările de sistem și securitate.</translation>
 <translation id="1979280758666859181">Treceți la un canal cu o versiune <ph name="PRODUCT_NAME" /> mai veche. Schimbarea canalului se va aplica atunci când versiunea canalului va corespunde cu versiunea instalată în prezent pe dispozitiv.</translation>
@@ -4337,7 +4336,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5941343993301164315">Conectează-te la <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizează</translation>
 <translation id="5942779427914696408">Vizibilitatea dispozitivului</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> va reporni după această actualizare. Actualizările de software și de securitate ulterioare se vor instala automat.</translation>
 <translation id="5944869793365969636">Scanează codul QR</translation>
 <translation id="5946591249682680882">ID raport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Fișierul nu poate fi analizat</translation>

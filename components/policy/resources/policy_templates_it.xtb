@@ -1438,6 +1438,16 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
 
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2972531017545674240">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
+
+      Ogni voce del criterio è un oggetto con un componente obbligatorio:
+      <ph name="URL_LABEL" /> (l'URL dell'app web da installare) e 3 componenti facoltativi:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (che indica la modalità di apertura dell'app web, ovvero una nuova scheda per impostazione predefinita).
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (Vero, se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione).
+
+      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sullo shelf di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>

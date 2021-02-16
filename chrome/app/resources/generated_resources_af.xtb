@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Verwyder …</translation>
 <translation id="1976150099241323601">Meld aan op sekuriteitstoestel</translation>
 <translation id="1977965994116744507">Bring jou foon nader om jou <ph name="DEVICE_TYPE" /> te ontsluit.</translation>
-<translation id="1978006917103730774">Toekomstige sagteware- en sekuriteitopdaterings sal outomaties geïnstalleer word.</translation>
 <translation id="1978057560491495741">Verwyder adres</translation>
 <translation id="1979095679518582070">As jy hierdie kenmerk afskakel, beïnvloed dit nie hierdie toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.</translation>
 <translation id="1979280758666859181">Jy verander tans na 'n kanaal met 'n ouer weergawe van <ph name="PRODUCT_NAME" />. Die kanaalverandering sal toegepas word wanneer die kanaalweergawe ooreenstem met die weergawe wat tans op jou toestel geïnstalleer is.</translation>
@@ -4337,7 +4336,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5941343993301164315">Meld asseblief by <ph name="TOKEN_NAME" /> aan.</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5942779427914696408">Toestelsigbaarheid</translation>
-<translation id="5942964813783878922">Jou <ph name="DEVICE_TYPE" /> sal ná hierdie opdatering herbegin. Toekomstige sagteware- en sekuriteitopdaterings sal outomaties geïnstalleer word.</translation>
 <translation id="5944869793365969636">Skandeer QR-kode</translation>
 <translation id="5946591249682680882">Verslag-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Kan nie lêer ontleed nie</translation>
@@ -6933,6 +6931,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8892168913673237979">Gereed!</translation>
 <translation id="8893801527741465188">Deïnstallering is voltooi</translation>
 <translation id="8893928184421379330">Jammer, die toestel <ph name="DEVICE_LABEL" /> kon nie herken word nie.</translation>
+<translation id="8894761918470382415">Datatoegangbeskerming vir randtoestelle</translation>
 <translation id="8895454554629927345">Boekmerklys</translation>
 <translation id="8898786835233784856">Kies volgende oortjie</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
@@ -7238,6 +7237,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie en oudio.</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="947329552760389097">&amp;Ondersoek elemente</translation>
+<translation id="949052952791086881">Jou administrateur vereis dat hierdie gebruiker aanmeld terwyl die toestel aanlyn is</translation>
 <translation id="951991426597076286">Weier</translation>
 <translation id="956500788634395331">Jy word teen potensieel skadelike uitbreidings beskerm</translation>
 <translation id="957960681186851048">Hierdie werf het probeer om veelvuldige lêers outomaties af te laai</translation>

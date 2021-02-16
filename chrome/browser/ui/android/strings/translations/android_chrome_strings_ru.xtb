@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">Сайт <ph name="SITE" /> запрашивает подключение</translation>
 <translation id="2000419248597011803">Отправлять некоторые файлы cookie и поисковые запросы из адресной строки в поисковую систему по умолчанию</translation>
 <translation id="2002537628803770967">Кредитные карты и адреса из Google Pay</translation>
-<translation id="2010780124464321179">Не удалось создать ссылку на текст. Поделитесь ссылкой на страницу.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="2017836877785168846">Будет удалена история и варианты автозаполнения в адресной строке.</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">Попытка переадресации заблокирована.</translation>
 <translation id="5527082711130173040">Чтобы выполнить поиск устройств, браузеру Chrome нужен доступ к геоданным. <ph name="BEGIN_LINK2" />Включите доступ<ph name="END_LINK2" /> и <ph name="BEGIN_LINK1" />обновите разрешения<ph name="END_LINK1" />.</translation>
 <translation id="5530766185686772672">Закрыть вкладки инкогнито</translation>
-<translation id="5530920986376047241">В нем можно сохранять страницы, чтобы прочитать их позже.</translation>
 <translation id="5534640966246046842">Адрес сайта скопирован</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">Открыть вкладку инкогнито</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> страница.}one{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страница.}few{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страницы.}many{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страниц.}other{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страницы.}}</translation>
-<translation id="6014293228235665243">Не прочитано</translation>
 <translation id="6036057147555329831">Дополнительный модуль ICU</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">Рекомендовано при включенных функциях TalkBack и Switch Access</translation>
 <translation id="7027549951530753705">Восстановлен объект "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029809446516969842">Пароли</translation>
-<translation id="7030675613184250187">Сохраняйте страницы в список для чтения, чтобы они всегда были у вас под рукой и доступны в офлайн-режиме.</translation>
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7063006564040364415">Не удалось связаться с сервером синхронизации</translation>

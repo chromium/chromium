@@ -190,7 +190,7 @@
 <translation id="1257550411839719984">Définir le répertoire de téléchargement par défaut</translation>
 <translation id="1265053460044691532">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion</translation>
 <translation id="127264587838521316">Autorise les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /></translation>
-<translation id="1274997165432133392">Cookies et autres données de site</translation>
+<translation id="1274997165432133392">Cookies et autres données des sites</translation>
 <translation id="127699919157094139">Cette règle permet de désactiver la synchronisation des données dans <ph name="PRODUCT_NAME" /> à l'aide des services de synchronisation hébergés par Google et d'empêcher les utilisateurs de modifier ce paramètre.
 
       Si vous activez ce paramètre, les utilisateurs ne peuvent pas le modifier ni l'ignorer dans <ph name="PRODUCT_NAME" />.
@@ -2468,7 +2468,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4423597592074154136">Spécifier manuellement les paramètres de proxy</translation>
 <translation id="4432762137771104529">Autoriser la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
 <translation id="443454694385851356">Anciens types de chiffrement (option non sécurisée)</translation>
-<translation id="443665821428652897">Effacer les données de sites à la fermeture du navigateur (obsolète)</translation>
+<translation id="443665821428652897">Effacer les données des sites à la fermeture du navigateur (obsolète)</translation>
 <translation id="4439336120285389675">Répertorier les fonctionnalités abandonnées de la plate-forme en ligne à réactiver provisoirement.
 
       Cette règle permet aux administrateurs de réactiver des fonctionnalités abandonnées de la plate-forme en ligne pendant une durée limitée. Ces fonctionnalités sont identifiées par une balise de chaîne. Les fonctionnalités correspondant aux balises incluses dans la liste renvoyée par cette règle sont réactivées.

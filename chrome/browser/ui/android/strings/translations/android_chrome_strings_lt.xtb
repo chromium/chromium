@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">Svetainė <ph name="SITE" /> nori būti susieta su</translation>
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
 <translation id="2002537628803770967">„Google Pay“ naudojamos kredito kortelės ir adresai</translation>
-<translation id="2010780124464321179">Nepavyko sukurti teksto nuorodos. Bendrinkite puslapio nuorodą.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="2017836877785168846">Išvaloma istorija ir automatiniai užbaigimai adreso juostoje.</translation>
 <translation id="2021896219286479412">Viso ekrano svetainės valdikliai</translation>
@@ -625,7 +624,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5524843473235508879">Peradresavimas užblokuotas.</translation>
 <translation id="5527082711130173040">„Chrome“ reikalinga prieiga prie informacijos apie vietovę, kad galėtų nuskaityti įrenginius. <ph name="BEGIN_LINK1" />Atnaujinkite leidimus<ph name="END_LINK1" />. Be to, galimybė pasiekti informaciją apie vietovę <ph name="BEGIN_LINK2" />išjungta šiame įrenginyje<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Užd. inkognito skirt. lapus</translation>
-<translation id="5530920986376047241">Skaitymo sąraše galite išsaugoti puslapių, kad galėtumėte rasti juos vėliau</translation>
 <translation id="5534640966246046842">Svetainė nukopijuota</translation>
 <translation id="5548606607480005320">Saugos patikra</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
@@ -707,8 +705,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5982307838673692400">Atidaryti inkognito skirtuką</translation>
 <translation id="6000066717592683814">Palikti „Google“</translation>
 <translation id="6005538289190791541">Siūlomas slaptažodis</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> puslapis}one{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapis}few{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapiai}many{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapio}other{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapių}}</translation>
-<translation id="6014293228235665243">Neskaityta</translation>
 <translation id="6036057147555329831">Papildomas ICU</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
@@ -865,7 +861,6 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="702463548815491781">Rekomenduojama, kai įjungta „TalkBack“ arba prieiga jungikliu</translation>
 <translation id="7027549951530753705">Atkurta „<ph name="ITEM_TITLE" />“</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
-<translation id="7030675613184250187">Skaitymo sąraše galite išsaugoti puslapių, kad galėtumėte rasti juos vėliau ir skaityti neprisijungę</translation>
 <translation id="7054588988317389591">Gauti vaizdų aprašus?</translation>
 <translation id="7055152154916055070">Peradresavimas užblokuotas:</translation>
 <translation id="7063006564040364415">Nepavyko prisijungti prie sinchronizavimo serverio.</translation>

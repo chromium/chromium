@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Poista...</translation>
 <translation id="1976150099241323601">Kirjaudu sisään suojauslaitteeseen</translation>
 <translation id="1977965994116744507">Tuo puhelimesi lähemmäs, jotta voit avata laitteen <ph name="DEVICE_TYPE" /> lukituksen.</translation>
-<translation id="1978006917103730774">Tulevat ohjelmistot ja tietoturvapäivitykset asennetaan automaattisesti.</translation>
 <translation id="1978057560491495741">Poista osoite</translation>
 <translation id="1979095679518582070">Jos tämä ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.</translation>
 <translation id="1979280758666859181">Olet vaihtamassa kanavalle, jossa on käytössä tuotteen <ph name="PRODUCT_NAME" /> vanhempi versio. Kanavan muutos otetaan käyttöön, kun kanavaversio vastaa tällä hetkellä laitteellesi asennettua versiota.</translation>
@@ -4333,7 +4332,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5941343993301164315">Kirjaudu sisään palveluun <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5942779427914696408">Laitteen näkyvyys</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> käynnistyy uudelleen päivityksen jälkeen. Tulevat ohjelmistot ja tietoturvapäivitykset asennetaan automaattisesti.</translation>
 <translation id="5944869793365969636">Skannaa QR-koodi</translation>
 <translation id="5946591249682680882">Raporttitunnus: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Tiedoston jäsentäminen ei onnistu.</translation>

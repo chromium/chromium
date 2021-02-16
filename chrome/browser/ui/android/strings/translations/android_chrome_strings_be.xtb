@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">Сайт <ph name="SITE" /> запытвае спалучэнне</translation>
 <translation id="2000419248597011803">Адпраўляе вашай стандартнай пошукавай сістэме некаторыя файлы cookie, а таксама пошукавыя запыты, уведзеныя ў адрасным радку і полі пошуку</translation>
 <translation id="2002537628803770967">Крэдытныя карткі і адрасы, якія выкарыстоўваюць Google Pay</translation>
-<translation id="2010780124464321179">Не ўдалося стварыць спасылку на тэкст. Абагульце спасылку на старонку.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="2017836877785168846">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку.</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">Перанакіраванне заблакіравана.</translation>
 <translation id="5527082711130173040">Для пошуку прылад браўзеру Chrome патрабуецца доступ да месцазнаходжання. <ph name="BEGIN_LINK1" />Змяніце дазволы<ph name="END_LINK1" />. Доступ да месцазнаходжання <ph name="BEGIN_LINK2" />для гэтай прылады таксама выключаны<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Закрыць укладкі інкогніта</translation>
-<translation id="5530920986376047241">Захоўвайце старонкі ў спісе чытання, каб вярнуцца да іх пазней</translation>
 <translation id="5534640966246046842">Сайт скапіраваны</translation>
 <translation id="5548606607480005320">Праверка бяспекі</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">Адкрыць укладку ў рэжыме інкогніта</translation>
 <translation id="6000066717592683814">Пакінуць Google</translation>
 <translation id="6005538289190791541">Прапанаваны пароль</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> старонка чакае вашай увагі}one{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> старонка чакае вашай увагі}few{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> старонкі чакаюць вашай увагі}many{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> старонак чакаюць вашай увагі}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> старонкі чакаюць вашай увагі}}</translation>
-<translation id="6014293228235665243">Непрачытанае</translation>
 <translation id="6036057147555329831">Дадатковы модуль ICU</translation>
 <translation id="6039379616847168523">Перайсці на наступную ўкладку</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">Рэкамендуецца, калі ўключаны TalkBack або доступ праз пераключальнікі</translation>
 <translation id="7027549951530753705">Адноўлена: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Паролі</translation>
-<translation id="7030675613184250187">Захоўвайце старонкі ў спісе чытання, каб вярнуцца да іх пазней або чытаць без падключэння да інтэрнэту</translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
 <translation id="7063006564040364415">Не ўдалося падключыцца да сервера сінхранізацыі.</translation>

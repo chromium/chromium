@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">Није пронађен ниједан мобилни уређај.</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6727969043791803658">Повезано, ниво батерије је <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Примењује администратор</translation>
 <translation id="6751826523481687655">Праћење учинка је укључено</translation>
 <translation id="6752912906630585008">Радна површина <ph name="REMOVED_DESK" /> је уклоњена и спојена са радном површином <ph name="RECEIVE_DESK" /></translation>

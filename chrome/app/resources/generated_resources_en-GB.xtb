@@ -899,7 +899,6 @@
 <translation id="1975841812214822307">Remove...</translation>
 <translation id="1976150099241323601">Sign in to Security Device</translation>
 <translation id="1977965994116744507">Bring your phone closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Future software and security updates will install automatically.</translation>
 <translation id="1978057560491495741">Remove address</translation>
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
 <translation id="1979280758666859181">You are changing to a channel with an older version of <ph name="PRODUCT_NAME" />. The channel change will be applied when the channel version matches the version currently installed on your device.</translation>
@@ -4345,7 +4344,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5941343993301164315">Please sign in to <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5942779427914696408">Device visibility</translation>
-<translation id="5942964813783878922">Your <ph name="DEVICE_TYPE" /> will restart after this update. Future software and security updates will install automatically.</translation>
 <translation id="5944869793365969636">Scan QR code</translation>
 <translation id="5946591249682680882">Report ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Unable to parse file</translation>

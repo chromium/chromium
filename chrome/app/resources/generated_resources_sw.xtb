@@ -896,7 +896,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1975841812214822307">Ondoa...</translation>
 <translation id="1976150099241323601">Ingia kwenye Kifaa Salama</translation>
 <translation id="1977965994116744507">Sogeza simu yako karibu ili ukifungue kifaa chako cha <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Masasisho ya baadaye ya programu na usalama yatasakinishwa kiotomatiki.</translation>
 <translation id="1978057560491495741">Ondoa anwani</translation>
 <translation id="1979095679518582070">Hatua ya kuzima kipengele hiki haiathiri uwezo wa kifaa hiki wa kutuma maelezo yanayohitajika kutekeleza huduma muhimu kama vile masasisho ya mfumo na usalama.</translation>
 <translation id="1979280758666859181">Unabadilisha hadi kituo chenye toleo zee la <ph name="PRODUCT_NAME" />. Mabadiliko ya kituo yatatumika wakati toleo la kituo linalingana na toleo lililosanidiwa kwenye kifaa chako.</translation>
@@ -4340,7 +4339,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5941343993301164315">Tafadhali ingia kwenye <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Punguza</translation>
 <translation id="5942779427914696408">Uonekanaji wa kifaa</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> yako itazima kisha iwake baada ya sasisho hili. Masasisho ya baadaye ya programu na usalama yatasakinishwa kiotomatiki.</translation>
 <translation id="5944869793365969636">Changanua msimbo wa QR</translation>
 <translation id="5946591249682680882">Kitambulisho cha ripoti <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Imeshindwa kuchanganua faili</translation>

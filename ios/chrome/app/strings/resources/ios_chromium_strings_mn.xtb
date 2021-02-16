@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
 <translation id="3639997914391704523">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="3805899903892079518">Chromium-д таны зураг, видеонд хандах зөвшөөрөл байхгүй байна. Хандалтыг iOS Тохиргоо &gt; Нууцлал &gt; Зураг хэсэгт идэвхжүүлээрэй.</translation>
+<translation id="3946918322491238254">Та энэ төхөөрөмж дээр бүх хавчуурга, түүх, нууц үг болон бусад тохиргоогоо харах боломжтой хэвээр байна. Хэрэв та өөрчлөлт хийвэл тэдгээрийг таны бүртгэлд синк хийхгүй.</translation>
 <translation id="4099085513035183040">Chromium Бета дээр дэмжихгүй</translation>
 <translation id="4166206055865952171">Chromium-г өгөгдмөлөө болгох</translation>
 <translation id="4555020257205549924">Энэ онцлог асаалттай үед Chromium бусад хэл дээрх хуудсыг Google Орчуулагчаар орчуулахыг санал болгоно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
 <translation id="5308226104666789935">Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="5521125884468363740">Та Chromium-г хаанаас ч ашигласан табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
+<translation id="5544795779875591523">Chromium-н өгөгдлөө энэ төхөөрөмжөөс арилгах эсвэл хэвээр үлдээх эсэхээ сонгоно уу?</translation>
 <translation id="5573014823074921752">Chromium-н зөвлөгөө. Табын бусад сонголтыг харахын тулд дэлгэцийнхээ доод эсвэл дээд хэсэгт байрлах самбараас Табыг харуулах товчлуурыг удаан дарна уу.</translation>
 <translation id="5700709190537129682">Chromium таны нууц үгнүүдийг шалгах боломжгүй байна</translation>
 <translation id="5777187867430702742">Chromium-н хуудас</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="8663480472502753423">Chromium-г хамгийн шинэ байлгаарай</translation>
 <translation id="8776843108004031667">Энэ бүртгэл болон хадгалаагүй аливаа өгөгдлийг Chromium-с хасна.</translation>
+<translation id="894437814105052438">Та гарсан үед Chromium таны Google Бүртгэлд ямар ч шинэ өгөгдөл синк хийхгүй. Өмнө нь синк хийсэн өгөгдөл бүртгэлд үлдэнэ.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
 <translation id="921174536258924340">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдох буюу эсхүл <ph name="BEGIN_LINK" />Google Бүртгэлдээ байгаа нууц үгнүүдийг шалгана уу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
+<translation id="994708389219151914">Таны бүртгэлийг <ph name="HOSTED_DOMAIN" /> удирддаг тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс арилгах болно.</translation>
 </translationbundle>

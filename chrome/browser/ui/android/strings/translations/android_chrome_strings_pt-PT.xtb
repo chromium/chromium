@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> pretende sincronizar</translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
 <translation id="2002537628803770967">Cartões de crédito e endereços com o Google Pay</translation>
-<translation id="2010780124464321179">Não é possível criar o link para o texto. Partilhe o link para a página.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2017836877785168846">Limpa o histórico e os preenchimentos automáticos da barra de endereço.</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
@@ -625,7 +624,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5524843473235508879">Redirecionamento bloqueado.</translation>
 <translation id="5527082711130173040">O Chrome precisa de acesso à localização para procurar dispositivos. <ph name="BEGIN_LINK1" />Atualize as autorizações<ph name="END_LINK1" />. O acesso à localização também está <ph name="BEGIN_LINK2" />desativado para este dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Fechar sep. de naveg. anón.</translation>
-<translation id="5530920986376047241">Pode guardar páginas na sua lista de leitura para encontrá-las novamente.</translation>
 <translation id="5534640966246046842">Site copiado</translation>
 <translation id="5548606607480005320">Verificação de segurança</translation>
 <translation id="5556459405103347317">Recarregar</translation>
@@ -707,8 +705,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5982307838673692400">Abrir um separador de navegação anónima</translation>
 <translation id="6000066717592683814">Manter o Google</translation>
 <translation id="6005538289190791541">Palavra-passe sugerida</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página.}other{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas.}}</translation>
-<translation id="6014293228235665243">Não lidas</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -865,7 +861,6 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o Acesso por comutador estão ativados.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> restaurado</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
-<translation id="7030675613184250187">Pode guardar páginas na sua lista de leitura para as encontrar novamente ou para as ler offline.</translation>
 <translation id="7054588988317389591">Pretende obter descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
 <translation id="7063006564040364415">Não foi possível estabelecer ligação ao servidor de sincronização.</translation>

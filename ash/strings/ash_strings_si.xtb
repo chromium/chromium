@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> එක් කරන ලදී</translation>
 <translation id="1047017786576569492">අර්ධ වශයෙන්</translation>
 <translation id="1047773237499189053">නව විශේෂාංගයක් ලබා ගත හැකිය, තව දැන ගැනීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
+<translation id="1052916631016577720">අයිතමය ස්කෑන් කිරීම</translation>
 <translation id="1056775291175587022">ජාල නැත</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">සෙලියුලර්: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">සහායක පූරණය වේ...</translation>
 <translation id="4356930093361201197">අධි අසමානතා ප්‍රකාරය</translation>
 <translation id="4371348193907997655">විකාශ සැකසීම්</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, සංඥා ප්‍රබලතාව සියයට <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4379531060876907730">ඔබේ පන්හිඳ මෙවලම් මේවායි</translation>
 <translation id="4389184120735010762">ඔබ ඩොක් කළ විශාලකය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">මෙම මොනිටරය ඔබේ <ph name="DEVICE_TYPE" /> සමග නොගැළපෙයි (මොනිටරය සහාය නොදක්වයි).</translation>
 <translation id="6043994281159824495">දැන් පිටවන්න</translation>
 <translation id="6047696787498798094">වෙනත් පරිශීලකයකුට මාරුවන විට තිර හවුල්කිරීම අහෝසි වේ. ඔබට ඉදිරියට යාමට අවශ්‍යද?</translation>
+<translation id="6050368268239407309">ඉදිරිපත් කිරීමේ මෙවලම්</translation>
 <translation id="6054305421211936131">ස්මාර්ට් කාඩ්පත සමඟ පුරන්න</translation>
 <translation id="6059276912018042191">මෑත Chrome ටැබ</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> තුළ ඔබව ස්වයංක්‍රියව වරනු ඇත.</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">ජංගම උපාංග හමු නොවීය.</translation>
 <translation id="6723839937902243910">බලය</translation>
 <translation id="6727969043791803658">සම්බන්ධිතයි, බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">ඔබේ පරිපාලකයා විසින් බලාත්මක කෙරේ</translation>
 <translation id="6751826523481687655">කාර්ය සාධන අනුරේඛනය ක්‍රියාත්මකයි</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>

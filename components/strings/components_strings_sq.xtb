@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Kartat e pranuara</translation>
 <translation id="1021753677514347426">Ky problem ndodh për shkak të një certifikate që instalove ti ose dikush tjetër në pajisjen tënde. Certifikata njihet se është përdorur për të monitoruar dhe ndërhyrë në rrjete dhe nuk është e besuar nga Chromium. Megjithëse ekzistojnë disa raste legjitime për monitorimin, si p.sh. një rrjet shkolle ose kompanie, Chromium dëshiron të sigurohet që je në dijeni se kjo ndodh, edhe nëse nuk arrin ta ndalosh. Monitorimi mund të ndodhë në çdo shfletues ose aplikacion që ka qasje në ueb.</translation>
 <translation id="1024111578869940408">Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek adresa e uebit ndryshime që janë të vështira për t'u dalluar.</translation>
+<translation id="1028781062521375153">Shiko detajet</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
 <translation id="1032854598605920125">Rrotullo në drejtim të akrepave të orës</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
@@ -146,6 +147,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1462951478840426066">Përdor fontet në kompjuterin tënd që të mund të krijosh përmbajtje me saktësi të lartë</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Majtas</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> është kodi yt për <ph name="EMBEDDED_ORIGIN" /> për të vazhduar te <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Shfaq më shumë</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1640180200866533862">Politikat e përdoruesit</translation>
 <translation id="1640244768702815859">Provo <ph name="BEGIN_LINK" />të vizitosh faqen kryesore të sajtit<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Vonoje daljen deri në</translation>
+<translation id="164212631332220697">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes.</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1645368109819982629">Protokolli nuk mbështetet</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1005,6 +1008,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4879725228911483934">Hap dhe vendos dritare në ekranet e tua</translation>
 <translation id="4880827082731008257">Historiku i kërkimeve</translation>
 <translation id="4881695831933465202">Hap</translation>
+<translation id="4885256590493466218">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes</translation>
 <translation id="4889420713887366944">Butoni "Hap dritaren e fshehtë", shtyp "Enter" për të hapur një dritare të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="4892518386797173871">Prapa</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1973,6 +1977,7 @@ Detaje shtesë:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> është kodi për <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Shtoje këtë skedë te faqeshënuesit</translation>
 <translation id="8751426954251315517">Provo përsëri herën tjetër</translation>
+<translation id="8757526089434340176">Disponohet ofertë e Google Pay</translation>
 <translation id="8759274551635299824">Kjo kartë ka skaduar</translation>
 <translation id="87601671197631245">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimet, mesazhet ose kartat e kreditit) kur dërgohen te ky sajt.</translation>
 <translation id="8761567432415473239">Shfletimi i sigurt i Google <ph name="BEGIN_LINK" />zbuloi së fundmi programe të dëmshme<ph name="END_LINK" /> në <ph name="SITE" />.</translation>

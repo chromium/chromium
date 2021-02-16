@@ -899,7 +899,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijavite se u Sigurnosni uređaj</translation>
 <translation id="1977965994116744507">Približite telefon da otključate uređaj <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Buduća ažuriranja softvera i sigurnosna ažuriranja će se automatski instalirati.</translation>
 <translation id="1978057560491495741">Uklonite adresu</translation>
 <translation id="1979095679518582070">Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.</translation>
 <translation id="1979280758666859181">Prelazite na kanal sa starijom verzijom proizvoda <ph name="PRODUCT_NAME" />. Promjena kanala će se primijeniti kada verzija kanala bude odgovarala verziji koja je trenutno instalirana na vašem uređaju.</translation>
@@ -4338,7 +4337,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5941343993301164315">Prijavite se na <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5942779427914696408">Vidljivost uređaja</translation>
-<translation id="5942964813783878922">Vaš uređaj <ph name="DEVICE_TYPE" /> će se ponovo pokrenuti nakon ovog ažuriranja. Buduća ažuriranja softvera i sigurnosna ažuriranja će se automatski instalirati.</translation>
 <translation id="5944869793365969636">Skenirajte QR kôd</translation>
 <translation id="5946591249682680882">ID izvještaja <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Nije moguće raščlaniti fajl</translation>

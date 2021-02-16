@@ -659,6 +659,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6715542151869432661">Nije pronađen nijedan mobilni uređaj.</translation>
 <translation id="6723839937902243910">Energija</translation>
 <translation id="6727969043791803658">Povezano, nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Primenjuje administrator</translation>
 <translation id="6751826523481687655">Praćenje učinka je uključeno</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena sa radnom površinom <ph name="RECEIVE_DESK" /></translation>

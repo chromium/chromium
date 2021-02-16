@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Ak to bude možné, weby budú zobrazovať text vo vašom preferovanom jazyku.</translation>
 <translation id="1952728750904661634">Prihlásenie pomocou spravovaného účtu</translation>
 <translation id="1965935827552890526">V ďalšom otvorenom okne Chromu dokončite, čo ste robili</translation>
+<translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
@@ -299,6 +300,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4038354071007134711">Tento súbor nedokáže otvoriť žiadna aplikácia na tomto zariadení.</translation>
 <translation id="4042870976416480368">Nájsť na stránke</translation>
 <translation id="4049507953662678203">Uistite sa, že máte pripojenie k sieti, a skúste to znova.</translation>
+<translation id="4079195788735381731">Vaša organizácia vás odhlásila</translation>
 <translation id="4082688844002261427">Ovládajte, ako sa pomocou histórie prehliadania prispôsobujú Vyhľadávanie, reklamy a ďalší obsah</translation>
 <translation id="408404951701638773">Vyhľadávací panel je teraz dostupnejší</translation>
 <translation id="411254640334432676">Sťahovanie zlyhalo.</translation>
@@ -411,9 +413,9 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
+<translation id="5360976571138293719">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekcii <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
 <translation id="5407969256130905701">Zahodiť zmeny</translation>
-<translation id="5409365236829784218">Nie sú nainštalované žiadne aplikácie, ktoré dokážu otvoriť tento súbor.</translation>
 <translation id="5416022985862681400">Posledných 7 dní</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
 <translation id="5433691172869980887">Používateľské meno bolo skopírované</translation>
@@ -497,6 +499,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6254066287920239840">Otvárať odkazy v aplikácii namiesto prehliadača.</translation>
 <translation id="6255097610484507482">Upraviť platobnú kartu</translation>
 <translation id="6284652193729350524">Ponúkať preklad jazyka <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Ak chcete zapnúť bezpečné prehliadanie, otvorte <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" /> a klepnite na Bezpečné prehliadanie.</translation>
 <translation id="6303969859164067831">Odhlásiť sa a vypnúť synchronizáciu</translation>
 <translation id="6308436439357671616">Umožňuje fotiť a nahrať fotky.</translation>
 <translation id="6324528485781869530">Prepnutie účtu na synchronizáciu</translation>

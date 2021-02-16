@@ -899,7 +899,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1975841812214822307">Noņemt...</translation>
 <translation id="1976150099241323601">Pierakstīties drošības ierīcē</translation>
 <translation id="1977965994116744507">Pietuviniet tālruni, lai atbloķētu ierīci (<ph name="DEVICE_TYPE" />).</translation>
-<translation id="1978006917103730774">Turpmāki programmatūras un drošības atjauninājumi tiks instalēti automātiski.</translation>
 <translation id="1978057560491495741">Adreses noņemšana</translation>
 <translation id="1979095679518582070">Izslēdzot šo funkciju, netiek ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.</translation>
 <translation id="1979280758666859181">Jūs gatavojaties pāriet uz kanālu ar vecāku <ph name="PRODUCT_NAME" /> versiju. Kanāla maiņa tiks piemērota, kad kanāla versija atbildīs versijai, kas pašreiz instalēta jūsu ierīcē.</translation>
@@ -4338,7 +4337,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5941343993301164315">Pierakstieties ierīcē <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizēt</translation>
 <translation id="5942779427914696408">Ierīces redzamība</translation>
-<translation id="5942964813783878922">Pēc šīs atjaunināšanas jūsu ierīce (<ph name="DEVICE_TYPE" />) tiks restartēta. Turpmāki programmatūras un drošības atjauninājumi tiks instalēti automātiski.</translation>
 <translation id="5944869793365969636">QR koda skenēšana</translation>
 <translation id="5946591249682680882">Pārskata ID: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Nevar parsēt failu.</translation>

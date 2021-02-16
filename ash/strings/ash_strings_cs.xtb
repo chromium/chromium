@@ -659,6 +659,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6715542151869432661">Nebyla nalezena žádná mobilní zařízení.</translation>
 <translation id="6723839937902243910">Napájení</translation>
 <translation id="6727969043791803658">Připojeno, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Vynuceno administrátorem</translation>
 <translation id="6751826523481687655">Trasování výkonu je zapnuté</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> byla odstraněna a sloučena s plochou <ph name="RECEIVE_DESK" /></translation>

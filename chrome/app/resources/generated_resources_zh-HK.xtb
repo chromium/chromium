@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
 <translation id="1977965994116744507">手機靠近您的 <ph name="DEVICE_TYPE" /> 即可將其解鎖。</translation>
-<translation id="1978006917103730774">日後的軟件及安全性更新將會自動安裝。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">即使關閉此功能，此裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。</translation>
 <translation id="1979280758666859181">您即將轉用較舊版本的 <ph name="PRODUCT_NAME" /> ，但其版本號與您裝置上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
@@ -4335,7 +4334,6 @@
 <translation id="5941343993301164315">請登入 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5942779427914696408">裝置分享設定</translation>
-<translation id="5942964813783878922">完成更新後，您的 <ph name="DEVICE_TYPE" /> 將會重新啟動。日後的軟件及安全性更新將會自動安裝。</translation>
 <translation id="5944869793365969636">掃瞄二維條碼</translation>
 <translation id="5946591249682680882">報告 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">無法剖析檔案</translation>

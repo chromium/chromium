@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Abrir link no <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova Notificação}one{# Nova Notificação}other{# Novas Notificações}}</translation>
 <translation id="1139343347646843679">Algo deu errado na configuração do Linux. Entre em contato com seu administrador.</translation>
+<translation id="1139923033416533844">Uso da memória</translation>
 <translation id="1140351953533677694">Acessar seus dispositivos seriais e Bluetooth</translation>
 <translation id="114036956334641753">Áudio e legendas</translation>
 <translation id="1140746652461896221">Bloquear conteúdo em qualquer página visitada</translation>
@@ -678,6 +679,7 @@
 <translation id="1734212868489994726">Azul-claro</translation>
 <translation id="1734230530703461088">Falha ao carregar extensões dentro do limite de tempo. Entre em contato com o administrador.</translation>
 <translation id="1734824808160898225">Talvez o <ph name="PRODUCT_NAME" /> não consiga se manter atualizado</translation>
+<translation id="173522743738009831">Sobre o Privacy Sandbox</translation>
 <translation id="173628468822554835">Ok. Por padrão, os novos sites que você visitar não enviarão notificações.</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1737968601308870607">Cadastre um bug</translation>
@@ -898,7 +900,6 @@
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Faça login no dispositivo seguro</translation>
 <translation id="1977965994116744507">Aproxime o smartphone para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">As atualizações de software e de segurança futuras serão instaladas automaticamente.</translation>
 <translation id="1978057560491495741">Remover endereço</translation>
 <translation id="1979095679518582070">A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.</translation>
 <translation id="1979280758666859181">Você está mudando para um canal com uma versão mais antiga do <ph name="PRODUCT_NAME" />. A mudança de canal será aplicada quando a versão do canal corresponder à versão instalada atualmente no dispositivo.</translation>
@@ -1001,6 +1002,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}one{# número de telefone}other{# números de telefone}}</translation>
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Nova guia à direita</translation>
+<translation id="2111810003053064883">Os anunciantes podem estudar a eficácia dos anúncios sem rastrear você nos sites.</translation>
 <translation id="21133533946938348">Fixar guia</translation>
 <translation id="2113479184312716848">Abrir &amp;arquivo...</translation>
 <translation id="2113921862428609753">Acesso às informações de autoridade</translation>
@@ -1030,6 +1032,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2138398485845393913">A conexão com "<ph name="DEVICE_NAME" />" ainda está em andamento</translation>
 <translation id="2139545522194199494">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade de sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, conectar</translation>
 <translation id="2139919072249842737">Botão "Configurar"</translation>
+<translation id="2140788884185208305">Integridade da bateria</translation>
 <translation id="214169863967063661">Abrir as configurações de aparência</translation>
 <translation id="2142328300403846845">Abrir link como</translation>
 <translation id="2142582065325732898">Ative a <ph name="LINK1_BEGIN" />Sincronização do Chrome<ph name="LINK1_END" /> para ver as guias recentes do navegador. <ph name="LINK2_BEGIN" />Saiba mais<ph name="LINK2_END" /></translation>
@@ -1544,6 +1547,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2712173769900027643">Pedir permissão</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">Solicitação de chave de segurança</translation>
 <translation id="2715751256863167692">Esse upgrade redefine seu Chromebook e remove os dados do usuário atuais.</translation>
 <translation id="2716986496990888774">Esta configuração é gerenciada por um dos seus pais.</translation>
 <translation id="2718395828230677721">Modo noturno</translation>
@@ -2003,6 +2007,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3238192140106069382">Conectando e verificando</translation>
 <translation id="3239373508713281971">Tempo limite removido para <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Selecione o diretório raiz da extensão a ser empacotada. Para atualizar uma extensão, selecione também a chave privada a ser reutilizada.</translation>
+<translation id="3242905690080165035">Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas em algumas regiões. Por enquanto, os sites podem testar o Privacy Sandbox enquanto continuam usando as tecnologias atuais da Web, como cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Continuar com o som desativado</translation>
 <translation id="3246107497225150582">{0,plural, =1{Atualize o dispositivo em 1 dia}one{Atualize o dispositivo em # dia}other{Atualize o dispositivo em # dias}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Erro de rede</translation>
@@ -2164,6 +2169,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3428419049384081277">Você está conectado</translation>
 <translation id="3428747202529429621">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada</translation>
 <translation id="3428800329481094896">Buscando as chaves SSH do contêiner Linux</translation>
+<translation id="3429160811076349561">Os recursos de teste estão desativados</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
 <translation id="3432227430032737297">Remover todos os cookies mostrados</translation>
@@ -3147,6 +3153,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4541662893742891060">Não é possível se conectar a esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
 <translation id="4541810033354695636">realidade aumentada</translation>
 <translation id="4542520061254486227">Leia seus dados em <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Os anunciantes podem descobrir quando milhares de usuários compartilham um interesse, como uma multidão em um show, e selecionar anúncios para esse grupo em vez de para uma única pessoa.</translation>
 <translation id="4543778593405494224">Gerenciador de certificados</translation>
 <translation id="4544174279960331769">Avatar azul padrão</translation>
 <translation id="4545028762441890696">Para reativar, aceite as novas permissões:</translation>
@@ -3195,6 +3202,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4582563038311694664">Redefinir todas as configurações</translation>
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617">Não foi possível abrir <ph name="URL" /> em um navegador alternativo. Fale com o administrador do sistema.</translation>
+<translation id="4587645918878093912">Atualmente, os sites dependem de muitas tecnologias, como cookies de terceiros, para serviços importantes, como exibição de anúncios relevantes e medição de desempenho do site.</translation>
 <translation id="4589713469967853491">Os registros foram gravados no diretório Downloads.</translation>
 <translation id="4590324241397107707">Armazenamento de banco de dados</translation>
 <translation id="4592891116925567110">App de desenho com a stylus</translation>
@@ -4339,7 +4347,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5941343993301164315">Faça login em <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5942779427914696408">Visibilidade do dispositivo</translation>
-<translation id="5942964813783878922">Seu <ph name="DEVICE_TYPE" /> será reiniciado depois desta atualização. As atualizações de software e de segurança futuras serão instaladas automaticamente.</translation>
 <translation id="5944869793365969636">Ler código QR</translation>
 <translation id="5946591249682680882">Código de relatório <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Não foi possível analisar o arquivo</translation>
@@ -4623,6 +4630,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6271348838875430303">correção desfeita</translation>
 <translation id="6272643420381259437">Ocorreu um erro (<ph name="ERROR" />) ao fazer o download do plug-in</translation>
 <translation id="6273677812470008672">Qualidade</translation>
+<translation id="6275846828483490454">O Privacy Sandbox é uma iniciativa em andamento para preservar a Web livre que ajudará a proteger você contra mecanismos de rastreamento.</translation>
 <translation id="6276210637549544171">O proxy <ph name="PROXY_SERVER" /> exige um nome de usuário e uma senha.</translation>
 <translation id="6277105963844135994">Tempo limite de rede</translation>
 <translation id="6277518330158259200">T&amp;irar captura de tela</translation>
@@ -5277,6 +5285,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7018275672629230621">Ler e alterar seu histórico de navegação</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7022562585984256452">Sua página inicial foi definida.</translation>
+<translation id="7023206482239788111">Para preservar a vitalidade da Web livre, o Privacy Sandbox cria maneiras melhores de oferecer esses serviços, sem causar falhas e evitando que seus dados sejam rastreados clandestinamente na Internet.</translation>
 <translation id="7025082428878635038">Conheça uma nova maneira de navegar com gestos</translation>
 <translation id="7025190659207909717">Gerenciamento dos serviços de dados móveis</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir tudo em &amp;uma janela anônima}=1{Abrir em &amp;uma janela anônima}one{Abrir tudo ({COUNT}) em &amp;uma janela anônima}other{Abrir tudo ({COUNT}) em &amp;uma janela anônima}}</translation>
@@ -5455,6 +5464,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7234010996000898150">Cancelando restauração do Linux</translation>
 <translation id="7235716375204803342">Buscando atividades…</translation>
 <translation id="7235737137505019098">Sua chave de segurança não tem espaço suficiente para mais contas.</translation>
+<translation id="7238640585329759787">Quando este recurso estiver ativado, os sites poderão usar as técnicas de preservação de privacidade mostradas aqui para exibir o conteúdo e os serviços deles. Isso inclui alternativas ao rastreamento entre sites. Ao longo do tempo, é possível que outros testes sejam adicionados.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalhes</translation>
 <translation id="7240339475467890413">Conectar a um novo ponto de acesso?</translation>
 <translation id="7241389281993241388">Faça login no <ph name="TOKEN_NAME" /> para importar o certificado do cliente.</translation>
@@ -6115,6 +6125,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7968833647796919681">Ativar coleta de dados de desempenho</translation>
 <translation id="7968982339740310781">Visualizar detalhes</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7970618607181090249">Tela touchscreen detectada</translation>
 <translation id="7970673414865679092">Detalhes da Ethernet</translation>
 <translation id="7970882136539140748">Não é possível salvar o cartão no momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 com criptografia RSA</translation>
@@ -6553,6 +6564,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8480082892550707549">Mesmo que você tenha feito o download de arquivos deste site antes, o site pode estar temporariamente não seguro (invadido). Tente fazer o download desse arquivo mais tarde.</translation>
 <translation id="8480869669560681089">Dispositivo desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar a permissão de USB</translation>
+<translation id="8481980314595922412">Os recursos de teste estão ativados</translation>
 <translation id="8487678622945914333">Aproximar</translation>
 <translation id="8489156414266187072">As sugestões personalizadas são exibidas apenas na sua conta</translation>
 <translation id="8490896350101740396">Os aplicativos de quiosque "<ph name="UPDATED_APPS" />" a seguir foram atualizados. Reinicie o dispositivo para concluir o processo de atualização.</translation>
@@ -7063,6 +7075,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9031549947500880805">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">&amp;Colar</translation>
+<translation id="903386633044383289">Conectar-se a dispositivos</translation>
 <translation id="9037818663270399707">Sua conexão não é particular em todo o tráfego de rede</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Você só tem mais 1 tentativa.}one{Você só tem mais # tentativa.}other{Você só tem mais # tentativas.}}</translation>
@@ -7195,6 +7208,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9180281769944411366">O processo pode levar alguns minutos. Iniciando o contêiner Linux.</translation>
 <translation id="9180380851667544951">O site pode compartilhar sua tela</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
+<translation id="9185818139207739329">Ativar testes do Privacy Sandbox</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
 <translation id="9188732951356337132">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar seu filho e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Usar seu smartphone Android como uma chave de segurança</translation>

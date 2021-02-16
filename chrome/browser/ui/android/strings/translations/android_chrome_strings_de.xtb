@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> möchte eine Kopplung durchführen</translation>
 <translation id="2000419248597011803">Suchanfragen, die in die Adressleiste und das Suchfeld eingegeben wurden, sowie einige Cookies werden an Ihre Standardsuchmaschine gesendet</translation>
 <translation id="2002537628803770967">Kreditkarten und Adressen aus Google Pay</translation>
-<translation id="2010780124464321179">Link zu Text kann nicht erstellt werden. Teilen Sie den Link zu der Seite.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Datei}other{# Dateien}}</translation>
 <translation id="2017836877785168846">Löscht den Verlauf sowie Autovervollständigungen in der Adressleiste.</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
@@ -625,7 +624,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5524843473235508879">Weiterleitung blockiert.</translation>
 <translation id="5527082711130173040">Chrome benötigt Zugriff auf den Standort, um nach Geräten suchen zu können. <ph name="BEGIN_LINK1" />Berechtigungen aktualisieren.<ph name="END_LINK1" /> Außerdem ist der Standortzugriff <ph name="BEGIN_LINK2" />für dieses Gerät deaktiviert<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognito-Tabs schließen</translation>
-<translation id="5530920986376047241">Sie können Seiten zu Ihrer Leseliste hinzufügen, um sie wiederzufinden</translation>
 <translation id="5534640966246046842">Website kopiert</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -707,8 +705,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5982307838673692400">Inkognitotab öffnen</translation>
 <translation id="6000066717592683814">Google beibehalten</translation>
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sie haben noch <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> Seite}other{Sie haben noch <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> Seiten}}</translation>
-<translation id="6014293228235665243">Ungelesen</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Zum nächsten Tab wechseln</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -865,7 +861,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="702463548815491781">Empfohlen, wenn TalkBack oder der Schalterzugriff aktiviert ist</translation>
 <translation id="7027549951530753705">Wiederhergestellt: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passwörter</translation>
-<translation id="7030675613184250187">Sie können Seiten zu Ihrer Leseliste hinzufügen, um sie wiederzufinden oder offline zu lesen</translation>
 <translation id="7054588988317389591">Bildbeschreibungen abrufen?</translation>
 <translation id="7055152154916055070">Weiterleitung blockiert:</translation>
 <translation id="7063006564040364415">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden.</translation>

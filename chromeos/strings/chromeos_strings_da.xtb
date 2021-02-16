@@ -107,6 +107,7 @@
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
+<translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">CPU-hastigheden er i øjeblikket begrænset for at spare på batteriet eller nedkøle enheden</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
+<translation id="4155551848414053977">Tjek, at scanneren er tændt og tilgængelig via dit netværk eller en direkte forbindelse</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
@@ -210,7 +212,7 @@
 <translation id="5760715441271661976">Tilstand for portal</translation>
 <translation id="5797428682393400134">GENNEMFØRT</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
-<translation id="5844247382766192936"><ph name="TEST_NAME" />-testen er annulleret</translation>
+<translation id="583281660410589416">Ukendt</translation>
 <translation id="5849570051105887917">Kode til udbyder til hjem</translation>
 <translation id="5866840822086176774">Meget stærk</translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
 <translation id="6191293864534840972">Ugyldige navneservere</translation>
+<translation id="6223752125779001553">Der er ingen tilgængelige scannere</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>

@@ -894,7 +894,6 @@
 <translation id="1975841812214822307">Eliminar…</translation>
 <translation id="1976150099241323601">Acceder al dispositivo de seguridad</translation>
 <translation id="1977965994116744507">Acerca el teléfono para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Se instalarán automáticamente las futuras versiones del software y las actualizaciones de seguridad.</translation>
 <translation id="1978057560491495741">Quitar dirección</translation>
 <translation id="1979095679518582070">Aunque esta función esté desactivada, este dispositivo podrá enviar la información necesaria para los servicios esenciales, como seguridad y actualizaciones del sistema.</translation>
 <translation id="1979280758666859181">Estás por cambiar a un canal que tiene una versión anterior de <ph name="PRODUCT_NAME" />. El cambio de canal se aplicará cuando la versión del canal coincida con la versión que esté instalada en ese momento en tu dispositivo.</translation>
@@ -4333,7 +4332,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5941343993301164315">Accede a <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5942779427914696408">Visibilidad del dispositivo</translation>
-<translation id="5942964813783878922">Tu <ph name="DEVICE_TYPE" /> se reiniciará después de esta actualización. Se instalarán automáticamente las futuras versiones del software y las actualizaciones de seguridad.</translation>
 <translation id="5944869793365969636">Escanea el código QR</translation>
 <translation id="5946591249682680882">ID de informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">No se puede analizar el archivo</translation>

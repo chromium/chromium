@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">يريد <ph name="SITE" /> الاقتران</translation>
 <translation id="2000419248597011803">يُرسِل بعض ملفات تعريف الارتباط وعمليات البحث من شريط العناوين ومربّع البحث إلى محرِّك البحث التلقائي.</translation>
 <translation id="2002537628803770967">‏بطاقات الائتمان والعناوين باستخدام Google Pay</translation>
-<translation id="2010780124464321179">يتعذّر إنشاء رابط للنص. يمكنك مشاركة رابط الصفحة.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{ملف واحد (#)}zero{# ملف}two{ملفان (#)}few{# ملفات}many{# ملفًا}other{# ملف}}</translation>
 <translation id="2017836877785168846">محو السجلّ وعمليات الإكمال التلقائي في شريط العناوين.</translation>
 <translation id="2021896219286479412">عناصر التحكم لموقع في وضع ملء الشاشة</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">تم حظر إعادة التوجيه.</translation>
 <translation id="5527082711130173040">‏يحتاج Chrome للوصول إلى الموقع للبحث عن الأجهزة. <ph name="BEGIN_LINK1" />تحديث الأذونات<ph name="END_LINK1" />. الوصول إلى الموقع <ph name="BEGIN_LINK2" />غير مفعّل لهذا الجهاز<ph name="END_LINK2" /> أيضًا.</translation>
 <translation id="5530766185686772672">إغلاق علامات تبويب التصفح المتخفي</translation>
-<translation id="5530920986376047241">يمكنك حفظ الصفحات في قائمة القراءة للوصول إليها مرة أخرى لاحقًا.</translation>
 <translation id="5534640966246046842">تم نسخ الموقع</translation>
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">فتح علامة تبويب في وضع التصفُّح المتخفي</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{لديك صفحة واحدة (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />).}zero{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة.}two{لديك صفحتان (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />).}few{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحات.}many{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة.}other{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة.}}</translation>
-<translation id="6014293228235665243">غير مقروءة</translation>
 <translation id="6036057147555329831">وحدة الرعاية المركزية الإضافية</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">‏يُوصى به عند تفعيل TalkBack أو الوصول عبر مفتاح التحويل</translation>
 <translation id="7027549951530753705">تمّت استعادة <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
-<translation id="7030675613184250187">يمكنك حفظ صفحات في "قائمة القراءة" للوصول إليها مرة أخرى أو قراءتها بلا إنترنت.</translation>
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
 <translation id="7063006564040364415">تعذر الاتصال بخادم المزامنة.</translation>
@@ -1006,7 +1001,7 @@
 <translation id="8015452622527143194">إعادة كامل محتوى الصفحة إلى الحجم التلقائي</translation>
 <translation id="8026334261755873520">محو بيانات التصفُّح</translation>
 <translation id="8027863900915310177">اختيار مكان التنزيل</translation>
-<translation id="8032569120109842252">متابَع</translation>
+<translation id="8032569120109842252">تتم متابعته حاليًا</translation>
 <translation id="8035133914807600019">مجلد جديد...</translation>
 <translation id="8037750541064988519">عدد الأيام المتبقية: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">تمّ إجراء عملية التحقُّق للتوّ.</translation>

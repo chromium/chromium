@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
 <translation id="1952728750904661634">Accedi con l'account gestito</translation>
 <translation id="1965935827552890526">Finisci ciò che stavi facendo in un'altra finestra di Chrome aperta.</translation>
+<translation id="1973912524893600642">Conserva i dati</translation>
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
@@ -299,6 +300,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4038354071007134711">Impossibile aprire il file con le app sul dispositivo.</translation>
 <translation id="4042870976416480368">Trova nella pagina</translation>
 <translation id="4049507953662678203">Controlla la connessione di rete e riprova.</translation>
+<translation id="4079195788735381731">La tua organizzazione ha disconnesso il tuo account</translation>
 <translation id="4082688844002261427">Gestisci la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca, gli annunci e non solo</translation>
 <translation id="408404951701638773">Ora è più facile raggiungere la barra di ricerca</translation>
 <translation id="411254640334432676">Download non riuscito.</translation>
@@ -411,9 +413,9 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Attiva la sincronizzazione</translation>
+<translation id="5360976571138293719">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Apri immagine</translation>
 <translation id="5407969256130905701">Annulla modifiche</translation>
-<translation id="5409365236829784218">Non ci sono applicazioni installate in grado di aprire questo file.</translation>
 <translation id="5416022985862681400">Ultimi 7 giorni</translation>
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
@@ -497,6 +499,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6254066287920239840">Apri i link all'interno dell'app invece che nel browser.</translation>
 <translation id="6255097610484507482">Modifica carta di credito</translation>
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
 <translation id="6303969859164067831">Esci e disattiva la sincronizzazione</translation>
 <translation id="6308436439357671616">In questo modo puoi scattare e caricare foto.</translation>
 <translation id="6324528485781869530">Cambia account di sincronizzazione</translation>

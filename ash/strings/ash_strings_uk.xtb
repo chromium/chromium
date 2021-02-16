@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">Мобільних пристроїв не знайдено.</translation>
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6727969043791803658">Під'єднано, акумулятор заряджено на <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Застосовується адміністратором</translation>
 <translation id="6751826523481687655">Відстеження ефективності ввімкнено</translation>
 <translation id="6752912906630585008">Робочий стіл "<ph name="REMOVED_DESK" />" видалено й об'єднано з робочим столом "<ph name="RECEIVE_DESK" />"</translation>

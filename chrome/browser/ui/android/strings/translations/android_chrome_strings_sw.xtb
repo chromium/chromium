@@ -146,7 +146,6 @@ Kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha bado kinashughulikiwa na 
 <translation id="2000419248597011803">Hutuma baadhi ya vidakuzi na utafutaji kutoka kwenye sehemu ya anwani na kisanduku cha kutafutia kwenye mtambo wako chaguomsingi wa kutafuta</translation>
 <translation id="2001360696084428949">Jaribu kuunganisha simu yako ukitumia kebo ya USB</translation>
 <translation id="2002537628803770967">Kadi za mikopo na anwani zinazotumia Google Pay</translation>
-<translation id="2010780124464321179">Imeshindwa kuweka kiungo cha maandishi. Shiriki kiungo cha ukurasa.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Faili #}other{Faili #}}</translation>
 <translation id="2017836877785168846">Hufuta historia na ujazaji kiotomatiki katika sehemu ya anwani.</translation>
 <translation id="2021896219286479412">Vidhibiti vya tovuti vya skrini nzima</translation>
@@ -645,7 +644,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5524843473235508879">Imezuia shughuli ya kuelekeza kwingine.</translation>
 <translation id="5527082711130173040">Chrome inahitaji idhini ya kufikia mahali ili itafute vifaa. <ph name="BEGIN_LINK1" />Badilisha ruhusa<ph name="END_LINK1" />. Kipengele cha idhini ya kufikia mahali pia <ph name="BEGIN_LINK2" />kimezimwa kwenye kifaa hiki<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Funga vichupo fiche</translation>
-<translation id="5530920986376047241">Unaweza kuhifadhi kurasa kwenye orodha yako ya kusoma ili uweze kuzipata tena</translation>
 <translation id="5534640966246046842">Tovuti imenakiliwa</translation>
 <translation id="5548606607480005320">Angalizo la usalama</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
@@ -727,8 +725,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5982307838673692400">Fungua kichupo Fiche</translation>
 <translation id="6000066717592683814">Endelea Kutumia Google</translation>
 <translation id="6005538289190791541">Nenosiri linalopendekezwa</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Una ukurasa <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />}other{Una kurasa <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />}}</translation>
-<translation id="6014293228235665243">Ambazo Hujasoma</translation>
 <translation id="6036057147555329831">ICU ya Ziada</translation>
 <translation id="6039379616847168523">Nenda kwenye kichupo kinachofuata</translation>
 <translation id="6040143037577758943">Funga</translation>
@@ -887,7 +883,6 @@ Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />u
 <translation id="702463548815491781">Inapendekezwa wakati umewasha TalkBack au kipengele cha Kufikia Kupitia Swichi</translation>
 <translation id="7027549951530753705">Umerejesha <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Manenosiri</translation>
-<translation id="7030675613184250187">Unaweza kuhifadhi kurasa kwenye orodha yako ya kusoma ili uzipate tena au usome nje ya mtandao</translation>
 <translation id="7054588988317389591">Ungependa kupata maelezo ya picha?</translation>
 <translation id="7055152154916055070">Imezuiwa kuelekeza kwingine:</translation>
 <translation id="7063006564040364415">Haikuweza kuunganisha kwenye seva ya usawazishaji.</translation>

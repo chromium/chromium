@@ -898,7 +898,6 @@
 <translation id="1975841812214822307">አስወግድ...</translation>
 <translation id="1976150099241323601">የደህንነት መሣሪያ ውስጥ ይግቡ</translation>
 <translation id="1977965994116744507">የእርስዎን <ph name="DEVICE_TYPE" /> ለመክፈት የእርስዎን ስልክ ያስጠጉት።</translation>
-<translation id="1978006917103730774">ወደፊት ሶፍትዌር እና ደህንነት ዝማኔዎች በራስሰር ይጫናሉ።</translation>
 <translation id="1978057560491495741">አድራሻ አስወግድ</translation>
 <translation id="1979095679518582070">ይህን ባሕሪ ማጥፋት ይህ መሣሪያ እንደ የሥርዓት ዝማኔዎች እና ደህንነት ላሉ አስፈላጊ አገልግሎቶች የሚያስፈልገውን መረጃ የመላክ ችሎታው ላይ ተጽዕኖ አያሳርፍበትም።</translation>
 <translation id="1979280758666859181">የቆየ የ<ph name="PRODUCT_NAME" /> ስሪት ወዳለው ሰርጥ እየቀየሩ ነው። የስርጡ ስሪት አሁን በመሣሪያዎ ላይ ከተጫነው ስሪት ጋር ሲዛመድ ነው የሰርጡ ለውጥ የሚተገበረው።</translation>
@@ -4334,7 +4333,6 @@
 <translation id="5941343993301164315">እባክዎ ወደ <ph name="TOKEN_NAME" /> ይግቡ።</translation>
 <translation id="5941711191222866238">አሳንስ</translation>
 <translation id="5942779427914696408">የመሣሪያ ታይነት</translation>
-<translation id="5942964813783878922">የእርስዎ <ph name="DEVICE_TYPE" /> ከዚህ ዝማኔ በኋላ እንደገና ይጀምራል። ወደፊት ሶፍትዌር እና ደህንነት ዝማኔዎች በራስሰር ይጫናሉ።</translation>
 <translation id="5944869793365969636">የQR ኮድ ይቃኙ</translation>
 <translation id="5946591249682680882">የሪፖርት መታወቂያ <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">ፋይልን መተንተን አልተቻለም</translation>

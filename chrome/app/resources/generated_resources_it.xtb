@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Apri link in <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuova notifica}other{# nuove notifiche}}</translation>
 <translation id="1139343347646843679">Si è verificato un errore durante la configurazione di Linux. Contatta l'amministratore.</translation>
+<translation id="1139923033416533844">Utilizzo della memoria</translation>
 <translation id="1140351953533677694">Accesso ai dispositivi seriali e Bluetooth</translation>
 <translation id="114036956334641753">Audio e sottotitoli</translation>
 <translation id="1140746652461896221">Blocco dei contenuti nelle pagine visitate</translation>
@@ -677,6 +678,7 @@
 <translation id="1734212868489994726">Azzurro</translation>
 <translation id="1734230530703461088">Impossibile caricare le estensioni entro il limite di tempo. Contatta l'amministratore.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> potrebbe non essere in grado di aggiornarsi automaticamente</translation>
+<translation id="173522743738009831">Informazioni su Privacy Sandbox</translation>
 <translation id="173628468822554835">Ok. Per impostazione predefinita, i nuovi siti che visiti non ti invieranno notifiche.</translation>
 <translation id="1736419249208073774">Esplora</translation>
 <translation id="1737968601308870607">Segnala bug</translation>
@@ -897,7 +899,6 @@
 <translation id="1975841812214822307">Rimuovi...</translation>
 <translation id="1976150099241323601">Accedi a dispositivo di sicurezza</translation>
 <translation id="1977965994116744507">Avvicina il telefono per sbloccare il tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">I futuri aggiornamenti software e della sicurezza verranno installati automaticamente.</translation>
 <translation id="1978057560491495741">Rimuovi indirizzo</translation>
 <translation id="1979095679518582070">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.</translation>
 <translation id="1979280758666859181">Stai per passare a un canale con una versione precedente di <ph name="PRODUCT_NAME" />. Il cambio di canale verrà applicato quando la versione del canale corrisponderà alla versione attualmente installata sul dispositivo.</translation>
@@ -1000,6 +1001,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2108349519800154983">{COUNT,plural, =1{Numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="211144231511833662">Cancella Tipi</translation>
 <translation id="2111670510994270194">Nuova scheda a destra</translation>
+<translation id="2111810003053064883">Gli inserzionisti possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.</translation>
 <translation id="21133533946938348">Blocca scheda</translation>
 <translation id="2113479184312716848">Apri &amp;file...</translation>
 <translation id="2113921862428609753">Accesso alle informazioni sull'autorità</translation>
@@ -1029,6 +1031,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2138398485845393913">Connessione a "<ph name="DEVICE_NAME" />" ancora in corso</translation>
 <translation id="2139545522194199494">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, connetti</translation>
 <translation id="2139919072249842737">Pulsante di configurazione</translation>
+<translation id="2140788884185208305">Condizioni batteria</translation>
 <translation id="214169863967063661">Apri le impostazioni relative all'aspetto</translation>
 <translation id="2142328300403846845">Apri link come</translation>
 <translation id="2142582065325732898">Attiva <ph name="LINK1_BEGIN" />Sincronizzazione Chrome<ph name="LINK1_END" /> per visualizzare le schede recenti di Chrome. <ph name="LINK2_BEGIN" />Scopri di più<ph name="LINK2_END" /></translation>
@@ -1542,6 +1545,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2712173769900027643">Chiedi autorizzazione</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">Richiesta di token di sicurezza</translation>
 <translation id="2715751256863167692">Questo upgrade ripristina il Chromebook e rimuove i dati utente correnti.</translation>
 <translation id="2716986496990888774">Questa impostazione è gestita da un genitore.</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
@@ -2001,6 +2005,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3238192140106069382">Connessione e verifica in corso…</translation>
 <translation id="3239373508713281971">Limite di tempo per l'app <ph name="APP_NAME" /> rimosso</translation>
 <translation id="3241680850019875542">Seleziona la directory principale dell'estensione di cui creare il pacchetto. Per aggiornare un'estensione, seleziona anche il file delle chiave privata da riutilizzare.</translation>
+<translation id="3242905690080165035">Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto in alcune aree geografiche. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
 <translation id="3246107497225150582">{0,plural, =1{Aggiorna il dispositivo entro un giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
@@ -2161,6 +2166,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3428419049384081277">Hai eseguito l'accesso.</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3428800329481094896">Recupero delle chiavi SSH del container Linux</translation>
+<translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3429271624041785769">Lingue contenuti web</translation>
 <translation id="3429275422858276529">Aggiungi questa pagina ai preferiti per trovarla facilmente in seguito</translation>
 <translation id="3432227430032737297">Rimuovi tutti i cookie visualizzati</translation>
@@ -3144,6 +3150,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4541662893742891060">Impossibile connettersi a questo profilo. Per assistenza tecnica, contatta il tuo operatore.</translation>
 <translation id="4541810033354695636">realtà aumentata</translation>
 <translation id="4542520061254486227">Lettura dei dati su <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Gli inserzionisti possono sapere quando migliaia di utenti hanno in comune un interesse simile, come la folla a un concerto, e selezionare annunci attinenti alla folla anziché a una singola persona.</translation>
 <translation id="4543778593405494224">Gestione certificati</translation>
 <translation id="4544174279960331769">Avatar blu predefinito</translation>
 <translation id="4545028762441890696">Per riattivarla, accetta le nuove autorizzazioni:</translation>
@@ -3192,6 +3199,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4582563038311694664">Ripristina tutte le impostazioni</translation>
 <translation id="4585793705637313973">Modifica pagina</translation>
 <translation id="4586275095964870617">Impossibile aprire <ph name="URL" /> in un browser alternativo. Contatta l'amministratore di sistema.</translation>
+<translation id="4587645918878093912">Al giorno d'oggi, i siti web si affidano a tante tecnologie, come i cookie di terze parti, per servizi importanti quali la visualizzazione di annunci pertinenti e la valutazione delle prestazioni di un sito.</translation>
 <translation id="4589713469967853491">Log scritti nella directory Download.</translation>
 <translation id="4590324241397107707">Archiviazione database</translation>
 <translation id="4592891116925567110">App di disegno con stilo</translation>
@@ -4335,7 +4343,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5941343993301164315">Accedi a <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5942779427914696408">Visibilità del dispositivo</translation>
-<translation id="5942964813783878922">Il dispositivo <ph name="DEVICE_TYPE" /> si riavvierà dopo questo aggiornamento. I futuri aggiornamenti software e della sicurezza verranno installati automaticamente.</translation>
 <translation id="5944869793365969636">Scansiona codice QR</translation>
 <translation id="5946591249682680882">ID rapporto <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Impossibile analizzare il file</translation>
@@ -4619,6 +4626,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6271348838875430303">correzione annullata</translation>
 <translation id="6272643420381259437">Si è verificato un errore (<ph name="ERROR" />) durante il download del plug-in</translation>
 <translation id="6273677812470008672">Qualità</translation>
+<translation id="6275846828483490454">Privacy Sandbox è un'iniziativa in corso per preservare il Web aperto che contribuirà a proteggerti dai meccanismi di tracciamento.</translation>
 <translation id="6276210637549544171">Il proxy <ph name="PROXY_SERVER" /> richiede un nome utente e una password.</translation>
 <translation id="6277105963844135994">Timeout di rete</translation>
 <translation id="6277518330158259200">&amp;Acquisisci screenshot</translation>
@@ -5273,6 +5281,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7018275672629230621">Lettura e modifica della cronologia di navigazione</translation>
 <translation id="7019805045859631636">Veloce</translation>
 <translation id="7022562585984256452">La tua pagina iniziale è stata impostata.</translation>
+<translation id="7023206482239788111">Privacy Sandbox preserva la vitalità del Web aperto offrendo metodi migliori per eseguire questi servizi, senza interrompere il funzionamento dei siti, impedendo allo stesso tempo il tuo tracciamento furtivo sul Web.</translation>
 <translation id="7025082428878635038">Scopri un nuovo modo per navigare tramite gesti</translation>
 <translation id="7025190659207909717">Gestione del servizio dati mobile</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Apri tutti nella finestra di navigazione in &amp;incognito}=1{Apri nella finestra di navigazione in &amp;incognito}other{Apri tutti ({COUNT}) nella finestra di navigazione in &amp;incognito}}</translation>
@@ -5451,6 +5460,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7234010996000898150">Annullamento del ripristino di Linux</translation>
 <translation id="7235716375204803342">Recupero delle attività in corso...</translation>
 <translation id="7235737137505019098">Sul token di sicurezza non c'è spazio a sufficienza per altri account.</translation>
+<translation id="7238640585329759787">Se attivi questa funzionalità, i siti potrebbero usare le tecniche che garantiscono la tutela della privacy mostrate qui per fornire i loro contenuti e servizi. Sono incluse alternative al tracciamento tra siti. Nel tempo potrebbero essere aggiunte altre prove.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, dettagli</translation>
 <translation id="7240339475467890413">Eseguire la connessione al nuovo hotspot?</translation>
 <translation id="7241389281993241388">Accedi a <ph name="TOKEN_NAME" /> per importare il certificato client.</translation>
@@ -6111,6 +6121,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7968833647796919681">Attiva raccolta di dati sul rendimento</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>
 <translation id="7969046989155602842">Comando</translation>
+<translation id="7970618607181090249">Touchscreen rilevato</translation>
 <translation id="7970673414865679092">Dettagli Ethernet</translation>
 <translation id="7970882136539140748">Impossibile salvare la carta al momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con crittografia RSA</translation>
@@ -6548,6 +6559,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8480082892550707549">Anche se hai già scaricato file da questo sito in passato, il sito potrebbe essere temporaneamente non sicuro (compromesso). Prova a scaricare il file in un secondo momento.</translation>
 <translation id="8480869669560681089">Dispositivo sconosciuto di <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>
+<translation id="8481980314595922412">Funzionalità di prova attive</translation>
 <translation id="8487678622945914333">Ingrandisci</translation>
 <translation id="8489156414266187072">I suggerimenti personali vengono mostrati soltanto nel tuo account</translation>
 <translation id="8490896350101740396">Le seguenti app kiosk "<ph name="UPDATED_APPS" />" sono state aggiornate. Riavvia il dispositivo per completare la procedura di aggiornamento.</translation>
@@ -7057,6 +7069,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9031549947500880805">Effettua il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. La copia di backup include i dati delle app.</translation>
 <translation id="9033765790910064284">Continua comunque</translation>
 <translation id="9033857511263905942">&amp;Incolla</translation>
+<translation id="903386633044383289">Collegati a dispositivi</translation>
 <translation id="9037818663270399707">La connessione non è privata per tutto il traffico di rete</translation>
 <translation id="9037965129289936994">Mostra originale</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Hai ancora a disposizione un tentativo.}other{Hai ancora a disposizione # tentativi.}}</translation>
@@ -7189,6 +7202,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9180281769944411366">Questa procedura potrebbe richiedere alcuni minuti. Avvio del container Linux in corso.</translation>
 <translation id="9180380851667544951">Il sito può condividere lo schermo</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# app}}</translation>
+<translation id="9185818139207739329">Attiva prove Privacy Sandbox</translation>
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9188732951356337132">Invia dati diagnostici e sull'utilizzo. Questo dispositivo attualmente invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Ulteriori informazioni<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Utilizza il tuo telefono Android come token di sicurezza</translation>

@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> जोडा बनाउन चाहन्छ</translation>
 <translation id="2000419248597011803">यसले ठेगाना पट्टी र खोज बाकसका केही कुकी र खोजहरूलाई तपाईंको पूर्वनिर्धारित खोज इन्जिनमा पठाउँछ</translation>
 <translation id="2002537628803770967">Google Pay को प्रयोग गर्ने क्रेडिट कार्ड र ठेगानाहरू</translation>
-<translation id="2010780124464321179">हाइलाइट गरिएको पाठको लिंक बनाउन सकिँदैन। पृष्ठको लिंक सेयर गर्नुहोस्।</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइलहरू}}</translation>
 <translation id="2017836877785168846">ठेगाना पट्टीबाट इतिहास र स्वतः पूर्णतासम्बन्धी सुविधाहरूलाई खाली गर्दछ।</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
@@ -624,7 +623,6 @@
 <translation id="5524843473235508879">रिडिरेक्ट गर्न रोक लगाइयो।</translation>
 <translation id="5527082711130173040">यन्त्रहरू स्क्यान गर्न Chrome लाई स्थान माथिको पहुँच चाहिन्छ। <ph name="BEGIN_LINK1" />अनुमतिहरूलाई अपडेट गर्नुहोस्<ph name="END_LINK1" />। यो यन्त्रमा स्थान माथिको पहुँचलाई पनि <ph name="BEGIN_LINK2" />निष्क्रिय पारिएको छ<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">इनकगनिटो ट्याबहरू बन्द गर्नुहोस्</translation>
-<translation id="5530920986376047241">तपाईं पेजहरू आफ्नो अध्ययन सूचीमा सुरक्षित गरी ती पेज पछि फेरि भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="5534640966246046842">साइट प्रतिलिपि गरियो</translation>
 <translation id="5548606607480005320">सुरक्षा जाँच</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
@@ -706,8 +704,6 @@
 <translation id="5982307838673692400">इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="6000066717592683814">Google लाई पूर्वनिर्धारित खोज इञ्जिनका रूपमा कायम राख्नुहोस्</translation>
 <translation id="6005538289190791541">सिफारिस गरिएको पासवर्ड</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> वटा पेज छन्}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> वटा पेज छन्}}</translation>
-<translation id="6014293228235665243">नपढिएको</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">अर्को ट्याबमा जानुहोस्</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
@@ -864,7 +860,6 @@
 <translation id="702463548815491781">TalkBack वा पहुँच स्विच गर्नुहोस् नामक सुविधा सक्रिय हुँदा मात्र सिफारिस गरिन्छ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोर गरियो</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
-<translation id="7030675613184250187">तपाईं पृष्ठहरूलाई आफ्नो अध्ययन सूचीमा सुरक्षित गरी ती पृष्ठ पछि फेरि फेला पार्न वा इन्टरनेट नभएका बेलामा पढ्न सक्नुहुन्छ</translation>
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7063006564040364415">समक्रमण सर्भरमा जडान गर्न सकेन।</translation>

@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> soovib siduda</translation>
 <translation id="2000419248597011803">Saadab teie vaikeotsingumootorile mõned küpsisefailid ja otsingud teie aadressiribalt ning otsingukastist</translation>
 <translation id="2002537628803770967">Krediitkaardid ja aadressid, mis kasutavad teenust Google Pay</translation>
-<translation id="2010780124464321179">Teksti jaoks ei saa linki luua. Jagage linki lehel.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fail}other{# faili}}</translation>
 <translation id="2017836877785168846">Kustutab aadressiribalt ajaloo ja automaatse täitmise teabe.</translation>
 <translation id="2021896219286479412">Saidi juhtelemendid täisekraanil</translation>
@@ -625,7 +624,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5524843473235508879">Ümbersuunamine blokeeriti.</translation>
 <translation id="5527082711130173040">Chrome vajab seadmete otsimiseks juurdepääsu teie asukohale. <ph name="BEGIN_LINK1" />Värskendage lube<ph name="END_LINK1" />. Juurdepääs asukohale on samuti <ph name="BEGIN_LINK2" />selles seadmes välja lülitatud<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognito vahelehtede sulgemine</translation>
-<translation id="5530920986376047241">Saate oma lehti salvestada lugemisloendisse, et neid hiljem uuesti vaadata</translation>
 <translation id="5534640966246046842">Sait on kopeeritud</translation>
 <translation id="5548606607480005320">Ohutuskontroll</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
@@ -707,8 +705,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5982307838673692400">Inkognito vahelehe avamine</translation>
 <translation id="6000066717592683814">Säilita Google</translation>
 <translation id="6005538289190791541">Soovitatud parool</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Teil on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> leht}other{Teil on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lehte}}</translation>
-<translation id="6014293228235665243">Lugemata</translation>
 <translation id="6036057147555329831">Täiendav ICU</translation>
 <translation id="6039379616847168523">Järgmisele vahelehele liikumine</translation>
 <translation id="6040143037577758943">Sulge</translation>
@@ -865,7 +861,6 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
 <translation id="7027549951530753705">Taastati <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Paroolid</translation>
-<translation id="7030675613184250187">Saate oma lehed salvestada lugemisloendisse, et need hiljem leida või neid võrguühenduseta lugeda</translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
 <translation id="7063006564040364415">Sünkroonimisserveriga ei saanud ühendust.</translation>

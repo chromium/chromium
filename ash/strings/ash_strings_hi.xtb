@@ -660,6 +660,7 @@
 <translation id="6715542151869432661">कोई मोबाइल डिवाइस नहीं मिला.</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6727969043791803658">कनेक्ट किया गया, <ph name="BATTERY_PERCENTAGE" /> % बैटरी बची है</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">यह सुविधा आपके एडमिन ने लागू की है</translation>
 <translation id="6751826523481687655">'परफ़ॉर्मेंस ट्रेसिंग' चालू कर दी गई है</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> को हटा दिया गया है और इसे डेस्क<ph name="RECEIVE_DESK" /> के साथ मिला दिया गया है</translation>

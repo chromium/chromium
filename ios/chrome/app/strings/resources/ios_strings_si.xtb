@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">හැකි විට, වෙබ් අඩවි ඔබේ කැමතිම භාෂාවෙන් පෙළ පෙන්වනු ඇත.</translation>
 <translation id="1952728750904661634">කළමනාකරණය කරන ලද ගිණුම සමගින් පිරීම</translation>
 <translation id="1965935827552890526">ඔබගේ අනෙක් විවෘත Chrome කවුළුව තුළ ඔබ කරමින් සිටි දේ අවසන් කරන්න.</translation>
+<translation id="1973912524893600642">දත්ත තබා ගන්න</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
 <translation id="2015722694326466240">මුරපද බැලීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">ගොනුව විවෘත කිරීමට මෙම උපාංගයෙහි යෙදුමක් නැත</translation>
 <translation id="4042870976416480368">පිටුවෙහි සොයා ගන්න</translation>
 <translation id="4049507953662678203">ඔබට ජාල සම්බන්ධතාවක් ඇති බව සහතික කරගෙන, නැවත උත්සාහ කරන්න.</translation>
+<translation id="4079195788735381731">ඔබගේ සංවිධානය විසින් ඔබව වරන ලදි</translation>
 <translation id="4082688844002261427">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීම, දැන්වීම් සහ තවත් දේ පුද්ගලායන කිරීමට භාවිත කෙරෙන ආකාරය පාලන කරන්න</translation>
 <translation id="408404951701638773">දැන් සෙවුම් තීරුවට ළඟා වීමට පහසුය</translation>
 <translation id="411254640334432676">බාගැනීම අසාර්ථකයි</translation>
@@ -411,9 +413,9 @@
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5327248766486351172">නම</translation>
 <translation id="5339316356165661760">සමමුහුර්ත කිරීම ක්‍රියාත්ම කරන්න</translation>
+<translation id="5360976571138293719">පෞද්ගලිකත්වය, ආරක්ෂාව සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> බලන්න</translation>
 <translation id="5388358297987318779">රූපය විවෘත කරන්න</translation>
 <translation id="5407969256130905701">වෙනස්කම් ඉවත ලන්න</translation>
-<translation id="5409365236829784218">මෙම ගොනුව විවෘත කළ හැකි යෙදුම් ස්ථාපනය කර නැත.</translation>
 <translation id="5416022985862681400">අන්තිම දින 7</translation>
 <translation id="543338862236136125">මුරපදය සංස්කරණ කරන්න</translation>
 <translation id="5433691172869980887">පරිශීලක නම පිටපත් කරන ලදී</translation>
@@ -497,6 +499,7 @@
 <translation id="6254066287920239840">බ්‍රවුසරය වෙනුවට යෙදුම තුළ සබැඳි විවෘත කරන්න.</translation>
 <translation id="6255097610484507482">ක්‍රෙඩිට් කාඩ්පත සංස්කරණය කරන්න</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> පරිවර්තන කිරීමට පිරිනමන්න</translation>
+<translation id="6293101329759844770">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කිරීමට, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> විවෘත කර සුරක්ෂිත බ්‍රවුස් කිරීම තට්ටු කරන්න.</translation>
 <translation id="6303969859164067831">වරනය වී සමමුහුව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="6308436439357671616">මෙය ඔබට ඡායාරූප ගෙන උඩුගත කිරීමට ඉඩ දෙයි.</translation>
 <translation id="6324528485781869530">සමමුහුර්ත ගිණුම මාරු කරන්න</translation>

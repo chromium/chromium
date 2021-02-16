@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> जोडू इच्छिते</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="2002537628803770967">Google Pay वापरून क्रेडिट कार्ड आणि पत्ते</translation>
-<translation id="2010780124464321179">मजकुराची लिंक तयार करू शकत नाही. पेजची लिंक शेअर करा.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
 <translation id="2017836877785168846">ॲड्रेस बारमधील इतिहास आणि आपोआप पूर्ण केलेले साफ करते.</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">रीडिरेक्‍ट ब्लॉक केले.</translation>
 <translation id="5527082711130173040">डिव्हाइस स्कॅन करण्‍यासाठी Chrome ला स्थान ॲक्सेसची आवश्यकता असते. <ph name="BEGIN_LINK1" />परवानग्या अपडेट करा<ph name="END_LINK1" />. स्थान ॲक्सेस देखील <ph name="BEGIN_LINK2" />या डिव्हाइसाठी बंद केला आहे<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">गुप्त टॅब बंद करा</translation>
-<translation id="5530920986376047241">पेज पुन्हा सापडण्यासाठी तुम्ही तुमच्या वाचन सूचीमध्ये ती सेव्ह करू शकता</translation>
 <translation id="5534640966246046842">साइट कॉपी केली</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">गुप्त टॅब उघडा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज आहे}other{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज आहेत}}</translation>
-<translation id="6014293228235665243">न वाचलेले</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">TalkBack किंवा स्विच ॲक्सेस सुरू असताना शिफारस केलेले</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोअर केले</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
-<translation id="7030675613184250187">पेज पुन्हा शोधण्यासाठी किंवा ऑफलाइन वाचण्यासाठी तुम्ही ती तुमच्या वाचन सूचीवर सेव्ह करू शकता</translation>
 <translation id="7054588988317389591">इमेजची वर्णने मिळवायची का?</translation>
 <translation id="7055152154916055070">रीडिरेक्ट ब्लॉक केले:</translation>
 <translation id="7063006564040364415">संकालित सर्व्हरशी कनेक्ट करू शकलो नाही.</translation>

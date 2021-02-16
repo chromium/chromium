@@ -249,7 +249,7 @@
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1272293450992660632">Les valeurs de code PIN sont différentes.</translation>
 <translation id="1272978324304772054">Ce compte utilisateur n'appartient pas au domaine auprès duquel l'appareil est enregistré. Si vous souhaitez vous enregistrer auprès d'un autre domaine, vous devez d'abord suivre la procédure de récupération de votre appareil.</translation>
-<translation id="1274997165432133392">Cookies et autres données de site</translation>
+<translation id="1274997165432133392">Cookies et autres données des sites</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Créez un code différent de l'actuel</translation>
@@ -898,7 +898,6 @@
 <translation id="1975841812214822307">Supprimer…</translation>
 <translation id="1976150099241323601">Se connecter au dispositif de sécurité</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone pour déverrouiller votre <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">Les prochaines mises à jour logicielles et de sécurité seront installées automatiquement.</translation>
 <translation id="1978057560491495741">Supprimer l'adresse</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels tels que les mises à jour et la sécurité du système.</translation>
 <translation id="1979280758666859181">Vous souhaitez installer une ancienne version de <ph name="PRODUCT_NAME" />. Ce changement sera appliqué dès que cette version correspondra à celle qui est installée sur votre appareil.</translation>
@@ -1404,7 +1403,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2542050502251273923">Définit le niveau de débogage du gestionnaire de connexion réseau et d'autres services à l'aide de ff_debug.</translation>
 <translation id="2544292303401268586">Votre administrateur a demandé à redémarrer votre appareil pour mettre à jour les applications. Cette opération peut prendre plusieurs minutes.</translation>
 <translation id="2544853746127077729">Certificat d'authentification rejeté par le réseau.</translation>
-<translation id="2546283357679194313">Cookies et données de sites</translation>
+<translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2548347166720081527">Autorisation "<ph name="PERMISSION" />" accordée</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2550212893339833758">Espace mémoire d'échange</translation>
@@ -4338,7 +4337,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5941343993301164315">Veuillez vous connecter à <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5942779427914696408">Visibilité de l'appareil</translation>
-<translation id="5942964813783878922">Votre <ph name="DEVICE_TYPE" /> redémarrera après cette mise à jour. Les prochaines mises à jour logicielles et de sécurité seront installées automatiquement.</translation>
 <translation id="5944869793365969636">Scanner le code QR</translation>
 <translation id="5946591249682680882">Identifiant de rapport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Impossible d'analyser le fichier</translation>
@@ -4391,7 +4389,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas disponible dans votre langue.</translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
-<translation id="6011449291337289699">Effacer les données de sites</translation>
+<translation id="6011449291337289699">Effacer les données des sites</translation>
 <translation id="6013027779243312217">Afficher des sous-titres pour vos contenus audio et vidéo</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6016178549409952427">Accéder au contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
@@ -5012,7 +5010,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6732801395666424405">Certificats non importés.</translation>
 <translation id="6732900235521116609">Impossible de supprimer le raccourci</translation>
 <translation id="6734468588183300211">Lorsque vous êtes en mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent être bloquées.</translation>
-<translation id="6735304988756581115">Afficher les cookies et autres données de site...</translation>
+<translation id="6735304988756581115">Afficher les cookies et autres données des sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6737663862851963468">Supprimer un ticket Kerberos</translation>

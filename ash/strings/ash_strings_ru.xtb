@@ -659,6 +659,7 @@
 <translation id="6715542151869432661">Мобильные устройства не найдены.</translation>
 <translation id="6723839937902243910">Питание</translation>
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6732800389263199929">ещё <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Функция принудительно включена администратором</translation>
 <translation id="6751826523481687655">Отслеживание эффективности включено.</translation>
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>

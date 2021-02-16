@@ -660,6 +660,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6715542151869432661">Ez da aurkitu gailu mugikorrik.</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6727969043791803658">Konektatuta; bateria: % <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="6732800389263199929">Beste <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Administratzaileak ezarri du</translation>
 <translation id="6751826523481687655">Aktibatuta dago funtzionamenduaren jarraipena egiteko aukera</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> lan-eremua kendu egin da, eta <ph name="RECEIVE_DESK" /> lan-eremuarekin bateratu</translation>

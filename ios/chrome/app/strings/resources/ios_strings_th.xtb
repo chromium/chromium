@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">เมื่อเป็นไปได้ เว็บไซต์จะแสดงในภาษาที่คุณต้องการ</translation>
 <translation id="1952728750904661634">ลงชื่อเข้าใช้ด้วยบัญชีที่มีการจัดการ</translation>
 <translation id="1965935827552890526">ทำสิ่งที่กำลังทำในหน้าต่าง Chrome ที่เปิดอยู่อีกอันให้เสร็จ</translation>
+<translation id="1973912524893600642">เก็บข้อมูลไว้</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
+<translation id="4079195788735381731">องค์กรนำคุณออกจากระบบ</translation>
 <translation id="4082688844002261427">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search, โฆษณา และบริการอื่นๆ ในแบบของคุณ</translation>
 <translation id="408404951701638773">เข้าถึงแถบค้นหาได้ง่ายขึ้นแล้ว</translation>
 <translation id="411254640334432676">การดาวน์โหลดล้มเหลว</translation>
@@ -411,9 +413,9 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5339316356165661760">เปิดการซิงค์</translation>
+<translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="5388358297987318779">เปิดภาพ</translation>
 <translation id="5407969256130905701">ยกเลิกการเปลี่ยนแปลง</translation>
-<translation id="5409365236829784218">ไม่ได้ติดตั้งแอปพลิเคชันที่สามารถเปิดไฟล์นี้</translation>
 <translation id="5416022985862681400">7 วันที่ผ่านมา</translation>
 <translation id="543338862236136125">แก้ไขรหัสผ่าน</translation>
 <translation id="5433691172869980887">คัดลอกชื่อผู้ใช้แล้ว</translation>
@@ -497,6 +499,7 @@
 <translation id="6254066287920239840">เปิดลิงก์ในแอปแทนเบราว์เซอร์</translation>
 <translation id="6255097610484507482">แก้ไขบัตรเครดิต</translation>
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
 <translation id="6303969859164067831">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6308436439357671616">ช่วยให้คุณถ่ายและอัปโหลดรูปภาพได้</translation>
 <translation id="6324528485781869530">เปลี่ยนบัญชีที่จะซิงค์</translation>

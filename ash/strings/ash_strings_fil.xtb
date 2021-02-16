@@ -11,6 +11,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1037492556044956303">Idinagdag ang <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">hindi buo</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
+<translation id="1052916631016577720">Pag-scan ng Item</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cellular: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4351433414020964307">Naglo-load ang Assistant...</translation>
 <translation id="4356930093361201197">high-contrast mode</translation>
 <translation id="4371348193907997655">Mga Cast Setting</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, lakas ng signal <ph name="SIGNAL_STRENGTH" /> porsyento</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
 <translation id="4379531060876907730">Ito ang iyong mga stylus tool</translation>
 <translation id="4389184120735010762">Napindot mo ang keyboard shortcut para sa naka-dock na magnifier. Gusto mo ba itong i-on?</translation>
@@ -586,6 +588,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6043212731627905357">Hindi gumagana ang monitor na ito sa iyong <ph name="DEVICE_TYPE" /> (hindi sinusuportahan ang monitor).</translation>
 <translation id="6043994281159824495">Mag-sign out ngayon</translation>
 <translation id="6047696787498798094">Matitigil ang screen sharing kapag nagpalit ka ng user. Gusto mo bang magpatuloy?</translation>
+<translation id="6050368268239407309">Mga tool sa presentation</translation>
 <translation id="6054305421211936131">Mag-sign in gamit ang smart card</translation>
 <translation id="6059276912018042191">Mga kamakailang tab ng Chrome</translation>
 <translation id="6062360702481658777">Awtomatiko kang masa-sign out sa loob ng <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -659,6 +662,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6715542151869432661">Walang nahanap na mobile device.</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6727969043791803658">Nakakonekta, <ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Ipinapatupad ng iyong administrator</translation>
 <translation id="6751826523481687655">Naka-on ang pag-trace ng performance</translation>
 <translation id="6752912906630585008">Inalis ang Desk na <ph name="REMOVED_DESK" /> at isinama sa Desk na <ph name="RECEIVE_DESK" /></translation>

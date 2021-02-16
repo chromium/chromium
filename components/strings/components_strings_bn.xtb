@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">এই কার্ডগুলি গ্রহণ করা হয়</translation>
 <translation id="1021753677514347426">আপনার ডিভাইসে আপনি বা অন্য কেউ একটি সার্টিফিকেট ইনস্টল করায় এই সমস্যা দেখা দিচ্ছে। এই সার্টিফিকেট ব্যবহার করে নেটওয়ার্ক ইন্টারসেপ্ট এবং মনিটর করা হয়, তবে Chromium এটিকে বিশ্বস্ত বলে মনে করে না। কোনও স্কুলের বা কোম্পানি নেটওয়ার্কের মতো কিছু নেটওয়ার্ক মনিটর করার প্রয়োজন হলেও, Chromium দেখে নেয় যে, আপনি যদি এটি বন্ধ করতে নাও পারেন, কী ঘটছে সেই সম্পর্কে যেন জানতে পারেন। ওয়েবে অ্যাক্সেস আছে, এমন যেকোনও ব্রাউজার বা অ্যাপের উপর নজর রাখা হতে পারে।</translation>
 <translation id="1024111578869940408">আক্রমণকারীরা কখনও কখনও ওয়েব অ্যাড্রেসে ছোট ও সহজে দেখা যায় না এমন পরিবর্তন করে কোনও সাইট নকল করে নেয়।</translation>
+<translation id="1028781062521375153">বিবরণ দেখুন</translation>
 <translation id="1030706264415084469"><ph name="URL" /> আপনার ডিভাইসে স্থায়ীভাবে বেশি ডেটা স্টোর করে রাখতে চায়</translation>
 <translation id="1032854598605920125">ঘড়ির কাঁটার দিকে ঘোরান</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">আপনার কম্পিউটারে বিভিন্ন ফন্ট ব্যবহার করুন যাতে হাই-ফিডালিটি কন্টেন্ট তৈরি করতে পারেন</translation>
 <translation id="1463543813647160932">৫x৭</translation>
 <translation id="1467432559032391204">বামে</translation>
+<translation id="1468653229182955856"><ph name="TOP_ORIGIN" />-এ চালিয়ে যেতে <ph name="EMBEDDED_ORIGIN" />-এর জন্য আপনার কোড হ'ল <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">আরও দেখান</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">ব্যবহারকারীর নীতিসমূহ</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />এই সাইটের হোমপেজটি ঘুরে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1641976391427233992">ডিলে আউটপুট</translation>
+<translation id="164212631332220697">চেক-আউট করার সময় <ph name="CARD_DETAIL" /> দিয়ে পেমেন্ট করুন।</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645368109819982629">অসমর্থিত প্রোটোকল</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -724,7 +727,7 @@
 <translation id="3761718714832595332">স্ট্যাটাসটি লুকান</translation>
 <translation id="3765032636089507299">নিরাপদ ব্রাউজিং পৃষ্ঠা তৈরি করা হচ্ছে।</translation>
 <translation id="3765588406864124894">মেলবক্স ৯</translation>
-<translation id="3767485424735936570">অ্যাডমিনিস্ট্রেটর নীতি অনুযায়ী <ph name="VM_NAME" />-এ এই কন্টেন্ট কপি ও পেস্ট না করতে সাজেস্ট করা হচ্ছে</translation>
+<translation id="3767485424735936570">অ্যাডমিনিস্ট্রেটর নীতি অনুযায়ী <ph name="VM_NAME" />-এ এই কন্টেন্ট কপি ও পেস্ট না করার সাজেস্ট করা হচ্ছে</translation>
 <translation id="3778403066972421603">আপনি কি এই কার্ডটি আপনার Google অ্যাকাউন্টে ও এই ডিভাইসে সেভ করতে চান?</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3781428340399460090">হট গোলাপী</translation>
@@ -1011,6 +1014,7 @@
 <translation id="4879725228911483934">উইন্ডো খুলে আপনার স্ক্রিনে রাখুন</translation>
 <translation id="4880827082731008257">সার্চের ইতিহাস</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="4885256590493466218">চেক-আউট করার সময় <ph name="CARD_DETAIL" /> দিয়ে পেমেন্ট করুন</translation>
 <translation id="4889420713887366944">'ছদ্মবেশী উইন্ডো' বোতাম খুলুন, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী উইন্ডো খুলতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="4892518386797173871">রিয়ার</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> হল আপনার <ph name="ORIGIN" />-এর কোড</translation>
 <translation id="874918643257405732">এই ট্যাব বুকমার্ক করুন</translation>
 <translation id="8751426954251315517">পরে আবার চেষ্টা করুন</translation>
+<translation id="8757526089434340176">Google Pay অফার উপলভ্য</translation>
 <translation id="8759274551635299824">এই কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="87601671197631245">এই সাইটটি পুরনো সিকিউরিটি কনফিগারেশন ব্যবহার করে তাই আপনার তথ্য (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ডের নম্বর) এই সাইটে পাঠানোর সময় এইসব তথ্যের নিরাপত্তা বিঘ্নিত হতে পারে।</translation>
 <translation id="8761567432415473239">Google নিরাপদ ব্রাউজিং সম্প্রতি <ph name="SITE" /> এ <ph name="BEGIN_LINK" />ক্ষতিকারক প্রোগ্রামগুলি খুঁজে পেয়েছে<ph name="END_LINK" />৷</translation>

@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> ପେୟାର୍‌ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2000419248597011803">ଆପଣଙ୍କର ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ୍‌କୁ ଠିକଣା ବାର୍‌ ଏବଂ ସନ୍ଧାନ ବାକ୍ସରୁ କିଛି କୁକୀ ଏବଂ ସନ୍ଧାନ ପଠାନ୍ତୁ</translation>
 <translation id="2002537628803770967">Google Pay ବ୍ୟବହାର କରୁଥିବା କ୍ରେଡିଟ୍ କାର୍ଡ ଓ ଠିକଣାଗୁଡ଼ିକ</translation>
-<translation id="2010780124464321179">ଟେକ୍ସଟର ଲିଙ୍କ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ପୃଷ୍ଠାରେ ଲିଙ୍କକୁ ସେୟାର୍ କରନ୍ତୁ।</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#ଟି ଫାଇଲ୍}other{#ଟି ଫାଇଲ୍}}</translation>
 <translation id="2017836877785168846">ଠିକଣା ବାର୍‌ରେ ଥିବା ଇତିବୃତ୍ତି ଓ ଅଟୋକମ୍ପ୍ଲିସେନ୍‍ଗୁଡ଼ିକୁ ଖାଲି କରନ୍ତୁ।</translation>
 <translation id="2021896219286479412">ପୂର୍ଣ୍ଣ-ସ୍କ୍ରିନ୍ ସାଇଟ୍ ନିୟନ୍ତ୍ରଣ</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">ରିଡାଇରେକ୍ଟ ଅବରୋଧ କରାଯାଇଛି।</translation>
 <translation id="5527082711130173040">ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ସ୍କାନ୍ କରିବାକୁ Chrome ଲୋକେସନ୍ ଆକ୍‌ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="BEGIN_LINK1" />ଅପ୍‌ଡେଟ୍ ଅନୁମତି<ph name="END_LINK1" />। ଲୋକେସନ୍‍ ଆକ୍ସେସ୍‍ ମଧ୍ୟ <ph name="BEGIN_LINK2" />ଏହି ଡିଭାଇସ୍‍ ପାଇଁ ବନ୍ଦ ଅଛି<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍ସ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="5530920986376047241">ଆପଣ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସେଭ୍ କରିପାରିବେ ଯାହା ଫଳରେ ଆପଣ ପୁଣି ସେଗୁଡ଼ିକୁ ପାଇପାରିବେ</translation>
 <translation id="5534640966246046842">ସାଇଟ୍‍କୁ କପି କରାଯାଇଛି</translation>
 <translation id="5548606607480005320">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
 <translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">ଏକ ଇନକଗ୍ନିଟୋ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6000066717592683814">Googleକୁ ଡିଫଲ୍ଟ ଭାବେ ରଖନ୍ତୁ</translation>
 <translation id="6005538289190791541">ପ୍ରସ୍ତାବିତ ପାସ୍‌ୱାର୍ଡ</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ଆପଣଙ୍କ ପାଖରେ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />ଟି ପୃଷ୍ଠା ଅଛି}other{ଆପଣଙ୍କ ପାଖରେ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />ଟି ପୃଷ୍ଠା ଅଛି}}</translation>
-<translation id="6014293228235665243">ପଢ଼ାଯାଇନଥିବା</translation>
 <translation id="6036057147555329831">ଅତିରିକ୍ତ ICU</translation>
 <translation id="6039379616847168523">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">TalkBack କିମ୍ବା ଆକ୍ସେସ୍ ପରିବର୍ତ୍ତନ ଚାଲୁ ଥିଲେ ଏହା କରିବାକୁ ସୁପାରିଶ୍ କରାଯାଇଛି</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ରିଷ୍ଟୋର୍ କରାଯାଇଛି</translation>
 <translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
-<translation id="7030675613184250187">ଆପଣ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସେଭ୍ କରିପାରିବେ ଯାହା ଫଳରେ ଆପଣ ପୁଣି ସେଗୁଡ଼ିକୁ ପାଇପାରିବେ ବା ଅଫଲାଇନରେ ପଢ଼ିପାରିବେ</translation>
 <translation id="7054588988317389591">ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="7055152154916055070">ରିଡାଇରେକ୍ଟକୁ ଅବରୋଧ କରାଯାଇଛି:</translation>
 <translation id="7063006564040364415">ସିଙ୍କ ସର୍ଭର ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ।</translation>

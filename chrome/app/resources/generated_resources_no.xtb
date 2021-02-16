@@ -894,7 +894,6 @@
 <translation id="1975841812214822307">Fjern</translation>
 <translation id="1976150099241323601">Logg på sikkerhetsenhet</translation>
 <translation id="1977965994116744507">Hold telefonen nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
-<translation id="1978006917103730774">Fremtidige programvare- og sikkerhetsoppdateringer blir installert automatisk.</translation>
 <translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.</translation>
 <translation id="1979280758666859181">Du endrer til en kanal med en eldre versjon av <ph name="PRODUCT_NAME" />. Kanalendringen trer i kraft når kanalversjonen samsvarer med versjonen som allerede er installert på enheten din.</translation>
@@ -4331,7 +4330,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5941343993301164315">Logg på <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5942779427914696408">Enhetens synlighet</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> starter på nytt etter denne oppdateringen. Fremtidige programvare- og sikkerhetsoppdateringer blir installert automatisk.</translation>
 <translation id="5944869793365969636">Skann QR-koden</translation>
 <translation id="5946591249682680882">Rapport-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Kan ikke parse filen</translation>

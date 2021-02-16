@@ -659,6 +659,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6715542151869432661">Mobil cihaz tapılmadı.</translation>
 <translation id="6723839937902243910">Enerji</translation>
 <translation id="6727969043791803658">Qoşuludur, <ph name="BATTERY_PERCENTAGE" />% batareya</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Administratorunuz tərəfindən icbari icra olunur</translation>
 <translation id="6751826523481687655">Performansın izlənməsi aktiv edildi</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> silinərək Masa <ph name="RECEIVE_DESK" /> ilə birləşdirildi</translation>

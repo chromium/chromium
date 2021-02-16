@@ -107,6 +107,7 @@
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
+<translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">Kasalukuyang limitado ang bilis ng CPU para mapahaba ang baterya o mapababa ang temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
 <translation id="3748026146096797577">Hindi Nakakonekta</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
+<translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
 <translation id="4170700058716978431">NABIGO</translation>
 <translation id="4176463684765177261">Hindi pinapaganana</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
@@ -211,7 +213,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="5797428682393400134">TAGUMPAY</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
-<translation id="5844247382766192936">Nakansela ang pagsubok sa <ph name="TEST_NAME" /></translation>
+<translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5849570051105887917">Home provider code</translation>
 <translation id="5866840822086176774">Napakalakas</translation>
 <translation id="5895138241574237353">I-restart</translation>
@@ -237,6 +239,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
+<translation id="6223752125779001553">Walang available na scanner</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6325525973963619867">Nabigo</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>

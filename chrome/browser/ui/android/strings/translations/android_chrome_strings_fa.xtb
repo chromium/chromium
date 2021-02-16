@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
 <translation id="2000419248597011803">برخی کوکی‌ها و جستجوها را از نوار نشانی و جعبه جستجو به موتور جستجوی پیش‌فرض ارسال می‌کند</translation>
 <translation id="2002537628803770967">‏کارت‌های اعتباری و نشانی‌های مورداستفاده در Google Pay</translation>
-<translation id="2010780124464321179">نمی‌توان پیوند به نوشتار را ایجاد کرد. پیوند به صفحه را هم‌رسانی کنید.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="2017836877785168846">سابقه و تکمیل خودکار را در نوار نشانی پاک می‌کند.</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">هدایت کردن مسدود شد.</translation>
 <translation id="5527082711130173040">‏Chrome برای جستجوی دستگاه‌ها باید به مکان دسترسی داشته باشد. <ph name="BEGIN_LINK1" />به‌روزرسانی مجوزها<ph name="END_LINK1" /> . دسترسی به مکان نیز <ph name="BEGIN_LINK2" />برای این دستگاه خاموش است<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">بستن برگه‌های ناشناس</translation>
-<translation id="5530920986376047241">می‌توانید صفحه‌ها را در فهرست خواندن ذخیره کنید تا آن‌ها را دوباره پیدا کنید</translation>
 <translation id="5534640966246046842">سایت کپی شد</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
 <translation id="5556459405103347317">تازه‌سازی</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">بازکردن برگه ناشناس</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> صفحه دارید}one{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحه دارید}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحه دارید}}</translation>
-<translation id="6014293228235665243">خوانده‌نشده</translation>
 <translation id="6036057147555329831">‏ICU اضافی</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">‏توصیه در زمانی‌که TalkBack یا «دسترسی کلیدی» روشن است</translation>
 <translation id="7027549951530753705">تاریخ بازیابی <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
-<translation id="7030675613184250187">می‌توانید صفحات را در فهرست خواندن ذخیره کنید تا دوباره آن‌ها را پیدا کنید یا درحالت آفلاین آن‌ها را بخوانید</translation>
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>

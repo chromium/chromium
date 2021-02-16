@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
 <translation id="1952728750904661634">نظم کردہ اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="1965935827552890526">‏اپنی دوسری کھلی ہوئی Chrome ونڈو میں آپ کیا کر رہے تھے مکمل کریں۔</translation>
+<translation id="1973912524893600642">ڈیٹا باقی رکھیں</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">اس آلہ پر کوئی ایپلیکیشن اس فائل کو نہیں کھول سکتی ہے۔</translation>
 <translation id="4042870976416480368">صفحہ میں تلاش کریں</translation>
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
+<translation id="4079195788735381731">آپ کی تنظیم نے آپ کو سائن آؤٹ کر دیا</translation>
 <translation id="4082688844002261427">تلاش اور اشتہارات کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="408404951701638773">تلاش بار تک رسائی حاصل کرنا اب زیادہ آسان ہے</translation>
 <translation id="411254640334432676">ڈاؤن لوڈ ناکام ہوگیا۔</translation>
@@ -411,9 +413,9 @@
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5339316356165661760">مطابقت پذیری آن کریں</translation>
+<translation id="5360976571138293719">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5388358297987318779">تصویر کھولیں</translation>
 <translation id="5407969256130905701">تبدیلیاں مسترد کریں</translation>
-<translation id="5409365236829784218">کوئی ایسی ایپلیکیشنز انسٹال نہیں کی گئی ہیں جو اس فائل کو کھول سکتی ہوں۔</translation>
 <translation id="5416022985862681400">گزشتہ 7 دن</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
@@ -497,6 +499,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6254066287920239840">براؤزر کی بجائے لنکس کو ایپ میں کھولیں۔</translation>
 <translation id="6255097610484507482">کریڈٹ کارڈ میں ترمیم کریں</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
+<translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
 <translation id="6303969859164067831">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
 <translation id="6308436439357671616">یہ آپ کو تصاویر لینے اور اپ لوڈ کرنے دیتا ہے۔</translation>
 <translation id="6324528485781869530">مطابقت پذیری اکاؤنٹ کو سوئچ کریں</translation>

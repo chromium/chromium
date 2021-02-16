@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" />-г нэмсэн</translation>
 <translation id="1047017786576569492">хэсэгчилсэн</translation>
 <translation id="1047773237499189053">Шинэ онцлог боломжтой байна. Нэмэлт мэдээлэл авах бол Дээш суман товчийг ашиглана уу.</translation>
+<translation id="1052916631016577720">Зүйл скан хийх</translation>
 <translation id="1056775291175587022">Сүлжээ алга</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Үүрэн холбоо: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4351433414020964307">Туслах ачаалж байна...</translation>
 <translation id="4356930093361201197">өндөр ялгаралтай горим</translation>
 <translation id="4371348193907997655">Дамжуулах тохиргоо</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /> хувь</translation>
 <translation id="4378551569595875038">Холбож байна...</translation>
 <translation id="4379531060876907730">Эдгээр нь таны мэдрэгч үзэгний хэрэгслүүд юм</translation>
 <translation id="4389184120735010762">Та суурилуулсан томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
@@ -587,6 +589,7 @@
 <translation id="6043212731627905357">Таны <ph name="DEVICE_TYPE" /> монитортой тохирохгүй байна (мониторыг дэмжээгүй).</translation>
 <translation id="6043994281159824495">Яг одоо гарах</translation>
 <translation id="6047696787498798094">Хэрэглэгчийг сольсноор дэлгэц хуваалцах сонголт зогсох болно. Та үргэлжлүүлэх үү?</translation>
+<translation id="6050368268239407309">Үзүүлэнгийн хэрэгсэл</translation>
 <translation id="6054305421211936131">Ухаалаг картаар нэвтрэх</translation>
 <translation id="6059276912018042191">Саяхны Chrome табууд</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" />-н дотор та сүлжээнээс автоматаар гарах болно.</translation>
@@ -660,6 +663,7 @@
 <translation id="6715542151869432661">Мобайл төхөөрөмж олдсонгүй.</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Таны администратор хэрэгжүүлдэг</translation>
 <translation id="6751826523481687655">Гүйцэтгэлийн хяналтыг асаасан</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> дэлгэцийг хасаж, <ph name="RECEIVE_DESK" /> дэлгэцтэй нэгтгэсэн</translation>

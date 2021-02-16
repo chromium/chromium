@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> ingin menyandingkan</translation>
 <translation id="2000419248597011803">Mengirimkan beberapa cookie dan penelusuran dari kolom URL dan kotak penelusuran ke mesin telusur default</translation>
 <translation id="2002537628803770967">Kartu kredit dan alamat yang menggunakan Google Pay</translation>
-<translation id="2010780124464321179">Tidak dapat membuat link ke teks. Bagikan link ke halaman.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# File}}</translation>
 <translation id="2017836877785168846">Hapus histori dan pelengkapan otomatis di kolom URL.</translation>
 <translation id="2021896219286479412">Kontrol situs layar penuh</translation>
@@ -625,7 +624,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5524843473235508879">Pengalihan diblokir.</translation>
 <translation id="5527082711130173040">Chrome memerlukan akses lokasi untuk memindai perangkat. <ph name="BEGIN_LINK1" />Perbarui izin<ph name="END_LINK1" />. Akses lokasi juga <ph name="BEGIN_LINK2" />dinonaktifkan untuk perangkat ini<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Tutup tab samaran</translation>
-<translation id="5530920986376047241">Anda dapat menyimpan halaman ke daftar bacaan untuk menemukannya lagi</translation>
 <translation id="5534640966246046842">Situs disalin</translation>
 <translation id="5548606607480005320">Pemeriksaan keselamatan</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
@@ -707,8 +705,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5982307838673692400">Buka tab Samaran</translation>
 <translation id="6000066717592683814">Tetap menggunakan Google</translation>
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda punya <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman}other{Anda punya <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman}}</translation>
-<translation id="6014293228235665243">Belum dibaca</translation>
 <translation id="6036057147555329831">ICU tambahan</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -865,7 +861,6 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="702463548815491781">Disarankan saat TalkBack atau Tombol Akses aktif</translation>
 <translation id="7027549951530753705">Memulihkan <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Sandi</translation>
-<translation id="7030675613184250187">Anda dapat menyimpan halaman ke daftar bacaan untuk menemukannya lagi atau membaca secara offline</translation>
 <translation id="7054588988317389591">Dapatkan deskripsi gambar?</translation>
 <translation id="7055152154916055070">Pengalihan diblokir:</translation>
 <translation id="7063006564040364415">Tidak dapat menyambung ke server sinkronisasi.</translation>

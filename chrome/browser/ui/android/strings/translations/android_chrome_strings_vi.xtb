@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> muốn ghép nối</translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
 <translation id="2002537628803770967">Thẻ tín dụng và địa chỉ lưu trong Google Pay</translation>
-<translation id="2010780124464321179">Không thể tạo đường liên kết đến văn bản. Hãy chia sẻ đường liên kết đến trang.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tệp}other{# tệp}}</translation>
 <translation id="2017836877785168846">Xóa lịch sử duyệt web và nội dung tự động hoàn thành trong thanh địa chỉ.</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
@@ -625,7 +624,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5524843473235508879">Đã chặn chuyển hướng.</translation>
 <translation id="5527082711130173040">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. <ph name="BEGIN_LINK1" />Cập nhật quyền<ph name="END_LINK1" />. Tính năng truy cập vị trí cũng bị <ph name="BEGIN_LINK2" />tắt cho thiết bị này<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Đóng thẻ ẩn danh</translation>
-<translation id="5530920986376047241">Bạn có thể lưu các trang vào danh sách đọc để tìm lại</translation>
 <translation id="5534640966246046842">Đã sao chép trang web</translation>
 <translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5556459405103347317">Tải lại</translation>
@@ -707,8 +705,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5982307838673692400">Mở một thẻ Ẩn danh</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn có <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn có <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
-<translation id="6014293228235665243">Chưa đọc</translation>
 <translation id="6036057147555329831">Bộ chuyển đổi giao diện (ICU) bổ sung</translation>
 <translation id="6039379616847168523">Chuyển sang thẻ tiếp theo</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -865,7 +861,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="702463548815491781">Khuyên dùng khi dịch vụ TalkBack hoặc Tiếp cận bằng công tắc đang bật</translation>
 <translation id="7027549951530753705">Đã khôi phục <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
-<translation id="7030675613184250187">Bạn có thể lưu các trang vào danh sách đọc để tìm lại hoặc đọc khi không có mạng</translation>
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
 <translation id="7055152154916055070">Liên kết chuyển hướng đã chặn:</translation>
 <translation id="7063006564040364415">Không thể kết nối với máy chủ đồng bộ hóa.</translation>

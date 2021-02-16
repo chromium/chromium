@@ -897,7 +897,6 @@
 <translation id="1975841812214822307">Buang...</translation>
 <translation id="1976150099241323601">Login ke Peranti Keamanan</translation>
 <translation id="1977965994116744507">Dekatkan ponsel untuk membuka kunci <ph name="DEVICE_TYPE" /> Anda.</translation>
-<translation id="1978006917103730774">Update software dan keamanan berikutnya akan diinstal secara otomatis.</translation>
 <translation id="1978057560491495741">Hapus alamat</translation>
 <translation id="1979095679518582070">Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat ini dalam mengirimkan informasi yang diperlukan bagi layanan penting seperti keamanan dan update sistem.</translation>
 <translation id="1979280758666859181">Anda mengubah ke saluran dengan versi <ph name="PRODUCT_NAME" /> yang lebih lama. Perubahan saluran ini akan berlaku jika versi saluran cocok dengan versi yang saat ini terpasang pada perangkat Anda.</translation>
@@ -4336,7 +4335,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5941343993301164315">Harap masuk ke <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Perkecil</translation>
 <translation id="5942779427914696408">Visibilitas perangkat</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> Anda akan dimulai ulang setelah update ini. Update software dan keamanan berikutnya akan diinstal secara otomatis.</translation>
 <translation id="5944869793365969636">Pindai kode QR</translation>
 <translation id="5946591249682680882">ID Laporan <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Tidak dapat mengurai file</translation>

@@ -659,6 +659,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6715542151869432661">Nu s-au găsit dispozitive mobile.</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6727969043791803658">Conectat, nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Impusă de administrator</translation>
 <translation id="6751826523481687655">Urmărirea performanțelor este activată</translation>
 <translation id="6752912906630585008">Desktopul <ph name="REMOVED_DESK" /> a fost eliminat și îmbinat cu desktopul <ph name="RECEIVE_DESK" /></translation>

@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Amakhadi amukelwe</translation>
 <translation id="1021753677514347426">Le nkinga yenzeka ngenxa yesitifiketi noma othile ufake kudivayisi yakho. Isitifiketi saziwa ngokusetshenziswa ukwengamela amanethiwekhi e-intercept, futhi asithembekile ku-Chromium. Ngenkathi ezinye izimo zokufinyelela zokwengamela zikhona, njengasesikoleni noma inethiwekhi yenkampani, i-Chromium ifuna ukuqinisekisa ukuthi uyaqaphela ukuthi lokhu kuyenzeka, ngisho noma ungeke ukwazi ukukumisa. Ukwengamela kungenzeka kunoma isiphi isiphequluli noma uhlelo lokusebenza olufinyelela iwebhu.</translation>
 <translation id="1024111578869940408">Abahlaseli kwesinye isikhathi balingisa amasayithi ngokwenza kube nzima ukubona ushintsho kukheli lewebhu.</translation>
+<translation id="1028781062521375153">Bona imininingwane</translation>
 <translation id="1030706264415084469">I-<ph name="URL" /> ifuna ukugcina ingunaphakade idatha enkulu kudivayisi yakho</translation>
 <translation id="1032854598605920125">Zungezisa ngokulandela iwashi</translation>
 <translation id="1036348656032585052">Vala</translation>
@@ -146,6 +147,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1462951478840426066">Sebenzisa amafonti akukhompuyutha yakho ukuze udale okuqukethwe kwe-high fidelity</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Kwesobunxele</translation>
+<translation id="1468653229182955856">I-<ph name="ONE_TIME_CODE" /> ikhodi yakho ye-<ph name="EMBEDDED_ORIGIN" /> ukuze uqhubeke e-<ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Bonisa okuningi</translation>
 <translation id="1473183651233018052">I-JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1640180200866533862">Izinqubomgomo zomsebenzisi</translation>
 <translation id="1640244768702815859">Zama <ph name="BEGIN_LINK" />ukuvakashela ikhasi lasekhaya lesayithi<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Bambezela okuphumayo kuze kube</translation>
+<translation id="164212631332220697">Khokha nge-<ph name="CARD_DETAIL" /> lapho usuqedela ukuthenga.</translation>
 <translation id="1644574205037202324">Umlando</translation>
 <translation id="1645368109819982629">Iphrothokholi engasekelwa</translation>
 <translation id="1652415888492971589">I-JIS B8</translation>
@@ -1007,6 +1010,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4879725228911483934">Vula uphinde ubeke amawindi kuzikrini zakho</translation>
 <translation id="4880827082731008257">Umlando wosesho</translation>
 <translation id="4881695831933465202">Vula</translation>
+<translation id="4885256590493466218">Khokha nge-<ph name="CARD_DETAIL" /> lapho usuqedela ukuthenga</translation>
 <translation id="4889420713887366944">Inkinobho yokuvula Iwindi le-Incognito, cindezela u-Enter ukuze uvule iwindi le-Incognito elisha lokuphequlula okuyimfihlo</translation>
 <translation id="4892518386797173871">Ingemuva</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1976,6 +1980,7 @@ Imininingwane engeziwe:
 <translation id="8742371904523228557">I-<ph name="ONE_TIME_CODE" /> ikhodi yakho ye-<ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Yenza ibhukhimakhi leli thebhu</translation>
 <translation id="8751426954251315517">Sicela uzame futhi ngesikhathi esilandelayo</translation>
+<translation id="8757526089434340176">Okunikezwayo kwe-Google Pay kuyatholakala</translation>
 <translation id="8759274551635299824">Leli khadi liphelelwe isikhathi</translation>
 <translation id="87601671197631245">Le sayithi isebenzisa ukulungiselelwa kokuvikeleka okuphelelwe isikhathi, okugaveza ulwazi lwakho (ngokwesibonelo, amaphasiwedi, imilayezo, noma amakhadi wesikweletu) uma kuthunyelwe kuleli sayithi.</translation>
 <translation id="8761567432415473239">I-Google Safe Browsing isanda <ph name="BEGIN_LINK" />kuthola izinhlelo eziyingozi<ph name="END_LINK" /> ku-<ph name="SITE" />.</translation>

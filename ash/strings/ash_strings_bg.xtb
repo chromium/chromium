@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">Добавихте <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">частично</translation>
 <translation id="1047773237499189053">Налице е нова функция. Използвайте стрелката нагоре, за да научите повече.</translation>
+<translation id="1052916631016577720">Преглеждане на елементите</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилно устройство: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Асистент се зарежда...</translation>
 <translation id="4356930093361201197">режим на висок контраст</translation>
 <translation id="4371348193907997655">Настройки за предаване</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /> процент(а)</translation>
 <translation id="4378551569595875038">Свързване...</translation>
 <translation id="4379531060876907730">Това са инструментите ви за писане</translation>
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">Този монитор не се поддържа от вашия <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Изход сега</translation>
 <translation id="6047696787498798094">Споделянето на екрана ще спре, когато превключите към друг потребител. Искате ли да продължите?</translation>
+<translation id="6050368268239407309">Инструменти за презентации</translation>
 <translation id="6054305421211936131">Влизане със смарткарта</translation>
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6062360702481658777">Ще излезете автоматично след <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -659,6 +662,7 @@
 <translation id="6715542151869432661">Няма намерени мобилни устройства.</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6727969043791803658">Свързано, <ph name="BATTERY_PERCENTAGE" />% батерия</translation>
+<translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6751052314767925245">Наложено от администратора ви</translation>
 <translation id="6751826523481687655">Проследяването на ефективността е включено</translation>
 <translation id="6752912906630585008">Работен кът <ph name="REMOVED_DESK" /> е премахнат и е обединен с работен кът <ph name="RECEIVE_DESK" /></translation>

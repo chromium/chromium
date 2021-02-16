@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
+<translation id="3946918322491238254">Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua conta.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4166206055865952171">Torne o Chromium seu navegador padrão</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5521125884468363740">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
+<translation id="5544795779875591523">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
 <translation id="5573014823074921752">Dica do Chromium. Para ver mais opções de guia, toque no botão "Mostrar guias" na barra de ferramentas localizada na parte superior ou inferior da tela e mantenha-o pressionado.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
+<translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
 <translation id="9022552996538154597">Fazer login no Chromium</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="921174536258924340">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
+<translation id="994708389219151914">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chromium serão apagados deste dispositivo.</translation>
 </translationbundle>

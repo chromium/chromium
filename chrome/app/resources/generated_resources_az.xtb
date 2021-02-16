@@ -893,7 +893,6 @@
 <translation id="1975841812214822307">Silin...</translation>
 <translation id="1976150099241323601">Təhlükəsizlik Cihazına daxil olun</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün telefonunuzu yaxın tutun.</translation>
-<translation id="1978006917103730774">Gələcək proqram və təhlükəsizlik güncəlləmələri avtomatik quraşdırılacaq.</translation>
 <translation id="1978057560491495741">Ünvanı silin</translation>
 <translation id="1979095679518582070">Bu xüsusiyyəti söndürmək bu cihazın sistem yeniləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.</translation>
 <translation id="1979280758666859181">Köhnə versiyalı <ph name="PRODUCT_NAME" /> ilə kanala keçirsiniz.</translation>
@@ -4328,7 +4327,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" /> məhsuluna daxil olun.</translation>
 <translation id="5941711191222866238">Minimallaşdırın</translation>
 <translation id="5942779427914696408">Cihazın görünmə dərəcəsi</translation>
-<translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> bu güncəlləmədən sonra yenidən başlayacaq. Gələcək proqram və təhlükəsizlik güncəlləmələri avtomatik quraşdırılacaq.</translation>
 <translation id="5944869793365969636">QR kodunu skan edin</translation>
 <translation id="5946591249682680882">Raport ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Faylı təhlil etmək alınmır</translation>

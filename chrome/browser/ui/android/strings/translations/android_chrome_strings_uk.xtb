@@ -137,7 +137,6 @@
 <translation id="1993768208584545658">Сайт <ph name="SITE" /> хоче підключитися до пристрою</translation>
 <translation id="2000419248597011803">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням</translation>
 <translation id="2002537628803770967">Кредитні картки й адреси, додані в Google Pay</translation>
-<translation id="2010780124464321179">Не вдається створити посилання на текст. Поділіться посиланням на сторінку.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="2017836877785168846">Очищує історію й автозавершення в адресному рядку.</translation>
 <translation id="2021896219286479412">Керування повноекранним режимом</translation>
@@ -625,7 +624,6 @@
 <translation id="5524843473235508879">Переспрямування заблоковано.</translation>
 <translation id="5527082711130173040">Щоб шукати пристрої, Chrome потрібен доступ до геоданих. <ph name="BEGIN_LINK1" />Оновити дозволи<ph name="END_LINK1" />. Доступ до геоданих також <ph name="BEGIN_LINK2" />вимкнено на цьому пристрої<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Закрити анонімні вкладки</translation>
-<translation id="5530920986376047241">Зберігайте сторінки в списку читання, щоб переглянути їх пізніше</translation>
 <translation id="5534640966246046842">URL-адресу сайту скопійовано</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
@@ -707,8 +705,6 @@
 <translation id="5982307838673692400">Відкрити анонімну вкладку</translation>
 <translation id="6000066717592683814">Залишити Google</translation>
 <translation id="6005538289190791541">Запропонований пароль</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> сторінка}one{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінка}few{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}many{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінок}other{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}}</translation>
-<translation id="6014293228235665243">Непрочитані</translation>
 <translation id="6036057147555329831">Зайвий модуль ICU</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -865,7 +861,6 @@
 <translation id="702463548815491781">Рекомендується, коли ввімкнено TalkBack або кнопковий доступ</translation>
 <translation id="7027549951530753705">Відновлено об'єкт "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029809446516969842">Паролі</translation>
-<translation id="7030675613184250187">Додайте сторінку в список читання, щоб переглянути її в режимі офлайн або відвідати пізніше</translation>
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
 <translation id="7063006564040364415">Не вдалося з’єднатись із сервером синхронізації.</translation>

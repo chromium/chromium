@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> mahu digandingkan</translation>
 <translation id="2000419248597011803">Menghantar beberapa kuki dan carian daripada bar alamat dan kotak carian ke enjin carian lalai anda</translation>
 <translation id="2002537628803770967">Kad kredit dan alamat yang menggunakan Google Pay</translation>
-<translation id="2010780124464321179">Tidak dapat membuat pautan kepada teks. Kongsi pautan kepada halaman.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fail}other{# Fail}}</translation>
 <translation id="2017836877785168846">Kosongkan sejarah dan pelengkapan automatik dalam bar alamat.</translation>
 <translation id="2021896219286479412">Kawalan tapak skrin penuh</translation>
@@ -625,7 +624,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5524843473235508879">Ubah hala disekat.</translation>
 <translation id="5527082711130173040">Chrome memerlukan akses lokasi untuk mengimbas peranti. <ph name="BEGIN_LINK1" />Kemas kini kebenaran<ph name="END_LINK1" />. Akses lokasi turut <ph name="BEGIN_LINK2" />dimatikan untuk peranti ini<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Tutup tab inkognito</translation>
-<translation id="5530920986376047241">Anda boleh menyimpan halaman pada senarai bacaan anda untuk mencari halaman itu lagi</translation>
 <translation id="5534640966246046842">Tapak disalin</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
@@ -707,8 +705,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5982307838673692400">Buka tab Inkognito</translation>
 <translation id="6000066717592683814">Kekalkan Google</translation>
 <translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman}other{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman}}</translation>
-<translation id="6014293228235665243">Belum dibaca</translation>
 <translation id="6036057147555329831">ICU tambahan</translation>
 <translation id="6039379616847168523">Lompat ke tab seterusnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -865,7 +861,6 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="702463548815491781">Disyorkan apabila TalkBack atau Akses Suis dihidupkan</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> dipulihkan</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
-<translation id="7030675613184250187">Anda boleh menyimpan halaman ke senarai bacaan anda untuk mencari halaman itu lagi atau membaca halaman itu secara luar talian</translation>
 <translation id="7054588988317389591">Dapatkan perihalan imej?</translation>
 <translation id="7055152154916055070">Ubah hala disekat:</translation>
 <translation id="7063006564040364415">Tidak dapat bersambung ke pelayan yang disegerakkan.</translation>

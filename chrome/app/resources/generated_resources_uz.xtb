@@ -895,7 +895,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1975841812214822307">O‘chirish...</translation>
 <translation id="1976150099241323601">Havfsizlik qurilmasiga kirish</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqarish uchun telefoningizni yaqinlashtiring.</translation>
-<translation id="1978006917103730774">Dastur va xavfsizlik sozlamalari avtomatik yangilanadi.</translation>
 <translation id="1978057560491495741">Manzilni olib tashlash</translation>
 <translation id="1979095679518582070">Bu funksiya faol boʻlmasa ham tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.</translation>
 <translation id="1979280758666859181">Siz <ph name="PRODUCT_NAME" />‘ning ancha eski versiyasidan yangilanish kanaliga o‘tyapsiz. O‘zgartirishlar kuchga kirishi uchun kanal versiyasi qurilmangizdagi joriy versiya bilan bir xil bo‘lishi kerak.</translation>
@@ -4334,7 +4333,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />: kirish zarur.</translation>
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5942779427914696408">Qurilmaning ochiqligi</translation>
-<translation id="5942964813783878922">Bu yangilanishdan keyin <ph name="DEVICE_TYPE" /> qayta ishga tushadi. Dastur va xavfsizlik sozlamalari avtomatik yangilanadi.</translation>
 <translation id="5944869793365969636">QR kodni skanerlash</translation>
 <translation id="5946591249682680882">Hisobot identifikatori: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Faylni ochib bo‘lmadi</translation>

@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
+<translation id="3946918322491238254">Makikita mo pa rin ang lahat ng iyong bookmark, history, password, at iba pang setting sa device na ito. Kung gagawa ka ng mga pagbabago, hindi masi-sync ang mga ito sa iyong account.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
 <translation id="4166206055865952171">Itakda ang Chromium bilang Iyong Default</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="5521125884468363740">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in at i-on ang pag-sync</translation>
+<translation id="5544795779875591523">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito?</translation>
 <translation id="5573014823074921752">Tip sa Chromium. Para sa higit pang opsyon sa tab, pindutin nang matagal ang button na Ipakita ang Mga Tab sa toolbar, na nasa ibaba o itaas ng iyong screen.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8663480472502753423">Panatilihing up to date ang Chromium</translation>
 <translation id="8776843108004031667">Aalisin sa Chromium ang account na ito at anumang hindi naka-save na data.</translation>
+<translation id="894437814105052438">Kapag nag-sign out ka, hindi magsi-sync ang Chromium ng anumang bagong data sa iyong Google Account. Mananatili sa account ang data na dati nang na-sync.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="921174536258924340">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
+<translation id="994708389219151914">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito.</translation>
 </translationbundle>

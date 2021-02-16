@@ -137,7 +137,6 @@
 <translation id="1993768208584545658"><ph name="SITE" /> vill parast</translation>
 <translation id="2000419248597011803">Sendir sum fótspor og sumar leitir úr veffangastikunni og leitarreitnum í sjálfgefnu leitarvélina þína</translation>
 <translation id="2002537628803770967">Kreditkort og heimilisföng sem nota Google Pay</translation>
-<translation id="2010780124464321179">Ekki er hægt að búa til tengil í texta. Deila tengli á síðu.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="2017836877785168846">Hreinsar ferilinn og sjálfvirka útfyllingu í veffangastiku.</translation>
 <translation id="2021896219286479412">Stýringar vefsvæðis á öllum skjá</translation>
@@ -625,7 +624,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5524843473235508879">Lokað á framsendingu.</translation>
 <translation id="5527082711130173040">Chrome þarf að hafa aðgang að staðsetningu til að geta leitað að tækjum. <ph name="BEGIN_LINK1" />Uppfæra heimildir<ph name="END_LINK1" />. Aðgangur að staðsetningu er einnig <ph name="BEGIN_LINK2" />óvirkur fyrir þetta tæki<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Loka huliðsflipum</translation>
-<translation id="5530920986376047241">Þú getur vistað síður á leslistann þinn til að finna þær aftur</translation>
 <translation id="5534640966246046842">Vefsvæði afritað</translation>
 <translation id="5548606607480005320">Öryggisathugun</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
@@ -707,8 +705,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5982307838673692400">Opna huliðsflipa</translation>
 <translation id="6000066717592683814">Nota Google áfram</translation>
 <translation id="6005538289190791541">Útbúið aðgangsorð</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Þú ert með <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> síðu}one{Þú ert með <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> síðu}other{Þú ert með <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> síður}}</translation>
-<translation id="6014293228235665243">Ólesið</translation>
 <translation id="6036057147555329831">Auka ICU</translation>
 <translation id="6039379616847168523">Stökkva í næsta flipa</translation>
 <translation id="6040143037577758943">Loka</translation>
@@ -865,7 +861,6 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="702463548815491781">Mælt með þegar kveikt er á TalkBack eða rofaaðgangi</translation>
 <translation id="7027549951530753705">Endurheimti <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
-<translation id="7030675613184250187">Þú getur vistað síður á leslistanum til að finna þær aftur síðar eða lesa án nettengingar</translation>
 <translation id="7054588988317389591">Fá myndlýsingar?</translation>
 <translation id="7055152154916055070">Lokað á framsendingu:</translation>
 <translation id="7063006564040364415">Ekki var hægt að tengjast samstillingarþjóninum.</translation>

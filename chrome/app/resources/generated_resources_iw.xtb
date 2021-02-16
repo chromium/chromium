@@ -896,7 +896,6 @@
 <translation id="1975841812214822307">הסרה...</translation>
 <translation id="1976150099241323601">צריך להיכנס אל התקן אבטחה</translation>
 <translation id="1977965994116744507">יש לקרב את הטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
-<translation id="1978006917103730774">עדכוני תוכנה ואבטחה עתידיים יותקנו באופן אוטומטי.</translation>
 <translation id="1978057560491495741">הסרת הכתובת</translation>
 <translation id="1979095679518582070">השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש עבור שירותים חיוניים, כמו אבטחה ועדכוני מערכת.</translation>
 <translation id="1979280758666859181">עברת לערוץ עם גרסה ישנה יותר של <ph name="PRODUCT_NAME" />. שינוי הערוץ יוחל כאשר גרסת הערוץ תתאים לגרסה המותקנת כעת במכשיר שלך.</translation>
@@ -4336,7 +4335,6 @@
 <translation id="5941343993301164315">כניסה ל-<ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5942779427914696408">הרשאות גישה למכשיר</translation>
-<translation id="5942964813783878922">ה-<ph name="DEVICE_TYPE" /> יופעל מחדש אחרי העדכון הזה. עדכוני תוכנה ואבטחה עתידיים יותקנו באופן אוטומטי.</translation>
 <translation id="5944869793365969636">‏סריקת קוד QR</translation>
 <translation id="5946591249682680882">מזהה דיווח <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">לא ניתן לנתח את הקובץ</translation>

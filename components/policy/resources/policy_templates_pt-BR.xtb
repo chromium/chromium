@@ -1439,6 +1439,26 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Os URLs precisam ter um esquema HTTPS, como "https://example.com".
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2972531017545674240">Se a política for definida, será especificada uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados ou desativados.
+
+      Cada item da lista da política é um objeto com um elemento obrigatório:
+      <ph name="URL_LABEL" />, o URL do app da Web que será instalado
+
+      E três elementos opcionais:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
+      para a forma como o app da Web é aberto (uma nova guia é o padrão).
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
+      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do <ph name="MS_WIN_NAME" />.
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (a partir da versão 90 do <ph name="PRODUCT_NAME" />),
+      permite que você substitua o nome do app se ele não for um
+      Progressive Web App (PWA) ou o nome do app instalado
+      temporariamente se ele for um PWA, mas a autenticação for exigida antes da
+      conclusão da instalação.
+
+      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>

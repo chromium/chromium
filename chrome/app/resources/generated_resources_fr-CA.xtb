@@ -898,7 +898,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
-<translation id="1978006917103730774">Les versions à venir des logiciels et les mises à jour de sécurité s'installeront automatiquement.</translation>
 <translation id="1978057560491495741">Retirer l'adresse</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.</translation>
 <translation id="1979280758666859181">Vous passez à un canal ayant une ancienne version de <ph name="PRODUCT_NAME" />. Le changement de canal sera appliqué lorsque la version du canal correspondra à la version actuellement installée sur votre appareil.</translation>
@@ -4338,7 +4337,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5941343993301164315">Veuillez vous connecter à <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5942779427914696408">Visibilité de l'appareil</translation>
-<translation id="5942964813783878922">Votre <ph name="DEVICE_TYPE" /> redémarrera après cette mise à jour. Les versions à venir des logiciels et les mises à jour de sécurité s'installeront automatiquement.</translation>
 <translation id="5944869793365969636">Numériser le code QR</translation>
 <translation id="5946591249682680882">Identifiant de rapport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Impossible d'analyser le fichier</translation>
