@@ -173,7 +173,12 @@ class AutomationWebContentsObserver
     if (old_ax_tree == ui::AXTreeIDUnknown())
       return;
 
-    ui::AXTreeID new_ax_tree = navigation->GetRenderFrameHost()->GetAXTreeID();
+    ui::AXTreeID new_ax_tree = ui::AXTreeIDUnknown();
+
+    // If navigation was canceled, render frame host will not
+    // be set and there is no new tree.
+    if (navigation->GetRenderFrameHost())
+      new_ax_tree = navigation->GetRenderFrameHost()->GetAXTreeID();
 
     if (old_ax_tree == new_ax_tree)
       return;
