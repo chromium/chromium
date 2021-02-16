@@ -2108,7 +2108,9 @@ TEST_F(StyleEngineTest, MarkForWhitespaceReattachment) {
   EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
   EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
 
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetStyleEngine().MarkForWhitespaceReattachment();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
 
   UpdateAllLifecyclePhases();
@@ -2120,7 +2122,9 @@ TEST_F(StyleEngineTest, MarkForWhitespaceReattachment) {
   EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
   EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
 
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetStyleEngine().MarkForWhitespaceReattachment();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
 
   UpdateAllLifecyclePhases();
@@ -2131,7 +2135,9 @@ TEST_F(StyleEngineTest, MarkForWhitespaceReattachment) {
   EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
   EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
 
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetStyleEngine().MarkForWhitespaceReattachment();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   EXPECT_TRUE(GetStyleEngine().NeedsLayoutTreeRebuild());
 }
 

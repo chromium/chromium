@@ -1811,6 +1811,7 @@ void StyleEngine::EnvironmentVariableChanged() {
 }
 
 void StyleEngine::MarkForWhitespaceReattachment() {
+  DCHECK(GetDocument().InStyleRecalc());
   for (auto element : whitespace_reattach_set_) {
     if (element->NeedsReattachLayoutTree() || !element->GetLayoutObject())
       continue;
