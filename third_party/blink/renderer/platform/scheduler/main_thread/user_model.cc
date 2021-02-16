@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/user_model.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -140,25 +141,17 @@ void UserModel::Reset(base::TimeTicks now) {
   pending_input_event_count_ = 0;
 }
 
-void UserModel::AsValueInto(base::trace_event::TracedValue* state) const {
-  auto dictionary_scope = state->BeginDictionaryScoped("user_model");
-  state->SetInteger("pending_input_event_count", pending_input_event_count_);
-  state->SetDouble(
-      "last_input_signal_time",
-      (last_input_signal_time_ - base::TimeTicks()).InMillisecondsF());
-  state->SetDouble(
-      "last_gesture_start_time",
-      (last_gesture_start_time_ - base::TimeTicks()).InMillisecondsF());
-  state->SetDouble(
-      "last_continuous_gesture_time",
-      (last_continuous_gesture_time_ - base::TimeTicks()).InMillisecondsF());
-  state->SetDouble("last_gesture_expected_start_time",
-                   (last_gesture_expected_start_time_ - base::TimeTicks())
-                       .InMillisecondsF());
-  state->SetDouble("last_reset_time",
-                   (last_reset_time_ - base::TimeTicks()).InMillisecondsF());
-  state->SetBoolean("is_gesture_expected", is_gesture_expected_);
-  state->SetBoolean("is_gesture_active", is_gesture_active_);
+void UserModel::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("pending_input_event_count", pending_input_event_count_);
+  dict.Add("last_input_signal_time", last_input_signal_time_);
+  dict.Add("last_gesture_start_time", last_gesture_start_time_);
+  dict.Add("last_continuous_gesture_time", last_continuous_gesture_time_);
+  dict.Add("last_gesture_expected_start_time",
+           last_gesture_expected_start_time_);
+  dict.Add("last_reset_time", last_reset_time_);
+  dict.Add("is_gesture_expected", is_gesture_expected_);
+  dict.Add("is_gesture_active", is_gesture_active_);
 }
 
 }  // namespace scheduler

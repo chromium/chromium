@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 
@@ -784,32 +785,22 @@ void FrameSchedulerImpl::OnRemovedBackForwardCacheOptOut(
       !back_forward_cache_opt_out_counts_.empty();
 }
 
-void FrameSchedulerImpl::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  state->SetBoolean("frame_visible", frame_visible_);
-  state->SetBoolean("page_visible", parent_page_scheduler_->IsPageVisible());
-  state->SetBoolean("cross_origin_to_main_frame", IsCrossOriginToMainFrame());
-  state->SetString("frame_type",
-                   frame_type_ == FrameScheduler::FrameType::kMainFrame
-                       ? "MainFrame"
-                       : "Subframe");
-  state->SetBoolean(
-      "disable_background_timer_throttling",
-      !RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled());
+void FrameSchedulerImpl::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("frame_visible", frame_visible_);
+  dict.Add("page_visible", parent_page_scheduler_->IsPageVisible());
+  dict.Add("cross_origin_to_main_frame", IsCrossOriginToMainFrame());
+  dict.Add("frame_type", frame_type_ == FrameScheduler::FrameType::kMainFrame
+                             ? "MainFrame"
+                             : "Subframe");
+  dict.Add("disable_background_timer_throttling",
+           !RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled());
 
-  {
-    auto dictionary_scope =
-        state->BeginDictionaryScoped("frame_task_queue_controller");
-    frame_task_queue_controller_->AsValueInto(state);
-  }
+  dict.Add("frame_task_queue_controller", frame_task_queue_controller_);
 
-  if (blame_context_) {
-    auto dictionary_scope = state->BeginDictionaryScoped("blame_context");
-    state->SetString(
-        "id_ref",
-        PointerToString(reinterpret_cast<void*>(blame_context_->id())));
-    state->SetString("scope", blame_context_->scope());
-  }
+  if (blame_context_)
+    dict.Add("blame_context", blame_context_);
 }
 
 void FrameSchedulerImpl::SetPageVisibilityForTracing(

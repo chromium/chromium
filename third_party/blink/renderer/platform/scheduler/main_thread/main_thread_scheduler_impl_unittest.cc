@@ -3340,7 +3340,7 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
       FROM_HERE, base::BindOnce(NullTask),
       base::TimeDelta::FromMilliseconds(10));
 
-  EXPECT_FALSE(scheduler_->ToString().empty());
+  scheduler_->CreateTraceEventObjectSnapshot();
 }
 
 TEST_F(MainThreadSchedulerImplTest,

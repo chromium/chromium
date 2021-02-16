@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -159,21 +160,11 @@ bool FrameTaskQueueController::RemoveResourceLoadingTaskQueue(
   return true;
 }
 
-void FrameTaskQueueController::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  {
-    auto array_scope = state->BeginArrayScoped("task_queues");
-    for (const auto& it : task_queues_) {
-      state->AppendString(PointerToString(it.value.get()));
-    }
-  }
-
-  {
-    auto array_scope = state->BeginArrayScoped("resource_loading_task_queues");
-    for (const auto& queue : resource_loading_task_queues_) {
-      state->AppendString(PointerToString(queue.get()));
-    }
-  }
+void FrameTaskQueueController::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("task_queues", task_queues_.Values());
+  dict.Add("resource_loading_task_queues", resource_loading_task_queues_);
 }
 
 // static

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 namespace trace_event {
@@ -125,8 +126,8 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
                              base::TimeTicks start_time,
                              base::TimeTicks end_time);
 
-  void AsValueInto(base::trace_event::TracedValue* state,
-                   base::TimeTicks now) const;
+  void WriteIntoTracedValue(perfetto::TracedValue context,
+                            base::TimeTicks now) const;
 
   base::WeakPtr<TaskQueueThrottler> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -161,6 +162,8 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
     void set_next_granted_run_time(base::TimeTicks next_granted_run_time) {
       next_granted_run_time_ = next_granted_run_time;
     }
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
    private:
     base::sequence_manager::TaskQueue* const queue_;

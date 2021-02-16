@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
@@ -42,8 +43,6 @@ namespace internal {
 PLATFORM_EXPORT void ValidateTracingCategory(const char* category);
 
 }  // namespace internal
-
-PLATFORM_EXPORT std::string PointerToString(const void* pointer);
 
 PLATFORM_EXPORT double TimeDeltaToMilliseconds(const base::TimeDelta& value);
 
@@ -185,6 +184,13 @@ class TraceableState : public TraceableVariable, private StateTracer<category> {
   const T& get() const { return state_; }
 
   void OnTraceLogEnabled() final { Trace(); }
+
+  // TraceableState<T> is serialisable into trace iff T is serialisable.
+  template <typename V = T>
+  typename perfetto::check_traced_value_support<V>::type WriteIntoTracedValue(
+      perfetto::TracedValue context) const {
+    perfetto::WriteIntoTracedValue(std::move(context), get());
+  }
 
  protected:
   void Assign(T new_state) {

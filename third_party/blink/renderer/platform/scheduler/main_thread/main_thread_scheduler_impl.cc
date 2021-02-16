@@ -2054,138 +2054,104 @@ void MainThreadSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
   ApplyVirtualTimePolicy();
 }
 
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-MainThreadSchedulerImpl::AsValue(base::TimeTicks optional_now) const {
-  base::AutoLock lock(any_thread_lock_);
-  return AsValueLocked(optional_now);
-}
-
 void MainThreadSchedulerImpl::CreateTraceEventObjectSnapshot() const {
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"),
-      "MainThreadScheduler", this, AsValue(helper_.NowTicks()));
+      "MainThreadScheduler", this, [&](perfetto::TracedValue context) {
+        base::AutoLock lock(any_thread_lock_);
+        WriteIntoTracedValueLocked(std::move(context), helper_.NowTicks());
+      });
 }
 
 void MainThreadSchedulerImpl::CreateTraceEventObjectSnapshotLocked() const {
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"),
-      "MainThreadScheduler", this, AsValueLocked(helper_.NowTicks()));
+      "MainThreadScheduler", this, [&](perfetto::TracedValue context) {
+        WriteIntoTracedValueLocked(std::move(context), helper_.NowTicks());
+      });
 }
 
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-MainThreadSchedulerImpl::AsValueLocked(base::TimeTicks optional_now) const {
-  auto state = std::make_unique<base::trace_event::TracedValue>();
-  AsValueIntoLocked(state.get(), optional_now);
-  return std::move(state);
-}
-
-std::string MainThreadSchedulerImpl::ToString() const {
-  base::AutoLock lock(any_thread_lock_);
-  base::trace_event::TracedValueJSON value;
-  AsValueIntoLocked(&value, base::TimeTicks());
-  return value.ToJSON();
-}
-
-void MainThreadSchedulerImpl::AsValueIntoLocked(
-    base::trace_event::TracedValue* state,
+void MainThreadSchedulerImpl::WriteIntoTracedValueLocked(
+    perfetto::TracedValue context,
     base::TimeTicks optional_now) const {
   helper_.CheckOnValidThread();
   any_thread_lock_.AssertAcquired();
 
+  auto dict = std::move(context).WriteDictionary();
+
   if (optional_now.is_null())
     optional_now = helper_.NowTicks();
-  state->SetBoolean(
-      "has_visible_render_widget_with_touch_handler",
-      main_thread_only().has_visible_render_widget_with_touch_handler);
-  state->SetString("current_use_case",
-                   UseCaseToString(main_thread_only().current_use_case));
-  state->SetBoolean(
-      "compositor_will_send_main_frame_not_expected",
-      main_thread_only().compositor_will_send_main_frame_not_expected);
-  state->SetBoolean("blocking_input_expected_soon",
-                    main_thread_only().blocking_input_expected_soon);
-  state->SetString("idle_period_state",
-                   IdleHelper::IdlePeriodStateToString(
-                       idle_helper_.SchedulerIdlePeriodState()));
-  state->SetBoolean("renderer_hidden", main_thread_only().renderer_hidden);
-  state->SetBoolean("waiting_for_any_main_frame_contentful_paint",
-                    any_thread().waiting_for_any_main_frame_contentful_paint);
-  state->SetBoolean("waiting_for_any_main_frame_meaningful_paint",
-                    any_thread().waiting_for_any_main_frame_meaningful_paint);
-  state->SetBoolean("have_seen_input_since_navigation",
-                    any_thread().have_seen_input_since_navigation);
-  state->SetBoolean(
+  dict.Add("has_visible_render_widget_with_touch_handler",
+           main_thread_only().has_visible_render_widget_with_touch_handler);
+  dict.Add("current_use_case",
+           UseCaseToString(main_thread_only().current_use_case));
+  dict.Add("compositor_will_send_main_frame_not_expected",
+           main_thread_only().compositor_will_send_main_frame_not_expected);
+  dict.Add("blocking_input_expected_soon",
+           main_thread_only().blocking_input_expected_soon);
+  dict.Add("idle_period_state", IdleHelper::IdlePeriodStateToString(
+                                    idle_helper_.SchedulerIdlePeriodState()));
+  dict.Add("renderer_hidden", main_thread_only().renderer_hidden);
+  dict.Add("waiting_for_any_main_frame_contentful_paint",
+           any_thread().waiting_for_any_main_frame_contentful_paint);
+  dict.Add("waiting_for_any_main_frame_meaningful_paint",
+           any_thread().waiting_for_any_main_frame_meaningful_paint);
+  dict.Add("have_seen_input_since_navigation",
+           any_thread().have_seen_input_since_navigation);
+  dict.Add(
       "have_reported_blocking_intervention_in_current_policy",
       main_thread_only().have_reported_blocking_intervention_in_current_policy);
-  state->SetBoolean(
+  dict.Add(
       "have_reported_blocking_intervention_since_navigation",
       main_thread_only().have_reported_blocking_intervention_since_navigation);
-  state->SetBoolean("renderer_backgrounded",
-                    main_thread_only().renderer_backgrounded);
-  state->SetBoolean("keep_active_fetch_or_worker",
-                    main_thread_only().keep_active_fetch_or_worker);
-  state->SetDouble("now", (optional_now - base::TimeTicks()).InMillisecondsF());
-  state->SetDouble(
+  dict.Add("renderer_backgrounded", main_thread_only().renderer_backgrounded);
+  dict.Add("keep_active_fetch_or_worker",
+           main_thread_only().keep_active_fetch_or_worker);
+  dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
+  dict.Add(
       "fling_compositor_escalation_deadline",
       (any_thread().fling_compositor_escalation_deadline - base::TimeTicks())
           .InMillisecondsF());
-  state->SetDouble("last_idle_period_end_time",
-                   (any_thread().last_idle_period_end_time - base::TimeTicks())
-                       .InMillisecondsF());
-  state->SetBoolean("awaiting_touch_start_response",
-                    any_thread().awaiting_touch_start_response);
-  state->SetBoolean("begin_main_frame_on_critical_path",
-                    any_thread().begin_main_frame_on_critical_path);
-  state->SetBoolean("last_gesture_was_compositor_driven",
-                    any_thread().last_gesture_was_compositor_driven);
-  state->SetBoolean("default_gesture_prevented",
-                    any_thread().default_gesture_prevented);
-  state->SetBoolean("is_audio_playing", main_thread_only().is_audio_playing);
-  state->SetBoolean("virtual_time_stopped",
-                    main_thread_only().virtual_time_stopped);
-  state->SetDouble("virtual_time_pause_count",
-                   main_thread_only().virtual_time_pause_count);
-  state->SetString(
-      "virtual_time_policy",
-      VirtualTimePolicyToString(main_thread_only().virtual_time_policy));
-  state->SetBoolean("virtual_time", main_thread_only().use_virtual_time);
+  dict.Add("last_idle_period_end_time",
+           (any_thread().last_idle_period_end_time - base::TimeTicks())
+               .InMillisecondsF());
+  dict.Add("awaiting_touch_start_response",
+           any_thread().awaiting_touch_start_response);
+  dict.Add("begin_main_frame_on_critical_path",
+           any_thread().begin_main_frame_on_critical_path);
+  dict.Add("last_gesture_was_compositor_driven",
+           any_thread().last_gesture_was_compositor_driven);
+  dict.Add("default_gesture_prevented", any_thread().default_gesture_prevented);
+  dict.Add("is_audio_playing", main_thread_only().is_audio_playing);
+  dict.Add("virtual_time_stopped", main_thread_only().virtual_time_stopped);
+  dict.Add("virtual_time_pause_count",
+           main_thread_only().virtual_time_pause_count);
+  dict.Add("virtual_time_policy",
+           VirtualTimePolicyToString(main_thread_only().virtual_time_policy));
+  dict.Add("virtual_time", main_thread_only().use_virtual_time);
 
-  {
-    auto dictionary_scope = state->BeginDictionaryScoped("page_schedulers");
-    for (PageSchedulerImpl* page_scheduler :
-         main_thread_only().page_schedulers) {
-      auto inner_dictionary = state->BeginDictionaryScopedWithCopiedName(
-          PointerToString(page_scheduler));
-      page_scheduler->AsValueInto(state);
-    }
-  }
+  dict.Add("page_schedulers", main_thread_only().page_schedulers);
 
-  {
-    auto dictionary_scope = state->BeginDictionaryScoped("policy");
-    main_thread_only().current_policy.AsValueInto(state);
-  }
+  dict.Add("policy", main_thread_only().current_policy);
 
   // TODO(skyostil): Can we somehow trace how accurate these estimates were?
-  state->SetDouble(
+  dict.Add(
       "longest_jank_free_task_duration",
       main_thread_only().longest_jank_free_task_duration->InMillisecondsF());
-  state->SetDouble(
-      "compositor_frame_interval",
-      main_thread_only().compositor_frame_interval.InMillisecondsF());
-  state->SetDouble(
-      "estimated_next_frame_begin",
-      (main_thread_only().estimated_next_frame_begin - base::TimeTicks())
-          .InMillisecondsF());
-  state->SetBoolean("in_idle_period", any_thread().in_idle_period);
+  dict.Add("compositor_frame_interval",
+           main_thread_only().compositor_frame_interval.InMillisecondsF());
+  dict.Add("estimated_next_frame_begin",
+           (main_thread_only().estimated_next_frame_begin - base::TimeTicks())
+               .InMillisecondsF());
+  dict.Add("in_idle_period", any_thread().in_idle_period);
 
-  any_thread().user_model.AsValueInto(state);
-  render_widget_scheduler_signals_.AsValueInto(state);
+  dict.Add("user_model", any_thread().user_model);
+  dict.Add("render_widget_scheduler_signals", render_widget_scheduler_signals_);
 
-  {
-    auto dictionary_scope =
-        state->BeginDictionaryScoped("task_queue_throttler");
-    task_queue_throttler_->AsValueInto(state, optional_now);
-  }
+  dict.Add("task_queue_throttler", [&](perfetto::TracedValue context) {
+    task_queue_throttler_->WriteIntoTracedValue(std::move(context),
+                                                optional_now);
+  });
 }
 
 bool MainThreadSchedulerImpl::Policy::IsQueueEnabled(
@@ -2207,17 +2173,18 @@ MainThreadSchedulerImpl::Policy::GetTimeDomainType() const {
   return TimeDomainType::kReal;
 }
 
-void MainThreadSchedulerImpl::Policy::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  state->SetString("rail_mode", RAILModeToString(rail_mode()));
-  state->SetString("use_case", UseCaseToString(use_case()));
+void MainThreadSchedulerImpl::Policy::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("rail_mode", RAILModeToString(rail_mode()));
+  dict.Add("use_case", UseCaseToString(use_case()));
 
-  state->SetBoolean("should_disable_throttling", should_disable_throttling());
-  state->SetBoolean("should_defer_task_queues", should_defer_task_queues());
-  state->SetBoolean("should_pause_task_queues", should_pause_task_queues());
-  state->SetBoolean("should_pause_task_queues_for_android_webview",
-                    should_pause_task_queues_for_android_webview());
-  state->SetBoolean("use_virtual_time", use_virtual_time());
+  dict.Add("should_disable_throttling", should_disable_throttling());
+  dict.Add("should_defer_task_queues", should_defer_task_queues());
+  dict.Add("should_pause_task_queues", should_pause_task_queues());
+  dict.Add("should_pause_task_queues_for_android_webview",
+           should_pause_task_queues_for_android_webview());
+  dict.Add("use_virtual_time", use_virtual_time());
 }
 
 void MainThreadSchedulerImpl::OnIdlePeriodStarted() {

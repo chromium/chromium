@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
 #include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
 
 namespace blink {
 namespace scheduler {
@@ -29,12 +28,6 @@ void ValidateTracingCategory(const char* category) {
 }
 
 }  // namespace internal
-
-std::string PointerToString(const void* pointer) {
-  return base::StringPrintf(
-      "0x%" PRIx64,
-      static_cast<uint64_t>(reinterpret_cast<uintptr_t>(pointer)));
-}
 
 double TimeDeltaToMilliseconds(const base::TimeDelta& value) {
   return value.InMillisecondsF();

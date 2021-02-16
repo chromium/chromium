@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 namespace sequence_manager {
@@ -264,6 +265,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return key;
     }
 
+    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+
     bool can_be_deferred : 1;
     bool can_be_throttled : 1;
     bool can_be_intensively_throttled : 1;
@@ -497,6 +500,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);

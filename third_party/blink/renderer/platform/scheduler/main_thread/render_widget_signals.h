@@ -11,6 +11,7 @@
 #include "base/trace_event/traced_value.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace blink {
 namespace scheduler {
@@ -43,7 +44,7 @@ class PLATFORM_EXPORT RenderWidgetSignals {
   std::unique_ptr<WebRenderWidgetSchedulingState>
   NewRenderWidgetSchedulingState();
 
-  void AsValueInto(base::trace_event::TracedValue* state) const;
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   friend class WebRenderWidgetSchedulingState;

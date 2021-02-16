@@ -51,14 +51,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
-
 class TaskObserver;
-
-namespace trace_event {
-class ConvertableToTraceFormat;
-}
 }  // namespace base
 
 namespace blink {
@@ -592,11 +588,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
              use_case_ == other.use_case_;
     }
 
-    void AsValueInto(base::trace_event::TracedValue* state) const;
-
     bool IsQueueEnabled(MainThreadTaskQueue* task_queue) const;
 
     TimeDomainType GetTimeDomainType() const;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
    private:
     RAILMode rail_mode_{RAILMode::kAnimation};
@@ -651,13 +647,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       MainThreadTaskQueue* queue);
 
   // Returns the serialized scheduler state for tracing.
-  std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue(
-      base::TimeTicks optional_now) const;
-  std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValueLocked(
-      base::TimeTicks optional_now) const;
+  void WriteIntoTracedValueLocked(perfetto::TracedValue context,
+                                  base::TimeTicks optional_now) const;
   void CreateTraceEventObjectSnapshotLocked() const;
-
-  std::string ToString() const;
 
   static bool ShouldPrioritizeInputEvent(const WebInputEvent& web_input_event);
 
@@ -798,9 +790,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Dispatch the callbacks which requested to be executed after the current
   // task.
   void DispatchOnTaskCompletionCallbacks();
-
-  void AsValueIntoLocked(base::trace_event::TracedValue*,
-                         base::TimeTicks optional_now) const;
 
   bool AllPagesFrozen() const;
 

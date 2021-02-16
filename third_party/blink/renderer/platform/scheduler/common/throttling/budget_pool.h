@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 namespace sequence_manager {
@@ -74,9 +75,9 @@ class PLATFORM_EXPORT BudgetPool {
   // Specify how this budget pool should block affected queues.
   virtual QueueBlockType GetBlockType() const = 0;
 
-  // Returns state for tracing.
-  virtual void AsValueInto(base::trace_event::TracedValue* state,
-                           base::TimeTicks now) const = 0;
+  // Records state for tracing.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context,
+                                    base::TimeTicks now) const = 0;
 
   // Adds |queue| to given pool. If the pool restriction does not allow
   // a task to be run immediately and |queue| is throttled, |queue| becomes

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -609,24 +610,17 @@ bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
                      });
 }
 
-void PageSchedulerImpl::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  state->SetBoolean("page_visible",
-                    page_visibility_ == PageVisibilityState::kVisible);
-  state->SetBoolean("is_audio_playing", IsAudioPlaying());
-  state->SetBoolean("is_frozen", is_frozen_);
-  state->SetBoolean("reported_background_throttling_since_navigation",
-                    reported_background_throttling_since_navigation_);
-  state->SetBoolean("is_page_freezable", IsBackgrounded());
+void PageSchedulerImpl::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("page_visible", page_visibility_ == PageVisibilityState::kVisible);
+  dict.Add("is_audio_playing", IsAudioPlaying());
+  dict.Add("is_frozen", is_frozen_);
+  dict.Add("reported_background_throttling_since_navigation",
+           reported_background_throttling_since_navigation_);
+  dict.Add("is_page_freezable", IsBackgrounded());
 
-  {
-    auto dictionary_scope = state->BeginDictionaryScoped("frame_schedulers");
-    for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-      auto inner_dictionary = state->BeginDictionaryScopedWithCopiedName(
-          PointerToString(frame_scheduler));
-      frame_scheduler->AsValueInto(state);
-    }
-  }
+  dict.Add("frame_schedulers", frame_schedulers_);
 }
 
 void PageSchedulerImpl::AddQueueToWakeUpBudgetPool(

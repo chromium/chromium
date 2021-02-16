@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -287,6 +288,29 @@ void MainThreadTaskQueue::SetImmediateWakeUpForTest() {
     main_thread_scheduler_->task_queue_throttler()->OnQueueNextWakeUpChanged(
         task_queue_.get(), base::TimeTicks());
   }
+}
+
+void MainThreadTaskQueue::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("type", queue_type_);
+  dict.Add("traits", queue_traits_);
+}
+
+void MainThreadTaskQueue::QueueTraits::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("can_be_deferred", can_be_deferred);
+  dict.Add("can_be_throttled", can_be_throttled);
+  dict.Add("can_be_intensively_throttled", can_be_intensively_throttled);
+  dict.Add("can_be_paused", can_be_paused);
+  dict.Add("can_be_frozen", can_be_frozen);
+  dict.Add("can_run_in_background", can_run_in_background);
+  dict.Add("can_run_when_virtual_time_paused",
+           can_run_when_virtual_time_paused);
+  dict.Add("can_be_paused_for_android_webview",
+           can_be_paused_for_android_webview);
+  dict.Add("prioritisation_type", prioritisation_type);
 }
 
 }  // namespace scheduler

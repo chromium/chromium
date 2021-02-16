@@ -82,8 +82,8 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
                                 base::TimeTicks now,
                                 base::TimeTicks desired_run_time) final;
   void OnWakeUp(base::TimeTicks now) final;
-  void AsValueInto(base::trace_event::TracedValue* state,
-                   base::TimeTicks now) const final;
+  void WriteIntoTracedValue(perfetto::TracedValue context,
+                            base::TimeTicks) const final;
 
  protected:
   QueueBlockType GetBlockType() const final;
