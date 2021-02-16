@@ -855,6 +855,9 @@ CSSSelector::AttributeMatchType CSSSelectorParser::ConsumeAttributeFlags(
   const CSSParserToken& flag = range.ConsumeIncludingWhitespace();
   if (EqualIgnoringASCIICase(flag.Value(), "i"))
     return CSSSelector::AttributeMatchType::kCaseInsensitive;
+  else if (EqualIgnoringASCIICase(flag.Value(), "s") &&
+           RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled())
+    return CSSSelector::AttributeMatchType::kCaseSensitiveAlways;
   failed_parsing_ = true;
   return CSSSelector::AttributeMatchType::kCaseSensitive;
 }

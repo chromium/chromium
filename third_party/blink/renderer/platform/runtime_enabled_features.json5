@@ -486,6 +486,12 @@
       status: "test",
     },
     {
+      // Support case-sensitive attribute selector modifier
+      // https://drafts.csswg.org/selectors-4/#attribute-case
+      name: "CSSCaseSensitiveSelector",
+      status: "test",
+    },
+    {
       // When the color-scheme is supported via the CSS color-scheme property
       // (CSSColorScheme) or the meta tag (MetaColorScheme), the only UA
       // rendering change is for the canvas background and the :root element

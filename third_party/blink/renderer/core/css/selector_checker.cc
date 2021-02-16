@@ -551,6 +551,14 @@ static bool AnyAttributeMatches(Element& element,
     if (legacy_case_insensitive &&
         AttributeValueMatches(attribute_item, match, selector_value,
                               kTextCaseASCIIInsensitive)) {
+      // If the `s` modifier is in the attribute selector, return false
+      // despite of legacy_case_insensitive.
+      if (selector.AttributeMatch() ==
+          CSSSelector::AttributeMatchType::kCaseSensitiveAlways) {
+        DCHECK(RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled());
+        return false;
+      }
+
       UseCounter::Count(element.GetDocument(),
                         WebFeature::kCaseInsensitiveAttrSelectorMatch);
       return true;

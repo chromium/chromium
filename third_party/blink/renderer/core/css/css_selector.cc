@@ -924,8 +924,13 @@ const CSSSelector* CSSSelector::SerializeCompound(
       if (simple_selector->match_ != kAttributeSet) {
         SerializeString(simple_selector->SerializingValue(), builder);
         if (simple_selector->AttributeMatch() ==
-            AttributeMatchType::kCaseInsensitive)
+            AttributeMatchType::kCaseInsensitive) {
           builder.Append(" i");
+        } else if (simple_selector->AttributeMatch() ==
+                   AttributeMatchType::kCaseSensitiveAlways) {
+          DCHECK(RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled());
+          builder.Append(" s");
+        }
         builder.Append(']');
       }
     }
