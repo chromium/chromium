@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/url_formatter/url_fixer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font_list.h"
@@ -26,6 +27,12 @@ bool FixupAndValidateStartupPage(const std::string& url_string,
 base::RefCountedMemory* GetFaviconResourceBytes(ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_SETTINGS_FAVICON, scale_factor);
+}
+
+base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
+    ui::ScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_FLAGS_FAVICON, scale_factor);
 }
 
 std::string ResolveFontList(const std::string& font_name_or_list) {

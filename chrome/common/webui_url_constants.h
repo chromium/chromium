@@ -399,6 +399,10 @@ extern const char kSignOutSubPage[];
 extern const char kSyncSetupSubPage[];
 extern const char kTriggeredResetProfileSettingsSubPage[];
 
+#if !defined(OS_ANDROID)
+extern const char kPrivacySandboxSubPagePath[];
+#endif
+
 #if defined(OS_WIN)
 extern const char kCleanupSubPage[];
 #endif

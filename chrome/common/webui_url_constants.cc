@@ -454,6 +454,10 @@ const char kCreateProfileSubPage[] = "createProfile";
 const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
 
+#if !defined(OS_ANDROID)
+const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
+#endif
+
 #if defined(OS_WIN)
 const char kCleanupSubPage[] = "cleanup";
 #endif  // defined(OS_WIN)
