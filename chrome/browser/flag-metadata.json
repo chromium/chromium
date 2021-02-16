@@ -863,6 +863,11 @@
     "name": "decouple-sync-from-android-auto-sync",
     "owners": [ "victorvianna@google.com", "treib@chromium.org" ],
     "expiry_milestone": 92
+  },  
+  {
+    "name": "default-browser-fullscreen-promo-cta-experiment",
+    "owners": [ "javierrobles", "bling-team@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "default-browser-fullscreen-promo-experiment",

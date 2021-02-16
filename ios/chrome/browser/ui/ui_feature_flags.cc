@@ -61,6 +61,10 @@ const base::Feature kDefaultBrowserFullscreenPromoExperiment{
     "DefaultBrowserFullscreenPromoExperiment",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDefaultBrowserFullscreenPromoCTAExperiment{
+    "DefaultBrowserFullscreenPromoCTAExperiment",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kIOSNewOmniboxImplementation{
     "kIOSNewOmniboxImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
 

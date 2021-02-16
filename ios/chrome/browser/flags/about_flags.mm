@@ -617,6 +617,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kDetectFormSubmissionOnFormClear)},
+    {"default-browser-fullscreen-promo-cta-experiment",
+     flag_descriptions::kDefaultBrowserFullscreenPromoCTAExperimentName,
+     flag_descriptions::kDefaultBrowserFullscreenPromoCTAExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromoCTAExperiment)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -30,6 +30,10 @@ const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupName[] =
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupName[] =
     "ChangeStrings";
 
+const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksArm[] =
+    "OpenLinks";
+const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchArm[] = "Switch";
+
 // Time threshold before activity timestamps should be removed. Currently set to
 // seven days.
 const NSTimeInterval kUserActivityTimestampExpiration = 7 * 24 * 60 * 60;
@@ -110,6 +114,24 @@ bool IsInModifiedStringsGroup() {
              kDefaultBrowserFullscreenPromoExperiment)
                  ->group_name() ==
              kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupName;
+}
+
+bool IsInCTAOpenLinksGroup() {
+  return base::FeatureList::IsEnabled(
+             kDefaultBrowserFullscreenPromoCTAExperiment) &&
+         base::FeatureList::GetFieldTrial(
+             kDefaultBrowserFullscreenPromoCTAExperiment)
+                 ->group_name() ==
+             kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksArm;
+}
+
+bool IsInCTASwitchGroup() {
+  return base::FeatureList::IsEnabled(
+             kDefaultBrowserFullscreenPromoCTAExperiment) &&
+         base::FeatureList::GetFieldTrial(
+             kDefaultBrowserFullscreenPromoCTAExperiment)
+                 ->group_name() ==
+             kDefaultBrowserFullscreenPromoCTAExperimentSwitchArm;
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {

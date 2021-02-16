@@ -136,6 +136,12 @@ const char kDefaultBrowserFullscreenPromoExperimentDescription[] =
     "When enabled, will show a modified default browser fullscreen modal promo "
     "UI.";
 
+const char kDefaultBrowserFullscreenPromoCTAExperimentName[] =
+    "Default Browser Fullscreen modal experiment with different CTA";
+const char kDefaultBrowserFullscreenPromoCTAExperimentDescription[] =
+    "When enabled, will show a modified default browser fullscreen modal promo "
+    "UI.";
+
 const char kDelayThresholdMinutesToUpdateGaiaCookieName[] =
     "Delay for polling (in minutes) to verify the existence of GAIA cookies.";
 const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[] =
