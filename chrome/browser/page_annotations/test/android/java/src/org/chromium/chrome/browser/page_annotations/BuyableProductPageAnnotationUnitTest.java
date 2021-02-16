@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotatio
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BuyableProductPageAnnotationUnitTest {
-    private static final long FAKE_PRICE_MICORS = 10000L;
+    private static final String FAKE_PRICE_MICORS = "10000";
     private static final String FAKE_CURRENCY_CODE = "USD";
 
     @Test
@@ -28,15 +28,15 @@ public class BuyableProductPageAnnotationUnitTest {
                 PageAnnotationsTestUtils.createFakeBuyableProductJson(
                         true, FAKE_PRICE_MICORS, FAKE_CURRENCY_CODE));
         Assert.assertNotNull(annotation);
-        Assert.assertEquals(annotation.getType(), PageAnnotationType.BUYABLE_PRODUCT);
-        Assert.assertEquals(annotation.getCurrencyCode(), FAKE_CURRENCY_CODE);
-        Assert.assertEquals(annotation.getCurrentPriceMicros(), FAKE_PRICE_MICORS);
+        Assert.assertEquals(PageAnnotationType.BUYABLE_PRODUCT, annotation.getType());
+        Assert.assertEquals(FAKE_CURRENCY_CODE, annotation.getCurrencyCode());
+        Assert.assertEquals(10000L, annotation.getCurrentPriceMicros());
     }
 
     @Test
     public void testFromMissingPriceMetadataJson() throws JSONException {
         BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
-                PageAnnotationsTestUtils.createFakeBuyableProductJson());
+                PageAnnotationsTestUtils.createEmptyBuyableProduct());
         Assert.assertNull(annotation);
     }
 
@@ -50,6 +50,14 @@ public class BuyableProductPageAnnotationUnitTest {
 
     @Test
     public void testFromMissingCurrencyCodeJson() throws JSONException {
+        BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
+                PageAnnotationsTestUtils.createFakeBuyableProductJson(
+                        true, FAKE_PRICE_MICORS, null));
+        Assert.assertNull(annotation);
+    }
+
+    @Test
+    public void testFromBadPriceAmountJson() throws JSONException {
         BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
                 PageAnnotationsTestUtils.createFakeBuyableProductJson(
                         true, FAKE_PRICE_MICORS, null));

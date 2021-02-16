@@ -18,11 +18,13 @@ public abstract class PageAnnotation {
     /**
      * Enumerates the various types of {@link PageAnnotation} subclasses.
      */
-    @StringDef({PageAnnotationType.UNKNOWN, PageAnnotationType.BUYABLE_PRODUCT})
+    @StringDef({PageAnnotationType.UNKNOWN, PageAnnotationType.BUYABLE_PRODUCT,
+            PageAnnotationType.PRODUCT_PRICE_UPDATE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PageAnnotationType {
         String UNKNOWN = "UNKNOWN";
         String BUYABLE_PRODUCT = "BUYABLE_PRODUCT";
+        String PRODUCT_PRICE_UPDATE = "PRODUCT_PRICE_UPDATE";
     }
 
     /** Creates a new instance. */
