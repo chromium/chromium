@@ -120,10 +120,10 @@ TEST_F(RateAdjusterTest, FastUnderlyingWithJitter) {
 
   // Need more samples to converge.
   for (int i = 0; i < 3000; ++i) {
-    AddSample(i * 20000, 300);
+    AddSample(i * 20000, 200);
   }
 
-  EXPECT_NEAR(clock_rate() * kUnderlyingRate, 1.0, 1e-5);
+  EXPECT_NEAR(clock_rate() * kUnderlyingRate, 1.0, 5e-5);
   EXPECT_GT(rate_change_count(), 1);
 }
 
