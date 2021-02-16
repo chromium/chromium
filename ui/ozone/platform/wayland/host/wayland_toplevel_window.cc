@@ -432,11 +432,17 @@ void WaylandToplevelWindow::SetSizeConstraints() {
   min_size_ = delegate()->GetMinimumSizeForWindow();
   max_size_ = delegate()->GetMaximumSizeForWindow();
 
-  if (min_size_.has_value())
-    shell_toplevel_->SetMinSize(min_size_->width(), min_size_->height());
+  if (min_size_.has_value()) {
+    auto min_size_dip =
+        gfx::ScaleToRoundedSize(min_size_.value(), 1.0f / buffer_scale());
+    shell_toplevel_->SetMinSize(min_size_dip.width(), min_size_dip.height());
+  }
 
-  if (max_size_.has_value())
-    shell_toplevel_->SetMaxSize(max_size_->width(), max_size_->height());
+  if (max_size_.has_value()) {
+    auto max_size_dip =
+        gfx::ScaleToRoundedSize(max_size_.value(), 1.0f / buffer_scale());
+    shell_toplevel_->SetMaxSize(max_size_dip.width(), max_size_dip.height());
+  }
 
   connection()->ScheduleFlush();
 }
