@@ -42,10 +42,6 @@ class NotificationIconsControllerTest : public AshTestBase {
     return notification_icons_controller_->separator_;
   }
 
-  TrayItemView* hidden_notification_count_view() {
-    return notification_icons_controller_->hidden_notification_count_view_;
-  }
-
   std::string AddNotification(bool is_pinned,
                               bool is_critical_warning,
                               const std::string& app_id = "app") {
@@ -81,28 +77,24 @@ class NotificationIconsControllerTest : public AshTestBase {
 TEST_F(NotificationIconsControllerTest, DisplayChanged) {
   AddNotification(true /* is_pinned */, false /* is_critical_warning */);
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
-  notification_icons_controller_->UpdateHiddenNotificationCounter();
 
   // Notification icons should be shown in medium screen size.
   UpdateDisplay("800x800");
   EXPECT_TRUE(
       notification_icons_controller_->tray_items().front()->GetVisible());
   EXPECT_TRUE(separator()->GetVisible());
-  EXPECT_TRUE(hidden_notification_count_view()->GetVisible());
 
   // Notification icons should not be shown in small screen size.
   UpdateDisplay("600x600");
   EXPECT_FALSE(
       notification_icons_controller_->tray_items().front()->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
-  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
 
   // Notification icons should be shown in large screen size.
   UpdateDisplay("1680x800");
   EXPECT_TRUE(
       notification_icons_controller_->tray_items().front()->GetVisible());
   EXPECT_TRUE(separator()->GetVisible());
-  EXPECT_TRUE(hidden_notification_count_view()->GetVisible());
 }
 
 TEST_F(NotificationIconsControllerTest, ShowNotificationIcons) {
@@ -147,39 +139,6 @@ TEST_F(NotificationIconsControllerTest, ShowNotificationIcons) {
   EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
   EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
-}
-
-TEST_F(NotificationIconsControllerTest, HiddenNotificationCount) {
-  UpdateDisplay("800x800");
-
-  // If there's no notification, the counter should be hidden by default.
-  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
-
-  int hidden_notification_num = 5;
-  base::string16 expected_text = base::UTF8ToUTF16("+5");
-
-  // The counter should not be shown if no icon is displayed in the tray (a.k.a
-  // no important notification).
-  for (int i = 0; i < hidden_notification_num; ++i) {
-    AddNotification(false /* is_pinned */, false /* is_critical_warning */);
-  }
-  notification_icons_controller_->UpdateHiddenNotificationCounter();
-  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
-
-  // Added a pinned notification, the counter should now be shown with the
-  // expected text.
-  std::string id0 =
-      AddNotification(true /* is_pinned */, false /* is_critical_warning */);
-  notification_icons_controller_->UpdateHiddenNotificationCounter();
-  EXPECT_TRUE(hidden_notification_count_view()->GetVisible());
-  EXPECT_EQ(expected_text,
-            hidden_notification_count_view()->label()->GetText());
-
-  // Remove the pinned notification should make the counter switch to hidden.
-  message_center::MessageCenter::Get()->RemoveNotification(id0,
-                                                           false /* by_user */);
-  notification_icons_controller_->UpdateHiddenNotificationCounter();
-  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
 }
 
 }  // namespace ash

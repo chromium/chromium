@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_ICONS_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/scoped_observation.h"
@@ -20,6 +21,7 @@ namespace ash {
 class UnifiedSystemTray;
 class TrayContainer;
 class TrayItemView;
+class HiddenNotificationCountView;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
@@ -41,6 +43,9 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
 
   // Return true if the view is containing and displaying a notification.
   bool HasNotification();
+
+  // Returns a string describing the current state for accessibility.
+  base::string16 GetAccessibleNameString() const;
 
   const std::string& GetNotificationId() const;
 
@@ -64,7 +69,8 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
 // notifications.
 class ASH_EXPORT NotificationIconsController
     : public UnifiedSystemTrayModel::Observer,
-      public message_center::MessageCenterObserver {
+      public message_center::MessageCenterObserver,
+      public SessionObserver {
  public:
   explicit NotificationIconsController(UnifiedSystemTray* tray);
   ~NotificationIconsController() override;
@@ -75,11 +81,18 @@ class ASH_EXPORT NotificationIconsController
   // Initialize the view by adding items to the container of the tray.
   void AddNotificationTrayItems(TrayContainer* tray_container);
 
-  // Update the text and visibility of the hidden notification counter.
-  void UpdateHiddenNotificationCounter();
-
   // Returns true if any item in `tray_items_` is containing a notification.
-  bool TrayItemHasNotification();
+  bool TrayItemHasNotification() const;
+
+  // Returns the number of notification icons showing in |tray_items_|.
+  size_t TrayNotificationIconsCount() const;
+
+  // Returns true if we should not show notification related items in tray (e.g.
+  // during quiet mode, screen lock, etc.).
+  bool ShouldShowNotificationItemsInTray();
+
+  // Returns a string describing the current state for accessibility.
+  base::string16 GetAccessibleNameString() const;
 
   // UnifiedSystemTrayModel::Observer:
   void OnSystemTrayButtonSizeChanged(
@@ -90,9 +103,18 @@ class ASH_EXPORT NotificationIconsController
   void OnNotificationRemoved(const std::string& id, bool by_user) override;
   void OnNotificationUpdated(const std::string& id) override;
 
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
   std::vector<NotificationIconTrayItemView*> tray_items() {
     return tray_items_;
   }
+
+  HiddenNotificationCountView* hidden_notification_count_view() {
+    return hidden_notification_count_view_;
+  }
+
+  bool icons_view_visible() const { return icons_view_visible_; }
 
  private:
   friend class NotificationIconsControllerTest;
@@ -120,7 +142,7 @@ class ASH_EXPORT NotificationIconsController
 
   UnifiedSystemTray* tray_;
 
-  TrayItemView* hidden_notification_count_view_ = nullptr;
+  HiddenNotificationCountView* hidden_notification_count_view_ = nullptr;
   TrayItemView* separator_ = nullptr;
 
   base::ScopedObservation<UnifiedSystemTrayModel,

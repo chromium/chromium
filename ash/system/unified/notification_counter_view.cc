@@ -109,9 +109,6 @@ NotificationCounterView::~NotificationCounterView() {
 }
 
 void NotificationCounterView::Update() {
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-
   size_t notification_count = message_center_utils::GetNotificationCount();
 
   // If we are currently showing icons of some notifications in the tray, this
@@ -120,10 +117,7 @@ void NotificationCounterView::Update() {
       icons_view_visible_ && controller_ &&
       controller_->TrayItemHasNotification();
   if (notification_count == 0 || tray_notification_icons_shown ||
-      message_center::MessageCenter::Get()->IsQuietMode() ||
-      !session_controller->ShouldShowNotificationTray() ||
-      (session_controller->IsScreenLocked() &&
-       !AshMessageCenterLockScreenController::IsEnabled())) {
+      !controller_->ShouldShowNotificationItemsInTray()) {
     SetVisible(false);
     return;
   }
@@ -168,8 +162,10 @@ const char* NotificationCounterView::GetClassName() const {
   return "NotificationCounterView";
 }
 
-HiddenNotificationCountView::HiddenNotificationCountView(Shelf* shelf)
-    : TrayItemView(shelf) {
+HiddenNotificationCountView::HiddenNotificationCountView(
+    Shelf* shelf,
+    NotificationIconsController* controller)
+    : TrayItemView(shelf), controller_(controller) {
   CreateLabel();
   SetupLabelForTray(label());
   SetBorder(views::CreateEmptyBorder(kUnifiedTrayTextTopPadding, 0, 0,
@@ -180,8 +176,30 @@ HiddenNotificationCountView::HiddenNotificationCountView(Shelf* shelf)
 
 HiddenNotificationCountView::~HiddenNotificationCountView() = default;
 
+void HiddenNotificationCountView::Update() {
+  if (!controller_->icons_view_visible() ||
+      !controller_->ShouldShowNotificationItemsInTray() ||
+      !controller_->TrayItemHasNotification()) {
+    SetVisible(false);
+    return;
+  }
+
+  int hidden_notification_num = message_center_utils::GetNotificationCount() -
+                                controller_->TrayNotificationIconsCount();
+  if (hidden_notification_num != 0) {
+    label()->SetText(l10n_util::GetStringFUTF16Int(
+        IDS_ASH_STATUS_TRAY_HIDDEN_NOTIFICATION_COUNT_LABEL,
+        hidden_notification_num));
+    label()->SetTooltipText(l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_HIDDEN_COUNT_TOOLTIP,
+        hidden_notification_num));
+  }
+
+  SetVisible(hidden_notification_num != 0);
+}
+
 void HiddenNotificationCountView::HandleLocaleChange() {
-  // TODO(crbug.com/1161557): Finish this function.
+  Update();
 }
 
 const char* HiddenNotificationCountView::GetClassName() const {

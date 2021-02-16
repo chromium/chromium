@@ -151,6 +151,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     notification_icons_controller_->AddNotificationTrayItems(tray_container());
     for (TrayItemView* tray_item : notification_icons_controller_->tray_items())
       tray_items_.push_back(tray_item);
+    tray_items_.push_back(
+        notification_icons_controller_->hidden_notification_count_view());
   }
   AddTrayItemToContainer(current_locale_view_);
   AddTrayItemToContainer(ime_mode_view_);
@@ -430,9 +432,16 @@ base::string16 UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(camera_view_->GetVisible()
                        ? camera_view_->GetAccessibleNameString()
                        : base::EmptyString16());
-  status.push_back(notification_counter_item_->GetVisible()
-                       ? notification_counter_item_->GetAccessibleNameString()
-                       : base::EmptyString16());
+  base::string16 notification_string;
+  if (notification_counter_item_->GetVisible()) {
+    notification_string = notification_counter_item_->GetAccessibleNameString();
+  } else if (notification_icons_controller_) {
+    notification_string =
+        notification_icons_controller_->GetAccessibleNameString();
+  } else {
+    notification_string = base::EmptyString16();
+  }
+  status.push_back(notification_string);
   status.push_back(ime_mode_view_->GetVisible()
                        ? ime_mode_view_->label()->GetAccessibleNameString()
                        : base::EmptyString16());
@@ -497,7 +506,7 @@ void UnifiedSystemTray::UpdateNotificationAfterDelay() {
   notification_counter_item_->Update();
   quiet_mode_view_->Update();
   if (notification_icons_controller_)
-    notification_icons_controller_->UpdateHiddenNotificationCounter();
+    notification_icons_controller_->hidden_notification_count_view()->Update();
 }
 
 message_center::MessagePopupView*

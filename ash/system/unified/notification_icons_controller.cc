@@ -5,7 +5,10 @@
 #include "ash/system/unified/notification_icons_controller.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
@@ -96,11 +99,18 @@ void NotificationIconTrayItemView::Reset() {
 }
 
 void NotificationIconTrayItemView::UpdateTooltipText() {
-  image_view()->SetTooltipText(notification_->title());
+  if (notification_)
+    image_view()->SetTooltipText(notification_->title());
 }
 
 bool NotificationIconTrayItemView::HasNotification() {
   return notification_;
+}
+
+base::string16 NotificationIconTrayItemView::GetAccessibleNameString() const {
+  if (!notification_)
+    return base::EmptyString16();
+  return notification_->title();
 }
 
 const std::string& NotificationIconTrayItemView::GetNotificationId() const {
@@ -120,10 +130,12 @@ NotificationIconsController::NotificationIconsController(
     : tray_(tray) {
   system_tray_model_observation_.Observe(tray_->model());
   message_center::MessageCenter::Get()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
 NotificationIconsController::~NotificationIconsController() {
   message_center::MessageCenter::Get()->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void NotificationIconsController::AddNotificationTrayItems(
@@ -134,35 +146,51 @@ void NotificationIconsController::AddNotificationTrayItems(
   }
 
   hidden_notification_count_view_ = tray_container->AddChildView(
-      std::make_unique<HiddenNotificationCountView>(tray_->shelf()));
+      std::make_unique<HiddenNotificationCountView>(tray_->shelf(), this));
 
   separator_ = tray_container->AddChildView(
       std::make_unique<SeparatorTrayItemView>(tray_->shelf()));
 
   OnSystemTrayButtonSizeChanged(tray_->model()->GetSystemTrayButtonSize());
+
+  // TODO(crbug.com/1161557): Refactor the code by moving
+  // |notification_counter_item_| and |quiet_mode_view_| of UnifiedSystemTray
+  // into this controller.
 }
 
-void NotificationIconsController::UpdateHiddenNotificationCounter() {
-  if (!icons_view_visible_ || !TrayItemHasNotification()) {
-    hidden_notification_count_view_->SetVisible(false);
-    return;
-  }
+bool NotificationIconsController::TrayItemHasNotification() const {
+  return first_unused_item_index_ != 0;
+}
 
+size_t NotificationIconsController::TrayNotificationIconsCount() const {
   // `first_unused_item_index_` is also the total number of notification icons
   // shown in the tray.
-  int hidden_notification_num =
-      message_center_utils::GetNotificationCount() - first_unused_item_index_;
-  if (hidden_notification_num != 0)
-    hidden_notification_count_view_->label()->SetText(
-        l10n_util::GetStringFUTF16Int(
-            IDS_ASH_STATUS_TRAY_HIDDEN_NOTIFICATION_COUNT_LABEL,
-            hidden_notification_num));
-
-  hidden_notification_count_view_->SetVisible(hidden_notification_num != 0);
+  return first_unused_item_index_;
 }
 
-bool NotificationIconsController::TrayItemHasNotification() {
-  return first_unused_item_index_ != 0;
+bool NotificationIconsController::ShouldShowNotificationItemsInTray() {
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  return !message_center::MessageCenter::Get()->IsQuietMode() &&
+         session_controller->ShouldShowNotificationTray() &&
+         (!session_controller->IsScreenLocked() ||
+          AshMessageCenterLockScreenController::IsEnabled());
+}
+
+base::string16 NotificationIconsController::GetAccessibleNameString() const {
+  if (!TrayItemHasNotification())
+    return base::EmptyString16();
+
+  std::vector<base::string16> status;
+  status.push_back(l10n_util::GetPluralStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_IMPORTANT_COUNT_ACCESSIBLE_NAME,
+      TrayNotificationIconsCount()));
+  for (NotificationIconTrayItemView* tray_item : tray_items_) {
+    status.push_back(tray_item->GetAccessibleNameString());
+  }
+  status.push_back(hidden_notification_count_view_->label()->GetTooltipText());
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME, status, nullptr);
 }
 
 void NotificationIconsController::OnSystemTrayButtonSizeChanged(
@@ -170,7 +198,7 @@ void NotificationIconsController::OnSystemTrayButtonSizeChanged(
   icons_view_visible_ =
       system_tray_size != UnifiedSystemTrayModel::SystemTrayButtonSize::kSmall;
   UpdateNotificationIcons();
-  UpdateHiddenNotificationCounter();
+  hidden_notification_count_view_->Update();
 }
 
 void NotificationIconsController::OnNotificationAdded(const std::string& id) {
@@ -198,7 +226,16 @@ void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
     item->UpdateTooltipText();
 }
 
+void NotificationIconsController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  UpdateNotificationIcons();
+  hidden_notification_count_view_->Update();
+}
+
 void NotificationIconsController::UpdateNotificationIcons() {
+  const bool should_show_icons =
+      icons_view_visible_ && ShouldShowNotificationItemsInTray();
+
   auto it = tray_items_.begin();
   for (message_center::Notification* notification :
        message_center_utils::GetSortedVisibleNotifications()) {
@@ -206,7 +243,7 @@ void NotificationIconsController::UpdateNotificationIcons() {
       break;
     if (ShouldShowNotification(notification)) {
       (*it)->SetNotification(notification);
-      (*it)->SetVisible(icons_view_visible_);
+      (*it)->SetVisible(should_show_icons);
       ++it;
     }
   }
@@ -217,7 +254,7 @@ void NotificationIconsController::UpdateNotificationIcons() {
     (*it)->Reset();
     (*it)->SetVisible(false);
   }
-  separator_->SetVisible(icons_view_visible_ && TrayItemHasNotification());
+  separator_->SetVisible(should_show_icons && TrayItemHasNotification());
 }
 
 NotificationIconTrayItemView*

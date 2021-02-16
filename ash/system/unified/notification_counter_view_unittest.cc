@@ -21,6 +21,24 @@
 
 namespace ash {
 
+namespace {
+
+void AddNotification(const std::string& notification_id,
+                     bool is_pinned = false) {
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.pinned = is_pinned;
+  message_center::MessageCenter::Get()->AddNotification(
+      std::make_unique<message_center::Notification>(
+          message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
+          base::UTF8ToUTF16("test_title"), base::UTF8ToUTF16("test message"),
+          gfx::Image(), /*display_source=*/base::string16(), GURL(),
+          message_center::NotifierId(message_center::NotifierType::APPLICATION,
+                                     "app"),
+          rich_notification_data, new message_center::NotificationDelegate()));
+}
+
+}  // namespace
+
 class NotificationCounterViewTest : public AshTestBase,
                                     public testing::WithParamInterface<bool> {
  public:
@@ -61,21 +79,6 @@ class NotificationCounterViewTest : public AshTestBase,
   }
 
  protected:
-  void AddNotification(const std::string& notification_id,
-                       bool is_pinned = false) {
-    message_center::RichNotificationData rich_notification_data;
-    rich_notification_data.pinned = is_pinned;
-    message_center::MessageCenter::Get()->AddNotification(
-        std::make_unique<message_center::Notification>(
-            message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
-            base::UTF8ToUTF16("test_title"), base::UTF8ToUTF16("test message"),
-            gfx::Image(), /*display_source=*/base::string16(), GURL(),
-            message_center::NotifierId(
-                message_center::NotifierType::APPLICATION, "app"),
-            rich_notification_data,
-            new message_center::NotificationDelegate()));
-  }
-
   NotificationCounterView* notification_counter_view() {
     return notification_counter_view_.get();
   }
@@ -147,6 +150,95 @@ TEST_P(NotificationCounterViewTest, DisplayChanged) {
                                                            false /* by_user */);
   notification_counter_view()->Update();
   EXPECT_TRUE(notification_counter_view()->GetVisible());
+}
+
+class HiddenNotificationCountViewTest : public AshTestBase {
+ public:
+  HiddenNotificationCountViewTest() = default;
+  HiddenNotificationCountViewTest(const HiddenNotificationCountViewTest&) =
+      delete;
+  HiddenNotificationCountViewTest& operator=(
+      const HiddenNotificationCountViewTest&) = delete;
+  ~HiddenNotificationCountViewTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    tray_ = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
+    notification_icons_controller_ =
+        std::make_unique<NotificationIconsController>(tray_.get());
+    notification_icons_controller_->AddNotificationTrayItems(
+        tray_->tray_container());
+    hidden_notification_count_view_ =
+        notification_icons_controller_->hidden_notification_count_view();
+  }
+
+  void TearDown() override {
+    notification_icons_controller_.reset();
+    tray_.reset();
+    AshTestBase::TearDown();
+  }
+
+ protected:
+  HiddenNotificationCountView* hidden_notification_count_view() {
+    return hidden_notification_count_view_;
+  }
+
+ private:
+  std::unique_ptr<UnifiedSystemTray> tray_;
+  std::unique_ptr<NotificationIconsController> notification_icons_controller_;
+  HiddenNotificationCountView* hidden_notification_count_view_;
+};
+
+TEST_F(HiddenNotificationCountViewTest, DisplayChanged) {
+  AddNotification("0", true /* is_pinned */);
+  AddNotification("1", false /* is_pinned */);
+  hidden_notification_count_view()->Update();
+
+  // Counter should be shown in medium screen size.
+  UpdateDisplay("800x800");
+  EXPECT_TRUE(hidden_notification_count_view()->GetVisible());
+
+  // Notification icons should not be shown in small screen size.
+  UpdateDisplay("600x600");
+  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
+
+  // Notification icons should be shown in large screen size.
+  UpdateDisplay("1680x800");
+  EXPECT_TRUE(hidden_notification_count_view()->GetVisible());
+}
+
+TEST_F(HiddenNotificationCountViewTest, HiddenNotificationCount) {
+  UpdateDisplay("800x800");
+
+  // If there's no notification, the counter should be hidden by default.
+  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
+
+  int hidden_notification_num = 5;
+  base::string16 expected_text = base::UTF8ToUTF16("+5");
+
+  // The counter should not be shown if no icon is displayed in the tray (a.k.a
+  // no important notification).
+  for (int i = 0; i < hidden_notification_num; ++i) {
+    AddNotification(base::NumberToString(i), false /* is_pinned */);
+  }
+  hidden_notification_count_view()->Update();
+  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
+
+  // Added a pinned notification, the counter should now be shown with the
+  // expected text.
+  AddNotification("5", true /* is_pinned */);
+  hidden_notification_count_view()->Update();
+  EXPECT_TRUE(hidden_notification_count_view()->GetVisible());
+  EXPECT_EQ(expected_text,
+            hidden_notification_count_view()->label()->GetText());
+
+  // Remove the pinned notification should make the counter switch to hidden.
+  message_center::MessageCenter::Get()->RemoveNotification("5",
+                                                           false /* by_user */);
+  hidden_notification_count_view()->Update();
+  EXPECT_FALSE(hidden_notification_count_view()->GetVisible());
 }
 
 }  // namespace ash

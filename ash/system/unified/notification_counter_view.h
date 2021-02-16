@@ -77,17 +77,23 @@ class ASH_EXPORT NotificationCounterView
 
 // An icon view to indicate the number of hidden notifications (besides from the
 // notifications that are shown in tray).
-class HiddenNotificationCountView : public TrayItemView {
+class ASH_EXPORT HiddenNotificationCountView : public TrayItemView {
  public:
-  explicit HiddenNotificationCountView(Shelf* shelf);
+  HiddenNotificationCountView(Shelf* shelf,
+                              NotificationIconsController* controller);
   ~HiddenNotificationCountView() override;
   HiddenNotificationCountView(const HiddenNotificationCountView&) = delete;
   HiddenNotificationCountView& operator=(const HiddenNotificationCountView&) =
       delete;
 
+  void Update();
+
   // TrayItemView:
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
+
+ private:
+  NotificationIconsController* const controller_;
 };
 
 // A do-not-distrub icon view in UnifiedSystemTray button.

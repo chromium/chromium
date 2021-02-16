@@ -428,6 +428,22 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_INDICATOR_LOCALE_TOOLTIP" desc="The tooltip text for the status area icon to indicate the current locale.">
         Using <ph name="LOCALE_NAME">$1<ex>English (United States)</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_IMPORTANT_COUNT_ACCESSIBLE_NAME" desc="The accessible name for a status area icon to describe number of important notifications. [ICU Syntax]">
+        {NUM_NOTIFICATIONS, plural,
+         =1 {1 important notification}
+         other {# important notifications}}
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_HIDDEN_COUNT_TOOLTIP" desc="The tooltip text for a status area icon to describe number of hidden notifications. [ICU Syntax]">
+        {NUM_NOTIFICATIONS, plural,
+         =1 {1 other notification}
+         other {# other notifications}}
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME" desc="The accessible name for the set of notifications icons shown in status area.">
+        <ph name="NUM_IMPORTANT_NOTIFICATION">$1<ex>2 important notifications</ex></ph>:
+        <ph name="NOTIFICATION_1">$2<ex>CAPSLOCK is on</ex></ph>,
+        <ph name="NOTIFICATION_2">$3<ex>CAPSLOCK is on</ex></ph>,
+        <ph name="NUM_OTHER_NOTIFICATION">$4<ex>2 other notifications</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_COUNT_TOOLTIP" desc="The tooltip text for a status area icon to describe number of notifications. [ICU Syntax]">
         {NUM_NOTIFICATIONS, plural,
          =1 {1 notification}
