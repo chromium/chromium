@@ -24,7 +24,6 @@ class AssistantManagerInternal;
 namespace chromeos {
 namespace assistant {
 class AssistantManagerServiceDelegate;
-class CrosPlatformApi;
 }  // namespace assistant
 }  // namespace chromeos
 
@@ -48,7 +47,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
 
   explicit LibassistantService(
       mojo::PendingReceiver<mojom::LibassistantService> receiver,
-      chromeos::assistant::CrosPlatformApi* platform_api,
       assistant::AssistantManagerServiceDelegate* delegate);
   LibassistantService(LibassistantService&) = delete;
   LibassistantService& operator=(LibassistantService&) = delete;

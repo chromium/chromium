@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/conversation_controller.h"
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
@@ -23,7 +22,6 @@ namespace libassistant {
 
 LibassistantService::LibassistantService(
     mojo::PendingReceiver<mojom::LibassistantService> receiver,
-    chromeos::assistant::CrosPlatformApi* platform_api,
     assistant::AssistantManagerServiceDelegate* delegate)
     : receiver_(this, std::move(receiver)),
       platform_api_(std::make_unique<PlatformApi>()),

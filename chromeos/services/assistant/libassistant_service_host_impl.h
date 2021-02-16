@@ -20,7 +20,6 @@ namespace chromeos {
 namespace assistant {
 
 class AssistantManagerServiceDelegate;
-class CrosPlatformApi;
 
 class LibassistantServiceHostImpl : public LibassistantServiceHost {
  public:
@@ -28,8 +27,8 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
       base::OnceCallback<void(assistant_client::AssistantManager*,
                               assistant_client::AssistantManagerInternal*)>;
 
-  LibassistantServiceHostImpl(CrosPlatformApi* platform_api,
-                              AssistantManagerServiceDelegate* delegate);
+  explicit LibassistantServiceHostImpl(
+      AssistantManagerServiceDelegate* delegate);
   LibassistantServiceHostImpl(LibassistantServiceHostImpl&) = delete;
   LibassistantServiceHostImpl& operator=(LibassistantServiceHostImpl&) = delete;
   ~LibassistantServiceHostImpl() override;
@@ -41,8 +40,6 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   void SetInitializeCallback(InitializeCallback) override;
 
  private:
-  // Owned by |AssistantManagerServiceImpl| which also owns |this|.
-  CrosPlatformApi* const platform_api_;
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
   AssistantManagerServiceDelegate* const delegate_;
 

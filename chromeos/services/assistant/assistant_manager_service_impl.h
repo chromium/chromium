@@ -63,7 +63,6 @@ class AssistantMediaSession;
 class AssistantProxy;
 class AudioInputHost;
 class AudioOutputDelegateImpl;
-class CrosPlatformApi;
 class MediaHost;
 class PlatformDelegateImpl;
 class ServiceContext;
@@ -280,7 +279,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void SetStateAndInformObservers(State new_state);
 
   State state_ = State::STOPPED;
-  std::unique_ptr<CrosPlatformApi> platform_api_;
   std::unique_ptr<action::CrosActionModule> action_module_;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 

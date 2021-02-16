@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "chromeos/services/assistant/platform/audio_input_host_impl.h"
-#include "chromeos/services/assistant/platform_api_impl.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -34,14 +33,6 @@ AssistantManagerServiceDelegateImpl::CreateAudioInputHost(
       std::move(pending_remote), context_->cras_audio_handler(),
       context_->power_manager_client(),
       context_->assistant_state()->locale().value());
-}
-
-std::unique_ptr<CrosPlatformApi>
-AssistantManagerServiceDelegateImpl::CreatePlatformApi(
-    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate) {
-  return std::make_unique<PlatformApiImpl>(platform_delegate,
-                                           context_->power_manager_client(),
-                                           context_->main_task_runner());
 }
 
 std::unique_ptr<assistant_client::AssistantManager>

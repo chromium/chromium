@@ -48,8 +48,7 @@ class PlatformApi : public assistant_client::PlatformApi {
   assistant_client::SystemProvider& GetSystemProvider() override;
 
  private:
-  // The below are all owned by the browser side |PlatformApiImpl|,
-  // which outlives us.
+  // This is owned by |AudioInputController|.
   assistant_client::AudioInputProvider* audio_input_provider_ = nullptr;
 
   std::unique_ptr<AudioOutputProviderImpl> audio_output_provider_;

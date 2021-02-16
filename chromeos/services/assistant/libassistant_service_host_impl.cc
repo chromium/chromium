@@ -12,10 +12,8 @@ namespace chromeos {
 namespace assistant {
 
 LibassistantServiceHostImpl::LibassistantServiceHostImpl(
-    CrosPlatformApi* platform_api,
     AssistantManagerServiceDelegate* delegate)
-    : platform_api_(platform_api), delegate_(delegate) {
-  DCHECK(platform_api_);
+    : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
@@ -27,7 +25,7 @@ void LibassistantServiceHostImpl::Launch(
   DCHECK(!libassistant_service_);
   libassistant_service_ =
       std::make_unique<chromeos::libassistant::LibassistantService>(
-          std::move(receiver), platform_api_, delegate_);
+          std::move(receiver), delegate_);
 
   if (pending_initialize_callback_) {
     libassistant_service_->SetInitializeCallback(

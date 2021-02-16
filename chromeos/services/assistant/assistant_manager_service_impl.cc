@@ -38,7 +38,6 @@
 #include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
 #include "chromeos/services/assistant/platform/platform_delegate_impl.h"
-#include "chromeos/services/assistant/platform_api_impl.h"
 #include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
@@ -243,22 +242,15 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           device_id_override,
           ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
-  platform_api_ = delegate_->CreatePlatformApi(platform_delegate_.get());
-
   if (libassistant_service_host) {
     // During unittests a custom host is passed in, so we'll use that one.
     libassistant_service_host_ = std::move(libassistant_service_host);
   } else {
     // Use the default service host if none was provided.
-    libassistant_service_host_ = std::make_unique<LibassistantServiceHostImpl>(
-        platform_api_.get(), delegate_.get());
+    libassistant_service_host_ =
+        std::make_unique<LibassistantServiceHostImpl>(delegate_.get());
   }
 
-  // |assistant_proxy_| owns the background thread that |platform_api_| needs
-  // for its constructor, but it also needs a reference to
-  // |libassistant_service_host| which requires |platform_api_| in its
-  // constructor.
-  // To solve this chicken-and-egg problem, we need a separe Initialize() call.
   assistant_proxy_->Initialize(libassistant_service_host_.get(),
                                std::move(pending_url_loader_factory));
 
@@ -281,9 +273,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
 
 AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
   // Destroy the Assistant Proxy first so the background thread is flushed
-  // before any of the other objects are destroyed. If we don't do this
-  // the background thread could for example access |platform_api_| after it
-  // is destroyed.
+  // before any of the other objects are destroyed.
   assistant_proxy_ = nullptr;
 }
 

@@ -23,7 +23,6 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
 LibassistantServiceTester::LibassistantServiceTester()
     : home_dir_override_(base::DIR_HOME),
       service_(service_remote_.BindNewPipeAndPassReceiver(),
-               /*platform_api=*/nullptr,
                &assistant_manager_service_delegate_) {
   BindControllers();
 }

@@ -31,9 +31,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
   std::unique_ptr<AudioInputHost> CreateAudioInputHost(
       mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
           pending_remote) override;
-  std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate)
-      override;
   std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
       assistant_client::PlatformApi* platform_api,
       const std::string& libassistant_config) override;
