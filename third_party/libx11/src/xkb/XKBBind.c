@@ -66,8 +66,11 @@ uint32_t KeycodeToKeysymXkbImpl(KeyCode key,
 
   auto group =
       AdjustGroup(GetXkbGroupFromState(modifiers), key_sym_map.groupInfo);
-  int col = group * key_sym_map.width;
-  const auto& type = map.types_rtrn->at(key_sym_map.kt_index[group]);
+  unsigned col = group * key_sym_map.width;
+  auto type_index = key_sym_map.kt_index[group];
+  if (type_index >= map.types_rtrn->size())
+    return 0;
+  const auto& type = map.types_rtrn->at(type_index);
 
   for (size_t i = 0; i < type.map.size(); i++) {
     const auto& entry = type.map[i];
@@ -79,5 +82,7 @@ uint32_t KeycodeToKeysymXkbImpl(KeyCode key,
     }
   }
 
+  if (col >= key_sym_map.syms.size())
+    return 0;
   return static_cast<uint32_t>(key_sym_map.syms.at(col));
 }
