@@ -679,6 +679,8 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
                               child_item->Size())
             .inline_offset;
     if (point_inline_offset < child_inline_offset) {
+      if (child_item->IsFloating())
+        continue;
       if (child_inline_offset < closest_child_after_inline_offset) {
         closest_child_after_inline_offset = child_inline_offset;
         closest_child_after = descendants.Current();
@@ -690,7 +692,9 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
         child_item->Size()
             .ConvertToLogical(writing_direction.GetWritingMode())
             .inline_size;
-    if (point_inline_offset > child_inline_end_offset) {
+    if (point_inline_offset >= child_inline_end_offset) {
+      if (child_item->IsFloating())
+        continue;
       if (child_inline_end_offset > closest_child_before_inline_offset) {
         closest_child_before_inline_offset = child_inline_end_offset;
         closest_child_before = descendants.Current();
@@ -698,17 +702,25 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
       continue;
     }
 
+    // |point_inline_offset| is in |child_item|.
     if (const PositionWithAffinity child_position =
             descendants.PositionForPointInChild(point))
       return child_position;
   }
 
+  // Note: We don't snap a point before/after of "float" to "float",
+  // |closest_child_after| and |closest_child_before| can not be a box for
+  // "float".
+  // Note: Float boxes are appeared in |NGFragmentItems| as DOM order, so,
+  // "float:right" can be placed anywhere instead of at end of items.
+  // See LayoutViewHitTest.Float{Left,Right}*
   if (closest_child_after) {
     descendants.MoveTo(closest_child_after);
     if (const PositionWithAffinity child_position =
             descendants.PositionForPointInChild(point))
       return child_position;
     if (closest_child_after->BoxFragment()) {
+      DCHECK(!closest_child_after->IsFloating());
       // Hit test at left of "12"[1] and after "cd"[2] reache here.
       // "<span dir="rtl">12<b>&#x05E7;&#x05D0;43</b></span>ab"
       // [1] "editing/selection/caret-at-bidi-boundary.html"
@@ -725,6 +737,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
             descendants.PositionForPointInChild(point))
       return child_position;
     if (closest_child_before->BoxFragment()) {
+      DCHECK(!closest_child_before->IsFloating());
       // LayoutViewHitTest.HitTestHorizontal "Top-right corner (outside) of div"
       // reach here.
       if (const PositionWithAffinity child_position =
