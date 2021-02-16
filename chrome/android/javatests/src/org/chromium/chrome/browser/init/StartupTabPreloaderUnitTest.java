@@ -179,7 +179,7 @@ public class StartupTabPreloaderUnitTest {
                         return intent;
                     }
                 },
-                new ActivityLifecycleDispatcherImpl(), null, tabCreatorManager,
+                new ActivityLifecycleDispatcherImpl(null), null, tabCreatorManager,
                 new IntentHandler(null, null));
     }
 

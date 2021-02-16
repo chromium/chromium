@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -34,8 +33,7 @@ public class WebappDisclosureController extends DisclosureController {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Inject
-    public WebappDisclosureController(ChromeActivity<?> activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
+    public WebappDisclosureController(BrowserServicesIntentDataProvider intentDataProvider,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             TrustedWebActivityModel model, ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier) {
@@ -44,7 +42,7 @@ public class WebappDisclosureController extends DisclosureController {
         mIntentDataProvider = intentDataProvider;
 
         deferredStartupWithStorageHandler.addTask((storage, didCreateStorage) -> {
-            if (activity.isActivityFinishingOrDestroyed()) return;
+            if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
 
             onDeferredStartupWithStorage(storage, didCreateStorage);
         });

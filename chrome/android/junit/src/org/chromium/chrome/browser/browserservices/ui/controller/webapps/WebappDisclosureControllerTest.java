@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
 import org.chromium.chrome.browser.webapps.WebappIntentUtils;
@@ -55,8 +54,6 @@ public class WebappDisclosureControllerTest {
     private static final String BOUND_PACKAGE = WebApkConstants.WEBAPK_PACKAGE_PREFIX + ".bound";
     private static final String SCOPE = "https://www.example.com";
 
-    @Mock
-    public WebappActivity mActivity;
     @Mock
     public CurrentPageVerifier mCurrentPageVerifier;
 
@@ -85,7 +82,7 @@ public class WebappDisclosureControllerTest {
         BrowserServicesIntentDataProvider intentDataProvider =
                 new WebApkIntentDataProviderBuilder(webApkPackageName, "https://pwa.rocks/")
                         .build();
-        return new WebappDisclosureController(mActivity, intentDataProvider,
+        return new WebappDisclosureController(intentDataProvider,
                 mock(WebappDeferredStartupWithStorageHandler.class), mModel,
                 mock(ActivityLifecycleDispatcher.class), mCurrentPageVerifier);
     }

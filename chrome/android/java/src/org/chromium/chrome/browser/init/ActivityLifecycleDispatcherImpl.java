@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.init;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -46,8 +47,15 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             new ObserverList<>();
     private final ObserverList<RecreateObserver> mRecreateObservers = new ObserverList<>();
 
+    private final Activity mActivity;
+
     private @ActivityState int mActivityState = ActivityState.DESTROYED;
     private boolean mIsNativeInitialized;
+    private boolean mDestroyed;
+
+    public ActivityLifecycleDispatcherImpl(Activity activity) {
+        mActivity = activity;
+    }
 
     @Override
     public void register(LifecycleObserver observer) {
@@ -129,6 +137,11 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         return mIsNativeInitialized;
     }
 
+    @Override
+    public boolean isActivityFinishingOrDestroyed() {
+        return mDestroyed || mActivity.isFinishing();
+    }
+
     void dispatchPreInflationStartup() {
         for (InflationObserver observer : mInflationObservers) {
             observer.onPreInflationStartup();
@@ -184,6 +197,10 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         for (NativeInitObserver observer : mNativeInitObservers) {
             observer.onFinishNativeInitialization();
         }
+    }
+
+    void onDestroyStarted() {
+        mDestroyed = true;
     }
 
     void dispatchOnDestroy() {

@@ -833,6 +833,11 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         public boolean isNativeInitializationFinished() {
             return false;
         }
+
+        @Override
+        public boolean isActivityFinishingOrDestroyed() {
+            return false;
+        }
     }
 
     private class TestMenuButtonDelegate implements MenuButtonDelegate {

@@ -71,7 +71,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             new NativeInitializationController(this);
 
     private final ActivityLifecycleDispatcherImpl mLifecycleDispatcher =
-            new ActivityLifecycleDispatcherImpl();
+            new ActivityLifecycleDispatcherImpl(this);
     private final MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher =
             new MultiWindowModeStateDispatcherImpl(this);
 
@@ -107,6 +107,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     protected void onDestroy() {
         mDestroyed = true;
+        mLifecycleDispatcher.onDestroyStarted();
 
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
