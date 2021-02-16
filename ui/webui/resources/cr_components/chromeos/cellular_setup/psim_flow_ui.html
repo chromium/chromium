@@ -27,7 +27,7 @@
         selected="[[selectedPSimPageName_]]"
         selected-item="{{selectedPage_}}">
       <setup-loading-page id="simDetectPage"
-          delegate="[[delegate]]" show-error="[[showError_]]"
+          delegate="[[delegate]]" state="[[getLoadingPageState_(showError)]]"
           loading-message="[[i18n('establishNetworkConnectionMessage')]]">
       </setup-loading-page>
       <provisioning-page id="provisioningPage"

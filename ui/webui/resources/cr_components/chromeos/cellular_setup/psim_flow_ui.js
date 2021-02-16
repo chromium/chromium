@@ -422,6 +422,15 @@ cr.define('cellularSetup', function() {
       this.state_ = success ? PSimUIState.ACTIVATION_SUCCESS :
                               PSimUIState.ACTIVATION_FAILURE;
     },
+
+    /**
+     * @param {boolean} showError
+     * @private
+     */
+    getLoadingPageState_(showError) {
+      return showError ? LoadingPageState.SIM_DETECT_ERROR :
+                         LoadingPageState.LOADING;
+    },
   });
 
   // #cr_define_end

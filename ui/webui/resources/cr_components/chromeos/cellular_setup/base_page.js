@@ -22,6 +22,16 @@ Polymer({
      * @type {string}
      */
     message: String,
+
+    /**
+     * Name for the cellular-setup iconset iron-icon displayed beside message.
+     *
+     * @type {string}
+     */
+    messageIcon: {
+      type: String,
+      value: '',
+    }
   },
 
   /**
@@ -38,5 +48,13 @@ Polymer({
    */
   isTitleShown_() {
     return !!this.title;
+  },
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  isMessageIconShown_() {
+    return !!this.messageIcon;
   }
 });

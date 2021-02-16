@@ -27,4 +27,18 @@ suite('CrComponentsBasePageTest', function() {
     const title = basePage.$$('#title');
     assertFalse(!!title);
   });
+
+  test('Message icon is shown', function() {
+    basePage.messageIcon = 'warning';
+    Polymer.dom.flush();
+    const messageIcon = basePage.$$('iron-icon');
+    assertTrue(!!messageIcon);
+    assertFalse(messageIcon.hidden);
+  });
+
+  test('Message icon is not shown', function() {
+    const messageIcon = basePage.$$('iron-icon');
+    assertTrue(!!messageIcon);
+    assertTrue(messageIcon.hidden);
+  });
 });

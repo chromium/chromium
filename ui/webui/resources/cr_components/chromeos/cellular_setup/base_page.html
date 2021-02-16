@@ -2,10 +2,12 @@
 
 <link rel="import" href="../../../cr_elements/shared_vars_css.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 
 <dom-module id="base-page">
   <template>
-    <style>
+    <style include="iron-positioning">
       #title {
         color: var(--google-grey-900);
         font-weight: normal;
@@ -21,11 +23,21 @@
         height: 256px;
         width: 100%;
       }
+
+      #message iron-icon {
+        padding-inline-end: 4px;
+      }
     </style>
     <template is="dom-if" if="[[isTitleShown_(title)]]" restamp>
       <h3 id="title">[[getTitle_(title)]]</h3>
     </template>
-    <div id="message">[[message]]</div>
+    <div id="message">
+      <iron-icon
+          icon$="cellular-setup:[[messageIcon]]"
+          hidden$="[[!isMessageIconShown_(messageIcon)]]">
+      </iron-icon>
+      [[message]]
+    </div>
     <slot name="page-body"></slot>
   </template>
   <script src="base_page.js"></script>

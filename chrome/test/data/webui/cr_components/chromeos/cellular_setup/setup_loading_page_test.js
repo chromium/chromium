@@ -8,20 +8,45 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertFalse, assertTrue} from '../../../chai_assert.js';
+// #import {LoadingPageState} from 'chrome://resources/cr_components/chromeos/cellular_setup/setup_loading_page.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
 
 suite('CrComponentsSetupLoadingPageTest', function() {
   let simDetectPage;
+  let basePage;
+  let messageIcon;
+  let errorMessage = 'Please insert your SIM and try again';
+
   setup(function() {
     simDetectPage = document.createElement('setup-loading-page');
     simDetectPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(simDetectPage);
     Polymer.dom.flush();
+
+    basePage = simDetectPage.$$('base-page');
+    assertTrue(!!basePage);
+    messageIcon = basePage.$$('iron-icon');
+    assertTrue(!!messageIcon);
   });
 
-  test('Base test', function() {
-    const basePage = simDetectPage.$$('base-page');
-    assertTrue(!!basePage);
+  test('No message is shown', function() {
+    simDetectPage.state = LoadingPageState.LOADING;
+    assertFalse(!!basePage.message);
+    assertTrue(messageIcon.hidden);
+  });
+
+  test('Warning message is shown', function() {
+    simDetectPage.state = LoadingPageState.CELLULAR_DISCONNECT_WARNING;
+    assertEquals(
+        basePage.message,
+        'This may cause a brief cellular network disconnection.');
+    assertFalse(messageIcon.hidden);
+  });
+
+  test('Error message is shown', function() {
+    simDetectPage.state = LoadingPageState.SIM_DETECT_ERROR;
+    assertEquals(basePage.message, errorMessage);
+    assertTrue(messageIcon.hidden);
   });
 });

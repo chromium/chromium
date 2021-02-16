@@ -30,6 +30,7 @@ cr.define('cellular_setup', function() {
 
     behaviors: [
       I18nBehavior,
+      NetworkListenerBehavior,
       SubflowBehavior,
     ],
 
@@ -110,6 +111,12 @@ cr.define('cellular_setup', function() {
         value: '',
         observer: 'onConfirmationCodeUpdated_',
       },
+
+      /** @private */
+      hasActivePSimNetwork_: {
+        type: Boolean,
+        value: false,
+      },
     },
 
     /**
@@ -134,6 +141,7 @@ cr.define('cellular_setup', function() {
 
     initSubflow() {
       this.fetchProfiles_();
+      this.onNetworkStateListChanged();
     },
 
     /** @private */
@@ -309,6 +317,12 @@ cr.define('cellular_setup', function() {
 
     /** @private */
     onSelectedProfileChanged_() {
+      // initializePageState_() may cause this observer to fire and update the
+      // buttonState when we're not on the profile selection page. Check we're
+      // on the profile selection page before proceeding.
+      if (this.state_ !== ESimUiState.PROFILE_SELECTION) {
+        return;
+      }
       this.forwardButtonLabel = this.selectedProfile_ ?
           this.i18n('next') :
           this.i18n('skipDiscovery');
@@ -399,6 +413,23 @@ cr.define('cellular_setup', function() {
     /** @private */
     getShowNoProfilesMessage_() {
       return !(this.pendingProfiles_ && this.pendingProfiles_.length > 0);
+    },
+
+    /** NetworkListenerBehavior override */
+    onNetworkStateListChanged() {
+      hasActivePSimNetwork().then((hasActive) => {
+        this.hasActivePSimNetwork_ = hasActive;
+      });
+    },
+
+    /**
+     * @param {boolean} hasActivePSimNetwork
+     * @private
+     */
+    getLoadingPageState_(hasActivePSimNetwork) {
+      return hasActivePSimNetwork ?
+          LoadingPageState.CELLULAR_DISCONNECT_WARNING :
+          LoadingPageState.LOADING;
     },
   });
 

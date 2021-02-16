@@ -253,7 +253,10 @@ js_library("onc_mojo") {
 }
 
 js_library("cellular_utils") {
-  deps = [ ":mojo_interface_provider" ]
+  deps = [
+    ":mojo_interface_provider",
+    ":onc_mojo",
+  ]
 }
 
 js_type_check("closure_compile_module") {
@@ -626,7 +629,10 @@ js_library("onc_mojo.m") {
 
 js_library("cellular_utils.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/cellular_utils.m.js" ]
-  deps = [ ":mojo_interface_provider.m" ]
+  deps = [
+    ":mojo_interface_provider.m",
+    ":onc_mojo.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
