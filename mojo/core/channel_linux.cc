@@ -30,6 +30,7 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/process_metrics.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

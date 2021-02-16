@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
 #include <utility>
 
@@ -58,9 +59,11 @@ const size_t kMaxUnusedReadBufferCapacity = 4096;
 // Fuchsia: The zx_channel_write() API supports up to 64 handles.
 const size_t kMaxAttachedHandles = 64;
 
+static_assert(alignof(std::max_align_t) >= kChannelMessageAlignment, "");
 Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
-  return Channel::AlignedBuffer(
-      static_cast<char*>(base::AlignedAlloc(size, kChannelMessageAlignment)));
+  // No need to call base::AlignedAlloc() since malloc() already had the proper
+  // alignment.
+  return Channel::AlignedBuffer(static_cast<char*>(malloc(size)));
 }
 
 }  // namespace
