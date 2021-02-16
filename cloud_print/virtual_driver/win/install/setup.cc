@@ -44,7 +44,7 @@ const char kRegisterSwitch[] = "register";
 const char kUninstallSwitch[] = "uninstall";
 const char kUnregisterSwitch[] = "unregister";
 
-base::FilePath GetSystemPath(const base::string16& binary) {
+base::FilePath GetSystemPath(const std::wstring& binary) {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &path)) {
     LOG(ERROR) << "Unable to get system path.";
@@ -53,7 +53,7 @@ base::FilePath GetSystemPath(const base::string16& binary) {
   return path.Append(binary);
 }
 
-base::FilePath GetNativeSystemPath(const base::string16& binary) {
+base::FilePath GetNativeSystemPath(const std::wstring& binary) {
   if (!IsSystem64Bit())
     return GetSystemPath(binary);
   base::FilePath path;
@@ -156,7 +156,7 @@ HRESULT InstallDriver(const base::FilePath& install_path) {
   wchar_t package_path[MAX_PATH * 10] = {0};
 
   base::FilePath inf_file = install_path.Append(kInfFileName);
-  base::string16 driver_name = LoadLocalString(IDS_DRIVER_NAME);
+  std::wstring driver_name = LoadLocalString(IDS_DRIVER_NAME);
 
   HRESULT result = UploadPrinterDriverPackage(
       NULL, inf_file.value().c_str(), NULL,
@@ -215,7 +215,7 @@ HRESULT InstallPrinter(void) {
 
   // None of the print API structures likes constant strings even though they
   // don't modify the string.  const_casting is the cleanest option.
-  base::string16 driver_name = LoadLocalString(IDS_DRIVER_NAME);
+  std::wstring driver_name = LoadLocalString(IDS_DRIVER_NAME);
   printer_info.pDriverName = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pPrinterName = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pComment = const_cast<LPWSTR>(driver_name.c_str());
@@ -238,7 +238,7 @@ HRESULT UninstallPrinter(void) {
   HANDLE handle = NULL;
   PRINTER_DEFAULTS printer_defaults = {0};
   printer_defaults.DesiredAccess = PRINTER_ALL_ACCESS;
-  base::string16 driver_name = LoadLocalString(IDS_DRIVER_NAME);
+  std::wstring driver_name = LoadLocalString(IDS_DRIVER_NAME);
   if (!OpenPrinter(const_cast<LPWSTR>(driver_name.c_str()), &handle,
                    &printer_defaults)) {
     // If we can't open the printer, it was probably already removed.
