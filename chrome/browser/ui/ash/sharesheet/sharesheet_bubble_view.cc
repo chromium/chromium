@@ -66,9 +66,21 @@ constexpr int kButtonWidth = 92;
 constexpr int kCornerRadius = 12;
 constexpr int kBubbleTopPaddingFromWindow = 36;
 constexpr int kDefaultBubbleWidth = 416;
-constexpr int kNoExtensionBubbleHeight = 340;
-constexpr int kDefaultBubbleHeight = 380;
-constexpr int kExpandedBubbleHeight = 522;
+
+// kDefaultBubbleBodyHeight = kTargetViewHeight + 2*kShortSpacing +
+// SharesheetExpandButton.kHeight + kShortSpacing
+constexpr int kDefaultBubbleBodyHeight = 308;
+
+// kExpandedBubbleBodyHeight = kTargetViewHeight + kShortSpacing +
+// kExpandViewPaddingTop + kExpandViewTitleLabelHeight +
+// SharesheetTargetButton.kButtonHeight + kShortSpacing +
+// SharesheetExpandButton.kHeight + kShortSpacing
+constexpr int kExpandedBubbleBodyHeight = 450;
+
+// kNoExtensionBubbleBodyHeight = kTargetViewHeight + kSmallSpacing +
+// kNoExtensionBottomPadding
+constexpr int kNoExtensionBubbleBodyHeight = 268;
+
 constexpr int kMaxTargetsPerRow = 4;
 constexpr int kMaxRowsForDefaultView = 2;
 
@@ -172,15 +184,16 @@ void SharesheetBubbleView::ShowBubble(
     // content previews flag is off.
     share_title_view->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(SharesheetBubbleView::kSpacing, kSpacing, 0,
+        gfx::Insets(SharesheetBubbleView::kSpacing, kSpacing, kSpacing,
                     SharesheetBubbleView::kSpacing));
-    main_view_->AddChildView(std::move(share_title_view));
+    share_title_view_ = main_view_->AddChildView(std::move(share_title_view));
   } else {
     // Adds view for content previews including the title, text descriptor
     // and image preview.
-    main_view_->AddChildView(std::make_unique<SharesheetContentPreviews>(
-        intent_->Clone(), delegate_->GetProfile(),
-        std::move(share_title_view)));
+    content_previews_ =
+        main_view_->AddChildView(std::make_unique<SharesheetContentPreviews>(
+            intent_->Clone(), delegate_->GetProfile(),
+            std::move(share_title_view)));
   }
 
   if (targets.empty()) {
@@ -223,16 +236,11 @@ void SharesheetBubbleView::ShowBubble(
     SetToDefaultBubbleSizing();
   } else {
     width_ = kDefaultBubbleWidth;
-    height_ = kNoExtensionBubbleHeight;
+    height_ = kNoExtensionBubbleBodyHeight + GetBubbleHeadHeight();
     expand_button_->SetVisible(false);
     expand_button_separator_->SetVisible(false);
   }
   UpdateAnchorPosition();
-
-  // Expanding the sharesheet is needed for content previews.
-  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
-    ResizeBubble(kDefaultBubbleWidth, GetBubbleHeight());
-  }
 }
 
 std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
@@ -663,14 +671,28 @@ void SharesheetBubbleView::CloseWidgetWithReason(
   delegate_->OnBubbleClosed(active_target_);
 }
 
+// TODO(crbug.com/1097623): Rename this function.
 int SharesheetBubbleView::GetBubbleHeight() {
-  int height =
-      show_expanded_view_ ? kExpandedBubbleHeight : kDefaultBubbleHeight;
-
-  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
-    height += kTitleLineHeight + 3;
-  }
+  int height = (show_expanded_view_ ? kExpandedBubbleBodyHeight
+                                    : kDefaultBubbleBodyHeight) +
+               GetBubbleHeadHeight();
   return height;
+}
+
+int SharesheetBubbleView::GetBubbleHeadHeight() {
+  // |head_height| is the max height of |content_previews_| and
+  // |share_title_view_|.
+  int head_height;
+  if (content_previews_) {
+    // The bubble height is increased by the height of the additional lines from
+    // text preview.
+    head_height = content_previews_->GetTitleViewHeight();
+  }
+  if (share_title_view_) {
+    head_height = share_title_view_->GetProperty(views::kMarginsKey)->height() +
+                  share_title_view_->GetPreferredSize().height();
+  }
+  return head_height;
 }
 
 void SharesheetBubbleView::RecordFormFactorMetric() {

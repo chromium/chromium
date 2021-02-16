@@ -73,6 +73,10 @@ SharesheetContentPreviews::SharesheetContentPreviews(
 
 SharesheetContentPreviews::~SharesheetContentPreviews() = default;
 
+int SharesheetContentPreviews::GetTitleViewHeight() {
+  return content_view_->GetPreferredSize().height();
+}
+
 void SharesheetContentPreviews::InitaliseImageView() {
   image_preview_ = AddChildView(std::make_unique<views::ImageView>());
   image_preview_->SetProperty(views::kMarginsKey,
@@ -84,22 +88,78 @@ void SharesheetContentPreviews::InitaliseImageView() {
 }
 
 void SharesheetContentPreviews::ShowTextPreview() {
-  if (intent_->file_urls.has_value() && !(intent_->file_urls.value().empty())) {
-    // TODO(crbug.com/2650014): add logic to handle other content types ie. url
-    // and text.
-    auto* file_title =
-        content_view_->AddChildView(std::make_unique<views::Label>(
-            base::ASCIIToUTF16(
-                (intent_->file_urls.value().front().ExtractFileName())),
-            ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
-    file_title->SetLineHeight(SharesheetBubbleView::kTitleLineHeight);
-    file_title->SetEnabledColor(kTitlePreviewColor);
-    file_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    file_title->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets(0, kSmallSpacing, SharesheetBubbleView::kSpacing,
-                    SharesheetBubbleView::kSpacing));
+  // TODO(crbug.com/2650014): call a function that will dynamically resize the
+  // image preview thumbnail relative to how many lines of text preview are
+  // present.
+
+  // TODO(crbug.com/2650014): Handle case for sharing multiple files. Add an
+  // enumeration string to reflect how many files are being sent.
+
+  std::vector<std::string> share_fields;
+  if (intent_->share_text.has_value() &&
+      !(intent_->share_text.value().empty())) {
+    share_fields = ExtractShareText();
   }
+
+  // Files are added last to share_fields so they appear on the 2nd line of text
+  // preview if a text/url is also shared.
+  if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty() &&
+      share_fields.size() < 2) {
+    for (const auto& file_url : intent_->file_urls.value()) {
+      share_fields.push_back(file_url.ExtractFileName());
+    }
+  }
+
+  // If there are two items to be shared, only the second line of text preview
+  // will have a bottom inset of |kSpacing| to create whitespace from the
+  // targets.
+  if (share_fields.size() == 1) {
+    AddTextLine(share_fields[0], SharesheetBubbleView::kSpacing);
+  } else if (share_fields.size() > 1) {
+    AddTextLine(share_fields[0], 0);
+    AddTextLine(share_fields[1], SharesheetBubbleView::kSpacing);
+  }
+}
+
+void SharesheetContentPreviews::AddTextLine(std::string text,
+                                            int bottom_spacing) {
+  auto* new_line = content_view_->AddChildView(std::make_unique<views::Label>(
+      (base::ASCIIToUTF16(text)),
+      ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
+  new_line->SetLineHeight(SharesheetBubbleView::kTitleLineHeight);
+  new_line->SetEnabledColor(kTitlePreviewColor);
+  new_line->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  new_line->SetProperty(views::kMarginsKey,
+                        gfx::Insets(0, kSmallSpacing, bottom_spacing,
+                                    SharesheetBubbleView::kSpacing));
+}
+
+std::vector<std::string> SharesheetContentPreviews::ExtractShareText() {
+  std::vector<std::string> result;
+  std::string extracted_text = intent_->share_text.value();
+  GURL extracted_url;
+  size_t last_space = extracted_text.find_last_of(' ');
+
+  if (!intent_->share_text.has_value())
+    return result;
+
+  if (last_space == std::string::npos) {
+    extracted_url = GURL(extracted_text);
+    if (extracted_url.is_valid())
+      extracted_text.clear();
+  } else {
+    extracted_url = GURL(extracted_text.substr(last_space + 1));
+    if (extracted_url.is_valid())
+      extracted_text.erase(last_space);
+  }
+
+  if (!extracted_text.empty())
+    result.push_back(extracted_text);
+
+  if (extracted_url.is_valid())
+    result.push_back(extracted_url.spec());
+
+  return result;
 }
 
 void SharesheetContentPreviews::ExecuteImageDecoder() {

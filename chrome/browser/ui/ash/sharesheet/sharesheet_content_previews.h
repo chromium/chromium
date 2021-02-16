@@ -28,12 +28,25 @@ class SharesheetContentPreviews : public views::View {
   SharesheetContentPreviews& operator=(const SharesheetContentPreviews&) =
       delete;
 
+  // Returns the height of the text preview view.
+  int GetTitleViewHeight();
+
  private:
   // Adds the view for image previews and sets the required properties.
   void InitaliseImageView();
 
   // Adds the view for text preview.
   void ShowTextPreview();
+
+  // Creates a new Label view and adds styling.
+  void AddTextLine(std::string text, int bottom_spacing);
+
+  // Parses the share_text attribute for each individual url and text
+  // from the intent struct and returns the result in a vector.
+  //
+  // TODO(crbug.com/2650014): Move the existing ExtractSharedFields function
+  // from share_target_utils.h to a common place and reuse the function here.
+  std::vector<std::string> ExtractShareText();
 
   // Invokes the image decoder to run tasks
   // which will decode the image preview.
