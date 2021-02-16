@@ -185,6 +185,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void InitImageData(const gfx::Size& size) override;
   void OnGeometryChanged(double old_zoom, float old_device_scale) override;
   Image GetPluginImageData() const override;
+  void SetAccessibilityViewportInfo(
+      const AccessibilityViewportInfo& viewport_info) override;
 
  private:
   // Message handlers.
@@ -224,11 +226,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Send accessibility information about the given page index.
   void SendNextAccessibilityPage(int32_t page_index);
-
-  // Send the accessibility information about the current viewport. This is
-  // done once when accessibility is first loaded and again when the geometry
-  // changes.
-  void SendAccessibilityViewportInfo();
 
   enum DocumentLoadState {
     LOAD_STATE_LOADING,

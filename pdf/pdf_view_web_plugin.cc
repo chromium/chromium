@@ -416,6 +416,13 @@ void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
   // accessibility information in the viewport.
 }
 
+// TODO(https://crbug.com/1144444): Add a Pepper-free implementation to send
+// accessibility viewport information.
+void PdfViewWebPlugin::SetAccessibilityViewportInfo(
+    const AccessibilityViewportInfo& viewport_info) {
+  NOTIMPLEMENTED();
+}
+
 void PdfViewWebPlugin::OnViewportChanged(gfx::Rect view_rect,
                                          float new_device_scale) {
   UpdateGeometryOnViewChanged(view_rect, new_device_scale);

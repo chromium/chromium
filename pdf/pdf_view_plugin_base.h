@@ -30,6 +30,7 @@ namespace chrome_pdf {
 class Image;
 class PDFiumEngine;
 class UrlLoader;
+struct AccessibilityViewportInfo;
 
 // Common base to share code between the two plugin implementations,
 // `OutOfProcessInstance` (Pepper) and `PdfViewWebPlugin` (Blink).
@@ -129,6 +130,17 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // device scale
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
+
+  // Prepare the accessibility information about the current viewport. Call
+  // SetAccessibilityViewportInfo() internally to set this information in the
+  // renderer. This is done once when accessibility is first loaded and again
+  // when the geometry changes.
+  void PrepareAndSetAccessibilityViewportInfo();
+
+  // Sets the accessibility information about the current viewport in the
+  // renderer.
+  virtual void SetAccessibilityViewportInfo(
+      const AccessibilityViewportInfo& viewport_info) = 0;
 
   const SkBitmap& image_data() const { return image_data_; }
   SkBitmap& mutable_image_data() { return image_data_; }

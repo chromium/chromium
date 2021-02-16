@@ -139,6 +139,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SendMessage(base::Value message) override;
   void InitImageData(const gfx::Size& size) override;
   void OnGeometryChanged(double old_zoom, float old_device_scale) override;
+  void SetAccessibilityViewportInfo(
+      const AccessibilityViewportInfo& viewport_info) override;
 
  private:
   // Call `Destroy()` instead.

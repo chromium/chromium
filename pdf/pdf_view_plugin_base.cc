@@ -26,6 +26,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -284,6 +285,23 @@ int PdfViewPluginBase::GetDocumentPixelWidth() const {
 int PdfViewPluginBase::GetDocumentPixelHeight() const {
   return static_cast<int>(
       std::ceil(document_size_.height() * zoom() * device_scale()));
+}
+
+void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
+  AccessibilityViewportInfo viewport_info;
+  viewport_info.scroll = gfx::ScaleToFlooredPoint(plugin_offset_, -1);
+  viewport_info.offset = gfx::ScaleToFlooredPoint(available_area_.origin(),
+                                                  1 / (device_scale_ * zoom_));
+  viewport_info.zoom = zoom_;
+  viewport_info.scale = device_scale_;
+  viewport_info.focus_info = {FocusObjectType::kNone, 0, 0};
+
+  engine_->GetSelection(&viewport_info.selection_start_page_index,
+                        &viewport_info.selection_start_char_index,
+                        &viewport_info.selection_end_page_index,
+                        &viewport_info.selection_end_char_index);
+
+  SetAccessibilityViewportInfo(viewport_info);
 }
 
 void PdfViewPluginBase::SetZoom(double scale) {

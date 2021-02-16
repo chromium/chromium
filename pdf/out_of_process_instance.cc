@@ -886,7 +886,7 @@ void OutOfProcessInstance::LoadAccessibility() {
     return;
   }
 
-  SendAccessibilityViewportInfo();
+  PrepareAndSetAccessibilityViewportInfo();
 
   // Schedule loading the first page.
   ScheduleTaskOnMainThread(
@@ -931,35 +931,6 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
       page_index + 1);
 }
 
-void OutOfProcessInstance::SendAccessibilityViewportInfo() {
-  AccessibilityViewportInfo viewport_info;
-  viewport_info.scroll = gfx::ScaleToFlooredPoint(plugin_offset(), -1);
-  viewport_info.offset = gfx::ScaleToFlooredPoint(
-      available_area().origin(), 1 / (device_scale() * zoom()));
-  viewport_info.zoom = zoom();
-  viewport_info.scale = device_scale();
-
-  engine()->GetSelection(&viewport_info.selection_start_page_index,
-                         &viewport_info.selection_start_char_index,
-                         &viewport_info.selection_end_page_index,
-                         &viewport_info.selection_end_char_index);
-
-  PP_PrivateAccessibilityViewportInfo pp_viewport_info = {
-      viewport_info.zoom,
-      viewport_info.scale,
-      pp::Point(viewport_info.scroll.x(), viewport_info.scroll.y()),
-      pp::Point(viewport_info.offset.x(), viewport_info.offset.y()),
-      viewport_info.selection_start_page_index,
-      viewport_info.selection_start_char_index,
-      viewport_info.selection_end_page_index,
-      viewport_info.selection_end_char_index,
-      {static_cast<PP_PrivateFocusObjectType>(
-           viewport_info.focus_info.focused_object_type),
-       viewport_info.focus_info.focused_object_page_index,
-       viewport_info.focus_info.focused_annotation_index_in_page}};
-  pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &pp_viewport_info);
-}
-
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
                                             const gfx::Rect& right) {
   pp::Point l(left.x() + available_area().x(), left.y());
@@ -973,7 +944,7 @@ void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
                             PP_MakeFloatPoint(l.x(), l.y()), left.height(),
                             PP_MakeFloatPoint(r.x(), r.y()), right.height());
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
-    SendAccessibilityViewportInfo();
+    PrepareAndSetAccessibilityViewportInfo();
 }
 
 void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
@@ -1865,11 +1836,29 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
   RecalculateAreas(old_zoom, old_device_scale);
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
-    SendAccessibilityViewportInfo();
+    PrepareAndSetAccessibilityViewportInfo();
 }
 
 Image OutOfProcessInstance::GetPluginImageData() const {
   return Image(pepper_image_data_);
+}
+
+void OutOfProcessInstance::SetAccessibilityViewportInfo(
+    const AccessibilityViewportInfo& viewport_info) {
+  PP_PrivateAccessibilityViewportInfo pp_viewport_info = {
+      viewport_info.zoom,
+      viewport_info.scale,
+      pp::Point(viewport_info.scroll.x(), viewport_info.scroll.y()),
+      pp::Point(viewport_info.offset.x(), viewport_info.offset.y()),
+      viewport_info.selection_start_page_index,
+      viewport_info.selection_start_char_index,
+      viewport_info.selection_end_page_index,
+      viewport_info.selection_end_char_index,
+      {static_cast<PP_PrivateFocusObjectType>(
+           viewport_info.focus_info.focused_object_type),
+       viewport_info.focus_info.focused_object_page_index,
+       viewport_info.focus_info.focused_annotation_index_in_page}};
+  pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &pp_viewport_info);
 }
 
 base::WeakPtr<PdfViewPluginBase> OutOfProcessInstance::GetWeakPtr() {
