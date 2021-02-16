@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -272,15 +273,19 @@ void ToolbarView::Init() {
     extensions_container_ = AddChildView(std::move(extensions_container));
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
-    chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>());
-    profile_pref_service_ = browser_->profile()->GetPrefs();
-    profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    profile_registrar_->Init(profile_pref_service_);
-    profile_registrar_->Add(
-        chrome_labs_prefs::kBrowserLabsEnabled,
-        base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
-                            base::Unretained(this)));
-    OnChromeLabsPrefChanged();
+    chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
+    if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get())) {
+      chrome_labs_button_ = AddChildView(
+          std::make_unique<ChromeLabsButton>(chrome_labs_model_.get()));
+      profile_pref_service_ = browser_->profile()->GetPrefs();
+      profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
+      profile_registrar_->Init(profile_pref_service_);
+      profile_registrar_->Add(
+          chrome_labs_prefs::kBrowserLabsEnabled,
+          base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
+                              base::Unretained(this)));
+      OnChromeLabsPrefChanged();
+    }
   }
 
   if (cast)

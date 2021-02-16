@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -137,6 +138,9 @@ class ToolbarView : public views::AccessiblePaneView,
   Browser* browser() const { return browser_; }
   BrowserActionsContainer* browser_actions() const { return browser_actions_; }
   ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
+  ChromeLabsBubbleViewModel* chrome_labs_model() const {
+    return chrome_labs_model_.get();
+  }
   ExtensionsToolbarContainer* extensions_container() const {
     return extensions_container_;
   }
@@ -288,6 +292,8 @@ class ToolbarView : public views::AccessiblePaneView,
   views::FlexLayout* layout_manager_ = nullptr;
 
   AppMenuIconController app_menu_icon_controller_;
+
+  std::unique_ptr<ChromeLabsBubbleViewModel> chrome_labs_model_;
 
   // Controls whether or not a home button should be shown on the toolbar.
   BooleanPrefMember show_home_button_;

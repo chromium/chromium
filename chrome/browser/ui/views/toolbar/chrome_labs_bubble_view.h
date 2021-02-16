@@ -18,9 +18,8 @@
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ChromeLabsBubbleView);
-
   static void Show(views::View* anchor_view,
-                   std::unique_ptr<ChromeLabsBubbleViewModel> model);
+                   const ChromeLabsBubbleViewModel* model);
 
   static bool IsShowing();
 
@@ -37,7 +36,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   ChromeLabsBubbleView(views::View* anchor_view,
-                       std::unique_ptr<ChromeLabsBubbleViewModel> model);
+                       const ChromeLabsBubbleViewModel* model);
 
   std::unique_ptr<ChromeLabsItemView> CreateLabItem(
       const LabInfo& lab,
@@ -59,7 +58,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   // This view will hold all the child lab items.
   views::FlexLayoutView* menu_item_container_;
 
-  std::unique_ptr<ChromeLabsBubbleViewModel> model_;
+  const ChromeLabsBubbleViewModel* model_;
 
   views::View* restart_prompt_;
 };

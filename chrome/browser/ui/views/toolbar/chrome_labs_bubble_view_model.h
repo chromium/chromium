@@ -32,18 +32,29 @@ struct LabInfo {
 class ChromeLabsBubbleViewModel {
  public:
   ChromeLabsBubbleViewModel();
-  // |lab_info_| will have `lab_info`, and whatever SetUpLabs appends to it.
-  explicit ChromeLabsBubbleViewModel(const std::vector<LabInfo>& lab_info);
   ~ChromeLabsBubbleViewModel();
 
   const std::vector<LabInfo>& GetLabInfo() const;
 
-  void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info);
-
  private:
-  void SetUpLabs();
+  const std::vector<LabInfo>& lab_info_;
+};
 
-  std::vector<LabInfo> lab_info_;
+// ScopedChromeLabsModelDataForTesting is intended to be used in test settings
+// to replace the production data in ChromeLabsBubbleViewModel. Upon
+// destruction, ScopedChromeLabsModelDataForTesting will remove the test data
+// from ChromeLabsBubbleViewModel.
+
+class ScopedChromeLabsModelDataForTesting {
+ public:
+  ScopedChromeLabsModelDataForTesting();
+  ScopedChromeLabsModelDataForTesting(
+      const ScopedChromeLabsModelDataForTesting&) = delete;
+  ScopedChromeLabsModelDataForTesting& operator=(
+      const ScopedChromeLabsModelDataForTesting&) = delete;
+  ~ScopedChromeLabsModelDataForTesting();
+
+  void SetModelDataForTesting(const std::vector<LabInfo>& test_feature_info);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_MODEL_H_
