@@ -30,6 +30,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_POSIX)
@@ -3009,8 +3010,12 @@ TEST_F(PartitionAllocDeathTest, CheckTriggered) {
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+// Not on chromecast, since gtest considers extra output from itself as a test
+// failure:
+// https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&              \
+    defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) && \
+    !BUILDFLAG(IS_CHROMECAST)
 
 namespace {
 
@@ -3074,7 +3079,8 @@ TEST_F(PartitionAllocTest, PreforkHandler) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+        // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) &&
+        // !BUILDFLAG(IS_CHROMECAST)
 
 }  // namespace internal
 }  // namespace base
