@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // Label styled for use in AppInfo dialog so accessible users can step through
 // and have each line read.
 // TODO(dfried): merge functionality into views::Label.
 class AppInfoLabel : public views::Label {
  public:
+  METADATA_HEADER(AppInfoLabel);
+
   explicit AppInfoLabel(const base::string16& text);
   ~AppInfoLabel() override;
 

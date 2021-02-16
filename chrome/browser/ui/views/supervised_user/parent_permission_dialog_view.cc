@@ -56,6 +56,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
@@ -68,6 +69,8 @@ constexpr int kInvalidCredentialLabelTopPadding = 3;
 // Override is needed to configure accessibility node for an empty name.
 class MaybeEmptyLabel : public views::Label {
  public:
+  METADATA_HEADER(MaybeEmptyLabel);
+
   MaybeEmptyLabel(const std::string& text, const CustomFont& font)
       : views::Label(base::UTF8ToUTF16(text), font) {}
 
@@ -84,6 +87,9 @@ class MaybeEmptyLabel : public views::Label {
       node_data->SetNameExplicitlyEmpty();
   }
 };
+
+BEGIN_METADATA(MaybeEmptyLabel, views::Label)
+END_METADATA
 
 // Returns bitmap for the default icon with size equal to the default icon's
 // pixel size under maximal supported scale factor.

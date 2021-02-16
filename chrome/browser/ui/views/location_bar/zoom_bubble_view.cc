@@ -50,6 +50,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -90,6 +92,8 @@ std::unique_ptr<views::ImageButton> CreateZoomButton(
 
 class ZoomValue : public views::Label {
  public:
+  METADATA_HEADER(ZoomValue);
+
   explicit ZoomValue(const content::WebContents* web_contents)
       : Label(base::string16(),
               views::style::CONTEXT_LABEL,
@@ -97,7 +101,9 @@ class ZoomValue : public views::Label {
         max_width_(GetLabelMaxWidth(web_contents)) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
-  ~ZoomValue() override {}
+  ZoomValue(const ZoomValue&) = delete;
+  ZoomValue& operator=(const ZoomValue&) = delete;
+  ~ZoomValue() override = default;
 
   // views::Label:
   gfx::Size CalculatePreferredSize() const override {
@@ -123,9 +129,10 @@ class ZoomValue : public views::Label {
   }
 
   const int max_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomValue);
 };
+
+BEGIN_METADATA(ZoomValue, views::Label)
+END_METADATA
 
 bool IsBrowserFullscreen(Browser* browser) {
   DCHECK(browser->window() &&

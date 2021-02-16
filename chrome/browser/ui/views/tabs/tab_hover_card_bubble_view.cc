@@ -44,6 +44,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -373,6 +374,10 @@ class TabHoverCardBubbleView::WidgetSlideAnimationDelegate
 class TabHoverCardBubbleView::FadeLabel : public views::Label {
  public:
   using Label::Label;
+
+  METADATA_HEADER(FadeLabel);
+
+  FadeLabel() = default;
   ~FadeLabel() override = default;
 
   // Sets the fade-out of the label as |percent| in the range [0, 1]. Since
@@ -393,6 +398,9 @@ class TabHoverCardBubbleView::FadeLabel : public views::Label {
     canvas->DrawColor(GetBackgroundColor());
   }
 };
+
+BEGIN_METADATA(TabHoverCardBubbleView, FadeLabel, views::Label)
+END_METADATA
 
 // Maintains a set of thumbnails to watch, ensuring the capture count on the
 // associated WebContents stays nonzero until a valid thumbnail has been

@@ -57,6 +57,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
@@ -68,6 +70,8 @@ namespace {
 // be always visible.
 class PreviewEliderLabel : public views::Label {
  public:
+  METADATA_HEADER(PreviewEliderLabel);
+
   // Creates a PreviewEliderLabel where |preview_text| might be elided,
   // |format_string| is the string with format argument numbers in ICU syntax
   // and |n| is the "N more" item count.
@@ -79,6 +83,9 @@ class PreviewEliderLabel : public views::Label {
         preview_text_(preview_text),
         format_string_(format_string),
         n_(n) {}
+  PreviewEliderLabel(const PreviewEliderLabel&) = delete;
+  PreviewEliderLabel& operator=(const PreviewEliderLabel&) = delete;
+  ~PreviewEliderLabel() override = default;
 
   // Formats |preview_text_|, |format_string_|, and |n_| into a string that fits
   // inside of |pixel_width|, eliding |preview_text_| as required.
@@ -110,9 +117,10 @@ class PreviewEliderLabel : public views::Label {
   base::string16 preview_text_;
   base::string16 format_string_;
   int n_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewEliderLabel);
 };
+
+BEGIN_METADATA(PreviewEliderLabel, views::Label)
+END_METADATA
 
 std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
     views::Button::PressedCallback callback,

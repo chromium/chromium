@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 AppInfoLabel::AppInfoLabel(const base::string16& text)
     : AppInfoLabel(text,
@@ -25,3 +26,6 @@ AppInfoLabel::AppInfoLabel(const base::string16& text,
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   views::FocusRing::Install(this);
 }
+
+BEGIN_METADATA(AppInfoLabel, views::Label)
+END_METADATA

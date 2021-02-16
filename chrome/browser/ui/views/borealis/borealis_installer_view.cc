@@ -35,6 +35,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
@@ -67,6 +68,9 @@ void borealis::ShowBorealisInstallerView(Profile* profile) {
 class BorealisInstallerView::TitleLabel : public views::Label {
  public:
   using Label::Label;
+
+  METADATA_HEADER(TitleLabel);
+
   TitleLabel() {}
   ~TitleLabel() override {}
 
@@ -75,6 +79,9 @@ class BorealisInstallerView::TitleLabel : public views::Label {
     node_data->role = ax::mojom::Role::kStatus;
   }
 };
+
+BEGIN_METADATA(BorealisInstallerView, TitleLabel, views::Label)
+END_METADATA
 
 // TODO(danielng):revisit UI elements when UX input is provided.
 // Currently using the UI specs that the Plugin VM installer use.
