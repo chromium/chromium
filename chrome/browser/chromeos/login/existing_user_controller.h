@@ -139,6 +139,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
     return auto_login_timer_ && auto_login_timer_->IsRunning();
   }
 
+  // Extracts out users allowed on login screen.
+  static user_manager::UserList ExtractLoginUsers(
+      const user_manager::UserList& users);
+
  private:
   friend class ExistingUserControllerTest;
   friend class ExistingUserControllerAutoLoginTest;

@@ -42,6 +42,7 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/chromeos/login/enterprise_user_session_metrics.h"
+#include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/signin/auth_error_observer.h"
 #include "chrome/browser/chromeos/login/signin/auth_error_observer_factory.h"
@@ -491,7 +492,8 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
     }
   }
 
-  return result;
+  // Extract out users that are allowed on login screen.
+  return ExistingUserController::ExtractLoginUsers(result);
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
