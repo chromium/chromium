@@ -679,10 +679,14 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 
 int QuicHttpStream::ProcessResponseHeaders(
     const spdy::Http2HeaderBlock& headers) {
-  if (!SpdyHeadersToHttpResponse(headers, response_info_)) {
+  const bool header_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
+                            header_valid);
+  if (!header_valid) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
   }
+
   // Put the peer's IP address and port into the response.
   IPEndPoint address;
   int rv = quic_session()->GetPeerAddress(&address);

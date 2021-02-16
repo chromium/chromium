@@ -40517,6 +40517,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="User typed or autofilled values"/>
 </enum>
 
+<enum name="JobProtocolErrorLocation">
+  <int value="0" label="SessionStartReadingFailed"/>
+  <int value="1" label="CreateSessionFailed"/>
+  <int value="2" label="CryptoConnectFailedSync"/>
+  <int value="3" label="CryptoConnectFailedAsync"/>
+</enum>
+
 <enum name="JpegColorSpace">
   <int value="0" label="Unknown color space">
     This is the bucket that counts the images that did not fall under any of the

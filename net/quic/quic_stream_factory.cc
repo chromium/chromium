@@ -111,6 +111,14 @@ enum class ConnectionStateAfterDNS {
   kMaxValue = kCryptoFinishedDnsNoMatch,
 };
 
+enum class JobProtocolErrorLocation {
+  kSessionStartReadingFailed = 0,
+  kCreateSessionFailed = 1,
+  kCryptoConnectFailedSync = 2,
+  kCryptoConnectFailedAsync = 3,
+  kMaxValue = kCryptoConnectFailedAsync,
+};
+
 base::Value NetLogQuicStreamFactoryJobParams(
     const QuicStreamFactory::QuicSessionAliasKey* key) {
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -146,6 +154,11 @@ std::string QuicPlatformNotificationToString(
 void HistogramCreateSessionFailure(enum CreateSessionFailure error) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.CreationError", error,
                             CREATION_ERROR_MAX);
+}
+
+void HistogramProtocolErrorLocation(enum JobProtocolErrorLocation location) {
+  UMA_HISTOGRAM_ENUMERATION("Net.QuicStreamFactory.DoConnectFailureLocation",
+                            location);
 }
 
 void LogConnectionIpPooling(bool pooled) {
@@ -648,6 +661,11 @@ void QuicStreamFactory::Job::OnConnectComplete(int rv) {
     return;
   }
 
+  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kCryptoConnectFailedAsync);
+  }
+
   rv = DoLoop(rv);
   if (rv != ERR_IO_PENDING && !callback_.is_null())
     std::move(callback_).Run(rv);
@@ -780,6 +798,10 @@ int QuicStreamFactory::Job::DoConnect() {
   if (rv != OK) {
     DCHECK(rv != ERR_IO_PENDING);
     DCHECK(!session_);
+    if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+      HistogramProtocolErrorLocation(
+          JobProtocolErrorLocation::kCreateSessionFailed);
+    }
     return rv;
   }
 
@@ -787,8 +809,11 @@ int QuicStreamFactory::Job::DoConnect() {
     return ERR_CONNECTION_CLOSED;
 
   session_->StartReading();
-  if (!session_->connection()->connected())
+  if (!session_->connection()->connected()) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kSessionStartReadingFailed);
     return ERR_QUIC_PROTOCOL_ERROR;
+  }
 
   rv = session_->CryptoConnect(
       base::BindOnce(&QuicStreamFactory::Job::OnConnectComplete, GetWeakPtr()));
@@ -798,6 +823,10 @@ int QuicStreamFactory::Job::DoConnect() {
     return ERR_QUIC_HANDSHAKE_FAILED;
   }
 
+  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kCryptoConnectFailedSync);
+  }
   return rv;
 }
 
