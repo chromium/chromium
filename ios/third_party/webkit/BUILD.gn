@@ -144,19 +144,6 @@ if (_build_mac_webkit) {
       "--clean",
       "--output_dir",
       rebase_path("$_webkit_mac_out_base_dir"),
-
-      # The arguments below allow building with Xcode 10.3 on macOS 10.15
-      "MACOSX_DEPLOYMENT_TARGET=10.14",
-      "WK_MACOS_1014_1015=_MACOS_BEFORE_1015",
-      "WK_MACOS_1014_1015_=_MACOS_BEFORE_1015",
-      "WK_MACOS_1015=_MACOS_BEFORE_1015",
-      "WK_MACOS_1015_1016=_MACOS_BEFORE_1015",
-      "WK_MACOS_BEFORE_1015=YES",
-      "TARGET_MAC_OS_X_VERSION_MAJOR=101400",
-      "MAC_OS_X_VERSION_ACTUAL=101406",
-      "MAC_OS_X_VERSION_MAJOR=101400",
-      "MAC_OS_X_VERSION_MINOR=1406",
-      "MAC_OS_X_PRODUCT_BUILD_VERSION=18G84",
     ]
   }
 
