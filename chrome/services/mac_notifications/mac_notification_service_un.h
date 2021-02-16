@@ -6,7 +6,6 @@
 #define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,7 +45,6 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   mojo::Receiver<notifications::mojom::MacNotificationService> binding_;
   base::scoped_nsobject<AlertUNNotificationCenterDelegate> delegate_;
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
-  NotificationCategoryManager category_manager_;
 };
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_

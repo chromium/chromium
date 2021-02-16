@@ -41,7 +41,6 @@ source_set("unit_tests") {
     ":mac_notifications",
     "//base/test:test_support",
     "//chrome/services/mac_notifications/public/cpp:test_support",
-    "//chrome/services/mac_notifications/public/cpp:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",

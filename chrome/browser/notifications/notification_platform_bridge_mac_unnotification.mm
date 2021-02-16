@@ -56,24 +56,20 @@ API_AVAILABLE(macosx(10.14))
 // can forward commands to C++.
 API_AVAILABLE(macosx(10.14))
 @interface UNNotificationCenterDelegate
-    : NSObject <UNUserNotificationCenterDelegate>
-- (instancetype)initWithNotificationClosedHandler:
-    (base::RepeatingCallback<void(std::string)>)onNotificationClosed;
+    : NSObject <UNUserNotificationCenterDelegate> {
+}
 @end
 
 NotificationPlatformBridgeMacUNNotification::
     NotificationPlatformBridgeMacUNNotification(
         UNUserNotificationCenter* notification_center,
         id<AlertDispatcher> alert_dispatcher)
-    : notification_center_([notification_center retain]),
+    : delegate_([UNNotificationCenterDelegate alloc]),
+      notification_center_([notification_center retain]),
       alert_dispatcher_([alert_dispatcher retain]),
-      delivered_notifications_([[NSMutableDictionary alloc] init]),
-      category_manager_(notification_center) {
-  delegate_.reset([[UNNotificationCenterDelegate alloc]
-      initWithNotificationClosedHandler:
-          base::BindRepeating(&NotificationPlatformBridgeMacUNNotification::
-                                  OnNotificationClosed,
-                              weak_factory_.GetWeakPtr())]);
+      categories_([[NSMutableSet alloc] init]),
+      delivered_categories_([[NSMutableDictionary alloc] init]),
+      delivered_notifications_([[NSMutableDictionary alloc] init]) {
   [notification_center_ setDelegate:delegate_.get()];
   LogUNNotificationBannerPermissionStatus(notification_center_.get());
   LogUNNotificationBannerStyle(notification_center_.get());
@@ -168,15 +164,23 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   }
 
   // Create a new category from the desired action buttons.
-  std::vector<base::string16> button_titles;
-  for (const message_center::ButtonInfo& button : notification.buttons())
-    button_titles.push_back(button.title);
-  NSString* category = category_manager_.GetOrCreateCategory(
-      system_notification_id, button_titles,
-      notification.should_show_settings_button());
+  UNNotificationCategory* category = [builder buildCategory];
+
+  // Check if this notification had an already existing category from a previous
+  // call, if that is the case then remove it.
+  if (UNNotificationCategory* existing =
+          [delivered_categories_ objectForKey:notification_id]) {
+    [categories_ removeObject:existing];
+  }
+
+  // This makes sure the map is always carrying the most recent category for
+  // this notification.
+  [delivered_categories_ setObject:category forKey:notification_id];
+  [categories_ addObject:category];
+
+  [notification_center_ setNotificationCategories:categories_];
 
   UNMutableNotificationContent* content = [builder buildUserNotification];
-  [content setCategoryIdentifier:category];
 
   base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
       weak_factory_.GetWeakPtr();
@@ -222,22 +226,19 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 void NotificationPlatformBridgeMacUNNotification::Close(
     Profile* profile,
     const std::string& notification_id) {
-  NSString* original_notification_id = base::SysUTF8ToNSString(notification_id);
-  std::string system_notification_id = DeriveMacNotificationId(
-      profile->IsOffTheRecord(), GetProfileId(profile), notification_id);
-  NSString* system_notification_id_ns =
-      base::SysUTF8ToNSString(system_notification_id);
+  NSString* originalNotificationId = base::SysUTF8ToNSString(notification_id);
+  NSString* notificationId = base::SysUTF8ToNSString(DeriveMacNotificationId(
+      profile->IsOffTheRecord(), GetProfileId(profile), notification_id));
   base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
       weak_factory_.GetWeakPtr();
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull notifications) {
     for (UNNotification* notification in notifications) {
-      NSString* toast_notification_id = [[notification request] identifier];
-      if ([system_notification_id_ns isEqualToString:toast_notification_id]) {
-        [notification_center_ removeDeliveredNotificationsWithIdentifiers:@[
-          toast_notification_id
-        ]];
+      NSString* toastNotificationId = [[notification request] identifier];
+      if ([notificationId isEqualToString:toastNotificationId]) {
+        [notification_center_
+            removeDeliveredNotificationsWithIdentifiers:@[ notificationId ]];
         return;
       }
     }
@@ -247,11 +248,18 @@ void NotificationPlatformBridgeMacUNNotification::Close(
         base::BindOnce(
             &NotificationPlatformBridgeMacUNNotification::DoCloseAlert,
             weak_ptr, profile,
-            base::SysNSStringToUTF8(original_notification_id)));
+            base::SysNSStringToUTF8(originalNotificationId)));
   }];
 
-  OnNotificationClosed(std::move(system_notification_id));
-  [delivered_notifications_ removeObjectForKey:system_notification_id_ns];
+  // Remove the category of the closed notification, and remove it from
+  // |delivered_notifications_|.
+  // TODO(knollr): Move notification category handling into a reusable class.
+  if (UNNotificationCategory* existing =
+          [delivered_categories_ objectForKey:notificationId]) {
+    [categories_ removeObject:existing];
+    [delivered_categories_ removeObjectForKey:notificationId];
+  }
+  [delivered_notifications_ removeObjectForKey:notificationId];
 }
 
 void NotificationPlatformBridgeMacUNNotification::GetDisplayed(
@@ -301,11 +309,6 @@ void NotificationPlatformBridgeMacUNNotification::DoCloseAlert(
   [alert_dispatcher_ closeNotificationWithId:notificationId
                                    profileId:profileId
                                    incognito:incognito];
-}
-
-void NotificationPlatformBridgeMacUNNotification::OnNotificationClosed(
-    std::string notification_id) {
-  category_manager_.ReleaseCategory(notification_id);
 }
 
 void NotificationPlatformBridgeMacUNNotification::DeliveredSuccessfully(
@@ -373,7 +376,12 @@ void NotificationPlatformBridgeMacUNNotification::DoSynchronizeNotifications(
     base::scoped_nsobject<NSMutableDictionary> dict(
         [[delivered_notifications_ objectForKey:notification_id] mutableCopy]);
 
-    OnNotificationClosed(base::SysNSStringToUTF8(notification_id));
+    // Remove the category of the dismissed notification.
+    if (UNNotificationCategory* existing =
+            [delivered_categories_ objectForKey:notification_id]) {
+      [categories_ removeObject:existing];
+      [delivered_categories_ removeObjectForKey:notification_id];
+    }
 
     // Closed notifications need to carry
     // NotificationOperation::NOTIFICATION_CLOSE and an invalid button index.
@@ -466,17 +474,7 @@ void NotificationPlatformBridgeMacUNNotification::DidGetAllDisplayedAlerts(
 }
 
 // /////////////////////////////////////////////////////////////////////////////
-@implementation UNNotificationCenterDelegate {
-  base::RepeatingCallback<void(std::string)> _onNotificationClosed;
-}
-
-- (instancetype)initWithNotificationClosedHandler:
-    (base::RepeatingCallback<void(std::string)>)onNotificationClosed {
-  if ((self = [super init])) {
-    _onNotificationClosed = std::move(onNotificationClosed);
-  }
-  return self;
-}
+@implementation UNNotificationCenterDelegate
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
        willPresentNotification:(UNNotification*)notification
@@ -497,17 +495,6 @@ void NotificationPlatformBridgeMacUNNotification::DidGetAllDisplayedAlerts(
              withCompletionHandler:(void (^)(void))completionHandler {
   NSDictionary* notificationResponse =
       [UNNotificationResponseBuilder buildDictionary:response];
-
-  // Notify platform bridge about closed notifications for cleanup tasks.
-  int operation = [[notificationResponse
-      objectForKey:notification_constants::kNotificationOperation] intValue];
-  if (operation ==
-      static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)) {
-    std::string notificationId =
-        base::SysNSStringToUTF8([[[response notification] request] identifier]);
-    _onNotificationClosed.Run(std::move(notificationId));
-  }
-
   ProcessMacNotificationResponse(notificationResponse);
   completionHandler();
 }

@@ -19,6 +19,7 @@ NSString* const kNotificationIdentifier = @"identifier";
 NSString* const kNotificationCloseButtonTag = @"closeButton";
 NSString* const kNotificationOptionsButtonTag = @"optionsButton";
 NSString* const kNotificationSettingsButtonTag = @"settingsButton";
+NSString* const kNotificationCategoryIdentifier = @"categoryIdentifier";
 
 // Applicable to NotificationBuilder and NotificationResponseBuilder
 NSString* const kNotificationOrigin = @"notificationOrigin";
