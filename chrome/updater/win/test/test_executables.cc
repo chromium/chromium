@@ -22,7 +22,7 @@ namespace updater {
 
 // If you add another test executable here, also add it to the data_deps in
 // the "test_executables" target of updater/win/test/BUILD.gn.
-const base::char16 kTestProcessExecutableName[] = L"updater_test_process.exe";
+const wchar_t kTestProcessExecutableName[] = L"updater_test_process.exe";
 
 base::Process LongRunningProcess(base::CommandLine* cmd) {
   base::FilePath exe_dir;
@@ -43,7 +43,7 @@ base::Process LongRunningProcess(base::CommandLine* cmd) {
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   command_line.AppendSwitchNative(
       updater::kInitDoneNotifierSwitch,
-      base::NumberToString16(
+      base::NumberToWString(
           base::win::HandleToUint32(init_done_event->handle())));
 
   if (cmd)

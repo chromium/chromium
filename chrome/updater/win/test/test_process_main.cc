@@ -40,7 +40,7 @@ int main(int, char**) {
   if (command_line->HasSwitch(updater::kTestEventToSignal)) {
     VLOG(1) << "Process is signaling event '" << updater::kTestEventToSignal
             << "'";
-    base::string16 event_name =
+    std::wstring event_name =
         command_line->GetSwitchValueNative(updater::kTestEventToSignal);
     base::win::ScopedHandle handle(
         ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
