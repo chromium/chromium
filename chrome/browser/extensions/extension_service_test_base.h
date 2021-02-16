@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -150,6 +151,13 @@ class ExtensionServiceTestBase : public testing::Test {
   policy::MockConfigurationPolicyProvider* policy_provider() {
     return &policy_provider_;
   }
+
+  // If a test uses a feature list, it should be destroyed after
+  // |task_environment_|, to avoid tsan data races between the ScopedFeatureList
+  // destructor, and any tasks running on different threads that check if a
+  // feature is enabled. ~BrowserTaskEnvironment will make sure those tasks
+  // finish before |feature_list_| is destroyed.
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   // Must be declared before anything that may make use of the

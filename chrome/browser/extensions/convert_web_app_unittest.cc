@@ -21,7 +21,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -129,12 +128,9 @@ class ExtensionFromWebApp : public extensions::ExtensionServiceTestBase {
 class ExtensionFromWebAppWithShortcutsMenu : public ExtensionFromWebApp {
  public:
   ExtensionFromWebAppWithShortcutsMenu() {
-    scoped_feature_list.InitAndEnableFeature(
+    feature_list_.InitAndEnableFeature(
         features::kDesktopPWAsAppIconShortcutsMenu);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp) {

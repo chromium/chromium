@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_allowlist.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
@@ -75,7 +74,6 @@ class ExtensionAllowlistUnitTest : public ExtensionServiceTestBase {
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   ExtensionPrefs* extension_prefs_;
 };
 
