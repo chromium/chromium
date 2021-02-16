@@ -389,6 +389,11 @@
   [self.incognitoThumbStripSupporting
       thumbStripEnabledWithPanHandler:panHandler];
   [self.regularThumbStripSupporting thumbStripEnabledWithPanHandler:panHandler];
+
+  self.baseViewController.regularPopupMenuHandler = HandlerForProtocol(
+      self.regularBrowser->GetCommandDispatcher(), PopupMenuCommands);
+  self.baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
+      self.incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
 }
 
 // Uninstalls the thumb strip and informs this object dependencies.
@@ -459,13 +464,6 @@
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
-  if (ShowThumbStripInTraitCollection(
-          self.baseViewController.traitCollection)) {
-    baseViewController.regularPopupMenuHandler = HandlerForProtocol(
-        _regularBrowser->GetCommandDispatcher(), PopupMenuCommands);
-    baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
-        _incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
-  }
 
   self.incognitoAuthMediator = [[IncognitoReauthMediator alloc]
       initWithConsumer:self.baseViewController.incognitoTabsConsumer
