@@ -141,6 +141,24 @@ int BucketWithOffsetAndUnit(int num, int offset, uint32_t unit) {
   return bucketed * unit + offset;
 }
 
+bool IsPageInTabGroup(content::WebContents* contents) {
+  if (!contents)
+    return false;
+
+    // TODO(tommycli): Implement this for Android too.
+#if !defined(OS_ANDROID)
+  if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
+    int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+    if (tab_index != TabStripModel::kNoTab &&
+        browser->tab_strip_model()->GetTabGroupForTab(tab_index).has_value()) {
+      return true;
+    }
+  }
+#endif  // !defined(OS_ANDROID)
+
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -257,18 +275,8 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                    ->GetSiteInstance()
                                    ->GetLastProcessAssignmentOutcome();
 
-  // Android has a different tab model, and will need its own implementation.
-#if !defined(OS_ANDROID)
-  auto* contents = navigation_handle->GetWebContents();
-  DCHECK(contents);
-  if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
-    int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
-    if (tab_index != TabStripModel::kNoTab &&
-        browser->tab_strip_model()->GetTabGroupForTab(tab_index).has_value()) {
-      memories_signals_.is_existing_part_of_tab_group = true;
-    }
-  }
-#endif  // !defined(OS_ANDROID)
+  memories_signals_.is_existing_part_of_tab_group =
+      IsPageInTabGroup(navigation_handle->GetWebContents());
 
   return CONTINUE_OBSERVING;
 }
@@ -1026,6 +1034,22 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
               total_foreground_duration_.InMilliseconds()));
 }
 
+void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
+    ukm::builders::PageLoad& builder) {
+  // Compute page-end Memories signals.
+  memories_signals_.is_placed_in_tab_group =
+      !memories_signals_.is_existing_part_of_tab_group &&
+      IsPageInTabGroup(GetDelegate().GetWebContents());
+
+  // Send ALL Memories signals to UKM at page end. This is to harmonize with
+  // the fact that they may only be recorded into History at page end, when
+  // we can be sure that the visit row already exists.
+  builder.SetOmniboxUrlCopied(memories_signals_.omnibox_url_copied);
+  builder.SetIsExistingPartOfTabGroup(
+      memories_signals_.is_existing_part_of_tab_group);
+  builder.SetIsPlacedInTabGroup(memories_signals_.is_placed_in_tab_group);
+}
+
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
   ukm::builders::PageLoad(GetDelegate().GetPageUkmSourceId())
       .SetInteractiveTiming_NumInputEvents(
@@ -1130,10 +1154,7 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   if (timing)
     RecordAbortMetrics(*timing, page_end_time, &builder);
 
-  // Add Memories signals to UKM.
-  builder.SetOmniboxUrlCopied(memories_signals_.omnibox_url_copied);
-  builder.SetIsExistingPartOfTabGroup(
-      memories_signals_.is_existing_part_of_tab_group);
+  RecordMemoriesMetrics(builder);
 
   builder.Record(ukm::UkmRecorder::Get());
 }

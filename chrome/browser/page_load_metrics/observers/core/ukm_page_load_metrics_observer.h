@@ -155,6 +155,8 @@ class UkmPageLoadMetricsObserver
       base::TimeTicks page_end_time,
       ukm::builders::PageLoad* builder);
 
+  void RecordMemoriesMetrics(ukm::builders::PageLoad& builder);
+
   void RecordInputTimingMetrics();
   void RecordSmoothnessMetrics();
 
@@ -297,6 +299,10 @@ class UkmPageLoadMetricsObserver
 
     // True if the page was in a tab group when the navigation was committed.
     bool is_existing_part_of_tab_group = false;
+
+    // True if the page was NOT part of a tab group when the navigation
+    // committed, and IS part of a tab group at the end of the page lifetime.
+    bool is_placed_in_tab_group = false;
   } memories_signals_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);

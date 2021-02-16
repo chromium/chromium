@@ -10571,6 +10571,19 @@ be describing additional metrics about the same event.
       navigation committed.
     </summary>
   </metric>
+  <metric name="IsPlacedInTabGroup" enum="Boolean">
+    <summary>
+      Roughly: measures if the page was added to a tab group. Specifically: this
+      is marked true if the page was not part of a tab group when the navigation
+      committed, and is part of a tab group at the end of the page lifetime.
+
+      Note, this means this boolean is mutually exclusive with
+      IsExistingPartOfTabGroup.
+
+      Also note, this means that a page that is added, and then sebsequently
+      removed from a tab group is counted as false.
+    </summary>
+  </metric>
   <metric name="IsSignedExchangeInnerResponse">
     <obsolete>
       Migrated to the PageLoad.SignedExchange event. The presence of that event
