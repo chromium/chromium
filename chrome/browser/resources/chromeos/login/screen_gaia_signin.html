@@ -8,13 +8,30 @@
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_loading_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/throbber_notice.html">
 
 <dom-module id="gaia-signin-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="screen_gaia_signin.css">
+    <style include="oobe-dialog-host">
+      [transparent] {
+        opacity: 0;
+      }
+
+      [animated-transparency][transparent] {
+        transition: opacity 500ms ease-in;
+      }
+
+      [animated-transparency]:not([transparent]) {
+        transition: opacity 500ms ease-out;
+      }
+
+      .icon20 {
+        height: 20px;
+        width: 20px;
+      }
+    </style>
     <gaia-dialog id="signin-frame-dialog"
         transparent$="[[isLoadingUiShown_]]" class="flex"
         for-step="online-gaia, gaia-loading"
@@ -37,11 +54,14 @@
         for-step="pin" on-cancel="onPinDialogCanceled_"
         on-completed="onPinDialogCompleted_">
     </security-token-pin>
-    <oobe-dialog id="saml-interstitial" role="dialog" has-buttons
-        title-key="loginWelcomeMessage" for-step="saml-interstitial">
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:googleg"
+    <oobe-adaptive-dialog id="saml-interstitial" role="dialog" has-buttons
+        for-step="saml-interstitial">
+      <hd-iron-icon slot="icon" icon1x="oobe-32:googleg"
           icon2x="oobe-64:googleg">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'loginWelcomeMessage')]]
+      </h1>
       <div slot="subtitle" hidden="[[isEmpty_(samlInterstitialDomain_)]]">
         <iron-icon class="icon20" icon="cr20:domain"></iron-icon>
         [[i18nDynamic(locale, 'samlInterstitialMessage',
@@ -61,7 +81,7 @@
         <oobe-next-button on-click="onSamlInterstitialNext_"
             id="interstitial-next" class="focus-on-show"></oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
     <div id="gaia-loading" class="layout center center-justified vertical fit"
         for-step="loading, gaia-loading">
       <throbber-notice text-key="gaiaLoading"></throbber-notice>
