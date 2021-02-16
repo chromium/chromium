@@ -49,9 +49,15 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
         std::unique_ptr<cablev2::Discovery> v2_discovery;
-        if (qr_generator_key_.has_value()) {
+        const bool have_v2_discovery_data =
+            cable_data_.has_value() &&
+            std::any_of(cable_data_->begin(), cable_data_->end(),
+                        [](const CableDiscoveryData& v) -> bool {
+                          return v.version == CableDiscoveryData::Version::V2;
+                        });
+        if (qr_generator_key_.has_value() || have_v2_discovery_data) {
           v2_discovery = std::make_unique<cablev2::Discovery>(
-              network_context_, *qr_generator_key_, std::move(v2_pairings_),
+              network_context_, qr_generator_key_, std::move(v2_pairings_),
               cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_));
         }

@@ -28,6 +28,11 @@ extern const base::Feature kWebAuthUseNativeWinApi;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthBiometricEnrollment;
 
+// Support a special caBLEv2 mode where the server provides the linking
+// information.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthCableServerLink;
+
 // Enable using a phone as a generic security key.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthPhoneSupport;

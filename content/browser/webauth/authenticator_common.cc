@@ -585,7 +585,11 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
         device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) {
+    // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
+    // must configure a |UsbDeviceManager|, which it'll only do if
+    // |kWebAuthPhoneSupport| is enabled, or if a V2 caBLE extension is seen.
     transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
   }
 

@@ -372,6 +372,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
                     pairings_from_extension.end());
   }
   const bool cable_extension_provided = !pairings.empty();
+  const bool cablev2_extension_provided =
+      std::any_of(pairings.begin(), pairings.end(),
+                  [](const device::CableDiscoveryData& v) -> bool {
+                    return v.version == device::CableDiscoveryData::Version::V2;
+                  });
 
   base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
@@ -388,6 +393,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     }
     have_paired_phones = !paired_phones.empty();
 
+    discovery_factory->set_cable_pairing_callback(base::BindRepeating(
+        &ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
+      (cablev2_extension_provided &&
+       base::FeatureList::IsEnabled(device::kWebAuthCableServerLink))) {
     mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
     content::GetDeviceService().BindUsbDeviceManager(
         usb_device_manager.BindNewPipeAndPassReceiver());
@@ -406,10 +419,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
                                                have_paired_phones, qr_string);
   discovery_factory->set_cable_data(std::move(pairings), qr_generator_key,
                                     std::move(paired_phones));
-
-  discovery_factory->set_cable_pairing_callback(base::BindRepeating(
-      &ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent,
-      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(

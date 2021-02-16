@@ -33,15 +33,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
     : public FidoDeviceDiscovery,
       public FidoDeviceDiscovery::BLEObserver {
  public:
-  Discovery(network::mojom::NetworkContext* network_context,
-            base::span<const uint8_t, kQRKeySize> qr_generator_key,
-            std::vector<std::unique_ptr<Pairing>> pairings,
-            const std::vector<CableDiscoveryData>& extension_contents,
-            // pairing_callback will be called when a QR-initiated connection
-            // receives pairing information from the peer, or when an existing
-            // pairing is found to be invalid.
-            base::Optional<base::RepeatingCallback<void(PairingEvent)>>
-                pairing_callback);
+  Discovery(
+      network::mojom::NetworkContext* network_context,
+      base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+      std::vector<std::unique_ptr<Pairing>> pairings,
+      const std::vector<CableDiscoveryData>& extension_contents,
+      // pairing_callback will be called when a QR-initiated connection
+      // receives pairing information from the peer, or when an existing
+      // pairing is found to be invalid.
+      base::Optional<base::RepeatingCallback<void(PairingEvent)>>
+          pairing_callback);
   ~Discovery() override;
   Discovery(const Discovery&) = delete;
   Discovery& operator=(const Discovery&) = delete;
@@ -64,13 +65,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   void AddPairing(std::unique_ptr<Pairing> pairing);
   void PairingIsInvalid(
       std::array<uint8_t, kP256X962Length> peer_public_key_x962);
-  static UnpairedKeys KeysFromQRGeneratorKey(
-      base::span<const uint8_t, kQRKeySize> qr_generator_key);
+  static base::Optional<UnpairedKeys> KeysFromQRGeneratorKey(
+      base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
   static base::Optional<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
   network::mojom::NetworkContext* const network_context_;
-  const UnpairedKeys qr_keys_;
+  const base::Optional<UnpairedKeys> qr_keys_;
   const base::Optional<UnpairedKeys> extension_keys_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
   const base::Optional<base::RepeatingCallback<void(PairingEvent)>>

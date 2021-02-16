@@ -217,7 +217,8 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
                       credential.transports().end());
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) {
     transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
   }
 

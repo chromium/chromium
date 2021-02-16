@@ -19,7 +19,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
 
@@ -53,12 +52,6 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
 
         super.onCreate(savedInstanceState);
-
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_AUTH_PHONE_SUPPORT)) {
-            // Ensure that connected USB devices cannot trigger this logic prior
-            // to launch review completion.
-            return;
-        }
 
         onNewIntent(getIntent());
     }
