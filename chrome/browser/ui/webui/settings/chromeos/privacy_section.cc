@@ -204,7 +204,6 @@ PrivacySection::~PrivacySection() = default;
 
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"privacyPageTitle", IDS_SETTINGS_PRIVACY},
       {"enableLogging", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE},
       {"enableLoggingDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC},
       {"enableContentProtectionAttestation",
@@ -230,6 +229,13 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    html_source->AddLocalizedString("privacyPageTitle",
+                                    IDS_SETTINGS_PRIVACY_V2);
+  } else {
+    html_source->AddLocalizedString("privacyPageTitle", IDS_SETTINGS_PRIVACY);
+  }
 
   html_source->AddBoolean(
       "privacySettingsRedesignEnabled",
