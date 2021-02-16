@@ -4429,21 +4429,34 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
     case UIA_ProviderDescriptionPropertyId:
     case UIA_RuntimeIdPropertyId:
       break;
-  }  // End of default UIA property ids.
-
-  // Custom UIA Property Ids.
-  if (property_id ==
-      UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId()) {
-    // We want to negate the unique id for it to be consistent across different
-    // Windows accessiblity APIs. The negative unique id convention originated
-    // from ::NotifyWinEvent() takes an hwnd and a child id. A 0 child id means
-    // self, and a positive child id means child #n. In order to fire an event
-    // for an arbitrary descendant of the window, Firefox started the practice
-    // of using a negative unique id. We follow the same negative unique id
-    // convention here and when we fire events via ::NotifyWinEvent().
-    result->vt = VT_BSTR;
-    result->bstrVal =
-        SysAllocString(base::NumberToWString(-GetUniqueId()).c_str());
+    default:
+      // We can't simply add these custom properties ids to the switch case
+      // because they are not constant expressions.
+      //
+      // Custom UIA Property Ids.
+      if (property_id ==
+          UiaRegistrarWin::GetInstance().GetUiaUniqueIdPropertyId()) {
+        // We want to negate the unique id for it to be consistent across
+        // different Windows accessiblity APIs. The negative unique id
+        // convention originated from ::NotifyWinEvent() takes an hwnd and a
+        // child id. A 0 child id means self, and a positive child id means
+        // child #n. In order to fire an event for an arbitrary descendant of
+        // the window, Firefox started the practice of using a negative unique
+        // id. We follow the same negative unique id convention here and when we
+        // fire events via ::NotifyWinEvent().
+        result->vt = VT_BSTR;
+        result->bstrVal =
+            SysAllocString(base::NumberToWString(-GetUniqueId()).c_str());
+      } else if (features::IsAccessibilityAriaVirtualContentEnabled() &&
+                 property_id == UiaRegistrarWin::GetInstance()
+                                    .GetVirtualContentPropertyId()) {
+        if (HasStringAttribute(ax::mojom::StringAttribute::kVirtualContent)) {
+          V_VT(result) = VT_BSTR;
+          GetStringAttributeAsBstr(ax::mojom::StringAttribute::kVirtualContent,
+                                   &V_BSTR(result));
+        }
+      }
+      break;
   }
 
   return S_OK;

@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
+
 // {3761326A-34B2-465A-835D-7A3D8F4EFB92}
 static const GUID kUiaEventTestCompleteSentinelGuid = {
     0x3761326a,
@@ -26,18 +27,28 @@ static const GUID kUiaPropertyUniqueIdGuid = {
     0x4f4c,
     {0xaf, 0xf6, 0x1c, 0x2e, 0x57, 0x52, 0xad, 0x8e}};
 
+// {28A68D78-3EA6-4FE4-B7C6-1E0F089A72A5}
+static const GUID kUiaPropertyVirtualContentGuid = {
+    0x28A68D78,
+    0x3EA6,
+    0x4FE4,
+    {0xB7, 0xC6, 0x1E, 0x0F, 0x08, 0x9A, 0x72, 0xA5}};
+
 class AX_EXPORT UiaRegistrarWin {
  public:
   UiaRegistrarWin();
   ~UiaRegistrarWin();
+
   PROPERTYID GetUiaUniqueIdPropertyId() const;
   EVENTID GetUiaTestCompleteEventId() const;
+  PROPERTYID GetVirtualContentPropertyId() const;
 
   static const UiaRegistrarWin& GetInstance();
 
  private:
   PROPERTYID uia_unique_id_property_id_ = 0;
   EVENTID uia_test_complete_event_id_ = 0;
+  PROPERTYID virtual_content_property_id_ = 0;
 };
 
 }  // namespace ui

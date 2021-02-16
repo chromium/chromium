@@ -216,6 +216,8 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     // everywhere.
     enabled_features->emplace_back(
         features::kEnableAccessibilityExposeHTMLElement);
+    enabled_features->emplace_back(
+        features::kEnableAccessibilityAriaVirtualContent);
     DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
                                               disabled_features);
   }

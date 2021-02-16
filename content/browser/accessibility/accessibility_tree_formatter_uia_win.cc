@@ -30,6 +30,7 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace {
@@ -211,6 +212,12 @@ const long AccessibilityTreeFormatterUia::properties_[] = {
     UIA_HeadingLevelPropertyId,                         // 30173
 };
 
+// Without this pragma, GCC returns a "declaration requires an exit-time
+// destructor" warning since this is a global map. This warning is not a problem
+// in this case and needs to be muted to complete the build.
+#pragma GCC diagnostic ignored "-Wexit-time-destructors"
+std::map<long, std::string> custom_properties_map_;
+
 const long AccessibilityTreeFormatterUia::patterns_[] = {
     UIA_SelectionPatternId,       // 10001
     UIA_ValuePatternId,           // 10002
@@ -263,6 +270,7 @@ AccessibilityTreeFormatterUia::AccessibilityTreeFormatterUia() {
                    IID_IUIAutomation, &uia_);
   CHECK(uia_.Get());
   BuildCacheRequests();
+  BuildCustomPropertiesMap();
 }
 
 AccessibilityTreeFormatterUia::~AccessibilityTreeFormatterUia() {}
@@ -316,6 +324,13 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
                     AXPropertyFilter::DENY);
   // UIA_WindowPatternId
   AddPropertyFilter(property_filters, "Window.IsModal=*");
+
+  // Custom properties.
+  AddPropertyFilter(
+      property_filters,
+      GetPropertyName(
+          ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId()) +
+          "=*");
 }
 
 base::Value AccessibilityTreeFormatterUia::BuildTree(
@@ -480,7 +495,7 @@ void AccessibilityTreeFormatterUia::AddProperties(
   for (long i : properties_) {
     base::win::ScopedVariant variant;
     if (SUCCEEDED(node->GetCachedPropertyValue(i, variant.Receive()))) {
-      WriteProperty(i, variant, root_x, root_y, dict);
+      WriteProperty(i, variant, dict, root_x, root_y);
     }
   }
   // Add control pattern specific properties
@@ -496,6 +511,7 @@ void AccessibilityTreeFormatterUia::AddProperties(
   AddValueProperties(node.Get(), dict);
   AddValueProperties(node.Get(), dict);
   AddWindowProperties(node.Get(), dict);
+  AddCustomProperties(node.Get(), dict);
 }
 
 void AccessibilityTreeFormatterUia::AddExpandCollapseProperties(
@@ -778,54 +794,71 @@ void AccessibilityTreeFormatterUia::AddWindowProperties(
   }
 }
 
+void AccessibilityTreeFormatterUia::AddCustomProperties(
+    IUIAutomationElement* node,
+    base::DictionaryValue* dict) const {
+  // Custom properties need to be added separately.
+  for (const auto& property : custom_properties_map_) {
+    base::win::ScopedVariant variant;
+    if (SUCCEEDED(
+            node->GetCurrentPropertyValue(property.first, variant.Receive()))) {
+      WriteProperty(property.first, variant, dict);
+    }
+  }
+}
+
+std::string AccessibilityTreeFormatterUia::GetPropertyName(
+    long property_id) const {
+  // We cannot infer the property name from a custom property id, so we get it
+  // from the map we created manually in `BuildCustomPropertiesMap()`.
+  auto property = custom_properties_map_.find(property_id);
+  if (property != custom_properties_map_.end())
+    return property->second;
+
+  return UiaIdentifierToCondensedString(property_id);
+}
+
 void AccessibilityTreeFormatterUia::WriteProperty(
     long propertyId,
     const base::win::ScopedVariant& var,
+    base::DictionaryValue* dict,
     int root_x,
-    int root_y,
-    base::DictionaryValue* dict) const {
+    int root_y) const {
   switch (var.type()) {
     case VT_EMPTY:
     case VT_NULL:
       break;
     case VT_I2:
-      dict->SetInteger(UiaIdentifierToCondensedString(propertyId),
-                       var.ptr()->iVal);
+      dict->SetInteger(GetPropertyName(propertyId), var.ptr()->iVal);
       break;
     case VT_I4:
       WriteI4Property(propertyId, var.ptr()->lVal, dict);
       break;
     case VT_R4:
-      dict->SetDouble(UiaIdentifierToCondensedString(propertyId),
-                      var.ptr()->fltVal);
+      dict->SetDouble(GetPropertyName(propertyId), var.ptr()->fltVal);
       break;
     case VT_R8:
-      dict->SetDouble(UiaIdentifierToCondensedString(propertyId),
-                      var.ptr()->dblVal);
+      dict->SetDouble(GetPropertyName(propertyId), var.ptr()->dblVal);
       break;
     case VT_I1:
-      dict->SetInteger(UiaIdentifierToCondensedString(propertyId),
-                       var.ptr()->cVal);
+      dict->SetInteger(GetPropertyName(propertyId), var.ptr()->cVal);
       break;
     case VT_UI1:
-      dict->SetInteger(UiaIdentifierToCondensedString(propertyId),
-                       var.ptr()->bVal);
+      dict->SetInteger(GetPropertyName(propertyId), var.ptr()->bVal);
       break;
     case VT_UI2:
-      dict->SetInteger(UiaIdentifierToCondensedString(propertyId),
-                       var.ptr()->uiVal);
+      dict->SetInteger(GetPropertyName(propertyId), var.ptr()->uiVal);
       break;
     case VT_UI4:
-      dict->SetInteger(UiaIdentifierToCondensedString(propertyId),
-                       var.ptr()->ulVal);
+      dict->SetInteger(GetPropertyName(propertyId), var.ptr()->ulVal);
       break;
       break;
     case VT_BSTR:
-      dict->SetString(UiaIdentifierToCondensedString(propertyId),
+      dict->SetString(GetPropertyName(propertyId),
                       BstrToUTF8(var.ptr()->bstrVal));
       break;
     case VT_BOOL:
-      dict->SetBoolean(UiaIdentifierToCondensedString(propertyId),
+      dict->SetBoolean(GetPropertyName(propertyId),
                        var.ptr()->boolVal == VARIANT_TRUE ? true : false);
       break;
     case VT_UNKNOWN:
@@ -849,19 +882,19 @@ void AccessibilityTreeFormatterUia::WriteI4Property(
     base::DictionaryValue* dict) const {
   switch (propertyId) {
     case UIA_ControlTypePropertyId:
-      dict->SetString(UiaIdentifierToCondensedString(propertyId),
+      dict->SetString(GetPropertyName(propertyId),
                       UiaIdentifierToCondensedString(lval));
       break;
     case UIA_OrientationPropertyId:
-      dict->SetString(UiaIdentifierToCondensedString(propertyId),
+      dict->SetString(GetPropertyName(propertyId),
                       UiaOrientationToString(lval));
       break;
     case UIA_LiveSettingPropertyId:
-      dict->SetString(UiaIdentifierToCondensedString(propertyId),
+      dict->SetString(GetPropertyName(propertyId),
                       UiaLiveSettingToString(lval));
       break;
     default:
-      dict->SetInteger(UiaIdentifierToCondensedString(propertyId), lval);
+      dict->SetInteger(GetPropertyName(propertyId), lval);
       break;
   }
 }
@@ -883,8 +916,7 @@ void AccessibilityTreeFormatterUia::WriteUnknownProperty(
     case UIA_LabeledByPropertyId: {
       Microsoft::WRL::ComPtr<IUIAutomationElement> node;
       if (unk && SUCCEEDED(unk->QueryInterface(IID_PPV_ARGS(&node)))) {
-        dict->SetString(UiaIdentifierToCondensedString(propertyId),
-                        GetNodeName(node.Get()));
+        dict->SetString(GetPropertyName(propertyId), GetNodeName(node.Get()));
       }
       break;
     }
@@ -909,7 +941,7 @@ void AccessibilityTreeFormatterUia::WriteRectangleProperty(
   rectangle->SetInteger("top", data[1] - root_y);
   rectangle->SetInteger("width", data[2]);
   rectangle->SetInteger("height", data[3]);
-  dict->Set(UiaIdentifierToCondensedString(propertyId), std::move(rectangle));
+  dict->Set(GetPropertyName(propertyId), std::move(rectangle));
 
   SafeArrayUnaccessData(value.parray);
 }
@@ -938,7 +970,7 @@ void AccessibilityTreeFormatterUia::WriteElementArray(
     }
   }
   if (!element_list.empty())
-    dict->SetString(UiaIdentifierToCondensedString(propertyId), element_list);
+    dict->SetString(GetPropertyName(propertyId), element_list);
 }
 
 base::string16 AccessibilityTreeFormatterUia::GetNodeName(
@@ -995,6 +1027,12 @@ void AccessibilityTreeFormatterUia::BuildCacheRequests() {
   }
 }
 
+void AccessibilityTreeFormatterUia::BuildCustomPropertiesMap() {
+  custom_properties_map_.insert(
+      {ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
+       "VirtualContent"});
+}
+
 std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
     const base::DictionaryValue& dict) const {
   std::unique_ptr<base::DictionaryValue> tree;
@@ -1002,16 +1040,19 @@ std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
 
   // Always show control type, and show it first.
   std::string control_type_value;
-  dict.GetString(UiaIdentifierToCondensedString(UIA_ControlTypePropertyId),
+  dict.GetString(GetPropertyName(UIA_ControlTypePropertyId),
                  &control_type_value);
   WriteAttribute(true, control_type_value, &line);
 
-  // properties
-  for (long i : properties_) {
-    ProcessPropertyForOutput(UiaIdentifierToCondensedString(i), dict, line);
-  }
+  // Properties.
+  for (long i : properties_)
+    ProcessPropertyForOutput(GetPropertyName(i), dict, line);
 
-  // patterns
+  // Custom properties.
+  for (const auto& i : custom_properties_map_)
+    ProcessPropertyForOutput(GetPropertyName(i.first), dict, line);
+
+  // Patterns.
   const std::string pattern_property_names[] = {
       // UIA_ExpandCollapsePatternId
       "ExpandCollapse.ExpandCollapseState",

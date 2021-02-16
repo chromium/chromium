@@ -43,6 +43,7 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
                           int root_y,
                           base::DictionaryValue* dict) const;
   void BuildCacheRequests();
+  void BuildCustomPropertiesMap();
   void AddProperties(IUIAutomationElement* node,
                      int root_x,
                      int root_y,
@@ -69,11 +70,14 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
                           base::DictionaryValue* dict) const;
   void AddWindowProperties(IUIAutomationElement* node,
                            base::DictionaryValue* dict) const;
+  void AddCustomProperties(IUIAutomationElement* node,
+                           base::DictionaryValue* dict) const;
+  std::string GetPropertyName(long property_id) const;
   void WriteProperty(long propertyId,
                      const base::win::ScopedVariant& var,
-                     int root_x,
-                     int root_y,
-                     base::DictionaryValue* dict) const;
+                     base::DictionaryValue* dict,
+                     int root_x = 0,
+                     int root_y = 0) const;
   // UIA enums have type I4, print formatted string for these when possible
   void WriteI4Property(long propertyId,
                        long lval,
