@@ -174,8 +174,6 @@ crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/text
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-# Need to adjust tolerances of this test.
-crbug.com/1165751 [ fuchsia fuchsia-board-astro ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # Flaky on Fuchsia hardware devices
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Skip ]
@@ -259,9 +257,6 @@ crbug.com/angleproject/4931 [ win nvidia angle-vulkan passthrough ] conformance/
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
 crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-# Need to adjust tolerances of this test.
-crbug.com/1165751 [ win intel angle-vulkan passthrough ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
-crbug.com/1165751 [ win nvidia angle-vulkan passthrough ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ####################
 # Fuchsia failures #
@@ -749,8 +744,6 @@ crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-prec
 
 # Flaky renderer hangs suspected due to some driver issue on Kevin devices.
 crbug.com/1091562 [ chromeos-board-kevin ] * [ RetryOnFailure ]
-
-crbug.com/1165751 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ########################
 # SwiftShader failures #
