@@ -666,6 +666,18 @@
       },
     },
   },
+  'cc_unittests_x11': {
+    'modifications': {
+      # CI tester.
+      # 'Linux Tester (Ozone X11)': {
+      'Linux Ozone Tester (X11)': {
+        # https://crbug.com/1178392
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_cc_unittests.filter',
+        ],
+      },
+    },
+  },
   'check_static_initializers': {
     'modifications': {
       'Mac Builder': {
@@ -2491,6 +2503,17 @@
       # crbug.com/1080749
       'Optional Linux Release (NVIDIA)',
     ],
+  },
+  'ui_base_unittests_x11': {
+    'modifications': {
+      # CI tester.
+      # 'Linux Tester (Ozone X11)': {
+      'Linux Ozone Tester (X11)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_ui_base_unittests.filter',
+        ],
+      },
+    },
   },
   'unit_tests': {
     'remove_from': [
