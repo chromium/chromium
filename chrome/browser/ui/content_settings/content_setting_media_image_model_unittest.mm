@@ -83,9 +83,6 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
   if (!base::mac::IsAtLeastOS10_14())
     return;
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMacSystemMediaPermissionsInfoUi);
-
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(

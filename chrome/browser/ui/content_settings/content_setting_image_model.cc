@@ -677,8 +677,6 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     return false;
 
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(
-          ::features::kMacSystemMediaPermissionsInfoUi)) {
     // Don't show an icon when the user has not made a decision yet for
     // the site level media permissions.
     if (IsCameraAccessPendingOnSystemLevelPrompt() ||
@@ -749,7 +747,6 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       }
       return true;
     }
-  }
 #endif  // defined(OS_MAC)
 
   DCHECK(IsMicAccessed() || IsCamAccessed());

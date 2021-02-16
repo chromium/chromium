@@ -5595,13 +5595,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardAuthentication)},
 
-#if defined(OS_MAC)
-    {"mac-system-media-permissions-info-ui",
-     flag_descriptions::kMacSystemMediaPermissionsInfoUiName,
-     flag_descriptions::kMacSystemMediaPermissionsInfoUiDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kMacSystemMediaPermissionsInfoUi)},
-#endif  // defined(OS_MAC)
-
     {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kStorageAccessAPI)},

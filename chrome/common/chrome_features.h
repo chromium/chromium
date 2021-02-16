@@ -396,9 +396,6 @@ extern const base::Feature kMacMaterialDesignDownloadShelf;
 
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kMacSystemMediaPermissionsInfoUi;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kMacSystemScreenCapturePermissionCheck;
 #endif
 

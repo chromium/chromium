@@ -1107,9 +1107,7 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
                 system_media_permissions::SystemPermission::kDenied &&
             MicrophoneAccessed() && !MicrophoneBlocked())) &&
           !(CameraAccessed() && CameraBlocked()) &&
-          !(MicrophoneAccessed() && MicrophoneBlocked()) &&
-          base::FeatureList::IsEnabled(
-              ::features::kMacSystemMediaPermissionsInfoUi));
+          !(MicrophoneAccessed() && MicrophoneBlocked()));
 #else
   return false;
 #endif  // defined(OS_MAC)

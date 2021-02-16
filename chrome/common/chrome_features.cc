@@ -597,13 +597,6 @@ const base::Feature kMacMaterialDesignDownloadShelf{
 #endif
 
 #if defined(OS_MAC)
-// In case a website is trying to use the camera/microphone, but Chrome itself
-// is blocked on the system level to access these, show an icon in the Omnibox,
-// which, when clicked, displays a bubble with information on how to toggle
-// Chrome's system-level media permissions.
-const base::Feature kMacSystemMediaPermissionsInfoUi{
-    "MacSystemMediaPermissionsInfoUI", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable screen capture system permission check on Mac 10.15+.
 const base::Feature kMacSystemScreenCapturePermissionCheck{
     "MacSystemScreenCapturePermissionCheck", base::FEATURE_ENABLED_BY_DEFAULT};
