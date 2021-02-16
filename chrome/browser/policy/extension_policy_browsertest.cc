@@ -353,15 +353,15 @@ class ExtensionPolicyTest : public PolicyTest {
   }
 
   const extensions::Extension* InstallForceListExtension(
+      const std::string& update_url_suffix,
       const std::string& id) {
     extensions::ExtensionRegistry* registry = extension_registry();
     if (registry->GetExtensionById(id,
-                                   extensions::ExtensionRegistry::EVERYTHING))
+                                   extensions::ExtensionRegistry::EVERYTHING)) {
       return nullptr;
+    }
 
-    GURL update_url = embedded_test_server()->GetURL(
-        "/extensions/good_v1_update_manifest.xml");
-
+    GURL update_url = embedded_test_server()->GetURL(update_url_suffix);
     PolicyMap policies;
     AddExtensionToForceList(&policies, id, update_url);
 
@@ -878,6 +878,15 @@ class ExtensionRequestInterceptor {
           params->client.get());
       return true;
     }
+
+    if (params->url_request.url.path() ==
+        "/good_prodversionmin_update_manifest.xml") {
+      content::URLLoaderInterceptor::WriteResponse(
+          "chrome/test/data/extensions/good_prodversionmin_update_manifest.xml",
+          params->client.get());
+      return true;
+    }
+
     if (params->url_request.url.path() == "/extensions/good_v1.crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good_v1.crx", params->client.get());
@@ -886,6 +895,11 @@ class ExtensionRequestInterceptor {
     if (params->url_request.url.path() == "/extensions/good2.crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good2.crx", params->client.get());
+      return true;
+    }
+    if (params->url_request.url.path() == "/extensions/good3.crx") {
+      content::URLLoaderInterceptor::WriteResponse(
+          "chrome/test/data/extensions/good3.crx", params->client.get());
       return true;
     }
 
@@ -1125,12 +1139,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, CrxVersionInconsistencyInCache) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Verifies that extensions that are force-installed by policies are
+// installed and can't be uninstalled.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
-  // Verifies that extensions that are force-installed by policies are
-  // installed and can't be uninstalled.
-
   ExtensionRequestInterceptor interceptor;
-
   extensions::ExtensionService* service = extension_service();
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
@@ -1275,6 +1287,88 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   }
 }
 
+// Verifies that "prodversionmin" attribute in update manifest is used to
+// select the version to which an already installed extension should be updated.
+// "Prodversionmin" specifies the minimum browser version which supports the
+// corresponding extension version.
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, UpdateExtensionWithProdversionmin) {
+  ExtensionRequestInterceptor interceptor;
+  extensions::ExtensionRegistry* registry = extension_registry();
+  ASSERT_FALSE(registry->GetExtensionById(
+      kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
+
+  // Install the extension with an older version. The extension manifest of this
+  // extension points to an update manifest which contains multiple <app> tags
+  // with different values of "prodversionmin" attribute.
+  const extensions::Extension* extension =
+      InstallExtension(FILE_PATH_LITERAL("good_prodversion_v1.crx"));
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(kGoodCrxId, extension->id());
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(kGoodCrxId));
+  auto installed_version =
+      registry->enabled_extensions().GetByID(kGoodCrxId)->version();
+  EXPECT_EQ(installed_version.CompareTo(base::Version("1.0.0.0")), 0);
+
+  // Update the extension and verify the version according to "prodversionmin"
+  // in the update manifest.
+  extensions::ExtensionService* service = extension_service();
+  extensions::ExtensionUpdater* updater = service->updater();
+  extensions::ExtensionUpdater::CheckParams params;
+  params.install_immediately = true;
+  extensions::TestExtensionRegistryObserver update_observer(
+      extension_registry());
+  updater->CheckNow(std::move(params));
+  update_observer.WaitForExtensionWillBeInstalled();
+
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(kGoodCrxId));
+  auto updated_version =
+      registry->enabled_extensions().GetByID(kGoodCrxId)->version();
+  EXPECT_EQ(updated_version.CompareTo(base::Version("1.0.0.1")), 0);
+}
+
+// Verifies that "prodversionmin" attribute in update manifest is used to
+// select the extension version which should be installed. "Prodversionmin"
+// specifies the minimum browser version which supports the corresponding
+// extension version.
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
+                       InstallExtensionWithProdversionmin) {
+  ExtensionRequestInterceptor interceptor;
+  extensions::ExtensionRegistry* registry = extension_registry();
+  ASSERT_FALSE(registry->GetExtensionById(
+      kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
+
+  // Extensions that are force-installed come from an update URL, which defaults
+  // to the webstore. Use a custom URL for this test for the update manifest.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const extensions::Extension* extension = InstallForceListExtension(
+      "/extensions/good_prodversionmin_update_manifest.xml", kGoodCrxId);
+  ASSERT_TRUE(extension);
+
+  auto installed_version = extension->version();
+  EXPECT_EQ(installed_version.CompareTo(base::Version("1.0.0.1")), 0);
+}
+
+// Verifies that if multiple <app> tags for an extension are specified in the
+// update manifest, the first valid tag is selected for crx download. This
+// test helps to notify of any change in this behaviour as there might be
+// extensions relying on it.
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, UpdateManifestOrderedAppTags) {
+  ExtensionRequestInterceptor interceptor;
+  extensions::ExtensionRegistry* registry = extension_registry();
+  ASSERT_FALSE(registry->GetExtensionById(
+      kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
+
+  // Extensions that are force-installed come from an update URL, which defaults
+  // to the webstore. Use a custom URL for this test for the update manifest.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const extensions::Extension* extension = InstallForceListExtension(
+      "/extensions/good_ordered_app_tags_update_manifest.xml", kGoodCrxId);
+  ASSERT_TRUE(extension);
+
+  auto installed_version = extension->version();
+  EXPECT_EQ(installed_version.CompareTo(base::Version("1.0.0.0")), 0);
+}
+
 // Verifies that corrupted non-webstore policy-based extension is automatically
 // repaired (reinstalled).
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
@@ -1288,8 +1382,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::ExtensionService* service = extension_service();
 
   // Step 1: Setup a policy and force-install an extension.
-  const extensions::Extension* extension =
-      InstallForceListExtension(kGoodCrxId);
+  const extensions::Extension* extension = InstallForceListExtension(
+      "/extensions/good_v1_update_manifest.xml", kGoodCrxId);
   ASSERT_TRUE(extension);
 
   // Step 2: Corrupt extension's resource.
@@ -1367,8 +1461,8 @@ IN_PROC_BROWSER_TEST_F(
   extensions::ExtensionService* service = extension_service();
 
   // Step 1: Setup a policy and force-install an extension.
-  const extensions::Extension* extension =
-      InstallForceListExtension(kGoodCrxId);
+  const extensions::Extension* extension = InstallForceListExtension(
+      "/extensions/good_v1_update_manifest.xml", kGoodCrxId);
   ASSERT_TRUE(extension);
 
   // Step 2: Corrupt extension's resource and hashes file.
@@ -1446,8 +1540,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::ExtensionService* service = extension_service();
 
   // Step 1: Setup a policy and force-install an extension.
-  const extensions::Extension* extension =
-      InstallForceListExtension(kGoodCrxId);
+  const extensions::Extension* extension = InstallForceListExtension(
+      "/extensions/good_v1_update_manifest.xml", kGoodCrxId);
   ASSERT_TRUE(extension);
 
   // Step 2: Corrupt extension's resource and remove hashes.
