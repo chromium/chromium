@@ -57,32 +57,81 @@ const char kKidsSupervisionSetupChildOAuth2Scope[] =
 const char kGoogleTalkOAuth2Scope[] =
     "https://www.googleapis.com/auth/googletalk";
 
+// OAuth2 scope for access to Google account information.
 const char kGoogleUserInfoEmail[] =
     "https://www.googleapis.com/auth/userinfo.email";
 const char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
 
-// OAuth scope for access to the people API (read-only).
+// OAuth2 scope for access to the people API (read-only).
 const char kPeopleApiReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readonly";
 
-// OAuth scope for access to the Reauth flow.
+// OAuth2 scope for access to the Reauth flow.
 const char kAccountsReauthOAuth2Scope[] =
     "https://www.googleapis.com/auth/accounts.reauth";
 
-// OAuth scope for access to audit recording (ARI).
+// OAuth2 scope for access to audit recording (ARI).
 const char kAuditRecordingOAuth2Scope[] =
     "https://www.googleapis.com/auth/auditrecording-pa";
 
-// OAuth scope for access to clear cut logs.
+// OAuth2 scope for access to clear cut logs.
 const char kClearCutOAuth2Scope[] = "https://www.googleapis.com/auth/cclog";
 
-// OAuth scope for FCM, the Firebase Cloud Messaging service.
+// OAuth2 scope for FCM, the Firebase Cloud Messaging service.
 const char kFCMOAuthScope[] =
     "https://www.googleapis.com/auth/firebase.messaging";
 
-// OAuth scope for access to Tachyon api.
+// OAuth2 scope for access to Tachyon api.
 const char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
+
+// OAuth2 scope for access to the Photos API.
+const char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
+
+// OAuth2 scope for access to Cast backdrop API.
+const char kCastBackdropOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cast.backdrop";
+
+// OAuth scope for access to Cloud Translation API.
+const char kCloudTranslationOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloud-translation";
+
+// OAuth2 scope for access to passwords leak checking API.
+const char kPasswordsLeakCheckOAuth2Scope[] =
+    "https://www.googleapis.com/auth/identity.passwords.leak.check";
+
+// OAuth2 scope for access to Chrome safe browsing API.
+const char kChromeSafeBrowsingOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome-safe-browsing";
+
+// OAuth2 scope for access to kid permissions by URL.
+const char kClassifyUrlKidPermissionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.permission";
+const char kKidFamilyReadonlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.family.readonly";
+
+// OAuth2 scope for access to payments.
+const char kPaymentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/wallet.chrome";
+
+const char kCryptAuthOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cryptauth";
+
+// OAuth2 scope for access to Drive.
+const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
+const char kDriveReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.readonly";
+
+// OAuth2 scope for access to Assistant SDK.
+const char kAssistantOAuth2Scope[] =
+    "https://www.googleapis.com/auth/assistant-sdk-prototype";
+
+// OAuth2 scope for access to nearby sharing.
+const char kNearbyShareOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbysharing-pa";
+
+// OAuth2 scope for access to GCM account tracker.
+const char kGCMGroupServerOAuth2Scope[] = "https://www.googleapis.com/auth/gcm";
 
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";

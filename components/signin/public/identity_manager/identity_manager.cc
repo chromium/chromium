@@ -133,9 +133,9 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     const ScopeSet& scopes,
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode) {
-  return std::make_unique<AccessTokenFetcher>(account_id, oauth_consumer_name,
-                                              token_service_.get(), scopes,
-                                              std::move(callback), mode);
+  return std::make_unique<AccessTokenFetcher>(
+      account_id, oauth_consumer_name, token_service_.get(),
+      primary_account_manager_.get(), scopes, std::move(callback), mode);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -147,8 +147,9 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode) {
   return std::make_unique<AccessTokenFetcher>(
-      account_id, oauth_consumer_name, token_service_.get(), url_loader_factory,
-      scopes, std::move(callback), mode);
+      account_id, oauth_consumer_name, token_service_.get(),
+      primary_account_manager_.get(), url_loader_factory, scopes,
+      std::move(callback), mode);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -162,7 +163,8 @@ IdentityManager::CreateAccessTokenFetcherForClient(
     AccessTokenFetcher::Mode mode) {
   return std::make_unique<AccessTokenFetcher>(
       account_id, client_id, client_secret, oauth_consumer_name,
-      token_service_.get(), scopes, std::move(callback), mode);
+      token_service_.get(), primary_account_manager_.get(), scopes,
+      std::move(callback), mode);
 }
 
 void IdentityManager::RemoveAccessTokenFromCache(
