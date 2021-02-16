@@ -42,7 +42,7 @@ NOINLINE void CheckForLoopFailures() {
   const auto threshold = base::TimeDelta::FromSeconds(1);
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
-      now - g_last_reshape_failure > threshold) {
+      now - g_last_reshape_failure < threshold) {
     CHECK(false);
   }
   g_last_reshape_failure = now;
