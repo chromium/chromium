@@ -1975,10 +1975,10 @@ Press an assigned switch to remove assignment.
     Internet Printing Protocol (IPPS)
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_PROTOCOL_HTTP" desc="The dropdown menu of the printer HTTP protocol on the manually add printer dialog.">
-    Internet Printing Protocol (HTTP)
+    Hypertext Transport Protocol (HTTP)
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_PROTOCOL_HTTPS" desc="The dropdown menu of the printer HTTPS protocol on the manually add printer dialog.">
-    Internet Printing Protocol (HTTPS)
+    Hypertext Transport Protocol (HTTPS)
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_PROTOCOL_APP_SOCKET" desc="The dropdown menu of the printer TCP/IP protocol on the manually add printer dialog.">
     AppSocket (TCP/IP)
