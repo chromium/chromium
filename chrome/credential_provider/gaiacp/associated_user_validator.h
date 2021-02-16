@@ -9,8 +9,8 @@
 
 #include <map>
 #include <set>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -96,7 +96,7 @@ class AssociatedUserValidator {
   // Checks whether the token handle for the given user is valid or not.
   // This function is blocking and may fire off a query for a token handle that
   // needs to complete before the function returns.
-  bool IsAuthEnforcedForUser(const base::string16& sid);
+  bool IsAuthEnforcedForUser(const std::wstring& sid);
 
   enum EnforceAuthReason {
     NOT_ENFORCED = 0,
@@ -112,7 +112,7 @@ class AssociatedUserValidator {
   // Returns the reason for enforcing authentication for the provided |sid|.
   // This function is blocking and may fire off a query for a token handle that
   // needs to complete before the function returns.
-  EnforceAuthReason GetAuthEnforceReason(const base::string16& sid);
+  EnforceAuthReason GetAuthEnforceReason(const std::wstring& sid);
 
   // Checks if user access blocking is enforced given the usage scenario (and
   // other registry based checks).
@@ -124,11 +124,11 @@ class AssociatedUserValidator {
   // if a user has just been denied signin access.
   bool DenySigninForUsersWithInvalidTokenHandles(
       CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
-      const std::vector<base::string16>& reauth_sids);
+      const std::vector<std::wstring>& reauth_sids);
 
   // Restores the access for a user that was denied access (if applicable).
   // Returns S_OK on success, failure otherwise.
-  HRESULT RestoreUserAccess(const base::string16& sid);
+  HRESULT RestoreUserAccess(const std::wstring& sid);
 
   // Allows access for all users that have had their access denied by this
   // token validator.
@@ -151,12 +151,12 @@ class AssociatedUserValidator {
 
   // Checks for the staleness of the last successful GCPW login for the input
   // user.
-  bool IsOnlineLoginStale(const base::string16& sid) const;
+  bool IsOnlineLoginStale(const std::wstring& sid) const;
 
   // Keeps the sid mapping in gcpw registry up to date with the latest token
   // handle information.
   HRESULT UpdateAssociatedSids(
-      std::map<base::string16, base::string16>* sid_to_handle);
+      std::map<std::wstring, std::wstring>* sid_to_handle);
 
  protected:
   // Returns the storage used for the instance pointer.
@@ -167,7 +167,7 @@ class AssociatedUserValidator {
 
   // Returns whether the user should be locked out of sign in (only used in
   // tests).
-  bool IsUserAccessBlockedForTesting(const base::string16& sid) const;
+  bool IsUserAccessBlockedForTesting(const std::wstring& sid) const;
 
   // Forces a refresh of all token handles the next time they are queried.
   // This function should only be called in tests.
@@ -175,12 +175,12 @@ class AssociatedUserValidator {
 
  private:
   void CheckTokenHandleValidity(
-      const std::map<base::string16, base::string16>& handles_to_verify);
-  void StartTokenValidityQuery(const base::string16& sid,
-                               const base::string16& token_handle,
+      const std::map<std::wstring, std::wstring>& handles_to_verify);
+  void StartTokenValidityQuery(const std::wstring& sid,
+                               const std::wstring& token_handle,
                                base::TimeDelta timeout);
-  bool IsTokenHandleValidForUser(const base::string16& sid);
-  bool IsUserAssociated(const base::string16& sid);
+  bool IsTokenHandleValidForUser(const std::wstring& sid);
+  bool IsUserAssociated(const std::wstring& sid);
   bool HasInvokedUpdateAssociatedSids();
 
   // Stores information about the current state of a user's token handle.
@@ -197,15 +197,15 @@ class AssociatedUserValidator {
     ~TokenHandleInfo();
 
     // Used when the handle is empty or invalid.
-    explicit TokenHandleInfo(const base::string16& token_handle);
+    explicit TokenHandleInfo(const std::wstring& token_handle);
 
     // Used to create a new token handle info that needs to query validity.
     // The validity is assumed to be invalid at the time of construction.
-    TokenHandleInfo(const base::string16& token_handle,
+    TokenHandleInfo(const std::wstring& token_handle,
                     base::Time update_time,
                     base::win::ScopedHandle::Handle thread_handle);
 
-    base::string16 queried_token_handle;
+    std::wstring queried_token_handle;
     bool is_valid = false;
     base::Time last_update;
     base::win::ScopedHandle pending_query_thread;
@@ -219,10 +219,10 @@ class AssociatedUserValidator {
 
   // Maps a user's sid to the token handle info associated with this user (if
   // any).
-  std::map<base::string16, std::unique_ptr<TokenHandleInfo>>
+  std::map<std::wstring, std::unique_ptr<TokenHandleInfo>>
       user_to_token_handle_info_;
   base::TimeDelta validation_timeout_;
-  std::set<base::string16> locked_user_sids_;
+  std::set<std::wstring> locked_user_sids_;
   mutable base::Lock validator_lock_;
 
   // When |block_deny_access_update_| != 0, prevent users from being denied

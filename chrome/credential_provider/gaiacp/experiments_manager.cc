@@ -59,7 +59,7 @@ void ExperimentsManager::RegisterExperiments() {
 
 // Reloads the experiment values from fetched experiments file for the given
 // |sid|. Loads the fetched experiments values into |experiments_to_values_|.
-bool ExperimentsManager::ReloadExperiments(const base::string16& sid) {
+bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   uint32_t open_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
   std::unique_ptr<base::File> experiments_file = GetOpenedFileForUser(
       sid, open_flags, kGcpwExperimentsDirectory, kGcpwUserExperimentsFileName);
@@ -94,7 +94,7 @@ bool ExperimentsManager::ReloadExperiments(const base::string16& sid) {
         LOGFN(WARNING) << "Either feature or value are not found!";
       }
 
-      experiments_to_values_[*f].second[base::UTF16ToUTF8(sid)] = *v;
+      experiments_to_values_[*f].second[base::WideToUTF8(sid)] = *v;
     }
   }
   return true;
@@ -102,7 +102,7 @@ bool ExperimentsManager::ReloadExperiments(const base::string16& sid) {
 
 // TODO(crbug.com/1143829): Reload experiments if they were fetched by ESA.
 void ExperimentsManager::ReloadAllExperiments() {
-  std::map<base::string16, UserTokenHandleInfo> sid_to_gaia_id;
+  std::map<std::wstring, UserTokenHandleInfo> sid_to_gaia_id;
   HRESULT hr = GetUserTokenHandles(&sid_to_gaia_id);
 
   if (FAILED(hr)) {

@@ -45,13 +45,13 @@ TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
   FakeUserPoliciesManager fake_user_policies_manager(true);
 
   // Create a few fake users associated to fake gaia ids.
-  std::vector<base::string16> sids;
+  std::vector<std::wstring> sids;
   const size_t num_users_needed = 3;
   for (size_t i = 0; i < num_users_needed; ++i) {
     CComBSTR sid_str;
-    base::string16 username = L"new-user-" + base::NumberToString16(i);
-    base::string16 gaia_id = L"gaia-id-" + base::NumberToString16(i);
-    base::string16 email = base::StringPrintf(L"user_%d@company.com", i);
+    std::wstring username = L"new-user-" + base::NumberToWString(i);
+    std::wstring gaia_id = L"gaia-id-" + base::NumberToWString(i);
+    std::wstring email = base::StringPrintf(L"user_%d@company.com", i);
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         username, L"password", L"Full Name", L"comment",
                         gaia_id, email, &sid_str));
@@ -60,8 +60,8 @@ TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
 
   // Create an existing user association in registry but with an invalid sid.
   base::win::RegKey key;
-  base::string16 key_name = base::StringPrintf(
-      L"%ls\\%ls", kGcpUsersRootKeyName, L"non-existent-user-sid");
+  std::wstring key_name = base::StringPrintf(L"%ls\\%ls", kGcpUsersRootKeyName,
+                                             L"non-existent-user-sid");
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_LOCAL_MACHINE, key_name.c_str(), KEY_WRITE));
   ASSERT_EQ(ERROR_SUCCESS,
@@ -239,10 +239,10 @@ TEST_P(GcpDevicePoliciesAllowedDomainsTest, OmahaPolicyTest) {
   bool has_omaha_domains_policy = std::get<0>(GetParam());
   bool has_registry_domains_policy = std::get<1>(GetParam()) != 0;
   bool use_old_domains_reg_key = std::get<1>(GetParam()) == 1;
-  base::string16 allowed_domains_str(std::get<2>(GetParam()));
+  std::wstring allowed_domains_str(std::get<2>(GetParam()));
   bool has_existing_user = std::get<3>(GetParam());
 
-  std::vector<base::string16> allowed_domains = base::SplitString(
+  std::vector<std::wstring> allowed_domains = base::SplitString(
       allowed_domains_str, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
 
@@ -268,7 +268,7 @@ TEST_P(GcpDevicePoliciesAllowedDomainsTest, OmahaPolicyTest) {
     ASSERT_EQ(S_OK,
               fake_os_user_manager()->CreateTestOSUser(
                   kDefaultUsername, L"password", L"Full Name", L"comment",
-                  base::UTF8ToUTF16(kDefaultGaiaId), base::string16(), &sid));
+                  base::UTF8ToWide(kDefaultGaiaId), std::wstring(), &sid));
     // Add a random user policy.
     user_policy.enable_dm_enrollment = false;
     user_policy.enable_gcpw_auto_update = false;
@@ -320,10 +320,10 @@ class GcpDevicePoliciesOmahaDomainsWinTest
 
 TEST_P(GcpDevicePoliciesOmahaDomainsWinTest, TestConflict) {
   bool use_old_domains_reg_key = std::get<0>(GetParam());
-  base::string16 domains_registry_str(std::get<1>(GetParam()));
-  base::string16 domains_from_omaha_str(std::get<2>(GetParam()));
+  std::wstring domains_registry_str(std::get<1>(GetParam()));
+  std::wstring domains_from_omaha_str(std::get<2>(GetParam()));
 
-  std::vector<base::string16> allowed_domains_omaha = base::SplitString(
+  std::vector<std::wstring> allowed_domains_omaha = base::SplitString(
       domains_from_omaha_str, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
 

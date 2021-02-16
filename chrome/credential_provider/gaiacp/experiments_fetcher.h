@@ -25,7 +25,7 @@ class ExperimentsFetcher {
   // Fetches the experiments for the user implied with the |access_token| from
   // the GCPW backend and saves it in file storage replacing any previously
   // fetched versions.
-  HRESULT FetchAndStoreExperiments(const base::string16& sid,
+  HRESULT FetchAndStoreExperiments(const std::wstring& sid,
                                    const std::string& access_token);
 
   // Fetches the experiments for the user-device |context| provided by the GCPW
@@ -48,7 +48,7 @@ class ExperimentsFetcher {
   // oauth token. Otherwise |request_dict| should be carrying the obfuscated
   // user id as well as DM token.
   HRESULT FetchAndStoreExperimentsInternal(
-      const base::string16& sid,
+      const std::wstring& sid,
       const std::string& access_token,
       std::unique_ptr<base::DictionaryValue> request_dict);
 };

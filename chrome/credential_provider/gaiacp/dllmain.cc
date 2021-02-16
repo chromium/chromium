@@ -237,7 +237,7 @@ void CALLBACK RunAsCrashpadHandlerW(HWND /*hwnd*/,
   DCHECK_EQ(cmd_line->GetSwitchValueASCII(switches::kProcessType),
             crash_reporter::switches::kCrashpadHandler);
 
-  base::string16 entrypoint_arg;
+  std::wstring entrypoint_arg;
   credential_provider::GetEntryPointArgumentForRunDll(
       CURRENT_MODULE(), credential_provider::kRunAsCrashpadHandlerEntryPoint,
       &entrypoint_arg);

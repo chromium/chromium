@@ -10,6 +10,8 @@
 #include "base/files/file.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/gaiacp/experiments_manager.h"
@@ -21,7 +23,8 @@ namespace credential_provider {
 namespace {
 
 // HTTP endpoint on the GCPW service to fetch experiments.
-const wchar_t kGcpwServiceFetchExperimentsPath[] = L"/v1/experiments";
+const base::char16 kGcpwServiceFetchExperimentsPath[] =
+    STRING16_LITERAL("/v1/experiments");
 
 // Default timeout when trying to make requests to the GCPW service.
 const base::TimeDelta kDefaultFetchExperimentsRequestTimeout =
@@ -88,12 +91,12 @@ class ExperimentsFetchTask : public extension::Task {
 // |dm_token| is empty, it isn't added into request. If user id isn't found for
 // the given |sid|, returns an empty dictionary.
 std::unique_ptr<base::DictionaryValue> GetExperimentsRequestDict(
-    const base::string16& sid,
-    const base::string16& device_resource_id,
-    const base::string16& dm_token) {
+    const std::wstring& sid,
+    const std::wstring& device_resource_id,
+    const std::wstring& dm_token) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
 
-  base::string16 user_id;
+  std::wstring user_id;
 
   HRESULT status = GetIdFromSid(sid.c_str(), &user_id);
   if (FAILED(status)) {
@@ -101,14 +104,15 @@ std::unique_ptr<base::DictionaryValue> GetExperimentsRequestDict(
     return nullptr;
   }
 
-  dict->SetString(kObfuscatedUserIdKey, user_id);
+  dict->SetString(kObfuscatedUserIdKey, base::WideToUTF8(user_id));
 
   if (!dm_token.empty()) {
-    dict->SetString(kDmTokenKey, dm_token);
+    dict->SetString(kDmTokenKey, base::WideToUTF8(dm_token));
   }
-  dict->SetString(kDeviceResourceIdKey, device_resource_id);
+  dict->SetString(kDeviceResourceIdKey, base::WideToUTF8(device_resource_id));
 
-  dict->SetString(kGcpwVersionKey, TEXT(CHROME_VERSION_STRING));
+  dict->SetString(kGcpwVersionKey,
+                  base::WideToUTF8(TEXT(CHROME_VERSION_STRING)));
 
   auto keys = std::make_unique<base::ListValue>();
   for (auto& experiment : ExperimentsManager::Get()->GetExperimentsList())
@@ -156,7 +160,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperiments(
 }
 
 HRESULT ExperimentsFetcher::FetchAndStoreExperiments(
-    const base::string16& sid,
+    const std::wstring& sid,
     const std::string& access_token) {
   HRESULT hr = FetchAndStoreExperimentsInternal(
       sid, access_token,
@@ -166,7 +170,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperiments(
 }
 
 HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
-    const base::string16& sid,
+    const std::wstring& sid,
     const std::string& access_token,
     std::unique_ptr<base::DictionaryValue> request_dict) {
   if (!request_dict) {
@@ -222,7 +226,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
   }
 
   base::Time fetch_time = base::Time::Now();
-  base::string16 fetch_time_millis = base::NumberToString16(
+  std::wstring fetch_time_millis = base::NumberToWString(
       fetch_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
 
   if (!ExperimentsManager::Get()->ReloadExperiments(sid)) {

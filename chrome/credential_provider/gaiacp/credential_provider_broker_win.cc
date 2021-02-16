@@ -35,7 +35,7 @@ using ScopedPreparsedData =
 
 // Opens the HID device handle with the input |device_path| and
 // returns a ScopedHandle.
-base::win::ScopedHandle OpenHidDevice(const base::string16& device_path) {
+base::win::ScopedHandle OpenHidDevice(const std::wstring& device_path) {
   base::win::ScopedHandle file(
       CreateFile(device_path.c_str(), GENERIC_WRITE | GENERIC_READ,
                  FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
@@ -67,7 +67,7 @@ base::Optional<uint16_t> GetUsagePage(HANDLE handle) {
 
 // Extracts the device path from |device_info_set| and |device_interface_data|
 // input fields.
-base::Optional<base::string16> GetDevicePath(
+base::Optional<std::wstring> GetDevicePath(
     HDEVINFO device_info_set,
     PSP_DEVICE_INTERFACE_DATA device_interface_data) {
   DWORD required_size = 0;
@@ -90,7 +90,7 @@ base::Optional<base::string16> GetDevicePath(
   }
   // Extract the device path and compare it with input device path
   // and ignore it if it doesn't match the input device path.
-  return base::string16(device_interface_detail_data->DevicePath);
+  return std::wstring(device_interface_detail_data->DevicePath);
 }
 }  // namespace
 
@@ -115,14 +115,14 @@ void CredentialProviderBrokerWin::OpenDevice(
              device_info_set.get(), nullptr, &GUID_DEVINTERFACE_HID,
              device_index, &device_interface_data);
          ++device_index) {
-      base::Optional<base::string16> device_path =
+      base::Optional<std::wstring> device_path =
           GetDevicePath(device_info_set.get(), &device_interface_data);
       if (!device_path)
         continue;
 
       DCHECK(base::IsStringASCII(device_path.value()));
-      if (!base::EqualsCaseInsensitiveASCII(device_path.value(),
-                                            input_device_path)) {
+      if (!base::EqualsCaseInsensitiveASCII(
+              device_path.value(), base::AsWStringPiece(input_device_path))) {
         continue;
       }
 

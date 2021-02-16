@@ -5,7 +5,8 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_EVENT_LOGS_UPLOAD_MANAGER_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_EVENT_LOGS_UPLOAD_MANAGER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/windows_types.h"
@@ -45,7 +46,7 @@ class EventLogsUploadManager {
     TimeStamp created_ts;
 
     // The data portion of the event log.
-    base::string16 data;
+    std::wstring data;
 
     // Severity level of the log entry.
     uint32_t severity_level;
@@ -53,7 +54,7 @@ class EventLogsUploadManager {
     EventLogEntry() : event_id(0), severity_level(0) {}
     EventLogEntry(uint64_t id,
                   const TimeStamp& ts,
-                  base::string16 data,
+                  std::wstring data,
                   uint32_t level)
         : event_id(id), created_ts(ts), data(data), severity_level(level) {}
 

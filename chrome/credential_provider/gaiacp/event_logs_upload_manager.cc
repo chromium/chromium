@@ -83,7 +83,7 @@ constexpr const wchar_t* kEventLogValuePaths[] = {
     L"Event/System/EventRecordID", L"Event/System/TimeCreated/@SystemTime"};
 
 // Mapping from the string values of log levels to their integral values.
-const std::unordered_map<base::string16, uint32_t>
+const std::unordered_map<std::wstring, uint32_t>
     kEventLogLevelStrToIntValueMap = {{L"Critical", 1},
                                       {L"Error", 2},
                                       {L"Warning", 3},
@@ -125,7 +125,7 @@ class EventLogReader {
       EventLogsUploadManager::EventLogEntry* log_entry);
   bool GetFormattedMessage(EVT_HANDLE event_handle,
                            EVT_FORMAT_MESSAGE_FLAGS message_flag,
-                           base::string16* message);
+                           std::wstring* message);
 
   EVT_HANDLE results_handle_;
   EVT_HANDLE publisher_metadata_;
@@ -136,10 +136,10 @@ class EventLogReader {
 };
 
 bool EventLogReader::Initialize(uint64_t first_event_id) {
-  base::string16 query(kEventLogQueryTemplateStr);
-  base::string16 pattern(L"{event_id}");
+  std::wstring query(kEventLogQueryTemplateStr);
+  std::wstring pattern(L"{event_id}");
   query.replace(query.find(pattern), pattern.size(),
-                base::NumberToString16(first_event_id));
+                base::NumberToWString(first_event_id));
 
   // If in an initialized state, close and re-initialize.
   if (results_handle_) {
@@ -305,7 +305,7 @@ bool EventLogReader::ReadEventLogEntryFromEvent(
     return false;
   }
 
-  base::string16 level_str;
+  std::wstring level_str;
   if (!GetFormattedMessage(event_handle, EvtFormatMessageLevel, &level_str))
     return false;
 
@@ -322,7 +322,7 @@ bool EventLogReader::ReadEventLogEntryFromEvent(
 // Read the requested formatted message from the event handle.
 bool EventLogReader::GetFormattedMessage(EVT_HANDLE event_handle,
                                          EVT_FORMAT_MESSAGE_FLAGS message_flag,
-                                         base::string16* message) {
+                                         std::wstring* message) {
   DCHECK(message);
 
   DWORD buffer_used = 0;
@@ -475,8 +475,8 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
     std::unique_ptr<base::Value> log_entries_value_list) {
   // The GCPW service uses serial number and machine GUID for identifying
   // the device entry.
-  base::string16 serial_number = GetSerialNumber();
-  base::string16 machine_guid;
+  std::wstring serial_number = GetSerialNumber();
+  std::wstring machine_guid;
   HRESULT hr = GetMachineGuid(&machine_guid);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "Could not get Machine GUID. Error:" << putHR(hr);
@@ -487,9 +487,9 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
 
   base::Value request_dict(base::Value::Type::DICTIONARY);
   request_dict.SetStringKey(kRequestSerialNumberParameterName,
-                            base::UTF16ToUTF8(serial_number));
+                            base::WideToUTF8(serial_number));
   request_dict.SetStringKey(kRequestMachineGuidParameterName,
-                            base::UTF16ToUTF8(machine_guid));
+                            base::WideToUTF8(machine_guid));
   request_dict.SetIntKey(kRequestChunkIdParameterName, chunk_id);
   base::Value log_entries =
       base::Value::FromUniquePtrValue(std::move(log_entries_value_list));
@@ -521,7 +521,7 @@ void EventLogsUploadManager::EventLogEntry::ToValue(base::Value& dict) const {
                       created_ts.seconds);
   timestamp.SetIntKey(kEventLogTimeStampNanosParameterName, created_ts.nanos);
 
-  dict.SetStringKey(kEventLogDataParameterName, base::UTF16ToUTF8(data));
+  dict.SetStringKey(kEventLogDataParameterName, base::WideToUTF8(data));
   dict.SetIntKey(kEventLogEventIdParameterName, event_id);
   dict.SetIntKey(kEventLogSeverityLevelParameterName, severity_level);
   dict.SetKey(kEventLogTimeStampParameterName, std::move(timestamp));
