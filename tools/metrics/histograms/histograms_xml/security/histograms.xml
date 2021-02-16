@@ -612,7 +612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Security.SiteEngagement" units="units"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>

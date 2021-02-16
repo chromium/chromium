@@ -105,7 +105,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
@@ -862,7 +862,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.WebSocket.SendType" enum="WebSocketSendType"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>yhirano@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>

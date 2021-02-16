@@ -709,7 +709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.ResourceBundleResult"
-    enum="SBFileTypeUpdateResult" expires_after="2021-06-13">
+    enum="SBFileTypeUpdateResult" expires_after="2021-08-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -722,7 +722,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.ResourceBundleVersion"
-    units="FileTypePolicies Version" expires_after="2021-06-13">
+    units="FileTypePolicies Version" expires_after="2021-08-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -919,7 +919,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanEnabled"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1166,7 +1166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.ThreatInfoSize" units="verdicts"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

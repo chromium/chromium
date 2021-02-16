@@ -51,7 +51,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

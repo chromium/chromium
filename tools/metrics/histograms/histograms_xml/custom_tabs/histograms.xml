@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
-    units="ms" expires_after="M92">
+    units="ms" expires_after="2021-08-15">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>

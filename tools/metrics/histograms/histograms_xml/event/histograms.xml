@@ -75,7 +75,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.BrowserVerifiedUserActivation" enum="BooleanSuccess"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>liviutinta@chromium.org</owner>
   <owner>mustaq@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -411,7 +411,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2021-06-16">
+    units="microseconds" expires_after="2021-08-15">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1274,7 +1274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.TimeToHandled2"
-    units="microseconds" expires_after="2021-06-13">
+    units="microseconds" expires_after="2021-08-15">
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a touch event and the generated
@@ -1487,7 +1487,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
-    expires_after="2021-06-15">
+    expires_after="2021-08-15">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1500,7 +1500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Touch.TimedOutOnMobileSite" enum="BooleanTimedOut"
-    expires_after="2021-06-15">
+    expires_after="2021-08-15">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

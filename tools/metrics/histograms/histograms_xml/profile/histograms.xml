@@ -485,7 +485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.SessionDuration.PerProfile" enum="Profile"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>msarda@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
   <summary>

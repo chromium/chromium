@@ -365,7 +365,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -454,7 +454,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.SuggestedFiles.LaunchIndex" units="index"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -581,7 +581,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
-    enum="ZeroStateResultType" expires_after="2021-06-13">
+    enum="ZeroStateResultType" expires_after="2021-08-15">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -727,7 +727,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListAppLaunchedV2" enum="AppListLaunchedFrom"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
 <!-- Name completed by histogram_suffixes name="AppListState" -->
 
   <owner>mmourgos@chromium.org</owner>
@@ -1086,7 +1086,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchResultOpenDisplayType"
-    enum="AppListSearchResultDisplayType" expires_after="2021-06-13">
+    enum="AppListSearchResultDisplayType" expires_after="2021-08-15">
   <owner>calamity@chromium.org</owner>
   <owner>src/ash/app_list/OWNERS</owner>
   <summary>
@@ -1701,7 +1701,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"
-    units="ms" expires_after="2021-06-13">
+    units="ms" expires_after="2021-08-15">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 

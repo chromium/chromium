@@ -637,7 +637,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.PageLoadCount.Counts"
-    enum="IOSPageLoadCountNavigationType" expires_after="2021-06-13">
+    enum="IOSPageLoadCountNavigationType" expires_after="2021-08-15">
   <owner>danyao@chromium.org</owner>
   <summary>The number of navigation started events by navigation type.</summary>
 </histogram>

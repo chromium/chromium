@@ -481,7 +481,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataReductionProxy.UserViewedSavingsDifferenceWithBreakdown"
-    units="%" expires_after="2021-05-16">
+    units="%" expires_after="2021-08-15">
   <owner>rajendrant@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>
@@ -506,7 +506,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataReductionProxy.UserViewedUsageDifferenceWithBreakdown"
-    units="%" expires_after="2021-05-16">
+    units="%" expires_after="2021-08-15">
   <owner>rajendrant@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>

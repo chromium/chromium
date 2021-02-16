@@ -1304,7 +1304,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.DecoderLifetimeProgression"
-    enum="D3D11LifetimeProgression" expires_after="2021-06-13">
+    enum="D3D11LifetimeProgression" expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1315,7 +1315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.H264Status" enum="MediaStatusCode"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1325,7 +1325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.NotifyErrorStatus" enum="MediaStatusCode"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1337,7 +1337,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.VP9Status" enum="MediaStatusCode"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1347,7 +1347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.WasVideoSupported"
-    enum="D3D11VideoNotSupportedReason" expires_after="2021-06-13">
+    enum="D3D11VideoNotSupportedReason" expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
@@ -1436,7 +1436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
-    enum="DXVALifetimeProgression" expires_after="2021-06-13">
+    enum="DXVALifetimeProgression" expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1458,7 +1458,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.DXVAVDA.UseD3D11" enum="DXVADXVersion"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>

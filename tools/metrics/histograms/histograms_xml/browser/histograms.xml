@@ -408,7 +408,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
-    units="microseconds" expires_after="2021-06-13">
+    units="microseconds" expires_after="2021-08-15">
   <owner>sadrul@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -690,7 +690,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.AlternativeBrowser" enum="BrowserType"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -735,7 +735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.Decision" enum="BooleanBrowserSwitch"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -747,7 +747,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.DecisionTime" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -799,7 +799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserSwitcher.IeemSitelistSize" units="rules"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

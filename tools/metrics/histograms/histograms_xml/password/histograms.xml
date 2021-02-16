@@ -704,7 +704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="M92">
+    enum="PasswordCheckResolutionAction" expires_after="2021-08-15">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -724,7 +724,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
-    enum="PasswordCheckResolutionAction" expires_after="M92">
+    enum="PasswordCheckResolutionAction" expires_after="2021-08-15">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2237,7 +2237,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.UIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2021-06-13">
+    enum="PasswordManagerUIDismissalReason" expires_after="2021-08-15">
   <owner>vasilii@chromium.org</owner>
   <summary>
     Why was the password manager's UI (bubble or infobar) closed? Save and
@@ -2410,7 +2410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.ModalWarningDialogAction"
-    enum="PasswordProtectionWarningAction" expires_after="2021-06-13">
+    enum="PasswordProtectionWarningAction" expires_after="2021-08-15">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2432,7 +2432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.PageInfoAction"
-    enum="PasswordProtectionWarningAction" expires_after="2021-04-11">
+    enum="PasswordProtectionWarningAction" expires_after="2021-08-15">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

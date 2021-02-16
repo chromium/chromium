@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.BetterOnboarding.Shown"
-    enum="AssistantBetterOnboardingMode" expires_after="2021-06-13">
+    enum="AssistantBetterOnboardingMode" expires_after="2021-08-15">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -72,7 +72,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>

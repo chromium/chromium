@@ -310,7 +310,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.UserType" enum="LoginUserType"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>cmasone@chromium.org</owner>
   <summary>
     Chrome OS histogram that keeps track of the way a user logs in and whether

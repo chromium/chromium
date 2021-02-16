@@ -1193,7 +1193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2523,7 +2523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The number of platform apps loaded at profile open.</summary>
 </histogram>
 
-<histogram name="Extensions.LoadTheme" units="units" expires_after="2021-06-13">
+<histogram name="Extensions.LoadTheme" units="units" expires_after="2021-08-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>The number of themes loaded at profile open.</summary>

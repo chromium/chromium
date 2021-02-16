@@ -1004,7 +1004,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2021-06-16">
+    expires_after="2021-08-15">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

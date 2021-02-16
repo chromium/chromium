@@ -110,13 +110,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2021-06-13">
+<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2021-08-15">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>The time elapsed for booting up the ARC instance.</summary>
 </histogram>
 
-<histogram name="Arc.AppCount" units="units" expires_after="2021-06-13">
+<histogram name="Arc.AppCount" units="units" expires_after="2021-08-15">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>
@@ -432,7 +432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>maajid@google.com</owner>
   <owner>shaochuan@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -469,7 +469,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Total" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>maajid@google.com</owner>
   <owner>shaochuan@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -674,7 +674,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Arc OptIn action taken by user.</summary>
@@ -1053,7 +1053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Session.StopReason" enum="ArcStopReason"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>shaochuan@google.com</owner>
@@ -1187,7 +1187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.UserInteraction" enum="ArcUserInteraction"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>jhorwich@chromium.org</owner>
   <owner>elijahtaylor@chromium.org</owner>
   <owner>shihuis@google.com</owner>

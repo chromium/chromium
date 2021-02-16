@@ -74,7 +74,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Enterprise.AutoEnrollmentBucketDownloadTime"
-    units="ms" expires_after="2021-05-02">
+    units="ms" expires_after="2021-08-15">
 <!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
 
   <owner>pmarko@chromium.org</owner>
@@ -151,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Enterprise.AutoEnrollmentRequestNetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2021-05-02">
+    enum="NetErrorCodes" expires_after="2021-08-15">
 <!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
 
   <owner>pmarko@chromium.org</owner>
@@ -356,7 +356,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.DeviceLocalAccountPolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2021-06-13">
+    enum="EnterprisePolicyInvalidations" expires_after="2021-08-15">
   <owner>asumaneev@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -543,7 +543,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.Enrollment" enum="EnterpriseEnrollmentType"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

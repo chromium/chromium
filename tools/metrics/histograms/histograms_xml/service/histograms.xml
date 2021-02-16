@@ -642,7 +642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.MainFramePageLoad" enum="ServiceWorkerSite"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

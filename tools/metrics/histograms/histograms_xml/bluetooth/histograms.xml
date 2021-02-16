@@ -674,7 +674,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.UnionOfServices.Services"
-    enum="GATTServiceHash" expires_after="2021-06-13">
+    enum="GATTServiceHash" expires_after="2021-08-15">
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>

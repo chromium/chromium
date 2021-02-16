@@ -57,7 +57,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerAction"
-    enum="ArcIntentHandlerAction" expires_after="2021-06-13">
+    enum="ArcIntentHandlerAction" expires_after="2021-08-15">
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -211,7 +211,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CertProvisioning.CsrSignTime" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-15">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -734,7 +734,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Provider" enum="ChromeOSSamlProvider"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>mslus@chromium.org</owner>
   <owner>mohammedabdon@chromium.org</owner>
   <summary>Records SAML provider when SAML login flow is used.</summary>
@@ -1223,7 +1223,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.Interaction"
-    enum="CrosSystemTrayInteraction" expires_after="2021-05-10">
+    enum="CrosSystemTrayInteraction" expires_after="2021-08-15">
   <owner>tengs@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1330,7 +1330,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.USB.DeviceAttached"
-    enum="ChromeOSUsbEventTiming" expires_after="2021-06-13">
+    enum="ChromeOSUsbEventTiming" expires_after="2021-08-15">
   <owner>allenwebb@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>

@@ -449,7 +449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.KeystoreDecryptionFailed"
-    enum="SyncKeystoreDecryptionFailure" expires_after="2021-06-01">
+    enum="SyncKeystoreDecryptionFailure" expires_after="2021-08-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -988,7 +988,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.Startup.DeferredInitTrigger"
-    enum="SyncDeferredInitTrigger" expires_after="2021-06-13">
+    enum="SyncDeferredInitTrigger" expires_after="2021-08-15">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>The type of event that triggered sync initialization.</summary>
@@ -1045,7 +1045,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.Startup.TypeTriggeringInit" enum="SyncModelTypes"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>Data type that first requests sync initialization.</summary>
