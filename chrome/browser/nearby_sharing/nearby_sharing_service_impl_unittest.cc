@@ -393,8 +393,7 @@ class NearbySharingServiceImplTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
-        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
-                                NearbyProcessStoppedCallback) {
+        .WillRepeatedly([&](base::OnceClosure) {
           auto mock_reference_ptr =
               std::make_unique<chromeos::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();

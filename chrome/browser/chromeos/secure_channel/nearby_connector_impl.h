@@ -80,9 +80,7 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   void ClearActiveAndPendingConnections();
   void ProcessQueuedConnectionRequests();
 
-  void OnNearbyProcessStopped(
-      nearby::NearbyProcessManager::NearbyProcessShutdownReason
-          shutdown_reason);
+  void OnNearbyProcessStopped();
   void OnConnected(const base::UnguessableToken& id,
                    mojo::PendingRemote<mojom::NearbyMessageSender>
                        message_sender_pending_remote);

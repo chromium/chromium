@@ -455,8 +455,7 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
           endpoint_id));
 }
 
-void NearbyConnectionsManagerImpl::OnNearbyProcessStopped(
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
+void NearbyConnectionsManagerImpl::OnNearbyProcessStopped() {
   NS_LOG(VERBOSE) << __func__;
   Reset();
 }

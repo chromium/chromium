@@ -98,7 +98,7 @@ NearbyProcessManagerImpl::~NearbyProcessManagerImpl() = default;
 
 std::unique_ptr<NearbyProcessManager::NearbyProcessReference>
 NearbyProcessManagerImpl::GetNearbyProcessReference(
-    NearbyProcessStoppedCallback on_process_stopped_callback) {
+    base::OnceClosure on_process_stopped_callback) {
   if (shut_down_)
     return nullptr;
 
@@ -132,11 +132,8 @@ void NearbyProcessManagerImpl::Shutdown() {
 
   shut_down_ = true;
 
-  NearbyProcessShutdownReason shutdown_reason =
-      NearbyProcessShutdownReason::kNormal;
-
-  ShutDownProcess(shutdown_reason);
-  NotifyProcessStopped(shutdown_reason);
+  ShutDownProcess(UtilityProcessShutdownReason::kNormal);
+  NotifyProcessStopped();
 }
 
 bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
@@ -187,21 +184,15 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
 void NearbyProcessManagerImpl::OnSharingProcessCrash() {
   NS_LOG(ERROR) << "The utility process has crashed.";
 
-  NearbyProcessShutdownReason shutdown_reason =
-      NearbyProcessShutdownReason::kCrash;
-
-  ShutDownProcess(shutdown_reason);
-  NotifyProcessStopped(shutdown_reason);
+  ShutDownProcess(UtilityProcessShutdownReason::kCrash);
+  NotifyProcessStopped();
 }
 
 void NearbyProcessManagerImpl::OnMojoPipeDisconnect() {
   NS_LOG(ERROR) << "A utility process Mojo pipe has disconnected.";
 
-  NearbyProcessShutdownReason shutdown_reason =
-      NearbyProcessShutdownReason::kMojoPipeDisconnection;
-
-  ShutDownProcess(shutdown_reason);
-  NotifyProcessStopped(shutdown_reason);
+  ShutDownProcess(UtilityProcessShutdownReason::kMojoPipeDisconnection);
+  NotifyProcessStopped();
 }
 
 void NearbyProcessManagerImpl::OnReferenceDeleted(
@@ -230,11 +221,11 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
       FROM_HERE, kProcessCleanupTimeout,
       base::BindOnce(&NearbyProcessManagerImpl::ShutDownProcess,
                      weak_ptr_factory_.GetWeakPtr(),
-                     NearbyProcessShutdownReason::kNormal));
+                     UtilityProcessShutdownReason::kNormal));
 }
 
 void NearbyProcessManagerImpl::ShutDownProcess(
-    NearbyProcessShutdownReason shutdown_reason) {
+    UtilityProcessShutdownReason shutdown_reason) {
   if (!sharing_ && !connections_ && !decoder_)
     return;
 
@@ -265,8 +256,7 @@ void NearbyProcessManagerImpl::ShutDownProcess(
   decoder_.reset();
 }
 
-void NearbyProcessManagerImpl::NotifyProcessStopped(
-    NearbyProcessShutdownReason shutdown_reason) {
+void NearbyProcessManagerImpl::NotifyProcessStopped() {
   // We are notifying clients that references are no longer active, so
   // invalidate WeakPtrs so that OnReferenceDeleted() is not invoked when
   // clients respond to the callback by releasing their references.
@@ -279,7 +269,7 @@ void NearbyProcessManagerImpl::NotifyProcessStopped(
 
   // Invoke the "process stopped" callback for each client.
   for (auto& it : old_map)
-    std::move(it.second).Run(shutdown_reason);
+    std::move(it.second).Run();
 }
 
 }  // namespace nearby

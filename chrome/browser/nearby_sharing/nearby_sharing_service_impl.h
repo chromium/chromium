@@ -302,9 +302,7 @@ class NearbySharingServiceImpl
   void OnIncomingMutualAcceptanceTimeout(const ShareTarget& share_target);
   void OnOutgoingMutualAcceptanceTimeout(const ShareTarget& share_target);
 
-  void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
-          shutdown_reason);
+  void OnNearbyProcessStopped();
   sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
 
   base::Optional<ShareTarget> CreateShareTarget(

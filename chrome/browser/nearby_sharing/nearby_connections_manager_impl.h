@@ -119,9 +119,7 @@ class NearbyConnectionsManagerImpl
   void OnConnectionTimedOut(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
-  void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
-          shutdown_reason);
+  void OnNearbyProcessStopped();
   location::nearby::connections::mojom::NearbyConnections*
   GetNearbyConnections();
   void Reset();

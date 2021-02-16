@@ -28,19 +28,6 @@ class NearbyProcessManager : public KeyedService {
     GetNearbySharingDecoder() const = 0;
   };
 
-  // These values are used for metrics. Entries should not be renumbered and
-  // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
-  enum class NearbyProcessShutdownReason {
-    kNormal = 0,
-    kCrash = 1,
-    kMojoPipeDisconnection = 2,
-    kMaxValue = kMojoPipeDisconnection
-  };
-
-  using NearbyProcessStoppedCallback =
-      base::OnceCallback<void(NearbyProcessShutdownReason)>;
-
   ~NearbyProcessManager() override = default;
 
   // Returns a reference which allows clients invoke functions implemented by
@@ -61,7 +48,7 @@ class NearbyProcessManager : public KeyedService {
   // Note: This function returns null if the user session is initializing or
   // shutting down.
   virtual std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
-      NearbyProcessStoppedCallback on_process_stopped_callback) = 0;
+      base::OnceClosure on_process_stopped_callback) = 0;
 };
 
 }  // namespace nearby
