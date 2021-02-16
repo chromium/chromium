@@ -280,10 +280,8 @@ void PageTimingMetricsSender::Update(
     return;
   }
 
-  // We want to force sending the metrics immediately when FCP is reached
-  // instead of using a timer. SendLatest() will force sending now since we
-  // already called EnsureSendTimer().
-  bool force_send_metrics =
+  // We want to force sending the metrics quickly when FCP is reached.
+  bool send_urgently =
       (!last_timing_->paint_timing ||
        !last_timing_->paint_timing->first_contentful_paint.has_value()) &&
       timing->paint_timing &&
@@ -291,11 +289,7 @@ void PageTimingMetricsSender::Update(
 
   last_timing_ = std::move(timing);
   metadata_recorder_.UpdateMetadata(monotonic_timing);
-  EnsureSendTimer();
-
-  if (force_send_metrics) {
-    SendLatest();
-  }
+  EnsureSendTimer(send_urgently);
 }
 
 void PageTimingMetricsSender::SendLatest() {
@@ -311,14 +305,26 @@ void PageTimingMetricsSender::UpdateCpuTiming(base::TimeDelta task_time) {
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::EnsureSendTimer() {
-  if (timer_->IsRunning())
+void PageTimingMetricsSender::EnsureSendTimer(bool urgent) {
+  if (urgent)
+    timer_->Stop();
+  else if (timer_->IsRunning())
     return;
 
-  // Send the first IPC eagerly to make sure the receiving side knows we're
-  // sending metrics as soon as possible.
-  int delay_ms =
-      have_sent_ipc_ ? buffer_timer_delay_ms_ : kInitialTimerDelayMillis;
+  int delay_ms;
+  if (urgent) {
+    // Send as soon as possible, but not synchronously, so that all pending
+    // presentation callbacks for the current frame can run first.
+    delay_ms = 0;
+  } else if (have_sent_ipc_) {
+    // This is the typical case.
+    delay_ms = buffer_timer_delay_ms_;
+  } else {
+    // Send the first IPC eagerly to make sure the receiving side knows we're
+    // sending metrics as soon as possible.
+    delay_ms = kInitialTimerDelayMillis;
+  }
+
   timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay_ms),
                 base::BindOnce(&PageTimingMetricsSender::SendNow,
                                base::Unretained(this)));

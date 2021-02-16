@@ -98,7 +98,7 @@ class PageTimingMetricsSender {
   base::OneShotTimer* timer() const { return timer_.get(); }
 
  private:
-  void EnsureSendTimer();
+  void EnsureSendTimer(bool urgent = false);
   void SendNow();
   void ClearNewFeatures();
 

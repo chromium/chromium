@@ -453,11 +453,13 @@ TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {
   InitPageLoadTimingForTest(&timing);
   timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
   validator_.ExpectPageLoadTiming(timing);
-  // Updating when |timing| has FCP will cause the metrics to be sent right
-  // away.
+
+  // Updating when |timing| has FCP will cause the metrics to be sent urgently.
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
-  EXPECT_FALSE(metrics_sender_->mock_timer()->IsRunning());
+  EXPECT_EQ(metrics_sender_->mock_timer()->GetCurrentDelay(),
+            base::TimeDelta::FromMilliseconds(0));
+  metrics_sender_->mock_timer()->Fire();
 }
 
 }  // namespace page_load_metrics
