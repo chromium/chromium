@@ -752,6 +752,8 @@ void HTMLImageElement::SelectSourceURL(
     ImageLoader::UpdateFromElementBehavior behavior) {
   if (!GetDocument().IsActive())
     return;
+  // TODO(crbug.com/1175295): Remove this CHECK once the investigation is done.
+  CHECK(GetDocument().GetExecutionContext());
 
   ImageCandidate candidate = FindBestFitImageFromPictureParent();
   if (candidate.IsEmpty()) {

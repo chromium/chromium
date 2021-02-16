@@ -629,6 +629,10 @@ void ImageLoader::DoUpdateFromElement(
 void ImageLoader::UpdateFromElement(
     UpdateFromElementBehavior update_behavior,
     network::mojom::ReferrerPolicy referrer_policy) {
+  if (!element_->GetDocument().IsActive()) {
+    return;
+  }
+
   AtomicString image_source_url = element_->ImageSourceURL();
   suppress_error_events_ = (update_behavior == kUpdateSizeChanged);
   last_base_element_url_ =
@@ -663,6 +667,9 @@ void ImageLoader::UpdateFromElement(
     // a memory leak in case it's already created.
     delay_until_do_update_from_element_ = nullptr;
   }
+
+  // TODO(crbug.com/1175295): Remove this CHECK once the investigation is done.
+  CHECK(element_->GetDocument().GetExecutionContext());
 
   if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url))) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
