@@ -102,14 +102,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   static StyleSVGResource* InitialMarkerEndResource() { return nullptr; }
   static EMaskType InitialMaskType() { return MT_LUMINANCE; }
   static EPaintOrder InitialPaintOrder() { return kPaintOrderNormal; }
-  static StylePath* InitialD() { return nullptr; }
-  static Length InitialCx() { return Length::Fixed(); }
-  static Length InitialCy() { return Length::Fixed(); }
-  static Length InitialX() { return Length::Fixed(); }
-  static Length InitialY() { return Length::Fixed(); }
-  static Length InitialR() { return Length::Fixed(); }
-  static Length InitialRx() { return Length::Auto(); }
-  static Length InitialRy() { return Length::Auto(); }
 
   // SVG CSS Property setters
   void SetAlignmentBaseline(EAlignmentBaseline val) {
@@ -147,38 +139,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   void SetMaskType(EMaskType val) { svg_noninherited_flags.f.mask_type = val; }
   void SetPaintOrder(EPaintOrder val) {
     svg_inherited_flags.paint_order = (int)val;
-  }
-  void SetD(scoped_refptr<StylePath> d) {
-    if (!(geometry->d == d))
-      geometry.Access()->d = std::move(d);
-  }
-  void SetCx(const Length& obj) {
-    if (!(geometry->cx == obj))
-      geometry.Access()->cx = obj;
-  }
-  void SetCy(const Length& obj) {
-    if (!(geometry->cy == obj))
-      geometry.Access()->cy = obj;
-  }
-  void SetX(const Length& obj) {
-    if (!(geometry->x == obj))
-      geometry.Access()->x = obj;
-  }
-  void SetY(const Length& obj) {
-    if (!(geometry->y == obj))
-      geometry.Access()->y = obj;
-  }
-  void SetR(const Length& obj) {
-    if (!(geometry->r == obj))
-      geometry.Access()->r = obj;
-  }
-  void SetRx(const Length& obj) {
-    if (!(geometry->rx == obj))
-      geometry.Access()->rx = obj;
-  }
-  void SetRy(const Length& obj) {
-    if (!(geometry->ry == obj))
-      geometry.Access()->ry = obj;
   }
   void SetFillOpacity(float obj) {
     if (!(fill->opacity == obj))
@@ -323,14 +283,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   const Length& BaselineShiftValue() const {
     return misc->baseline_shift_value;
   }
-  StylePath* D() const { return geometry->d.get(); }
-  const Length& Cx() const { return geometry->cx; }
-  const Length& Cy() const { return geometry->cy; }
-  const Length& X() const { return geometry->x; }
-  const Length& Y() const { return geometry->y; }
-  const Length& R() const { return geometry->r; }
-  const Length& Rx() const { return geometry->rx; }
-  const Length& Ry() const { return geometry->ry; }
   StyleSVGResource* MaskerResource() const { return resources->masker.get(); }
   StyleSVGResource* MarkerStartResource() const {
     return inherited_resources->marker_start.get();
@@ -421,7 +373,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   // non-inherited attributes
   DataRef<StyleStopData> stops;
   DataRef<StyleMiscData> misc;
-  DataRef<StyleGeometryData> geometry;
   DataRef<StyleResourceData> resources;
 
  private:

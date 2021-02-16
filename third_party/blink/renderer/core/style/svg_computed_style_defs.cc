@@ -139,35 +139,4 @@ bool StyleInheritedResourceData::operator==(
          DataEquivalent(marker_end, other.marker_end);
 }
 
-StyleGeometryData::StyleGeometryData()
-    : d(SVGComputedStyle::InitialD()),
-      cx(SVGComputedStyle::InitialCx()),
-      cy(SVGComputedStyle::InitialCy()),
-      x(SVGComputedStyle::InitialX()),
-      y(SVGComputedStyle::InitialY()),
-      r(SVGComputedStyle::InitialR()),
-      rx(SVGComputedStyle::InitialRx()),
-      ry(SVGComputedStyle::InitialRy()) {}
-
-inline StyleGeometryData::StyleGeometryData(const StyleGeometryData& other)
-    : RefCounted<StyleGeometryData>(),
-      d(other.d),
-      cx(other.cx),
-      cy(other.cy),
-      x(other.x),
-      y(other.y),
-      r(other.r),
-      rx(other.rx),
-      ry(other.ry) {}
-
-scoped_refptr<StyleGeometryData> StyleGeometryData::Copy() const {
-  return base::AdoptRef(new StyleGeometryData(*this));
-}
-
-bool StyleGeometryData::operator==(const StyleGeometryData& other) const {
-  return x == other.x && y == other.y && r == other.r && rx == other.rx &&
-         ry == other.ry && cx == other.cx && cy == other.cy &&
-         DataEquivalent(d, other.d);
-}
-
 }  // namespace blink

@@ -31,7 +31,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/core/style/style_path.h"
 #include "third_party/blink/renderer/core/style/svg_dash_array.h"
 #include "third_party/blink/renderer/core/style/svg_paint.h"
 #include "third_party/blink/renderer/core/style/unzoomed_length.h"
@@ -273,33 +272,6 @@ class StyleInheritedResourceData
  private:
   StyleInheritedResourceData();
   StyleInheritedResourceData(const StyleInheritedResourceData&);
-};
-
-// Geometry properties
-class StyleGeometryData : public RefCounted<StyleGeometryData> {
-  USING_FAST_MALLOC(StyleGeometryData);
-
- public:
-  static scoped_refptr<StyleGeometryData> Create() {
-    return base::AdoptRef(new StyleGeometryData);
-  }
-  scoped_refptr<StyleGeometryData> Copy() const;
-  bool operator==(const StyleGeometryData&) const;
-  bool operator!=(const StyleGeometryData& other) const {
-    return !(*this == other);
-  }
-  scoped_refptr<StylePath> d;
-  Length cx;
-  Length cy;
-  Length x;
-  Length y;
-  Length r;
-  Length rx;
-  Length ry;
-
- private:
-  StyleGeometryData();
-  StyleGeometryData(const StyleGeometryData&);
 };
 
 }  // namespace blink

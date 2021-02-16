@@ -102,7 +102,8 @@
                 "grid-row-start", "grid-row-end", "grid-column-start", "grid-column-end",
                 "column-gap", "column-width", "column-rule-style",
                 "column-rule-width", "column-rule-color", "-internal-visited-column-rule-color",
-                "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",],
+                "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
+                "cx", "cy", "d", "rx", "ry", "x", "y", "r",],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",

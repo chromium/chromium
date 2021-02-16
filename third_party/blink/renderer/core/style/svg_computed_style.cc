@@ -41,7 +41,6 @@ SVGComputedStyle::SVGComputedStyle() {
   stops = initial_style->stops;
   misc = initial_style->misc;
   inherited_resources = initial_style->inherited_resources;
-  geometry = initial_style->geometry;
   resources = initial_style->resources;
 
   SetBitDefaults();
@@ -55,7 +54,6 @@ SVGComputedStyle::SVGComputedStyle(CreateInitialType) {
   stops.Init();
   misc.Init();
   inherited_resources.Init();
-  geometry.Init();
   resources.Init();
 }
 
@@ -66,7 +64,6 @@ SVGComputedStyle::SVGComputedStyle(const SVGComputedStyle& other)
   stops = other.stops;
   misc = other.misc;
   inherited_resources = other.inherited_resources;
-  geometry = other.geometry;
   resources = other.resources;
 
   svg_inherited_flags = other.svg_inherited_flags;
@@ -87,7 +84,7 @@ bool SVGComputedStyle::InheritedEqual(const SVGComputedStyle& other) const {
 
 bool SVGComputedStyle::NonInheritedEqual(const SVGComputedStyle& other) const {
   return stops == other.stops && misc == other.misc &&
-         geometry == other.geometry && resources == other.resources &&
+         resources == other.resources &&
          svg_noninherited_flags == other.svg_noninherited_flags;
 }
 
@@ -104,7 +101,6 @@ void SVGComputedStyle::CopyNonInheritedFromCached(
   svg_noninherited_flags = other.svg_noninherited_flags;
   stops = other.stops;
   misc = other.misc;
-  geometry = other.geometry;
   resources = other.resources;
 }
 
@@ -184,10 +180,6 @@ bool SVGComputedStyle::DiffNeedsLayoutAndPaintInvalidation(
         other.stroke->dash_array->data.IsEmpty())
       return true;
   }
-
-  // The geometry properties require a re-layout.
-  if (geometry.Get() != other.geometry.Get() && *geometry != *other.geometry)
-    return true;
 
   return false;
 }
