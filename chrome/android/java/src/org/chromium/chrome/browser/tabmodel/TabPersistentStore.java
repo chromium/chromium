@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -91,6 +92,41 @@ public class TabPersistentStore {
 
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
+
+    public void onNativeLibraryReady(TabContentManager tabContentManager) {
+        setTabContentManager(tabContentManager);
+
+        mTabModelSelector.addObserver(new EmptyTabModelSelectorObserver() {
+            @Override
+            public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                if (creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {
+                    addTabToSaveQueue(tab);
+                }
+            }
+
+            @Override
+            public void onTabHidden(Tab tab) {
+                addTabToSaveQueue(tab);
+            }
+        });
+
+        new TabModelSelectorTabObserver(mTabModelSelector) {
+            @Override
+            public void onNavigationEntriesDeleted(Tab tab) {
+                addTabToSaveQueue(tab);
+            }
+
+            @Override
+            public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                addTabToSaveQueue(tab);
+            }
+
+            @Override
+            public void onRootIdChanged(Tab tab, int newRootId) {
+                addTabToSaveQueue(tab);
+            }
+        };
+    }
 
     /**
      * Callback interface to use while reading the persisted TabModelSelector info from disk.

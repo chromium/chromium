@@ -297,6 +297,16 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
         }
     }
 
+    /**
+     * Notifies all the listeners that a tab has been hidden to switch to another.
+     * @param tab The tab that has been hidden.
+     */
+    protected void notifyTabHidden(Tab tab) {
+        for (TabModelSelectorObserver listener : mObservers) {
+            listener.onTabHidden(tab);
+        }
+    }
+
     protected TabCreatorManager getTabCreatorManager() {
         return mTabCreatorManager;
     }

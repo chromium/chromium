@@ -22,4 +22,7 @@ public class EmptyTabModelSelectorObserver implements TabModelSelectorObserver {
 
     @Override
     public void onTabStateInitialized() {}
+
+    @Override
+    public void onTabHidden(Tab tab) {}
 }

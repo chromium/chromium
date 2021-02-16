@@ -113,12 +113,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         }
     }
 
-    private void handleOnPageLoadStopped(Tab tab) {
-        if (tab != null && mTabSaver.get() != null) {
-            mTabSaver.get().addTabToSaveQueue(tab);
-        }
-    }
-
     /**
      * Should be called when the app starts showing a view with multiple tabs.
      */
@@ -156,9 +150,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             IncognitoTabModel incognitoModel) {
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
-        if (mTabSaver.get() != null) {
-            mTabSaver.get().setTabContentManager(mTabContentManager);
-        }
 
         addObserver(new EmptyTabModelSelectorObserver() {
             @Override
@@ -166,11 +157,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 // Only invalidate if the tab exists in the currently selected model.
                 if (TabModelUtils.getTabById(getCurrentModel(), tab.getId()) != null) {
                     mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrlString());
-                }
-
-                if (mTabSaver.get() != null
-                        && creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {
-                    mTabSaver.get().addTabToSaveQueue(tab);
                 }
             }
         });
@@ -182,11 +168,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 if (model == getCurrentModel()) {
                     mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrlString());
                 }
-            }
-
-            @Override
-            public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                handleOnPageLoadStopped(tab);
             }
 
             @Override
@@ -212,13 +193,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             }
 
             @Override
-            public void onNavigationEntriesDeleted(Tab tab) {
-                if (mTabSaver.get() != null) {
-                    mTabSaver.get().addTabToSaveQueue(tab);
-                }
-            }
-
-            @Override
             public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
                 if (window == null && !isReparentingInProgress()) {
                     getModel(tab.isIncognito()).removeTab(tab);
@@ -228,13 +202,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             @Override
             public void onCloseContents(Tab tab) {
                 closeTab(tab);
-            }
-
-            @Override
-            public void onRootIdChanged(Tab tab, int newRootId) {
-                if (mTabSaver.get() != null) {
-                    mTabSaver.get().addTabToSaveQueue(tab);
-                }
             }
         };
     }
@@ -308,9 +275,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                     cacheTabBitmap(mVisibleTab);
                 }
                 mVisibleTab.hide(TabHidingType.CHANGED_TABS);
-                if (mTabSaver.get() != null) {
-                    mTabSaver.get().addTabToSaveQueue(mVisibleTab);
-                }
+                notifyTabHidden(mVisibleTab);
             }
             mVisibleTab = null;
         }
@@ -355,10 +320,5 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     @Override
     public void notifyChanged() {
         super.notifyChanged();
-    }
-
-    @VisibleForTesting
-    public TabPersistentStore getTabPersistentStoreForTesting() {
-        return mTabSaver.get();
     }
 }

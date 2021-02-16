@@ -523,7 +523,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mLocaleManager = LocaleManager.getInstance();
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 
-            mTabModelSelectorImpl.onNativeLibraryReady(getTabContentManager());
+            mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
 
             mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelectorImpl) {
                 @Override

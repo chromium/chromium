@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -58,6 +59,11 @@ public abstract class TabModelOrchestrator {
         if (mTabModelSelector != null) {
             mTabModelSelector.destroy();
         }
+    }
+
+    public void onNativeLibraryReady(TabContentManager tabContentManager) {
+        mTabModelSelector.onNativeLibraryReady(tabContentManager);
+        mTabPersistentStore.onNativeLibraryReady(tabContentManager);
     }
 
     /**

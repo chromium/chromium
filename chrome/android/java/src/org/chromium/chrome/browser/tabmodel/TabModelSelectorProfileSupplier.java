@@ -46,6 +46,9 @@ public class TabModelSelectorProfileSupplier
     public void onNewTabCreated(Tab tab, int creationState) {}
 
     @Override
+    public void onTabHidden(Tab tab) {}
+
+    @Override
     public void onTabStateInitialized() {
         mIsTabStateInitialized = true;
         Profile profile = mSelector.getCurrentModel().getProfile();

@@ -360,7 +360,8 @@ public class TabModelMergingTest {
         TabModelSelectorImpl tabModelSelector =
                 (TabModelSelectorImpl) mActivity2.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tabModelSelector.getTabPersistentStoreForTesting().addObserver(mockObserver);
+            mActivity2.getTabModelOrchestratorSupplier().get().getTabPersistentStore().addObserver(
+                    mockObserver);
         });
 
         // Merge tabs into ChromeTabbedActivity2. Wait for the merge to finish, ensuring the

@@ -325,7 +325,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     public void initializeCompositor() {
         super.initializeCompositor();
-        getTabModelSelector().onNativeLibraryReady(getTabContentManager());
+        mTabFactory.getTabModelOrchestrator().onNativeLibraryReady(getTabContentManager());
     }
 
     @Override
