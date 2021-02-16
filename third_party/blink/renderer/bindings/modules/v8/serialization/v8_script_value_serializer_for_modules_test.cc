@@ -989,7 +989,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
   scoped_refptr<media::VideoFrame> media_frame =
       media::VideoFrame::CreateBlackFrame(kFrameSize);
 
-  // Pass a copy the reference to the video frame.
   auto* blink_frame = MakeGarbageCollected<VideoFrame>(
       media_frame, scope.GetExecutionContext());
 
@@ -1004,9 +1003,12 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
 
   EXPECT_FALSE(media_frame->HasOneRef());
 
-  // Closing either |blink_frame| or |new_frame| should remove all references
+  // Closing |blink_frame| and |new_frame| should remove all references
   // to |media_frame|.
   blink_frame->close();
+  EXPECT_FALSE(media_frame->HasOneRef());
+
+  new_frame->close();
   EXPECT_TRUE(media_frame->HasOneRef());
 }
 
