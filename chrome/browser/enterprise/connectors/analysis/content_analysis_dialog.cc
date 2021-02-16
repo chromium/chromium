@@ -289,7 +289,7 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     message_columns->AddPaddingColumn(0.0, kMessageAndIconRowLeadingPadding);
     message_columns->AddColumn(
         /*h_align=*/views::GridLayout::LEADING,
-        /*v_align=*/views::GridLayout::FILL,
+        /*v_align=*/views::GridLayout::LEADING,
         /*resize_percent=*/0.0,
         /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
         /*fixed_width=*/0,
