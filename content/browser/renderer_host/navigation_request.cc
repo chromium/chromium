@@ -726,6 +726,57 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
       common_params.initiator_origin.value_or(url::Origin()));
 }
 
+// Special chrome schemes cannot directly be categorized in public/private/local
+// address spaces using information from the network or the PolicyContainer. We
+// have to classify them manually. In its default state an unhandled scheme will
+// have an IPAddressSpace of kUnknown, which is equivalent to public.
+// This means a couple of things:
+// - They cannot embed anything private or local without being secure contexts
+//   and triggering a CORS preflight.
+// - Private Network Access does not prevent them being embedded by less private
+//   content.
+// - It pollutes metrics since kUnknown could also mean a missed edge case.
+// To address these issues we list here a number of schemes that should be
+// considered local.
+// TODO(titouan): It might be better to have these schemes (and in general
+// other schemes such as data: or blob:) handled directly by the URLLoaders.
+// Investigate on whether this is worth doing.
+network::mojom::IPAddressSpace IPAddressSpaceForSpecialScheme(const GURL& url) {
+  // This only handles schemes that are known to the content/ layer.
+  // List here: content/public/common/url_constants.cc.
+  const char* special_content_schemes[] = {
+      kChromeDevToolsScheme,
+      kChromeUIScheme,
+      kChromeUIUntrustedScheme,
+  };
+  // TODO(crbug.com/1167698): kGuestCheme and kExternalFileScheme look like
+  // strong candidates to be on this list. Verify if that makes sense. Also
+  // handle the chrome/ layer schemes.
+  for (auto* scheme : special_content_schemes) {
+    if (url.SchemeIs(scheme))
+      return network::mojom::IPAddressSpace::kLocal;
+  }
+  return network::mojom::IPAddressSpace::kUnknown;
+}
+
+network::mojom::IPAddressSpace CalculateIPAddressSpace(
+    const GURL& url,
+    network::mojom::URLResponseHead* response_head) {
+  // Determine the IPAddressSpace, based on the IP address and the response
+  // headers received.
+  network::mojom::IPAddressSpace computed_ip_address_space =
+      blink::CalculateClientAddressSpace(url, response_head);
+
+  // Some navigation aren't loaded from the network. An IPAddressSpace can still
+  // be attributed for some, whose scheme are known from the content/ layer. For
+  // instance chrome: or devtools:
+  if (computed_ip_address_space == network::mojom::IPAddressSpace::kUnknown) {
+    computed_ip_address_space = IPAddressSpaceForSpecialScheme(url);
+  }
+
+  return computed_ip_address_space;
+}
+
 }  // namespace
 
 // static
@@ -4687,11 +4738,12 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
 
+  network::mojom::IPAddressSpace computed_ip_address_space =
+      CalculateIPAddressSpace(common_params_->url, response_head_.get());
+
   // When we cannot compute the IPAddressSpace directly, the policy container
   // inheritance mechanisms should have provided us with the correct value
   // already. Do not overwrite it.
-  auto computed_ip_address_space = blink::CalculateClientAddressSpace(
-      common_params_->url, response_head_.get());
   if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown)
     policy_container_host_->SetIPAddressSpace(computed_ip_address_space);
 

@@ -679,8 +679,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
-  // TODO(crbug.com/1167698): This should be kLocal.
-  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 }
 
