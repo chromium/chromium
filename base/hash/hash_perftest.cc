@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,14 +21,26 @@
 namespace base {
 namespace {
 
-void Timing(const size_t len) {
+void Sha1Hash(void* data, size_t size) {
+  unsigned char digest[kSHA1Length];
+  memset(digest, 0, kSHA1Length);
+  SHA1HashBytes(reinterpret_cast<uint8_t*>(data), size, digest);
+}
+
+void FastHash(void* data, size_t size) {
+  base::Hash(reinterpret_cast<uint8_t*>(data), size);
+}
+
+void RunTest(const char* hash_name,
+             void (*hash)(void*, size_t),
+             const size_t len) {
   constexpr char kMetricRuntime[] = "runtime";
   constexpr char kMetricThroughput[] = "throughput";
   // Histograms automatically calculate mean, min, max, and standard deviation,
   // but not median, so have a separate metric for a manually calculated median.
   constexpr char kMetricMedianThroughput[] = "median_throughput";
 
-  perf_test::PerfResultReporter reporter("SHA1.",
+  perf_test::PerfResultReporter reporter(hash_name,
                                          NumberToString(len) + "_bytes");
   reporter.RegisterImportantMetric(kMetricRuntime, "us");
   reporter.RegisterImportantMetric(kMetricThroughput, "bytesPerSecond");
@@ -39,12 +52,10 @@ void Timing(const size_t len) {
   {
     std::vector<uint8_t> buf(len);
     RandBytes(buf.data(), len);
-    unsigned char digest[kSHA1Length];
-    memset(digest, 0, kSHA1Length);
 
     for (int i = 0; i < kNumRuns; ++i) {
       const auto start = TimeTicks::Now();
-      SHA1HashBytes(buf.data(), len, digest);
+      hash(buf.data(), len);
       utime[i] = TimeTicks::Now() - start;
       total_test_time += utime[i];
     }
@@ -75,10 +86,15 @@ void Timing(const size_t len) {
 }  // namespace
 
 TEST(SHA1PerfTest, Speed) {
-  Timing(1024 * 1024U >> 1);
-  Timing(1024 * 1024U >> 5);
-  Timing(1024 * 1024U >> 6);
-  Timing(1024 * 1024U >> 7);
+  for (int shift : {1, 5, 6, 7}) {
+    RunTest("SHA1.", Sha1Hash, 1024 * 1024U >> shift);
+  }
+}
+
+TEST(HashPerfTest, Speed) {
+  for (int shift : {1, 5, 6, 7}) {
+    RunTest("FastHash.", FastHash, 1024 * 1024U >> shift);
+  }
 }
 
 }  // namespace base

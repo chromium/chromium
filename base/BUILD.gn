@@ -2548,7 +2548,7 @@ component("i18n") {
 
 test("base_perftests") {
   sources = [
-    "hash/sha1_perftest.cc",
+    "hash/hash_perftest.cc",
     "message_loop/message_pump_perftest.cc",
     "observer_list_perftest.cc",
     "strings/string_util_perftest.cc",
