@@ -61,6 +61,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   const String& RelativeUrl() const { return relative_url_; }
 
   const Referrer& GetReferrer() const { return referrer_; }
+  const AtomicString& GetInitiator() const { return initiator_name_; }
   bool GetIsAdRelated() const { return is_ad_related_; }
 
   void ReResolveURL(const Document&) const;

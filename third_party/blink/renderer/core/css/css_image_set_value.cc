@@ -44,10 +44,8 @@
 
 namespace blink {
 
-CSSImageSetValue::CSSImageSetValue(CSSParserMode parser_mode)
-    : CSSValueList(kImageSetClass, kCommaSeparator),
-      cached_scale_factor_(1),
-      parser_mode_(parser_mode) {}
+CSSImageSetValue::CSSImageSetValue()
+    : CSSValueList(kImageSetClass, kCommaSeparator), cached_scale_factor_(1) {}
 
 CSSImageSetValue::~CSSImageSetValue() = default;
 
@@ -117,9 +115,10 @@ StyleImage* CSSImageSetValue::CacheImage(
       resource_request.SetIsAdResource();
     ResourceLoaderOptions options(
         document.GetExecutionContext()->GetCurrentWorld());
-    options.initiator_info.name = parser_mode_ == kUASheetMode
-                                      ? fetch_initiator_type_names::kUacss
-                                      : fetch_initiator_type_names::kCSS;
+    const AtomicString& initiator_name = image_value.GetInitiator();
+    options.initiator_info.name = initiator_name.IsEmpty()
+                                      ? fetch_initiator_type_names::kCSS
+                                      : initiator_name;
     options.initiator_info.referrer = image_value.GetReferrer().referrer;
     FetchParameters params(std::move(resource_request), options);
 
@@ -181,7 +180,7 @@ void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 CSSImageSetValue* CSSImageSetValue::ValueWithURLsMadeAbsolute() {
-  auto* value = MakeGarbageCollected<CSSImageSetValue>(parser_mode_);
+  auto* value = MakeGarbageCollected<CSSImageSetValue>();
   for (auto& item : *this) {
     auto* image_value = DynamicTo<CSSImageValue>(item.Get());
     image_value ? value->Append(*image_value->ValueWithURLMadeAbsolute())

@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -2164,28 +2165,29 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
   return result;
 }
 
-static CSSValue* CreateCSSImageValueWithReferrer(
+static CSSImageValue* CreateCSSImageValueWithReferrer(
     const AtomicString& raw_value,
     const CSSParserContext& context) {
-  CSSValue* image_value = MakeGarbageCollected<CSSImageValue>(
+  return MakeGarbageCollected<CSSImageValue>(
       raw_value, context.CompleteURL(raw_value), context.GetReferrer(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated());
-  return image_value;
 }
 
 static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
                                  const CSSParserContext& context) {
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
-  auto* image_set = MakeGarbageCollected<CSSImageSetValue>(context.Mode());
+  auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
   do {
     AtomicString url_value =
         ConsumeUrlAsStringView(args, context).ToAtomicString();
     if (url_value.IsNull())
       return nullptr;
 
-    CSSValue* image = CreateCSSImageValueWithReferrer(url_value, context);
+    CSSImageValue* image = CreateCSSImageValueWithReferrer(url_value, context);
+    if (context.Mode() == kUASheetMode)
+      image->SetInitiator(fetch_initiator_type_names::kUacss);
     image_set->Append(*image);
 
     const CSSParserToken& token = args.ConsumeIncludingWhitespace();
