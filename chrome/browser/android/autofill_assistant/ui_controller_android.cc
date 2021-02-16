@@ -534,10 +534,13 @@ void UiControllerAndroid::SetSpinPoodle(bool enabled) {
 
 void UiControllerAndroid::OnHeaderFeedbackButtonClicked() {
   JNIEnv* env = AttachCurrentThread();
+  // If the feedback is sent by interacting with the header, it's more likely
+  // that there is a problem with the bottomsheet, so in this case we don't send
+  // the website's screenshot (COMPOSITOR).
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
       ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
-      ScreenshotMode::COMPOSITOR);
+      ScreenshotMode::DEFAULT);
 }
 
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
