@@ -4159,6 +4159,7 @@ test("net_unittests") {
     "cert/ev_root_ca_metadata_unittest.cc",
     "cert/internal/cert_issuer_source_aia_unittest.cc",
     "cert/internal/cert_issuer_source_static_unittest.cc",
+    "cert/internal/cert_issuer_source_sync_unittest.cc",
     "cert/internal/cert_issuer_source_sync_unittest.h",
     "cert/internal/certificate_policies_unittest.cc",
     "cert/internal/crl_unittest.cc",
