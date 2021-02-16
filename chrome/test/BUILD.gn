@@ -6176,6 +6176,7 @@ test("unit_tests") {
       "../browser/ui/views/tabs/tab_strip_layout_unittest.cc",
       "../browser/ui/views/tabs/tab_strip_unittest.cc",
       "../browser/ui/views/tabs/tab_unittest.cc",
+      "../browser/ui/views/toolbar/chrome_labs_bubble_view_model_unittest.cc",
       "../browser/ui/views/toolbar/chrome_labs_bubble_view_unittest.cc",
       "../browser/ui/views/toolbar/chrome_labs_button_unittest.cc",
       "../browser/ui/views/toolbar/reload_button_unittest.cc",

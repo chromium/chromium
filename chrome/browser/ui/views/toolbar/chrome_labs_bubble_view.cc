@@ -192,7 +192,10 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
         flags_state_->FindFeatureEntryByName(lab.internal_name);
     if (IsFeatureSupportedOnChannel(lab) &&
         IsFeatureSupportedOnPlatform(entry)) {
-      DCHECK_EQ(entry->type, flags_ui::FeatureEntry::FEATURE_VALUE);
+      bool valid_entry_type =
+          entry->type == flags_ui::FeatureEntry::FEATURE_VALUE ||
+          entry->type == flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE;
+      DCHECK(valid_entry_type);
       int default_index = GetIndexOfEnabledLabState(entry);
       menu_item_container_->AddChildView(
           CreateLabItem(lab, default_index, entry));
