@@ -244,8 +244,7 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
   void* new_ptr = nullptr;
   if (size > 0) {
     size = MaybeAdjustSize(size);
-    new_ptr = AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
-                                                    alignment, size);
+    new_ptr = AllocateAlignedMemory(alignment, size);
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address)
