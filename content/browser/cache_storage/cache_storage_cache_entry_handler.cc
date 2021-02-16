@@ -8,7 +8,7 @@
 #include "base/guid.h"
 #include "base/optional.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
-#include "content/browser/background_fetch/storage/cache_entry_handler_impl.h"
+#include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -361,7 +361,7 @@ CacheStorageCacheEntryHandler::CreateCacheEntryHandler(
       return std::make_unique<CacheStorageCacheEntryHandlerImpl>(
           std::move(blob_storage_context));
     case storage::mojom::CacheStorageOwner::kBackgroundFetch:
-      return std::make_unique<background_fetch::CacheEntryHandlerImpl>(
+      return std::make_unique<BackgroundFetchCacheEntryHandlerImpl>(
           std::move(blob_storage_context));
   }
   NOTREACHED();

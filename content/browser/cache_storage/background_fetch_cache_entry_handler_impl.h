@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_CACHE_ENTRY_HANDLER_IMPL_H_
-#define CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_CACHE_ENTRY_HANDLER_IMPL_H_
+#ifndef CONTENT_BROWSER_CACHE_STORAGE_BACKGROUND_FETCH_CACHE_ENTRY_HANDLER_IMPL_H_
+#define CONTENT_BROWSER_CACHE_STORAGE_BACKGROUND_FETCH_CACHE_ENTRY_HANDLER_IMPL_H_
 
 #include "content/browser/cache_storage/cache_storage_cache_entry_handler.h"
 
-#include "content/browser/cache_storage/cache_storage_cache.h"
-
 namespace content {
-namespace background_fetch {
 
-class CacheEntryHandlerImpl : public CacheStorageCacheEntryHandler {
+class BackgroundFetchCacheEntryHandlerImpl
+    : public CacheStorageCacheEntryHandler {
  public:
-  explicit CacheEntryHandlerImpl(
+  explicit BackgroundFetchCacheEntryHandlerImpl(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
-  ~CacheEntryHandlerImpl() override;
+  ~BackgroundFetchCacheEntryHandlerImpl() override;
 
   // CacheStorageCacheEntryHandler implementation:
   std::unique_ptr<PutContext> CreatePutContext(
@@ -31,12 +29,12 @@ class CacheEntryHandlerImpl : public CacheStorageCacheEntryHandler {
  private:
   base::WeakPtr<CacheStorageCacheEntryHandler> GetWeakPtr() override;
 
-  base::WeakPtrFactory<CacheEntryHandlerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BackgroundFetchCacheEntryHandlerImpl> weak_ptr_factory_{
+      this};
 
-  DISALLOW_COPY_AND_ASSIGN(CacheEntryHandlerImpl);
+  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchCacheEntryHandlerImpl);
 };
 
-}  // namespace background_fetch
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_CACHE_ENTRY_HANDLER_IMPL_H_
+#endif  // CONTENT_BROWSER_CACHE_STORAGE_BACKGROUND_FETCH_CACHE_ENTRY_HANDLER_IMPL_H_
