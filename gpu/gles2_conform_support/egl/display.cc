@@ -12,6 +12,7 @@
 #include "gpu/gles2_conform_support/egl/thread_state.h"
 #include "ui/gl/init/gl_factory.h"
 
+namespace gles2_conform_support {
 namespace egl {
 
 Display::Display()
@@ -394,3 +395,4 @@ Context* Display::GetContext(EGLContext context) {
 }
 
 }  // namespace egl
+}  // namespace gles2_conform_support

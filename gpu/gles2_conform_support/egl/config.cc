@@ -5,6 +5,7 @@
 #include "gpu/gles2_conform_support/egl/config.h"
 #include "base/check.h"
 
+namespace gles2_conform_support {
 namespace egl {
 
 Config::Config(EGLint surface_type)
@@ -220,3 +221,4 @@ bool Config::ValidateAttributeList(const EGLint* attrib_list) {
 }
 
 }  // namespace egl
+}  // namespace gles2_conform_support

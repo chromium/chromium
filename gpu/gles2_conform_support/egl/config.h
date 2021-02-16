@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 
+namespace gles2_conform_support {
 namespace egl {
 
 class Config {
@@ -89,5 +90,6 @@ class Config {
 };
 
 }  // namespace egl
+}  // namespace gles2_conform_support
 
 #endif  // GPU_GLES2_CONFORM_TEST_CONFIG_H_

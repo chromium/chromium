@@ -36,6 +36,7 @@ class GLES2Interface;
 }  // namespace gles2
 }  // namespace gpu
 
+namespace gles2_conform_support {
 namespace egl {
 class Display;
 class Surface;
@@ -136,5 +137,6 @@ class Context : public base::RefCountedThreadSafe<Context>,
 };
 
 }  // namespace egl
+}  // namespace gles2_conform_support
 
 #endif  // GPU_GLES2_CONFORM_TEST_CONTEXT_H_

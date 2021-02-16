@@ -25,6 +25,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 
+namespace gles2_conform_support {
 // Thread local key for ThreadState instance. Accessed when holding g_egl_lock
 // only, since the initialization can not be Guaranteed otherwise.  Not in
 // anonymous namespace due to Mac OS X 10.6 linker. See gles2_lib.cc.
@@ -204,3 +205,4 @@ void ThreadState::AutoCurrentContextRestore::SetCurrent(Surface* surface,
 }
 
 }  // namespace egl
+}  // namespace gles2_conform_support

@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include <EGL/egl.h>
 
+namespace gles2_conform_support {
 namespace egl {
 
 class Context;
@@ -66,5 +67,6 @@ class ThreadState {
 };
 
 }  // namespace egl
+}  // namespace gles2_conform_support
 
 #endif
