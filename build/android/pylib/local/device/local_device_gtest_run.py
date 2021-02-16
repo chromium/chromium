@@ -324,6 +324,8 @@ class _ApkDelegate(object):
         raise
       finally:
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
+          if not os.path.isdir(self._coverage_dir):
+            os.makedirs(self._coverage_dir)
           with tempfile_ext.NamedTemporaryDirectory(
               prefix=self._coverage_dir) as temp_d:
             _PullCoverageFiles(device, device_coverage_dir, temp_d)
