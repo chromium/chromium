@@ -305,9 +305,6 @@ ContentSettingsContentSettingSetFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingGetResourceIdentifiersFunction::Run() {
-  ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   return RespondNow(
       Error(content_settings_api_constants::
