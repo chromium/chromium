@@ -17,6 +17,7 @@
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {
@@ -26,9 +27,37 @@ FullRestoreReadHandler* FullRestoreReadHandler::GetInstance() {
   return full_restore_read_handler.get();
 }
 
-FullRestoreReadHandler::FullRestoreReadHandler() = default;
+FullRestoreReadHandler::FullRestoreReadHandler() {
+  aura::Env::GetInstance()->AddObserver(this);
+}
 
-FullRestoreReadHandler::~FullRestoreReadHandler() = default;
+FullRestoreReadHandler::~FullRestoreReadHandler() {
+  aura::Env::GetInstance()->RemoveObserver(this);
+}
+
+void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
+  // TODO(crbug.com/1146900): Handle ARC app windows.
+
+  if (!SessionID::IsValidValue(
+          window->GetProperty(::full_restore::kRestoreWindowIdKey))) {
+    return;
+  }
+
+  observed_windows_.AddObservation(window);
+}
+
+void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
+  // TODO(crbug.com/1146900): Handle ARC app windows.
+
+  DCHECK(observed_windows_.IsObservingSource(window));
+  observed_windows_.RemoveObservation(window);
+
+  int32_t restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+  DCHECK(SessionID::IsValidValue(restore_window_id));
+
+  RemoveAppRestoreData(restore_window_id);
+}
 
 void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
                                           Callback callback) {
@@ -94,6 +123,17 @@ void FullRestoreReadHandler::OnGetRestoreData(
   }
 
   std::move(callback).Run(std::move(restore_data));
+}
+
+void FullRestoreReadHandler::RemoveAppRestoreData(int window_id) {
+  auto it = window_id_to_app_restore_info_.find(window_id);
+  if (it == window_id_to_app_restore_info_.end())
+    return;
+
+  profile_path_to_restore_data_[it->second.first]->RemoveAppRestoreData(
+      it->second.second, window_id);
+
+  window_id_to_app_restore_info_.erase(it);
 }
 
 }  // namespace full_restore

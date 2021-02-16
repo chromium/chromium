@@ -11,10 +11,10 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
+#include "base/scoped_multi_source_observation.h"
+#include "ui/aura/env_observer.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 
 namespace base {
 class FilePath;
@@ -30,7 +30,9 @@ struct WindowInfo;
 // restore data file. RestoreHandler runs on the main thread and creates
 // FullRestoreFileHandler (which runs on a background task runner) for the
 // actual reading.
-class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
+class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
+    : public aura::EnvObserver,
+      public aura::WindowObserver {
  public:
   // The callback function to get the restore data when the reading operation is
   // done.
@@ -39,10 +41,15 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
   static FullRestoreReadHandler* GetInstance();
 
   FullRestoreReadHandler();
-  virtual ~FullRestoreReadHandler();
-
   FullRestoreReadHandler(const FullRestoreReadHandler&) = delete;
   FullRestoreReadHandler& operator=(const FullRestoreReadHandler&) = delete;
+  ~FullRestoreReadHandler() override;
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override;
 
   // Reads the restore data from |profile_path| on a background task runner, and
   // calls |callback| when the reading operation is done.
@@ -63,6 +70,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
                         Callback callback,
                         std::unique_ptr<RestoreData>);
 
+  // Removes AppRestoreData for |restore_window_id|.
+  void RemoveAppRestoreData(int restore_window_id);
+
   // The restore data read from the full restore files.
   std::map<base::FilePath, std::unique_ptr<RestoreData>>
       profile_path_to_restore_data_;
@@ -73,6 +83,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
   // id when get the window info.
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
 
   base::WeakPtrFactory<FullRestoreReadHandler> weak_factory_{this};
 };
