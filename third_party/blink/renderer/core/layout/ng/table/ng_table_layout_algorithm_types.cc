@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
 namespace blink {
 
@@ -53,7 +54,8 @@ inline void InlineSizesFromStyle(
   }
   if (length.IsPercent()) {
     *percentage_inline_size = length.Percent();
-  } else if (length.IsCalculated()) {
+  } else if (length.IsCalculated() &&
+             !length.GetCalculationValue().IsExpression()) {
     // crbug.com/1154376 Style engine should handle %+0px case automatically.
     PixelsAndPercent pixels_and_percent = length.GetPixelsAndPercent();
     if (pixels_and_percent.pixels == 0.0f)
