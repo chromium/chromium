@@ -134,6 +134,8 @@ class BASE_EXPORT BuildInfo {
 
   bool is_debug_android() const { return is_debug_android_; }
 
+  bool is_tv() const { return is_tv_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -168,6 +170,7 @@ class BASE_EXPORT BuildInfo {
   const std::string extracted_file_suffix_;
   const int target_sdk_version_;
   const bool is_debug_android_;
+  const bool is_tv_;
 
   DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };
