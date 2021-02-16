@@ -17,6 +17,7 @@ cr.define('login.AssistantOptInFlowScreen', function() {
      */
     show() {
       var url = new URL(document.URL);
+      $('assistant-optin-flow-card').onBeforeShow();
       $('assistant-optin-flow-card')
           .onShow(
               url.searchParams.get('flow-type'),
