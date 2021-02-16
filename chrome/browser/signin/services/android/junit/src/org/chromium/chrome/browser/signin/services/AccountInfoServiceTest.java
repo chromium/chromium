@@ -24,12 +24,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.AccountInfoService.PendingAccountInfoFetch;
 import org.chromium.components.signin.AccountTrackerService;
-import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -57,10 +56,10 @@ public class AccountInfoServiceTest {
     private IdentityManager mIdentityManagerMock;
 
     @Mock
-    private ProfileDataSource.Observer mObserverMock;
+    private Callback<AccountInfo> mCallbackMock;
 
     @Captor
-    private ArgumentCaptor<ProfileData> mProfileDataCaptor;
+    private ArgumentCaptor<AccountInfo> mAccountInfoCaptor;
 
     @Before
     public void setUp() {
@@ -81,28 +80,26 @@ public class AccountInfoServiceTest {
     public void testFetchingAccountInfoWhenAccountsAreNotSeeded() {
         when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(false);
 
-        AccountInfoService.get().addObserver(mObserverMock);
-        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL);
+        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, mCallbackMock);
         final PendingAccountInfoFetch pendingAccountInfoFetch = PendingAccountInfoFetch.get();
 
         verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingAccountInfoFetch);
         verify(mIdentityManagerMock, never()).forceRefreshOfExtendedAccountInfo(any());
-        verify(mObserverMock, never()).onProfileDataUpdated(any());
+        verify(mCallbackMock, never()).onResult(any());
     }
 
     @Test
     public void testFetchingAccountInfoWhenAccountsAreSeededAndNoAccountInfoAvailable() {
         when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
 
-        AccountInfoService.get().addObserver(mObserverMock);
-        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL);
+        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, mCallbackMock);
         final PendingAccountInfoFetch pendingAccountInfoFetch = PendingAccountInfoFetch.get();
 
         verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingAccountInfoFetch);
         verify(mIdentityManagerMock)
                 .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(ACCOUNT_EMAIL);
         verify(mIdentityManagerMock, never()).forceRefreshOfExtendedAccountInfo(any());
-        verify(mObserverMock, never()).onProfileDataUpdated(any());
+        verify(mCallbackMock, never()).onResult(any());
     }
 
     @Test
@@ -114,14 +111,13 @@ public class AccountInfoServiceTest {
                      ACCOUNT_EMAIL))
                 .thenReturn(accountInfo);
 
-        AccountInfoService.get().addObserver(mObserverMock);
-        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL);
+        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, mCallbackMock);
         final PendingAccountInfoFetch pendingAccountInfoFetch = PendingAccountInfoFetch.get();
         verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingAccountInfoFetch);
         verify(mIdentityManagerMock)
                 .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(ACCOUNT_EMAIL);
         verify(mIdentityManagerMock).forceRefreshOfExtendedAccountInfo(accountInfo.getId());
-        verify(mObserverMock, never()).onProfileDataUpdated(any());
+        verify(mCallbackMock, never()).onResult(any());
     }
 
     @Test
@@ -133,18 +129,17 @@ public class AccountInfoServiceTest {
                      ACCOUNT_EMAIL))
                 .thenReturn(accountInfo);
 
-        AccountInfoService.get().addObserver(mObserverMock);
-        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL);
+        AccountInfoService.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, mCallbackMock);
         final PendingAccountInfoFetch pendingAccountInfoFetch = PendingAccountInfoFetch.get();
         verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingAccountInfoFetch);
         verify(mIdentityManagerMock)
                 .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(ACCOUNT_EMAIL);
         verify(mIdentityManagerMock, never()).forceRefreshOfExtendedAccountInfo(any());
-        verify(mObserverMock).onProfileDataUpdated(mProfileDataCaptor.capture());
-        final ProfileData profileData = mProfileDataCaptor.getValue();
-        Assert.assertEquals(ACCOUNT_EMAIL, profileData.getAccountEmail());
-        Assert.assertEquals(accountInfo.getFullName(), profileData.getFullName());
-        Assert.assertEquals(accountInfo.getGivenName(), profileData.getGivenName());
-        Assert.assertEquals(accountInfo.getAccountImage(), profileData.getAvatar());
+        verify(mCallbackMock).onResult(mAccountInfoCaptor.capture());
+        final AccountInfo result = mAccountInfoCaptor.getValue();
+        Assert.assertEquals(ACCOUNT_EMAIL, result.getEmail());
+        Assert.assertEquals(accountInfo.getFullName(), result.getFullName());
+        Assert.assertEquals(accountInfo.getGivenName(), result.getGivenName());
+        Assert.assertEquals(accountInfo.getAccountImage(), result.getAccountImage());
     }
 }

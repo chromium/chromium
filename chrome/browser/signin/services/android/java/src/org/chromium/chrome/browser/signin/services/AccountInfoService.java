@@ -4,20 +4,22 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import android.util.Pair;
+
 import androidx.annotation.GuardedBy;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.AccountTrackerService;
-import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class handles the {@link AccountInfo} fetch on Java side.
@@ -28,8 +30,6 @@ final class AccountInfoService {
 
     @GuardedBy("LOCK")
     private static AccountInfoService sInstance;
-
-    private final ObserverList<ProfileDataSource.Observer> mObservers = new ObserverList<>();
 
     /**
      * Get the instance of ProfileDownloader.
@@ -52,28 +52,6 @@ final class AccountInfoService {
     }
 
     /**
-     * Add an observer.
-     * @param observer An observer.
-     */
-    public void addObserver(ProfileDataSource.Observer observer) {
-        mObservers.addObserver(observer);
-    }
-
-    /**
-     * Remove an observer.
-     * @param observer An observer.
-     */
-    public void removeObserver(ProfileDataSource.Observer observer) {
-        mObservers.removeObserver(observer);
-    }
-
-    private void notifyObservers(ProfileDataSource.ProfileData profileData) {
-        for (ProfileDataSource.Observer observer : mObservers) {
-            observer.onProfileDataUpdated(profileData);
-        }
-    }
-
-    /**
      * Private class (package private for tests) to pend account info fetch requests when system
      * accounts have not been seeded into AccountTrackerService.
      * It listens onSystemAccountsSeedingComplete to finish pending
@@ -84,11 +62,10 @@ final class AccountInfoService {
             implements AccountTrackerService.OnSystemAccountsSeededListener {
         private static PendingAccountInfoFetch sPendingAccountInfoFetch;
 
-        private final ArrayList<String> mAccountEmails;
+        private final List<Pair<String, Callback<AccountInfo>>> mPendingRequests =
+                new ArrayList<>();
 
-        private PendingAccountInfoFetch() {
-            mAccountEmails = new ArrayList<>();
-        }
+        private PendingAccountInfoFetch() {}
 
         static PendingAccountInfoFetch get() {
             ThreadUtils.assertOnUiThread();
@@ -101,42 +78,44 @@ final class AccountInfoService {
             return sPendingAccountInfoFetch;
         }
 
-        void pendFetch(String accountEmail) {
-            mAccountEmails.add(accountEmail);
+        void pendFetch(String accountEmail, Callback<AccountInfo> callback) {
+            mPendingRequests.add(Pair.create(accountEmail, callback));
         }
 
         @Override
         public void onSystemAccountsSeedingComplete() {
-            for (String accountEmail : mAccountEmails) {
-                fetchAccountInfo(accountEmail);
+            for (Pair<String, Callback<AccountInfo>> request : mPendingRequests) {
+                fetchAccountInfo(request.first, request.second);
             }
-            mAccountEmails.clear();
+            mPendingRequests.clear();
         }
 
         @Override
         public void onSystemAccountsChanged() {
-            mAccountEmails.clear();
+            mPendingRequests.clear();
         }
     }
 
     /**
      * Starts fetching the account information for a given account.
      * @param accountEmail Account email to fetch the information for
+     * @param callback Callback that takes the fetched {@link AccountInfo} as argument.
      */
-    public void startFetchingAccountInfoFor(String accountEmail) {
+    @MainThread
+    public void startFetchingAccountInfoFor(String accountEmail, Callback<AccountInfo> callback) {
         ThreadUtils.assertOnUiThread();
         final Profile profile = Profile.getLastUsedRegularProfile();
         if (IdentityServicesProvider.get()
                         .getAccountTrackerService(profile)
                         .checkAndSeedSystemAccounts()) {
-            fetchAccountInfo(accountEmail);
+            fetchAccountInfo(accountEmail, callback);
         } else {
-            PendingAccountInfoFetch.get().pendFetch(accountEmail);
+            PendingAccountInfoFetch.get().pendFetch(accountEmail, callback);
         }
     }
 
     @MainThread
-    private static void fetchAccountInfo(String accountEmail) {
+    private static void fetchAccountInfo(String accountEmail, Callback<AccountInfo> callback) {
         final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
         final AccountInfo accountInfo =
@@ -145,9 +124,7 @@ final class AccountInfoService {
         if (accountInfo == null) {
             Log.i(TAG, "No AccountInfo available for email:" + accountEmail);
         } else if (accountInfo.getAccountImage() != null) {
-            AccountInfoService.get().notifyObservers(
-                    new ProfileDataSource.ProfileData(accountEmail, accountInfo.getAccountImage(),
-                            accountInfo.getFullName(), accountInfo.getGivenName()));
+            callback.onResult(accountInfo);
         } else {
             // Downloads the extended account information(full name, account image, etc) and saves
             // it on disk for the given Id.
