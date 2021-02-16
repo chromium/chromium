@@ -278,13 +278,27 @@ void ContentDecryptionModuleAdapter::GetHwKeyData(
     const media::DecryptConfig* decrypt_config,
     const std::vector<uint8_t>& hw_identifier,
     GetHwKeyDataCB callback) {
+  // Take the fields we want out of the |decrypt_config| in case the pointer
+  // becomes invalid when we are re-posting the task.
+  GetHwKeyDataInternal(decrypt_config->key_id(), decrypt_config->iv(),
+                       decrypt_config->encryption_scheme(), hw_identifier,
+                       std::move(callback));
+}
+
+void ContentDecryptionModuleAdapter::GetHwKeyDataInternal(
+    const std::string& key_id,
+    const std::string& iv,
+    const media::EncryptionScheme encryption_scheme,
+    const std::vector<uint8_t>& hw_identifier,
+    GetHwKeyDataCB callback) {
   // This can get called from decoder threads or mojo threads, so we may need
   // to repost the task.
   if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
     mojo_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ContentDecryptionModuleAdapter::GetHwKeyData,
-                                  weak_factory_.GetWeakPtr(), decrypt_config,
-                                  hw_identifier, std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&ContentDecryptionModuleAdapter::GetHwKeyDataInternal,
+                       weak_factory_.GetWeakPtr(), key_id, iv,
+                       encryption_scheme, hw_identifier, std::move(callback)));
     return;
   }
   if (!cros_cdm_remote_) {
@@ -293,9 +307,9 @@ void ContentDecryptionModuleAdapter::GetHwKeyData(
     return;
   }
   auto cros_decrypt_config = cdm::mojom::DecryptConfig::New();
-  cros_decrypt_config->key_id = decrypt_config->key_id();
-  cros_decrypt_config->iv = decrypt_config->iv();
-  cros_decrypt_config->encryption_scheme = decrypt_config->encryption_scheme();
+  cros_decrypt_config->key_id = key_id;
+  cros_decrypt_config->iv = iv;
+  cros_decrypt_config->encryption_scheme = encryption_scheme;
 
   cros_cdm_remote_->GetHwKeyData(std::move(cros_decrypt_config), hw_identifier,
                                  std::move(callback));
