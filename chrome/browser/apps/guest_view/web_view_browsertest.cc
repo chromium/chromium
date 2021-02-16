@@ -41,6 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -57,10 +58,12 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/ax_event_notification_details.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -2054,6 +2057,115 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
   // renderer processes will cause the RWHVGuest's RenderProcessGone()
   // shutdown path to be exercised.
   chrome::CloseAllBrowsers();
+}
+
+namespace {
+
+// TODO(mcnee): Several other features implement something very similar to this
+// class in order to specify URLs to trigger Safe Browsing. Consolidate them
+// into a single test utility class.
+class FakeSafeBrowsingDatabaseManager
+    : public safe_browsing::TestSafeBrowsingDatabaseManager {
+ public:
+  FakeSafeBrowsingDatabaseManager() = default;
+
+  void AddDangerousUrl(const GURL& dangerous_url) {
+    dangerous_urls_.insert(dangerous_url);
+  }
+
+  // TestSafeBrowsingDatabaseManager implementation:
+  // These are implemented as needed to return stubbed values.
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override {
+    return true;
+  }
+  bool ChecksAreAlwaysAsync() const override { return false; }
+  bool CheckBrowseUrl(const GURL& url,
+                      const safe_browsing::SBThreatTypeSet& threat_types,
+                      Client* client) override {
+    if (!dangerous_urls_.contains(url))
+      return true;
+
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync,
+                       url, client));
+    return false;
+  }
+  bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
+                         Client* client) override {
+    return true;
+  }
+  bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override {
+    return true;
+  }
+  safe_browsing::ThreatSource GetThreatSource() const override {
+    return safe_browsing::ThreatSource::LOCAL_PVER4;
+  }
+  bool IsSupported() const override { return true; }
+
+ private:
+  ~FakeSafeBrowsingDatabaseManager() override = default;
+
+  static void CheckBrowseURLAsync(GURL url, Client* client) {
+    client->OnCheckBrowseUrlResult(url,
+                                   safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
+                                   safe_browsing::ThreatMetadata());
+  }
+
+  base::flat_set<GURL> dangerous_urls_;
+};
+
+}  // namespace
+
+// This allows us to specify URLs which trigger Safe Browsing.
+class WebViewSafeBrowsingTest : public WebViewTest {
+ public:
+  WebViewSafeBrowsingTest()
+      : safe_browsing_factory_(
+            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()) {
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    WebViewTest::SetUpOnMainThread();
+  }
+
+ protected:
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    fake_safe_browsing_database_manager_ =
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+    safe_browsing_factory_->SetTestDatabaseManager(
+        fake_safe_browsing_database_manager_.get());
+    safe_browsing::SafeBrowsingService::RegisterFactory(
+        safe_browsing_factory_.get());
+    WebViewTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+
+  void TearDown() override {
+    WebViewTest::TearDown();
+    safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
+  }
+
+  void AddDangerousUrl(const GURL& dangerous_url) {
+    fake_safe_browsing_database_manager_->AddDangerousUrl(dangerous_url);
+  }
+
+ private:
+  scoped_refptr<FakeSafeBrowsingDatabaseManager>
+      fake_safe_browsing_database_manager_;
+  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
+      safe_browsing_factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewSafeBrowsingTest,
+                       Shim_TestLoadAbortSafeBrowsing) {
+  // We start the test server here, instead of in TestHelper, because we need
+  // to know the URL to treat as dangerous before running the rest of the test.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  AddDangerousUrl(embedded_test_server()->GetURL("evil.com", "/title1.html"));
+  TestHelper("testLoadAbortSafeBrowsing", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, ShimSrcAttribute) {
