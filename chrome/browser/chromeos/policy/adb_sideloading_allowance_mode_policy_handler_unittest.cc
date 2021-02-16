@@ -15,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -40,10 +41,12 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         mock_notification_(
             new chromeos::MockAdbSideloadingPolicyChangeNotification()) {
+    chromeos::PowerManagerClient::InitializeFake();
+
     adb_sideloading_allowance_mode_policy_handler_ =
         new AdbSideloadingAllowanceModePolicyHandler(
             chromeos::CrosSettings::Get(), local_state_.Get(),
-            mock_notification_);
+            chromeos::PowerManagerClient::Get(), mock_notification_);
 
     adb_sideloading_allowance_mode_policy_handler_
         ->SetCheckSideloadingStatusCallbackForTesting(
@@ -52,7 +55,9 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
                                 weak_factory_.GetWeakPtr()));
   }
 
-  ~AdbSideloadingAllowanceModePolicyHandlerTest() override = default;
+  ~AdbSideloadingAllowanceModePolicyHandlerTest() override {
+    chromeos::PowerManagerClient::Shutdown();
+  }
 
   void CheckSideloadingStatus(base::OnceCallback<void(bool)> callback) {
     std::move(callback).Run(is_arc_sideloading_enabled_);

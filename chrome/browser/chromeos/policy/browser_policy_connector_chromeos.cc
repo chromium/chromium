@@ -290,6 +290,7 @@ void BrowserPolicyConnectorChromeOS::Init(
   adb_sideloading_allowance_mode_policy_handler_ =
       std::make_unique<AdbSideloadingAllowanceModePolicyHandler>(
           chromeos::CrosSettings::Get(), local_state,
+          chromeos::PowerManagerClient::Get(),
           new chromeos::AdbSideloadingPolicyChangeNotification());
 }
 
@@ -336,6 +337,8 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
        device_cloud_external_data_policy_handlers_) {
     device_cloud_external_data_policy_handler->Shutdown();
   }
+
+  adb_sideloading_allowance_mode_policy_handler_.reset();
 
   ChromeBrowserPolicyConnector::Shutdown();
 }
