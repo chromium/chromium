@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Role presentation changes to role row.
-FAIL Role presentation toggled on table. Cannot read property 'role' of undefined
-PASS Select size change.
-PASS Input type change.
-Harness: the test ran to completion.
-
