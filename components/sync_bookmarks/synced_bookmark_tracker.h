@@ -28,6 +28,7 @@ class BookmarkNode;
 }  // namespace bookmarks
 
 namespace syncer {
+class ClientTagHash;
 struct EntityData;
 }  // namespace syncer
 
@@ -76,16 +77,10 @@ class SyncedBookmarkTracker {
     }
 
     const sync_pb::EntityMetadata* metadata() const {
-      // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-      // Should be removed after figuring out the reason for the crash.
-      CHECK(metadata_);
       return metadata_.get();
     }
 
     sync_pb::EntityMetadata* metadata() {
-      // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
-      // Should be removed after figuring out the reason for the crash.
-      CHECK(metadata_);
       return metadata_.get();
     }
 
@@ -145,11 +140,12 @@ class SyncedBookmarkTracker {
   const Entity* GetEntityForSyncId(const std::string& sync_id) const;
 
   // Returns null if no entity is found.
+  const Entity* GetEntityForClientTagHash(
+      const syncer::ClientTagHash& client_tag_hash) const;
+
+  // Returns null if no entity is found.
   const SyncedBookmarkTracker::Entity* GetEntityForBookmarkNode(
       const bookmarks::BookmarkNode* node) const;
-
-  // Returns null if no tombstone entity is found.
-  const Entity* GetTombstoneEntityForGuid(const base::GUID& guid) const;
 
   // Starts tracking local bookmark |bookmark_node|, which must not be tracked
   // beforehand. The rest of the arguments represent the initial metadata.
@@ -337,6 +333,12 @@ class SyncedBookmarkTracker {
   // metadata for almost everything.
   std::unordered_map<std::string, std::unique_ptr<Entity>>
       sync_id_to_entities_map_;
+
+  // Index for efficient lookups by client tag hash.
+  std::unordered_map<syncer::ClientTagHash,
+                     const Entity*,
+                     syncer::ClientTagHash::Hash>
+      client_tag_hash_to_entities_map_;
 
   // A map of bookmark nodes to sync entities. It's keyed by the bookmark node
   // pointers which get assigned when loading the bookmark model. This map is

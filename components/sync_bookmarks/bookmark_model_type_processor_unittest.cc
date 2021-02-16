@@ -445,14 +445,25 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
       model_metadata.add_bookmarks_metadata();
   bookmark_metadata->set_id(bookmark_bar_node->id());
   bookmark_metadata->mutable_metadata()->set_server_id(kBookmarkBarId);
+  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(bookmark_bar_node->guid())
+          .value());
 
   bookmark_metadata = model_metadata.add_bookmarks_metadata();
   bookmark_metadata->set_id(bookmark_model()->other_node()->id());
   bookmark_metadata->mutable_metadata()->set_server_id(kOtherBookmarksId);
+  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(
+          bookmark_model()->other_node()->guid())
+          .value());
 
   bookmark_metadata = model_metadata.add_bookmarks_metadata();
   bookmark_metadata->set_id(bookmark_model()->mobile_node()->id());
   bookmark_metadata->mutable_metadata()->set_server_id(kMobileBookmarksId);
+  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(
+          bookmark_model()->mobile_node()->guid())
+          .value());
 
   // Add an entry for the bookmark node.
   *model_metadata.add_bookmarks_metadata() =
@@ -695,14 +706,25 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.add_bookmarks_metadata();
   bookmark_metadata->set_id(bookmark_bar_node->id());
   bookmark_metadata->mutable_metadata()->set_server_id(kBookmarkBarId);
+  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(bookmark_bar_node->guid())
+          .value());
 
   bookmark_metadata = model_metadata.add_bookmarks_metadata();
   bookmark_metadata->set_id(bookmark_model()->other_node()->id());
   bookmark_metadata->mutable_metadata()->set_server_id(kOtherBookmarksId);
+  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(
+          bookmark_model()->other_node()->guid())
+          .value());
 
   bookmark_metadata = model_metadata.add_bookmarks_metadata();
   bookmark_metadata->set_id(bookmark_model()->mobile_node()->id());
   bookmark_metadata->mutable_metadata()->set_server_id(kMobileBookmarksId);
+  bookmark_metadata->mutable_metadata()->set_client_tag_hash(
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(
+          bookmark_model()->mobile_node()->guid())
+          .value());
 
   // Add an entry for the bookmark node.
   bookmark_metadata = model_metadata.add_bookmarks_metadata();

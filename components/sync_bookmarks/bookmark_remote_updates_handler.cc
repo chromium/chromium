@@ -298,19 +298,21 @@ void BookmarkRemoteUpdatesHandler::Process(
         bookmark_tracker_->GetEntityForSyncId(
             update_entity.originator_client_item_id);
     if (!old_tracked_entity && !update_entity.client_tag_hash.value().empty()) {
-      // There's currently no way to perform a lookup by client tag hash. As an
-      // approximation, the bookmark node's GUID can be used, which is the same
-      // as the temporary sync ID assigned upon local creation (just like
-      // originator client ID). This doesn't work for remote deletions, which
-      // don't include a GUID in specifics, but the existing UMA data for
-      // DuplicateBookmarkEntityOnRemoteUpdateCondition::kServerIdTombstone
-      // indicates that users don't in practice run into this.
-      // TODO(crbug.com/1143246): Adopt proper lookups by client tag hash once
-      // the tracker supports this.
-      old_tracked_entity = bookmark_tracker_->GetEntityForSyncId(
-          remote_guid.AsLowercaseString());
+      old_tracked_entity = bookmark_tracker_->GetEntityForClientTagHash(
+          syncer::ClientTagHash::FromHashed(
+              update_entity.client_tag_hash.value()));
     }
-    if (old_tracked_entity) {
+
+    // Do another lookup by GUID, in case the remote client tag is not set.
+    // TODO(crbug.com/1143246): Unify with the above by computing the inferred
+    // client tag, which requires logic analogous to what
+    // HasExpectedBookmarkGuid() uses internally.
+    if (!old_tracked_entity && !update_entity.is_deleted()) {
+      old_tracked_entity = bookmark_tracker_->GetEntityForClientTagHash(
+          SyncedBookmarkTracker::GetClientTagHashFromGUID(remote_guid));
+    }
+
+    if (old_tracked_entity && old_tracked_entity != tracked_entity) {
       // TODO(crbug.com/1143246): UMA data supports the idea that this can be
       // transformed into a DCHECK. However, strictly speaking, this can only be
       // safely done once the tracker supports lookups based on client tag

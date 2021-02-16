@@ -108,7 +108,7 @@ sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
   return model_metadata;
 }
 
-TEST(SyncedBookmarkTrackerTest, ShouldGetAssociatedNodes) {
+TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
 
@@ -116,6 +116,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldGetAssociatedNodes) {
   const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
   const int64_t kId = 1;
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kCreationTime(base::Time::Now() -
                                  base::TimeDelta::FromSeconds(1));
@@ -125,12 +126,15 @@ TEST(SyncedBookmarkTrackerTest, ShouldGetAssociatedNodes) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
 
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), kUrl);
+  bookmarks::BookmarkNode node(kId, kGuid, kUrl);
   const SyncedBookmarkTracker::Entity* entity =
       tracker->Add(&node, kSyncId, kServerVersion, kCreationTime,
                    unique_position.ToProto(), specifics);
   ASSERT_THAT(entity, NotNull());
   EXPECT_THAT(entity->bookmark_node(), Eq(&node));
+  EXPECT_THAT(entity->GetClientTagHash(),
+              Eq(syncer::ClientTagHash::FromUnhashed(
+                  syncer::BOOKMARKS, kGuid.AsLowercaseString())));
   EXPECT_THAT(entity->metadata()->server_id(), Eq(kSyncId));
   EXPECT_THAT(entity->metadata()->server_version(), Eq(kServerVersion));
   EXPECT_THAT(entity->metadata()->creation_time(),
@@ -138,34 +142,54 @@ TEST(SyncedBookmarkTrackerTest, ShouldGetAssociatedNodes) {
   EXPECT_TRUE(
       syncer::UniquePosition::FromProto(entity->metadata()->unique_position())
           .Equals(unique_position));
+  EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
+  EXPECT_THAT(tracker->GetEntityForBookmarkNode(&node), Eq(entity));
+  EXPECT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      Eq(entity));
 
   syncer::EntityData data;
   *data.specifics.mutable_bookmark() = specifics.bookmark();
   data.unique_position = unique_position.ToProto();
   EXPECT_TRUE(entity->MatchesDataIgnoringParent(data));
+
   EXPECT_THAT(tracker->GetEntityForSyncId("unknown id"), IsNull());
 }
 
-TEST(SyncedBookmarkTrackerTest, ShouldReturnNullForDisassociatedNodes) {
+TEST(SyncedBookmarkTrackerTest, ShouldRemoveEntity) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
   const sync_pb::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
+  bookmarks::BookmarkNode node(kId, kGuid, GURL());
   const SyncedBookmarkTracker::Entity* entity =
       tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
                    unique_position, specifics);
   ASSERT_THAT(entity, NotNull());
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
+  ASSERT_THAT(tracker->GetEntityForBookmarkNode(&node), Eq(entity));
+  ASSERT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      Eq(entity));
+
   tracker->Remove(entity);
+
   EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), IsNull());
+  EXPECT_THAT(tracker->GetEntityForBookmarkNode(&node), IsNull());
+  EXPECT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      IsNull());
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldBuildBookmarkModelMetadata) {
@@ -457,30 +481,79 @@ TEST(SyncedBookmarkTrackerTest,
               Eq(kId1));
 }
 
-TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
+TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
   const sync_pb::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
+  bookmarks::BookmarkNode node(kId, kGuid, GURL());
   const SyncedBookmarkTracker::Entity* entity =
       tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
                    unique_position, specifics);
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
+  ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
+  ASSERT_THAT(tracker->GetEntityForBookmarkNode(&node), Eq(entity));
+  ASSERT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      Eq(entity));
+  ASSERT_FALSE(entity->metadata()->is_deleted());
+  ASSERT_THAT(entity->bookmark_node(), Eq(&node));
 
   // Delete the bookmark, leading to a pending deletion (local tombstone).
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kSyncId));
+  tracker->MarkDeleted(entity);
+
+  EXPECT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));
+  EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
+  EXPECT_THAT(tracker->GetEntityForBookmarkNode(&node), IsNull());
+  EXPECT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      Eq(entity));
+  EXPECT_TRUE(entity->metadata()->is_deleted());
+  EXPECT_THAT(entity->bookmark_node(), IsNull());
+}
+
+TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+
+  const std::string kSyncId = "SYNC_ID";
+  const int64_t kId = 1;
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+  const int64_t kServerVersion = 1000;
+  const base::Time kModificationTime(base::Time::Now() -
+                                     base::TimeDelta::FromSeconds(1));
+  const sync_pb::UniquePosition unique_position;
+  const sync_pb::EntitySpecifics specifics =
+      GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
+  bookmarks::BookmarkNode node(kId, kGuid, GURL());
+  const SyncedBookmarkTracker::Entity* entity =
+      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
+                   unique_position, specifics);
+
+  ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
+  ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
+
+  // Delete the bookmark, leading to a pending deletion (local tombstone).
+  tracker->MarkDeleted(entity);
   ASSERT_THAT(entity->bookmark_node(), IsNull());
   ASSERT_TRUE(entity->metadata()->is_deleted());
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));
+  ASSERT_THAT(tracker->GetEntityForBookmarkNode(&node), IsNull());
+  ASSERT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      Eq(entity));
 
   // Undelete it.
   tracker->UndeleteTombstoneForBookmarkNode(entity, &node);
@@ -488,6 +561,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
   EXPECT_THAT(entity->bookmark_node(), NotNull());
   EXPECT_FALSE(entity->metadata()->is_deleted());
   EXPECT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
+  ASSERT_THAT(tracker->GetEntityForBookmarkNode(&node), Eq(entity));
+  EXPECT_THAT(
+      tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, kGuid.AsLowercaseString())),
+      Eq(entity));
 }
 
 TEST(SyncedBookmarkTrackerTest,

@@ -103,9 +103,16 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   // the tombstone was not committed yet. In that case the existing entity
   // should be updated.
   const SyncedBookmarkTracker::Entity* entity =
-      bookmark_tracker_->GetTombstoneEntityForGuid(node->guid());
+      bookmark_tracker_->GetEntityForClientTagHash(
+          SyncedBookmarkTracker::GetClientTagHashFromGUID(node->guid()));
   const base::Time creation_time = base::Time::Now();
   if (entity) {
+    // If there is a tracked entity with the same client tag hash (effectively
+    // the same bookmark GUID), it must be a tombstone. Otherwise it means
+    // the bookmark model contains to bookmarks with the same GUID.
+    // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
+    // Should be removed after figuring out the reason for the crash.
+    CHECK(!entity->bookmark_node()) << "Added bookmark with duplicate GUID";
     bookmark_tracker_->UndeleteTombstoneForBookmarkNode(entity, node);
     bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
                               creation_time, unique_position, specifics);
