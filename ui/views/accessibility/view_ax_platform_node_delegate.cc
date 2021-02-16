@@ -177,7 +177,7 @@ void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   ui::AXPlatformNodeBase* focused_node =
       static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_);
   // Continue to drill down focused nodes to get to the "deepest" node that is
-  // focused. This is not necessarily a view - it could be web content.
+  // focused. This is not necessarily a view. It could be web content.
   while (focused_node) {
     ui::AXPlatformNodeBase* deeper_focus = static_cast<ui::AXPlatformNodeBase*>(
         ui::AXPlatformNode::FromNativeViewAccessible(focused_node->GetFocus()));
@@ -434,7 +434,7 @@ bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {
-  NOTREACHED() << "Should only be called on Mac.";
+  NOTIMPLEMENTED() << "Should only be called on Mac.";
   return nullptr;
 }
 
@@ -480,6 +480,10 @@ bool ViewAXPlatformNodeDelegate::IsLeaf() const {
 
 bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
   return IsIgnored() || !view()->GetVisible();
+}
+
+bool ViewAXPlatformNodeDelegate::IsAccessibilityEnabled() const {
+  return GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
 
 bool ViewAXPlatformNodeDelegate::IsFocused() const {
