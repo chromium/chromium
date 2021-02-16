@@ -271,12 +271,6 @@ template("write_build_config") {
         rebase_path(invoker.java_resources_jar, root_build_dir),
       ]
     }
-    if (defined(invoker.jetified_jar_path)) {
-      args += [
-        "--jetified-jar-path",
-        rebase_path(invoker.jetified_jar_path, root_build_dir),
-      ]
-    }
     if (defined(invoker.annotation_processor_deps) &&
         invoker.annotation_processor_deps != []) {
       _processor_configs = []
@@ -1849,39 +1843,6 @@ if (enable_java_templates) {
 
     _deps = invoker.jar_deps
     _previous_output_jar = invoker.input_jar_path
-
-    if (defined(invoker.jetified_jar_path)) {
-      _jetify_target = "${target_name}__jetify"
-
-      action_with_pydeps(_jetify_target) {
-        script = "//build/android/gyp/jetify_jar.py"
-        deps = _deps
-        _jetify_jar_path =
-            "//third_party/jetifier_standalone/bin/jetifier-standalone"
-        _jetify_config_path =
-            "//third_party/jetifier_standalone/config/ignore_R.config"
-
-        inputs = [
-          _previous_output_jar,
-          _jetify_jar_path,
-        ]
-        outputs = [ invoker.jetified_jar_path ]
-        args = [
-          "--input-path",
-          rebase_path(invoker.input_jar_path, root_build_dir),
-          "--output-path",
-          rebase_path(invoker.jetified_jar_path, root_build_dir),
-          "--jetify-path",
-          rebase_path(_jetify_jar_path, root_build_dir),
-          "--jetify-config-path",
-          rebase_path(_jetify_config_path, root_build_dir),
-        ]
-      }
-
-      _deps = []
-      _deps = [ ":$_jetify_target" ]
-      _previous_output_jar = invoker.jetified_jar_path
-    }
 
     # Create the .jar in lib.java for use by java_binary.
     if (defined(invoker.host_jar_path)) {
@@ -3528,11 +3489,6 @@ if (enable_java_templates) {
         _unprocessed_jar_path = _javac_jar_path
       }
     }
-    if (_build_host_jar || _build_device_jar) {
-      if (defined(invoker.enable_jetify) && invoker.enable_jetify) {
-        _jetified_jar_path = "$target_out_dir/${_main_target_name}.jetified.jar"
-      }
-    }
 
     if (_is_prebuilt || _has_sources) {
       _java_res_deps = []
@@ -3679,9 +3635,6 @@ if (enable_java_templates) {
       chromium_code = _chromium_code
       build_config = _build_config
       is_prebuilt = _is_prebuilt
-      if (defined(invoker.enable_jetify) && invoker.enable_jetify) {
-        jetified_jar_path = _jetified_jar_path
-      }
 
       # Specifically avoid passing in invoker.base_module_target as one of the
       # possible_config_deps.
@@ -3963,9 +3916,6 @@ if (enable_java_templates) {
             classpath_deps = _classpath_deps
             forward_variables_from(invoker, [ "desugar_jars_paths" ])
           }
-        }
-        if (defined(invoker.enable_jetify) && invoker.enable_jetify) {
-          jetified_jar_path = _jetified_jar_path
         }
 
         # proguard_configs listed on java_library targets need to be marked
