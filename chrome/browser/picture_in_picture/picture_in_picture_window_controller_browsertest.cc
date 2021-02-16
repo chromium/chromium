@@ -2046,8 +2046,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Play/Pause button in the Picture-in-Picture window
 // calls the Media Session actions "play" and "pause" handler functions.
+// TODO(https://crbug.com/1178749) flaky test
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PlayPauseHandlersCalled) {
+                       DISABLED_PlayPauseHandlersCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
