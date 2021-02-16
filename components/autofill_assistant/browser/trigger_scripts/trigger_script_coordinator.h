@@ -132,7 +132,14 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // previous results to reuse.
   void RunOutOfScheduleTriggerConditionCheck();
 
-  void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
+  void NotifyOnTriggerScriptFinished(TriggerUIType trigger_ui_type,
+                                     Metrics::LiteScriptFinishedState state);
+
+  // Value of trigger_ui_type for the currently visible script, if there is one.
+  //
+  // When recording a hide or stop action, be sure to capture the type before
+  // hiding the script.
+  TriggerUIType GetTriggerUiTypeForVisibleScript() const;
 
   // Used to query login information for the current webcontents.
   WebsiteLoginManager* website_login_manager_;

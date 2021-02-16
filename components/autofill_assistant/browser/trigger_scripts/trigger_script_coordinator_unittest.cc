@@ -119,17 +119,23 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
   }
 
-  void AssertRecordedFinishedState(Metrics::LiteScriptFinishedState state) {
+  void AssertRecordedFinishedState(TriggerUIType type,
+                                   Metrics::LiteScriptFinishedState state) {
     auto entries =
         ukm_recorder_.GetEntriesByName("AutofillAssistant.LiteScriptFinished");
     ASSERT_THAT(entries.size(), Eq(1u));
     ukm_recorder_.ExpectEntrySourceHasUrl(
         entries[0], web_contents()->GetLastCommittedURL());
+    EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "TriggerUIType"),
+              static_cast<int64_t>(type));
     EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entries[0], "LiteScriptFinished"),
               static_cast<int64_t>(state));
   }
 
-  void AssertRecordedShownToUserState(Metrics::LiteScriptShownToUser state,
+  // Make sure that an UKM entry with |state| has been recorded
+  // |expected_times|, and has been associated each time with |type|.
+  void AssertRecordedShownToUserState(TriggerUIType type,
+                                      Metrics::LiteScriptShownToUser state,
                                       int expected_times) {
     auto entries = ukm_recorder_.GetEntriesByName(
         "AutofillAssistant.LiteScriptShownToUser");
@@ -139,6 +145,8 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     for (const auto* entry : entries) {
       if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptShownToUser") ==
           static_cast<int64_t>(state)) {
+        EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entry, "TriggerUIType"),
+                  static_cast<int64_t>(type));
         actual_times++;
       }
     }
@@ -146,6 +154,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   }
 
   void AssertRecordedLiteScriptOnboardingState(
+      TriggerUIType type,
       Metrics::LiteScriptOnboarding state,
       int expected_times) {
     auto entries = ukm_recorder_.GetEntriesByName(
@@ -156,6 +165,8 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     for (const auto* entry : entries) {
       if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptOnboarding") ==
           static_cast<int64_t>(state)) {
+        EXPECT_EQ(*ukm_recorder_.GetEntryMetric(entry, "TriggerUIType"),
+                  static_cast<int64_t>(type));
         actual_times++;
       }
     }
@@ -227,6 +238,7 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnBackendRequestFailed) {
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
   AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
 }
 
@@ -239,6 +251,7 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
   AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
 }
 
@@ -250,7 +263,8 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnNoTriggerScriptsAvailable) {
                                       LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE));
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
-  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+  AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
+                              Metrics::LiteScriptFinishedState::
                                   LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
 }
 
@@ -410,9 +424,10 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionNotNow) {
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
   GetTriggerScriptsResponseProto response;
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -434,15 +449,17 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
       .Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
-  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+  AssertRecordedFinishedState(CART_RETURNING_USER,
+                              Metrics::LiteScriptFinishedState::
                                   LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
   GetTriggerScriptsResponseProto response;
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -464,15 +481,17 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
       .Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_FOREVER);
-  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+  AssertRecordedFinishedState(CART_RETURNING_USER,
+                              Metrics::LiteScriptFinishedState::
                                   LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
   GetTriggerScriptsResponseProto response;
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CHECKOUT_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -494,9 +513,10 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
 TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
   GetTriggerScriptsResponseProto response;
   response.add_additional_allowed_domains("other-example.com");
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -523,7 +543,7 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
   SimulateNavigateToUrl(GURL("https://other-example.com/page"));
 
   // Navigating to subdomain of whitelisted domain is ok.
-  SimulateNavigateToUrl(GURL("https://other-example.com/page"));
+  SimulateNavigateToUrl(GURL("https://subdomain.other-example.com/page"));
 
   // Navigating to non-whitelisted domain is not ok.
   EXPECT_CALL(
@@ -533,14 +553,16 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
       .Times(1);
   SimulateNavigateToUrl(GURL("https://example.different.com/page"));
   AssertRecordedFinishedState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
   GetTriggerScriptsResponseProto response;
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -577,14 +599,16 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
                                       LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE))
       .Times(1);
   SimulateWebContentsVisibilityChanged(content::Visibility::VISIBLE);
-  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+  AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
+                              Metrics::LiteScriptFinishedState::
                                   LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
   GetTriggerScriptsResponseProto response;
-  response.add_trigger_scripts()->set_on_swipe_to_dismiss(
-      TriggerScriptProto::NOT_NOW);
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  script->set_on_swipe_to_dismiss(TriggerScriptProto::NOT_NOW);
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -601,14 +625,16 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   coordinator_->OnBottomSheetClosedWithSwipe();
   AssertRecordedShownToUserState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_SWIPE_DISMISSED, 1);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
   GetTriggerScriptsResponseProto response;
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CHECKOUT_RETURNING_USER);
   response.set_timeout_ms(3000);
   response.set_trigger_condition_check_interval_ms(1000);
   std::string serialized_response;
@@ -637,14 +663,16 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
                                       LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
   GetTriggerScriptsResponseProto response;
-  *response.add_trigger_scripts()
-       ->mutable_trigger_condition()
-       ->mutable_selector() = ToSelectorProto("#selector");
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  *script->mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("#selector");
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   response.set_timeout_ms(3000);
   response.set_trigger_condition_check_interval_ms(1000);
   std::string serialized_response;
@@ -682,6 +710,7 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
                                       LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
@@ -758,12 +787,14 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
                                       LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
   GetTriggerScriptsResponseProto response;
-  response.add_trigger_scripts();
+  TriggerScriptProto* script = response.add_trigger_scripts();
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -785,6 +816,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
   AssertRecordedFinishedState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW);
 }
 
@@ -812,7 +844,8 @@ TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
                                   LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING));
   coordinator_->OnProactiveHelpSettingChanged(
       /* proactive_help_enabled = */ false);
-  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+  AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
+                              Metrics::LiteScriptFinishedState::
                                   LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
 }
 
@@ -865,7 +898,8 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
 
 TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
   GetTriggerScriptsResponseProto response;
-  response.add_trigger_scripts();
+  auto* script = response.add_trigger_scripts();
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -890,9 +924,11 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
                                      /* result= */ OnboardingResult::ACCEPTED);
 
   AssertRecordedLiteScriptOnboardingState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
       1);
   AssertRecordedFinishedState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
@@ -901,7 +937,8 @@ TEST_F(TriggerScriptCoordinatorTest,
   auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ true);
 
   GetTriggerScriptsResponseProto response;
-  response.add_trigger_scripts();
+  auto* script = response.add_trigger_scripts();
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -935,16 +972,20 @@ TEST_F(TriggerScriptCoordinatorTest,
                                      /* result= */ OnboardingResult::ACCEPTED);
 
   AssertRecordedLiteScriptOnboardingState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
       1);
   AssertRecordedLiteScriptOnboardingState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
       1);
   AssertRecordedLiteScriptOnboardingState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::
           LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
       1);
   AssertRecordedFinishedState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
@@ -953,7 +994,8 @@ TEST_F(TriggerScriptCoordinatorTest,
   auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ false);
 
   GetTriggerScriptsResponseProto response;
-  response.add_trigger_scripts();
+  auto* script = response.add_trigger_scripts();
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -979,15 +1021,18 @@ TEST_F(TriggerScriptCoordinatorTest,
                                      /* result= */ OnboardingResult::REJECTED);
 
   AssertRecordedLiteScriptOnboardingState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
       1);
-  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+  AssertRecordedFinishedState(CART_RETURNING_USER,
+                              Metrics::LiteScriptFinishedState::
                                   LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
   GetTriggerScriptsResponseProto response;
-  response.add_trigger_scripts();
+  auto* script = response.add_trigger_scripts();
+  script->set_trigger_ui_type(CART_RETURNING_USER);
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -1012,9 +1057,11 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
                                      /* result= */ OnboardingResult::ACCEPTED);
 
   AssertRecordedLiteScriptOnboardingState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED,
       1);
   AssertRecordedFinishedState(
+      CART_RETURNING_USER,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 

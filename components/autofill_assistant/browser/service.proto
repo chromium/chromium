@@ -572,7 +572,22 @@ message TriggerScriptProto {
   optional TriggerScriptAction on_swipe_to_dismiss = 4
       [default = CANCEL_SESSION];
 
+  // An identifier for the type of trigger UI this trigger represents, for UKM.
+  optional TriggerUIType trigger_ui_type = 5;
+
   reserved 2;
+}
+
+// Set of TriggerUIType to group UKM metrics by.
+//
+// The set of available values is defined by AutofillAssistantTriggerUIType in
+// tools/metrics/histograms/enums.xml
+enum TriggerUIType {
+  UNSPECIFIED_TRIGGER_UI_TYPE = 0;
+  CART_FIRST_TIME_USER = 1;
+  CART_RETURNING_USER = 2;
+  CHECKOUT_FIRST_TIME_USER = 3;
+  CHECKOUT_RETURNING_USER = 4;
 }
 
 message TriggerScriptConditionProto {

@@ -1626,6 +1626,19 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="metrics.TriggerUIType"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TriggerUIType" enum="AutofillAssistantTriggerUIType">
+    <summary>
+      A enum that captures the type of trigger and its intent.
+    </summary>
+    <aggregation>
+      <history>
         <statistics>
           <enumeration/>
         </statistics>
@@ -1648,6 +1661,19 @@ be describing additional metrics about the same event.
       An enum that describes whether users who have successfully finished a lite
       script also accepted the onboarding or not. See
       components/autofill_assistant/browser/metrics.h.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="metrics.TriggerUIType"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TriggerUIType" enum="AutofillAssistantTriggerUIType">
+    <summary>
+      A enum that captures the type of trigger and its intent.
     </summary>
     <aggregation>
       <history>
@@ -1675,6 +1701,19 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="metrics.TriggerUIType"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TriggerUIType" enum="AutofillAssistantTriggerUIType">
+    <summary>
+      A enum that captures the type of trigger and its intent.
+    </summary>
+    <aggregation>
+      <history>
         <statistics>
           <enumeration/>
         </statistics>
@@ -1695,6 +1734,19 @@ be describing additional metrics about the same event.
     <summary>
       An enum that captures the different ways a lite script may be started or
       suppressed. See components/autofill_assistant/browser/metrics.h.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="metrics.TriggerUIType"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TriggerUIType" enum="AutofillAssistantTriggerUIType">
+    <summary>
+      A enum that captures the type of trigger and its intent.
     </summary>
     <aggregation>
       <history>

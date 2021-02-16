@@ -70,7 +70,7 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
             base::Base64UrlDecodePolicy::IGNORE_PADDING, &response)) {
       LOG(ERROR) << "Failed to base64-decode trigger scripts response";
       Metrics::RecordLiteScriptFinished(
-          ukm::UkmRecorder::Get(), web_contents,
+          ukm::UkmRecorder::Get(), web_contents, UNSPECIFIED_TRIGGER_UI_TYPE,
           Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR);
       return;
     }

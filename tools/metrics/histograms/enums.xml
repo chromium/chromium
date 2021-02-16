@@ -4773,6 +4773,14 @@ others/histograms.xml -->
   <int value="3" label="Initially incomplete &amp; Failure"/>
 </enum>
 
+<enum name="AutofillAssistantTriggerUIType">
+  <int value="0" label="UNSPECIFIED_TRIGGER_UI_TYPE"/>
+  <int value="1" label="CART_FIRST_TIME_USER"/>
+  <int value="2" label="CART_RETURNING_USER"/>
+  <int value="3" label="CHECKOUT_FIRST_TIME_USER"/>
+  <int value="4" label="CHECKOUT_RETURNING_TIME_USER"/>
+</enum>
+
 <enum name="AutofillAwGSuggestionAvailability">
   <int value="0" label="No suggestion"/>
   <int value="1" label="Has suggestion, user doesn't select it"/>
