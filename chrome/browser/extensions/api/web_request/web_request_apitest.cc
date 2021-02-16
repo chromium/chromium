@@ -3142,7 +3142,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HSTSUpgradeAfterRedirect) {
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
 }
 
-class SubresourceWebBundlesWebRequestApiTest : public ExtensionApiTest {
+class SubresourceWebBundlesWebRequestApiTest
+    : public testing::WithParamInterface<bool>,
+      public ExtensionApiTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
@@ -3150,6 +3152,18 @@ class SubresourceWebBundlesWebRequestApiTest : public ExtensionApiTest {
   }
 
  protected:
+  // Whether 'extraHeaders' is set in opt_extraInfoSpec of addEventListener.
+  enum class ExtraInfoSpec {
+    // No 'extraHeaders'
+    kDefault,
+    // with 'extraHeaders'
+    kExtraHeaders
+  };
+
+  static ExtraInfoSpec GetExtraInfoSpec() {
+    return GetParam() ? ExtraInfoSpec::kExtraHeaders : ExtraInfoSpec::kDefault;
+  }
+
   bool TryLoadScript(const char* script_src) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -3221,9 +3235,13 @@ class SubresourceWebBundlesWebRequestApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceWebBundlesWebRequestApiTest,
+                         ::testing::Bool());
+
 // Ensure web request listeners can intercept requests for a web bundle and its
 // subresources.
-IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
                        RequestIntercepted) {
   // Create an extension that intercepts requests.
   TestExtensionDir test_dir;
@@ -3234,7 +3252,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
         "background": { "scripts": ["background.js"] },
         "permissions": ["<all_urls>", "webRequest"]
       })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+
+  std::string opt_extra_info_spec = "";
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+    opt_extra_info_spec += "'extraHeaders'";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
         window.numMainResourceRequests = 0;
         window.numWebBundleRequests = 0;
         window.numScriptRequests = 0;
@@ -3245,10 +3268,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
             window.numWebBundleRequests++;
           else if (details.url.includes('test.js'))
             window.numScriptRequests++;
-        }, {urls: ['<all_urls>']}, []);
+        }, {urls: ['<all_urls>']}, [%s]);
 
         chrome.test.sendMessage('ready');
-      )");
+      )",
+                                        opt_extra_info_spec.c_str()));
   const Extension* extension = nullptr;
   {
     ExtensionTestMessageListener listener("ready", false);
@@ -3318,7 +3342,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
 
 // Ensure web request API can block the requests for the subresources inside the
 // web bundle.
-IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
                        RequestCanceled) {
   // Create an extension that blocks a bundle subresource request.
   TestExtensionDir test_dir;
@@ -3329,7 +3353,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
         "background": { "scripts": ["background.js"] },
         "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
       })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+  std::string opt_extra_info_spec = "'blocking'";
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+    opt_extra_info_spec += ", 'extraHeaders'";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
         window.numPassScriptRequests = 0;
         window.numCancelScriptRequests = 0;
         chrome.webRequest.onBeforeRequest.addListener(function(details) {
@@ -3340,10 +3368,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
             window.numCancelScriptRequests++;
             return {cancel: true};
           }
-        }, {urls: ['<all_urls>']}, ['blocking']);
+        }, {urls: ['<all_urls>']}, [%s]);
 
         chrome.test.sendMessage('ready');
-      )");
+      )",
+                                        opt_extra_info_spec.c_str()));
   const Extension* extension = nullptr;
   {
     ExtensionTestMessageListener listener("ready", false);
@@ -3412,9 +3441,101 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
                                           "window.numCancelScriptRequests"));
 }
 
+// Ensure web request API can change the headers of the subresources inside the
+// web bundle.
+IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest, ChangeHeader) {
+  // Create an extension that changes the header of the subresources inside the
+  // web bundle.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Web Request Subresource Web Bundles Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"] },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  std::string opt_extra_info_spec = "'blocking', 'responseHeaders'";
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+    opt_extra_info_spec += ", 'extraHeaders'";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
+        chrome.webRequest.onHeadersReceived.addListener(function(details) {
+          if (!details.url.includes('target.txt')) {
+            return {cancel: false};
+          }
+          const headers = details.responseHeaders;
+          for (let i = 0; i < headers.length; i++) {
+            if (headers[i].name.toLowerCase() == 'foo') {
+              headers[i].value += '-changed';
+            }
+          }
+          headers.push({name: 'foo', value:'inserted'});
+          return {responseHeaders: headers};
+        }, {urls: ['<all_urls>']}, [%s]);
+
+        chrome.test.sendMessage('ready');
+      )",
+                                        opt_extra_info_spec.c_str()));
+  const Extension* extension = nullptr;
+  {
+    ExtensionTestMessageListener listener("ready", false);
+    extension = LoadExtension(test_dir.UnpackedPath());
+    ASSERT_TRUE(extension);
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+  const char kPageHtml[] = R"(
+        <title>Loaded</title>
+        <body>
+        <script>
+        (async () => {
+          const wbn_url = new URL('./web_bundle.wbn', location.href).toString();
+          const target_url = new URL('./target.txt', location.href).toString();
+          const link = document.createElement('link');
+          link.rel = 'webbundle';
+          link.href = wbn_url;
+          link.resources = target_url;
+          document.body.appendChild(link);
+          const res = await fetch(target_url);
+          document.title = res.status + ':' + res.headers.get('foo');
+        })();
+        </script>
+        </body>
+      )";
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/web_bundle.wbn", &web_bundle);
+  RegisterRequestHandler("/test.html", "text/html", kPageHtml);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Create a web bundle.
+  std::string target_txt_url_str =
+      embedded_test_server()->GetURL("/target.txt").spec();
+  web_package::test::WebBundleBuilder builder(target_txt_url_str, "");
+  auto target_txt_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "text/plain"}, {"foo", "bar"}},
+      "Hello world");
+  builder.AddIndexEntry(target_txt_url_str, "", {target_txt_location});
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::string16 expected_title =
+      base::ASCIIToUTF16("200:bar-changed, inserted");
+  content::TitleWatcher title_watcher(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  ui_test_utils::NavigateToURL(browser(), page_url);
+
+  EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+}
+
 // Ensure web request API can redirect the requests for the subresources inside
 // the web bundle.
-IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
                        RequestRedirected) {
   // Create an extension that redirects a bundle subresource request.
   TestExtensionDir test_dir;
@@ -3425,7 +3546,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
         "background": { "scripts": ["background.js"] },
         "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
       })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+  std::string opt_extra_info_spec = "'blocking'";
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+    opt_extra_info_spec += ", 'extraHeaders'";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
         chrome.webRequest.onBeforeRequest.addListener(function(details) {
           if (details.url.includes('redirect.js')) {
             const redirectUrl =
@@ -3442,10 +3567,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesWebRequestApiTest,
                                     'redirected_to_server.js');
             return {redirectUrl: redirectUrl};
           }
-        }, {urls: ['<all_urls>']}, ['blocking']);
+        }, {urls: ['<all_urls>']}, [%s]);
 
         chrome.test.sendMessage('ready');
-      )");
+      )",
+                                        opt_extra_info_spec.c_str()));
   const Extension* extension = nullptr;
   {
     ExtensionTestMessageListener listener("ready", false);

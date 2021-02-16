@@ -31,10 +31,12 @@ struct WebBundlePendingSubresourceRequest {
   WebBundlePendingSubresourceRequest(
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       const ResourceRequest& url_request,
-      mojo::PendingRemote<mojom::URLLoaderClient> client)
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client)
       : receiver(std::move(receiver)),
         url_request(url_request),
-        client(std::move(client)) {}
+        client(std::move(client)),
+        trusted_header_client(std::move(trusted_header_client)) {}
   ~WebBundlePendingSubresourceRequest() = default;
 
   WebBundlePendingSubresourceRequest(
@@ -45,6 +47,7 @@ struct WebBundlePendingSubresourceRequest {
   mojo::PendingReceiver<mojom::URLLoader> receiver;
   const ResourceRequest url_request;
   mojo::PendingRemote<mojom::URLLoaderClient> client;
+  mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client;
 };
 
 class WebBundleManager::MemoryQuotaConsumer
@@ -112,9 +115,10 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
   auto it = pending_requests_.find({process_id, web_bundle_token_params.token});
   if (it != pending_requests_.end()) {
     for (auto& pending_request : it->second) {
-      factory->StartSubresourceRequest(std::move(pending_request->receiver),
-                                       pending_request->url_request,
-                                       std::move(pending_request->client));
+      factory->StartSubresourceRequest(
+          std::move(pending_request->receiver), pending_request->url_request,
+          std::move(pending_request->client),
+          std::move(pending_request->trusted_header_client));
     }
     pending_requests_.erase(it);
   }
@@ -146,20 +150,23 @@ void WebBundleManager::StartSubresourceRequest(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
-    int32_t process_id) {
+    int32_t process_id,
+    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client) {
   DCHECK(url_request.web_bundle_token_params.has_value());
   base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
       GetWebBundleURLLoaderFactory(*url_request.web_bundle_token_params,
                                    process_id);
   if (web_bundle_url_loader_factory) {
     web_bundle_url_loader_factory->StartSubresourceRequest(
-        std::move(receiver), url_request, std::move(client));
+        std::move(receiver), url_request, std::move(client),
+        std::move(trusted_header_client));
     return;
   }
   // A request for subresource arrives earlier than a request for a webbundle.
   pending_requests_[{process_id, url_request.web_bundle_token_params->token}]
       .push_back(std::make_unique<WebBundlePendingSubresourceRequest>(
-          std::move(receiver), url_request, std::move(client)));
+          std::move(receiver), url_request, std::move(client),
+          std::move(trusted_header_client)));
 }
 
 void WebBundleManager::DisconnectHandler(

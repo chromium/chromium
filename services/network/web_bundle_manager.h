@@ -42,7 +42,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       const ResourceRequest& url_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
-      int32_t process_id);
+      int32_t process_id,
+      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client);
 
  private:
   friend class WebBundleManagerTest;

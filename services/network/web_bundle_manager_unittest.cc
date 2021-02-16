@@ -121,7 +121,8 @@ StartSubresourceLoad(WebBundleURLLoaderFactory& factory) {
   request.method = "GET";
   request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
   factory.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
-                                  client->CreateRemote());
+                                  client->CreateRemote(),
+                                  mojo::Remote<mojom::TrustedHeaderClient>());
   return std::forward_as_tuple(std::move(loader), std::move(client));
 }
 
@@ -261,7 +262,8 @@ TEST_F(WebBundleManagerTest,
   auto client = std::make_unique<network::TestURLLoaderClient>();
 
   manager.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
-                                  client->CreateRemote(), process_id1);
+                                  client->CreateRemote(), process_id1,
+                                  mojo::Remote<mojom::TrustedHeaderClient>());
 
   // Simulate that a webbundle request arrives, calling
   // WebBundleManager::CreateWebBundleURLLoaderFactory.

@@ -134,10 +134,18 @@ void URLLoaderFactory::CreateLoaderAndStart(
   if (url_request.web_bundle_token_params.has_value() &&
       url_request.destination !=
           network::mojom::RequestDestination::kWebBundle) {
+    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client;
+    if (header_client_ && (options & mojom::kURLLoadOptionUseHeaderClient)) {
+      // CORS preflight request must not come here.
+      DCHECK(!(options & mojom::kURLLoadOptionAsCorsPreflight));
+      header_client_->OnLoaderCreated(
+          request_id, trusted_header_client.BindNewPipeAndPassReceiver());
+    }
+
     // Load a subresource from a WebBundle.
     context_->GetWebBundleManager().StartSubresourceRequest(
         std::move(receiver), url_request, std::move(client),
-        params_->process_id);
+        params_->process_id, std::move(trusted_header_client));
     return;
   }
 

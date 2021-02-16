@@ -154,7 +154,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     result.client = std::make_unique<network::TestURLLoaderClient>();
     factory_->StartSubresourceRequest(
         result.loader.BindNewPipeAndPassReceiver(), request,
-        result.client->CreateRemote());
+        result.client->CreateRemote(),
+        mojo::Remote<mojom::TrustedHeaderClient>());
     return result;
   }
 

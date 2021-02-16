@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
@@ -50,19 +51,40 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   void StartSubresourceRequest(
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       const ResourceRequest& url_request,
-      mojo::PendingRemote<mojom::URLLoaderClient> client);
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client);
 
  private:
   class BundleDataSource;
   class URLLoader;
 
   bool HasError() const;
-  void StartLoad(URLLoader* loader);
+
+  void OnBeforeSendHeadersComplete(
+      base::WeakPtr<URLLoader> loader,
+      int result,
+      const base::Optional<net::HttpRequestHeaders>& headers);
+  void QueueOrStartLoader(base::WeakPtr<URLLoader> loader);
+
+  void StartLoad(base::WeakPtr<URLLoader> loader);
   void OnMetadataParsed(web_package::mojom::BundleMetadataPtr metadata,
                         web_package::mojom::BundleMetadataParseErrorPtr error);
   void OnResponseParsed(base::WeakPtr<URLLoader> loader,
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
+  void OnHeadersReceivedComplete(
+      base::WeakPtr<URLLoader> loader,
+      const std::string& original_header,
+      uint64_t payload_offset,
+      uint64_t payload_length,
+      int result,
+      const base::Optional<std::string>& headers,
+      const base::Optional<GURL>& preserve_fragment_on_redirect_url);
+  void SendResponseToLoader(base::WeakPtr<URLLoader> loader,
+                            const std::string& headers,
+                            uint64_t payload_offset,
+                            uint64_t payload_length);
+
   void OnMemoryQuotaExceeded();
   void OnDataCompleted();
   void MaybeRecordLoadResult(SubresourceWebBundleLoadResult result);
