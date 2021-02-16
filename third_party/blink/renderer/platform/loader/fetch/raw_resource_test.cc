@@ -245,7 +245,7 @@ TEST_F(RawResourceTest, PreloadWithAsynchronousAddClient) {
       ReplayingBytesConsumer::Command(ReplayingBytesConsumer::Command::kDone));
   ResponseBodyLoader* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
       *bytes_consumer, *MakeGarbageCollected<NoopResponseBodyLoaderClient>(),
-      platform_->test_task_runner().get());
+      platform_->test_task_runner().get(), nullptr);
   Persistent<DummyClient> dummy_client = MakeGarbageCollected<DummyClient>();
 
   // Set the response first to make ResourceClient addition asynchronous.

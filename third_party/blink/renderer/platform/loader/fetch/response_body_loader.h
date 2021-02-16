@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -24,6 +25,7 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
+class BackForwardCacheLoaderHelper;
 class ResponseBodyLoader;
 
 // See ResponseBodyLoader for details. This is a virtual interface to expose
@@ -74,9 +76,11 @@ class PLATFORM_EXPORT ResponseBodyLoader final
       private ResponseBodyLoaderClient,
       private BytesConsumer::Client {
  public:
-  ResponseBodyLoader(BytesConsumer&,
-                     ResponseBodyLoaderClient&,
-                     scoped_refptr<base::SingleThreadTaskRunner>);
+  ResponseBodyLoader(
+      BytesConsumer&,
+      ResponseBodyLoaderClient&,
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
 
   // ResponseBodyLoaderDrainableInterface implementation.
   mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
@@ -134,10 +138,12 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
   String DebugName() const override { return "ResponseBodyLoader"; }
+
   Member<Buffer> body_buffer_;
   Member<BytesConsumer> bytes_consumer_;
   Member<DelegatingBytesConsumer> delegating_bytes_consumer_;
   const Member<ResponseBodyLoaderClient> client_;
+  WeakMember<BackForwardCacheLoaderHelper> back_forward_cache_loader_helper_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   WebURLLoader::DeferType suspended_state_ =
       WebURLLoader::DeferType::kNotDeferred;

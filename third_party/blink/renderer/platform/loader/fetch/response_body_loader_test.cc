@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
@@ -21,6 +22,15 @@
 namespace blink {
 
 namespace {
+
+class TestBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
+ public:
+  TestBackForwardCacheLoaderHelper() = default;
+
+  bool CanContinueBufferingWhileInBackForwardCache() const override {
+    return true;
+  }
+};
 
 class ResponseBodyLoaderTest : public testing::Test {
  protected:
@@ -139,6 +149,15 @@ class ResponseBodyLoaderTest : public testing::Test {
     const Member<BytesConsumer> bytes_consumer_;
     const Member<TestClient> test_response_body_loader_client_;
   };
+
+  ResponseBodyLoader* MakeResponseBodyLoader(
+      BytesConsumer& bytes_consumer,
+      ResponseBodyLoaderClient& client,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    return MakeGarbageCollected<ResponseBodyLoader>(
+        bytes_consumer, client, task_runner,
+        MakeGarbageCollected<TestBackForwardCacheLoaderHelper>());
+  }
 };
 
 class ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest
@@ -156,8 +175,7 @@ TEST_F(ResponseBodyLoaderTest, Load) {
   consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -185,8 +203,7 @@ TEST_F(ResponseBodyLoaderTest, LoadFailure) {
   consumer->Add(Command(Command::kError));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -213,8 +230,7 @@ TEST_F(ResponseBodyLoaderTest, LoadWithDataAndDone) {
   consumer->Add(Command(Command::kDataAndDone, "llo"));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -243,8 +259,7 @@ TEST_F(ResponseBodyLoaderTest, Abort) {
 
   auto* client = MakeGarbageCollected<TestClient>(
       TestClient::Option::kAbortOnDidReceiveData);
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
   client->SetLoader(*body_loader);
 
   EXPECT_FALSE(client->LoadingIsFinished());
@@ -275,8 +290,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 
   auto* client = MakeGarbageCollected<TestClient>(
       TestClient::Option::kSuspendOnDidReceiveData);
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
   client->SetLoader(*body_loader);
 
   EXPECT_FALSE(client->LoadingIsFinished());
@@ -340,8 +354,7 @@ TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -372,8 +385,7 @@ TEST_F(ResponseBodyLoaderTest, NotDrainable) {
   consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   ResponseBodyLoaderClient* intermediate_client = nullptr;
   auto data_pipe = body_loader->DrainAsDataPipe(&intermediate_client);
@@ -415,8 +427,7 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipe) {
       task_runner, std::move(consumer_end), &completion_notifier);
   auto* client = MakeGarbageCollected<TestClient>();
 
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   ResponseBodyLoaderClient* client_for_draining = nullptr;
   auto data_pipe = body_loader->DrainAsDataPipe(&client_for_draining);
@@ -465,8 +476,7 @@ TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
   consumer->Add(Command(Command::kData, "he"));
   body_loader->Start();
   task_runner->RunUntilIdle();
@@ -524,8 +534,7 @@ TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
   consumer->Add(Command(Command::kData, "he"));
   body_loader->Start();
   task_runner->RunUntilIdle();
@@ -578,8 +587,7 @@ TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
   consumer->Add(Command(Command::kData, "he"));
   body_loader->Start();
   task_runner->RunUntilIdle();
@@ -641,8 +649,7 @@ TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
   body_loader->Start();
   task_runner->RunUntilIdle();
   EXPECT_EQ("", client->GetData());
@@ -693,8 +700,7 @@ TEST_F(ResponseBodyLoaderTest, DrainAsDataPipeAndReportError) {
       task_runner, std::move(consumer_end), &completion_notifier);
   auto* client = MakeGarbageCollected<TestClient>();
 
-  auto* body_loader =
-      MakeGarbageCollected<ResponseBodyLoader>(*consumer, *client, task_runner);
+  auto* body_loader = MakeResponseBodyLoader(*consumer, *client, task_runner);
 
   ResponseBodyLoaderClient* client_for_draining = nullptr;
   auto data_pipe = body_loader->DrainAsDataPipe(&client_for_draining);
@@ -728,8 +734,9 @@ TEST_F(ResponseBodyLoaderTest, DrainAsBytesConsumer) {
   original_consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
@@ -757,8 +764,9 @@ TEST_F(ResponseBodyLoaderTest, CancelDrainedBytesConsumer) {
   original_consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
@@ -793,8 +801,9 @@ TEST_F(ResponseBodyLoaderTest, DrainAsBytesConsumerWithError) {
   original_consumer->Add(Command(Command::kError));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
@@ -821,8 +830,9 @@ TEST_F(ResponseBodyLoaderTest, AbortAfterBytesConsumerIsDrained) {
   original_consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
   auto* bytes_consumer_client =
@@ -851,8 +861,9 @@ TEST_F(ResponseBodyLoaderTest, AbortAfterBytesConsumerIsDrainedIsNotified) {
       MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
@@ -880,8 +891,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   original_consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
   const char* buffer = nullptr;
@@ -927,8 +939,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   original_consumer->Add(Command(Command::kError));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
   const char* buffer = nullptr;
@@ -979,8 +992,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   original_consumer->Add(Command(Command::kDataAndDone, "hello"));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
   const char* buffer = nullptr;
@@ -1037,8 +1051,8 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
       task_runner, std::move(consumer_end), &completion_notifier);
   auto* client = MakeGarbageCollected<TestClient>();
 
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
@@ -1065,8 +1079,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   original_consumer->Add(Command(Command::kWait));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
   task_runner->RunUntilIdle();
@@ -1094,8 +1109,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   original_consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
   auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);
@@ -1134,8 +1150,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   original_consumer->Add(Command(Command::kError));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
   auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);
@@ -1174,8 +1191,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   original_consumer->Add(Command(Command::kDataAndDone, "hahaha"));
 
   auto* client = MakeGarbageCollected<TestClient>();
-  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
-      *original_consumer, *client, task_runner);
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
   auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);

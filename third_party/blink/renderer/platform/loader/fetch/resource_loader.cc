@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors_error_string.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -544,8 +545,8 @@ void ResourceLoader::DidStartLoadingResponseBodyInternal(
   DCHECK(!response_body_loader_);
   ResponseBodyLoaderClient& response_body_loader_client = *this;
   response_body_loader_ = MakeGarbageCollected<ResponseBodyLoader>(
-      bytes_consumer, response_body_loader_client,
-      task_runner_for_body_loader_);
+      bytes_consumer, response_body_loader_client, task_runner_for_body_loader_,
+      fetcher_->GetBackForwardCacheLoaderHelper());
   resource_->ResponseBodyReceived(*response_body_loader_,
                                   task_runner_for_body_loader_);
   if (response_body_loader_->IsDrained()) {

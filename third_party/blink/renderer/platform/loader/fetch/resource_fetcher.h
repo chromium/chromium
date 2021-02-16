@@ -319,6 +319,9 @@ class PLATFORM_EXPORT ResourceFetcher
   void EvictFromBackForwardCache(mojom::RendererEvictionReason reason);
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
   bool CanContinueBufferingWhileInBackForwardCache();
+  BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
+    return back_forward_cache_loader_helper_;
+  }
 
  private:
   friend class ResourceCacheValidationSuppressor;

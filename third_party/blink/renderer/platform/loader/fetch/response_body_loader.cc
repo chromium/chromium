@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -347,9 +348,11 @@ class ResponseBodyLoader::Buffer final
 ResponseBodyLoader::ResponseBodyLoader(
     BytesConsumer& bytes_consumer,
     ResponseBodyLoaderClient& client,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
     : bytes_consumer_(bytes_consumer),
       client_(client),
+      back_forward_cache_loader_helper_(back_forward_cache_loader_helper),
       task_runner_(std::move(task_runner)) {
   bytes_consumer_->SetClient(this);
   body_buffer_ = MakeGarbageCollected<Buffer>(this);
@@ -436,19 +439,26 @@ void ResponseBodyLoader::DidCancelLoadingBody() {
   client_->DidCancelLoadingBody();
 }
 
-// TODO(yuzus): Remove this and provide the capability to the loader.
 void ResponseBodyLoader::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
-  client_->EvictFromBackForwardCache(reason);
+  if (!back_forward_cache_loader_helper_)
+    return;
+  back_forward_cache_loader_helper_->EvictFromBackForwardCache(reason);
 }
 
 void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
     size_t num_bytes) {
-  client_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+  if (!back_forward_cache_loader_helper_)
+    return;
+  back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
+      num_bytes);
 }
 
 bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
-  return client_->CanContinueBufferingWhileInBackForwardCache();
+  if (!back_forward_cache_loader_helper_)
+    return false;
+  return back_forward_cache_loader_helper_
+      ->CanContinueBufferingWhileInBackForwardCache();
 }
 
 void ResponseBodyLoader::Start() {
@@ -495,7 +505,7 @@ void ResponseBodyLoader::Suspend(WebURLLoader::DeferType suspended_state) {
 
 void ResponseBodyLoader::EvictFromBackForwardCacheIfDrained() {
   if (IsDrained()) {
-    client_->EvictFromBackForwardCache(
+    EvictFromBackForwardCache(
         mojom::blink::RendererEvictionReason::kNetworkRequestDatapipeDrained);
   }
 }
@@ -612,6 +622,7 @@ void ResponseBodyLoader::Trace(Visitor* visitor) const {
   visitor->Trace(delegating_bytes_consumer_);
   visitor->Trace(client_);
   visitor->Trace(body_buffer_);
+  visitor->Trace(back_forward_cache_loader_helper_);
   ResponseBodyLoaderDrainableInterface::Trace(visitor);
   ResponseBodyLoaderClient::Trace(visitor);
   BytesConsumer::Client::Trace(visitor);
