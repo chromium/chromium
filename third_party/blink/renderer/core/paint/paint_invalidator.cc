@@ -199,6 +199,17 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       *tree_builder_context.current.transform,
       *tree_builder_context.current.clip, *tree_builder_context.current_effect);
 
+  // Adjust old_paint_offset so that LayoutShiftTracker will see the change of
+  // offset caused by change of paint offset translations below the layout shift
+  // root.
+  PhysicalOffset adjusted_old_transform_indifferent_paint_offset =
+      context.old_paint_offset -
+      tree_builder_context.current.additional_offset_to_layout_shift_root_delta;
+  PhysicalOffset adjusted_old_paint_offset =
+      adjusted_old_transform_indifferent_paint_offset -
+      tree_builder_context.translation_2d_to_layout_shift_root_delta;
+  PhysicalOffset new_paint_offset = tree_builder_context.current.paint_offset;
+
   if (object.IsText()) {
     const auto& text = To<LayoutText>(object);
     LogicalOffset new_starting_point;
@@ -217,11 +228,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
 
     layout_shift_tracker.NotifyTextPrePaint(
         text, property_tree_state, old_starting_point, new_starting_point,
-        // Similar to the adjustment of old_paint_offset for LayoutBox.
-        context.old_paint_offset -
-            tree_builder_context.current
-                .additional_offset_to_layout_shift_root_delta,
-        tree_builder_context.current.paint_offset, logical_height);
+        adjusted_old_paint_offset,
+        adjusted_old_transform_indifferent_paint_offset, new_paint_offset,
+        logical_height);
     return;
   }
 
@@ -229,7 +238,23 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   const auto& box = To<LayoutBox>(object);
 
   PhysicalRect new_rect = box.PhysicalVisualOverflowRect();
+  new_rect.Move(new_paint_offset);
   PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
+  old_rect.Move(adjusted_old_paint_offset);
+
+  bool should_create_containing_block_scope =
+      // TODO(crbug.com/1178618): Support multiple-fragments when switching to
+      // LayoutNGFragmentTraversal.
+      context.fragment_data == &box.FirstFragment() &&
+      box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
+  if (should_create_containing_block_scope) {
+    // For layout shift tracking of contained LayoutTexts.
+    context.containing_block_scope_ =
+        std::make_unique<LayoutShiftTracker::ContainingBlockScope>(
+            PhysicalSizeToBeNoop(box.PreviousSize()),
+            PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
+  }
+
   bool should_report_layout_shift = [&]() -> bool {
     if (box.ShouldSkipNextLayoutShiftTracking()) {
       box.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(false);
@@ -258,41 +283,13 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     // different from that of the parent).
     return parent_context->fragment_data->PaintOffset() -
                parent_context->old_paint_offset !=
-           tree_builder_context.current.paint_offset - context.old_paint_offset;
+           new_paint_offset - context.old_paint_offset;
   }();
-
-  bool should_create_containing_block_scope =
-      // TODO(crbug.com/1104064): Support multiple-fragments when switching to
-      // LayoutNGFragmentTraversal.
-      context.fragment_data == &box.FirstFragment() &&
-      box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
-  if (!should_report_layout_shift && !should_create_containing_block_scope)
-    return;
-
-  new_rect.Move(tree_builder_context.current.paint_offset);
-  old_rect.Move(context.old_paint_offset);
-  // Adjust old_visual_rect so that LayoutShiftTracker can see the change of
-  // offset caused by change of transforms below the layout shift root.
-  old_rect.Move(-tree_builder_context.current
-                     .additional_offset_to_layout_shift_root_delta);
-
-  if (should_create_containing_block_scope) {
-    // For layout shift tracking of contained LayoutTexts.
-    context.containing_block_scope_ =
-        std::make_unique<LayoutShiftTracker::ContainingBlockScope>(
-            PhysicalSizeToBeNoop(box.PreviousSize()),
-            PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
-    if (!should_report_layout_shift)
-      return;
+  if (should_report_layout_shift) {
+    layout_shift_tracker.NotifyBoxPrePaint(
+        box, property_tree_state, old_rect, new_rect, adjusted_old_paint_offset,
+        adjusted_old_transform_indifferent_paint_offset, new_paint_offset);
   }
-
-  // Adjust old_paint_offset similarly.
-  PhysicalOffset old_paint_offset =
-      context.old_paint_offset -
-      tree_builder_context.current.additional_offset_to_layout_shift_root_delta;
-  layout_shift_tracker.NotifyBoxPrePaint(
-      box, property_tree_state, old_rect, new_rect, old_paint_offset,
-      tree_builder_context.current.paint_offset);
 }
 
 bool PaintInvalidator::InvalidatePaint(

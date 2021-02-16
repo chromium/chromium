@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Layout Instability: no layout shift for transform change</title>
+<title>Layout Instability: no layout shift if transform change counters location change</title>
 <link rel="help" href="https://wicg.github.io/layout-instability/" />
 <style>
 body { margin: 0; }
@@ -20,14 +20,17 @@ promise_test(async () => {
   // Wait for the initial render to complete.
   await waitForAnimationFrames(2);
 
-  // Modify the transform, for which no shift should be reported.
-  document.querySelector("#transformed").style = "transform: translateY(100px)";
+  // Modify the transform and the location at the same time, and the values
+  // cancel each other visually, for which no shift should be reported.
+  transformed.style.transform = 'translateY(100px)';
+  transformed.style.top = '-100px';
+  transformed.style.left = '20px';
   // Change size of child, for which no shift should be reported, either.
-  document.querySelector("#child").style = "width: 300px";
+  child.style.width = '300px';
 
   await waitForAnimationFrames(2);
   // No shift should be reported.
   assert_equals(watcher.score, 0);
-}, 'no layout shift for transform change');
+}, 'no layout shift if transform change counters location change');
 
 </script>

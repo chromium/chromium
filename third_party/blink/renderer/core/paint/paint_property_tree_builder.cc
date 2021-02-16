@@ -953,15 +953,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
   // properties_->Transform() is present if a CSS transform is present,
   // and is also present if transform-style: preserve-3d is set.
   // See NeedsTransform.
-  if (properties_->Transform()) {
-    context_.current.transform = properties_->Transform();
+  if (const auto* transform = properties_->Transform()) {
+    context_.current.transform = transform;
     if (object_.StyleRef().Preserves3D()) {
-      context_.current.rendering_context_id =
-          properties_->Transform()->RenderingContextId();
+      context_.current.rendering_context_id = transform->RenderingContextId();
       context_.current.should_flatten_inherited_transform = false;
     } else {
       context_.current.rendering_context_id = 0;
       context_.current.should_flatten_inherited_transform = true;
+    }
+    if (transform->IsIdentityOr2DTranslation()) {
+      context_.translation_2d_to_layout_shift_root_delta +=
+          PhysicalOffset::FromFloatSizeRound(transform->Translation2D());
     }
   } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
              !object_.IsAnonymous()) {
@@ -2621,7 +2624,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // the object itself.
   if (IsA<LayoutView>(object_)) {
     context_.current.additional_offset_to_layout_shift_root_delta =
-        PhysicalOffset();
+        context_.translation_2d_to_layout_shift_root_delta = PhysicalOffset();
   }
 }
 
@@ -2656,6 +2659,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
     // additional_offset_to_layout_shift_root_delta.
     context_.current.additional_offset_to_layout_shift_root_delta =
         context_.old_paint_offset - fragment_data_.PaintOffset();
+    context_.translation_2d_to_layout_shift_root_delta = PhysicalOffset();
   }
 
 #if DCHECK_IS_ON()
@@ -2690,6 +2694,12 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
       // between the old and new paint offset translation.
       context.pending_additional_offset_to_layout_shift_root_delta =
           -PhysicalOffset::FromFloatSizeRound(translation->Translation2D());
+    }
+    if (const auto* transform = properties->Transform()) {
+      if (transform->IsIdentityOr2DTranslation()) {
+        context.translation_2d_to_layout_shift_root_delta -=
+            PhysicalOffset::FromFloatSizeRound(transform->Translation2D());
+      }
     }
   }
 

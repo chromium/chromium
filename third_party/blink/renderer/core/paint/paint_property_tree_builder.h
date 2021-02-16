@@ -151,6 +151,10 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // ContainingBlockContext is set, this value should be added to
   // ContainingBlockContext::additional_offset_to_layout_shift_root_delta.
   PhysicalOffset pending_additional_offset_to_layout_shift_root_delta;
+
+  // The delta between the old and new accumulated offsets of 2d translation
+  // transforms to the layout shift root.
+  PhysicalOffset translation_2d_to_layout_shift_root_delta;
 };
 
 struct PaintPropertyTreeBuilderContext {

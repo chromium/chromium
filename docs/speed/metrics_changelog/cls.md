@@ -4,6 +4,7 @@ This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
 * Chrome 90
   * Metric definition improvement: [Bug fixes involving changes to transform, effect, clip or position](2021_02_cls.md)
+  * Metric definition improvement: [Consider transform change countering layout shift](2021_02_cls.md)
 * Chrome 89
   * Metric definition improvement: [Ignore layout shift under opacity:0](2020_12_cls.md)
   * Metric definition improvement: [Clip layout shift rect by visual viewport](2020_12_cls.md)

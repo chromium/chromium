@@ -46,20 +46,26 @@ class CORE_EXPORT LayoutShiftTracker final
   // |old_rect| and |old_paint_offset| so that we can calculate the correct old
   // visual representation and old starting point in the initial containing
   // block and the viewport with the new property tree state in most cases.
-  void NotifyBoxPrePaint(const LayoutBox& box,
-                         const PropertyTreeStateOrAlias& property_tree_state,
-                         const PhysicalRect& old_rect,
-                         const PhysicalRect& new_rect,
-                         const PhysicalOffset& old_paint_offset,
-                         const PhysicalOffset& new_paint_offset);
+  // |old_transform_indifferent_paint_offset| is the adjusted old paint offset
+  // with transform changes excluded.
+  void NotifyBoxPrePaint(
+      const LayoutBox& box,
+      const PropertyTreeStateOrAlias& property_tree_state,
+      const PhysicalRect& old_rect,
+      const PhysicalRect& new_rect,
+      const PhysicalOffset& old_paint_offset,
+      const PhysicalOffset& old_transform_indifferent_paint_offset,
+      const PhysicalOffset& new_paint_offset);
 
-  void NotifyTextPrePaint(const LayoutText& text,
-                          const PropertyTreeStateOrAlias& property_tree_state,
-                          const LogicalOffset& old_starting_point,
-                          const LogicalOffset& new_starting_point,
-                          const PhysicalOffset& old_paint_offset,
-                          const PhysicalOffset& new_paint_offset,
-                          const LayoutUnit logical_height);
+  void NotifyTextPrePaint(
+      const LayoutText& text,
+      const PropertyTreeStateOrAlias& property_tree_state,
+      const LogicalOffset& old_starting_point,
+      const LogicalOffset& new_starting_point,
+      const PhysicalOffset& old_paint_offset,
+      const PhysicalOffset& old_transform_indifferent_paint_offset,
+      const PhysicalOffset& new_paint_offset,
+      const LayoutUnit logical_height);
 
   void NotifyPrePaintFinished();
   void NotifyInput(const WebInputEvent&);
@@ -146,6 +152,7 @@ class CORE_EXPORT LayoutShiftTracker final
                      const PhysicalRect& old_rect,
                      const PhysicalRect& new_rect,
                      const FloatPoint& old_starting_point,
+                     const FloatPoint& old_transform_indifferent_starting_point,
                      const FloatPoint& new_starting_point);
 
   void ReportShift(double score_delta, double weighted_score_delta);

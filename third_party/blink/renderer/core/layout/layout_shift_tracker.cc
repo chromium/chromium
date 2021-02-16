@@ -205,6 +205,7 @@ void LayoutShiftTracker::ObjectShifted(
     const PhysicalRect& old_rect,
     const PhysicalRect& new_rect,
     const FloatPoint& old_starting_point,
+    const FloatPoint& old_transform_indifferent_starting_point,
     const FloatPoint& new_starting_point) {
   // The caller should ensure these conditions.
   DCHECK(!old_rect.IsEmpty());
@@ -215,6 +216,11 @@ void LayoutShiftTracker::ObjectShifted(
 
   if (EqualWithinMovementThreshold(old_starting_point, new_starting_point,
                                    threshold_physical_px))
+    return;
+
+  if (old_transform_indifferent_starting_point != old_starting_point &&
+      EqualWithinMovementThreshold(old_transform_indifferent_starting_point,
+                                   new_starting_point, threshold_physical_px))
     return;
 
   if (SmallerThanRegionGranularity(old_rect) &&
@@ -255,6 +261,20 @@ void LayoutShiftTracker::ObjectShifted(
     // allowing counterscrolled layout shifts. Ideally, we would map old_rect
     // to viewport coordinates using the previous frame's scroll tree.
     return;
+  }
+
+  if (old_transform_indifferent_starting_point != old_starting_point) {
+    FloatPoint old_transform_indifferent_starting_point_in_root =
+        transform.MapPoint(old_transform_indifferent_starting_point);
+    if (EqualWithinMovementThreshold(
+            old_transform_indifferent_starting_point_in_root,
+            new_starting_point_in_root, threshold_physical_px))
+      return;
+    if (EqualWithinMovementThreshold(
+            old_transform_indifferent_starting_point_in_root +
+                frame_scroll_delta_,
+            new_starting_point_in_root, threshold_physical_px))
+      return;
   }
 
   FloatRect old_rect_in_root(old_rect);
@@ -353,10 +373,13 @@ void LayoutShiftTracker::NotifyBoxPrePaint(
     const PhysicalRect& old_rect,
     const PhysicalRect& new_rect,
     const PhysicalOffset& old_paint_offset,
+    const PhysicalOffset& old_transform_indifferent_paint_offset,
     const PhysicalOffset& new_paint_offset) {
   DCHECK(NeedsToTrack(box));
   ObjectShifted(box, property_tree_state, old_rect, new_rect,
                 StartingPoint(old_paint_offset, box, box.PreviousSize()),
+                StartingPoint(old_transform_indifferent_paint_offset, box,
+                              box.PreviousSize()),
                 StartingPoint(new_paint_offset, box, box.Size()));
 }
 
@@ -366,6 +389,7 @@ void LayoutShiftTracker::NotifyTextPrePaint(
     const LogicalOffset& old_starting_point,
     const LogicalOffset& new_starting_point,
     const PhysicalOffset& old_paint_offset,
+    const PhysicalOffset& old_transform_indifferent_paint_offset,
     const PhysicalOffset& new_paint_offset,
     LayoutUnit logical_height) {
   DCHECK(NeedsToTrack(text));
@@ -377,6 +401,9 @@ void LayoutShiftTracker::NotifyTextPrePaint(
       old_paint_offset + old_starting_point.ConvertToPhysical(writing_direction,
                                                               block->old_size_,
                                                               PhysicalSize());
+  PhysicalOffset old_transform_indifferent_physical_starting_point =
+      old_physical_starting_point + old_transform_indifferent_paint_offset -
+      old_paint_offset;
   PhysicalOffset new_physical_starting_point =
       new_paint_offset + new_starting_point.ConvertToPhysical(writing_direction,
                                                               block->new_size_,
@@ -395,6 +422,7 @@ void LayoutShiftTracker::NotifyTextPrePaint(
 
   ObjectShifted(text, property_tree_state, old_rect, new_rect,
                 FloatPoint(old_physical_starting_point),
+                FloatPoint(old_transform_indifferent_physical_starting_point),
                 FloatPoint(new_physical_starting_point));
 }
 
