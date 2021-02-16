@@ -930,7 +930,7 @@ void Controller::OnPeriodicScriptCheck() {
     autostart_timeout_script_path_.clear();
     periodic_script_check_scheduled_ = false;
     ExecuteScript(script_path, /* start_message= */ "", /* needs_ui= */ false,
-                  TriggerContext::CreateEmpty(), state_);
+                  std::make_unique<TriggerContext>(), state_);
     return;
   }
 
@@ -1157,7 +1157,8 @@ bool Controller::MaybeAutostartScript(
   std::string path = runnable_scripts[autostart_index].path;
   std::string start_message = runnable_scripts[autostart_index].start_message;
   bool needs_ui = runnable_scripts[autostart_index].needs_ui;
-  ExecuteScript(path, start_message, needs_ui, TriggerContext::CreateEmpty(),
+  ExecuteScript(path, start_message, needs_ui,
+                std::make_unique<TriggerContext>(),
                 AutofillAssistantState::PROMPT);
   return true;
 }

@@ -59,7 +59,7 @@ class ScriptExecutorTest : public testing::Test,
     script_parameters["additional_param"] = "additional_param_value";
     executor_ = std::make_unique<ScriptExecutor>(
         kScriptPath,
-        TriggerContext::Create(script_parameters, "additional_exp"),
+        std::make_unique<TriggerContext>(script_parameters, "additional_exp"),
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
         /* listener= */ this, &scripts_state_, &ordered_interrupts_,
@@ -187,9 +187,8 @@ TEST_F(ScriptExecutorTest, GetActionsFails) {
 }
 
 TEST_F(ScriptExecutorTest, ForwardParameters) {
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "value";
-  delegate_.SetTriggerContext(TriggerContext::Create(parameters, "exp"));
+  delegate_.SetTriggerContext(std::make_unique<TriggerContext>(
+      std::map<std::string, std::string>{{"param", "value"}}, "exp"));
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
       .WillOnce(Invoke([](const std::string& script_path, const GURL& url,
                           const TriggerContext& trigger_context,
@@ -199,12 +198,11 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
         // |trigger_context| includes data passed to
         // ScriptExecutor constructor as well as data from the
         // delegate's TriggerContext.
-        EXPECT_THAT("exp,additional_exp", trigger_context.experiment_ids());
-        EXPECT_THAT(
-            "additional_param_value",
-            trigger_context.GetParameter("additional_param").value_or(""));
-        EXPECT_THAT("value",
-                    trigger_context.GetParameter("param").value_or(""));
+        EXPECT_THAT(trigger_context.GetExperimentIds(),
+                    Eq("exp,additional_exp"));
+        EXPECT_THAT(trigger_context.GetParameter("additional_param"),
+                    Eq("additional_param_value"));
+        EXPECT_THAT(trigger_context.GetParameter("param"), Eq("value"));
 
         std::move(callback).Run(net::HTTP_OK, "");
       }));
@@ -1975,7 +1973,7 @@ TEST_F(ScriptExecutorTest, InterceptUserActions) {
   // in this test.
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _));
 
-  (*delegate_.GetUserActions())[0].Call(TriggerContext::CreateEmpty());
+  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>());
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 }
 
@@ -1994,13 +1992,17 @@ TEST_F(ScriptExecutorTest, ReportDirectActionsChoices) {
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillOnce(SaveArg<3>(&processed_actions_capture));
 
-  auto context = std::make_unique<TriggerContextImpl>();
-  context->SetDirectAction(true);
   executor_->Run(&user_data_, executor_callback_.Get());
 
   ASSERT_NE(nullptr, delegate_.GetUserActions());
   ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
-  (*delegate_.GetUserActions())[0].Call(std::move(context));
+  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>(
+      /* parameters = */ std::map<std::string, std::string>(),
+      /* experiment_ids = */ std::string(),
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ true,
+      /* caller_account_hash = */ std::string()));
 
   ASSERT_THAT(processed_actions_capture, SizeIs(1));
   EXPECT_TRUE(processed_actions_capture[0].direct_action());
@@ -2032,7 +2034,7 @@ TEST_F(ScriptExecutorTest, PauseAndResume) {
                            AllOf(Field(&Chip::text, StrEq("Button")),
                                  Field(&Chip::type, HIGHLIGHTED_ACTION)))));
 
-  (*delegate_.GetUserActions())[0].Call(TriggerContext::CreateEmpty());
+  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>());
   EXPECT_EQ("Tell", delegate_.GetStatusMessage());
   EXPECT_THAT(delegate_.GetStateHistory(),
               ElementsAre(AutofillAssistantState::PROMPT,
@@ -2079,7 +2081,7 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
   // not advance to the next action (i.e. |PromptAction|), so the status
   // status message is the one from |TellAction|.
   EXPECT_CALL(mock_web_controller_, OnFindElement(_, _)).Times(0);
-  (*delegate_.GetUserActions())[0].Call(TriggerContext::CreateEmpty());
+  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>());
   EXPECT_EQ("Tell", delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 

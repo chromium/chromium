@@ -854,7 +854,7 @@ void UiControllerAndroid::OnCancelButtonClicked(
     return;
   }
 
-  CloseOrCancel(index, TriggerContext::CreateEmpty(),
+  CloseOrCancel(index, std::make_unique<TriggerContext>(),
                 Metrics::DropOutReason::SHEET_CLOSED);
 }
 
@@ -922,7 +922,7 @@ bool UiControllerAndroid::OnBackButtonClicked() {
     ui_delegate_->OnStop(back_button_settings->message(),
                          back_button_settings->undo_label());
   } else {
-    CloseOrCancel(-1, TriggerContext::CreateEmpty(),
+    CloseOrCancel(-1, std::make_unique<TriggerContext>(),
                   Metrics::DropOutReason::BACK_BUTTON_CLICKED);
   }
   return true;

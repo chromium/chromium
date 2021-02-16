@@ -60,8 +60,7 @@ TEST_F(ServiceImplTest, GetScriptsForUrl) {
               Run(net::HTTP_OK, std::string("response")))
       .Times(1);
 
-  TriggerContextImpl trigger_context;
-  service_->GetScriptsForUrl(GURL("https://www.example.com"), trigger_context,
+  service_->GetScriptsForUrl(GURL("https://www.example.com"), TriggerContext(),
                              mock_response_callback_.Get());
 }
 
@@ -74,10 +73,9 @@ TEST_F(ServiceImplTest, GetActions) {
               Run(net::HTTP_OK, std::string("response")))
       .Times(1);
 
-  TriggerContextImpl trigger_context;
   service_->GetActions(
       std::string("fake_script_path"), GURL("https://www.example.com"),
-      trigger_context, std::string("fake_global_payload"),
+      TriggerContext(), std::string("fake_global_payload"),
       std::string("fake_script_payload"), mock_response_callback_.Get());
 }
 
@@ -100,10 +98,9 @@ TEST_F(ServiceImplTest, GetActionsForwardsScriptStoreConfig) {
   set_config.set_bundle_version(12);
   service_->SetScriptStoreConfig(set_config);
 
-  TriggerContextImpl trigger_context;
   service_->GetActions(
       std::string("fake_script_path"), GURL("https://www.example.com"),
-      trigger_context, std::string("fake_global_payload"),
+      TriggerContext(), std::string("fake_global_payload"),
       std::string("fake_script_payload"), mock_response_callback_.Get());
 
   ScriptActionRequestProto get_actions_request_proto;
@@ -125,9 +122,8 @@ TEST_F(ServiceImplTest, GetNextActions) {
               Run(net::HTTP_OK, std::string("response")))
       .Times(1);
 
-  TriggerContextImpl trigger_context;
   service_->GetNextActions(
-      trigger_context, std::string("fake_previous_global_payload"),
+      TriggerContext(), std::string("fake_previous_global_payload"),
       std::string("fake_previous_script_payload"), /* processed_actions = */ {},
       /* timing_stats = */ RoundtripTimingStats(),
       mock_response_callback_.Get());

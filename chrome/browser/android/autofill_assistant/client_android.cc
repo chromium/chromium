@@ -118,13 +118,8 @@ bool ClientAndroid::Start(JNIEnv* env,
 
   GURL initial_url(base::android::ConvertJavaStringToUTF8(env, jinitial_url));
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, jexperiment_ids, jparameter_names, jparameter_values);
-  trigger_context->SetCCT(jis_cct);
-  trigger_context->SetOnboardingShown(jonboarding_shown);
-  if (jcaller_account) {
-    trigger_context->SetCallerAccountHash(
-        base::android::ConvertJavaStringToUTF8(env, jcaller_account));
-  }
+      env, jexperiment_ids, jparameter_names, jparameter_values, jis_cct,
+      jonboarding_shown, /* is_direct_action = */ false, jcaller_account);
 
   if (VLOG_IS_ON(2)) {
     std::string experiment_ids =
@@ -153,11 +148,15 @@ void ClientAndroid::StartTriggerScript(
     const base::android::JavaParamRef<jobjectArray>& jparameter_names,
     const base::android::JavaParamRef<jobjectArray>& jparameter_values,
     jlong jservice_request_sender) {
+  // TODO(arbesser): populate is_cct field correctly for trigger scripts.
   trigger_script_bridge_.StartTriggerScript(
       web_contents_, jdelegate,
       GURL(base::android::ConvertJavaStringToUTF8(env, jinitial_url)),
       ui_controller_android_utils::CreateTriggerContext(
-          env, jexperiment_ids, jparameter_names, jparameter_values),
+          env, jexperiment_ids, jparameter_names, jparameter_values,
+          /* is_cct = */ false, /* onboarding_shown = */ false,
+          /* is_direct_action = */ false,
+          /* caller_account_hash = */ nullptr),
       jservice_request_sender);
 }
 
@@ -224,7 +223,10 @@ void ClientAndroid::FetchWebsiteActions(
   base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   controller_->Track(
       ui_controller_android_utils::CreateTriggerContext(
-          env, jexperiment_ids, jparameter_names, jparameter_values),
+          env, jexperiment_ids, jparameter_names, jparameter_values,
+          /* is_cct = */ false, /* onboarding_shown = */ false,
+          /* is_direct_action = */ true,
+          /* caller_account_hash = */ nullptr),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
 }
@@ -339,14 +341,15 @@ bool ClientAndroid::PerformDirectAction(
   std::string action_name =
       base::android::ConvertJavaStringToUTF8(env, jaction_name);
 
-  int action_index = FindDirectAction(action_name);
-
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, jexperiment_ids, jparameter_names, jparameter_values);
-  trigger_context->SetDirectAction(true);
+      env, jexperiment_ids, jparameter_names, jparameter_values,
+      /* is_cct = */ false, /* onboarding_shown = */ false,
+      /* is_direct_action = */ true,
+      /* caller_account_hash = */ nullptr);
 
   // Cancel through the UI if it is up. This allows the user to undo. This is
   // always available, even if no action was found and action_index == -1.
+  int action_index = FindDirectAction(action_name);
   if (action_name == kCancelActionName && ui_controller_android_) {
     ui_controller_android_->CloseOrCancel(action_index,
                                           std::move(trigger_context),

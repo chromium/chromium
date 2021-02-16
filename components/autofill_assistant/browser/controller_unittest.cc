@@ -182,7 +182,7 @@ class ControllerTest : public content::RenderViewHostTestHarness {
   void Start() { Start("http://initialurl.com"); }
 
   void Start(const std::string& url_string) {
-    Start(url_string, TriggerContext::CreateEmpty());
+    Start(url_string, std::make_unique<TriggerContext>());
   }
 
   void Start(const std::string& url_string,
@@ -409,19 +409,24 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
                           const std::string& global_payload,
                           const std::string& script_payload,
                           Service::ResponseCallback& callback) {
-        EXPECT_THAT("value",
-                    trigger_context.GetParameter("required").value_or(""));
-        EXPECT_THAT("value0",
-                    trigger_context.GetParameter("arg0").value_or(""));
+        EXPECT_THAT(trigger_context.GetParameter("required"), Eq("value"));
+        EXPECT_THAT(trigger_context.GetParameter("arg0"), Eq("value0"));
+        EXPECT_TRUE(trigger_context.GetDirectAction());
 
         std::move(callback).Run(true, "");
       }));
 
-  std::map<std::string, std::string> parameters;
-  parameters["required"] = "value";
-  parameters["arg0"] = "value0";
   EXPECT_TRUE(controller_->PerformUserActionWithContext(
-      0, TriggerContext::Create(parameters, "")));
+      0, std::make_unique<TriggerContext>(
+             /* parameters = */ std::map<std::string, std::string>{{"required",
+                                                                    "value"},
+                                                                   {"arg0",
+                                                                    "value0"}},
+             /* experiment_ids = */ std::string(),
+             /* is_cct = */ false,
+             /* onboarding_shown = */ false,
+             /* is_direct_action = */ true,
+             /* caller_account_hash = */ std::string())));
 }
 
 TEST_F(ControllerTest, NoScripts) {
@@ -701,7 +706,7 @@ TEST_F(ControllerTest, InitialUrlLoads) {
   EXPECT_CALL(*mock_service_, OnGetScriptsForUrl(Eq(initialUrl), _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
 
-  controller_->Start(initialUrl, TriggerContext::CreateEmpty());
+  controller_->Start(initialUrl, std::make_unique<TriggerContext>());
 }
 
 TEST_F(ControllerTest, ProgressIncreasesAtStart) {
@@ -1261,7 +1266,7 @@ TEST_F(ControllerTest, Track) {
   // Start tracking at example.com, with one script matching
   SetLastCommittedUrl(GURL("http://example.com/"));
 
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
 
@@ -1309,7 +1314,7 @@ TEST_F(ControllerTest, TrackScriptWithNoUI) {
   // Start tracking at example.com, with one script matching
   SetLastCommittedUrl(GURL("http://example.com/"));
 
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
 
   EXPECT_TRUE(controller_->PerformUserAction(0));
@@ -1334,7 +1339,7 @@ TEST_F(ControllerTest, TrackScriptShowUIOnTell) {
   // Start tracking at example.com, with one script matching
   SetLastCommittedUrl(GURL("http://example.com/"));
 
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
 
   EXPECT_FALSE(controller_->NeedsUI());
@@ -1365,7 +1370,7 @@ TEST_F(ControllerTest, TrackScriptShowUIOnError) {
   // Start tracking at example.com, with one script matching
   SetLastCommittedUrl(GURL("http://example.com/"));
 
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
 
   EXPECT_FALSE(controller_->NeedsUI());
@@ -1395,7 +1400,7 @@ TEST_F(ControllerTest, TrackContinuesAfterScriptError) {
   // Start tracking at example.com, with one script matching
   SetLastCommittedUrl(GURL("http://example.com/"));
 
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
 
@@ -1427,7 +1432,7 @@ TEST_F(ControllerTest, TrackReportsFirstSetOfScripts) {
 
   SetLastCommittedUrl(GURL("http://example.com/"));
   bool first_check_done = false;
-  controller_->Track(TriggerContext::CreateEmpty(),
+  controller_->Track(std::make_unique<TriggerContext>(),
                      base::BindOnce(
                          [](Controller* controller, bool* is_done) {
                            // User actions must have been set when this is
@@ -1457,7 +1462,7 @@ TEST_F(ControllerTest, TrackReportsNoScripts) {
   base::MockCallback<base::OnceCallback<void()>> callback;
 
   EXPECT_CALL(callback, Run());
-  controller_->Track(TriggerContext::CreateEmpty(), callback.Get());
+  controller_->Track(std::make_unique<TriggerContext>(), callback.Get());
   EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
 }
 
@@ -1474,7 +1479,7 @@ TEST_F(ControllerTest, TrackReportsNoScriptsForNow) {
   base::MockCallback<base::OnceCallback<void()>> callback;
 
   EXPECT_CALL(callback, Run());
-  controller_->Track(TriggerContext::CreateEmpty(), callback.Get());
+  controller_->Track(std::make_unique<TriggerContext>(), callback.Get());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
 }
 
@@ -1492,7 +1497,7 @@ TEST_F(ControllerTest, TrackReportsNoScriptsForThePage) {
   base::MockCallback<base::OnceCallback<void()>> callback;
 
   EXPECT_CALL(callback, Run());
-  controller_->Track(TriggerContext::CreateEmpty(), callback.Get());
+  controller_->Track(std::make_unique<TriggerContext>(), callback.Get());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
 }
 
@@ -1502,12 +1507,12 @@ TEST_F(ControllerTest, TrackReportsAlreadyDone) {
   SetNextScriptResponse(script_response);
 
   SetLastCommittedUrl(GURL("http://example.com/"));
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
 
   base::MockCallback<base::OnceCallback<void()>> callback;
   EXPECT_CALL(callback, Run());
-  controller_->Track(TriggerContext::CreateEmpty(), callback.Get());
+  controller_->Track(std::make_unique<TriggerContext>(), callback.Get());
 }
 
 TEST_F(ControllerTest, TrackThenAutostart) {
@@ -1519,7 +1524,7 @@ TEST_F(ControllerTest, TrackThenAutostart) {
   SetNextScriptResponse(script_response);
 
   SetLastCommittedUrl(GURL("http://example.com/"));
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
   EXPECT_THAT(controller_->GetUserActions(), SizeIs(1));
 
@@ -1727,7 +1732,7 @@ TEST_F(ControllerTest, UnexpectedNavigationDuringPromptAction_Tracking) {
   SetupActionsForScript("runnable", runnable_script);
 
   SetLastCommittedUrl(GURL("http://example.com/"));
-  controller_->Track(TriggerContext::CreateEmpty(), base::DoNothing());
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
   EXPECT_EQ(controller_->GetUserActions()[0].chip().text, "runnable");
@@ -2272,12 +2277,14 @@ TEST_F(ControllerTest, SetOverlayColors) {
           Field(&Controller::OverlayColors::highlight_border,
                 StrEq("#FFFFFFFF")))));
 
-  std::map<std::string, std::string> parameters;
-  parameters["OVERLAY_COLORS"] = "#FF000000:#FFFFFFFF";
-  auto context = TriggerContext::Create(parameters, "exps");
-
   GURL url("http://a.example.com/path");
-  controller_->Start(url, std::move(context));
+  controller_->Start(
+      url,
+      std::make_unique<TriggerContext>(
+          /* parameters = */ std::map<std::string,
+                                      std::string>{{"OVERLAY_COLORS",
+                                                    "#FF000000:#FFFFFFFF"}},
+          /* experiment_ids = */ std::string()));
 }
 
 TEST_F(ControllerTest, SetDateTimeRange) {
@@ -2644,15 +2651,17 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
   GURL initialUrl("http://example.com/password");
   EXPECT_CALL(*mock_service_, OnGetScriptsForUrl(Eq(initialUrl), _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
-  std::map<std::string, std::string> parameters;
-  std::string username = "test_username";
-  parameters["PASSWORD_CHANGE_USERNAME"] = username;
 
-  EXPECT_TRUE(
-      controller_->Start(initialUrl, TriggerContext::Create(parameters, "")));
+  EXPECT_TRUE(controller_->Start(
+      initialUrl,
+      std::make_unique<TriggerContext>(
+          /* parameters = */ std::map<std::string,
+                                      std::string>{{"PASSWORD_CHANGE_USERNAME",
+                                                    "test_username"}},
+          /* experiment_ids = */ std::string())));
   // Initial navigation.
   SimulateNavigateToUrl(GURL("http://b.example.com"));
-  EXPECT_EQ(GetUserData()->selected_login_->username, username);
+  EXPECT_EQ(GetUserData()->selected_login_->username, "test_username");
   EXPECT_EQ(GetUserData()->selected_login_->origin, initialUrl.GetOrigin());
   EXPECT_EQ(controller_->GetCurrentURL().host(), "b.example.com");
 }

@@ -98,7 +98,8 @@ class UiDelegate {
   // Returns true if the action was triggered, false if the index did not
   // correspond to any enabled actions.
   bool PerformUserAction(int index) {
-    return PerformUserActionWithContext(index, TriggerContext::CreateEmpty());
+    return PerformUserActionWithContext(index,
+                                        std::make_unique<TriggerContext>());
   }
 
   // If the controller is waiting for user data, this field contains a non-null

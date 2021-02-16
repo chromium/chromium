@@ -69,7 +69,7 @@ class ScriptPreconditionTest : public testing::Test {
 
     SetUrl("http://www.example.com/path");
 
-    trigger_context_ = TriggerContext::CreateEmpty();
+    trigger_context_ = std::make_unique<TriggerContext>();
   }
 
  protected:
@@ -253,9 +253,12 @@ TEST_F(ScriptPreconditionTest, ParameterMustExist) {
 
   EXPECT_FALSE(Check(proto));
 
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "exists";
-  trigger_context_ = TriggerContext::Create(parameters, "");
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::map<std::string, std::string>{{"param", "exists"}}, "",
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* caller_account_hash = */ std::string());
 
   EXPECT_TRUE(Check(proto));
 }
@@ -268,9 +271,12 @@ TEST_F(ScriptPreconditionTest, ParameterMustNotExist) {
 
   EXPECT_TRUE(Check(proto));
 
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "exists";
-  trigger_context_ = TriggerContext::Create(parameters, "");
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::map<std::string, std::string>{{"param", "exists"}}, "",
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* caller_account_hash = */ std::string());
 
   EXPECT_FALSE(Check(proto));
 }
@@ -283,15 +289,20 @@ TEST_F(ScriptPreconditionTest, ParameterMustHaveValue) {
 
   EXPECT_FALSE(Check(proto));
 
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "another value";
-  trigger_context_ = TriggerContext::Create(parameters, "");
-
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::map<std::string, std::string>{{"param", "another"}}, "",
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* caller_account_hash = */ std::string());
   EXPECT_FALSE(Check(proto));
 
-  parameters["param"] = "value";
-  trigger_context_ = TriggerContext::Create(parameters, "");
-
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::map<std::string, std::string>{{"param", "value"}}, "",
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* caller_account_hash = */ std::string());
   EXPECT_TRUE(Check(proto));
 }
 

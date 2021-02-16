@@ -74,14 +74,13 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
   EXPECT_CALL(mock_client_, IsAccessibilityEnabled())
       .WillRepeatedly(Return(true));
 
-  TriggerContextImpl trigger_context(/* params = */ {}, /* exp = */ "1,2,3");
-  trigger_context.SetCCT(true);
-  trigger_context.SetOnboardingShown(true);
-  trigger_context.SetDirectAction(true);
-  trigger_context.SetCallerAccountHash("some_value");
-
   ClientContextImpl client_context(&mock_client_);
-  client_context.Update(trigger_context);
+  client_context.Update({/* params = */ {},
+                         /* exp = */ "1,2,3",
+                         /* is_cct = */ true,
+                         /* onboarding_shown = */ true,
+                         /* is_direct_action = */ true,
+                         /* caller_account_hash = */ "some_value"});
 
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
@@ -105,15 +104,24 @@ TEST_F(ClientContextTest, AccountMatching) {
               Eq(ClientContextProto::UNKNOWN));
 
   // Should match john.doe@chromium.org.
-  TriggerContextImpl trigger_context;
-  trigger_context.SetCallerAccountHash(
-      "2c8fa87717fab622bb5cc4d18135fe30dae339efd274b450022d361be92b48c3");
-  client_context.Update(trigger_context);
+  client_context.Update(
+      {/* params = */ {},
+       /* exp = */ std::string(),
+       /* is_cct = */ false,
+       /* onboarding_shown = */ false,
+       /* is_direct_action = */ false,
+       /* caller_account_hash = */
+       "2c8fa87717fab622bb5cc4d18135fe30dae339efd274b450022d361be92b48c3"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
-  trigger_context.SetCallerAccountHash("different");
-  client_context.Update(trigger_context);
+  client_context.Update({/* params = */ {},
+                         /* exp = */ std::string(),
+                         /* is_cct = */ false,
+                         /* onboarding_shown = */ false,
+                         /* is_direct_action = */ false,
+                         /* caller_account_hash = */
+                         "different"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }

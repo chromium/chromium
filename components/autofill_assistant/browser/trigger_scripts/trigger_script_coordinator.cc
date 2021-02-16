@@ -73,9 +73,11 @@ void TriggerScriptCoordinator::Start(
     const GURL& deeplink_url,
     std::unique_ptr<TriggerContext> trigger_context) {
   deeplink_url_ = deeplink_url;
-  trigger_context_ = std::make_unique<TriggerContextImpl>(
+  trigger_context_ = std::make_unique<TriggerContext>(
       ExtractDebugScriptParameters(*trigger_context),
-      trigger_context->experiment_ids());
+      trigger_context->GetExperimentIds(), trigger_context->GetCCT(),
+      trigger_context->GetOnboardingShown(), trigger_context->GetDirectAction(),
+      /* caller_account_hash = */ std::string());
   ClientContextProto client_context;
   client_context.mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());

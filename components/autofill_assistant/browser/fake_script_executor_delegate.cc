@@ -9,7 +9,7 @@
 namespace autofill_assistant {
 
 FakeScriptExecutorDelegate::FakeScriptExecutorDelegate()
-    : trigger_context_(TriggerContext::CreateEmpty()) {}
+    : trigger_context_(std::make_unique<TriggerContext>()) {}
 
 FakeScriptExecutorDelegate::~FakeScriptExecutorDelegate() = default;
 

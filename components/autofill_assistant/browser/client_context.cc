@@ -26,8 +26,7 @@ ClientContextImpl::ClientContextImpl(const Client* client) : client_(client) {
   }
 
   client_->GetDeviceContext().ToProto(proto_.mutable_device_context());
-  auto empty_trigger_context = TriggerContext::CreateEmpty();
-  Update(*empty_trigger_context);
+  Update(TriggerContext());
 }
 
 void ClientContextImpl::Update(const TriggerContext& trigger_context) {
@@ -38,17 +37,17 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
                                            ? ClientContextProto::NOT_SIGNED_IN
                                            : ClientContextProto::SIGNED_IN);
 
-  std::string experiment_ids = trigger_context.experiment_ids();
+  std::string experiment_ids = trigger_context.GetExperimentIds();
   if (!experiment_ids.empty()) {
     proto_.set_experiment_ids(experiment_ids);
   }
-  if (trigger_context.is_cct()) {
+  if (trigger_context.GetCCT()) {
     proto_.set_is_cct(true);
   }
-  if (trigger_context.is_onboarding_shown()) {
+  if (trigger_context.GetOnboardingShown()) {
     proto_.set_is_onboarding_shown(true);
   }
-  if (trigger_context.is_direct_action()) {
+  if (trigger_context.GetDirectAction()) {
     proto_.set_is_direct_action(true);
   }
 
@@ -57,10 +56,10 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
       crypto::SHA256HashString(chrome_signed_in_email_address);
   std::string client_account_hash = base::ToLowerASCII(base::HexEncode(
       chrome_account_sha_bin.data(), chrome_account_sha_bin.size()));
-  if (trigger_context.get_caller_account_hash().empty()) {
+  if (trigger_context.GetCallerAccountHash().empty()) {
     proto_.set_accounts_matching_status(ClientContextProto::UNKNOWN);
   } else {
-    if (trigger_context.get_caller_account_hash() == client_account_hash) {
+    if (trigger_context.GetCallerAccountHash() == client_account_hash) {
       proto_.set_accounts_matching_status(
           ClientContextProto::ACCOUNTS_MATCHING);
     } else {

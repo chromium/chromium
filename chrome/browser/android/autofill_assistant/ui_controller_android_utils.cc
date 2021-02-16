@@ -488,14 +488,20 @@ std::map<std::string, std::string> CreateStringMapFromJava(
   return result;
 }
 
-std::unique_ptr<TriggerContextImpl> CreateTriggerContext(
+std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jexperiment_ids,
     const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values) {
-  return std::make_unique<TriggerContextImpl>(
+    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
+    jboolean is_cct,
+    jboolean onboarding_shown,
+    jboolean is_direct_action,
+    const base::android::JavaParamRef<jstring>& jcaller_account_hash) {
+  return std::make_unique<TriggerContext>(
       CreateStringMapFromJava(env, jparameter_names, jparameter_values),
-      base::android::ConvertJavaStringToUTF8(env, jexperiment_ids));
+      SafeConvertJavaStringToNative(env, jexperiment_ids), is_cct,
+      onboarding_shown, is_direct_action,
+      SafeConvertJavaStringToNative(env, jcaller_account_hash));
 }
 
 }  // namespace ui_controller_android_utils

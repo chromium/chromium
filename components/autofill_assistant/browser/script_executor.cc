@@ -119,7 +119,7 @@ void ScriptExecutor::Run(const UserData* user_data,
 
   delegate_->GetService()->GetActions(
       script_path_, delegate_->GetScriptURL(),
-      MergedTriggerContext(
+      TriggerContext(
           {delegate_->GetTriggerContext(), additional_context_.get()}),
       last_global_payload_, last_script_payload_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
@@ -514,7 +514,7 @@ void ScriptExecutor::SetBrowseDomainsAllowlist(
 
 void ScriptExecutor::OnChosen(UserAction::Callback callback,
                               std::unique_ptr<TriggerContext> context) {
-  if (context->is_direct_action()) {
+  if (context->GetDirectAction()) {
     current_action_data_.direct_action = true;
   }
   std::move(callback).Run(std::move(context));
@@ -1061,7 +1061,7 @@ void ScriptExecutor::GetNextActions() {
   VLOG(2) << "Client execution time: "
           << roundtrip_timing_stats_.client_time_ms();
   delegate_->GetService()->GetNextActions(
-      MergedTriggerContext(
+      TriggerContext(
           {delegate_->GetTriggerContext(), additional_context_.get()}),
       last_global_payload_, last_script_payload_, processed_actions_,
       roundtrip_timing_stats_,
@@ -1349,7 +1349,9 @@ void ScriptExecutor::WaitForDomOperation::RunInterrupt(
   SavePreInterruptState();
   ran_interrupts_.insert(path);
   interrupt_executor_ = std::make_unique<ScriptExecutor>(
-      path, TriggerContext::Merge({main_script_->additional_context_.get()}),
+      path,
+      std::make_unique<TriggerContext>(std::vector<const TriggerContext*>{
+          main_script_->additional_context_.get()}),
       main_script_->last_global_payload_, main_script_->initial_script_payload_,
       /* listener= */ this, main_script_->scripts_state_, &no_interrupts_,
       delegate_);

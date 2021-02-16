@@ -108,11 +108,15 @@ std::map<std::string, std::string> CreateStringMapFromJava(
     const base::android::JavaRef<jobjectArray>& values);
 
 // Creates a C++ trigger context for the specified java inputs.
-std::unique_ptr<TriggerContextImpl> CreateTriggerContext(
+std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jexperiment_ids,
     const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values);
+    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
+    jboolean is_cct,
+    jboolean onboarding_shown,
+    jboolean is_direct_action,
+    const base::android::JavaParamRef<jstring>& jcaller_account_hash);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant
