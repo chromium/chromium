@@ -409,4 +409,10 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   EXPECT_TRUE(provider_->policies().Equals(expected_bundle));
 }
 
+// These are abstract policy provider tests, which are instantiated for each
+// policy provider implementation.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ConfigurationPolicyProviderTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    Configuration3rdPartyPolicyProviderTest);
+
 }  // namespace policy
