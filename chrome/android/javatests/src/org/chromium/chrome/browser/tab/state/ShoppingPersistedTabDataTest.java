@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 
 import android.support.test.filters.SmallTest;
 
+import androidx.annotation.IntDef;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,12 +36,15 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation;
+import org.chromium.chrome.browser.page_annotations.PageAnnotation;
+import org.chromium.chrome.browser.page_annotations.PageAnnotationsService;
+import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,10 +55,12 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * Test relating to {@link ShoppingPersistedTabData}
  */
@@ -62,6 +69,16 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class ShoppingPersistedTabDataTest {
+    @IntDef({MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL,
+            MockPageAnnotationsResponse.BUYABLE_PRODUCT_PRICE_UPDATED,
+            MockPageAnnotationsResponse.BUYABLE_PRODUCT_EMPTY})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface MockPageAnnotationsResponse {
+        int BUYABLE_PRODUCT_INITIAL = 0;
+        int BUYABLE_PRODUCT_PRICE_UPDATED = 1;
+        int BUYABLE_PRODUCT_EMPTY = 2;
+    }
+
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -80,8 +97,14 @@ public class ShoppingPersistedTabDataTest {
     @Mock
     OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
-    // Tracks if the endpoint fetcher has been called once or not
-    private boolean mCalledOnce;
+    @Mock
+    Profile mProfileMock;
+
+    @Mock
+    PageAnnotationsServiceFactory mServiceFactoryMock;
+
+    @Mock
+    PageAnnotationsService mPageAnnotationsServiceMock;
 
     private static final long PRICE_MICROS = 123456789012345L;
     private static final long UPDATED_PRICE_MICROS = 287000000L;
@@ -93,26 +116,6 @@ public class ShoppingPersistedTabDataTest {
     private static final String GREAT_BRITAIN_CURRENCY_CODE = "GBP";
     private static final String JAPAN_CURRENCY_CODE = "JPY";
 
-    private static final String EMPTY_PRICE = "";
-    private static final String ENDPOINT_RESPONSE_INITIAL =
-            "{\"annotations\":[{\"type\":\"DOCUMENT_INTENT\",\"documentIntent\":"
-            + "{\"intent\":\"UNKNOWN\"}},{\"type\":\"BUYABLE_PRODUCT\",\"buyableProduct\":"
-            + "{\"title\":\"foo title\",\"imageUrl\":\"https://images.com?q=1234\","
-            + "\"currentPrice\":{\"currencyCode\":\"USD\",\"amountMicros\":\"123456789012345\"},"
-            + "\"referenceType\":\"MAIN_PRODUCT\"}}]}";
-
-    private static final String ENDPOINT_RESPONSE_UPDATE =
-            "{\"annotations\":[{\"type\":\"DOCUMENT_INTENT\",\"documentIntent\":"
-            + "{\"intent\":\"UNKNOWN\"}},{\"type\":\"BUYABLE_PRODUCT\",\"buyableProduct\":"
-            + "{\"title\":\"foo title\",\"imageUrl\":\"https://images.com?q=1234\","
-            + "\"currentPrice\":{\"currencyCode\":\"USD\",\"amountMicros\":\"287000000\"},"
-            + "\"referenceType\":\"MAIN_PRODUCT\"}}]}";
-
-    private static final String EMPTY_RESPONSE = "{}";
-
-    private static final String DEFAULT_ENDPOINT = "https://memex-pa.googleapis.com/v1/annotations";
-    private static final String ENDPOINT_OVERRIDE = "my-endpoint.com";
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -122,6 +125,10 @@ public class ShoppingPersistedTabDataTest {
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
         mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE);
         PersistedTabDataConfiguration.setUseTestConfig(true);
+
+        Profile.setLastUsedProfileForTesting(mProfileMock);
+        doReturn(mPageAnnotationsServiceMock).when(mServiceFactoryMock).getForLastUsedProfile();
+        ShoppingPersistedTabData.sPageAnnotationsServiceFactory = mServiceFactoryMock;
     }
 
     @UiThreadTest
@@ -160,7 +167,7 @@ public class ShoppingPersistedTabDataTest {
         final Semaphore semaphore = new Semaphore(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                verifyEndpointFetcherCalled(3);
+                verifyGetPageAnnotationsCalled(3);
                 Assert.assertEquals(
                         UPDATED_PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
                 Assert.assertEquals(
@@ -178,7 +185,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testShoppingBloomFilterNotShoppingWebsite() {
-        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL);
         mockOptimizationGuideResponse(OptimizationGuideDecision.FALSE);
         Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
         Semaphore semaphore = new Semaphore(0);
@@ -187,7 +194,7 @@ public class ShoppingPersistedTabDataTest {
                     tab, (shoppingPersistedTabData) -> { semaphore.release(); });
         });
         acquireSemaphore(semaphore);
-        verifyEndpointFetcherCalled(0);
+        verifyGetPageAnnotationsCalled(0);
     }
 
     @SmallTest
@@ -195,7 +202,7 @@ public class ShoppingPersistedTabDataTest {
     public void testShoppingBloomFilterShoppingWebsite() {
         for (@OptimizationGuideDecision int decision :
                 new int[] {OptimizationGuideDecision.TRUE, OptimizationGuideDecision.UNKNOWN}) {
-            mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+            mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL);
             mockOptimizationGuideResponse(decision);
             Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
             Semaphore semaphore = new Semaphore(0);
@@ -204,17 +211,17 @@ public class ShoppingPersistedTabDataTest {
                         tab, (shoppingPersistedTabData) -> { semaphore.release(); });
             });
             acquireSemaphore(semaphore);
-            verifyEndpointFetcherCalled(1);
+            verifyGetPageAnnotationsCalled(1);
         }
     }
 
     private long shoppingPriceChange(Tab tab) {
         final Semaphore initialSemaphore = new Semaphore(0);
         final Semaphore updateSemaphore = new Semaphore(0);
-        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                verifyEndpointFetcherCalled(1);
+                verifyGetPageAnnotationsCalled(1);
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
                 Assert.assertEquals(
                         UNITED_STATES_CURRENCY_CODE, shoppingPersistedTabData.getCurrencyCode());
@@ -227,10 +234,10 @@ public class ShoppingPersistedTabDataTest {
         });
         acquireSemaphore(initialSemaphore);
         long firstUpdateTime = getTimeLastUpdatedOnUiThread(tab);
-        mockEndpointResponse(ENDPOINT_RESPONSE_UPDATE);
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_PRICE_UPDATED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (updatedShoppingPersistedTabData) -> {
-                verifyEndpointFetcherCalled(2);
+                verifyGetPageAnnotationsCalled(2);
                 Assert.assertEquals(
                         UPDATED_PRICE_MICROS, updatedShoppingPersistedTabData.getPriceMicros());
                 Assert.assertEquals(
@@ -243,14 +250,16 @@ public class ShoppingPersistedTabDataTest {
         acquireSemaphore(updateSemaphore);
         return getTimeLastUpdatedOnUiThread(tab);
     }
-
+    @UiThreadTest
     @SmallTest
     @Test
     public void testNoRefetch() {
         final Semaphore initialSemaphore = new Semaphore(0);
         final Semaphore updateSemaphore = new Semaphore(0);
         Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
-        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+        // Mock annotations response.
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
@@ -264,8 +273,8 @@ public class ShoppingPersistedTabDataTest {
             });
         });
         acquireSemaphore(initialSemaphore);
-        verifyEndpointFetcherCalled(1);
-        mockEndpointResponse(ENDPOINT_RESPONSE_UPDATE);
+        verifyGetPageAnnotationsCalled(1);
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_PRICE_UPDATED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
@@ -280,7 +289,36 @@ public class ShoppingPersistedTabDataTest {
         acquireSemaphore(updateSemaphore);
         // EndpointFetcher should not have been called a second time - because we haven't passed the
         // time to live
-        verifyEndpointFetcherCalled(1);
+        verifyGetPageAnnotationsCalled(1);
+    }
+
+    private void mockPageAnnotationsResponse(@MockPageAnnotationsResponse int expectedResponse) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                Callback callback = (Callback) invocation.getArguments()[1];
+                callback.onResult(new LinkedList<PageAnnotation>() {
+                    {
+                        switch (expectedResponse) {
+                            case MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL:
+                                add(new BuyableProductPageAnnotation(
+                                        PRICE_MICROS, UNITED_STATES_CURRENCY_CODE));
+                                break;
+                            case MockPageAnnotationsResponse.BUYABLE_PRODUCT_PRICE_UPDATED:
+                                add(new BuyableProductPageAnnotation(
+                                        UPDATED_PRICE_MICROS, UNITED_STATES_CURRENCY_CODE));
+                                break;
+                            case MockPageAnnotationsResponse.BUYABLE_PRODUCT_EMPTY:
+                            default:
+                                break;
+                        }
+                    }
+                });
+                return null;
+            }
+        })
+                .when(mPageAnnotationsServiceMock)
+                .getAnnotations(any(GURL.class), any(Callback.class));
     }
 
     @UiThreadTest
@@ -593,7 +631,7 @@ public class ShoppingPersistedTabDataTest {
     public void testSPTDSavingEnabledUponSuccessfulResponse() {
         final Semaphore semaphore = new Semaphore(0);
         Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
-        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertTrue(shoppingPersistedTabData.mIsTabSaveEnabledSupplier.get());
@@ -609,7 +647,7 @@ public class ShoppingPersistedTabDataTest {
     public void testSPTDNullUponUnsuccessfulResponse() {
         final Semaphore semaphore = new Semaphore(0);
         Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
-        mockEndpointResponse(EMPTY_RESPONSE);
+        mockPageAnnotationsResponse(MockPageAnnotationsResponse.BUYABLE_PRODUCT_EMPTY);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertNull(shoppingPersistedTabData);
@@ -634,25 +672,15 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(42_000_000L, deserialized.getPriceMicros());
     }
 
-    // TODO(crbug.com/1168345) Create end to end test overriding the endpoint
-    @SmallTest
-    @Test
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_endpoint/my-endpoint.com"})
-    public void testEndpointOverride() {
-        Assert.assertEquals(ENDPOINT_OVERRIDE, ShoppingPersistedTabData.ENDPOINT.getValue());
-    }
-
-    @SmallTest
-    @Test
-    public void testEndpointNoOverride() {
-        Assert.assertEquals(DEFAULT_ENDPOINT, ShoppingPersistedTabData.ENDPOINT.getValue());
-    }
-
     private void verifyEndpointFetcherCalled(int numTimes) {
         verify(mEndpointFetcherJniMock, times(numTimes))
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
                         anyString(), anyLong(), any(String[].class), any(Callback.class));
+    }
+
+    private void verifyGetPageAnnotationsCalled(int numTimes) {
+        verify(mPageAnnotationsServiceMock, times(numTimes))
+                .getAnnotations(any(GURL.class), any(Callback.class));
     }
 
     private static Tab createTabOnUiThread(int tabId, boolean isIncognito) {
@@ -669,20 +697,6 @@ public class ShoppingPersistedTabDataTest {
                             .getLastPriceChangeTimeMs());
         });
         return res.get();
-    }
-
-    private void mockEndpointResponse(String response) {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[7];
-                callback.onResult(new EndpointResponse(response));
-                return null;
-            }
-        })
-                .when(mEndpointFetcherJniMock)
-                .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(String[].class), any(Callback.class));
     }
 
     private static void acquireSemaphore(Semaphore semaphore) {

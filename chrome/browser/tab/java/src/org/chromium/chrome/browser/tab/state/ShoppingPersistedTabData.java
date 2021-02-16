@@ -10,21 +10,17 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import org.chromium.base.Callback;
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation;
+import org.chromium.chrome.browser.page_annotations.PageAnnotation;
+import org.chromium.chrome.browser.page_annotations.PageAnnotationUtils;
+import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -36,6 +32,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -44,43 +41,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String TAG = "SPTD";
-    private static final String ENDPOINT_DEFAULT = "https://memex-pa.googleapis.com/v1/annotations";
-    private static final String ENDPOINT_QUERY_STRING_PARAMS = "?url=%s";
-    private static final long TIMEOUT_MS = 1000L;
-    private static final String HTTPS_METHOD = "GET";
-    private static final String CONTENT_TYPE = "application/json; charset=UTF-8";
-    private static final String OAUTH_NAME = "SPTD";
-    private static final String EMPTY_POST_DATA = "";
-
-    private static final String ANNOTATIONS_KEY = "annotations";
-    private static final String PRICE_KEY = "price";
-    private static final String TYPE_KEY = "type";
-    private static final String BUYABLE_PRODUCT_ANNOTATION_KEY = "BUYABLE_PRODUCT";
-    private static final String BUYABLE_PRODUCT_KEY = "buyableProduct";
-    private static final String CURRENT_PRICE_KEY = "currentPrice";
-    private static final String CURRENCY_CODE_KEY = "currencyCode";
-    private static final String AMOUNT_MICROS_KEY = "amountMicros";
-    private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
-
     private static final String TIME_TO_LIVE_MS_PARAM = "price_tracking_time_to_live_ms";
     private static final String DISPLAY_TIME_MS_PARAM = "price_tracking_display_time_ms";
-    private static final String ENDPOINT_PARAM = "price_tracking_endpoint";
-
-    private static final long ONE_WEEK_MS = TimeUnit.DAYS.toMillis(7);
-    @VisibleForTesting
-    public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
-
-    public static final IntCachedFieldTrialParameter TIME_TO_LIVE_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    TIME_TO_LIVE_MS_PARAM, (int) ONE_HOUR_MS);
-
-    public static final IntCachedFieldTrialParameter DISPLAY_TIME_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    DISPLAY_TIME_MS_PARAM, (int) ONE_WEEK_MS);
-
-    public static final StringCachedFieldTrialParameter ENDPOINT =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, ENDPOINT_PARAM, ENDPOINT_DEFAULT);
 
     private static final int FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS = 2;
     private static final int FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS = 0;
@@ -91,6 +53,18 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final long TWO_UNITS = 2 * MICROS_TO_UNITS;
     private static final long TEN_UNITS = 10 * MICROS_TO_UNITS;
     private static final int MINIMUM_DROP_PERCENTAGE = 10;
+    private static final long ONE_WEEK_MS = TimeUnit.DAYS.toMillis(7);
+
+    @VisibleForTesting
+    public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
+
+    public static final IntCachedFieldTrialParameter TIME_TO_LIVE_MS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                    TIME_TO_LIVE_MS_PARAM, (int) ONE_HOUR_MS);
+
+    public static final IntCachedFieldTrialParameter DISPLAY_TIME_MS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                    DISPLAY_TIME_MS_PARAM, (int) ONE_WEEK_MS);
 
     @VisibleForTesting
     public static final long NO_TRANSITIONS_OCCURRED = -1;
@@ -108,6 +82,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
             new ObservableSupplierImpl<>();
+
+    @VisibleForTesting
+    protected static PageAnnotationsServiceFactory sPageAnnotationsServiceFactory =
+            new PageAnnotationsServiceFactory();
 
     @VisibleForTesting
     protected EmptyTabObserver mUrlUpdatedObserver;
@@ -210,19 +188,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             supplierCallback.onResult(null);
                             return;
                         }
-                        EndpointFetcher.fetchUsingChromeAPIKey(
-                                (endpointResponse)
-                                        -> {
+
+                        sPageAnnotationsServiceFactory.getForLastUsedProfile().getAnnotations(
+                                tab.getUrl(), (result) -> {
                                     supplierCallback.onResult(
-                                            build(tab, endpointResponse.getResponseString(),
-                                                    previousShoppingPersistedTabData));
-                                },
-                                Profile.getLastUsedRegularProfile(),
-                                String.format(ENDPOINT.getValue() + ENDPOINT_QUERY_STRING_PARAMS,
-                                        tab.getUrlString()),
-                                HTTPS_METHOD, CONTENT_TYPE, EMPTY_POST_DATA, TIMEOUT_MS,
-                                new String[] {ACCEPT_LANGUAGE_KEY,
-                                        LocaleUtils.getDefaultLocaleListString()});
+                                            build(tab, result, previousShoppingPersistedTabData));
+                                });
                     });
                 },
                 ShoppingPersistedTabData.class, callback);
@@ -261,35 +232,22 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         mIsTabSaveEnabledSupplier.set(false);
     }
 
-    private static ShoppingPersistedTabData build(Tab tab, String responseString,
+    private static ShoppingPersistedTabData build(Tab tab, List<PageAnnotation> annotations,
             ShoppingPersistedTabData previousShoppingPersistedTabData) {
         ShoppingPersistedTabData res = new ShoppingPersistedTabData(tab);
         @FoundBuyableProductAnnotation
         int foundBuyableProductAnnotation = FoundBuyableProductAnnotation.NOT_FOUND;
-        try {
-            JSONObject jsonObject = new JSONObject(responseString);
-            JSONArray annotations = jsonObject.getJSONArray(ANNOTATIONS_KEY);
-            for (int i = 0; i < annotations.length(); i++) {
-                JSONObject annotation = annotations.getJSONObject(i);
-                if (BUYABLE_PRODUCT_ANNOTATION_KEY.equals(annotation.getString(TYPE_KEY))) {
-                    JSONObject metadata = annotation.getJSONObject(BUYABLE_PRODUCT_KEY);
-                    JSONObject priceMetadata = metadata.getJSONObject(CURRENT_PRICE_KEY);
-                    res.setPriceMicros(Long.parseLong(priceMetadata.getString(AMOUNT_MICROS_KEY)),
-                            previousShoppingPersistedTabData);
-                    res.setCurrencyCode(priceMetadata.getString(CURRENCY_CODE_KEY));
-                    res.setLastUpdatedMs(System.currentTimeMillis());
-                    foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
-                    break;
-                }
-            }
-        } catch (JSONException e) {
-            Log.i(TAG,
-                    String.format(Locale.US,
-                            "There was a problem acquiring "
-                                    + "ShoppingPersistedTabData "
-                                    + "Details: %s",
-                            e.toString()));
+
+        BuyableProductPageAnnotation buyableProduct =
+                PageAnnotationUtils.getAnnotation(annotations, BuyableProductPageAnnotation.class);
+        if (buyableProduct != null) {
+            res.setPriceMicros(
+                    buyableProduct.getCurrentPriceMicros(), previousShoppingPersistedTabData);
+            res.setCurrencyCode(buyableProduct.getCurrencyCode());
+            res.setLastUpdatedMs(System.currentTimeMillis());
+            foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
         }
+
         RecordHistogram.recordEnumeratedHistogram(
                 "Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation",
                 foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);

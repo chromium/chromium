@@ -15,6 +15,7 @@ include_rules = [
   "+chrome/browser/ui/android/layouts/java",
   "+chrome/browser/notifications",
   "+chrome/browser/password_manager/android",
+  "+chrome/browser/page_annotations/android",
   "+chrome/browser/policy/android",
   "+chrome/browser/preferences/android/java",
   "+chrome/browser/safe_browsing/android",
