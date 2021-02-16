@@ -29,9 +29,10 @@ public class WebappLaunchCauseMetrics extends LaunchCauseMetrics {
                 }
                 return LaunchCause.WEBAPK_OTHER_DISTRIBUTOR;
             }
-            // Legacy PWAs added via Add to Homescreen, usually because install failed or was
-            // unsupported by the device/browser, or the icon pre-dates WebApks. Should be mostly
-            // indistinguishable from an installed WebApk.
+            // Legacy PWAs added via Add to Homescreen, either because install failed or was
+            // unsupported by the device/browser, or the icon pre-dates WebApks, or this is a
+            // standalone fullscreen pwa without either a ServiceWorker or Manifest. Should be
+            // mostly indistinguishable from an installed WebApk.
             return LaunchCause.WEBAPK_CHROME_DISTRIBUTOR;
         }
 
