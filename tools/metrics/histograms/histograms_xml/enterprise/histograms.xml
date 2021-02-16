@@ -1238,8 +1238,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.SystemLogUploadResult"
-    enum="EnterpriseSystemLogUploadResult" expires_after="2021-02-14">
-  <owner>poromov@chromium.org</owner>
+    enum="EnterpriseSystemLogUploadResult" expires_after="2021-08-14">
+  <owner>bmalcolm@chromium.org</owner>
+  <owner>cros-client-wa@google.com</owner>
   <summary>Result of a single attempt to upload system logs.</summary>
 </histogram>
 
