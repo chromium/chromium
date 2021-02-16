@@ -176,7 +176,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
-  webui::AddResourcePathsBulk(source, kResources);
+  source->AddResourcePaths(kResources);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"title", IDS_CHROME_SIGNIN_TITLE},

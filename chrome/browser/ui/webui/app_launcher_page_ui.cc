@@ -85,8 +85,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIAppLauncherPageHost);
   content::WebUIDataSource::Add(GetProfile(), source);
 
-  webui::AddResourcePathsBulk(
-      source, base::make_span(kAppsResources, kAppsResourcesSize));
+  source->AddResourcePaths(base::make_span(kAppsResources, kAppsResourcesSize));
   source->SetDefaultResource(IDR_APPS_NEW_TAB_HTML);
   source->UseStringsJs();
 

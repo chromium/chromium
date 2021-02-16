@@ -42,6 +42,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void AddDouble(base::StringPiece name, double value) override;
   void UseStringsJs() override;
   void AddResourcePath(base::StringPiece path, int resource_id) override;
+  void AddResourcePaths(base::span<const webui::ResourcePath> paths) override;
   void SetDefaultResource(int resource_id) override;
   void SetRequestFilter(const WebUIDataSource::ShouldHandleRequestCallback&
                             should_handle_request_callback,

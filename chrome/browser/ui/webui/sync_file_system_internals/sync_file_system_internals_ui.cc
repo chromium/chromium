@@ -25,9 +25,9 @@ content::WebUIDataSource* CreateSyncFileSystemInternalsHTMLSource() {
       content::WebUIDataSource::Create(
           chrome::kChromeUISyncFileSystemInternalsHost);
   source->UseStringsJs();
-  webui::AddResourcePathsBulk(
-      source, base::make_span(kSyncFileSystemInternalsResources,
-                              kSyncFileSystemInternalsResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kSyncFileSystemInternalsResources,
+                      kSyncFileSystemInternalsResourcesSize));
   source->SetDefaultResource(IDR_SYNC_FILE_SYSTEM_INTERNALS_MAIN_HTML);
   return source;
 }

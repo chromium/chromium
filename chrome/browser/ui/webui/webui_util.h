@@ -30,11 +30,6 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const ResourcePath> resources,
                           int default_resource);
 
-// Calls content::WebUIDataSource::AddResourcePath() in a for-loop for |paths|.
-// Reduces code size vs. reimplementing the same for-loop.
-void AddResourcePathsBulk(content::WebUIDataSource* source,
-                          base::span<const ResourcePath> paths);
-
 // Returns whether the device is enterprise managed. Note that on Linux, there's
 // no good way of detecting whether the device is managed, so always return
 // false.

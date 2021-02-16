@@ -41,14 +41,8 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const ResourcePath> resources,
                           int default_resource) {
   SetJSModuleDefaults(source);
-  AddResourcePathsBulk(source, resources);
+  source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
-}
-
-void AddResourcePathsBulk(content::WebUIDataSource* source,
-                          base::span<const ResourcePath> paths) {
-  for (const auto& path : paths)
-    source->AddResourcePath(path.path, path.id);
 }
 
 bool IsEnterpriseManaged() {

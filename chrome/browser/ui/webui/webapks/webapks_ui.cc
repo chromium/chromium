@@ -25,8 +25,8 @@ WebUIDataSource* CreateWebApksUIDataSource() {
       WebUIDataSource::Create(chrome::kChromeUIWebApksHost);
   html_source->UseStringsJs();
 
-  webui::AddResourcePathsBulk(
-      html_source, base::make_span(kWebapksResources, kWebapksResourcesSize));
+  html_source->AddResourcePaths(
+      base::make_span(kWebapksResources, kWebapksResourcesSize));
   html_source->SetDefaultResource(IDR_WEBAPKS_ABOUT_WEBAPKS_HTML);
 
   return html_source;

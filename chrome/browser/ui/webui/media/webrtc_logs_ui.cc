@@ -79,8 +79,8 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
   source->AddLocalizedStrings(kStrings);
 
   source->UseStringsJs();
-  webui::AddResourcePathsBulk(
-      source, base::make_span(kWebrtcLogsResources, kWebrtcLogsResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kWebrtcLogsResources, kWebrtcLogsResourcesSize));
   source->SetDefaultResource(IDR_WEBRTC_LOGS_WEBRTC_LOGS_HTML);
   return source;
 }

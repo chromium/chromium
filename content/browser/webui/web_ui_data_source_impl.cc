@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/template_expressions.h"
 #include "ui/base/webui/jstemplate_builder.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace content {
@@ -181,6 +182,12 @@ void WebUIDataSourceImpl::UseStringsJs() {
 void WebUIDataSourceImpl::AddResourcePath(base::StringPiece path,
                                           int resource_id) {
   path_to_idr_map_[path.as_string()] = resource_id;
+}
+
+void WebUIDataSourceImpl::AddResourcePaths(
+    base::span<const webui::ResourcePath> paths) {
+  for (const auto& path : paths)
+    AddResourcePath(path.path, path.id);
 }
 
 void WebUIDataSourceImpl::SetDefaultResource(int resource_id) {

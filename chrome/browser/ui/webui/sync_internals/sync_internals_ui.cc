@@ -54,7 +54,7 @@ content::WebUIDataSource* CreateSyncInternalsHTMLSource() {
       {syncer::sync_ui_util::kInvalidationsJS,
        IDR_SYNC_DRIVER_SYNC_INTERNALS_INVALIDATIONS_JS},
   };
-  webui::AddResourcePathsBulk(source, kResources);
+  source->AddResourcePaths(kResources);
 
   source->SetDefaultResource(IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_HTML);
   return source;

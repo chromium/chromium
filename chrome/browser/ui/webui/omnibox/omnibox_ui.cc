@@ -41,8 +41,8 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   VersionUI::AddVersionDetailStrings(source);
   source->UseStringsJs();
 
-  webui::AddResourcePathsBulk(
-      source, base::make_span(kOmniboxResources, kOmniboxResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kOmniboxResources, kOmniboxResourcesSize));
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
 
 #if !defined(OS_ANDROID)

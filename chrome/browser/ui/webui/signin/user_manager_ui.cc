@@ -83,7 +83,7 @@ content::WebUIDataSource* UserManagerUI::CreateUIDataSource(
       {"user_manager_tutorial.html", IDR_USER_MANAGER_TUTORIAL_HTML},
       {"user_manager_tutorial.js", IDR_USER_MANAGER_TUTORIAL_JS},
   };
-  webui::AddResourcePathsBulk(source, kResources);
+  source->AddResourcePaths(kResources);
 
   source->SetDefaultResource(IDR_USER_MANAGER_HTML);
 

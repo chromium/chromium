@@ -44,8 +44,7 @@ namespace {
 content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINetInternalsHost);
-  webui::AddResourcePathsBulk(
-      source,
+  source->AddResourcePaths(
       base::make_span(kNetInternalsResources, kNetInternalsResourcesSize));
   source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(

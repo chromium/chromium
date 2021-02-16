@@ -259,7 +259,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {omnibox::kPageIconResourceName, IDR_LOCAL_NTP_ICONS_PAGE},
       {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG},
       {omnibox::kTrendingUpIconResourceName, IDR_LOCAL_NTP_ICONS_TRENDING_UP}};
-  webui::AddResourcePathsBulk(source, kImages);
+  source->AddResourcePaths(kImages);
 
   source->AddBoolean(
       "recipeTasksModuleEnabled",

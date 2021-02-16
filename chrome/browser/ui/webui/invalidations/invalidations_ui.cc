@@ -29,8 +29,7 @@ content::WebUIDataSource* CreateInvalidationsHTMLSource() {
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->DisableTrustedTypesCSP();
-  webui::AddResourcePathsBulk(
-      source,
+  source->AddResourcePaths(
       base::make_span(kInvalidationsResources, kInvalidationsResourcesSize));
   source->SetDefaultResource(IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_HTML);
   return source;
