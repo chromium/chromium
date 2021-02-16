@@ -1470,6 +1470,7 @@ cr.define('cr.ui', function() {
   }
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     List: List,
     Size: Size,

@@ -337,3 +337,5 @@
 /* #export */ function isTextInputElement(el) {
   return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
 }
+
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

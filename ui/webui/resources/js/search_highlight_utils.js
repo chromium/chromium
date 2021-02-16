@@ -169,6 +169,7 @@ cr.define('cr.search_highlight_utils', function() {
   }
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     Range,
     createEmptySearchBubble,

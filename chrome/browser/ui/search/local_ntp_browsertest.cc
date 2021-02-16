@@ -380,8 +380,11 @@ IN_PROC_BROWSER_TEST_F(LocalNTPTest, GoogleNTPLoadsWithoutError) {
   EXPECT_TRUE(is_google);
 
   // We shouldn't have gotten any console error messages.
-  EXPECT_TRUE(console_observer.messages().empty())
-      << console_observer.GetMessageAt(0u);
+  for (const auto& message : console_observer.messages()) {
+    if (message.log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      FAIL() << message.message;
+    }
+  }
 
   // Make sure load time metrics were recorded.
   histograms.ExpectTotalCount("NewTabPage.LoadTime", 1);
@@ -429,8 +432,11 @@ IN_PROC_BROWSER_TEST_F(LocalNTPTest, NonGoogleNTPLoadsWithoutError) {
   EXPECT_FALSE(is_google);
 
   // We shouldn't have gotten any console error messages.
-  EXPECT_TRUE(console_observer.messages().empty())
-      << console_observer.GetMessageAt(0u);
+  for (const auto& message : console_observer.messages()) {
+    if (message.log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      FAIL() << message.message;
+    }
+  }
 
   // Make sure load time metrics were recorded.
   histograms.ExpectTotalCount("NewTabPage.LoadTime", 1);
@@ -471,8 +477,11 @@ IN_PROC_BROWSER_TEST_F(LocalNTPTest, FrenchGoogleNTPLoadsWithoutError) {
   ASSERT_EQ(base::ASCIIToUTF16("Nouvel onglet"), active_tab->GetTitle());
 
   // We shouldn't have gotten any console error messages.
-  EXPECT_TRUE(console_observer.messages().empty())
-      << console_observer.GetMessageAt(0u);
+  for (const auto& message : console_observer.messages()) {
+    if (message.log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      FAIL() << message.message;
+    }
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNTPTest, LoadsMDIframe) {

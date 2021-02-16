@@ -67,7 +67,11 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
       child, url, heavy_ads::PrepareHeavyAdPage(), net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 
-  EXPECT_TRUE(console_observer.messages().empty());
+  for (const auto& message : console_observer.messages()) {
+    if (message.log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      FAIL() << message.message;
+    }
+  }
 }
 
 // Checks that the heavy ad strings are in the html content of the rendered

@@ -53,8 +53,11 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest,
   EXPECT_TRUE(microphone_is_visible);
 
   // We shouldn't have gotten any console error messages.
-  EXPECT_TRUE(console_observer.messages().empty())
-      << console_observer.GetMessageAt(0u);
+  for (const auto& message : console_observer.messages()) {
+    if (message.log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      FAIL() << message.message;
+    }
+  }
 }
 
 // Test is flaky: crbug.com/790963.

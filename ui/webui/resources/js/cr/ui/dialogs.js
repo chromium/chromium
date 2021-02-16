@@ -437,6 +437,7 @@ cr.define('cr.ui.dialogs', function() {
   };
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     BaseDialog: BaseDialog,
     AlertDialog: AlertDialog,

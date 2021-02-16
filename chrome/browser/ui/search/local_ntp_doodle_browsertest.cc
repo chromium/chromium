@@ -104,7 +104,9 @@ class FailOnConsoleMessage : public content::WebContentsObserver {
       int32_t line_no,
       const base::string16& source_id,
       const base::Optional<base::string16>& untrusted_stack_trace) override {
-    ADD_FAILURE() << "Unexpected console message: " << message;
+    if (log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      ADD_FAILURE() << "Unexpected console error: " << message;
+    }
   }
 };
 
