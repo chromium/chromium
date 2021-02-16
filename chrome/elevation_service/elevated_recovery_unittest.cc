@@ -134,11 +134,10 @@ TEST_F(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
   base::win::ScopedHandle proc_handle;
 
   // Empty browser_appid/browser_version/session_id.
-  EXPECT_EQ(
-      E_INVALIDARG,
-      elevation_service::RunChromeRecoveryCRX(
-          TestFile("valid_publisher.crx3"), base::string16(), base::string16(),
-          base::string16(), ::GetCurrentProcessId(), &proc_handle));
+  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
+                              TestFile("valid_publisher.crx3"), std::wstring(),
+                              std::wstring(), std::wstring(),
+                              ::GetCurrentProcessId(), &proc_handle));
 
   // Invalid browser_appid, valid browser_version/session_id.
   EXPECT_EQ(E_INVALIDARG,
@@ -149,8 +148,8 @@ TEST_F(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
 
   // Empty browser_appid, invalid browser_version, valid session_id.
   EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
-                              TestFile("valid_publisher.crx3"),
-                              base::string16(), L"invalidbrowserversion",
+                              TestFile("valid_publisher.crx3"), std::wstring(),
+                              L"invalidbrowserversion",
                               L"{c49ab053-2387-4809-b188-1902648802e1}",
                               ::GetCurrentProcessId(), &proc_handle));
 
