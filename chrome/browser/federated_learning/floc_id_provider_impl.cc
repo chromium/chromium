@@ -13,6 +13,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace federated_learning {
 
@@ -147,6 +149,21 @@ std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
   return floc_id_.ToStringForJsApi();
 }
 
+void FlocIdProviderImpl::MaybeRecordFlocToUkm(ukm::SourceId source_id) {
+  if (!need_ukm_recording_)
+    return;
+
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::FlocPageLoad builder(source_id);
+
+  if (floc_id_.IsValid())
+    builder.SetFlocId(floc_id_.ToUint64());
+
+  builder.Record(ukm_recorder->Get());
+
+  need_ukm_recording_ = false;
+}
+
 void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
   DCHECK(floc_computation_in_progress_);
   floc_computation_in_progress_ = false;
@@ -163,6 +180,8 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
 
   floc_id_ = result.floc_id;
   floc_id_.SaveToPrefs(prefs_);
+
+  need_ukm_recording_ = true;
 
   ScheduleFlocComputation(kFlocIdScheduledUpdateInterval.Get());
 }

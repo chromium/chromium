@@ -23,8 +23,10 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace federated_learning {
@@ -881,6 +883,99 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleHistoryEntries) {
   EXPECT_EQ(
       FlocId(FlocId::SimHashHistory({"a.test", "b.test"}), kTime1, kTime2, 0),
       floc_id());
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       MaybeRecordFlocToUkmMethod_FilteredRecording) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  InitializeFlocIdProvider();
+
+  floc_id_provider_->MaybeRecordFlocToUkm(1);
+
+  // Initially the |need_ukm_recording_| is false. The recording attempt should
+  // have been filtered. Expect no events.
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::FlocPageLoad::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       MaybeRecordFlocToUkmMethod_RecordInvalidFloc) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  InitializeFlocIdProvider();
+
+  floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult());
+  floc_id_provider_->MaybeRecordFlocToUkm(1);
+
+  // Expect an event with a missing metric, meaning the floc id is invalid.
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::FlocPageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  EXPECT_FALSE(ukm_recorder.EntryHasMetric(
+      entries.back(), ukm::builders::FlocPageLoad::kFlocIdName));
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       MaybeRecordFlocToUkmMethod_RecordValidFloc) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  InitializeFlocIdProvider();
+
+  floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
+      /*sim_hash=*/123, FlocIdTester::Create(123, base::Time::FromTimeT(4),
+                                             base::Time::FromTimeT(5), 6, 7,
+                                             base::Time::FromTimeT(8))));
+  floc_id_provider_->MaybeRecordFlocToUkm(1);
+
+  // Expect an event with a metric having the expected floc value.
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::FlocPageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(entries.back(),
+                                 ukm::builders::FlocPageLoad::kFlocIdName,
+                                 /*expected_value=*/123);
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       MaybeRecordFlocToUkmMethod_MultipleRecordings) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  InitializeFlocIdProvider();
+
+  floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
+      /*sim_hash=*/123, FlocIdTester::Create(123, base::Time::FromTimeT(4),
+                                             base::Time::FromTimeT(5), 6, 7,
+                                             base::Time::FromTimeT(8))));
+  floc_id_provider_->MaybeRecordFlocToUkm(1);
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::FlocPageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  // Subsequent recoding attempt will be filtered as the last recording has set
+  // |need_ukm_recording_| to false.
+  floc_id_provider_->MaybeRecordFlocToUkm(1);
+  entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::FlocPageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  // Trigger a new floc computation completion.
+  set_floc_computation_in_progress(true);
+  floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
+      /*sim_hash=*/456, FlocIdTester::Create(456, base::Time::FromTimeT(4),
+                                             base::Time::FromTimeT(5), 6, 7,
+                                             base::Time::FromTimeT(8))));
+  floc_id_provider_->MaybeRecordFlocToUkm(1);
+
+  // The new recording attempt should have succeeded.
+  entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::FlocPageLoad::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  ukm_recorder.ExpectEntryMetric(entries.back(),
+                                 ukm::builders::FlocPageLoad::kFlocIdName,
+                                 /*expected_value=*/456);
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,

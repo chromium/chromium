@@ -8,6 +8,7 @@
 #include "components/federated_learning/floc_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 namespace federated_learning {
@@ -24,6 +25,11 @@ class FlocIdProvider : public KeyedService {
   virtual std::string GetInterestCohortForJsApi(
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) const = 0;
+
+  // Record the floc id to UKM if this is the first recording attempt after each
+  // time the floc is (re-)computed. No-op if the existing floc was already
+  // recorded to UKM before.
+  virtual void MaybeRecordFlocToUkm(ukm::SourceId source_id) = 0;
 
   ~FlocIdProvider() override = default;
 };

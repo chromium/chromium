@@ -93,6 +93,8 @@ class FlocIdProviderImpl : public FlocIdProvider,
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) const override;
 
+  void MaybeRecordFlocToUkm(ukm::SourceId source_id) override;
+
  protected:
   // protected virtual for testing.
   virtual void OnComputeFlocCompleted(ComputeFlocResult result);
@@ -178,6 +180,13 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // The id to be exposed to the JS API. It will always be in sync with the one
   // stored in prefs.
   FlocId floc_id_;
+
+  // When a floc is computed, we'll record it to the UKM on the next page load.
+  // This flag controls whether the recording is needed. Caveat: given that this
+  // info does not persist across browser sessions, we could miss the recording
+  // when the floc is computed and then the browser is closed before the next
+  // page load occurs.
+  bool need_ukm_recording_ = false;
 
   bool floc_computation_in_progress_ = false;
 

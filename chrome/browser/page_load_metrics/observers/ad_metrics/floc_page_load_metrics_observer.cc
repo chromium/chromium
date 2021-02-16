@@ -5,6 +5,9 @@
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/floc_page_load_metrics_observer.h"
 
 #include "chrome/browser/federated_learning/floc_eligibility_observer.h"
+#include "chrome/browser/federated_learning/floc_id_provider.h"
+#include "chrome/browser/federated_learning/floc_id_provider_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 
 FlocPageLoadMetricsObserver::FlocPageLoadMetricsObserver() = default;
@@ -15,6 +18,14 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FlocPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
+  federated_learning::FlocIdProvider* floc_id_provider =
+      federated_learning::FlocIdProviderFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              GetDelegate().GetWebContents()->GetBrowserContext()));
+
+  if (floc_id_provider)
+    floc_id_provider->MaybeRecordFlocToUkm(source_id);
+
   return federated_learning::FlocEligibilityObserver::
       GetOrCreateForCurrentDocument(navigation_handle->GetRenderFrameHost())
           ->OnCommit(navigation_handle);

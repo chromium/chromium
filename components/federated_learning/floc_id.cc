@@ -69,6 +69,11 @@ std::string FlocId::ToStringForJsApi() const {
                        base::NumberToString(sorting_lsh_version_)});
 }
 
+uint64_t FlocId::ToUint64() const {
+  DCHECK(id_.has_value());
+  return id_.value();
+}
+
 // static
 void FlocId::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(kFlocIdValuePrefKey, 0);
