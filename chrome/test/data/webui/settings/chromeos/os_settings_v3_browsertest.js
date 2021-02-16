@@ -318,6 +318,7 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
+ ['OsSettingsUi', 'os_settings_ui_test.m.js'],
  ['OsSettingsMain', 'os_settings_main_test.m.js'],
  ['OsSearchPage', 'os_search_page_test.m.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],

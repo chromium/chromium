@@ -14,7 +14,7 @@
 // #import '../search/user_action_recorder.mojom-lite.js';
 // clang-format on
 
-/* export */ class PrefToSettingMetricConverter {
+/* #export */ class PrefToSettingMetricConverter {
   /**
    * @param {string} prefKey
    * @param {*} prefValue

@@ -2,14 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for the OS Settings main page. */
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
 
-suite('OSSettingsPage', function() {
+// #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// clang-format on
+
+/** @fileoverview Suite of tests for the OS Settings ui and main page. */
+
+suite('OSSettingsUi', function() {
   let settingsMain = null;
   let settingsPage = null;
+  let ui;
 
   suiteSetup(async function() {
+    document.body.innerHTML = '';
+    ui = document.createElement('os-settings-ui');
+    document.body.appendChild(ui);
+    Polymer.dom.flush();
+
     await CrSettingsPrefs.initialized;
+    settingsMain =
+        document.querySelector('os-settings-ui').$$('os-settings-main');
 
     settingsMain =
         document.querySelector('os-settings-ui').$$('os-settings-main');

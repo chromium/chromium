@@ -29,11 +29,6 @@ suite('OsSettingsPageTests', function() {
       document.body.appendChild(settingsPage);
       Polymer.dom.flush();
     });
-
-    const idleRender = settingsPage.$$('settings-idle-load');
-    assert(!!idleRender);
-    await idleRender.get();
-    Polymer.dom.flush();
   });
 
   teardown(function() {

@@ -509,6 +509,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_settings_page/main_page_behavior.m.js",
     "chromeos/os_settings_page/settings_idle_load.m.js",
     "chromeos/os_settings_page/os_settings_page.m.js",
+    "chromeos/os_settings_ui/os_settings_ui.m.js",
     "chromeos/os_settings_routes.m.js",
     "chromeos/os_settings_search_box/os_search_result_row.m.js",
     "chromeos/os_settings_search_box/os_settings_search_box.m.js",
@@ -1222,8 +1223,7 @@ js_library("search_handler") {
 
 group("closure_compile_module") {
   deps = [
-    # TODO: Uncomment as the Polymer3 migration makes progress.
-    #":closure_compile_local_module",
+    ":closure_compile_local_module",
     "ambient_mode_page:closure_compile_module",
     "bluetooth_page:closure_compile_module",
     "crostini_page:closure_compile_module",
@@ -1253,8 +1253,7 @@ group("closure_compile_module") {
     "os_settings_menu:closure_compile_module",
     "os_settings_page:closure_compile_module",
     "os_settings_search_box:closure_compile_module",
-
-    #"os_settings_ui:closure_compile_module",
+    "os_settings_ui:closure_compile_module",
     "os_toolbar:closure_compile_module",
     "parental_controls_page:closure_compile_module",
     "personalization_page:closure_compile_module",
@@ -1264,18 +1263,24 @@ group("closure_compile_module") {
 js_type_check("closure_compile_local_module") {
   is_polymer3 = true
   deps = [
+    ":lazy_load",
     ":metrics_recorder.m",
     ":os_icons.m",
     ":os_page_visibility.m",
     ":os_route.m",
-
-    #  ":os_settings.m",
+    ":os_settings",
     ":os_settings_icons_css.m",
     ":os_settings_routes.m",
     ":pref_to_setting_metric_converter.m",
     ":route_origin_behavior.m",
     ":search_handler.m",
   ]
+}
+
+js_library("os_settings") {
+}
+
+js_library("lazy_load") {
 }
 
 js_library("deep_linking_behavior.m") {

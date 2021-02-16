@@ -137,6 +137,13 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                    "settings.StorageSizeStat|StorageSizeStat",
                                    "settings.ModifierKey|ModifierKey",
                                    "settings.getDisplayApi|getDisplayApi",
+                                   "settings.defaultResourceLoaded|defaultResourceLoaded",
+                                   "settings.osPageVisibility|osPageVisibility",
+                                   "settings.setGlobalScrollTarget|setGlobalScrollTarget",
+                                   "settings.recordPageFocus|recordPageFocus",
+                                   "settings.recordPageBlur|recordPageBlur",
+                                   "settings.recordClick|recordClick",
+                                   "settings.recordNavigation|recordNavigation",
                                  ]
 
 os_settings_auto_imports = settings_auto_imports +
@@ -152,7 +159,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_browser_proxy.html|GoogleAssistantBrowserProxy,GoogleAssistantBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/guest_os/guest_os_browser_proxy.html|GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, CROSTINI_TYPE, PLUGIN_VM_TYPE",
                              "chrome/browser/resources/settings/chromeos/kerberos_page/kerberos_accounts_browser_proxy.html|KerberosAccount,KerberosAccountsBrowserProxyImpl,KerberosAccountsBrowserProxy,KerberosErrorType,KerberosConfigErrorCode,ValidateKerberosConfigResult",
-                             "chrome/browser/resources/settings/chromeos/metrics_recorder.html|recordSettingChange, recordSearch, setUserActionRecorderForTesting",
+                             "chrome/browser/resources/settings/chromeos/metrics_recorder.html|recordSettingChange, recordSearch, setUserActionRecorderForTesting,recordPageFocus,recordPageBlur,recordClick,recordNavigation",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_browser_proxy.html|MultiDeviceBrowserProxy,MultiDeviceBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_constants.html|MultiDeviceSettingsMode,MultiDeviceFeature,MultiDeviceFeatureState,MultiDevicePageContentData,PhoneHubNotificationAccessStatus,SmartLockSignInEnabledState",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_feature_behavior.html|MultiDeviceFeatureBehavior",
@@ -171,7 +178,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/os_people_page/fingerprint_browser_proxy.html|FingerprintInfo,FingerprintBrowserProxy,FingerprintResultType,FingerprintBrowserProxyImpl,FingerprintAttempt,FingerprintScan",
                              "chrome/browser/resources/settings/chromeos/os_people_page/lock_state_behavior.html|LockScreenUnlockType,LockStateBehaviorImpl,LockStateBehavior",
                              "chrome/browser/resources/settings/chromeos/os_people_page/os_sync_browser_proxy.html|OsSyncBrowserProxy,OsSyncBrowserProxyImpl,OsSyncPrefs",
-                             "chrome/browser/resources/settings/chromeos/os_page_visibility.html|OSPageVisibility",
+                             "chrome/browser/resources/settings/chromeos/os_page_visibility.html|OSPageVisibility,osPageVisibility",
                              "chrome/browser/resources/settings/chromeos/os_reset_page/os_reset_browser_proxy.html|OsResetBrowserProxy,OsResetBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_route.html|routes",
                              "chrome/browser/resources/settings/chromeos/os_settings_routes.html|OsSettingsRoutes",
@@ -182,7 +189,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/route_origin_behavior.html|RouteOriginBehaviorImpl,RouteOriginBehavior",
                              "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html|FontsBrowserProxy,FontsBrowserProxyImpl",
                              "chrome/browser/resources/settings/controls/settings_dropdown_menu.html|DropdownMenuOptionList",
-                             "chrome/browser/resources/settings/global_scroll_target_behavior.html|GlobalScrollTargetBehavior",
+                             "chrome/browser/resources/settings/global_scroll_target_behavior.html|GlobalScrollTargetBehavior,setGlobalScrollTarget",
                              "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html|LanguagesBrowserProxy,LanguagesBrowserProxyImpl",
                              "chrome/browser/resources/settings/lifetime_browser_proxy.html|LifetimeBrowserProxy,LifetimeBrowserProxyImpl",
                              "chrome/browser/resources/settings/people_page/account_manager_browser_proxy.html|AccountManagerBrowserProxy,AccountManagerBrowserProxyImpl,Account",
@@ -210,7 +217,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "ui/webui/resources/html/list_property_update_behavior.html|ListPropertyUpdateBehavior",
                              "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
                              "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,html,flush,Templatizer,TemplateInstanceBase",
-                             "ui/webui/resources/html/util.html|HTMLEscape",
+                             "ui/webui/resources/html/util.html|HTMLEscape,listenOnce",
                              "ui/webui/resources/html/web_ui_listener_behavior.html|WebUIListenerBehavior",
                              "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/browser_proxy.html|BrowserProxy",
                              "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store_client.html|AppManagementStoreClient",
@@ -222,6 +229,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/os_apps_page/android_apps_browser_proxy.html|AndroidAppsBrowserProxyImpl,AndroidAppsInfo",
                              "chrome/browser/resources/settings/chromeos/device_page/drag_behavior.html|DragBehavior,DragPosition",
                              "chrome/browser/resources/settings/chromeos/device_page/layout_behavior.html|LayoutBehavior",
+                             "chrome/browser/resources/settings/chromeos/pref_to_setting_metric_converter.html|PrefToSettingMetricConverter",
                              "third_party/polymer/v1_0/components-chromium/iron-resizable-behavior/iron-resizable-behavior.html|IronResizableBehavior",
                            ]
 
