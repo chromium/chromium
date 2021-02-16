@@ -549,7 +549,7 @@ void FeatureList::RegisterOverridesFromCommandLine(
     std::string::size_type pos = feature_name.find('<');
     if (pos != std::string::npos) {
       feature_name = StringPiece(value.data(), pos);
-      trial = FieldTrialList::Find(std::string(value.substr(pos + 1)));
+      trial = FieldTrialList::Find(value.substr(pos + 1));
 #if !defined(OS_NACL)
       // If the below DCHECK fires, it means a non-existent trial name was
       // specified via the "Feature<Trial" command-line syntax.

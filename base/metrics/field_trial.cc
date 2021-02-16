@@ -464,9 +464,9 @@ FieldTrialList::~FieldTrialList() {
 
 // static
 FieldTrial* FieldTrialList::FactoryGetFieldTrial(
-    const std::string& trial_name,
+    StringPiece trial_name,
     FieldTrial::Probability total_probability,
-    const std::string& default_group_name,
+    StringPiece default_group_name,
     FieldTrial::RandomizationType randomization_type,
     int* default_group_number) {
   return FactoryGetFieldTrialWithRandomizationSeed(
@@ -476,9 +476,9 @@ FieldTrial* FieldTrialList::FactoryGetFieldTrial(
 
 // static
 FieldTrial* FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-    const std::string& trial_name,
+    StringPiece trial_name,
     FieldTrial::Probability total_probability,
-    const std::string& default_group_name,
+    StringPiece default_group_name,
     FieldTrial::RandomizationType randomization_type,
     uint32_t randomization_seed,
     int* default_group_number,
@@ -544,7 +544,7 @@ FieldTrial* FieldTrialList::Find(StringPiece trial_name) {
 }
 
 // static
-int FieldTrialList::FindValue(const std::string& trial_name) {
+int FieldTrialList::FindValue(StringPiece trial_name) {
   FieldTrial* field_trial = Find(trial_name);
   if (field_trial)
     return field_trial->group();
@@ -552,7 +552,7 @@ int FieldTrialList::FindValue(const std::string& trial_name) {
 }
 
 // static
-std::string FieldTrialList::FindFullName(const std::string& trial_name) {
+std::string FieldTrialList::FindFullName(StringPiece trial_name) {
   FieldTrial* field_trial = Find(trial_name);
   if (field_trial)
     return field_trial->group_name();
@@ -560,12 +560,12 @@ std::string FieldTrialList::FindFullName(const std::string& trial_name) {
 }
 
 // static
-bool FieldTrialList::TrialExists(const std::string& trial_name) {
+bool FieldTrialList::TrialExists(StringPiece trial_name) {
   return Find(trial_name) != nullptr;
 }
 
 // static
-bool FieldTrialList::IsTrialActive(const std::string& trial_name) {
+bool FieldTrialList::IsTrialActive(StringPiece trial_name) {
   FieldTrial* field_trial = Find(trial_name);
   FieldTrial::ActiveGroup active_group;
   return field_trial && field_trial->GetActiveGroup(&active_group);

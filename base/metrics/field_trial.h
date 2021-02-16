@@ -112,7 +112,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
     // used in preference to |trial_name| for generating the entropy by entropy
     // providers that support it. A given instance should always return the same
     // value given the same input |trial_name| and |randomization_seed| values.
-    virtual double GetEntropyForTrial(const std::string& trial_name,
+    virtual double GetEntropyForTrial(StringPiece trial_name,
                                       uint32_t randomization_seed) const = 0;
   };
 
@@ -295,7 +295,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   virtual ~FieldTrial();
 
   // Return the default group name of the FieldTrial.
-  std::string default_group_name() const { return default_group_name_; }
+  const std::string& default_group_name() const { return default_group_name_; }
 
   // Marks this trial as having been registered with the FieldTrialList. Must be
   // called no more than once and before any |group()| calls have occurred.
@@ -330,7 +330,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   bool GetStateWhileLocked(State* field_trial_state, bool include_disabled);
 
   // Returns the group_name. A winner need not have been chosen.
-  std::string group_name_internal() const { return group_name_; }
+  const std::string& group_name_internal() const { return group_name_; }
 
   // The name of the field trial, as can be found via the FieldTrialList.
   const std::string trial_name_;
@@ -439,9 +439,9 @@ class BASE_EXPORT FieldTrialList {
   // Use this static method to get a startup-randomized FieldTrial or a
   // previously created forced FieldTrial.
   static FieldTrial* FactoryGetFieldTrial(
-      const std::string& trial_name,
+      StringPiece trial_name,
       FieldTrial::Probability total_probability,
-      const std::string& default_group_name,
+      StringPiece default_group_name,
       FieldTrial::RandomizationType randomization_type,
       int* default_group_number);
 
@@ -457,9 +457,9 @@ class BASE_EXPORT FieldTrialList {
   // used for randomization instead of the provider given when the
   // FieldTrialList was instantiated.
   static FieldTrial* FactoryGetFieldTrialWithRandomizationSeed(
-      const std::string& trial_name,
+      StringPiece trial_name,
       FieldTrial::Probability total_probability,
-      const std::string& default_group_name,
+      StringPiece default_group_name,
       FieldTrial::RandomizationType randomization_type,
       uint32_t randomization_seed,
       int* default_group_number,
@@ -471,7 +471,7 @@ class BASE_EXPORT FieldTrialList {
 
   // Returns the group number chosen for the named trial, or
   // FieldTrial::kNotFinalized if the trial does not exist.
-  static int FindValue(const std::string& trial_name);
+  static int FindValue(StringPiece trial_name);
 
   // Returns the group name chosen for the named trial, or the empty string if
   // the trial does not exist. The first call of this function on a given field
@@ -479,13 +479,13 @@ class BASE_EXPORT FieldTrialList {
   // metrics, crashes, etc.
   // Note: Direct use of this function and related FieldTrial functions is
   // generally discouraged - instead please use base::Feature when possible.
-  static std::string FindFullName(const std::string& trial_name);
+  static std::string FindFullName(StringPiece trial_name);
 
   // Returns true if the named trial has been registered.
-  static bool TrialExists(const std::string& trial_name);
+  static bool TrialExists(StringPiece trial_name);
 
   // Returns true if the named trial exists and has been activated.
-  static bool IsTrialActive(const std::string& trial_name);
+  static bool IsTrialActive(StringPiece trial_name);
 
   // Creates a persistent representation of active FieldTrial instances for
   // resurrection in another process. This allows randomization to be done in

@@ -18,7 +18,7 @@ class MockEntropyProvider : public base::FieldTrial::EntropyProvider {
   ~MockEntropyProvider() override;
 
   // base::FieldTrial::EntropyProvider:
-  double GetEntropyForTrial(const std::string& trial_name,
+  double GetEntropyForTrial(StringPiece trial_name,
                             uint32_t randomization_seed) const override;
 
  private:

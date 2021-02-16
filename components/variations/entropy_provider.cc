@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/hash/sha1.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
 #include "components/variations/hashing.h"
@@ -26,7 +27,7 @@ SHA1EntropyProvider::~SHA1EntropyProvider() {
 }
 
 double SHA1EntropyProvider::GetEntropyForTrial(
-    const std::string& trial_name,
+    base::StringPiece trial_name,
     uint32_t randomization_seed) const {
   // Given enough input entropy, SHA-1 will produce a uniformly random spread
   // in its output space. In this case, the input entropy that is used is the
@@ -36,10 +37,10 @@ double SHA1EntropyProvider::GetEntropyForTrial(
   // it has been observed that this method does not result in a uniform
   // distribution given the same |trial_name|. When using such a low entropy
   // source, NormalizedMurmurHashEntropyProvider should be used instead.
-  std::string input(entropy_source_);
-  input.append(randomization_seed == 0
-                   ? trial_name
-                   : base::NumberToString(randomization_seed));
+  std::string input = base::StrCat(
+      {entropy_source_, randomization_seed == 0
+                            ? trial_name
+                            : base::NumberToString(randomization_seed)});
 
   unsigned char sha1_hash[base::kSHA1Length];
   base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(input.c_str()),
@@ -66,7 +67,7 @@ NormalizedMurmurHashEntropyProvider::NormalizedMurmurHashEntropyProvider(
 NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() {}
 
 double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
-    const std::string& trial_name,
+    base::StringPiece trial_name,
     uint32_t randomization_seed) const {
   if (randomization_seed == 0) {
     randomization_seed = internal::VariationsMurmurHash::Hash(

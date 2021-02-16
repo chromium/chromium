@@ -20,7 +20,7 @@ namespace internal {
 
 // static
 std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
-    const std::string& data) {
+    base::StringPiece data) {
   const size_t data_size = data.size();
   const size_t word_num = (data_size + 3) / 4;  // data_size / 4, rounding up
   std::vector<uint32_t> words(word_num, 0);

@@ -12,7 +12,7 @@ MockEntropyProvider::MockEntropyProvider(double entropy_value)
 MockEntropyProvider::~MockEntropyProvider() = default;
 
 double MockEntropyProvider::GetEntropyForTrial(
-    const std::string& trial_name,
+    StringPiece trial_name,
     uint32_t randomization_seed) const {
   return entropy_value_;
 }
