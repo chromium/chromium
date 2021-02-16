@@ -15,12 +15,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/task_runner.h"
 
-// BindPostTask() is a helper function for binding a OnceCallback to a task
-// runner. BindPostTask(task_runner, callback) returns a task runner bound
-// callback with an identical type to |callback|. The returned callback will
-// take the same arguments as the input |callback|. Invoking Run() on the
-// returned callback will post a task to run |callback| on target |task_runner|
-// with the provided arguments.
+// BindPostTask() is a helper function for binding a OnceCallback or
+// RepeatingCallback to a task runner. BindPostTask(task_runner, callback)
+// returns a task runner bound callback with an identical type to |callback|.
+// The returned callback will take the same arguments as the input |callback|.
+// Invoking Run() on the returned callback will post a task to run |callback| on
+// target |task_runner| with the provided arguments.
 //
 // This is typically used when a callback must be invoked on a specific task
 // runner but is provided as a result callback to a function that runs
@@ -75,6 +75,28 @@ OnceCallback<void(Args...)> BindPostTask(
   using Helper = internal::BindPostTaskTrampoline<OnceCallback<void(Args...)>>;
 
   return base::BindOnce(
+      &Helper::template Run<Args...>,
+      std::make_unique<Helper>(std::move(task_runner), location,
+                               std::move(callback)));
+}
+
+// Creates a RepeatingCallback that will run |callback| on |task_runner|. When
+// the returned callback is destroyed a task will be posted to destroy the input
+// |callback| on |task_runner|.
+template <typename ReturnType, typename... Args>
+RepeatingCallback<void(Args...)> BindPostTask(
+    scoped_refptr<TaskRunner> task_runner,
+    RepeatingCallback<ReturnType(Args...)> callback,
+    const Location& location = FROM_HERE) {
+  static_assert(std::is_same<ReturnType, void>::value,
+                "RepeatingCallback must have void return type in order to "
+                "produce a closure for PostTask(). Use base::IgnoreResult() to "
+                "drop the return value if desired.");
+
+  using Helper =
+      internal::BindPostTaskTrampoline<RepeatingCallback<void(Args...)>>;
+
+  return base::BindRepeating(
       &Helper::template Run<Args...>,
       std::make_unique<Helper>(std::move(task_runner), location,
                                std::move(callback)));

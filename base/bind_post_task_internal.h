@@ -56,7 +56,7 @@ class BindPostTaskTrampoline {
 
   template <typename... Args>
   void Run(Args... args) {
-    // GetClosure() consumes `callback_`.
+    // If CallbackType is a OnceCallback then GetClosure() consumes `callback_`.
     task_runner_->PostTask(location_,
                            GetClosure(&callback_, std::forward<Args>(args)...));
   }
@@ -71,6 +71,17 @@ class BindPostTaskTrampoline {
   static OnceClosure GetClosure(OnceCallback<void(Args...)>* callback,
                                 Args&&... args) {
     return BindOnce(std::move(*callback), std::forward<Args>(args)...);
+  }
+
+  static OnceClosure GetClosure(RepeatingClosure* callback) {
+    // `callback` is already a closure, no need to call BindOnce().
+    return *callback;
+  }
+
+  template <typename... Args>
+  static OnceClosure GetClosure(RepeatingCallback<void(Args...)>* callback,
+                                Args&&... args) {
+    return BindOnce(*callback, std::forward<Args>(args)...);
   }
 
   static void DestroyCallbackOnTaskRunner(CallbackType callback) {}

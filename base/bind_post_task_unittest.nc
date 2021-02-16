@@ -17,10 +17,18 @@ int ReturnInt() {
   return 5;
 }
 
-#if defined(NCTEST_ONCE_NON_VOID_RETURN)  // [r"||fatal error: static_assert failed due to requirement 'std::is_same<int, void>::value' \"OnceCallback must have void return type in order to produce a closure for PostTask\(\). Use base::IgnoreResult\(\) to drop the return value if desired.\""]
+#if defined(NCTEST_ONCE_NON_VOID_RETURN)  // [r"fatal error: static_assert failed due to requirement 'std::is_same<int, void>::value' \"OnceCallback must have void return type in order to produce a closure for PostTask\(\). Use base::IgnoreResult\(\) to drop the return value if desired.\""]
 // OnceCallback with non-void return type.
 void WontCompile() {
   OnceCallback<int()> cb = BindOnce(&ReturnInt);
+  auto post_cb = BindPostTask(SequencedTaskRunnerHandle::Get(), std::move(cb));
+  std::move(post_cb).Run();
+}
+
+#elif defined(NCTEST_REPEATING_NON_VOID_RETURN)  // [r"fatal error: static_assert failed due to requirement 'std::is_same<int, void>::value' \"RepeatingCallback must have void return type in order to produce a closure for PostTask\(\). Use base::IgnoreResult\(\) to drop the return value if desired.\""]
+// RepeatingCallback with non-void return type.
+void WontCompile() {
+  RepeatingCallback<int()> cb = BindRepeating(&ReturnInt);
   auto post_cb = BindPostTask(SequencedTaskRunnerHandle::Get(), std::move(cb));
   std::move(post_cb).Run();
 }
