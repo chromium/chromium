@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -39,6 +40,13 @@ class ChromePasswordProtectionService
   ChromePasswordProtectionService(SafeBrowsingService* sb_service,
                                   ChromeBrowserState* browser_state);
   ~ChromePasswordProtectionService() override;
+
+  // PasswordProtectionServiceBase:
+  void RequestFinished(
+      safe_browsing::PasswordProtectionRequest* request,
+      safe_browsing::RequestOutcome outcome,
+      std::unique_ptr<safe_browsing::LoginReputationClientResponse> response)
+      override;
 
   void ShowModalWarning(
       safe_browsing::PasswordProtectionRequest* request,
@@ -145,7 +153,9 @@ class ChromePasswordProtectionService
       safe_browsing::PasswordType password_type,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
-      bool password_field_exists) override;
+      bool password_field_exists,
+      safe_browsing::PasswordProtectionService::ShowWarningCallback
+          show_warning_callback) override;
 
   // PasswordProtectionService override.
   void MaybeLogPasswordReuseLookupEvent(
@@ -199,7 +209,9 @@ class ChromePasswordProtectionService
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
       safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
-      bool password_field_exists);
+      bool password_field_exists,
+      safe_browsing::PasswordProtectionService::ShowWarningCallback
+          show_warning_callback);
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
@@ -222,6 +234,11 @@ class ChromePasswordProtectionService
 
   // Returns whether |browser_state_| has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
+
+  // Lookup by WebState for a callback for showing a warning for that WebState.
+  std::map<web::WebState*,
+           safe_browsing::PasswordProtectionService::ShowWarningCallback>
+      show_warning_callbacks_;
 
   ChromeBrowserState* browser_state_;
 };

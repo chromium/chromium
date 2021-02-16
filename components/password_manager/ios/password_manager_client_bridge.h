@@ -53,6 +53,9 @@ using password_manager::CredentialLeakType;
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType
                                   URL:(const GURL&)URL;
 
+// Shows Password Protection warning with |warningText|.
+- (void)showPasswordProtectionWarning:(NSString*)warningText;
+
 @end
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_CLIENT_BRIDGE_H_

@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
+#import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_password_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -341,6 +342,10 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                                                            URL:URL];
 }
 
+- (void)showPasswordProtectionWarning:(NSString*)warningText {
+  [self.passwordProtectionDispatcher showPasswordProtectionWarning:warningText];
+}
+
 #pragma mark - Private methods
 
 // The dispatcher used for ApplicationCommands.
@@ -357,6 +362,14 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   DCHECK(self.browser->GetCommandDispatcher());
   return HandlerForProtocol(self.browser->GetCommandDispatcher(),
                             PasswordBreachCommands);
+}
+
+// The dispatcher used for PasswordProtectionCommands.
+- (id<PasswordProtectionCommands>)passwordProtectionDispatcher {
+  DCHECK(self.browser);
+  DCHECK(self.browser->GetCommandDispatcher());
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            PasswordProtectionCommands);
 }
 
 - (InfoBarIOS*)findInfobarOfType:(InfobarType)infobarType manual:(BOOL)manual {

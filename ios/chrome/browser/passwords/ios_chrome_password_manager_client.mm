@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
@@ -326,9 +327,13 @@ void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
   safe_browsing::PasswordProtectionService* service =
       GetPasswordProtectionService();
   if (service) {
+    auto show_warning_callback = base::BindOnce(
+        &IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning,
+        weak_factory_.GetWeakPtr());
     service->MaybeStartProtectedPasswordEntryRequest(
         bridge_.webState, bridge_.webState->GetLastCommittedURL(), username,
-        password_type, matching_reused_credentials, password_field_exists);
+        password_type, matching_reused_credentials, password_field_exists,
+        std::move(show_warning_callback));
   }
 }
 
@@ -338,6 +343,12 @@ void IOSChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
   if (service) {
     service->MaybeLogPasswordReuseDetectedEvent(bridge_.webState);
   }
+}
+
+void IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning(
+    const base::string16& warning_text) {
+  [bridge_
+      showPasswordProtectionWarning:base::SysUTF16ToNSString(warning_text)];
 }
 
 void IOSChromePasswordManagerClient::DidFinishNavigation(

@@ -61,6 +61,8 @@ using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using SafeBrowsingStatus =
     sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus;
+using ShowWarningCallback =
+    safe_browsing::PasswordProtectionService::ShowWarningCallback;
 
 namespace {
 
@@ -118,12 +120,39 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
 
 ChromePasswordProtectionService::~ChromePasswordProtectionService() = default;
 
+// Removes ShowWarningCallbacks after requests have finished, even if they were
+// not called.
+void ChromePasswordProtectionService::RequestFinished(
+    safe_browsing::PasswordProtectionRequest* request,
+    RequestOutcome outcome,
+    std::unique_ptr<LoginReputationClientResponse> response) {
+  // Ensure parent class method runs before removing callback.
+  PasswordProtectionService::RequestFinished(request, outcome,
+                                             std::move(response));
+  safe_browsing::PasswordProtectionRequestIOS* request_ios =
+      static_cast<safe_browsing::PasswordProtectionRequestIOS*>(request);
+  web::WebState* web_state = request_ios->web_state();
+  show_warning_callbacks_.erase(web_state);
+}
+
 void ChromePasswordProtectionService::ShowModalWarning(
     safe_browsing::PasswordProtectionRequest* request,
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     ReusedPasswordAccountType password_type) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  safe_browsing::PasswordProtectionRequestIOS* request_ios =
+      static_cast<safe_browsing::PasswordProtectionRequestIOS*>(request);
+  web::WebState* web_state = request_ios->web_state();
+  auto callback = std::move(show_warning_callbacks_[web_state]);
+  if (callback) {
+    ReusedPasswordAccountType reused_password_account_type =
+        GetPasswordProtectionReusedPasswordAccountType(request->password_type(),
+                                                       request->username());
+    std::vector<size_t> placeholder_offsets;
+    const base::string16 warning_text = GetWarningDetailText(
+        reused_password_account_type, &placeholder_offsets);
+    std::move(callback).Run(warning_text);
+  }
 }
 
 void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
@@ -440,7 +469,8 @@ void ChromePasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
     PasswordType password_type,
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
-    bool password_field_exists) {
+    bool password_field_exists,
+    ShowWarningCallback show_warning_callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   LoginReputationClientRequest::TriggerType trigger_type =
@@ -456,7 +486,7 @@ void ChromePasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
       StartRequest(web_state, main_frame_url, username, password_type,
                    matching_reused_credentials,
                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-                   password_field_exists);
+                   password_field_exists, std::move(show_warning_callback));
     } else {
       RequestOutcome reason = GetPingNotSentReason(
           trigger_type, main_frame_url, reused_password_account_type);
@@ -635,7 +665,8 @@ void ChromePasswordProtectionService::StartRequest(
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
     LoginReputationClientRequest::TriggerType trigger_type,
-    bool password_field_exists) {
+    bool password_field_exists,
+    ShowWarningCallback show_warning_callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   scoped_refptr<safe_browsing::PasswordProtectionRequest> request(
       new safe_browsing::PasswordProtectionRequestIOS(
@@ -644,6 +675,7 @@ void ChromePasswordProtectionService::StartRequest(
           password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
   pending_requests_.insert(std::move(request));
+  show_warning_callbacks_[web_state] = std::move(show_warning_callback);
 }
 
 password_manager::PasswordStore*

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/language_code.h"
@@ -143,6 +144,9 @@ class IOSChromePasswordManagerClient
 
   void LogPasswordReuseDetectedEvent() override;
 
+  // Notifies user with password protection warning.
+  void NotifyUserPasswordProtectionWarning(const base::string16& warning_text);
+
  private:
   // web::WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
@@ -185,6 +189,7 @@ class IOSChromePasswordManagerClient
       input_event_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordManagerClient);
+  base::WeakPtrFactory<IOSChromePasswordManagerClient> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_CLIENT_H_

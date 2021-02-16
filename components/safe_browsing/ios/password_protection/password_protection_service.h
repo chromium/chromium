@@ -24,6 +24,9 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
   using PasswordProtectionServiceBase::PasswordProtectionServiceBase;
 
  public:
+  using ShowWarningCallback =
+      base::OnceCallback<void(const base::string16& warning_text)>;
+
   virtual void MaybeStartProtectedPasswordEntryRequest(
       web::WebState* web_state,
       const GURL& main_frame_url,
@@ -31,7 +34,8 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       PasswordType password_type,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials,
-      bool password_field_exists) = 0;
+      bool password_field_exists,
+      ShowWarningCallback show_warning_callback) = 0;
 
   // Records a Chrome Sync event for the result of the URL reputation lookup
   // if the user enters their sync password on a website.
