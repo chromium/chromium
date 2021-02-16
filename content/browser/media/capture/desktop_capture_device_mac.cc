@@ -8,6 +8,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_device.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -182,7 +183,19 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
 
 std::unique_ptr<media::VideoCaptureDevice> CreateDesktopCaptureDeviceMac(
     const DesktopMediaID& source) {
-  CHECK_EQ(source.type, DesktopMediaID::TYPE_SCREEN);
+  // DesktopCaptureDeviceMac supports only TYPE_SCREEN.
+  // https://crbug.com/1176900
+  if (source.type != DesktopMediaID::TYPE_SCREEN)
+    return nullptr;
+
+  // DesktopCaptureDeviceMac only supports a single display at a time. It
+  // will not stitch desktops together.
+  // https://crbug.com/1178360
+  if (source.id == webrtc::kFullDesktopScreenId ||
+      source.id == webrtc::kInvalidScreenId) {
+    return nullptr;
+  }
+
   IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
   IncrementDesktopCaptureCounter(source.audio_share
                                      ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
