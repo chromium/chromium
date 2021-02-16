@@ -22,6 +22,8 @@ namespace blink {
 
 namespace {
 
+const float kProgressBoundsTolerance = 0.000001f;
+
 // This class includes information that is required by the compositor thread
 // when painting background color.
 class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
@@ -80,16 +82,24 @@ class BackgroundColorPaintWorkletProxyClient
     float progress = entry->second.float_value.value();
 
     // Get the start and end color based on the progress and offsets.
-    DCHECK_EQ(offsets.front(), 0);
-    DCHECK_EQ(offsets.back(), 1);
-    unsigned result_index = -1;
-    for (unsigned i = 0; i < offsets.size() - 1; i++) {
-      if (progress <= offsets[i + 1]) {
-        result_index = i;
-        break;
+    unsigned result_index = offsets.size() - 1;
+    // The progress of the animation might outside of [0, 1] by
+    // kProgressBoundsTolerance.
+    if (progress <= 0) {
+      result_index = 0;
+      DCHECK_GE(progress, -kProgressBoundsTolerance);
+    } else if (progress > 0 && progress < 1) {
+      for (unsigned i = 0; i < offsets.size() - 1; i++) {
+        if (progress <= offsets[i + 1]) {
+          result_index = i;
+          break;
+        }
       }
     }
-    DCHECK_GE(result_index, 0u);
+    if (result_index == offsets.size() - 1) {
+      DCHECK_LE(std::fabs(progress - 1), kProgressBoundsTolerance);
+      result_index = offsets.size() - 2;
+    }
     // Because the progress is a global one, we need to adjust it with offsets.
     float adjusted_progress =
         (progress - offsets[result_index]) /
@@ -260,18 +270,19 @@ bool BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
                                               offsets);
 }
 
-sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest() {
+sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest(
+    const Vector<Color>& animated_colors,
+    const Vector<double>& offsets,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
   FloatSize container_size(100, 100);
-  Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
-  Vector<double> offsets = {0, 1};
   CompositorPaintWorkletInput::PropertyKeys property_keys;
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
           container_size, 1u, animated_colors, offsets, property_keys);
-  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
   BackgroundColorPaintWorkletProxyClient* client =
       BackgroundColorPaintWorkletProxyClient::Create(1u);
-  return client->Paint(input.get(), property_values);
+  return client->Paint(input.get(), animated_property_values);
 }
 
 }  // namespace blink

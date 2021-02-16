@@ -44,7 +44,11 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
                                            Vector<double>* offsets);
 
   // For testing purpose only.
-  static sk_sp<cc::PaintRecord> ProxyClientPaintForTest();
+  static sk_sp<cc::PaintRecord> ProxyClientPaintForTest(
+      const Vector<Color>& animated_colors,
+      const Vector<double>& offsets,
+      const CompositorPaintWorkletJob::AnimatedPropertyValues&
+          animated_property_values);
 };
 
 }  // namespace blink

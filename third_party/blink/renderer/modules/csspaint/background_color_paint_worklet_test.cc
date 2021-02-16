@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 
 namespace blink {
 
@@ -207,9 +208,65 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsNotFallback) {
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash
 // when the animated property value is empty.
-TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintNoCrash) {
+TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithNoPropertyValue) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
-  BackgroundColorPaintWorklet::ProxyClientPaintForTest();
+  Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Vector<double> offsets = {0, 1};
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
+                                                       property_values);
+}
+
+// Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash if the
+// progress of the animation is a negative number.
+TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithNegativeProgress) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Vector<double> offsets = {0, 1};
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  CompositorPaintWorkletInput::PropertyKey property_key(
+      CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
+      CompositorElementId(1u));
+  CompositorPaintWorkletInput::PropertyValue property_value(-0.0f);
+  property_values.insert(std::make_pair(property_key, property_value));
+  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
+                                                       property_values);
+}
+
+// Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash if the
+// progress of the animation is > 1.
+TEST_F(BackgroundColorPaintWorkletTest,
+       ProxyClientPaintWithLargerThanOneProgress) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Vector<double> offsets = {0, 1};
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  CompositorPaintWorkletInput::PropertyKey property_key(
+      CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
+      CompositorElementId(1u));
+  float progress = 1 + std::numeric_limits<float>::epsilon();
+  CompositorPaintWorkletInput::PropertyValue property_value(progress);
+  property_values.insert(std::make_pair(property_key, property_value));
+  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
+                                                       property_values);
+}
+
+// Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash when the
+// largest offset is not exactly one.
+TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithCloseToOneOffset) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  Vector<Color> animated_colors = {Color(0, 255, 0), Color(0, 255, 255),
+                                   Color(255, 0, 0)};
+  Vector<double> offsets = {0, 0.6, 0.99999};
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  CompositorPaintWorkletInput::PropertyKey property_key(
+      CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
+      CompositorElementId(1u));
+  float progress = 1 - std::numeric_limits<float>::epsilon();
+  CompositorPaintWorkletInput::PropertyValue property_value(progress);
+  property_values.insert(std::make_pair(property_key, property_value));
+  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
+                                                       property_values);
 }
 
 }  // namespace blink
