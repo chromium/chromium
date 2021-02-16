@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,6 +78,7 @@ class CartService : public history::HistoryServiceObserver,
 
  private:
   friend class CartServiceFactory;
+  friend class CartServiceTest;
 
   // Use |CartServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
@@ -117,6 +119,8 @@ class CartService : public history::HistoryServiceObserver,
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
   history::HistoryService* history_service_;
+  base::Optional<base::Value> domain_name_mapping_;
+  base::Optional<base::Value> domain_cart_url_mapping_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 
