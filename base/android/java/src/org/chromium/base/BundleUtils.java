@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
@@ -42,6 +43,7 @@ import java.util.Arrays;
  */
 public final class BundleUtils {
     private static Boolean sIsBundle;
+    private static final Object sSplitLock = new Object();
 
     // This cache is needed to support the workaround for b/172602571, see
     // createIsolatedSplitContext() for more info.
@@ -94,6 +96,13 @@ public final class BundleUtils {
     }
 
     /**
+     * The lock to hold when calling {@link Context#createContextForSplit(String)}.
+     */
+    public static Object getSplitContextLock() {
+        return sSplitLock;
+    }
+
+    /**
      * Returns a context for the isolated split with the name splitName. This will throw a
      * RuntimeException if isolated splits are enabled and the split is not installed. If the
      * current Android version does not support isolated splits, the original context will be
@@ -108,7 +117,19 @@ public final class BundleUtils {
         }
 
         try {
-            Context context = ApiHelperForO.createContextForSplit(base, splitName);
+            Context context;
+            // The Application class handles locking itself using the split context lock. This is
+            // necessary to prevent a possible deadlock, since the application waits for splits
+            // preloading on a background thread.
+            // TODO(crbug.com/1172950): Consider moving preloading logic into //base so we can lock
+            // here.
+            if (isApplicationContext(base)) {
+                context = ApiHelperForO.createContextForSplit(base, splitName);
+            } else {
+                synchronized (getSplitContextLock()) {
+                    context = ApiHelperForO.createContextForSplit(base, splitName);
+                }
+            }
             ClassLoader parent = context.getClassLoader().getParent();
             Context appContext = ContextUtils.getApplicationContext();
             // If the ClassLoader from the newly created context does not equal either the
@@ -121,17 +142,21 @@ public final class BundleUtils {
                     && !parent.equals(BundleUtils.class.getClassLoader()) && appContext != null
                     && !parent.equals(appContext.getClassLoader());
             if (shouldReplaceClassLoader) {
-                if (!sCachedClassLoaders.containsKey(splitName)) {
-                    String[] splitNames = ApiHelperForO.getSplitNames(context.getApplicationInfo());
-                    int idx = Arrays.binarySearch(splitNames, splitName);
-                    assert idx >= 0;
-                    // The librarySearchPath argument to PathClassLoader is not needed here because
-                    // the framework doesn't pass it either, see b/171269960.
-                    sCachedClassLoaders.put(splitName,
-                            new PathClassLoader(context.getApplicationInfo().splitSourceDirs[idx],
-                                    appContext.getClassLoader()));
+                synchronized (sCachedClassLoaders) {
+                    if (!sCachedClassLoaders.containsKey(splitName)) {
+                        String[] splitNames =
+                                ApiHelperForO.getSplitNames(context.getApplicationInfo());
+                        int idx = Arrays.binarySearch(splitNames, splitName);
+                        assert idx >= 0;
+                        // The librarySearchPath argument to PathClassLoader is not needed here
+                        // because the framework doesn't pass it either, see b/171269960.
+                        sCachedClassLoaders.put(splitName,
+                                new PathClassLoader(
+                                        context.getApplicationInfo().splitSourceDirs[idx],
+                                        appContext.getClassLoader()));
+                    }
+                    replaceClassLoader(context, sCachedClassLoaders.get(splitName));
                 }
-                replaceClassLoader(context, sCachedClassLoaders.get(splitName));
             }
             RecordHistogram.recordBooleanHistogram(
                     "Android.IsolatedSplits.ClassLoaderReplaced." + splitName,
@@ -217,5 +242,13 @@ public final class BundleUtils {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isApplicationContext(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Application) return true;
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return false;
     }
 }

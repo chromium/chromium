@@ -65,7 +65,12 @@ public final class ApiHelperForO {
         return info.splitNames;
     }
 
-    /** See {@link Context.createContextForSplit(String) }. */
+    /**
+     * See {@link Context.createContextForSplit(String) }. Be careful about adding new uses of
+     * this, most split Contexts should be created through {@link
+     * BundleUtils.createIsolatedSplitContext(Context, String) since it has workarounds for
+     * framework bugs.
+     */
     public static Context createContextForSplit(Context context, String name)
             throws PackageManager.NameNotFoundException {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

@@ -78,7 +78,10 @@ public class SplitChromeApplication extends SplitCompatApplication {
             // class loader cache (b/172602571).
             finishPreload(name);
             long startTime = SystemClock.uptimeMillis();
-            Context context = super.createContextForSplit(name);
+            Context context;
+            synchronized (BundleUtils.getSplitContextLock()) {
+                context = super.createContextForSplit(name);
+            }
             RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.ContextCreateTime." + name,
                     SystemClock.uptimeMillis() - startTime);
             return context;
