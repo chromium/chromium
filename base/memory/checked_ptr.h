@@ -21,6 +21,7 @@
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #endif
@@ -138,8 +139,11 @@ struct BackupRefPtrImpl {
     void* ptr = const_cast<void*>(cv_ptr);
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-    if (IsSupportedAndNotNull(ptr))
+    if (IsSupportedAndNotNull(ptr)) {
+      DCHECK(features::IsPartitionAllocGigaCageEnabled());
+      DCHECK(ptr != nullptr);
       AcquireInternal(ptr);
+    }
 
     return addr;
   }
@@ -148,8 +152,11 @@ struct BackupRefPtrImpl {
   static ALWAYS_INLINE void ReleaseWrappedPtr(uintptr_t wrapped_ptr) {
     void* ptr = reinterpret_cast<void*>(wrapped_ptr);
 
-    if (IsSupportedAndNotNull(ptr))
+    if (IsSupportedAndNotNull(ptr)) {
+      DCHECK(features::IsPartitionAllocGigaCageEnabled());
+      DCHECK(ptr != nullptr);
       ReleaseInternal(ptr);
+    }
   }
 
   // Returns equivalent of |WrapRawPtr(nullptr)|. Separated out to make it a
@@ -166,8 +173,11 @@ struct BackupRefPtrImpl {
       uintptr_t wrapped_ptr) {
 #if DCHECK_IS_ON()
     void* ptr = reinterpret_cast<void*>(wrapped_ptr);
-    if (IsSupportedAndNotNull(ptr))
+    if (IsSupportedAndNotNull(ptr)) {
+      DCHECK(features::IsPartitionAllocGigaCageEnabled());
+      DCHECK(ptr != nullptr);
       DCHECK(IsPointeeAlive(ptr));
+    }
 #endif
     return reinterpret_cast<void*>(wrapped_ptr);
   }

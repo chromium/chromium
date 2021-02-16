@@ -388,9 +388,7 @@ static void PartitionDumpBucketStats(
 
 #if DCHECK_IS_ON()
 void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
-  }
+  PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
 }
 #endif
 
@@ -473,7 +471,11 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       allow_ref_count = false;
     } else {
       allow_cookies = true;
-      allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kEnabled;
+      // Allow ref-count if it's explicitly requested *and* GigaCage is enabled.
+      // Without GigaCage it'd be unused, thus wasteful.
+      allow_ref_count =
+          (opts.ref_count == PartitionOptions::RefCount::kEnabled) &&
+          features::IsPartitionAllocGigaCageEnabled();
     }
 
 #if PARTITION_EXTRAS_REQUIRED
@@ -707,8 +709,10 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 #if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
         void* slot_start = AdjustPointerForExtrasSubtract(ptr);
         internal::PartitionRefCount* old_ref_count;
-        if (allow_ref_count)
+        if (allow_ref_count) {
+          PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
           old_ref_count = internal::PartitionRefCountPointer(slot_start);
+        }
 #endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
         size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
         slot_span->SetRawSize(new_raw_size);

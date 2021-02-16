@@ -813,6 +813,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     // these rare cases, assuming that some remain.
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !BUILDFLAG(USE_BACKUP_REF_PTR)
+  // GigaCage is always enabled on Android and is needed for PA_CHECK below.
+  PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
   PA_CHECK(IsManagedByPartitionAllocNormalBuckets(ptr) ||
            IsManagedByPartitionAllocDirectMap(ptr));
 #endif
@@ -885,6 +887,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
+    PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
     if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If we are holding the last reference to the allocation, it can be freed
@@ -1126,6 +1129,10 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // for zero-sized allocations when |PartitionRefCount| is used. The returned
   // value may lead to incorrect results when passed to a function that performs
   // bitwise operations on pointers, e.g., |PartitionAllocGetSlotOffset()|.
+  //
+  // In theory, there is no need to do this if root's |allow_ref_count| is
+  // false, or IsPartitionAllocGigaCageEnabled() is false, but we prefer not to
+  // add more checks on the hot path.
   if (UNLIKELY(raw_size == 0))
     raw_size = 1;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -1294,6 +1301,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   bool is_direct_mapped = raw_size > kMaxBucketed;
   // LIKELY: Direct mapped allocations are large and rare.
   if (allow_ref_count && LIKELY(!is_direct_mapped)) {
+    PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
     new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount();
   }
