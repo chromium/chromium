@@ -4,7 +4,7 @@
 
 module memories.mojom;
 
-import "components/memories/common/memories.mojom";
+import "components/memories/core/memories.mojom";
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {

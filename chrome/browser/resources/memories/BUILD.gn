@@ -58,7 +58,7 @@ generate_grd("build_memories_definition_mojo_grdp") {
   resource_path_rewrites =
       [ "memories.mojom-lite.js|memories_definition.mojom-lite.js" ]
   input_files_base_dir =
-      rebase_path("$root_gen_dir/components/memories/common", root_build_dir)
+      rebase_path("$root_gen_dir/components/memories/core", root_build_dir)
 }
 
 generate_grd("build_grd") {
@@ -85,7 +85,7 @@ grit("resources") {
   deps = [
     ":build_grd",
     "//chrome/browser/ui/webui/memories:mojo_bindings_js",
-    "//components/memories/common:mojo_bindings_js",
+    "//components/memories/core:mojo_bindings_js",
   ]
   outputs = [
     "grit/memories_resources.h",

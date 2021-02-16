@@ -2,5 +2,7 @@
 
 Service implementation for Chrome Memories history clustering feature.
 
-This is implemented as a component to allow //components/omnibox to depend on
-this feature, as well as future iOS compatibility.
+Memories is implemented as a [a layered component](https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design).
+
+This was done to allow the component to depend on //components/omnibox as well
+as to enable iOS compatibility.

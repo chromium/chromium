@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("browser") {
+source_set("content") {
   sources = [
-    "memories_service.cc",
-    "memories_service.h",
+    "memories_service_factory.cc",
+    "memories_service_factory.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//components/keyed_service/core",
+    "//components/keyed_service/content",
+    "//components/memories/core",
   ]
 }

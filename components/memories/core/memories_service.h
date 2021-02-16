@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEMORIES_BROWSER_MEMORIES_SERVICE_H_
-#define COMPONENTS_MEMORIES_BROWSER_MEMORIES_SERVICE_H_
+#ifndef COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
+#define COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
 
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -25,4 +25,4 @@ class MemoriesService : public KeyedService {
 
 }  // namespace memories
 
-#endif  // COMPONENTS_MEMORIES_BROWSER_MEMORIES_SERVICE_H_
+#endif  // COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/memories/browser/memories_service.h"
+#include "components/memories/core/memories_service.h"
 
 namespace memories {
 

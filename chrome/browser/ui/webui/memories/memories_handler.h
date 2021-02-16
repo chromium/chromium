@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
 
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
-#include "components/memories/common/memories.mojom.h"
+#include "components/memories/core/memories.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

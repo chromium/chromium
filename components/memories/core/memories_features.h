@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEMORIES_COMMON_MEMORIES_FEATURES_H_
-#define COMPONENTS_MEMORIES_COMMON_MEMORIES_FEATURES_H_
+#ifndef COMPONENTS_MEMORIES_CORE_MEMORIES_FEATURES_H_
+#define COMPONENTS_MEMORIES_CORE_MEMORIES_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -13,4 +13,4 @@ extern const base::Feature kChromeMemories;
 
 }  // namespace memories
 
-#endif  // COMPONENTS_MEMORIES_COMMON_MEMORIES_FEATURES_H_
+#endif  // COMPONENTS_MEMORIES_CORE_MEMORIES_FEATURES_H_

@@ -4,15 +4,18 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-source_set("common") {
+static_library("core") {
   sources = [
     "memories_features.cc",
     "memories_features.h",
+    "memories_service.cc",
+    "memories_service.h",
   ]
 
-  public_deps = [
+  deps = [
     ":mojo_bindings",
     "//base",
+    "//components/keyed_service/core",
   ]
 }
 
