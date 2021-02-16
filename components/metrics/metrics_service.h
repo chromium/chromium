@@ -198,7 +198,8 @@ class MetricsService : public base::HistogramFlattener {
   // The MetricsService has a lifecycle that is stored as a state.
   // See metrics_service.cc for description of this lifecycle.
   enum State {
-    INITIALIZED,          // Constructor was called.
+    CONSTRUCTED,          // Constructor was called.
+    INITIALIZED,          // InitializeMetricsRecordingState() was called.
     INIT_TASK_SCHEDULED,  // Waiting for deferred init tasks to finish.
     SENDING_LOGS,         // Sending logs and creating new ones when we run out.
   };
