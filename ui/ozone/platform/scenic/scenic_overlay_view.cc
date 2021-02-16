@@ -50,6 +50,9 @@ ScenicOverlayView::~ScenicOverlayView() {
     surface->AssertBelongsToCurrentThread();
     surface->RemoveOverlayView(buffer_collection_id_);
   }
+
+  // Releasing |image_pipe_| implicitly also enforces cleanup.
+  image_pipe_->RemoveBufferCollection(kImagePipeBufferCollectionId);
 }
 
 void ScenicOverlayView::Initialize(
