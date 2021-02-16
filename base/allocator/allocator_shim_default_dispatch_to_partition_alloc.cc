@@ -96,17 +96,25 @@ base::ThreadSafePartitionRoot* Allocator() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
         base::PartitionOptions::ThreadCache::kEnabled,
+#elif BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+        // With ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL, if GigaCage is enabled,
+        // this partition is only temporary until BackupRefPtr is re-configured
+        // at run-time. Leave the ability to have a thread cache to the main
+        // partition. (Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies
+        // that USE_BACKUP_REF_PTR is true.)
+        //
+        // Note that it is ok to use RefCount::kEnabled below regardless of the
+        // GigaCage check, because the constructor will disable ref-count if
+        // GigaCage is disabled.
+        base::features::IsPartitionAllocGigaCageEnabled()
+            ? base::PartitionOptions::ThreadCache::kDisabled
+            : base::PartitionOptions::ThreadCache::kEnabled,
 #else
         // Other tests, such as the ThreadCache tests create a thread cache, and
         // only one is supported at a time.
-        //
-        // Also, with ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL, this partition is
-        // only temporary until BackupRefPtr is re-configured at run-time. Leave
-        // the ability to have a thread cache to the main partition. (Note that
-        // ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that USE_BACKUP_REF_PTR
-        // is true.)
         base::PartitionOptions::ThreadCache::kDisabled,
-#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::RefCount::kEnabled,
   });
@@ -321,6 +329,13 @@ alignas(base::ThreadSafePartitionRoot) uint8_t
         base::ThreadSafePartitionRoot)];
 
 void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
+  // If GigaCage is disabled, don't configure a new partition with ref-count
+  // enabled, as it'll be ineffective thus wasteful (increased fragmentation).
+  // Furthermore, in this case, the main partition has thread cache enabled, so
+  // creating one more here simply wouldn't work.
+  if (!base::features::IsPartitionAllocGigaCageEnabled())
+    return;
+
   auto* current_root = g_root_.load(std::memory_order_acquire);
   // We expect a number of heap allocations to be made before this function is
   // called, which should force the `g_root` initialization.
