@@ -674,6 +674,10 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // present in the omnibox.
 - (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL;
 
+// Taps on the Open in New Window context menu action and waits for the
+// |content| to be present in webview.
+- (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content;
+
 // Taps on the Open in Incognito context menu action and waits for the |URL| to
 // be present in the omnibox. |useNewString| determines which action string
 // to use.

@@ -545,6 +545,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 - (void)tearDown {
+  [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
   [super tearDown];
   [ReadingListAppInterface resetConnectionType];
 }
@@ -1292,6 +1294,20 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
 
   [self verifyReadingListIsEmpty];
+}
+
+#pragma mark - Multiwindow
+
+// Tests the Open in New Window context menu action for a reading list entry.
+- (void)testContextMenuOpenInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  [self addURLToReadingList:distillablePageURL];
+  LongPressEntry(kDistillableTitle);
+
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kContentToKeep];
 }
 
 #pragma mark - Helper Methods

@@ -53,6 +53,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)tearDown {
   // No-op if only one window presents.
   [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [super tearDown];
@@ -194,30 +195,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   [BookmarkEarlGreyUI verifyActionSheetsForSingleURLWithEditEnabled:YES];
-}
-
-// Tests display and selection of 'Open in New Window' in a context menu on a
-// bookmarks entry.
-//
-// TODO(crbug.com/1035764)/TODO(https://crbug.com/1145948): Reenable flaky test.
-- (void)DISABLED_testContextMenuOpenInNewWindow {
-  [BookmarkEarlGrey clearBookmarksPositionCache];
-  [BookmarkEarlGrey setupStandardBookmarks];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
-
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
-
-  // Open a bookmark in a new window (through a long press).
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
-      performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          GetFirstUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
 }
 
 // Verify Edit Text functionality on single URL selection.
@@ -1115,6 +1092,28 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarkEditViewContainerIdentifier)]
       assertWithMatcher:grey_nil()];
+}
+
+#pragma mark - Multiwindow
+
+// Tests display and selection of 'Open in New Window' in a context menu on a
+// bookmarks entry.
+- (void)testContextMenuOpenInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [BookmarkEarlGrey clearBookmarksPositionCache];
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  // Open a bookmark in a new window (through a long press).
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
+      performAction:grey_longPress()];
+
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
 }
 
 #pragma mark - Helpers

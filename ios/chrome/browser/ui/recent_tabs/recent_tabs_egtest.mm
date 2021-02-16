@@ -368,21 +368,9 @@ GURL TestPageURL() {
   [self loadTestURL];
   OpenRecentTabsPanel();
 
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
-
   [self longPressTestURLTab];
 
-  // Select "Open in New Window" and confirm that new tab is opened with
-  // selected URL in the new window.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::OpenLinkInNewWindowButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-
-  // Validate that one window has the URL loaded.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          TestPageURL().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"hello"];
 
   // Validate that Recent tabs was not closed in the original window. The
   // Accessibility Element matcher is added as there are other (non-accessible)

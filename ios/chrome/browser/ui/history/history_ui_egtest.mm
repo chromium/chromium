@@ -403,21 +403,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self loadTestURLs];
   [self openHistoryPanel];
 
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
-
   // Long press on the history element.
   [[EarlGrey
       selectElementWithMatcher:HistoryEntry(_URL1.GetOrigin().spec(), kTitle1)]
       performAction:grey_longPress()];
 
-  // Select "Open in New Window" and confirm that new tab is opened with
-  // selected URL in the new window.
-  [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          _URL1.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kResponse1];
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu

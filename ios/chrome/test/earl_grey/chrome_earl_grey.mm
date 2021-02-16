@@ -29,6 +29,7 @@ using chrome_test_util::ActivityViewHeader;
 using chrome_test_util::CopyLinkButton;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::OpenLinkInNewWindowButton;
 using chrome_test_util::ShareButton;
 
 namespace {
@@ -1262,6 +1263,14 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   [self waitForIncognitoTabCount:oldIncognitoTabCount];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
       assertWithMatcher:grey_notNil()];
+}
+
+- (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content {
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey waitForWebStateContainingText:content inWindowWithNumber:1];
 }
 
 - (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL
