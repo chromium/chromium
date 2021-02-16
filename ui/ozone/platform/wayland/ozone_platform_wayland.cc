@@ -254,7 +254,8 @@ class OzonePlatformWayland : public OzonePlatform {
         properties;
     static bool initialized = false;
     if (!initialized) {
-      properties->supports_overlays = ui::IsWaylandOverlayDelegationEnabled();
+      properties->supports_overlays =
+          ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
       initialized = true;
     }
     return *properties;
