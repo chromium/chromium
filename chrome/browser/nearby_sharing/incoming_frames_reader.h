@@ -14,19 +14,19 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_process_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 
 class NearbyConnection;
+class Profile;
 
 // Helper class to read incoming frames from Nearby devices.
-class IncomingFramesReader {
+class IncomingFramesReader : public NearbyProcessManager::Observer {
  public:
-  IncomingFramesReader(chromeos::nearby::NearbyProcessManager* process_manager,
+  IncomingFramesReader(NearbyProcessManager* process_manager,
+                       Profile* profile,
                        NearbyConnection* connection);
-  virtual ~IncomingFramesReader();
-  IncomingFramesReader(const IncomingFramesReader&) = delete;
-  IncomingFramesReader& operator=(IncomingFramesReader&) = delete;
+  ~IncomingFramesReader() override;
 
   // Reads an incoming frame from |connection|. |callback| is called
   // with the frame read from connection or nullopt if connection socket is
@@ -51,18 +51,21 @@ class IncomingFramesReader {
       base::TimeDelta timeout);
 
  private:
+  // NearbyProcessManager::Observer:
+  void OnNearbyProfileChanged(Profile* profile) override;
+  void OnNearbyProcessStarted() override;
+  void OnNearbyProcessStopped() override;
+
   void ReadNextFrame();
   void OnDataReadFromConnection(base::Optional<std::vector<uint8_t>> bytes);
   void OnFrameDecoded(sharing::mojom::FramePtr mojo_frame);
   void OnTimeout();
-  void OnNearbyProcessStopped();
   void Done(base::Optional<sharing::mojom::V1FramePtr> frame);
   base::Optional<sharing::mojom::V1FramePtr> GetCachedFrame(
       base::Optional<sharing::mojom::V1Frame::Tag> frame_type);
 
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
-      process_reference_;
+  NearbyProcessManager* process_manager_;
+  Profile* profile_;
   NearbyConnection* connection_;
   base::Optional<sharing::mojom::V1Frame::Tag> frame_type_;
   base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
@@ -74,6 +77,8 @@ class IncomingFramesReader {
       cached_frames_;
 
   bool is_process_stopped_ = false;
+  ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
+      nearby_process_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

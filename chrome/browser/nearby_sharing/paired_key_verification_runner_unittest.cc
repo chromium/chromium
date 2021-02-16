@@ -18,9 +18,10 @@
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
+#include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,10 +45,10 @@ const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1);
 
 class MockIncomingFramesReader : public IncomingFramesReader {
  public:
-  MockIncomingFramesReader(
-      chromeos::nearby::NearbyProcessManager* process_manager,
-      NearbyConnection* connection)
-      : IncomingFramesReader(process_manager, connection) {}
+  MockIncomingFramesReader(NearbyProcessManager* process_manager,
+                           Profile* profile,
+                           NearbyConnection* connection)
+      : IncomingFramesReader(process_manager, profile, connection) {}
 
   MOCK_METHOD(void,
               ReadFrame,
@@ -97,7 +98,8 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
   };
 
   PairedKeyVerificationRunnerTest()
-      : frames_reader_(&process_manager_, &connection_) {}
+      : frames_reader_(&mock_nearby_process_manager_, &profile_, &connection_) {
+  }
 
   void SetUp() override { share_target_.is_incoming = true; }
 
@@ -213,10 +215,10 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  testing::NiceMock<MockNearbyProcessManager> mock_nearby_process_manager_;
+  TestingProfile profile_;
   FakeNearbyConnection connection_;
   FakeNearbyShareCertificateManager certificate_manager_;
-  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
-      process_manager_;
   testing::NiceMock<MockIncomingFramesReader> frames_reader_;
   ShareTarget share_target_;
 };

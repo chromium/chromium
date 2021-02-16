@@ -17,18 +17,7 @@ namespace {
 
 bool g_bypass_primary_user_check_for_testing = false;
 
-}  // namespace
-
-// static
-NearbyProcessManager* NearbyProcessManagerFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<NearbyProcessManager*>(
-      NearbyProcessManagerFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create=*/true));
-}
-
-// static
-bool NearbyProcessManagerFactory::CanBeLaunchedForProfile(Profile* profile) {
+bool IsLoggedInAsPrimaryUser(Profile* profile) {
   // Guest/incognito profiles cannot use Phone Hub.
   if (profile->IsOffTheRecord())
     return false;
@@ -38,6 +27,16 @@ bool NearbyProcessManagerFactory::CanBeLaunchedForProfile(Profile* profile) {
     return false;
 
   return ProfileHelper::IsPrimaryProfile(profile);
+}
+
+}  // namespace
+
+// static
+NearbyProcessManager* NearbyProcessManagerFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<NearbyProcessManager*>(
+      NearbyProcessManagerFactory::GetInstance()->GetServiceForBrowserContext(
+          profile, /*create=*/true));
 }
 
 // static
@@ -68,7 +67,7 @@ KeyedService* NearbyProcessManagerFactory::BuildServiceInstanceFor(
   // The service is meant to be a singleton, since multiple simultaneous process
   // managers could interfere with each other. Provide access only to the
   // primary user.
-  if (CanBeLaunchedForProfile(profile) ||
+  if (IsLoggedInAsPrimaryUser(profile) ||
       g_bypass_primary_user_check_for_testing) {
     return NearbyProcessManagerImpl::Factory::Create(
                NearbyConnectionsDependenciesProviderFactory::GetForProfile(

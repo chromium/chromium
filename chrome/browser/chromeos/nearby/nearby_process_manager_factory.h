@@ -21,9 +21,6 @@ class NearbyProcessManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static NearbyProcessManager* GetForProfile(Profile* profile);
 
-  // Returns true if the nearby process can be launched for |profile|
-  static bool CanBeLaunchedForProfile(Profile* profile);
-
   static NearbyProcessManagerFactory* GetInstance();
 
   // When true is passed, this factory will create a NearbyProcessManager even
