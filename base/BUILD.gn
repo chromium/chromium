@@ -91,6 +91,15 @@ declare_args() {
 assert(!enable_mutex_priority_inheritance || is_chromecast,
        "Do not enable PI mutexes without consulting the security team")
 
+# Prevent using BackupRefPtr when PartitionAlloc - Everywhere isn't used.
+# In theory, such a configuration is possible, but its scope would be limited
+# only Blink partitions, which is currently not tested. Better to trigger an
+# error, than have BackupRefPtr silently disabled while believing it is enabled.
+if (!is_nacl) {
+  assert(!use_backup_ref_ptr || use_allocator == "partition",
+         "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
+}
+
 # enable_runtime_backup_ref_ptr_control can only be used if use_backup_ref_ptr
 # is true.
 assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
