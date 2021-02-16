@@ -319,7 +319,7 @@ BackForwardCacheImpl::Entry::Entry(
     : render_frame_host(std::move(rfh)),
       proxy_hosts(std::move(proxies)),
       render_view_hosts(std::move(render_view_hosts)) {}
-BackForwardCacheImpl::Entry::~Entry() {}
+BackForwardCacheImpl::Entry::~Entry() = default;
 
 BackForwardCacheTestDelegate::BackForwardCacheTestDelegate() {
   DCHECK(!g_bfcache_disabled_test_observer);
@@ -691,10 +691,12 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
   TRACE_EVENT0("navigation", "BackForwardCache::DestroyEvictedFrames");
   if (entries_.empty())
     return;
-  entries_.erase(std::remove_if(
-      entries_.begin(), entries_.end(), [](std::unique_ptr<Entry>& entry) {
-        return entry->render_frame_host->is_evicted_from_back_forward_cache();
-      }));
+  entries_.erase(std::remove_if(entries_.begin(), entries_.end(),
+                                [](std::unique_ptr<Entry>& entry) {
+                                  return entry->render_frame_host
+                                      ->is_evicted_from_back_forward_cache();
+                                }),
+                 entries_.end());
 }
 
 bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {

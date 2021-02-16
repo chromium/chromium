@@ -100,7 +100,7 @@ BackForwardCacheMetrics::BackForwardCacheMetrics(
       page_store_result_(
           std::make_unique<BackForwardCacheCanStoreDocumentResult>()) {}
 
-BackForwardCacheMetrics::~BackForwardCacheMetrics() {}
+BackForwardCacheMetrics::~BackForwardCacheMetrics() = default;
 
 void BackForwardCacheMetrics::MainFrameDidStartNavigationToDocument() {
   if (!started_navigation_timestamp_)
