@@ -23,7 +23,7 @@ For each bug try to:
   elsewhere
 * Dupe it against an existing bug
 * Close it as `WontFix`.
-* Give the bug a priority. Refer to [this (internal) document for guidelines](https://goto.google.com/xnzwn)
+* Give the bug a priority. Refer to [this document for guidelines](https://docs.google.com/document/d/1JOtp1LS7suqTjMuv41jQFc7aCTR33zJKPoGjKpvVFCA)
 * If the bug is a potential security issue (Allows for code execution from remote
   site, allows crossing security boundaries, unchecked array bounds, etc) mark
   it `Type-Bug-Security`.
@@ -165,4 +165,4 @@ generating and modifying shifts
 
 * [Web Platform Team SLOs](https://docs.google.com/document/d/18ylPve6jd43m8B7Dil6xmS4G9MHL2_DhQon72je-O9o/edit)
 
-* [(Internal) Web Platform bug triage guidelines](http://go/xnzwn)
+* [Web Platform bug triage guidelines](https://docs.google.com/document/d/1JOtp1LS7suqTjMuv41jQFc7aCTR33zJKPoGjKpvVFCA)
