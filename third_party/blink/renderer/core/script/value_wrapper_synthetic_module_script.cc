@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "v8/include/v8.h"
@@ -35,6 +36,7 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
                                  "ModuleScriptLoader",
                                  "CreateCSSWrapperSyntheticModuleScript");
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  UseCounter::Count(execution_context, WebFeature::kCreateCSSModuleScript);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
   if (!context_window) {
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
@@ -83,6 +85,8 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                  "ModuleScriptLoader",
                                  "CreateJSONWrapperSyntheticModuleScript");
+  UseCounter::Count(ExecutionContext::From(settings_object->GetScriptState()),
+                    WebFeature::kCreateJSONModuleScript);
   // Step 1. "Let script be a new module script that this algorithm will
   // subsequently initialize."
   // [spec text]

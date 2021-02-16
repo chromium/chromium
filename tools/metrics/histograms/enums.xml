@@ -31421,6 +31421,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3801" label="WasmModuleSharing"/>
   <int value="3802" label="CrossOriginWasmModuleSharing"/>
   <int value="3803" label="OverflowClipAlongEitherAxis"/>
+  <int value="3804" label="CreateJSONModuleScript"/>
+  <int value="3805" label="CreateCSSModuleScript"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
