@@ -37,9 +37,6 @@ namespace internal {
 class BASE_EXPORT PartitionRefCount {
  public:
   PartitionRefCount();
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
-  PartitionRefCount(PartitionRefCount&& other);
-#endif
 
   // Incrementing the counter doesn't imply any visibility about modified
   // memory, hence relaxed atomics. For decrement, visibility is required before

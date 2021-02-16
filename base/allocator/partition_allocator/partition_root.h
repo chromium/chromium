@@ -1246,22 +1246,24 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   slot, thus creating the "empty" space.
   //
   // If BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is true, Layout inside the
-  // slot:
-  //  |[cookie]|...data...|[empty]|[cookie]|[align]|[refcnt]|[unused]|
+  // slot of small buckets:
+  //  |[cookie]|...data...|[empty]|[cookie]|[refcnt]|
   //           <---(a)---->
   //           <-------(b)-------->
-  //  <--(c)--->                  <---(c)-->   +   <--(c)--->
-  //  <--(d)-------------->   +   <---(d)-->   +   <--(d)--->
-  //  <---------------------(e)----------------------------->
-  //  <-------------------------(f)---------------------------------->
+  //  <--(c)--->                  <-------(c)------->
+  //  <---------(d)------->   +   <-------(d)------->
+  //  <------------------(e)------------------------>
+  //  <------------------(f)------------------------>
   //
-  // [refcnt] is put just after the object instead of the end of the slot. This
-  // is important to keep the system pages at the end of the slot empty and thus
-  // decommittable.
-  //
-  // - The size is larger than or equal to utilized_slot_size => the situation
-  // is the same when BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is not set.
-  // - refcnt needs to be aligned with alignof(refcnt).
+  // If the slot size is small, [refcnt] is stored at the end of the slot.
+  // If the slot size is large (i.e. single slot span case), [refcnt] is stored
+  // in SubsequentMetadata (after raw size). However, the space for refcnt is
+  // still reserved after use data (or after the trailing cookie, if present),
+  // even though redundant. This important to put the extras right after user
+  // data so that we can keep the system pages at the end of the slot empty and
+  // thus decommittable.
+  // TODO(tasak): we don't need to add/subtract sizeof(refcnt) to requested size
+  // in single slot span case.
 
   // The value given to the application is just after the ref-count and cookie,
   // or the cookie (BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is true).

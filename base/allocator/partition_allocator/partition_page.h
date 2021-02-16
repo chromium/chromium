@@ -135,11 +135,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
     if (LIKELY(!CanStoreRawSize())) {
       return bucket->slot_size;
     }
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
-    return bits::AlignUp(GetRawSize(), alignof(PartitionRefCount));
-#else
     return GetRawSize();
-#endif
   }
 
   // Returns the size available to the app. It can be equal or higher than the
@@ -213,6 +209,14 @@ struct SubsequentPageMetadata {
   //   the first one is used to store slot information, but the second one is
   //   available for extra information)
   size_t raw_size;
+
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+  // We don't need to use PartitionRefCount directly, because:
+  // - the ref count is used only when CanStoreRawSize() is true.
+  // - we will construct PartitionRefCount when allocating memory (inside
+  //   AllocFlagsNoHooks), not when allocating SubsequentPageMetadata.
+  uint8_t ref_count_buffer[sizeof(base::internal::PartitionRefCount)];
+#endif
 };
 
 // Each partition page has metadata associated with it. The metadata of the
@@ -263,6 +267,16 @@ static_assert(offsetof(PartitionPage<NotThreadSafe>, slot_span_metadata) == 0,
 static_assert(offsetof(PartitionPage<NotThreadSafe>,
                        subsequent_page_metadata) == 0,
               "");
+
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+// ref_count_buffer is used as PartitionRefCount. We need to make the buffer
+// aignof(base::internal::PartitionRefCount)-aligned. Otherwise, misalignment
+// crash will be observed.
+static_assert(offsetof(SubsequentPageMetadata, ref_count_buffer) %
+                      alignof(base::internal::PartitionRefCount) ==
+                  0,
+              "");
+#endif
 
 ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);

@@ -14,19 +14,6 @@ namespace internal {
 
 #if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
 
-PartitionRefCount::PartitionRefCount(PartitionRefCount&& other) {
-  // TODO(tasak): This code will cause race conditoin, because raw size and
-  // reference count is not in one atomic operation. To avoid this, since only
-  // |CanStoreRawSize()| needs this relocation, store the reference count along
-  // with the raw size in |SubsequentPageMetadata|. So we don't need the
-  // relocation.
-  count_.store(other.count_.load(std::memory_order_acquire),
-               std::memory_order_release);
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  brp_cookie_ = CalculateCookie();
-#endif
-}
-
 // TODO(tasak): Optimize this function. There's potential for optimization in
 // all callers of |PartitionRefCountPointer| (apart from marking it
 // |ALWAYS_INLINE|):
@@ -36,29 +23,40 @@ PartitionRefCount::PartitionRefCount(PartitionRefCount&& other) {
 //   inlined |PartitionAllocGetSlotStart|).
 PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   DCheckGetSlotOffsetIsZero(slot_start);
-  //  |<---------------------- (b) ----------------------------->
-  //  |<------------------- (a) --------------------->
-  //  | cookie | data | cookie | [align] | ref count | [unused] |
-  //  ^                                  ^
-  //  |                                  |
-  // slot_start               partition_ref_count_ptr
+  // Layout inside the slot of small buckets:
+  //  |<---------------- slot size ----------------->
+  //  |[cookie]|...data...|[empty]|[cookie]|[refcnt]|
+  //  ^                                    ^
+  //  |                                    |
+  // slot_start                   partition_ref_count_ptr
   //
-  // (a): slot_span->GetUtilizedSlotSize()
-  // (b): slot_span->bucket->slot_size
+  // Layout inside the slot of single-slot spans (raw size is available)
+  //  |<---------------------- slot size ------------------------>
+  //  |[cookie]|...data...|[cookie]|[refcnt_placeholder]|[unused]|
+  //
+  // refcount is not stored in the slot (even though the space for it is still
+  // reserved). Instead, refcount is stored in the subsequent page metadata.
+
   auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStartPtr(slot_start);
   PA_DCHECK(slot_span);
 #if DCHECK_IS_ON()
   PartitionCookieCheckValue(slot_start);
 #endif
-  char* slot_start_ptr = reinterpret_cast<char*>(slot_start);
-  size_t ref_count_offset =
-      slot_span->GetUtilizedSlotSize() - kInSlotRefCountBufferSize;
-  char* partition_ref_count_ptr = slot_start_ptr + ref_count_offset;
+  uint8_t* partition_ref_count_ptr;
+  if (UNLIKELY(slot_span->CanStoreRawSize())) {
+    auto* the_next_page =
+        reinterpret_cast<PartitionPage<ThreadSafe>*>(slot_span) + 1;
+    partition_ref_count_ptr =
+        the_next_page->subsequent_page_metadata.ref_count_buffer;
+  } else {
+    uint8_t* slot_start_ptr = reinterpret_cast<uint8_t*>(slot_start);
+    size_t ref_count_offset =
+        slot_span->bucket->slot_size - kInSlotRefCountBufferSize;
+    partition_ref_count_ptr = slot_start_ptr + ref_count_offset;
+  }
   PA_DCHECK(reinterpret_cast<uintptr_t>(partition_ref_count_ptr) %
                 alignof(PartitionRefCount) ==
             0);
-  PA_DCHECK(partition_ref_count_ptr + kInSlotRefCountBufferSize <=
-            slot_start_ptr + slot_span->bucket->slot_size);
   return reinterpret_cast<PartitionRefCount*>(partition_ref_count_ptr);
 }
 
