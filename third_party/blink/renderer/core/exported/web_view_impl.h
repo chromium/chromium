@@ -41,6 +41,7 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
@@ -503,7 +504,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void TakeFocus(bool reverse);
 
   // Shows a previously created WebView (via window.open()).
-  void Show(const base::UnguessableToken& opener_frame_token,
+  void Show(const LocalFrameToken& opener_frame_token,
             NavigationPolicy policy,
             const gfx::Rect& rect,
             bool opened_by_user_gesture);

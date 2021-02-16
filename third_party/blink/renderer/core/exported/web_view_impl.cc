@@ -2765,7 +2765,7 @@ void WebViewImpl::TakeFocus(bool reverse) {
   }
 }
 
-void WebViewImpl::Show(const base::UnguessableToken& opener_frame_token,
+void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
                        NavigationPolicy policy,
                        const gfx::Rect& rect,
                        bool opened_by_user_gesture) {

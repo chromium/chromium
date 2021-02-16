@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
@@ -495,9 +496,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   EXPECT_EQ(SK_ColorBLUE, web_view->BackgroundColor());
 
   frame_test_helpers::TestWebFrameClient web_frame_client;
-  WebLocalFrame* frame =
-      WebLocalFrame::CreateMainFrame(web_view, &web_frame_client, nullptr,
-                                     base::UnguessableToken::Create(), nullptr);
+  WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
+      web_view, &web_frame_client, nullptr, LocalFrameToken(), nullptr);
   web_frame_client.Bind(frame);
 
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -2719,9 +2719,8 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       mojo::NullAssociatedReceiver(),
       web_view_helper_.GetAgentGroupScheduler()));
   frame_test_helpers::TestWebFrameClient web_frame_client;
-  WebLocalFrame* local_frame =
-      WebLocalFrame::CreateMainFrame(web_view, &web_frame_client, nullptr,
-                                     base::UnguessableToken::Create(), nullptr);
+  WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(
+      web_view, &web_frame_client, nullptr, LocalFrameToken(), nullptr);
   web_frame_client.Bind(local_frame);
   WebNonCompositedWidgetClient widget_client;
   frame_test_helpers::TestWebFrameWidget* widget =

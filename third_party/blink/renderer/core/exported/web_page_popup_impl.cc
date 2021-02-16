@@ -34,6 +34,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/ukm_manager.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -387,7 +388,7 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
       empty_local_frame_client, *page_,
       /* FrameOwner* */ nullptr, /* Frame* parent */ nullptr,
       /* Frame* previous_sibling */ nullptr,
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+      FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       window_agent_factory,
       /* InterfaceRegistry* */ nullptr,
       /* policy_container */ nullptr);
