@@ -273,7 +273,7 @@ bool WindowCycleController::IsAltTabPerActiveDesk() {
 }
 
 bool WindowCycleController::IsSwitchingMode() {
-  return features::IsBentoEnabled() && is_switching_mode_;
+  return IsInteractiveAltTabModeAllowed() && is_switching_mode_;
 }
 
 bool WindowCycleController::IsTabSliderFocused() {
