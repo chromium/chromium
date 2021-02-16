@@ -437,6 +437,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckPlatformHandleFile,
   return 0;
 }
 
+#if !defined(OS_ANDROID)
 class MultiprocessMessagePipeTestWithPipeCount
     : public MultiprocessMessagePipeTest,
       public testing::WithParamInterface<size_t> {};
@@ -482,7 +483,6 @@ TEST_P(MultiprocessMessagePipeTestWithPipeCount, PlatformHandlePassing) {
 }
 
 // Android multi-process tests are not executing the new process. This is flaky.
-#if !defined(OS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PipeCount,
                          MultiprocessMessagePipeTestWithPipeCount,
                          // TODO(rockot): Enable the 128 and 250 pipe cases when
