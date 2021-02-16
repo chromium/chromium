@@ -26,7 +26,6 @@ from blinkpy.w3c.wpt_metadata_builder import (
 def _make_expectation(port,
                       test_path,
                       test_statuses,
-                      test_names=[],
                       trailing_comments=""):
     """Creates an expectation object for a single test or directory.
 
@@ -34,8 +33,6 @@ def _make_expectation(port,
         port: the port to run against
         test_path: the path to set expectations for
         test_status: the statuses of the test
-        test_names: a set of tests under the 'test_path'. Should be non-empty
-            when the 'test_path' is a directory instead of a single test
         trailing_comments: comments at the end of the expectation line.
 
     Returns:
@@ -44,12 +41,6 @@ def _make_expectation(port,
     expectation_dict = OrderedDict()
     expectation_dict["expectations"] = ("# results: [ %s ]\n%s [ %s ]%s" % \
         (test_statuses, test_path, test_statuses, trailing_comments))
-
-    # When test_path is a dir, we expect test_names to be provided.
-    is_dir = test_path.endswith('/')
-    assert is_dir == bool(test_names)
-    if not is_dir:
-        test_names = [test_path]
 
     return TestExpectations(port, expectations_dict=expectation_dict)
 
@@ -273,9 +264,7 @@ class WPTMetadataBuilderTest(unittest.TestCase):
     def test_metadata_for_skipped_directory(self):
         """A skipped WPT directory should get a dir-wide metadata file."""
         test_dir = "external/wpt/test_dir/"
-        test_name = "external/wpt/test_dir/test.html"
-        expectations = _make_expectation(
-            self.port, test_dir, "SKIP", test_names=[test_name])
+        expectations = _make_expectation(self.port, test_dir, "SKIP")
         metadata_builder = WPTMetadataBuilder(expectations, self.port)
         filename, contents = metadata_builder.get_metadata_filename_and_contents(
             test_dir, SKIP_TEST)
