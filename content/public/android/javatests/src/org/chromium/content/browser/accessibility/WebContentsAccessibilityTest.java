@@ -52,6 +52,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher;
@@ -288,6 +289,7 @@ public class WebContentsAccessibilityTest {
      * Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates.
      */
     @Test
+    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
@@ -316,6 +318,7 @@ public class WebContentsAccessibilityTest {
      * Ensure we need to throttle TYPE_WINDOW_CONTENT_CHANGED events for some large tree updates.
      */
     @Test
+    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
