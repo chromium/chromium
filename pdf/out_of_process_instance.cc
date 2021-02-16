@@ -932,23 +932,32 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
 }
 
 void OutOfProcessInstance::SendAccessibilityViewportInfo() {
-  PP_PrivateAccessibilityViewportInfo viewport_info;
-  viewport_info.scroll.x = -plugin_offset().x();
-  viewport_info.scroll.y = -plugin_offset().y();
-  viewport_info.offset.x = available_area().x() / (device_scale() * zoom());
-  viewport_info.offset.y = available_area().y() / (device_scale() * zoom());
-
+  AccessibilityViewportInfo viewport_info;
+  viewport_info.scroll = gfx::ScaleToFlooredPoint(plugin_offset(), -1);
+  viewport_info.offset = gfx::ScaleToFlooredPoint(
+      available_area().origin(), 1 / (device_scale() * zoom()));
   viewport_info.zoom = zoom();
   viewport_info.scale = device_scale();
-  viewport_info.focus_info = {
-      PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_NONE, 0, 0};
 
   engine()->GetSelection(&viewport_info.selection_start_page_index,
                          &viewport_info.selection_start_char_index,
                          &viewport_info.selection_end_page_index,
                          &viewport_info.selection_end_char_index);
 
-  pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &viewport_info);
+  PP_PrivateAccessibilityViewportInfo pp_viewport_info = {
+      viewport_info.zoom,
+      viewport_info.scale,
+      pp::Point(viewport_info.scroll.x(), viewport_info.scroll.y()),
+      pp::Point(viewport_info.offset.x(), viewport_info.offset.y()),
+      viewport_info.selection_start_page_index,
+      viewport_info.selection_start_char_index,
+      viewport_info.selection_end_page_index,
+      viewport_info.selection_end_char_index,
+      {static_cast<PP_PrivateFocusObjectType>(
+           viewport_info.focus_info.focused_object_type),
+       viewport_info.focus_info.focused_object_page_index,
+       viewport_info.focus_info.focused_annotation_index_in_page}};
+  pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &pp_viewport_info);
 }
 
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,

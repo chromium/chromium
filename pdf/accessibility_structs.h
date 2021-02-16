@@ -337,6 +337,37 @@ struct AccessibilityPageObjects {
   AccessibilityFormFieldInfo form_fields;
 };
 
+// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
+// from Pepper.
+// Explicitly set all enum values to match enum values in
+// PP_PrivateFocusObjectType.
+enum class FocusObjectType {
+  kNone = 0,
+  kDocument = 1,
+  kLink = 2,
+  kHighlight = 3,
+  kTextField = 4,
+  kMaxValue = kTextField,
+};
+
+struct AccessibilityFocusInfo {
+  FocusObjectType focused_object_type = FocusObjectType::kNone;
+  uint32_t focused_object_page_index = 0;
+  uint32_t focused_annotation_index_in_page = 0;
+};
+
+struct AccessibilityViewportInfo {
+  double zoom = 0.0;
+  double scale = 0.0;
+  gfx::Point scroll;
+  gfx::Point offset;
+  uint32_t selection_start_page_index = 0;
+  uint32_t selection_start_char_index = 0;
+  uint32_t selection_end_page_index = 0;
+  uint32_t selection_end_char_index = 0;
+  AccessibilityFocusInfo focus_info;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_

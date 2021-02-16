@@ -346,3 +346,16 @@ STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kCheckBox,
 STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kRadioButton,
                    PP_PRIVATEBUTTON_RADIOBUTTON);
 STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kMaxValue, PP_PRIVATEBUTTON_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kNone,
+                   PP_PRIVATEFOCUSOBJECT_NONE);
+STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kDocument,
+                   PP_PRIVATEFOCUSOBJECT_DOCUMENT);
+STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kLink,
+                   PP_PRIVATEFOCUSOBJECT_LINK);
+STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kHighlight,
+                   PP_PRIVATEFOCUSOBJECT_HIGHLIGHT);
+STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kTextField,
+                   PP_PRIVATEFOCUSOBJECT_TEXT_FIELD);
+STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kMaxValue,
+                   PP_PRIVATEFOCUSOBJECT_LAST);
