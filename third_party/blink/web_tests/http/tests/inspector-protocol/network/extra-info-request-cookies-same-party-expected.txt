@@ -15,6 +15,8 @@ requestWillBeSentExtraInfo request cookies on same domain:[
             secure : true
             session : true
             size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value1
         }
     }

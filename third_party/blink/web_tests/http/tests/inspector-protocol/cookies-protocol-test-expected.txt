@@ -54,14 +54,28 @@ Running test: deleteAllCookies
 
 Running test: invalidCookieAddDomain
 Setting Cookie
-setCookie failed: Invalid cookie fields
+setCookie failed: URL must have scheme http or https
 Num of cookies 0
 
 Running test: deleteAllCookies
 
 Running test: invalidCookieAddName
 Setting Cookie
-setCookie failed: Invalid cookie fields
+setCookie failed: Sanitizing cookie failed
+Num of cookies 0
+
+Running test: deleteAllCookies
+
+Running test: invalidCookieSourceScheme
+Setting Cookie
+setCookie failed: Invalid cookie source scheme
+Num of cookies 0
+
+Running test: deleteAllCookies
+
+Running test: invalidCookieSourcePort
+Setting Cookie
+setCookie failed: Invalid source port
 Num of cookies 0
 
 Running test: deleteAllCookies

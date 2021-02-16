@@ -1,0 +1,9 @@
+Verifies that the sourceScheme field will be handled correctly.
+
+sourceScheme_Secure: Secure
+sourceScheme_NonSecure: NonSecure
+sourceScheme_Unset: Unset
+sourceScheme_UndefinedSecureURL: Secure
+sourceScheme_UndefinedNonSecureURL: NonSecure
+sourceScheme_UndefinedNonSecureURL_SecureAttribute: Secure
+

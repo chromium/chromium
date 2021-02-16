@@ -90,6 +90,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace content {
 namespace protocol {
@@ -126,21 +127,45 @@ Network::CertificateTransparencyCompliance SerializeCTPolicyCompliance(
   return Network::CertificateTransparencyComplianceEnum::Unknown;
 }
 
+namespace {
+Network::CookiePriority BuildCookiePriority(net::CookiePriority priority) {
+  switch (priority) {
+    case net::CookiePriority::COOKIE_PRIORITY_HIGH:
+      return Network::CookiePriorityEnum::High;
+    case net::CookiePriority::COOKIE_PRIORITY_MEDIUM:
+      return Network::CookiePriorityEnum::Medium;
+    case net::CookiePriority::COOKIE_PRIORITY_LOW:
+      return Network::CookiePriorityEnum::Low;
+  }
+}
+Network::CookieSourceScheme BuildCookieSourceScheme(
+    net::CookieSourceScheme scheme) {
+  switch (scheme) {
+    case net::CookieSourceScheme::kUnset:
+      return Network::CookieSourceSchemeEnum::Unset;
+    case net::CookieSourceScheme::kNonSecure:
+      return Network::CookieSourceSchemeEnum::NonSecure;
+    case net::CookieSourceScheme::kSecure:
+      return Network::CookieSourceSchemeEnum::Secure;
+  }
+}
+base::Optional<Network::CookieSameSite> BuildCookieSameSite(
+    net::CookieSameSite same_site) {
+  switch (same_site) {
+    case net::CookieSameSite::STRICT_MODE:
+      return Network::CookieSameSiteEnum::Strict;
+    case net::CookieSameSite::LAX_MODE:
+      return Network::CookieSameSiteEnum::Lax;
+    case net::CookieSameSite::NO_RESTRICTION:
+      return Network::CookieSameSiteEnum::None;
+    case net::CookieSameSite::UNSPECIFIED:
+      return base::nullopt;
+  }
+}
+}  // namespace
+
 std::unique_ptr<Network::Cookie> BuildCookie(
     const net::CanonicalCookie& cookie) {
-  String cp;
-  switch (cookie.Priority()) {
-    case net::CookiePriority::COOKIE_PRIORITY_HIGH:
-      cp = Network::CookiePriorityEnum::High;
-      break;
-    case net::CookiePriority::COOKIE_PRIORITY_MEDIUM:
-      cp = Network::CookiePriorityEnum::Medium;
-      break;
-    case net::CookiePriority::COOKIE_PRIORITY_LOW:
-      cp = Network::CookiePriorityEnum::Low;
-      break;
-  }
-
   std::unique_ptr<Network::Cookie> devtools_cookie =
       Network::Cookie::Create()
           .SetName(cookie.Name())
@@ -154,23 +179,18 @@ std::unique_ptr<Network::Cookie> BuildCookie(
           .SetHttpOnly(cookie.IsHttpOnly())
           .SetSecure(cookie.IsSecure())
           .SetSession(!cookie.IsPersistent())
-          .SetPriority(cp)
+          .SetPriority(BuildCookiePriority(cookie.Priority()))
           .SetSameParty(cookie.IsSameParty())
+          .SetSourceScheme(BuildCookieSourceScheme(cookie.SourceScheme()))
+          .SetSourcePort(cookie.SourcePort())
           .Build();
 
-  switch (cookie.SameSite()) {
-    case net::CookieSameSite::STRICT_MODE:
-      devtools_cookie->SetSameSite(Network::CookieSameSiteEnum::Strict);
-      break;
-    case net::CookieSameSite::LAX_MODE:
-      devtools_cookie->SetSameSite(Network::CookieSameSiteEnum::Lax);
-      break;
-    case net::CookieSameSite::NO_RESTRICTION:
-      devtools_cookie->SetSameSite(Network::CookieSameSiteEnum::None);
-      break;
-    case net::CookieSameSite::UNSPECIFIED:
-      break;
+  base::Optional<Network::CookieSourceScheme> maybe_same_site =
+      BuildCookieSameSite(cookie.SameSite());
+  if (maybe_same_site) {
+    devtools_cookie->SetSameSite(*maybe_same_site);
   }
+
   return devtools_cookie;
 }
 
@@ -218,6 +238,7 @@ class CookieRetrieverNetworkService
   std::unordered_map<std::string, net::CanonicalCookie> all_cookies_;
 };
 
+namespace {
 std::vector<net::CanonicalCookie> FilterCookies(
     const std::vector<net::CanonicalCookie>& cookies,
     const std::string& name,
@@ -259,26 +280,56 @@ void DeleteFilteredCookies(network::mojom::CookieManager* cookie_manager,
   }
 }
 
-std::unique_ptr<net::CanonicalCookie> MakeCookieFromProtocolValues(
-    const std::string& name,
-    const std::string& value,
-    const std::string& url_spec,
-    const std::string& domain,
-    const std::string& path,
-    bool secure,
-    bool http_only,
-    const std::string& same_site,
-    double expires,
-    const std::string& priority) {
+absl::variant<net::CookieSourceScheme, Response> GetSourceSchemeFromProtocol(
+    const std::string& source_scheme) {
+  if (source_scheme == Network::CookieSourceSchemeEnum::Unset) {
+    return net::CookieSourceScheme::kUnset;
+  } else if (source_scheme == Network::CookieSourceSchemeEnum::NonSecure) {
+    return net::CookieSourceScheme::kNonSecure;
+  } else if (source_scheme == Network::CookieSourceSchemeEnum::Secure) {
+    return net::CookieSourceScheme::kSecure;
+  }
+  return Response::InvalidParams("Invalid cookie source scheme");
+}
+
+absl::variant<int, Response> GetCookieSourcePort(int source_port) {
+  // Only {url::PORT_UNSPECIFIED, [1,65535]} are valid.
+  if (source_port == url::PORT_UNSPECIFIED ||
+      (source_port >= 1 && source_port <= 65535)) {
+    return source_port;
+  }
+
+  return Response::InvalidParams("Invalid source port");
+}
+
+}  // namespace
+
+absl::variant<std::unique_ptr<net::CanonicalCookie>, Response>
+MakeCookieFromProtocolValues(const std::string& name,
+                             const std::string& value,
+                             const std::string& url_spec,
+                             const std::string& domain,
+                             const std::string& path,
+                             bool secure,
+                             bool http_only,
+                             const std::string& same_site,
+                             double expires,
+                             const std::string& priority,
+                             bool same_party,
+                             const Maybe<std::string>& source_scheme,
+                             const Maybe<int>& source_port) {
   std::string normalized_domain = domain;
 
-  if (url_spec.empty() && domain.empty())
-    return nullptr;
+  if (url_spec.empty() && domain.empty()) {
+    return Response::InvalidParams(
+        "At least one of the url or domain needs to be specified");
+  }
 
+  GURL source_url;
   if (!url_spec.empty()) {
-    GURL source_url = GURL(url_spec);
+    source_url = GURL(url_spec);
     if (!source_url.SchemeIsHTTPOrHTTPS())
-      return nullptr;
+      return Response::InvalidParams("URL must have scheme http or https");
 
     secure = secure || source_url.SchemeIsCryptographic();
     if (normalized_domain.empty())
@@ -322,10 +373,58 @@ std::unique_ptr<net::CanonicalCookie> MakeCookieFromProtocolValues(
   else if (priority == Network::CookiePriorityEnum::Low)
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
-  // TODO(crbug.com/1142606): Add SameParty to DevTools cookie structures.
-  return net::CanonicalCookie::CreateSanitizedCookie(
-      url, name, value, normalized_domain, path, base::Time(), expiration_date,
-      base::Time(), secure, http_only, css, cp, /*same_party=*/false);
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          url, name, value, normalized_domain, path, base::Time(),
+          expiration_date, base::Time(), secure, http_only, css, cp,
+          same_party);
+
+  if (!cookie)
+    return Response::InvalidParams("Sanitizing cookie failed");
+
+  // Update the cookie's sourceScheme unless it's undefined in which case we'll
+  // keep the value that was implied from `url` via CreateSanitizedCookie.
+  if (source_scheme.isJust()) {
+    auto cookie_source_scheme_or_error =
+        GetSourceSchemeFromProtocol(source_scheme.fromJust());
+    if (absl::holds_alternative<Response>(cookie_source_scheme_or_error)) {
+      return absl::get<Response>(std::move(cookie_source_scheme_or_error));
+    }
+    net::CookieSourceScheme cookie_source_scheme =
+        absl::get<net::CookieSourceScheme>(cookie_source_scheme_or_error);
+    if (cookie->IsSecure() &&
+        cookie_source_scheme == net::CookieSourceScheme::kNonSecure) {
+      return Response::InvalidParams(
+          "Secure attribute cannot be set for a cookie with an insecure source "
+          "scheme");
+    }
+
+    cookie->SetSourceScheme(cookie_source_scheme);
+  }
+
+  // Update the cookie's port unless it's undefined in which case we'll
+  // keep the value that was implied from `url` via CreateSanitizedCookie.
+  if (source_port.isJust()) {
+    auto cookie_source_port_or_error =
+        GetCookieSourcePort(source_port.fromJust());
+    if (absl::holds_alternative<Response>(cookie_source_port_or_error)) {
+      return absl::get<Response>(std::move(cookie_source_port_or_error));
+    }
+    int port_value = absl::get<int>(cookie_source_port_or_error);
+
+    // If the url has a port specified it must match the source_port value.
+    // Otherwise this set cookie request is considered malformed.
+    // Note: Default port values (https: 443, http: 80) are ignored. They will
+    // be treated as if they were not specified.
+    if (source_url.has_port() && source_url.IntPort() != port_value) {
+      return Response::InvalidParams(
+          "Source port does not match the url's specified port");
+    }
+
+    cookie->SetSourcePort(port_value);
+  }
+
+  return cookie;
 }
 
 std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
@@ -1223,26 +1322,28 @@ void NetworkHandler::SetCookie(const std::string& name,
                                Maybe<std::string> same_site,
                                Maybe<double> expires,
                                Maybe<std::string> priority,
+                               Maybe<bool> same_party,
+                               Maybe<std::string> source_scheme,
+                               Maybe<int> source_port,
                                std::unique_ptr<SetCookieCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
     return;
   }
 
-  if (!url.isJust() && !domain.isJust()) {
-    callback->sendFailure(Response::InvalidParams(
-        "At least one of the url and domain needs to be specified"));
-  }
-
-  std::unique_ptr<net::CanonicalCookie> cookie = MakeCookieFromProtocolValues(
+  auto cookie_or_error = MakeCookieFromProtocolValues(
       name, value, url.fromMaybe(""), domain.fromMaybe(""), path.fromMaybe(""),
       secure.fromMaybe(false), http_only.fromMaybe(false),
-      same_site.fromMaybe(""), expires.fromMaybe(-1), priority.fromMaybe(""));
+      same_site.fromMaybe(""), expires.fromMaybe(-1), priority.fromMaybe(""),
+      same_party.fromMaybe(false), source_scheme, source_port);
 
-  if (!cookie) {
-    callback->sendFailure(Response::InvalidParams(kInvalidCookieFields));
+  if (absl::holds_alternative<Response>(cookie_or_error)) {
+    callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
     return;
   }
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      absl::get<std::unique_ptr<net::CanonicalCookie>>(
+          std::move(cookie_or_error));
 
   net::CookieOptions options;
   // Permit it to set a SameSite cookie if it wants to.
@@ -1263,18 +1364,30 @@ void NetworkHandler::SetCookies(
     base::OnceCallback<void(bool)> callback) {
   std::vector<std::unique_ptr<net::CanonicalCookie>> net_cookies;
   for (const std::unique_ptr<Network::CookieParam>& cookie : *cookies) {
-    std::unique_ptr<net::CanonicalCookie> net_cookie =
-        MakeCookieFromProtocolValues(
-            cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
-            cookie->GetDomain(""), cookie->GetPath(""),
-            cookie->GetSecure(false), cookie->GetHttpOnly(false),
-            cookie->GetSameSite(""), cookie->GetExpires(-1),
-            cookie->GetPriority(""));
-    if (!net_cookie) {
+    // We need to pass Maybe<> to the function below, but we can't directly
+    // get to the `cookie`'s Maybe<> so instead we recreate them.
+    const Maybe<std::string> source_scheme =
+        cookie->HasSourceScheme()
+            ? Maybe<std::string>(cookie->GetSourceScheme(""))
+            : Maybe<std::string>();
+    const Maybe<int> source_port = cookie->HasSourcePort()
+                                       ? Maybe<int>(cookie->GetSourcePort(0))
+                                       : Maybe<int>();
+
+    auto net_cookie_or_error = MakeCookieFromProtocolValues(
+        cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
+        cookie->GetDomain(""), cookie->GetPath(""), cookie->GetSecure(false),
+        cookie->GetHttpOnly(false), cookie->GetSameSite(""),
+        cookie->GetExpires(-1), cookie->GetPriority(""),
+        cookie->GetSameParty(false), source_scheme, source_port);
+    if (absl::holds_alternative<Response>(net_cookie_or_error)) {
+      // TODO: Investiage whether we can report the error as a protocol error
+      // (this might be a breaking CDP change).
       std::move(callback).Run(false);
       return;
     }
-    net_cookies.push_back(std::move(net_cookie));
+    net_cookies.push_back(absl::get<std::unique_ptr<net::CanonicalCookie>>(
+        std::move(net_cookie_or_error)));
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(

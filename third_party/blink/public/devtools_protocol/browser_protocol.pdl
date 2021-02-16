@@ -4426,6 +4426,15 @@ domain Network
       Medium
       High
 
+  # Represents the source scheme of the origin that originally set the cookie.
+  # A value of "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
+  # This is a temporary ability and it will be removed in the future.
+  experimental type CookieSourceScheme extends string
+    enum
+      Unset
+      NonSecure
+      Secure
+
   # Timing information for the request.
   type ResourceTiming extends object
     properties
@@ -4807,6 +4816,12 @@ domain Network
       experimental CookiePriority priority
       # True if cookie is SameParty.
       experimental boolean sameParty
+      # Cookie source scheme type.
+      experimental CookieSourceScheme sourceScheme
+      # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+      # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+      # This is a temporary ability and it will be removed in the future.
+      experimental integer sourcePort
 
   # Types of reasons why a cookie may not be stored from a response.
   experimental type SetCookieBlockedReason extends string
@@ -4935,7 +4950,7 @@ domain Network
       # Cookie value.
       string value
       # The request-URI to associate with the setting of the cookie. This value can affect the
-      # default domain and path values of the created cookie.
+      # default domain, path, source port, and source scheme values of the created cookie.
       optional string url
       # Cookie domain.
       optional string domain
@@ -4951,6 +4966,14 @@ domain Network
       optional TimeSinceEpoch expires
       # Cookie Priority.
       experimental optional CookiePriority priority
+      # True if cookie is SameParty.
+      experimental optional boolean sameParty
+      # Cookie source scheme type.
+      experimental optional CookieSourceScheme sourceScheme
+      # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+      # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+      # This is a temporary ability and it will be removed in the future.
+      experimental optional integer sourcePort
 
   # Authorization challenge for HTTP status code 401 or 407.
   experimental type AuthChallenge extends object
@@ -5281,7 +5304,7 @@ domain Network
       # Cookie value.
       string value
       # The request-URI to associate with the setting of the cookie. This value can affect the
-      # default domain and path values of the created cookie.
+      # default domain, path, source port, and source scheme values of the created cookie.
       optional string url
       # Cookie domain.
       optional string domain
@@ -5297,6 +5320,14 @@ domain Network
       optional TimeSinceEpoch expires
       # Cookie Priority type.
       experimental optional CookiePriority priority
+      # True if cookie is SameParty.
+      experimental optional boolean sameParty
+      # Cookie source scheme type.
+      experimental optional CookieSourceScheme sourceScheme
+      # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+      # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+      # This is a temporary ability and it will be removed in the future.
+      experimental optional integer sourcePort
     returns
       # Always set to true. If an error occurs, the response indicates protocol error.
       deprecated boolean success

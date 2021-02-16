@@ -17,6 +17,8 @@ Javascript initiated subresource blocked set-cookies:[
             secure : true
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
         cookieLine : name=value; SameSite=None; SameParty; Secure

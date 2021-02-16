@@ -15,6 +15,8 @@ set-cookie that would overwrite secure cookie blocked set-cookies:[
             secure : false
             session : true
             size : 9
+            sourcePort : 8000
+            sourceScheme : NonSecure
             value : value
         }
         cookieLine : name=value

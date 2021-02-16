@@ -16,6 +16,8 @@ Browser initiated navigation blocked cookies:[
             secure : false
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
     }
@@ -36,6 +38,8 @@ Javascript initiated navigation blocked cookies:[
             secure : false
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
     }
@@ -57,6 +61,8 @@ Javascript initiated subresource blocked cookies:[
             secure : false
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
     }

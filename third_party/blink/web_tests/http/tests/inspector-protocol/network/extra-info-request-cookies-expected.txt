@@ -16,6 +16,8 @@ requestWillBeSentExtraInfo request cookies on same domain:[
             secure : true
             session : true
             size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value1
         }
     }
@@ -33,6 +35,8 @@ requestWillBeSentExtraInfo request cookies on same domain:[
             secure : false
             session : true
             size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value2
         }
     }
@@ -53,6 +57,8 @@ requestWillBeSentExtraInfo request cookies on subdomain[
             secure : false
             session : true
             size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value2
         }
     }
@@ -71,6 +77,8 @@ requestWillBeSentExtraInfo request cookies on subdomain[
             secure : true
             session : true
             size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value1
         }
     }
