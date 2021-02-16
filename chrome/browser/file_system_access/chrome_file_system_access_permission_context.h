@@ -72,6 +72,10 @@ class ChromeFileSystemAccessPermissionContext
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin);
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin);
 
+  void SetMaxIdsPerOriginForTesting(unsigned int max_ids) {
+    max_ids_per_origin_ = max_ids;
+  }
+
   // Returns a snapshot of the currently granted permissions.
   // TODO(https://crbug.com/984769): Eliminate process_id and frame_id from this
   // method when grants stop being scoped to a frame.
@@ -114,10 +118,18 @@ class ChromeFileSystemAccessPermissionContext
 
   void MaybeMigrateOriginToNewSchema(const url::Origin& origin);
 
+  // An origin can only specify up to `max_ids_per_origin_` custom IDs per
+  // origin (not including the default ID). If this limit is exceeded, evict
+  // using LRU.
+  void MaybeEvictEntries(std::unique_ptr<base::Value>& value);
+
   virtual base::WeakPtr<ChromeFileSystemAccessPermissionContext>
   GetWeakPtr() = 0;
 
   scoped_refptr<HostContentSettingsMap> content_settings_;
+
+  // Number of custom IDs an origin can specify.
+  size_t max_ids_per_origin_ = 32u;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeFileSystemAccessPermissionContext);
 };

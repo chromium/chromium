@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -55,6 +56,7 @@ const char kDefaultLastPickedDirectoryKey[] = "default-id";
 const char kCustomLastPickedDirectoryKey[] = "custom-id";
 const char kPathKey[] = "path";
 const char kPathTypeKey[] = "path-type";
+const char kTimestampKey[] = "timestamp";
 
 // TODO(https://crbug.com/1177334): Remove migration logic.
 // Deprecated 2/2021. Former schema (per origin):
@@ -509,6 +511,35 @@ void ChromeFileSystemAccessPermissionContext::MaybeMigrateOriginToNewSchema(
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
 }
 
+void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
+    std::unique_ptr<base::Value>& value) {
+  if (!value->is_dict()) {
+    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    return;
+  }
+
+  std::vector<std::pair<base::Time, std::string>> entries;
+  entries.reserve(value->DictSize());
+  for (const auto& entry : value->DictItems()) {
+    // Don't evict the default ID.
+    if (entry.first == kDefaultLastPickedDirectoryKey)
+      continue;
+    entries.emplace_back(util::ValueToTime(entry.second.FindKey(kTimestampKey))
+                             .value_or(base::Time::Min()),
+                         entry.first);
+  }
+
+  if (entries.size() <= max_ids_per_origin_)
+    return;
+
+  base::ranges::sort(entries);
+  size_t entries_to_remove = entries.size() - max_ids_per_origin_;
+  for (size_t i = 0; i < entries_to_remove; ++i) {
+    bool did_remove_entry = value->RemoveKey(entries[i].second);
+    DCHECK(did_remove_entry);
+  }
+}
+
 void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id,
@@ -519,18 +550,18 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
-  if (!value) {
+  if (!value)
     value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  }
 
   // Create an entry into the nested dictionary.
   base::Value entry(base::Value::Type::DICTIONARY);
   entry.SetKey(kPathKey, util::FilePathToValue(path));
   entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
+  entry.SetKey(kTimestampKey, util::TimeToValue(base::Time::Now()));
 
-  // TODO(https://crbug.com/1171354): Limit the number of `id`s that can be set
-  // per origin.
   value->SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
+
+  MaybeEvictEntries(value);
 
   content_settings_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), origin.GetURL(),

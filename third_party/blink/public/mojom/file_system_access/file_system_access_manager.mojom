@@ -58,6 +58,7 @@ interface FileSystemAccessManager {
   // picked directory. The next time the matching ID is specified, the picker
   // will default to this directory. The ID cannot exceed 32 characters in
   // length and may only contain alphanumeric characters, '-', and '_'.
+  // A maximum of 32 custom IDs is allowed per origin (LRU eviction).
   // |well_known_starting_directory| opens the file picker at a well-known
   // directory.
   // |starting_directory_token| is resolved into a file or directory by the

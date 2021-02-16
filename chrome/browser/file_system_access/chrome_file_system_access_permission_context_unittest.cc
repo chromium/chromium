@@ -480,6 +480,82 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(old_path_info.type, type);
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest, LimitNumberOfIds) {
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
+            base::FilePath());
+
+  permission_context()->SetMaxIdsPerOriginForTesting(3);
+
+  // Default path should NOT be evicted.
+  auto default_id = std::string();
+  auto default_path = base::FilePath::FromUTF8Unsafe("default");
+
+  std::string id1("1");
+  auto path1 = base::FilePath::FromUTF8Unsafe("path1");
+  std::string id2("2");
+  auto path2 = base::FilePath::FromUTF8Unsafe("path2");
+  std::string id3("3");
+  auto path3 = base::FilePath::FromUTF8Unsafe("path3");
+  std::string id4("4");
+  auto path4 = base::FilePath::FromUTF8Unsafe("path4");
+
+  // Set the path using the default ID. This should NOT be evicted.
+  permission_context()->SetLastPickedDirectory(kTestOrigin, default_id,
+                                               default_path, PathType::kLocal);
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, default_id)
+                .path,
+            default_path);
+
+  // Set the maximum number of IDs. Only set IDs should return non-empty paths.
+  permission_context()->SetLastPickedDirectory(kTestOrigin, id1, path1,
+                                               PathType::kLocal);
+  permission_context()->SetLastPickedDirectory(kTestOrigin, id2, path2,
+                                               PathType::kLocal);
+  permission_context()->SetLastPickedDirectory(kTestOrigin, id3, path3,
+                                               PathType::kLocal);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id1).path,
+            path1);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id2).path,
+            path2);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id3).path,
+            path3);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id4).path,
+            base::FilePath());  // Unset.
+
+  // Once the 4th id has been set, only `id1` should have been evicted.
+  permission_context()->SetLastPickedDirectory(kTestOrigin, id4, path4,
+                                               PathType::kLocal);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id1).path,
+            base::FilePath());  // Unset.
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id2).path,
+            path2);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id3).path,
+            path3);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id4).path,
+            path4);
+
+  // Re-set `id1`, evicting `id2`.
+  permission_context()->SetLastPickedDirectory(kTestOrigin, id1, path1,
+                                               PathType::kLocal);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id1).path,
+            path1);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id2).path,
+            base::FilePath());  // Unset.
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id3).path,
+            path3);
+  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin, id4).path,
+            path4);
+
+  // Ensure the default path was never evicted.
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, default_id)
+                .path,
+            default_path);
+}
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        SetLastPickedDirectory_NewPermissionContext) {
   EXPECT_EQ(permission_context()
