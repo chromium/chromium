@@ -50,6 +50,8 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
 
   void UpdateOffscreenCanvasFilterQuality(SkFilterQuality filter_quality);
 
+  virtual bool HasCanvasCapture() const { return false; }
+
  private:
   bool PostSetSuspendAnimationToOffscreenCanvasThread(bool suspend);
 

@@ -311,8 +311,24 @@ void CanvasResourceDispatcher::DidReceiveCompositorFrameAck(
 }
 
 void CanvasResourceDispatcher::SetNeedsBeginFrame(bool needs_begin_frame) {
-  if (needs_begin_frame_ == needs_begin_frame)
+  if (needs_begin_frame_ == needs_begin_frame) {
+    // If the offscreencanvas is in the same tread as the canvas, and we are
+    // trying for a second time to request the being frame, and we are in a
+    // capture_stream scenario, we will call a BeginFrame right away. So
+    // Offscreen Canvas can behave in a more synchronous way when it's on the
+    // main thread.
+    if (needs_begin_frame_ && IsMainThread()) {
+      OffscreenCanvasPlaceholder* placeholder_canvas =
+          OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
+              placeholder_canvas_id_);
+      if (placeholder_canvas &&
+          placeholder_canvas->IsOffscreenCanvasRegistered() &&
+          placeholder_canvas->HasCanvasCapture() && Client()) {
+        Client()->BeginFrame();
+      }
+    }
     return;
+  }
   needs_begin_frame_ = needs_begin_frame;
   if (!suspend_animation_)
     SetNeedsBeginFrameInternal();

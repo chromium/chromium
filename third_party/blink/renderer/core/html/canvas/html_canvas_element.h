@@ -149,6 +149,8 @@ class CORE_EXPORT HTMLCanvasElement final
   // Used for canvas capture.
   void AddListener(CanvasDrawListener*);
   void RemoveListener(CanvasDrawListener*);
+  // Derived from OffscreenCanvasPlaceholder.
+  bool HasCanvasCapture() const final { return !listeners_.IsEmpty(); }
 
   // Used for rendering
   void DidDraw(const FloatRect&) override;
