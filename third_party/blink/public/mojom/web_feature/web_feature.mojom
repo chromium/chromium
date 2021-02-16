@@ -3125,6 +3125,9 @@ enum WebFeature {
   kOverflowClipAlongEitherAxis = 3803,
   kCreateJSONModuleScript = 3804,
   kCreateCSSModuleScript = 3805,
+  kInsertHTMLCommandOnInput = 3806,
+  kInsertHTMLCommandOnTextarea = 3807,
+  kInsertHTMLCommandOnReadWritePlainText = 3808,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

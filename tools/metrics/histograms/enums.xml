@@ -31423,6 +31423,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3803" label="OverflowClipAlongEitherAxis"/>
   <int value="3804" label="CreateJSONModuleScript"/>
   <int value="3805" label="CreateCSSModuleScript"/>
+  <int value="3806" label="InsertHTMLCommandOnInput"/>
+  <int value="3807" label="InsertHTMLCommandOnTextarea"/>
+  <int value="3808" label="InsertHTMLCommandOnReadWritePlainText"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
