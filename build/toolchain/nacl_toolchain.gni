@@ -56,6 +56,10 @@ template("nacl_toolchain") {
       use_clang_profiling = false
       use_clang_coverage = false
       coverage_instrumentation_input_file = ""
+
+      if (use_rbe) {
+        rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_linux_nacl.cfg"
+      }
     }
   }
 }

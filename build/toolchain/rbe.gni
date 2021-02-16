@@ -12,25 +12,21 @@ rbe_cfg_dir = rebase_path("//buildtools/reclient_cfgs", root_build_dir)
 # chromium source on their system.
 rbe_exec_root = rebase_path("//")
 
-# Configuration file selection based on operating system.
-cfg_file = ""
-if (is_linux || is_android) {
-  cfg_file = "${rbe_cfg_dir}/rewrapper_linux.cfg"
-}
-if (is_win) {
-  cfg_file = "${rbe_cfg_dir}/rewrapper_windows.cfg"
-}
-if (is_mac || is_ios) {
-  cfg_file = "${rbe_cfg_dir}/rewrapper_mac.cfg"
-}
-
-# C/C++ (clang) rewrapper prefix to use when use_rbe is true.
-# As more action types are supported in reclient, more prefixes
-# can be defined.
-cc_rewrapper =
-    "${rbe_bin_dir}/rewrapper -cfg=${cfg_file} -exec_root=${rbe_exec_root}"
-
 declare_args() {
   # Set to true to enable remote compilation using RBE.
   use_rbe = false
+
+  # Set to the path of the RBE reclient configuration file.
+  rbe_cc_cfg_file = ""
+}
+
+# Configuration file selection based on operating system.
+if (is_linux || is_android) {
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_linux.cfg"
+}
+if (is_win) {
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_windows.cfg"
+}
+if (is_mac || is_ios) {
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_mac.cfg"
 }

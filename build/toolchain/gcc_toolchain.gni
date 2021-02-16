@@ -183,7 +183,14 @@ template("gcc_toolchain") {
     # gomacc in that case.
     goma_path = "$goma_dir/gomacc"
     if (toolchain_uses_rbe) {
-      compiler_prefix = "${cc_rewrapper} "
+      if (defined(toolchain_args.rbe_cc_cfg_file)) {
+        toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
+      } else {
+        toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
+      }
+
+      # C/C++ (clang) rewrapper prefix to use when use_rbe is true.
+      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
     } else if (toolchain_uses_goma &&
                (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
                 !invoker_toolchain_args.needs_gomacc_path_arg)) {
