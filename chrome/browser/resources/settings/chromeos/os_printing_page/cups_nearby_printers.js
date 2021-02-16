@@ -68,6 +68,16 @@ Polymer({
      * @private
      */
     listBlurred_: Boolean,
+
+    /**
+     * This is set to true while waiting for a response during a printer setup.
+     * @type {boolean}
+     * @private
+     */
+    savingPrinter_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {
@@ -108,6 +118,7 @@ Polymer({
   onAddAutomaticPrinter_(e) {
     const item = e.detail.item;
     this.setActivePrinter_(item);
+    this.savingPrinter_ = true;
 
     settings.CupsPrintersBrowserProxyImpl.getInstance()
         .addDiscoveredPrinter(item.printerInfo.printerId)
@@ -125,7 +136,7 @@ Polymer({
   onAddPrintServerPrinter_(e) {
     const item = e.detail.item;
     this.setActivePrinter_(item);
-
+    this.savingPrinter_ = true;
     settings.CupsPrintersBrowserProxyImpl.getInstance()
         .addCupsPrinter(item.printerInfo)
         .then(
@@ -141,6 +152,7 @@ Polymer({
   onQueryDiscoveredPrinter_(e) {
     const item = e.detail.item;
     this.setActivePrinter_(item);
+    this.savingPrinter_ = true;
 
     // This is a workaround to ensure type safety on the params of the casted
     // function. We do this because the closure compiler does not work well with
@@ -179,6 +191,7 @@ Polymer({
    * @private
    */
   onAddNearbyPrintersSucceeded_(printerName, result) {
+    this.savingPrinter_ = false;
     this.fire(
         'show-cups-printer-toast',
         {resultCode: result, printerName: printerName});
@@ -190,6 +203,7 @@ Polymer({
    * @private
    */
   onAddNearbyPrinterFailed_(printer) {
+    this.savingPrinter_ = false;
     this.fire('show-cups-printer-toast', {
       resultCode: PrinterSetupResult.PRINTER_UNREACHABLE,
       printerName: printer.printerName
@@ -203,6 +217,7 @@ Polymer({
    * @private
    */
   onQueryDiscoveredPrinterSucceeded_(printerName, result) {
+    this.savingPrinter_ = false;
     this.fire(
         'show-cups-printer-toast',
         {resultCode: result, printerName: printerName});
@@ -214,6 +229,7 @@ Polymer({
    * @private
    */
   onQueryDiscoveredPrinterFailed_(printer) {
+    this.savingPrinter_ = false;
     this.fire(
         'open-manufacturer-model-dialog-for-specified-printer',
         {item: /** @type {CupsPrinterInfo} */ (printer)});

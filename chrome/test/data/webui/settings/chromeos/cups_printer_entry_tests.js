@@ -80,6 +80,37 @@ function verifySearchQueryResults(
   }
 }
 
+/**
+ * Returns a printer entry with the given |printerType|.
+ * @param {!PrinterType} printerType
+ * @return {!PrinterListEntry}
+ */
+function createPrinterEntry(printerType) {
+  return {
+    printerInfo: {
+      ppdManufacturer: '',
+      ppdModel: '',
+      printerAddress: 'test:123',
+      printerDescription: '',
+      printerId: 'id_123',
+      printerManufacturer: '',
+      printerModel: '',
+      printerMakeAndModel: '',
+      printerName: 'Test name',
+      printerPPDPath: '',
+      printerPpdReference: {
+        userSuppliedPpdUrl: '',
+        effectiveMakeAndModel: '',
+        autoconf: false,
+      },
+      printerProtocol: 'ipp',
+      printerQueue: 'moreinfohere',
+      printerStatus: '',
+    },
+    printerType: printerType,
+  };
+}
+
 suite('CupsPrintersEntry', function() {
   /** A printer list entry created before each test. */
   let printerEntryTestElement = null;
@@ -101,29 +132,8 @@ suite('CupsPrintersEntry', function() {
     const expectedPrinterName = 'Test name';
     const expectedPrinterSubtext = 'Test subtext';
 
-    printerEntryTestElement.printerEntry = {
-      printerInfo: {
-        ppdManufacturer: '',
-        ppdModel: '',
-        printerAddress: 'test:123',
-        printerDescription: '',
-        printerId: 'id_123',
-        printerManufacturer: '',
-        printerModel: '',
-        printerMakeAndModel: '',
-        printerName: expectedPrinterName,
-        printerPPDPath: '',
-        printerPpdReference: {
-          userSuppliedPpdUrl: '',
-          effectiveMakeAndModel: '',
-          autoconf: false,
-        },
-        printerProtocol: 'ipp',
-        printerQueue: 'moreinfohere',
-        printerStatus: '',
-      },
-      printerType: PrinterType.SAVED,
-    };
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
     assertEquals(
         expectedPrinterName,
         printerEntryTestElement.shadowRoot.querySelector('#printerName')
@@ -146,29 +156,8 @@ suite('CupsPrintersEntry', function() {
   });
 
   test('savedPrinterShowsThreeDotMenu', function() {
-    printerEntryTestElement.printerEntry = {
-      printerInfo: {
-        ppdManufacturer: '',
-        ppdModel: '',
-        printerAddress: 'test:123',
-        printerDescription: '',
-        printerId: 'id_123',
-        printerManufacturer: '',
-        printerModel: '',
-        printerMakeAndModel: '',
-        printerName: 'test1',
-        printerPPDPath: '',
-        printerPpdReference: {
-          userSuppliedPpdUrl: '',
-          effectiveMakeAndModel: '',
-          autoconf: false,
-        },
-        printerProtocol: 'ipp',
-        printerQueue: 'moreinfohere',
-        printerStatus: '',
-      },
-      printerType: PrinterType.SAVED,
-    };
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
 
     // Assert that three dot menu is not shown before the dom is updated.
     assertFalse(!!printerEntryTestElement.$$('.icon-more-vert'));
@@ -178,5 +167,34 @@ suite('CupsPrintersEntry', function() {
     // Three dot menu should be visible when |printerType| is set to
     // PrinterType.SAVED.
     assertTrue(!!printerEntryTestElement.$$('.icon-more-vert'));
+  });
+
+  test('disableButtonWhenSavingPrinter', function() {
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.DISCOVERED);
+    Polymer.dom.flush();
+    const setupButton = printerEntryTestElement.$$('#setupPrinterButton');
+    assertFalse(setupButton.disabled);
+    printerEntryTestElement.savingPrinter = true;
+    assertTrue(setupButton.disabled);
+
+    printerEntryTestElement.savingPrinter = false;
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.AUTOMATIC);
+    Polymer.dom.flush();
+    const automaticButton =
+        printerEntryTestElement.$$('#automaticPrinterButton');
+    assertFalse(automaticButton.disabled);
+    printerEntryTestElement.savingPrinter = true;
+    assertTrue(automaticButton.disabled);
+
+    printerEntryTestElement.savingPrinter = false;
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.PRINTSERVER);
+    Polymer.dom.flush();
+    const saveButton = printerEntryTestElement.$$('#savePrinterButton');
+    assertFalse(saveButton.disabled);
+    printerEntryTestElement.savingPrinter = true;
+    assertTrue(saveButton.disabled);
   });
 });

@@ -2369,7 +2369,7 @@ var OSSettingsCupsPrinterEntryTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsCupsPrinterEntryTest', 'MAYBE_AllJsTests', () => {
+TEST_F('OSSettingsCupsPrinterEntryTest', 'All', () => {
   mocha.run();
 });
 

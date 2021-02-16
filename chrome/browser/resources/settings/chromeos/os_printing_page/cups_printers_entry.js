@@ -23,6 +23,8 @@ Polymer({
      * @type {string}
      */
     subtext: {type: String, value: ''},
+
+    savingPrinter: Boolean,
   },
 
   /**

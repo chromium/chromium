@@ -3,8 +3,8 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="cups_printer_types.html">
 <link rel="import" href="cups_printers_browser_proxy.html">
+<link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
 
 <dom-module id="settings-cups-printers-entry">
@@ -48,7 +48,8 @@
               on-click="onAddDiscoveredPrinterTap_"
               aria-label$="[[getSetupButtonAria_()]]"
               focus-row-control
-              focus-type="setupPrinterButton">
+              focus-type="setupPrinterButton"
+              disabled="[[savingPrinter]]">
             $i18n{setupPrinter}
           </cr-button>
         </template>
@@ -58,7 +59,8 @@
               on-click="onAddAutomaticPrinterTap_"
               aria-label$="[[getSaveButtonAria_()]]"
               focus-row-control
-              focus-type="automaticPrinterButton">
+              focus-type="automaticPrinterButton"
+              disabled="[[savingPrinter]]">
             $i18n{savePrinter}
           </cr-button>
         </template>
@@ -68,7 +70,8 @@
           class="save-printer-button" on-click="onAddServerPrinterTap_"
               aria-label$="[[getSaveButtonAria_()]]"
               focus-row-control
-              focus-type="savePrinterButton">
+              focus-type="savePrinterButton"
+              disabled="[[savingPrinter]]">
             $i18n{savePrinter}
           </cr-button>
         </template>
