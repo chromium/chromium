@@ -42,7 +42,7 @@ class PageTextAgent
   // value iff this class wants more text than that.
   base::OnceCallback<void(const base::string16&)>
   MaybeRequestTextDumpOnLayoutEvent(blink::WebMeaningfulLayout event,
-                                    uint64_t* max_size);
+                                    uint32_t* max_size);
 
   // Bind to mojo pipes. Public for testing.
   void Bind(mojo::PendingAssociatedReceiver<mojom::PageTextService> receiver);

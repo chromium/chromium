@@ -33,7 +33,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   void Reset() { was_called_ = false; }
 
-  void PopulateRequest(uint64_t max_size,
+  void PopulateRequest(uint32_t max_size,
                        const std::set<mojom::TextDumpEvent>& events) {
     request_ = std::make_unique<PageTextObserver::ConsumerTextDumpRequest>();
     request_->max_size = max_size;

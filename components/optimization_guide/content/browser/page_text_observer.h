@@ -51,7 +51,7 @@ class PageTextObserver : public content::WebContentsObserver,
     // that is passed in the callback may actually be greater than this value if
     // another consumer requests a greater amount on the same event, or less on
     // pages with little text.
-    uint64_t max_size = 0;
+    uint32_t max_size = 0;
 
     // All of the |TextDumpEvent|'s that have been requested.
     std::set<mojom::TextDumpEvent> events;

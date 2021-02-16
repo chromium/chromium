@@ -36,7 +36,7 @@ namespace {
 class PageTextChunkConsumer : public mojom::PageTextConsumer {
  public:
   PageTextChunkConsumer(mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
-                        uint64_t max_size,
+                        uint32_t max_size,
                         base::OnceCallback<void(base::string16)> on_complete)
       : remaining_size_(max_size),
         on_complete_(std::move(on_complete)),
@@ -83,7 +83,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
 
  private:
   // The maximum length in bytes that will be read from the data pipe.
-  uint64_t remaining_size_ = 0;
+  uint32_t remaining_size_ = 0;
 
   // While |on_complete_| is non-null, the mojo pipe is also bound. Once the
   // |on_complete_| callback is run, this class is no longer active and can be
@@ -219,7 +219,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
   std::set<std::unique_ptr<PageTextChunkConsumer>> consumers_;
 
   // The max length, in bytes, to request for each event.
-  std::map<mojom::TextDumpEvent, uint64_t> max_size_by_event_;
+  std::map<mojom::TextDumpEvent, uint32_t> max_size_by_event_;
 };
 
 }  // namespace

@@ -482,7 +482,7 @@ void ChromeRenderFrameObserver::CapturePageText(
   bool capture_for_translate_phishing =
       ShouldCapturePageTextForTranslateOrPhishing(layout_type);
 
-  uint64_t capture_max_size =
+  uint32_t capture_max_size =
       capture_for_translate_phishing ? kMaxIndexChars : 0;
   auto text_callback = page_text_agent_->MaybeRequestTextDumpOnLayoutEvent(
       layout_type, &capture_max_size);
@@ -499,9 +499,7 @@ void ChromeRenderFrameObserver::CapturePageText(
     TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");
 
     contents = WebFrameContentDumper::DumpFrameTreeAsText(
-                   render_frame()->GetWebFrame(),
-                   // TODO(crbug/1163244): Move everything to be uint32.
-                   static_cast<size_t>(capture_max_size))
+                   render_frame()->GetWebFrame(), capture_max_size)
                    .Utf16();
   }
 

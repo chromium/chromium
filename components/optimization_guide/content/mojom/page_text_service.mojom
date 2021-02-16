@@ -21,7 +21,7 @@ enum TextDumpEvent {
 struct PageTextDumpRequest {
   // The maximum size of the requested text dump, in bytes. Note that the actual
   // dump size may be less than this value on pages with little text.
-  uint64 max_size;
+  uint32 max_size;
 
   // The event at which the text dump should be taken.
   TextDumpEvent event;

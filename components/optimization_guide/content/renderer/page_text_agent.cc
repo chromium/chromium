@@ -48,7 +48,7 @@ void PageTextAgent::Bind(
 base::OnceCallback<void(const base::string16&)>
 PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
     blink::WebMeaningfulLayout event,
-    uint64_t* max_size) {
+    uint32_t* max_size) {
   base::Optional<mojom::TextDumpEvent> mojo_event =
       LayoutEventAsMojoEvent(event);
   if (!mojo_event) {

@@ -67,13 +67,13 @@ TEST_F(PageTextAgentTest, IncreasesMax) {
   request->event = mojom::TextDumpEvent::kFirstLayout;
   agent.RequestPageTextDump(std::move(request), std::move(consumer_remote));
 
-  uint64_t size = 123;
+  uint32_t size = 123;
   auto callback = agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedParsing, &size);
   ASSERT_TRUE(callback);
   EXPECT_EQ(1024U, size);
 
-  uint64_t other_size = 1234;
+  uint32_t other_size = 1234;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedLoading, &other_size));
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
@@ -99,13 +99,13 @@ TEST_F(PageTextAgentTest, MaxStaysSame) {
   request->event = mojom::TextDumpEvent::kFirstLayout;
   agent.RequestPageTextDump(std::move(request), std::move(consumer_remote));
 
-  uint64_t size = 123;
+  uint32_t size = 123;
   auto callback = agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedParsing, &size);
   ASSERT_TRUE(callback);
   EXPECT_EQ(123U, size);
 
-  uint64_t other_size = 1234;
+  uint32_t other_size = 1234;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedLoading, &other_size));
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
@@ -131,13 +131,13 @@ TEST_F(PageTextAgentTest, FinishedLoading) {
   request->event = mojom::TextDumpEvent::kFinishedLoad;
   agent.RequestPageTextDump(std::move(request), std::move(consumer_remote));
 
-  uint64_t size = 123;
+  uint32_t size = 123;
   auto callback = agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedLoading, &size);
   EXPECT_TRUE(callback);
   EXPECT_EQ(1024U, size);
 
-  uint64_t other_size = 1234;
+  uint32_t other_size = 1234;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedParsing, &other_size));
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
@@ -163,13 +163,13 @@ TEST_F(PageTextAgentTest, LongTextOnChunkEdge) {
   request->event = mojom::TextDumpEvent::kFirstLayout;
   agent.RequestPageTextDump(std::move(request), std::move(consumer_remote));
 
-  uint64_t size = 123;
+  uint32_t size = 123;
   auto callback = agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedParsing, &size);
   EXPECT_TRUE(callback);
-  EXPECT_EQ(uint64_t(1 << 16), size);
+  EXPECT_EQ(uint32_t(1 << 16), size);
 
-  uint64_t other_size = 1234;
+  uint32_t other_size = 1234;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedLoading, &other_size));
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
@@ -182,7 +182,7 @@ TEST_F(PageTextAgentTest, LongTextOnChunkEdge) {
 
   EXPECT_EQ(text, consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
-  EXPECT_EQ(uint64_t((1 << 16) / 4096), consumer.num_chunks());
+  EXPECT_EQ(uint32_t((1 << 16) / 4096), consumer.num_chunks());
 }
 
 TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
@@ -197,13 +197,13 @@ TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
   request->event = mojom::TextDumpEvent::kFirstLayout;
   agent.RequestPageTextDump(std::move(request), std::move(consumer_remote));
 
-  uint64_t size = 123;
+  uint32_t size = 123;
   auto callback = agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedParsing, &size);
   EXPECT_TRUE(callback);
-  EXPECT_EQ(uint64_t(1 << 16), size);
+  EXPECT_EQ(uint32_t(1 << 16), size);
 
-  uint64_t other_size = 1234;
+  uint32_t other_size = 1234;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedLoading, &other_size));
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
@@ -216,13 +216,13 @@ TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
 
   EXPECT_EQ(text, consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
-  EXPECT_EQ(uint64_t(((1 << 15) + 3) / 4096) + 1, consumer.num_chunks());
+  EXPECT_EQ(uint32_t(((1 << 15) + 3) / 4096) + 1, consumer.num_chunks());
 }
 
 TEST_F(PageTextAgentTest, NoRequests) {
   PageTextAgent agent(nullptr);
 
-  uint64_t size = 123;
+  uint32_t size = 123;
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
       blink::WebMeaningfulLayout::kFinishedParsing, &size));
   EXPECT_FALSE(agent.MaybeRequestTextDumpOnLayoutEvent(
