@@ -1106,12 +1106,6 @@ const char kExperimentalExtensionApisDescription[] =
     "Enables experimental extension APIs. Note that the extension gallery "
     "doesn't allow you to upload extensions that use experimental APIs.";
 
-const char kExperimentalFlingAnimationName[] =
-    "Enable experimental fling animation";
-const char kExperimentalFlingAnimationDescription[] =
-    "Enables the use of a touch fling curve that is based on the behavior of "
-    "native apps on Windows.";
-
 const char kExperimentalWebPlatformFeaturesName[] =
     "Experimental Web Platform features";
 const char kExperimentalWebPlatformFeaturesDescription[] =
