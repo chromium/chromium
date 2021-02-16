@@ -19,7 +19,6 @@
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/floc_component_installer.h"
-#include "chrome/browser/component_updater/games_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/origin_trials_component_installer.h"
@@ -170,10 +169,6 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   RegisterSafetyTipsComponent(cus);
   RegisterCrowdDenyComponent(cus);
   RegisterTLSDeprecationConfigComponent(cus);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
-  component_updater::RegisterGamesComponent(cus, profile_prefs);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterSmartDimComponent(cus);

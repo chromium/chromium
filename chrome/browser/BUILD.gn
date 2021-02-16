@@ -318,8 +318,6 @@ static_library("browser") {
     "component_updater/first_party_sets_component_installer.h",
     "component_updater/floc_component_installer.cc",
     "component_updater/floc_component_installer.h",
-    "component_updater/games_component_installer.cc",
-    "component_updater/games_component_installer.h",
     "component_updater/mei_preload_component_installer.cc",
     "component_updater/mei_preload_component_installer.h",
     "component_updater/origin_trials_component_installer.cc",

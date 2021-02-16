@@ -2900,10 +2900,6 @@ const char kFillingPasswordsFromAnyOriginDescription[] =
     "button opens a different sheet that allows filling a password from any "
     "origin.";
 
-const char kGamesHubName[] = "Games Hub";
-const char kGamesHubDescription[] =
-    "Enables viewing and usage of the Games Hub.";
-
 const char kHomepagePromoCardName[] =
     "Enable homepage promo card on the New Tab Page";
 const char kHomepagePromoCardDescription[] =

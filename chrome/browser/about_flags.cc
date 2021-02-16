@@ -89,7 +89,6 @@
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/flags_ui_switches.h"
-#include "components/games/core/games_features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lookalikes/core/features.h"
@@ -6161,12 +6160,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCrOSActionRecorderDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kEnableCrOSActionRecorderChoices)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if defined(OS_ANDROID)
-    {"enable-games-hub", flag_descriptions::kGamesHubName,
-     flag_descriptions::kGamesHubDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(games::features::kGamesHub)},
-#endif  // defined(OS_ANDROID)
 
     {"enable-heavy-ad-intervention",
      flag_descriptions::kHeavyAdInterventionName,

@@ -1684,9 +1684,6 @@ extern const char kExploreSitesDescription[];
 extern const char kFillingPasswordsFromAnyOriginName[];
 extern const char kFillingPasswordsFromAnyOriginDescription[];
 
-extern const char kGamesHubName[];
-extern const char kGamesHubDescription[];
-
 extern const char kHomepagePromoCardName[];
 extern const char kHomepagePromoCardDescription[];
 

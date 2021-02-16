@@ -10,8 +10,6 @@ static_library("core") {
     "data_files_parser.h",
     "games_constants.cc",
     "games_constants.h",
-    "games_features.cc",
-    "games_features.h",
     "games_prefs.cc",
     "games_prefs.h",
     "games_service.h",

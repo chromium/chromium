@@ -42924,7 +42924,6 @@ from previous Chrome versions.
   <int value="-2105498697" label="EnableImeSandbox:disabled"/>
   <int value="-2105133782" label="GesturePropertiesDBusService:enabled"/>
   <int value="-2104950596" label="HandwritingGesture:enabled"/>
-  <int value="-2104654357" label="GamesHub:enabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
   <int value="-2101338272" label="EnablePciguardUi:disabled"/>
@@ -46978,7 +46977,6 @@ from previous Chrome versions.
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:disabled"/>
   <int value="1617187093" label="enable-improved-a2hs"/>
   <int value="1618633341" label="MashOopViz:enabled"/>
-  <int value="1619516032" label="GamesHub:disabled"/>
   <int value="1619842095" label="ColorProviderRedirection:enabled"/>
   <int value="1620369597" label="enable-unsafe-webgpu"/>
   <int value="1621298798" label="VrBrowserKeyboard:enabled"/>

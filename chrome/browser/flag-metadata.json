@@ -1736,11 +1736,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-games-hub",
-    "owners": [ "csharp", "seblalancette", "tmartino" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
     "expiry_milestone": 90
