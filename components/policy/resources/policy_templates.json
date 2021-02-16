@@ -3311,7 +3311,7 @@
 
       If you set the policy, users can't change it. If not set, users choose the behavior at installation or first run.
 
-      This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.
+      This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are managed via MDM or joined to a domain via MCX.
 
       (For Chrome OS, see DeviceMetricsReportingEnabled.)''',
     },

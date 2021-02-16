@@ -94,6 +94,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   SafeBrowsingItemType,
   SafeBrowsingManagedItemType,
   ImproveChromeItemType,
+  ImproveChromeManagedItemType,
   BetterSearchAndBrowsingItemType,
   ItemTypePasswordLeakCheckSwitch,
   SignInDisabledItemType,
@@ -175,9 +176,13 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // All the items for the non-personalized section.
 @property(nonatomic, strong, readonly) ItemArray nonPersonalizedItems;
 
-// Pref service used to check if a specific pref is managed by enterprise
+// User pref service used to check if a specific pref is managed by enterprise
 // policies.
 @property(nonatomic, assign, readonly) PrefService* userPrefService;
+
+// Local pref service used to check if a specific pref is managed by enterprise
+// policies.
+@property(nonatomic, assign, readonly) PrefService* localPrefService;
 
 @end
 
@@ -197,6 +202,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     _mode = mode;
     _syncSetupService = syncSetupService;
     _userPrefService = userPrefService;
+    _localPrefService = localPrefService;
     _autocompleteSearchPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kSearchSuggestEnabled];
@@ -584,6 +590,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         base::mac::ObjCCast<SyncSwitchItem>(item).on =
             self.sendDataUsagePreference.value;
         break;
+      case ImproveChromeManagedItemType:
+        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
+            self.sendDataUsagePreference.value
+                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+        break;
       case BetterSearchAndBrowsingItemType:
         base::mac::ObjCCast<SyncSwitchItem>(item).on =
             self.anonymizedDataCollectionPreference.value;
@@ -685,14 +697,27 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [items addObject:safeBrowsingItem];
     }
     [items addObject:self.passwordLeakCheckItem];
-    SyncSwitchItem* improveChromeItem =
-        [self switchItemWithItemType:ImproveChromeItemType
-                        textStringID:
-                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
-                      detailStringID:
-                          IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL
-                            dataType:0];
-    [items addObject:improveChromeItem];
+    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
+        self.localPrefService->IsManagedPreference(
+            metrics::prefs::kMetricsReportingEnabled)) {
+      TableViewInfoButtonItem* improveChromeItem = [self
+          TableViewInfoButtonItemType:ImproveChromeManagedItemType
+                         textStringID:
+                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
+                       detailStringID:
+                           IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL
+                               status:self.sendDataUsagePreference];
+      [items addObject:improveChromeItem];
+    } else {
+      SyncSwitchItem* improveChromeItem = [self
+          switchItemWithItemType:ImproveChromeItemType
+                    textStringID:
+                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
+                  detailStringID:
+                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL
+                        dataType:0];
+      [items addObject:improveChromeItem];
+    }
     SyncSwitchItem* betterSearchAndBrowsingItemType = [self
         switchItemWithItemType:BetterSearchAndBrowsingItemType
                   textStringID:
@@ -918,6 +943,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case SyncSettingsNotCofirmedErrorItemType:
     case ManageSyncItemType:
     case SignInDisabledItemType:
+    case ImproveChromeManagedItemType:
       NOTREACHED();
       break;
   }
@@ -958,6 +984,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case SafeBrowsingManagedItemType:
     case ItemTypePasswordLeakCheckSwitch:
     case ImproveChromeItemType:
+    case ImproveChromeManagedItemType:
     case BetterSearchAndBrowsingItemType:
     case SyncChromeDataItemType:
     case SignInDisabledItemType:
