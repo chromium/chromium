@@ -26,7 +26,7 @@ namespace {
 // Return true if ancestor is in the containing block chain above descendant.
 bool IsContainingBlockChainDescendant(const LayoutObject* descendant,
                                       const LayoutObject* ancestor) {
-  if (!ancestor || !descendant)
+  if (!ancestor || !descendant || ancestor == descendant)
     return false;
   LocalFrame* ancestor_frame = ancestor->GetDocument().GetFrame();
   LocalFrame* descendant_frame = descendant->GetDocument().GetFrame();

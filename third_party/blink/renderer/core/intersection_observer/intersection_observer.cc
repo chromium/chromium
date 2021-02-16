@@ -327,10 +327,7 @@ bool IntersectionObserver::RootIsValid() const {
 
 void IntersectionObserver::observe(Element* target,
                                    ExceptionState& exception_state) {
-  if (!RootIsValid())
-    return;
-
-  if (!target || root() == target)
+  if (!RootIsValid() || !target)
     return;
 
   if (target->EnsureIntersectionObserverData().GetObservationFor(*this))
