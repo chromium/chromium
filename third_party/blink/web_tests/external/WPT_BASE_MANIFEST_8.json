@@ -547,8 +547,22 @@
         {}
        ]
       ],
+      "expression_width_crash.html": [
+       "5c636bef6ab8acb68553c1b9b19e9ae744229c30",
+       [
+        null,
+        {}
+       ]
+      ],
       "inline-splitting-crash.html": [
        "decc3eb1fbe1937e693a5401c64f58a3411d792b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "legacy_ng_mix_crash.html": [
+       "7e7377ef7ebe6332824c7503ee2fa56ebea67aac",
        [
         null,
         {}
@@ -255588,7 +255602,7 @@
       []
      ],
      "sxg-util.js": [
-      "78edf137408f93150209f76b6e492d13805ca95a",
+      "22c7ec8322dae2df2dd970b2e14ed8ee87c638e1",
       []
      ],
      "sxg-version1b2.sxg": [
@@ -371138,6 +371152,13 @@
          {}
         ]
        ],
+       "preventScroll-nested-scroll-elements.html": [
+        "a7ae76f733a363ca29bb3ae87f319722744ea997",
+        [
+         null,
+         {}
+        ]
+       ],
        "preventScroll-textarea.html": [
         "446284b1863d73f03b845a121189f273b77decd1",
         [
@@ -389231,7 +389252,14 @@
      ]
     ],
     "transform-change.html": [
-     "fd9657a71455629f856e53b8fa20aec1a3008e73",
+     "3fa24964e11df3976a4911e308d22cdc6f7cdc28",
+     [
+      null,
+      {}
+     ]
+    ],
+    "transform-counter-layout-shift.html": [
+     "fd744e383ba8825421af7b90c6f7478bc60b1607",
      [
       null,
       {}
@@ -419691,17 +419719,21 @@
      ]
     ],
     "sxg-inner-url-bom.tentative.html": [
-     "7055f5fabec5c148b114dca771db1bbb6d548fef",
+     "be2d7e5022f7ed4d71b8879a88793e28c1cd69f8",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "sxg-invalid-utf8-inner-url.tentative.html": [
-     "a70bba2fdc1dabe7456699923cf50baa9c5b5d39",
+     "7512d639e88ab6c4c5a33e8c4417c016174fe175",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "sxg-invalid-validity-url.tentative.html": [
@@ -419726,10 +419758,12 @@
      ]
     ],
     "sxg-merkle-integrity-error.tentative.html": [
-     "5f923d205421ca30e360ddf0de41bb64733de1d3",
+     "a5c4a2f7eeca9b43b76669b2f19550e62d379b49",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "sxg-navigation-timing.tentative.html": [
@@ -419798,10 +419832,12 @@
      ]
     ],
     "sxg-referrer-same-physical-remote-logical.tentative.https.html": [
-     "fc6f187be38db9b3d02e36c10bf6c80252648da5",
+     "3ba597ed4967418e545338927175a3d952df28b2",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "sxg-referrer-same-physical-same-logical.tentative.https.html": [
