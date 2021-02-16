@@ -226,6 +226,7 @@ def main():
       # Include libclang_rt.builtins.a for Fuchsia targets.
       'lib/clang/$V/lib/aarch64-fuchsia/libclang_rt.builtins.a',
       'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.builtins.a',
+      'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.profile.a',
     ])
   if sys.platform == 'darwin':
     want.extend([

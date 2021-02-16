@@ -1081,6 +1081,27 @@ def main():
       CopyFile(os.path.join(build_dir, 'lib', target_spec, builtins_a),
                fuchsia_lib_dst_dir)
 
+      # Build the Fuchsia profile runtime.
+      if target_arch == 'x86_64':
+        fuchsia_args.extend([
+            '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
+            '-DCOMPILER_RT_BUILD_PROFILE=ON',
+            '-DCMAKE_CXX_COMPILER_TARGET=%s-fuchsia' % target_arch,
+            '-DCMAKE_CXX_COMPILER_WORKS=ON',
+        ])
+        profile_build_dir = os.path.join(LLVM_BUILD_DIR,
+                                         'fuchsia-profile-' + target_arch)
+        if not os.path.exists(profile_build_dir):
+          os.mkdir(os.path.join(profile_build_dir))
+        os.chdir(profile_build_dir)
+        RunCommand(['cmake'] +
+                   fuchsia_args +
+                   [COMPILER_RT_DIR])
+        profile_a = 'libclang_rt.profile.a'
+        RunCommand(['ninja', profile_a])
+        CopyFile(os.path.join(profile_build_dir, 'lib', target_spec, profile_a),
+                              fuchsia_lib_dst_dir)
+
   # Run tests.
   if args.run_tests or args.llvm_force_head_revision:
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], msvc_arch='x64')
