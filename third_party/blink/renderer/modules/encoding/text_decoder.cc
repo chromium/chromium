@@ -81,29 +81,25 @@ String TextDecoder::decode(const BufferSource& input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
-  DCHECK(!input.IsNull());
+  // In case of `input` == IDL "missing" special value, default to (nullptr, 0).
+  void* start = nullptr;
+  size_t length = 0;
   if (input.IsArrayBufferView()) {
-    const char* start = static_cast<const char*>(
-        input.GetAsArrayBufferView().View()->BaseAddress());
-    size_t length = input.GetAsArrayBufferView().View()->byteLength();
-    if (length > std::numeric_limits<uint32_t>::max()) {
-      exception_state.ThrowRangeError(
-          "Buffer size exceeds maximum heap object size.");
-      return String();
-    }
-    return decode(start, static_cast<uint32_t>(length), options,
-                  exception_state);
+    start = input.GetAsArrayBufferView()->BaseAddress();
+    length = input.GetAsArrayBufferView()->byteLength();
+  } else if (input.IsArrayBuffer()) {
+    start = input.GetAsArrayBuffer()->Data();
+    length = input.GetAsArrayBuffer()->ByteLength();
   }
-  DCHECK(input.IsArrayBuffer());
-  const char* start =
-      static_cast<const char*>(input.GetAsArrayBuffer()->Data());
-  size_t length = input.GetAsArrayBuffer()->ByteLength();
+
   if (length > std::numeric_limits<uint32_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return String();
   }
-  return decode(start, static_cast<uint32_t>(length), options, exception_state);
+
+  return decode(static_cast<const char*>(start), static_cast<uint32_t>(length),
+                options, exception_state);
 }
 
 String TextDecoder::decode(const char* start,
