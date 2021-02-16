@@ -407,6 +407,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void UpdateCacheSizeGotSize(CacheStorageCacheHandle,
                               base::OnceClosure callback,
                               int64_t current_cache_size);
+  void UpdateCacheSizeNotifiedStorageModified(base::OnceClosure callback);
 
   // GetAllMatchedEntries callbacks.
   void GetAllMatchedEntriesImpl(blink::mojom::FetchAPIRequestPtr request,

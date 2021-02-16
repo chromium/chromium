@@ -71,11 +71,14 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   // last_notified_type_ and last_notified_delta_ respecitvely.
   // If non-null MockQuotaManager is given to the constructor this also
   // updates the manager's internal usage information.
-  void NotifyStorageModified(storage::QuotaClientType client_id,
-                             const url::Origin& origin,
-                             blink::mojom::StorageType type,
-                             int64_t delta,
-                             base::Time modification_time) override;
+  void NotifyStorageModified(
+      storage::QuotaClientType client_id,
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      int64_t delta,
+      base::Time modification_time,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback) override;
 
   int notify_storage_accessed_count() const { return storage_accessed_count_; }
   int notify_storage_modified_count() const { return storage_modified_count_; }

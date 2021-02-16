@@ -209,7 +209,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                              const url::Origin& origin,
                              blink::mojom::StorageType type,
                              int64_t delta,
-                             base::Time modification_time);
+                             base::Time modification_time,
+                             base::OnceClosure callback);
 
   // Called by storage backends via proxy.
   //

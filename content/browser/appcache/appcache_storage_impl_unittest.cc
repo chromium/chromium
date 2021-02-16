@@ -189,16 +189,21 @@ class AppCacheStorageImplTest : public testing::Test {
       last_origin_ = origin;
     }
 
-    void NotifyStorageModified(storage::QuotaClientType client_id,
-                               const url::Origin& origin,
-                               StorageType type,
-                               int64_t delta,
-                               base::Time modification_time) override {
+    void NotifyStorageModified(
+        storage::QuotaClientType client_id,
+        const url::Origin& origin,
+        StorageType type,
+        int64_t delta,
+        base::Time modification_time,
+        scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+        base::OnceClosure callback) override {
       EXPECT_EQ(storage::QuotaClientType::kAppcache, client_id);
       EXPECT_EQ(StorageType::kTemporary, type);
       ++notify_storage_modified_count_;
       last_origin_ = origin;
       last_delta_ = delta;
+      if (callback)
+        callback_task_runner->PostTask(FROM_HERE, std::move(callback));
     }
 
     // Not needed for our tests.

@@ -126,15 +126,20 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
     accesses_[origin] += 1;
   }
 
-  void NotifyStorageModified(QuotaClientType client_id,
-                             const url::Origin& origin,
-                             blink::mojom::StorageType type,
-                             int64_t delta,
-                             base::Time modification_time) override {
+  void NotifyStorageModified(
+      QuotaClientType client_id,
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      int64_t delta,
+      base::Time modification_time,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback) override {
     EXPECT_EQ(QuotaClientType::kDatabase, client_id);
     EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
     modifications_[origin].first += 1;
     modifications_[origin].second += delta;
+    if (callback)
+      callback_task_runner->PostTask(FROM_HERE, std::move(callback));
   }
 
   // Not needed for our tests.

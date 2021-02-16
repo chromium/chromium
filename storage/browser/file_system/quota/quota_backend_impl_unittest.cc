@@ -57,14 +57,19 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
                             blink::mojom::StorageType type,
                             bool enabled) override {}
 
-  void NotifyStorageModified(QuotaClientType client_id,
-                             const url::Origin& origin,
-                             blink::mojom::StorageType type,
-                             int64_t delta,
-                             base::Time modification_time) override {
+  void NotifyStorageModified(
+      QuotaClientType client_id,
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      int64_t delta,
+      base::Time modification_time,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback) override {
     ++storage_modified_count_;
     usage_ += delta;
     ASSERT_LE(usage_, quota_);
+    if (callback)
+      callback_task_runner->PostTask(FROM_HERE, std::move(callback));
   }
 
   void GetUsageAndQuota(

@@ -124,11 +124,17 @@ class AppCacheHostTest : public testing::Test {
     void NotifyStorageAccessed(const url::Origin& origin,
                                blink::mojom::StorageType type,
                                base::Time access_time) override {}
-    void NotifyStorageModified(storage::QuotaClientType client_id,
-                               const url::Origin& origin,
-                               blink::mojom::StorageType type,
-                               int64_t delta,
-                               base::Time modification_time) override {}
+    void NotifyStorageModified(
+        storage::QuotaClientType client_id,
+        const url::Origin& origin,
+        blink::mojom::StorageType type,
+        int64_t delta,
+        base::Time modification_time,
+        scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+        base::OnceClosure callback) override {
+      if (callback)
+        callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+    }
     void SetUsageCacheEnabled(storage::QuotaClientType client_id,
                               const url::Origin& origin,
                               blink::mojom::StorageType type,

@@ -8,7 +8,7 @@ self.addEventListener('fetch', evt => {
 
     // Before returning the response store a clone in cache_storage
     // and compute its padded usage.
-    const cache = await caches.open('foo');
+    const cache = await caches.open('padding');
     // Make sure to use the URL and not the full request.  The main window
     // and service worker requests may have different headers which can
     // throw off the size comparison.

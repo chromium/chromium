@@ -78,11 +78,22 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual void NotifyStorageAccessed(const url::Origin& origin,
                                      blink::mojom::StorageType type,
                                      base::Time access_time);
-  virtual void NotifyStorageModified(QuotaClientType client_id,
-                                     const url::Origin& origin,
-                                     blink::mojom::StorageType type,
-                                     int64_t delta,
-                                     base::Time modification_time);
+
+  // Notify the quota manager that storage has been modified for the given
+  // client.  A |callback| may be optionally provided to be invoked on the
+  // given task runner when the quota system's state in memory has been
+  // updated.  If a |callback| is provided then |callback_task_runner| must
+  // also be provided.  If the quota manager runs on |callback_task_runner|,
+  // then the |callback| may be invoked synchronously.
+  virtual void NotifyStorageModified(
+      QuotaClientType client_id,
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      int64_t delta,
+      base::Time modification_time,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
+      base::OnceClosure callback = base::OnceClosure());
+
   virtual void NotifyOriginInUse(const url::Origin& origin);
   virtual void NotifyOriginNoLongerInUse(const url::Origin& origin);
   virtual void NotifyWriteFailed(const url::Origin& origin);

@@ -95,23 +95,42 @@ void QuotaManagerProxy::NotifyStorageAccessed(const url::Origin& origin,
     quota_manager_impl_->NotifyStorageAccessed(origin, type, access_time);
 }
 
-void QuotaManagerProxy::NotifyStorageModified(QuotaClientType client_id,
-                                              const url::Origin& origin,
-                                              blink::mojom::StorageType type,
-                                              int64_t delta,
-                                              base::Time modification_time) {
+void QuotaManagerProxy::NotifyStorageModified(
+    QuotaClientType client_id,
+    const url::Origin& origin,
+    blink::mojom::StorageType type,
+    int64_t delta,
+    base::Time modification_time,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceClosure callback) {
+  DCHECK(!callback || callback_task_runner);
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::NotifyStorageModified, this,
-                       client_id, origin, type, delta, modification_time));
+                       client_id, origin, type, delta, modification_time,
+                       std::move(callback_task_runner), std::move(callback)));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
+    base::OnceClosure manager_callback;
+    if (callback) {
+      manager_callback = base::BindOnce(
+          [](scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+             base::OnceClosure callback) {
+            if (callback_task_runner->RunsTasksInCurrentSequence()) {
+              std::move(callback).Run();
+              return;
+            }
+            callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+          },
+          std::move(callback_task_runner), std::move(callback));
+    }
     quota_manager_impl_->NotifyStorageModified(client_id, origin, type, delta,
-                                               modification_time);
+                                               modification_time,
+                                               std::move(manager_callback));
   }
 }
 

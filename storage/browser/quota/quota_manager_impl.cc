@@ -1429,11 +1429,15 @@ void QuotaManagerImpl::NotifyStorageModified(QuotaClientType client_id,
                                              const url::Origin& origin,
                                              StorageType type,
                                              int64_t delta,
-                                             base::Time modification_time) {
+                                             base::Time modification_time,
+                                             base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
   DCHECK(GetUsageTracker(type));
   GetUsageTracker(type)->UpdateUsageCache(client_id, origin, delta);
+
+  if (callback)
+    std::move(callback).Run();
 
   if (db_disabled_)
     return;

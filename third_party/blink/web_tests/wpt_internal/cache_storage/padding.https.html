@@ -105,8 +105,8 @@ promise_test(async t => {
 }, 'Cache padding varies with request method.');
 
 promise_test(async t => {
-  const cache1 = await caches.open('foo');
-  const cache2 = await caches.open('bar');
+  const cache1 = await caches.open('padding');
+  const cache2 = await caches.open('padding-2');
 
   const net_response = await fetch(TARGET_URL, { mode: 'no-cors',
                                                  cache: 'reload' });
@@ -117,6 +117,7 @@ promise_test(async t => {
   await cache2.put(TARGET_URL, cache_response);
   await cache1.delete(TARGET_URL);
   const usage2 = (await navigator.storage.estimate()).usageDetails.caches;
+  await cache2.delete(TARGET_URL);
 
   assert_equals(usage1, usage2,
                 'The padding value should follow a response loaded from ' +
@@ -158,7 +159,7 @@ promise_test(async t => {
 
   // Compute a padded usage value based on the response returned from our
   // outer fetch.
-  const cache = await caches.open('foo');
+  const cache = await caches.open('padding');
   // Make sure to use the URL and not the full request.  The main window
   // and service worker requests may have different headers which can
   // throw off the size comparison.

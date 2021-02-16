@@ -2179,6 +2179,7 @@ void LegacyCacheStorageCache::PaddingDidQueryCache(
 
 void LegacyCacheStorageCache::CalculateCacheSize(
     net::Int64CompletionOnceCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   net::Int64CompletionRepeatingCallback got_size_callback =
       AdaptCallbackForRepeating(std::move(callback));
   int64_t rv = backend_->CalculateSizeOfAllEntries(got_size_callback);
@@ -2187,6 +2188,7 @@ void LegacyCacheStorageCache::CalculateCacheSize(
 }
 
 void LegacyCacheStorageCache::UpdateCacheSize(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_state_ != BACKEND_OPEN)
     return;
 
@@ -2202,6 +2204,7 @@ void LegacyCacheStorageCache::UpdateCacheSizeGotSize(
     CacheStorageCacheHandle cache_handle,
     base::OnceClosure callback,
     int64_t current_cache_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(current_cache_size, CacheStorage::kSizeUnknown);
   cache_size_ = current_cache_size;
   int64_t size_delta = PaddedCacheSize() - last_reported_size_;
@@ -2209,8 +2212,16 @@ void LegacyCacheStorageCache::UpdateCacheSizeGotSize(
 
   quota_manager_proxy_->NotifyStorageModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), origin_,
-      blink::mojom::StorageType::kTemporary, size_delta, base::Time::Now());
+      blink::mojom::StorageType::kTemporary, size_delta, base::Time::Now(),
+      scheduler_task_runner_,
+      base::BindOnce(
+          &LegacyCacheStorageCache::UpdateCacheSizeNotifiedStorageModified,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void LegacyCacheStorageCache::UpdateCacheSizeNotifiedStorageModified(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cache_storage_)
     cache_storage_->NotifyCacheContentChanged(cache_name_);
 

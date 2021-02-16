@@ -75,7 +75,9 @@ void MockQuotaManagerProxy::NotifyStorageModified(
     const url::Origin& origin,
     blink::mojom::StorageType type,
     int64_t delta,
-    base::Time modification_time) {
+    base::Time modification_time,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceClosure callback) {
   ++storage_modified_count_;
   last_notified_origin_ = origin;
   last_notified_type_ = type;
@@ -83,6 +85,8 @@ void MockQuotaManagerProxy::NotifyStorageModified(
   if (mock_quota_manager_) {
     mock_quota_manager_->UpdateUsage(origin, type, delta);
   }
+  if (callback)
+    callback_task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
 MockQuotaManagerProxy::~MockQuotaManagerProxy() {

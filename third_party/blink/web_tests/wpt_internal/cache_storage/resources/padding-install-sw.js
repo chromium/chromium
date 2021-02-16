@@ -6,7 +6,7 @@ const TARGET_URL = tmp_url.href;
 
 self.addEventListener('install', evt => {
   evt.waitUntil(async function() {
-    const cache = await caches.open('foo');
+    const cache = await caches.open('padding');
     const response = await fetch(TARGET_URL, { mode: 'no-cors',
                                                cache: 'force-cache' });
     await cache.put(TARGET_URL, response);
