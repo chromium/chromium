@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/shopping_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_bg_color">
+
+    <RelativeLayout
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/selectable_list_toolbar_height"
+        android:orientation="horizontal"
+        android:background="@color/default_bg_color">
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/back"
+            style="@style/ToolbarButton"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:paddingStart="8dp"
+            android:src="@drawable/btn_back"
+            android:contentDescription="@string/accessibility_toolbar_btn_back"
+            app:tint="@color/default_icon_color_tint_list" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/close"
+            android:layout_toEndOf="@id/back"
+            android:layout_centerVertical="true"
+            android:paddingStart="24dp"
+            android:textAlignment="viewStart"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/shopping_title"
+            android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/close"
+            style="@style/ToolbarButton"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:paddingEnd="8dp"
+            android:src="@drawable/btn_close"
+            android:contentDescription="@string/close"
+            app:tint="@color/default_icon_color_tint_list" />
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/product_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/selectable_list_toolbar_height"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"/>
+
+    <org.chromium.components.browser_ui.widget.FadingShadowView
+        android:id="@+id/fading_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_shadow_height"
+        android:layout_marginTop="@dimen/selectable_list_toolbar_height"
+        android:visibility="gone"/>
+
+</FrameLayout>

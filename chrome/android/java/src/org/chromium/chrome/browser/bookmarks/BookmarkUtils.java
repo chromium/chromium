@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -31,12 +32,14 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
+import org.chromium.chrome.browser.bookmarks.shopping.ShoppingNotificationService;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,6 +53,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -63,6 +67,8 @@ import java.util.List;
  */
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
+
+    private static final String SHOPPING_BOOKMARKS_TITLE = "Shopping";
 
     /**
      * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the
@@ -94,16 +100,19 @@ public class BookmarkUtils {
                         ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)
                 && AppMenuPropertiesDelegateImpl.THREE_BUTTON_ACTION_BAR_VARIATION.getValue()
                            .equals("add_to_option");
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER) && !isAddToOptionVariation) {
+        //if (CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER) && !isAddToOptionVariation) {
             // Show a bottom sheet to let the user select target bookmark folder.
             showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
                     activity, fromCustomTab, callback);
+        /*
             return;
         }
 
         BookmarkId newBookmarkId = addBookmarkAndShowSnackbar(
                 bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
         callback.onResult(newBookmarkId);
+
+        */
     }
 
     private static void showBookmarkBottomSheet(BookmarkModel bookmarkModel, Tab tab,
@@ -124,8 +133,9 @@ public class BookmarkUtils {
                 newBookmarkId = BookmarkUtils.addToReadingList(tab.getOriginalUrl(), tab.getTitle(),
                         snackbarManager, bookmarkModel, activity);
             } else {
-                newBookmarkId = addBookmarkAndShowSnackbar(
-                        bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
+                newBookmarkId = addBookmarkAndShowSnackbar(bookmarkModel,
+                        selectedBookmarkItem.getId(), tab, snackbarManager, activity,
+                        fromCustomTab);
             }
             RecordHistogram.recordEnumeratedHistogram("Bookmarks.BottomSheet.DestinationFolder",
                     selectedBookmarkItem.getId().getType(), BookmarkType.LAST + 1);
@@ -134,10 +144,11 @@ public class BookmarkUtils {
     }
 
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
-    private static BookmarkId addBookmarkAndShowSnackbar(BookmarkModel bookmarkModel, Tab tab,
-            SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab) {
-        BookmarkId bookmarkId =
-                addBookmarkInternal(activity, bookmarkModel, tab.getTitle(), tab.getOriginalUrl());
+    private static BookmarkId addBookmarkAndShowSnackbar(BookmarkModel bookmarkModel,
+            BookmarkId parentId, Tab tab, SnackbarManager snackbarManager, Activity activity,
+            boolean fromCustomTab) {
+        BookmarkId bookmarkId = addBookmarkInternal(
+                activity, bookmarkModel, parentId, tab.getTitle(), tab.getOriginalUrl());
 
         Snackbar snackbar = null;
         if (bookmarkId == null) {
@@ -154,8 +165,18 @@ public class BookmarkUtils {
         } else {
             String folderName = bookmarkModel.getBookmarkTitle(
                     bookmarkModel.getBookmarkById(bookmarkId).getParentId());
-            SnackbarController snackbarController =
-                    createSnackbarControllerForEditButton(activity, bookmarkId);
+
+            SnackbarController snackbarController;
+            boolean isShopping = false;
+            if (findShoppingFolder(bookmarkModel).getId() == parentId.getId()) {
+                isShopping = true;
+                snackbarController =
+                        createSnackbarControllerForViewButton(activity, parentId);
+            } else {
+                snackbarController =
+                        createSnackbarControllerForEditButton(activity, bookmarkId);
+            }
+
             if (getLastUsedParent(activity) == null) {
                 if (fromCustomTab) {
                     String packageLabel = BuildInfo.getInstance().hostPackageLabel;
@@ -172,11 +193,51 @@ public class BookmarkUtils {
                         Snackbar.UMA_BOOKMARK_ADDED)
                         .setTemplateText(activity.getString(R.string.bookmark_page_saved_folder));
             }
-            snackbar.setSingleLine(false).setAction(activity.getString(R.string.bookmark_item_edit),
-                    null);
+
+            int stringId = isShopping ? R.string.bookmark_item_view : R.string.bookmark_item_edit;
+
+            snackbar.setSingleLine(false).setAction(activity.getString(stringId), null);
         }
         snackbarManager.showSnackbar(snackbar);
         return bookmarkId;
+    }
+
+    public static void findOrCreateShoppingFolder(
+            Callback<BookmarkId> callback, BookmarkModel bookmarkModel) {
+        if (bookmarkModel == null) {
+            final BookmarkModel model = new BookmarkModel();
+            model.finishLoadingBookmarkModel(() -> {
+                findOrCreateShoppingFolderInternal(callback, model);
+            });
+        } else {
+            findOrCreateShoppingFolderInternal(callback, bookmarkModel);
+        }
+    }
+
+    private static void findOrCreateShoppingFolderInternal(
+            Callback<BookmarkId> callback, BookmarkModel model) {
+        BookmarkId rootId = model.getDefaultFolder();
+        for (BookmarkId id : model.getChildIDs(rootId)) {
+            if (SHOPPING_BOOKMARKS_TITLE.equals(model.getBookmarkTitle(id))) {
+                callback.onResult(new BookmarkId(id.getId(), BookmarkType.SHOPPING));
+                return;
+            }
+        }
+
+        BookmarkId shoppingId = model.addFolder(rootId, model.getChildCount(rootId),
+                SHOPPING_BOOKMARKS_TITLE);
+
+        callback.onResult(new BookmarkId(shoppingId.getId(), BookmarkType.SHOPPING));
+    }
+
+    public static BookmarkId findShoppingFolder(BookmarkModel model) {
+        BookmarkId rootId = model.getDefaultFolder();
+        for (BookmarkId id : model.getChildIDs(rootId)) {
+            if (SHOPPING_BOOKMARKS_TITLE.equals(model.getBookmarkTitle(id))) {
+                return new BookmarkId(id.getId(), BookmarkType.SHOPPING);
+            }
+        }
+        return new BookmarkId(BookmarkId.INVALID_ID, BookmarkType.NORMAL);
     }
 
     /**
@@ -211,9 +272,8 @@ public class BookmarkUtils {
      * An internal version of {@link #addBookmarkSilently(Context, BookmarkModel, String, String)}.
      * Will reset last used parent if it fails to add a bookmark
      */
-    private static BookmarkId addBookmarkInternal(
-            Context context, BookmarkModel bookmarkModel, String title, GURL url) {
-        BookmarkId parent = getLastUsedParent(context);
+    private static BookmarkId addBookmarkInternal(Context context, BookmarkModel bookmarkModel,
+            BookmarkId parent, String title, GURL url) {
         BookmarkItem parentItem = null;
         if (parent != null) {
             parentItem = bookmarkModel.getBookmarkById(parent);
@@ -259,12 +319,60 @@ public class BookmarkUtils {
         };
     }
 
+    public static void openToShoppingFolder(BookmarkId productId) {
+        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
+            ProcessInitializationHandler.getInstance().initializePreNative();
+            BrowserStartupController.getInstance().startBrowserProcessesAsync(
+                    LibraryProcessType.PROCESS_BROWSER, true, false,
+                    new BrowserStartupController.StartupCallback() {
+                        @Override
+                        public void onSuccess() {
+                            openToShoppingFolderHelper(productId);
+                        }
+
+                        @Override
+                        public void onFailure() {
+                        }
+                    });
+        } else {
+            openToShoppingFolderHelper(productId);
+        }
+    }
+
+    private static void openToShoppingFolderHelper(BookmarkId productId) {
+        BookmarkModel model = new BookmarkModel();
+        model.finishLoadingBookmarkModel(() -> {
+            BookmarkId shopping = findShoppingFolder(model);
+            showBookmarkManager(null, shopping, productId);
+        });
+    }
+
+    /**
+     * Creates a snackbar controller for a case where "View" button is shown to view the newly
+     * created bookmark.
+     */
+    private static SnackbarController createSnackbarControllerForViewButton(
+            final Activity activity, final BookmarkId folderId) {
+        return new SnackbarController() {
+            @Override
+            public void onDismissNoAction(Object actionData) {
+                RecordUserAction.record("EnhancedBookmarks.EditAfterCreateButtonNotClicked");
+            }
+
+            @Override
+            public void onAction(Object actionData) {
+                RecordUserAction.record("EnhancedBookmarks.EditAfterCreateButtonClicked");
+                showBookmarkManager(activity, folderId);
+            }
+        };
+    }
+
     /**
      * Shows bookmark main UI.
      * @param activity An activity to start the manager with.
      */
     public static void showBookmarkManager(Activity activity) {
-        showBookmarkManager(activity, null);
+        showBookmarkManager(activity, null, null);
     }
 
     /**
@@ -276,6 +384,18 @@ public class BookmarkUtils {
      */
     public static void showBookmarkManager(
             @Nullable Activity activity, @Nullable BookmarkId folderId) {
+        showBookmarkManager(activity, folderId, null);
+    }
+
+    /**
+     * Shows bookmark main UI.
+     * @param activity An activity to start the manager with. If null, the bookmark manager will be
+     *         started as a new task.
+     * @param folderId The bookmark folder to open. If null, the bookmark manager will open the most
+     *         recent folder.
+     */
+    public static void showBookmarkManager(@Nullable Activity activity,
+            @Nullable BookmarkId folderId, @Nullable BookmarkId focusBookmark) {
         ThreadUtils.assertOnUiThread();
         Context context = activity == null ? ContextUtils.getApplicationContext() : activity;
         String url = getFirstUrlToLoad(context, folderId);
@@ -288,6 +408,13 @@ public class BookmarkUtils {
 
         // Phone.
         Intent intent = new Intent(context, BookmarkActivity.class);
+
+        if (focusBookmark != null) {
+            intent.putExtra(
+                    ShoppingNotificationService.EXTRA_PRODUCT_BOOKMARK_ID,
+                    focusBookmark.toString());
+        }
+
         intent.setData(Uri.parse(url));
         if (activity != null) {
             // Start from an existing activity.
@@ -403,6 +530,9 @@ public class BookmarkUtils {
         if (type == BookmarkType.READING_LIST) {
             return UiUtils.getTintedDrawable(
                     context, R.drawable.ic_reading_list_folder, getFolderIconTint(type));
+        } else if (type == BookmarkType.SHOPPING) {
+            return UiUtils.getTintedDrawable(
+                    context, R.drawable.ic_shopping_bag_24dp, getFolderIconTint(type));
         }
         return TintedDrawable.constructTintedDrawable(
                 context, R.drawable.ic_folder_blue_24dp, getFolderIconTint(type));
@@ -413,8 +543,12 @@ public class BookmarkUtils {
      * @return The tint used on the bookmark folder icon.
      */
     public static int getFolderIconTint(@BookmarkType int type) {
-        return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_blue
-                                                   : R.color.default_icon_color_tint_list;
+        if (type == BookmarkType.READING_LIST) {
+            return R.color.default_icon_color_blue;
+        } else if (type == BookmarkType.SHOPPING) {
+            return R.color.default_icon_color_blue;
+        }
+        return R.color.default_icon_color_tint_list;
     }
 
     private static void openUrl(Context context, String url, ComponentName componentName) {
@@ -493,6 +627,13 @@ public class BookmarkUtils {
             BookmarkId parent = bookmarkModel.getBookmarkById(bookmarkId).getParentId();
             if (parent.equals(rootFolder)) managedAndPartnerFolderIds.add(bookmarkId);
         }
+
+        BookmarkId shoppingFolder = findShoppingFolder(bookmarkModel);
+        if (shoppingFolder.getId() == BookmarkId.INVALID_ID) {
+            findOrCreateShoppingFolder((id) -> {}, bookmarkModel);
+            shoppingFolder = findShoppingFolder(bookmarkModel);
+        }
+        topLevelFolders.add(shoppingFolder);
 
         // Adds normal bookmark top level folders.
         if (bookmarkModel.isFolderVisible(mobileNodeId)) {
