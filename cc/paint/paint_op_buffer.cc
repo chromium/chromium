@@ -593,6 +593,7 @@ size_t DrawPathOp::Serialize(const PaintOp* base_op,
     serialized_flags = &op->flags;
   helper.Write(*serialized_flags);
   helper.Write(op->path);
+  helper.Write(op->sk_path_fill_type);
   return helper.size();
 }
 
@@ -1066,6 +1067,8 @@ PaintOp* DrawPathOp::Deserialize(const volatile void* input,
   PaintOpReader helper(input, input_size, options);
   helper.Read(&op->flags);
   helper.Read(&op->path);
+  helper.Read(&op->sk_path_fill_type);
+  op->path.setFillType(static_cast<SkPathFillType>(op->sk_path_fill_type));
   if (!helper.valid() || !op->IsValid()) {
     op->~DrawPathOp();
     return nullptr;

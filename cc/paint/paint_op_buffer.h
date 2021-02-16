@@ -685,7 +685,9 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   static constexpr PaintOpType kType = PaintOpType::DrawPath;
   static constexpr bool kIsDrawOp = true;
   DrawPathOp(const SkPath& path, const PaintFlags& flags)
-      : PaintOpWithFlags(kType, flags), path(path) {}
+      : PaintOpWithFlags(kType, flags),
+        path(path),
+        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())) {}
   static void RasterWithFlags(const DrawPathOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
@@ -696,6 +698,12 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   HAS_SERIALIZATION_FUNCTIONS();
 
   ThreadsafePath path;
+
+  // Changing the fill type on an SkPath does not change the
+  // generation id. This can lead to caching issues so we explicitly
+  // serialize/deserialize this value and set it on the SkPath before handing it
+  // to Skia.
+  uint8_t sk_path_fill_type;
 
  private:
   DrawPathOp() : PaintOpWithFlags(kType) {}

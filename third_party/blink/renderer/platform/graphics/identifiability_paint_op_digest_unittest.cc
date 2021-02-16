@@ -249,7 +249,7 @@ TEST(IdentifiabilityPaintOpDigestTest, BufferLeftoversDontAffectFutureDigests) {
                                                     /*num_ops_to_visit=*/1);
   identifiability_paintop_digest2.MaybeUpdateDigest(paint_record2,
                                                     /*num_ops_to_visit=*/1);
-  EXPECT_EQ(INT64_C(6142427981168684668),
+  EXPECT_EQ(INT64_C(-5176081089277907656),
             identifiability_paintop_digest1.GetToken().ToUkmMetricValue());
   EXPECT_EQ(kScaleDigest,
             identifiability_paintop_digest2.GetToken().ToUkmMetricValue());
@@ -280,7 +280,7 @@ TEST(IdentifiabilityPaintOpDigestTest,
   paint_record->push<cc::ScaleOp>(kScaleX, kScaleY);
   identifiability_paintop_digest.MaybeUpdateDigest(paint_record,
                                                    /*num_ops_to_visit=*/2);
-  EXPECT_EQ(INT64_C(-4103331043531983164),
+  EXPECT_EQ(INT64_C(7452261428569988526),
             identifiability_paintop_digest.GetToken().ToUkmMetricValue());
 
   EXPECT_FALSE(identifiability_paintop_digest.encountered_skipped_ops());
