@@ -263,11 +263,6 @@ void HTMLAnchorElement::ParseAttribute(
   }
 }
 
-void HTMLAnchorElement::AccessKeyAction(bool send_mouse_events) {
-  DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
-}
-
 bool HTMLAnchorElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName().LocalName() == html_names::kHrefAttr ||
          HTMLElement::IsURLAttribute(attribute);

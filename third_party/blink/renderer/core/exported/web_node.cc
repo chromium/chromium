@@ -176,11 +176,10 @@ bool WebNode::IsDocumentTypeNode() const {
 void WebNode::SimulateClick() {
   private_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kUserInteraction)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&Node::DispatchSimulatedClick,
-                    WrapWeakPersistent(private_.Get()), nullptr, kSendNoEvents,
-                    SimulatedClickCreationScope::kFromUserAgent));
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(&Node::DispatchSimulatedClick,
+                           WrapWeakPersistent(private_.Get()), nullptr,
+                           SimulatedClickCreationScope::kFromUserAgent));
 }
 
 WebElementCollection WebNode::GetElementsByHTMLTagName(

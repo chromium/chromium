@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/core/events/ui_event.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -18,7 +18,7 @@ class CORE_EXPORT SimulatedEventUtil {
   SimulatedEventUtil() = delete;
 
   static Event* CreateEvent(const AtomicString& event_type,
-                            AbstractView* view,
+                            Node& node,
                             const Event* underlying_event,
                             SimulatedClickCreationScope creation_scope);
 };

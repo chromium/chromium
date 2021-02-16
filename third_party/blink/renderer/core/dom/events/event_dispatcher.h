@@ -57,7 +57,6 @@ class EventDispatcher {
 
   static void DispatchSimulatedClick(Node&,
                                      const Event* underlying_event,
-                                     SimulatedClickMouseEventOptions,
                                      SimulatedClickCreationScope);
 
   DispatchEventResult Dispatch();

@@ -2929,14 +2929,12 @@ DispatchEventResult Node::DispatchDOMActivateEvent(int detail,
 }
 
 void Node::DispatchSimulatedClick(const Event* underlying_event,
-                                  SimulatedClickMouseEventOptions event_options,
                                   SimulatedClickCreationScope scope) {
   if (auto* element = IsElementNode() ? To<Element>(this) : parentElement()) {
     element->ActivateDisplayLockIfNeeded(
         DisplayLockActivationReason::kSimulatedClick);
   }
-  EventDispatcher::DispatchSimulatedClick(*this, underlying_event,
-                                          event_options, scope);
+  EventDispatcher::DispatchSimulatedClick(*this, underlying_event, scope);
 }
 
 void Node::DefaultEventHandler(Event& event) {

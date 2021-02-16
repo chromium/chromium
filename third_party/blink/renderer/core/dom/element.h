@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/element_data.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -596,7 +597,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   AtomicString ComputeInheritedLanguage() const;
   Locale& GetLocale() const;
 
-  virtual void AccessKeyAction(bool /*sendToAnyEvent*/) {}
+  virtual void AccessKeyAction(SimulatedClickCreationScope) {}
 
   virtual bool IsURLAttribute(const Attribute&) const { return false; }
   virtual bool IsHTMLContentAttribute(const Attribute&) const { return false; }

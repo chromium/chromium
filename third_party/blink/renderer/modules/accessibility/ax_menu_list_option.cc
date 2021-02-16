@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
@@ -122,7 +123,8 @@ bool AXMenuListOption::OnNativeClickAction() {
     // Clicking on an option within a menu list should first select that item
     // (which should include firing `input` and `change` events), then toggle
     // whether the menu list is showing.
-    GetElement()->AccessKeyAction(true);
+    GetElement()->AccessKeyAction(
+        SimulatedClickCreationScope::kFromAccessibility);
 
     // Calling OnNativeClickAction on the parent select element will toggle
     // it open or closed.

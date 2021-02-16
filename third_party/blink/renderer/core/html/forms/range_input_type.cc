@@ -36,6 +36,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -269,11 +270,10 @@ String RangeInputType::Serialize(const Decimal& value) const {
 
 // FIXME: Could share this with KeyboardClickableInputTypeView and
 // BaseCheckableInputType if we had a common base class.
-void RangeInputType::AccessKeyAction(bool send_mouse_events) {
-  InputTypeView::AccessKeyAction(send_mouse_events);
-
-  GetElement().DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
+void RangeInputType::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
+  InputTypeView::AccessKeyAction(creation_scope);
+  GetElement().DispatchSimulatedClick(nullptr, creation_scope);
 }
 
 void RangeInputType::SanitizeValueInResponseToMinOrMaxAttributeChange() {

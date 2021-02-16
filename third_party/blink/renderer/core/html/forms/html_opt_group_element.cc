@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -147,11 +148,14 @@ String HTMLOptGroupElement::DefaultToolTip() const {
   return String();
 }
 
-void HTMLOptGroupElement::AccessKeyAction(bool) {
+void HTMLOptGroupElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
   HTMLSelectElement* select = OwnerSelectElement();
-  // send to the parent to bring focus to the list box
+  // Send to the parent to bring focus to the list box.
+  // TODO(crbug.com/1176745): investigate why we don't care
+  // about creation scope.
   if (select && !select->IsFocused())
-    select->AccessKeyAction(false);
+    select->AccessKeyAction(SimulatedClickCreationScope::kFromUserAgent);
 }
 
 void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {

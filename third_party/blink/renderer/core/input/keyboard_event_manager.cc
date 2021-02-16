@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -170,7 +171,7 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
     return false;
   elem->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
                           mojom::blink::FocusType::kAccessKey, nullptr));
-  elem->AccessKeyAction(false);
+  elem->AccessKeyAction(SimulatedClickCreationScope::kFromUserAgent);
   return true;
 }
 

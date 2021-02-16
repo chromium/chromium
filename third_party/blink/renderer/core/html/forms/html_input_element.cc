@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -729,8 +730,9 @@ void HTMLInputElement::SetSelectionRangeForTesting(
   TextControlElement::setSelectionRangeForBinding(start, end);
 }
 
-void HTMLInputElement::AccessKeyAction(bool send_mouse_events) {
-  input_type_view_->AccessKeyAction(send_mouse_events);
+void HTMLInputElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
+  input_type_view_->AccessKeyAction(creation_scope);
 }
 
 bool HTMLInputElement::IsPresentationAttribute(

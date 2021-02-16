@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -98,7 +99,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
                                   mojom::blink::FocusType);
   virtual void HandleBlurEvent();
   virtual void HandleDOMActivateEvent(Event&);
-  virtual void AccessKeyAction(bool send_mouse_events);
+  virtual void AccessKeyAction(SimulatedClickCreationScope creation_scope);
   virtual void Blur();
   void DispatchSimulatedClickIfActive(KeyboardEvent&) const;
 

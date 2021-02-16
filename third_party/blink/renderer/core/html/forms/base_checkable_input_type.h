@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_BASE_CHECKABLE_INPUT_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_BASE_CHECKABLE_INPUT_TYPE_H_
 
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/core/html/forms/input_type_view.h"
 
@@ -61,7 +62,7 @@ class BaseCheckableInputType : public InputType, public InputTypeView {
   void AppendToFormData(FormData&) const final;
   void HandleKeypressEvent(KeyboardEvent&) final;
   bool CanSetStringValue() const final;
-  void AccessKeyAction(bool send_mouse_events) final;
+  void AccessKeyAction(SimulatedClickCreationScope creation_scope) final;
   bool MatchesDefaultPseudoClass() override;
   ValueMode GetValueMode() const override;
   void SetValue(const String&,

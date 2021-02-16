@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
@@ -1039,13 +1040,11 @@ void HTMLElement::setSpellcheck(bool enable) {
 }
 
 void HTMLElement::click() {
-  DispatchSimulatedClick(nullptr, kSendNoEvents,
-                         SimulatedClickCreationScope::kFromScript);
+  DispatchSimulatedClick(nullptr, SimulatedClickCreationScope::kFromScript);
 }
 
-void HTMLElement::AccessKeyAction(bool send_mouse_events) {
-  DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
+void HTMLElement::AccessKeyAction(SimulatedClickCreationScope creation_scope) {
+  DispatchSimulatedClick(nullptr, creation_scope);
 }
 
 String HTMLElement::title() const {

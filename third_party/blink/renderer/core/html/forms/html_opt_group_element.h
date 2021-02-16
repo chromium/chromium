@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OPT_GROUP_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -54,7 +55,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void ChildrenChanged(const ChildrenChange& change) override;
   bool ChildrenChangedAllChildrenRemovedNeedsList() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
-  void AccessKeyAction(bool send_mouse_events) override;
+  void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool MatchesEnabledPseudoClass() const override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

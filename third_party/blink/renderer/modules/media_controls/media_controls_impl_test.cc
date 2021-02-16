@@ -268,8 +268,7 @@ class MediaControlsImplTest : public PageTestBase,
   void ClickOverflowButton() {
     MediaControls()
         .download_button_->OverflowElementForTests()
-        ->DispatchSimulatedClick(nullptr, kSendNoEvents,
-                                 SimulatedClickCreationScope::kFromUserAgent);
+        ->DispatchSimulatedClick(nullptr);
   }
 
   void SetReady() {

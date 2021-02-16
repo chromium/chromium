@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -617,7 +618,7 @@ bool HTMLTextAreaElement::IsValidValue(const String& candidate) const {
          !TooShort(&candidate, kIgnoreDirtyFlag);
 }
 
-void HTMLTextAreaElement::AccessKeyAction(bool) {
+void HTMLTextAreaElement::AccessKeyAction(SimulatedClickCreationScope) {
   focus();
 }
 

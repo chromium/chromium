@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -249,11 +250,12 @@ void HTMLLabelElement::focus(const FocusParams& params) {
   }
 }
 
-void HTMLLabelElement::AccessKeyAction(bool send_mouse_events) {
+void HTMLLabelElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
   if (HTMLElement* element = control())
-    element->AccessKeyAction(send_mouse_events);
+    element->AccessKeyAction(creation_scope);
   else
-    HTMLElement::AccessKeyAction(send_mouse_events);
+    HTMLElement::AccessKeyAction(creation_scope);
 }
 
 }  // namespace blink

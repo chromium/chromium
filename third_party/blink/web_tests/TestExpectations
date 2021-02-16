@@ -5651,6 +5651,9 @@ crbug.com/1177568 http/tests/devtools/console/console-error-on-call-frame.js [ P
 # Failing on Webkit Linux Leak
 crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
 
+# No support for key combinations like Alt + c in testdriver.Actions for content_shell
+crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
+
 # Timing out on Fuchsia
 crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Pass Timeout ]
 

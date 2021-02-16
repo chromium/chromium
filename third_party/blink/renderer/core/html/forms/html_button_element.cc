@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -154,11 +155,10 @@ void HTMLButtonElement::AppendToFormData(FormData& form_data) {
     form_data.AppendFromElement(GetName(), Value());
 }
 
-void HTMLButtonElement::AccessKeyAction(bool send_mouse_events) {
+void HTMLButtonElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
   focus();
-
-  DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
+  DispatchSimulatedClick(nullptr, creation_scope);
 }
 
 bool HTMLButtonElement::IsURLAttribute(const Attribute& attribute) const {

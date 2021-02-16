@@ -129,12 +129,10 @@ TEST_F(MediaControlDisplayCutoutFullscreenButtonElementTest,
 
   EXPECT_EQ(mojom::ViewportFit::kAuto, CurrentViewportFit());
 
-  display_cutout_fullscreen_button_->DispatchSimulatedClick(
-      nullptr, kSendNoEvents, SimulatedClickCreationScope::kFromUserAgent);
+  display_cutout_fullscreen_button_->DispatchSimulatedClick(nullptr);
   EXPECT_EQ(mojom::ViewportFit::kCoverForcedByUserAgent, CurrentViewportFit());
 
-  display_cutout_fullscreen_button_->DispatchSimulatedClick(
-      nullptr, kSendNoEvents, SimulatedClickCreationScope::kFromUserAgent);
+  display_cutout_fullscreen_button_->DispatchSimulatedClick(nullptr);
   EXPECT_EQ(mojom::ViewportFit::kAuto, CurrentViewportFit());
 }
 
