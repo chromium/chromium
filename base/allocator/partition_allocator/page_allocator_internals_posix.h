@@ -11,7 +11,6 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/check_op.h"
-#include "base/cpu.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
@@ -141,7 +140,23 @@ bool UseMapJit() {
 constexpr bool kHintIsAdvisory = true;
 std::atomic<int32_t> s_allocPageErrorCode{0};
 
-int GetAccessFlags(PageAccessibilityConfiguration accessibility);
+int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
+  switch (accessibility) {
+    case PageRead:
+      return PROT_READ;
+    case PageReadWrite:
+      return PROT_READ | PROT_WRITE;
+    case PageReadExecute:
+      return PROT_READ | PROT_EXEC;
+    case PageReadWriteExecute:
+      return PROT_READ | PROT_WRITE | PROT_EXEC;
+    default:
+      NOTREACHED();
+      FALLTHROUGH;
+    case PageInaccessible:
+      return PROT_NONE;
+  }
+}
 
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,

@@ -30,15 +30,7 @@ BASE_EXPORT std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
 // Query information about the processor.
 class BASE_EXPORT CPU final {
  public:
-  CPU();
-  CPU(CPU&&);
-  CPU(const CPU&) = delete;
-  // Construction path used in very early application startup. The difference
-  // between this and CPU::CPU() is that this doesn't allocate any memory, the
-  // catch is that no CPU model information is available (only features).
-#if defined(ARCH_CPU_ARM_FAMILY)
-  static CPU CreateNoAllocation() { return CPU(false); }
-#endif
+  explicit CPU();
 
   enum IntelMicroArchitecture {
     PENTIUM,
@@ -148,8 +140,7 @@ class BASE_EXPORT CPU final {
 
  private:
   // Query the processor for CPUID information.
-  void Initialize(bool requires_branding);
-  explicit CPU(bool requires_branding);
+  void Initialize();
 
   int signature_ = 0;  // raw form of type, family, model, and stepping
   int type_ = 0;       // process type

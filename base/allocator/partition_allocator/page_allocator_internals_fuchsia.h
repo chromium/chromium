@@ -47,7 +47,6 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageRead:
       return ZX_VM_PERM_READ;
     case PageReadWrite:
-    case PageReadWriteTagged:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
     case PageReadExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_EXECUTE;

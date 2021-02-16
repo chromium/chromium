@@ -24,7 +24,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/tagging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -478,11 +477,6 @@ int TestSuite::Run() {
 #if defined(OS_IOS)
   test_listener_ios::RegisterTestEndListener();
 #endif
-
-  // Opts this test into synchronous MTE mode, where pointer mismatches
-  // will be detected immediately.
-  base::memory::ChangeMemoryTaggingModeForCurrentThread(
-      base::memory::TagViolationReportingMode::kSynchronous);
 
   int result = RUN_ALL_TESTS();
 

@@ -98,11 +98,9 @@ std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
 }  // namespace internal
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
-CPU::CPU(bool require_branding) {
-  Initialize(require_branding);
+CPU::CPU() {
+  Initialize();
 }
-CPU::CPU() : CPU(true) {}
-CPU::CPU(CPU&&) = default;
 
 namespace {
 
@@ -219,7 +217,7 @@ const ProcCpuInfo& ParseProcCpu() {
 
 }  // namespace
 
-void CPU::Initialize(bool require_branding) {
+void CPU::Initialize() {
 #if defined(ARCH_CPU_X86_FAMILY)
   int cpu_info[4] = {-1};
   // This array is used to temporarily hold the vendor name and then the brand
@@ -338,12 +336,10 @@ void CPU::Initialize(bool require_branding) {
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-  if (require_branding) {
-    const ProcCpuInfo& info = ParseProcCpu();
-    cpu_brand_ = info.brand;
-    implementer_ = info.implementer;
-    part_number_ = info.part_number;
-  }
+  const ProcCpuInfo& info = ParseProcCpu();
+  cpu_brand_ = info.brand;
+  implementer_ = info.implementer;
+  part_number_ = info.part_number;
 
 #if defined(ARCH_CPU_ARM64)
   // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2
