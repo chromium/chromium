@@ -259,7 +259,7 @@ export class PluginController {
   beforeZoom() {
     this.postMessage_({type: 'stopScrolling'});
 
-    if (this.viewport_.pinchPhase === PinchPhase.PINCH_START) {
+    if (this.viewport_.pinchPhase === PinchPhase.START) {
       const position = this.viewport_.position;
       const zoom = this.viewport_.getZoom();
       const pinchPhase = this.viewport_.pinchPhase;

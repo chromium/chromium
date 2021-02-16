@@ -131,7 +131,7 @@ export class Viewport {
     this.prevScale_ = 1;
 
     /** @private {!PinchPhase} */
-    this.pinchPhase_ = PinchPhase.PINCH_NONE;
+    this.pinchPhase_ = PinchPhase.NONE;
 
     /** @private {?Point} */
     this.pinchPanVector_ = null;
@@ -1386,9 +1386,8 @@ export class Viewport {
       this.sentPinchEvent_ = false;
       this.mightZoom_(() => {
         const {direction, center, startScaleRatio} = e.detail;
-        this.pinchPhase_ = direction === 'out' ?
-            PinchPhase.PINCH_UPDATE_ZOOM_OUT :
-            PinchPhase.PINCH_UPDATE_ZOOM_IN;
+        this.pinchPhase_ = direction === 'out' ? PinchPhase.UPDATE_ZOOM_OUT :
+                                                 PinchPhase.UPDATE_ZOOM_IN;
 
         const scaleDelta = startScaleRatio / this.prevScale_;
         if (this.firstPinchCenterInFrame_ != null) {
@@ -1440,7 +1439,7 @@ export class Viewport {
     window.requestAnimationFrame(() => {
       this.mightZoom_(() => {
         const {center, startScaleRatio} = e.detail;
-        this.pinchPhase_ = PinchPhase.PINCH_END;
+        this.pinchPhase_ = PinchPhase.END;
         const scaleDelta = startScaleRatio / this.prevScale_;
         this.pinchCenter_ = /** @type {!Point} */ (center);
 
@@ -1449,7 +1448,7 @@ export class Viewport {
         this.updateViewport_();
       });
 
-      this.pinchPhase_ = PinchPhase.PINCH_NONE;
+      this.pinchPhase_ = PinchPhase.NONE;
       this.pinchPanVector_ = null;
       this.pinchCenter_ = null;
       this.firstPinchCenterInFrame_ = null;
@@ -1470,7 +1469,7 @@ export class Viewport {
     // We also use rAF for pinch start, so that if there is a pinch end event
     // scheduled by rAF, this pinch start will be sent after.
     window.requestAnimationFrame(() => {
-      this.pinchPhase_ = PinchPhase.PINCH_START;
+      this.pinchPhase_ = PinchPhase.START;
       this.prevScale_ = 1;
       this.oldCenterInContent_ =
           this.frameToContent_(this.frameToPluginCoordinate_(e.detail.center));
@@ -1495,11 +1494,11 @@ export class Viewport {
  * @enum {number}
  */
 export const PinchPhase = {
-  PINCH_NONE: 0,
-  PINCH_START: 1,
-  PINCH_UPDATE_ZOOM_OUT: 2,
-  PINCH_UPDATE_ZOOM_IN: 3,
-  PINCH_END: 4
+  NONE: 0,
+  START: 1,
+  UPDATE_ZOOM_OUT: 2,
+  UPDATE_ZOOM_IN: 3,
+  END: 4,
 };
 
 /**
