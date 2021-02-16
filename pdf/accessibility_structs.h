@@ -15,6 +15,12 @@
 
 namespace chrome_pdf {
 
+struct AccessibilityDocInfo {
+  uint32_t page_count = 0;
+  bool text_accessible = false;
+  bool text_copyable = false;
+};
+
 struct AccessibilityPageInfo {
   uint32_t page_index = 0;
   gfx::Rect bounds;

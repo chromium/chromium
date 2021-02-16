@@ -867,18 +867,20 @@ void OutOfProcessInstance::EnableAccessibility() {
 
 void OutOfProcessInstance::LoadAccessibility() {
   set_accessibility_state(AccessibilityState::kLoaded);
-  PP_PrivateAccessibilityDocInfo doc_info;
+  AccessibilityDocInfo doc_info;
   doc_info.page_count = engine()->GetNumberOfPages();
-  doc_info.text_accessible = PP_FromBool(
-      engine()->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE));
-  doc_info.text_copyable =
-      PP_FromBool(engine()->HasPermission(PDFEngine::PERMISSION_COPY));
+  doc_info.text_accessible =
+      engine()->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE);
+  doc_info.text_copyable = engine()->HasPermission(PDFEngine::PERMISSION_COPY);
 
   // A new document layout will trigger the creation of a new accessibility
   // tree, so |next_accessibility_page_index_| should be reset to ignore
   // outdated asynchronous calls of SendNextAccessibilityPage().
   set_next_accessibility_page_index(0);
-  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &doc_info);
+  PP_PrivateAccessibilityDocInfo pp_doc_info = {
+      doc_info.page_count, PP_FromBool(doc_info.text_accessible),
+      PP_FromBool(doc_info.text_copyable)};
+  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &pp_doc_info);
 
   // If the document contents isn't accessible, don't send anything more.
   if (!(engine()->HasPermission(PDFEngine::PERMISSION_COPY) ||
