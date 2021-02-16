@@ -102,6 +102,10 @@ static_library("devtools") {
     # yet causing devtools not to compile.  Adding this indirect dependency to
     # the proto to fix that.
     "//components/enterprise/common/proto:connectors_proto",
+
+    # Similar bandaid as the above. Since we cannot depend on
+    # //chrome/browser:browser, we include indirect dependencies here.
+    "//components/paint_preview/buildflags:buildflags",
     "//content/public/browser",
     "//net",
     "//services/viz/privileged/mojom/compositing",
