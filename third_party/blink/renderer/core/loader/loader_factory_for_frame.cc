@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -47,7 +48,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   WrappedResourceRequest webreq(request);
 
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
@@ -96,7 +98,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
         ->WrapURLLoaderFactory(std::move(url_loader_factory))
         ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
                           CreateTaskRunnerHandle(unfreezable_task_runner),
-                          /*keep_alive_handle=*/mojo::NullRemote());
+                          /*keep_alive_handle=*/mojo::NullRemote(),
+                          back_forward_cache_loader_helper);
   }
 
   if (document_loader_->GetServiceWorkerNetworkProvider()) {
@@ -107,7 +110,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
         document_loader_->GetServiceWorkerNetworkProvider()->CreateURLLoader(
             webreq, CreateTaskRunnerHandle(freezable_task_runner),
             CreateTaskRunnerHandle(unfreezable_task_runner),
-            std::move(pending_remote));
+            std::move(pending_remote), back_forward_cache_loader_helper);
     if (loader) {
       IssueKeepAliveHandleIfRequested(request, frame->GetLocalFrameHostRemote(),
                                       std::move(pending_receiver));
@@ -129,7 +132,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   return frame->GetURLLoaderFactory()->CreateURLLoader(
       webreq, CreateTaskRunnerHandle(freezable_task_runner),
       CreateTaskRunnerHandle(unfreezable_task_runner),
-      std::move(pending_remote));
+      std::move(pending_remote), back_forward_cache_loader_helper);
 }
 
 std::unique_ptr<WebCodeCacheLoader>

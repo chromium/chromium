@@ -77,6 +77,7 @@
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_http_load_info.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
@@ -354,14 +355,15 @@ std::unique_ptr<blink::WebURLLoader> WebURLLoaderFactoryImpl::CreateURLLoader(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-        keep_alive_handle) {
+        keep_alive_handle,
+    blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   DCHECK(freezable_task_runner_handle);
   DCHECK(unfreezable_task_runner_handle);
   return std::make_unique<WebURLLoaderImpl>(
       cors_exempt_header_list_, terminate_sync_load_event_,
       std::move(freezable_task_runner_handle),
       std::move(unfreezable_task_runner_handle), loader_factory_,
-      std::move(keep_alive_handle));
+      std::move(keep_alive_handle), back_forward_cache_loader_helper);
 }
 
 // This inner class exists since the WebURLLoader may be deleted while inside a
@@ -369,15 +371,17 @@ std::unique_ptr<blink::WebURLLoader> WebURLLoaderFactoryImpl::CreateURLLoader(
 // being deleted if it may have work to do after calling into the client.
 class WebURLLoaderImpl::Context : public blink::WebRequestPeer {
  public:
-  Context(WebURLLoaderImpl* loader,
-          const std::vector<std::string>& cors_exempt_header_list,
-          base::WaitableEvent* terminate_sync_load_event,
-          std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-              freezable_task_runner_handle,
-          std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-              unfreezable_task_runner_handle,
-          scoped_refptr<network::SharedURLLoaderFactory> factory,
-          mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle);
+  Context(
+      WebURLLoaderImpl* loader,
+      const std::vector<std::string>& cors_exempt_header_list,
+      base::WaitableEvent* terminate_sync_load_event,
+      std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
+          freezable_task_runner_handle,
+      std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
+          unfreezable_task_runner_handle,
+      scoped_refptr<network::SharedURLLoaderFactory> factory,
+      mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
 
   int request_id() const { return request_id_; }
   WebURLLoaderClient* client() const { return client_; }
@@ -478,6 +482,8 @@ class WebURLLoaderImpl::Context : public blink::WebRequestPeer {
   std::unique_ptr<blink::WebResourceRequestSender> resource_request_sender_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper_;
 };
 
 // WebURLLoaderImpl::Context --------------------------------------------------
@@ -494,7 +500,8 @@ WebURLLoaderImpl::Context::Context(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle)
+    mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle,
+    blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : loader_(loader),
       report_raw_headers_(false),
       client_(nullptr),
@@ -511,7 +518,8 @@ WebURLLoaderImpl::Context::Context(
       request_id_(-1),
       resource_request_sender_(
           std::make_unique<blink::WebResourceRequestSender>()),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_(std::move(url_loader_factory)),
+      back_forward_cache_loader_helper_(back_forward_cache_loader_helper) {
   DCHECK(url_loader_factory_);
 }
 
@@ -641,7 +649,8 @@ void WebURLLoaderImpl::Context::Start(
         sync_load_response, url_loader_factory_, std::move(throttles),
         timeout_interval, cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(download_to_blob_registry), base::WrapRefCounted(this),
-        std::move(resource_load_info_notifier_wrapper));
+        std::move(resource_load_info_notifier_wrapper),
+        back_forward_cache_loader_helper_);
     return;
   }
 
@@ -652,7 +661,8 @@ void WebURLLoaderImpl::Context::Start(
       std::move(request), requestor_id, unfreezable_task_runner_, tag,
       loader_options, cors_exempt_header_list_, base::WrapRefCounted(this),
       url_loader_factory_, std::move(throttles),
-      std::move(resource_load_info_notifier_wrapper));
+      std::move(resource_load_info_notifier_wrapper),
+      back_forward_cache_loader_helper_);
 
   if (defers_loading_ != blink::WebURLLoader::DeferType::kNotDeferred) {
     resource_request_sender_->SetDefersLoading(
@@ -792,14 +802,16 @@ WebURLLoaderImpl::WebURLLoaderImpl(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle)
+    mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle,
+    blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : context_(new Context(this,
                            cors_exempt_header_list,
                            terminate_sync_load_event,
                            std::move(freezable_task_runner_handle),
                            std::move(unfreezable_task_runner_handle),
                            std::move(url_loader_factory),
-                           std::move(keep_alive_handle))) {}
+                           std::move(keep_alive_handle),
+                           back_forward_cache_loader_helper)) {}
 
 WebURLLoaderImpl::~WebURLLoaderImpl() {
   Cancel();

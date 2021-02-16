@@ -771,11 +771,12 @@ Document::Document(const DocumentInit& initializer,
     auto& properties =
         *MakeGarbageCollected<DetachableResourceFetcherProperties>(
             *MakeGarbageCollected<NullResourceFetcherProperties>());
-    fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties, &FetchContext::NullInstance(),
-        GetTaskRunner(TaskType::kNetworking),
-        GetTaskRunner(TaskType::kNetworkingUnfreezable),
-        nullptr /* loader_factory */, GetExecutionContext()));
+    fetcher_ = MakeGarbageCollected<ResourceFetcher>(
+        ResourceFetcherInit(properties, &FetchContext::NullInstance(),
+                            GetTaskRunner(TaskType::kNetworking),
+                            GetTaskRunner(TaskType::kNetworkingUnfreezable),
+                            nullptr /* loader_factory */, GetExecutionContext(),
+                            nullptr /* back_forward_cache_loader_helper */));
 
     if (imports_controller_) {
       // We don't expect the fetcher to be used, so count such unexpected use.

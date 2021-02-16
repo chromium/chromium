@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -72,7 +73,8 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner>,
-      scoped_refptr<base::SingleThreadTaskRunner>) override {
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      WebBackForwardCacheLoaderHelper) override {
     return std::make_unique<NoopWebURLLoader>();
   }
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
@@ -130,7 +132,8 @@ class ScriptStreamingTest : public testing::Test {
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, freezable_task_runner_,
         unfreezable_task_runner_, MakeGarbageCollected<NoopLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
 
     EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle_, consumer_handle_),
               MOJO_RESULT_OK);

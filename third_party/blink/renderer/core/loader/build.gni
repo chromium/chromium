@@ -15,6 +15,8 @@ blink_core_sources_loader = [
   "appcache/application_cache_host_for_frame.h",
   "appcache/application_cache_host_for_worker.cc",
   "appcache/application_cache_host_for_worker.h",
+  "back_forward_cache_loader_helper_for_frame.cc",
+  "back_forward_cache_loader_helper_for_frame.h",
   "base_fetch_context.cc",
   "base_fetch_context.h",
   "cookie_jar.cc",

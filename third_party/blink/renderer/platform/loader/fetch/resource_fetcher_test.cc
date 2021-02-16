@@ -177,7 +177,8 @@ class ResourceFetcherTest : public testing::Test {
         CreateTaskRunner(),
         MakeGarbageCollected<TestLoaderFactory>(
             platform_->GetURLLoaderMockFactory()),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
   }
 
   ResourceFetcher* CreateFetcher(
@@ -603,7 +604,8 @@ class RequestSameResourceOnComplete
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(mock_factory_),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
     ResourceRequest resource_request2(GetResource()->Url());
     resource_request2.SetCacheMode(mojom::FetchCacheMode::kValidateCache);
     FetchParameters fetch_params2 =
@@ -771,7 +773,8 @@ class ScopedMockRedirectRequester {
         properties->MakeDetachable(), context_, task_runner_,
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(mock_factory_),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
     ResourceRequest resource_request(url);
     resource_request.SetRequestContext(
         mojom::blink::RequestContextType::INTERNAL);
@@ -1356,13 +1359,13 @@ TEST_F(ResourceFetcherTest, DeprioritizeSubframe) {
 TEST_F(ResourceFetcherTest, Detach) {
   DetachableResourceFetcherProperties& properties =
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();
-  auto* const fetcher =
-      MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-          properties, MakeGarbageCollected<MockFetchContext>(),
-          CreateTaskRunner(), CreateTaskRunner(),
-          MakeGarbageCollected<TestLoaderFactory>(
-              platform_->GetURLLoaderMockFactory()),
-          MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* const fetcher = MakeGarbageCollected<ResourceFetcher>(
+      ResourceFetcherInit(properties, MakeGarbageCollected<MockFetchContext>(),
+                          CreateTaskRunner(), CreateTaskRunner(),
+                          MakeGarbageCollected<TestLoaderFactory>(
+                              platform_->GetURLLoaderMockFactory()),
+                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          nullptr /* back_forward_cache_loader_helper */));
 
   EXPECT_EQ(&properties, &fetcher->GetProperties());
   EXPECT_FALSE(properties.IsDetached());

@@ -30,6 +30,7 @@
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -94,7 +95,9 @@ class WebWorkerFetchContextImpl::Factory : public blink::WebURLLoaderFactory {
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle) override {
+          keep_alive_handle,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
     DCHECK(freezable_task_runner_handle);
     DCHECK(unfreezable_task_runner_handle);
 
@@ -105,14 +108,15 @@ class WebWorkerFetchContextImpl::Factory : public blink::WebURLLoaderFactory {
           cors_exempt_header_list_, terminate_sync_load_event_,
           std::move(freezable_task_runner_handle),
           std::move(unfreezable_task_runner_handle),
-          service_worker_loader_factory_, std::move(keep_alive_handle));
+          service_worker_loader_factory_, std::move(keep_alive_handle),
+          back_forward_cache_loader_helper);
     }
 
     return std::make_unique<WebURLLoaderImpl>(
         cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle), loader_factory_,
-        std::move(keep_alive_handle));
+        std::move(keep_alive_handle), back_forward_cache_loader_helper);
   }
 
   void SetServiceWorkerURLLoaderFactory(

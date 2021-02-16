@@ -168,6 +168,7 @@
 #include "third_party/blink/public/platform/tracked_child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -1275,7 +1276,9 @@ class RenderFrameImpl::FrameURLLoaderFactory
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle) override {
+          keep_alive_handle,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
     // This should not be called if the frame is detached.
     DCHECK(frame_);
 
@@ -1284,7 +1287,8 @@ class RenderFrameImpl::FrameURLLoaderFactory
         /*terminate_sync_load_event=*/nullptr,
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle),
-        frame_->GetLoaderFactoryBundle(), std::move(keep_alive_handle));
+        frame_->GetLoaderFactoryBundle(), std::move(keep_alive_handle),
+        back_forward_cache_loader_helper);
   }
 
  private:

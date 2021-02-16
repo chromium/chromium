@@ -52,6 +52,7 @@
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -201,7 +202,9 @@ class FakeWebURLLoaderFactory : public blink::WebURLLoaderFactoryForTest {
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle) override {
+          keep_alive_handle,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
     return std::make_unique<FakeWebURLLoader>(
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle));

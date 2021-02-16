@@ -38,7 +38,8 @@ class WorkletModuleResponsesMapTest : public testing::Test {
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<TestLoaderFactory>(
             platform_->GetURLLoaderMockFactory()),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
     map_ = MakeGarbageCollected<WorkletModuleResponsesMap>();
   }
 

@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
+#include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_for_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_resource_fetcher_properties.h"
@@ -235,7 +236,8 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
       frame->GetTaskRunner(TaskType::kNetworking),
       frame->GetTaskRunner(TaskType::kNetworkingUnfreezable),
       MakeGarbageCollected<LoaderFactoryForFrame>(loader, *frame->DomWindow()),
-      frame->DomWindow());
+      frame->DomWindow(),
+      MakeGarbageCollected<BackForwardCacheLoaderHelperForFrame>(*frame));
   init.use_counter =
       MakeGarbageCollected<DetachableUseCounter>(frame->DomWindow());
   init.console_logger = MakeGarbageCollected<DetachableConsoleLogger>(

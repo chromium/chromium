@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -80,7 +81,8 @@ class ResourceLoaderTest : public testing::Test {
         const ResourceRequest& request,
         const ResourceLoaderOptions& options,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
-        scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner)
+        scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+        WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
         override {
       return std::make_unique<NoopWebURLLoader>(
           std::move(freezable_task_runner));
@@ -92,6 +94,16 @@ class ResourceLoaderTest : public testing::Test {
 
   static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {
     return base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  }
+
+  ResourceFetcher* MakeResourceFetcher(
+      TestResourceFetcherProperties* properties,
+      FetchContext* context) {
+    return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+        properties->MakeDetachable(), context, CreateTaskRunner(),
+        CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
   }
 
  private:
@@ -157,10 +169,7 @@ std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
 TEST_F(ResourceLoaderTest, LoadResponseBody) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
 
   KURL url("https://www.example.com/");
   ResourceRequest request(url);
@@ -222,10 +231,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
 
   // Fetch a data url.
   KURL url("data:text/plain,Hello%20World!");
@@ -276,10 +282,7 @@ class TestRawResourceClient final
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
   scheduler::FakeTaskRunner* task_runner =
       static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
@@ -316,10 +319,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncEmptyData) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
 
   // Fetch an empty data url.
   KURL url("data:text/html,");
@@ -340,10 +340,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncEmptyData) {
 TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
 
   // Fetch a data url synchronously.
   KURL url("data:text/plain,Hello%20World!");
@@ -366,10 +363,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
 TEST_F(ResourceLoaderTest, LoadDataURL_SyncEmptyData) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
 
   // Fetch an empty data url synchronously.
   KURL url("data:text/html,");
@@ -388,10 +382,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_SyncEmptyData) {
 TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
   scheduler::FakeTaskRunner* task_runner =
       static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
@@ -435,10 +426,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
 TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context, CreateTaskRunner(),
-      CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeResourceFetcher(properties, context);
   scheduler::FakeTaskRunner* task_runner =
       static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
@@ -509,10 +497,7 @@ class ResourceLoaderIsolatedCodeCacheTest : public ResourceLoaderTest {
     auto* properties =
         MakeGarbageCollected<TestResourceFetcherProperties>(origin);
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context, CreateTaskRunner(),
-        CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+    auto* fetcher = MakeResourceFetcher(properties, context);
     ResourceRequest request;
     request.SetUrl(foo_url_);
     request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
@@ -612,13 +597,10 @@ class ResourceLoaderSubresourceFilterCnameAliasTest
   }
 
   ResourceFetcher* MakeResourceFetcherWithMockSubresourceFilter() {
+    auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context =
         MakeFetchContextWithMockSubresourceFilter(blocked_urls_, tagged_urls_);
-    auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-    return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context, CreateTaskRunner(),
-        CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+    return MakeResourceFetcher(properties, context);
   }
 
   void CreateMojoDataPipe() {

@@ -190,13 +190,14 @@ void ModuleScriptLoaderTest::InitializeForDocument() {
   auto* fetch_context = MakeGarbageCollected<MockFetchContext>();
   auto* properties =
       MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
-  fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), fetch_context,
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      MakeGarbageCollected<TestLoaderFactory>(
-          platform_->GetURLLoaderMockFactory()),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  fetcher_ = MakeGarbageCollected<ResourceFetcher>(
+      ResourceFetcherInit(properties->MakeDetachable(), fetch_context,
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          MakeGarbageCollected<TestLoaderFactory>(
+                              platform_->GetURLLoaderMockFactory()),
+                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          nullptr /* back_forward_cache_loader_helper */));
   modulator_ = MakeGarbageCollected<ModuleScriptLoaderTestModulator>(
       ToScriptStateForMainWorld(&GetFrame()));
 }
@@ -205,13 +206,14 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
   auto* fetch_context = MakeGarbageCollected<MockFetchContext>();
   auto* properties =
       MakeGarbageCollected<TestResourceFetcherProperties>(security_origin_);
-  fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), fetch_context,
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      MakeGarbageCollected<TestLoaderFactory>(
-          platform_->GetURLLoaderMockFactory()),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  fetcher_ = MakeGarbageCollected<ResourceFetcher>(
+      ResourceFetcherInit(properties->MakeDetachable(), fetch_context,
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          MakeGarbageCollected<TestLoaderFactory>(
+                              platform_->GetURLLoaderMockFactory()),
+                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          nullptr /* back_forward_cache_loader_helper */));
   reporting_proxy_ = std::make_unique<MockWorkerReportingProxy>();
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       url_, mojom::blink::ScriptType::kModule, "GlobalScopeName", "UserAgent",

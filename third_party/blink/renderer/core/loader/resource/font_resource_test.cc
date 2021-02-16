@@ -66,12 +66,13 @@ TEST_F(FontResourceTest,
 
   MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-      properties->MakeDetachable(), context,
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-      MakeGarbageCollected<TestLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
+      ResourceFetcherInit(properties->MakeDetachable(), context,
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          MakeGarbageCollected<TestLoaderFactory>(),
+                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          nullptr /* back_forward_cache_loader_helper */));
 
   // Fetch to cache a resource.
   ResourceRequest request1(url);

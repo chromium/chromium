@@ -25,6 +25,7 @@
 
 namespace blink {
 class ResourceLoadInfoNotifierWrapper;
+class WebBackForwardCacheLoaderHelper;
 class WebResourceRequestSender;
 class WebURLRequestExtraData;
 }  // namespace blink
@@ -48,7 +49,9 @@ class CONTENT_EXPORT WebURLLoaderFactoryImpl
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle) override;
+          keep_alive_handle,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override;
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
@@ -69,7 +72,8 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle);
+      mojo::PendingRemote<blink::mojom::KeepAliveHandle> keep_alive_handle,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
   ~WebURLLoaderImpl() override;
 
   static void PopulateURLResponse(const blink::WebURL& url,

@@ -109,7 +109,8 @@ class MemoryCacheTest : public testing::Test {
         properties->MakeDetachable(), MakeGarbageCollected<MockFetchContext>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        MakeGarbageCollected<TestLoaderFactory>(), lifecycle_notifier_));
+        MakeGarbageCollected<TestLoaderFactory>(), lifecycle_notifier_,
+        nullptr /* back_forward_cache_loader_helper */));
   }
 
   void TearDown() override {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
 
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 
@@ -19,7 +20,8 @@ std::unique_ptr<WebURLLoader> WebURLLoaderFactoryWithMock::CreateURLLoader(
     const WebURLRequest& request,
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
-    CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>) {
+    CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+    WebBackForwardCacheLoaderHelper) {
   return mock_factory_->CreateURLLoader();
 }
 

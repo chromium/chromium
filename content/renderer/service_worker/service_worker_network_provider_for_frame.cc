@@ -15,6 +15,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
@@ -110,7 +111,8 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-        keep_alive_handle) {
+        keep_alive_handle,
+    blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   // RenderThreadImpl is nullptr in some tests.
   if (!RenderThreadImpl::current())
     return nullptr;
@@ -149,7 +151,8 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
       /*terminate_sync_load_event=*/nullptr,
       std::move(freezable_task_runner_handle),
       std::move(unfreezable_task_runner_handle),
-      context()->GetSubresourceLoaderFactory(), std::move(keep_alive_handle));
+      context()->GetSubresourceLoaderFactory(), std::move(keep_alive_handle),
+      back_forward_cache_loader_helper);
 }
 
 blink::mojom::ControllerServiceWorkerMode

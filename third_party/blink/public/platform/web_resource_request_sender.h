@@ -57,6 +57,7 @@ namespace blink {
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 class MojoURLLoaderClient;
+class WebBackForwardCacheLoaderHelper;
 class WebRequestPeer;
 class WebResourceRequestSenderDelegate;
 struct SyncLoadResponse;
@@ -109,7 +110,8 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender
       mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper);
+          resource_load_info_notifier_wrapper,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
 
   // Call this method to initiate the request. If this method succeeds, then
   // the peer's methods will be called asynchronously to report various events.
@@ -131,7 +133,8 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper);
+          resource_load_info_notifier_wrapper,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
 
   // Cancels the current request and `request_info_` will be released.
   virtual void Cancel(scoped_refptr<base::SingleThreadTaskRunner> task_runner);

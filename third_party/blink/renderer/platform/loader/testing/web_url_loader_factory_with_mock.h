@@ -23,8 +23,8 @@ class WebURLLoaderFactoryWithMock : public WebURLLoaderFactory {
       const WebURLRequest&,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>)
-      override;
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+      WebBackForwardCacheLoaderHelper) override;
 
  private:
   // Not owned. The mock factory should outlive |this|.

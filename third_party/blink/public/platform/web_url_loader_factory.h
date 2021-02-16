@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class WebBackForwardCacheLoaderHelper;
 class WebURLLoader;
 class WebURLRequest;
 
@@ -35,7 +36,8 @@ class WebURLLoaderFactory {
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner,
       CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle) = 0;
+          keep_alive_handle,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) = 0;
 };
 
 // A test version of the above factory interface, which supports cloning the

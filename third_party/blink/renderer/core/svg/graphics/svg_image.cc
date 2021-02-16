@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
@@ -138,7 +139,9 @@ class FailingLoaderFactory final : public WebURLLoaderFactory {
       std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
       std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle,
       CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle) override {
+          keep_alive_handle,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
     return std::make_unique<FailingLoader>(
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle));

@@ -47,6 +47,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -298,13 +300,15 @@ ResourceFetcherInit::ResourceFetcherInit(
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     ResourceFetcher::LoaderFactory* loader_factory,
-    ContextLifecycleNotifier* context_lifecycle_notifier)
+    ContextLifecycleNotifier* context_lifecycle_notifier,
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
     : properties(&properties),
       context(context),
       freezable_task_runner(std::move(freezable_task_runner)),
       unfreezable_task_runner(std::move(unfreezable_task_runner)),
       loader_factory(loader_factory),
-      context_lifecycle_notifier(context_lifecycle_notifier) {
+      context_lifecycle_notifier(context_lifecycle_notifier),
+      back_forward_cache_loader_helper(back_forward_cache_loader_helper) {
   DCHECK(context);
   DCHECK(this->freezable_task_runner);
   DCHECK(this->unfreezable_task_runner);
@@ -524,6 +528,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
           init.frame_or_worker_scheduler,
           *console_logger_,
           init.loading_behavior_observer)),
+      back_forward_cache_loader_helper_(init.back_forward_cache_loader_helper),
       archive_(init.archive),
       resource_timing_report_timer_(
           freezable_task_runner_,
@@ -1235,9 +1240,10 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     const ResourceLoaderOptions& options) {
   DCHECK(!GetProperties().IsDetached());
   DCHECK(loader_factory_);
-  return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
-                                          freezable_task_runner_,
-                                          unfreezable_task_runner_);
+  return loader_factory_->CreateURLLoader(
+      ResourceRequest(request), options, freezable_task_runner_,
+      unfreezable_task_runner_,
+      WebBackForwardCacheLoaderHelper(back_forward_cache_loader_helper_));
 }
 
 std::unique_ptr<WebCodeCacheLoader> ResourceFetcher::CreateCodeCacheLoader() {
@@ -1733,6 +1739,8 @@ void ResourceFetcher::ClearContext() {
   resource_load_observer_ = nullptr;
   use_counter_->Detach();
   console_logger_->Detach();
+  if (back_forward_cache_loader_helper_)
+    back_forward_cache_loader_helper_->Detach();
   loader_factory_ = nullptr;
 
   unused_preloads_timer_.Cancel();
@@ -2295,6 +2303,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(console_logger_);
   visitor->Trace(loader_factory_);
   visitor->Trace(scheduler_);
+  visitor->Trace(back_forward_cache_loader_helper_);
   visitor->Trace(archive_);
   visitor->Trace(resource_timing_report_timer_);
   visitor->Trace(loaders_);

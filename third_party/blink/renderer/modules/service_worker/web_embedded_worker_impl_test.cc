@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -101,8 +102,8 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
       const WebURLRequest&,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>)
-      override {
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+      WebBackForwardCacheLoaderHelper) override {
     return std::make_unique<FakeWebURLLoader>();
   }
 };

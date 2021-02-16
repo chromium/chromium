@@ -18,8 +18,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -281,7 +283,8 @@ MojoURLLoaderClient::MojoURLLoaderClient(
     WebMojoURLLoaderClientObserver* url_loader_client_observer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool bypass_redirect_checks,
-    const GURL& request_url)
+    const GURL& request_url,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : back_forward_cache_timeout_(
           base::TimeDelta::FromSeconds(GetLoadingTasksUnfreezableParamAsInt(
               "grace_period_to_finish_loading_in_seconds",
@@ -291,7 +294,8 @@ MojoURLLoaderClient::MojoURLLoaderClient(
       url_loader_client_observer_(url_loader_client_observer),
       task_runner_(std::move(task_runner)),
       bypass_redirect_checks_(bypass_redirect_checks),
-      last_loaded_url_(request_url) {}
+      last_loaded_url_(request_url),
+      back_forward_cache_loader_helper_(back_forward_cache_loader_helper) {}
 
 MojoURLLoaderClient::~MojoURLLoaderClient() = default;
 
@@ -330,19 +334,34 @@ void MojoURLLoaderClient::OnReceiveResponse(
   }
 }
 
+BackForwardCacheLoaderHelper*
+MojoURLLoaderClient::GetBackForwardCacheLoaderHelper() {
+  return back_forward_cache_loader_helper_.GetBackForwardCacheLoaderHelper();
+}
+
 void MojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   StopBackForwardCacheEvictionTimer();
-  url_loader_client_observer_->EvictFromBackForwardCache(reason);
+  auto* back_forward_cache_loader_helper = GetBackForwardCacheLoaderHelper();
+  if (!back_forward_cache_loader_helper)
+    return;
+  back_forward_cache_loader_helper->EvictFromBackForwardCache(reason);
 }
 
 void MojoURLLoaderClient::DidBufferLoadWhileInBackForwardCache(
     size_t num_bytes) {
-  url_loader_client_observer_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+  auto* back_forward_cache_loader_helper = GetBackForwardCacheLoaderHelper();
+  if (!back_forward_cache_loader_helper)
+    return;
+  back_forward_cache_loader_helper->DidBufferLoadWhileInBackForwardCache(
+      num_bytes);
 }
 
 bool MojoURLLoaderClient::CanContinueBufferingWhileInBackForwardCache() {
-  return url_loader_client_observer_
+  auto* back_forward_cache_loader_helper = GetBackForwardCacheLoaderHelper();
+  if (!back_forward_cache_loader_helper)
+    return false;
+  return back_forward_cache_loader_helper
       ->CanContinueBufferingWhileInBackForwardCache();
 }
 

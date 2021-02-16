@@ -516,6 +516,7 @@ component("platform") {
     "exported/weak_wrapper_resource_load_info_notifier.cc",
     "exported/web_audio_bus.cc",
     "exported/web_audio_device.cc",
+    "exported/web_back_forward_cache_loader_helper.cc",
     "exported/web_blob_info.cc",
     "exported/web_cache.cc",
     "exported/web_content_decryption_module.cc",

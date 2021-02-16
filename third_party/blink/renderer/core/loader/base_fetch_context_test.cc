@@ -139,7 +139,8 @@ class BaseFetchContextTest : public testing::Test {
             properties, fetch_context_,
             base::MakeRefCounted<scheduler::FakeTaskRunner>(),
             base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-            MakeGarbageCollected<TestLoaderFactory>(), execution_context_));
+            MakeGarbageCollected<TestLoaderFactory>(), execution_context_,
+            nullptr /* back_forward_cache_loader_helper */));
   }
 
   const FetchClientSettingsObject& GetFetchClientSettingsObject() const {

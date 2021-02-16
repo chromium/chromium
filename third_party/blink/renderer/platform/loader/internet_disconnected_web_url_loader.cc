@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -23,7 +24,8 @@ InternetDisconnectedWebURLLoaderFactory::CreateURLLoader(
     std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-        keep_alive_handle) {
+        keep_alive_handle,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   DCHECK(freezable_task_runner_handle);
   return std::make_unique<InternetDisconnectedWebURLLoader>(
       std::move(freezable_task_runner_handle));

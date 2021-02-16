@@ -36,13 +36,17 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
 
@@ -131,7 +135,20 @@ void WebResourceRequestSender::SendSync(
     mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
     scoped_refptr<WebRequestPeer> peer,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-        resource_load_info_notifier_wrapper) {
+        resource_load_info_notifier_wrapper,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
+  if (IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {
+    // Sync fetches are triggered by script, which should not run when a
+    // document is in back-forward cache. If we somehow made it here, we should
+    // trigger a back-forward cache eviction.
+    auto* helper =
+        back_forward_cache_loader_helper.GetBackForwardCacheLoaderHelper();
+    if (helper) {
+      helper->EvictFromBackForwardCache(
+          blink::mojom::RendererEvictionReason::kJavaScriptExecution);
+    }
+  }
+
   CheckSchemeForReferrerPolicy(*request);
 
   DCHECK(loader_options & network::mojom::kURLLoadOptionSynchronous);
@@ -200,7 +217,8 @@ int WebResourceRequestSender::SendAsync(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-        resource_load_info_notifier_wrapper) {
+        resource_load_info_notifier_wrapper,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   CheckSchemeForReferrerPolicy(*request);
 
 #if defined(OS_ANDROID)
@@ -227,7 +245,7 @@ int WebResourceRequestSender::SendAsync(
 
   auto client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
-      request->url);
+      request->url, back_forward_cache_loader_helper);
 
   std::unique_ptr<ThrottlingURLLoader> url_loader =
       ThrottlingURLLoader::CreateLoaderAndStart(

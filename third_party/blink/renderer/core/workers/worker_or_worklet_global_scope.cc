@@ -321,12 +321,12 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
     auto* worker_fetch_context = MakeGarbageCollected<WorkerFetchContext>(
         properties, *this, web_worker_fetch_context_, subresource_filter_,
         content_security_policy, resource_timing_notifier);
-    ResourceFetcherInit init(properties, worker_fetch_context,
-                             GetTaskRunner(TaskType::kNetworking),
-                             GetTaskRunner(TaskType::kNetworkingUnfreezable),
-                             MakeGarbageCollected<LoaderFactoryForWorker>(
-                                 *this, web_worker_fetch_context_),
-                             this);
+    ResourceFetcherInit init(
+        properties, worker_fetch_context, GetTaskRunner(TaskType::kNetworking),
+        GetTaskRunner(TaskType::kNetworkingUnfreezable),
+        MakeGarbageCollected<LoaderFactoryForWorker>(*this,
+                                                     web_worker_fetch_context_),
+        this, nullptr /* back_forward_cache_loader_helper */);
     init.use_counter = MakeGarbageCollected<DetachableUseCounter>(this);
     init.console_logger = MakeGarbageCollected<DetachableConsoleLogger>(this);
 
@@ -358,7 +358,8 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
         ResourceFetcherInit(properties, &FetchContext::NullInstance(),
                             GetTaskRunner(TaskType::kNetworking),
                             GetTaskRunner(TaskType::kNetworkingUnfreezable),
-                            nullptr /* loader_factory */, this));
+                            nullptr /* loader_factory */, this,
+                            nullptr /* back_forward_cache_loader_helper */));
   }
   if (IsContextPaused())
     fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);

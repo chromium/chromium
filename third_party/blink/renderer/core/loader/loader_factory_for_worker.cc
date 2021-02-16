@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -29,7 +30,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   WrappedResourceRequest wrapped(request);
 
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
@@ -57,10 +59,10 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
 
   if (url_loader_factory) {
     return web_context_->WrapURLLoaderFactory(std::move(url_loader_factory))
-        ->CreateURLLoader(wrapped,
-                          CreateTaskRunnerHandle(freezable_task_runner),
-                          CreateTaskRunnerHandle(unfreezable_task_runner),
-                          std::move(keep_alive_handle));
+        ->CreateURLLoader(
+            wrapped, CreateTaskRunnerHandle(freezable_task_runner),
+            CreateTaskRunnerHandle(unfreezable_task_runner),
+            std::move(keep_alive_handle), back_forward_cache_loader_helper);
   }
 
   // If |global_scope_| is a service worker, use |script_loader_factory_| for
@@ -82,7 +84,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
         return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
             wrapped, CreateTaskRunnerHandle(freezable_task_runner),
             CreateTaskRunnerHandle(unfreezable_task_runner),
-            std::move(keep_alive_handle));
+            std::move(keep_alive_handle), back_forward_cache_loader_helper);
       }
     }
   } else {
@@ -92,7 +94,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   return web_context_->GetURLLoaderFactory()->CreateURLLoader(
       wrapped, CreateTaskRunnerHandle(freezable_task_runner),
       CreateTaskRunnerHandle(unfreezable_task_runner),
-      std::move(keep_alive_handle));
+      std::move(keep_alive_handle), back_forward_cache_loader_helper);
 }
 
 std::unique_ptr<WebCodeCacheLoader>

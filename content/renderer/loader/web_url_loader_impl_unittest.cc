@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
@@ -81,7 +82,9 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
       scoped_refptr<blink::WebRequestPeer> peer,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper) override {
+          resource_load_info_notifier_wrapper,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
     *response = std::move(sync_load_response_);
   }
 
@@ -96,7 +99,9 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper) override {
+          resource_load_info_notifier_wrapper,
+      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
     EXPECT_FALSE(peer_);
     if (sync_load_response_.head->encoded_body_length != -1)
       EXPECT_TRUE(loader_options & network::mojom::kURLLoadOptionSynchronous);
@@ -179,7 +184,8 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
                     blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &fake_url_loader_factory_),
-            /*keep_alive_handle=*/mojo::NullRemote())),
+            /*keep_alive_handle=*/mojo::NullRemote(),
+            blink::WebBackForwardCacheLoaderHelper())),
         delete_on_receive_redirect_(false),
         delete_on_receive_response_(false),
         delete_on_receive_data_(false),

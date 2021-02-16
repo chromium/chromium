@@ -53,6 +53,7 @@
 namespace blink {
 
 enum class ResourceType : uint8_t;
+class BackForwardCacheLoaderHelper;
 class DetachableConsoleLogger;
 class DetachableUseCounter;
 class DetachableResourceFetcherProperties;
@@ -65,6 +66,7 @@ class ResourceError;
 class ResourceLoadObserver;
 class ResourceTimingInfo;
 class SubresourceWebBundle;
+class WebBackForwardCacheLoaderHelper;
 class WebCodeCacheLoader;
 struct ResourceFetcherInit;
 struct ResourceLoaderOptions;
@@ -100,8 +102,8 @@ class PLATFORM_EXPORT ResourceFetcher
         const ResourceRequest&,
         const ResourceLoaderOptions&,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
-        scoped_refptr<base::SingleThreadTaskRunner>
-            unfreezable_task_runner) = 0;
+        scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+        WebBackForwardCacheLoaderHelper) = 0;
 
     // Create a code cache loader to fetch data from code caches.
     virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() = 0;
@@ -435,6 +437,7 @@ class PLATFORM_EXPORT ResourceFetcher
   const Member<DetachableConsoleLogger> console_logger_;
   Member<LoaderFactory> loader_factory_;
   const Member<ResourceLoadScheduler> scheduler_;
+  Member<BackForwardCacheLoaderHelper> back_forward_cache_loader_helper_;
 
   DocumentResourceMap cached_resources_map_;
 
@@ -542,7 +545,8 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       ResourceFetcher::LoaderFactory* loader_factory,
-      ContextLifecycleNotifier* context_lifecycle_notifier);
+      ContextLifecycleNotifier* context_lifecycle_notifier,
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr);
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
@@ -559,6 +563,7 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
   ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override =
       ResourceLoadScheduler::ThrottleOptionOverride::kNone;
   LoadingBehaviorObserver* loading_behavior_observer = nullptr;
+  BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ResourceFetcherInit);
 };
