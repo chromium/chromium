@@ -496,7 +496,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   // OK to assign.  The bounds will be recalculated when the buffer scale
   // changes.
   bounds_px_ = properties.bounds;
-  UpdateVisualSize(bounds_px_.size());
   opacity_ = properties.opacity;
   type_ = properties.type;
 
