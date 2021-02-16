@@ -20,6 +20,8 @@ def AugmentOptionsForV8BrowsingMetrics(options, enable_runtime_call_stats=True):
       'disabled-by-default-memory-infra',
       'toplevel',
       # V8 categories.
+      'cppgc',
+      'disabled-by-default-cppgc',
       'disabled-by-default-v8.gc',
       'v8',
       'v8.wasm',
