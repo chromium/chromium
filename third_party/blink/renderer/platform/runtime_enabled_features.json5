@@ -1135,11 +1135,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNGForControls",
-      depends_on: ["LayoutNG"],
-      status: "stable",
-    },
-    {
       // Traverse the fragment tree when painting and hit-testing, instead of
       // the layout object tree.
       name: "LayoutNGFragmentTraversal",

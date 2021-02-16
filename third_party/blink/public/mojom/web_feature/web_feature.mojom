@@ -2542,7 +2542,6 @@ enum WebFeature {
   kLegacyLayoutByMultiCol = 3214,
   kLegacyLayoutByPrinting = 3215,
   kLegacyLayoutBySVG = 3217,
-  kLegacyLayoutBySlider = 3218,
   kLegacyLayoutByTable = 3219,
   kLegacyLayoutByTextCombine = 3220,
   kLegacyLayoutByTextControl = 3221,

@@ -30812,7 +30812,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3215" label="LegacyLayoutByPrinting"/>
   <int value="3216" label="OBSOLETE_LegacyLayoutByRuby"/>
   <int value="3217" label="LegacyLayoutBySVG"/>
-  <int value="3218" label="LegacyLayoutBySlider"/>
+  <int value="3218" label="OBSOLETE_LegacyLayoutBySlider"/>
   <int value="3219" label="LegacyLayoutByTable"/>
   <int value="3220" label="LegacyLayoutByTextCombine"/>
   <int value="3221" label="LegacyLayoutByTextControl"/>

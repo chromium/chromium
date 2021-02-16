@@ -61,7 +61,6 @@ class RangeInputType final : public InputType, public InputTypeView {
   bool IsSteppable() const override;
   void HandleMouseDownEvent(MouseEvent&) override;
   void HandleKeydownEvent(KeyboardEvent&) override;
-  bool TypeShouldForceLegacyLayout() const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) const override;
   void CreateShadowSubtree() override;
