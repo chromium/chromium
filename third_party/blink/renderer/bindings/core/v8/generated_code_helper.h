@@ -78,9 +78,9 @@ using InstallTemplateFunction =
 using InstallRuntimeEnabledFeaturesFunction =
     void (*)(v8::Isolate*,
              const DOMWrapperWorld&,
-             v8::Local<v8::Object> instance,
-             v8::Local<v8::Object> prototype,
-             v8::Local<v8::Function> interface_name);
+             v8::Local<v8::Object> instance_object,
+             v8::Local<v8::Object> prototype_object,
+             v8::Local<v8::Function> interface_object);
 
 using InstallRuntimeEnabledFeaturesOnTemplateFunction = InstallTemplateFunction;
 
