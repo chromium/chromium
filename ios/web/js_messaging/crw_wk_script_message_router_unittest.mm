@@ -195,7 +195,13 @@ TEST_F(CRWWKScriptMessageRouterTest, MAYBE_RemoveAllHandlersLeak) {
 
 // Tests proper routing of WKScriptMessage object depending on message name and
 // web view.
-TEST_F(CRWWKScriptMessageRouterTest, Routing) {
+// TODO(crbug.com/1178500): Re-enable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_Routing Routing
+#else
+#define MAYBE_Routing DISABLED_Routing
+#endif  // TARGET_OS_SIMULATOR
+TEST_F(CRWWKScriptMessageRouterTest, MAYBE_Routing) {
   // It's expected that messages handlers will be called once and in order.
   WKFrameInfo* frame_info = [[WKFrameInfo alloc] init];
   __block NSInteger last_called_handler = 0;
