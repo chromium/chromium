@@ -160,6 +160,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
                  size_t expected_decrypt_size,
                  media::Decryptor::Status status,
                  const std::vector<uint8_t>& decrypted_data);
+  void GetHwKeyDataInternal(const std::string& key_id,
+                            const std::string& iv,
+                            const media::EncryptionScheme encryption_scheme,
+                            const std::vector<uint8_t>& hw_identifier,
+                            GetHwKeyDataCB callback);
 
   THREAD_CHECKER(thread_checker_);
 
