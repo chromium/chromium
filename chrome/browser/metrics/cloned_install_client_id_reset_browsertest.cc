@@ -63,22 +63,21 @@ class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
 #endif  // defined(OS_WIN)
 };
 
-// Test is flaky on Mac (https://crbug.com/1175077).
-#if defined(OS_MAC)
-#define MAYBE_PRE_TestClonedInstallClientIdReset \
-  DISABLED_PRE_TestClonedInstallClientIdReset
-#else
-#define MAYBE_PRE_TestClonedInstallClientIdReset \
-  PRE_TestClonedInstallClientIdReset
-#endif
 IN_PROC_BROWSER_TEST_F(ClonedInstallClientIdResetBrowserTest,
-                       MAYBE_PRE_TestClonedInstallClientIdReset) {
+                       PRE_TestClonedInstallClientIdReset) {
   local_state()->SetBoolean(metrics::prefs::kMetricsResetIds, true);
   EXPECT_EQ(kInitialClientId, metrics_service()->GetClientId());
 }
 
+// Test is flaky on Mac (https://crbug.com/1175077).
+#if defined(OS_MAC)
+#define MAYBE_TestClonedInstallClientIdReset \
+  DISABLED_TestClonedInstallClientIdReset
+#else
+#define MAYBE_TestClonedInstallClientIdReset TestClonedInstallClientIdReset
+#endif
 IN_PROC_BROWSER_TEST_F(ClonedInstallClientIdResetBrowserTest,
-                       TestClonedInstallClientIdReset) {
+                       MAYBE_TestClonedInstallClientIdReset) {
   EXPECT_NE(kInitialClientId, metrics_service()->GetClientId());
   EXPECT_FALSE(local_state()->GetBoolean(metrics::prefs::kMetricsResetIds));
 }
