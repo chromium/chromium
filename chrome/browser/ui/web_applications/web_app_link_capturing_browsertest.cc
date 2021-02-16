@@ -229,14 +229,9 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {start_url_});
 }
 
-// Flaky on lacros: https://crbug.com/1167176
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CaptureLinksNewClient DISABLED_CaptureLinksNewClient
-#else
-#define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
-#endif
+// Flaky test: https://crbug.com/1167176
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
-                       MAYBE_CaptureLinksNewClient) {
+                       DISABLED_CaptureLinksNewClient) {
   InstallTestApp("/web_apps/capture_links_new_client.html");
 
   Navigate(browser(), out_of_scope_);
