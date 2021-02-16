@@ -376,7 +376,8 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
     // them in the layer tree if |this| is not the preview view for the active
     // desk.
     visible_on_all_desks_windows_to_mirror =
-        Shell::Get()->desks_controller()->visible_on_all_desks_windows();
+        Shell::Get()->desks_controller()->GetVisibleOnAllDesksWindowsOnRoot(
+            mini_view_->root_window());
     for (auto* window : visible_on_all_desks_windows_to_mirror)
       GetLayersData(window, &layers_data);
   }

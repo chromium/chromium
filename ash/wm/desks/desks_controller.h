@@ -90,6 +90,10 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // switch animation is in progress.
   const Desk* GetTargetActiveDesk() const;
 
+  // Returns the visible on all desks windows that reside on |root_window|.
+  base::flat_set<aura::Window*> GetVisibleOnAllDesksWindowsOnRoot(
+      aura::Window* root_window) const;
+
   // Restores the primary user's activate desk at active_desk_index.
   void RestorePrimaryUserActiveDeskIndex(int active_desk_index);
 
