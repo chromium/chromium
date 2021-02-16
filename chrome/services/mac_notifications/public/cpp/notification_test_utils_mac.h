@@ -10,13 +10,60 @@
 
 API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotification : NSObject
-@property(nonatomic, retain) UNNotificationRequest* request;
+@property(nonatomic, retain, nullable) UNNotificationRequest* request;
 @end
 
 API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotificationResponse : NSObject
-@property(nonatomic, retain) FakeUNNotification* notification;
-@property(nonatomic, copy) NSString* actionIdentifier;
+@property(nonatomic, retain, nullable) FakeUNNotification* notification;
+@property(nonatomic, copy, nullable) NSString* actionIdentifier;
+@end
+
+API_AVAILABLE(macosx(10.14))
+@interface FakeUNNotificationSettings : NSObject
+@property(nonatomic, assign) UNAlertStyle alertStyle;
+@property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
+@end
+
+API_AVAILABLE(macosx(10.14))
+@interface FakeUNUserNotificationCenter : NSObject
+- (nullable instancetype)init;
+- (void)setDelegate:(id<UNUserNotificationCenterDelegate> _Nullable)delegate;
+- (void)removeAllDeliveredNotifications;
+- (void)setNotificationCategories:
+    (NSSet<UNNotificationCategory*>* _Nonnull)categories;
+- (void)replaceContentForRequestWithIdentifier:
+            (NSString* _Nonnull)requestIdentifier
+                            replacementContent:
+                                (UNMutableNotificationContent* _Nonnull)content
+                             completionHandler:
+                                 (void (^_Nonnull)(NSError* _Nullable error))
+                                     notificationDelivered;
+- (void)addNotificationRequest:(UNNotificationRequest* _Nonnull)request
+         withCompletionHandler:
+             (void (^_Nonnull)(NSError* _Nullable error))completionHandler;
+- (void)getDeliveredNotificationsWithCompletionHandler:
+    (void (^_Nonnull)(NSArray<UNNotification*>* _Nonnull notifications))
+        completionHandler;
+- (void)getNotificationCategoriesWithCompletionHandler:
+    (void (^_Nonnull)(NSSet<UNNotificationCategory*>* _Nonnull categories))
+        completionHandler;
+- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options
+                      completionHandler:
+                          (void (^_Nonnull)(BOOL granted,
+                                            NSError* _Nullable error))
+                              completionHandler;
+- (void)removeDeliveredNotificationsWithIdentifiers:
+    (NSArray<NSString*>* _Nonnull)identifiers;
+- (void)getNotificationSettingsWithCompletionHandler:
+    (void (^_Nonnull)(UNNotificationSettings* _Nonnull settings))
+        completionHandler;
+
+// Synchronous accessors for tests.
+- (FakeUNNotificationSettings* _Nonnull)settings;
+- (NSArray<UNNotification*>* _Nonnull)notifications;
+- (NSSet<UNNotificationCategory*>* _Nonnull)categories;
+
 @end
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_TEST_UTILS_MAC_H_

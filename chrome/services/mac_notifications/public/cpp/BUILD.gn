@@ -23,5 +23,7 @@ source_set("test_support") {
     "notification_test_utils_mac.mm",
   ]
 
+  deps = [ "//base" ]
+
   frameworks = [ "Foundation.framework" ]
 }

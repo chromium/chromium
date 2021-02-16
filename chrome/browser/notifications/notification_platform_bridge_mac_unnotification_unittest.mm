@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,140 +31,6 @@
 #include "testing/gtest_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
-
-// TODO(crbug/1146412): Move the mock classes to a separate file to avoid name
-// clashes.
-API_AVAILABLE(macosx(10.14))
-@interface FakeNotification : NSObject
-@property(nonatomic, retain) UNNotificationRequest* request;
-@end
-
-@implementation FakeNotification
-@synthesize request;
-@end
-
-API_AVAILABLE(macosx(10.14))
-@interface FakeUNNotificationSettings : NSObject
-@property(nonatomic, assign) UNAlertStyle alertStyle;
-@property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
-@end
-
-@implementation FakeUNNotificationSettings
-@synthesize alertStyle;
-@synthesize authorizationStatus;
-@end
-
-API_AVAILABLE(macosx(10.14))
-@interface FakeUNUserNotificationCenter : NSObject
-@property(nonatomic, assign) base::scoped_nsobject<FakeUNNotificationSettings>
-    settings;
-- (instancetype)init;
-// Need to provide a nop implementation of setDelegate as it is
-// used during the setup of the bridge.
-- (void)setDelegate:(id<UNUserNotificationCenterDelegate>)delegate;
-- (void)removeAllDeliveredNotifications;
-- (void)setNotificationCategories:(NSSet<UNNotificationCategory*>*)categories;
-- (void)replaceContentForRequestWithIdentifier:(NSString*)requestIdentifier
-                            replacementContent:
-                                (UNMutableNotificationContent*)content
-                             completionHandler:
-                                 (void (^)(NSError* _Nullable error))
-                                     notificationDelivered;
-- (void)addNotificationRequest:(UNNotificationRequest*)request
-         withCompletionHandler:(void (^)(NSError* error))completionHandler;
-- (void)getDeliveredNotificationsWithCompletionHandler:
-    (void (^)(NSArray<UNNotification*>* notifications))completionHandler;
-- (void)getNotificationCategoriesWithCompletionHandler:
-    (void (^)(NSSet<UNNotificationCategory*>* categories))completionHandler;
-- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options
-                      completionHandler:(void (^)(BOOL granted, NSError* error))
-                                            completionHandler;
-- (void)removeDeliveredNotificationsWithIdentifiers:
-    (NSArray<NSString*>*)identifiers;
-- (void)getNotificationSettingsWithCompletionHandler:
-    (void (^)(UNNotificationSettings* settings))completionHandler;
-@end
-
-@implementation FakeUNUserNotificationCenter {
-  base::scoped_nsobject<NSMutableDictionary> _banners;
-  base::scoped_nsobject<NSSet> _categories;
-}
-
-@synthesize settings;
-
-- (instancetype)init {
-  if ((self = [super init])) {
-    settings.reset([[FakeUNNotificationSettings alloc] init]);
-    _banners.reset([[NSMutableDictionary alloc] init]);
-    _categories.reset([[NSSet alloc] init]);
-  }
-  return self;
-}
-
-- (void)setDelegate:(id<UNUserNotificationCenterDelegate>)delegate {
-}
-
-- (void)removeAllDeliveredNotifications {
-  [_banners removeAllObjects];
-}
-
-- (void)setNotificationCategories:(NSSet<UNNotificationCategory*>*)categories {
-  _categories.reset([categories copy]);
-}
-
-- (void)replaceContentForRequestWithIdentifier:(NSString*)requestIdentifier
-                            replacementContent:
-                                (UNMutableNotificationContent*)content
-                             completionHandler:
-                                 (void (^)(NSError* _Nullable error))
-                                     notificationDelivered {
-  UNNotificationRequest* request =
-      [UNNotificationRequest requestWithIdentifier:requestIdentifier
-                                           content:content
-                                           trigger:nil];
-  base::scoped_nsobject<FakeNotification> notification(
-      [[FakeNotification alloc] init]);
-  [notification setRequest:request];
-  [_banners setObject:notification forKey:[request identifier]];
-  notificationDelivered(/*error=*/nil);
-}
-
-- (void)addNotificationRequest:(UNNotificationRequest*)request
-         withCompletionHandler:(void (^)(NSError* error))completionHandler {
-  base::scoped_nsobject<FakeNotification> notification(
-      [[FakeNotification alloc] init]);
-  [notification setRequest:request];
-  [_banners setObject:notification forKey:[request identifier]];
-  completionHandler(/*error=*/nil);
-}
-
-- (void)getDeliveredNotificationsWithCompletionHandler:
-    (void (^)(NSArray<UNNotification*>* notifications))completionHandler {
-  completionHandler([_banners allValues]);
-}
-
-- (void)getNotificationCategoriesWithCompletionHandler:
-    (void (^)(NSSet<UNNotificationCategory*>* categories))completionHandler {
-  completionHandler([[_categories copy] autorelease]);
-}
-
-- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options
-                      completionHandler:(void (^)(BOOL granted, NSError* error))
-                                            completionHandler {
-  completionHandler(/*granted=*/YES, /*error=*/nil);
-}
-
-- (void)removeDeliveredNotificationsWithIdentifiers:
-    (NSArray<NSString*>*)identifiers {
-  [_banners removeObjectsForKeys:identifiers];
-}
-
-- (void)getNotificationSettingsWithCompletionHandler:
-    (void (^)(UNNotificationSettings* settings))completionHandler {
-  completionHandler(static_cast<UNNotificationSettings*>(settings.get()));
-}
-
-@end
 
 using message_center::Notification;
 
