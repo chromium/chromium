@@ -664,8 +664,10 @@ ImagePaintFilter::ImagePaintFilter(PaintImage image,
       src_rect_(src_rect),
       dst_rect_(dst_rect),
       filter_quality_(filter_quality) {
+  SkSamplingOptions sampling(filter_quality,
+                             SkSamplingOptions::kMedium_asMipmapLinear);
   cached_sk_filter_ = SkImageFilters::Image(image_.GetSkImage(), src_rect_,
-                                            dst_rect_, filter_quality_);
+                                            dst_rect_, sampling);
 }
 
 ImagePaintFilter::~ImagePaintFilter() = default;
