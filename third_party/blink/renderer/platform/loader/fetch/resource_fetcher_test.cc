@@ -32,9 +32,11 @@
 
 #include <memory>
 #include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -255,12 +257,6 @@ TEST_F(ResourceFetcherTest, UseExistingResource) {
   EXPECT_EQ(resource, new_resource);
 
   // Test histograms.
-  histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.PerDocument.Mock", 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.PerDocument.Mock",
-      0 /* RevalidationPolicy::kUse */, 1);
-
   histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
                                     2);
   histogram_tester.ExpectBucketCount(
@@ -270,14 +266,11 @@ TEST_F(ResourceFetcherTest, UseExistingResource) {
       "Blink.MemoryCache.RevalidationPolicy.Mock",
       0 /* RevalidationPolicy::kUse */, 1);
 
-  // Create a new fetcher and load the same resource. The PerDocument histogram
-  // should not be incremented.
+  // Create a new fetcher and load the same resource.
   auto* new_fetcher = CreateFetcher();
   Resource* new_fetcher_resource =
       MockResource::Fetch(fetch_params, new_fetcher, nullptr);
   EXPECT_EQ(resource, new_fetcher_resource);
-  histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.PerDocument.Mock", 1);
   histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
                                     3);
   histogram_tester.ExpectBucketCount(
@@ -286,6 +279,76 @@ TEST_F(ResourceFetcherTest, UseExistingResource) {
   histogram_tester.ExpectBucketCount(
       "Blink.MemoryCache.RevalidationPolicy.Mock",
       0 /* RevalidationPolicy::kUse */, 2);
+}
+
+TEST_F(ResourceFetcherTest, MemoryCachePerContextUseExistingResource) {
+  blink::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kScopeMemoryCachePerContext);
+
+  KURL url("http://127.0.0.1:8000/foo.html");
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(http_names::kCacheControl, "max-age=3600");
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      url, WrappedResourceResponse(response),
+      test::PlatformTestDataPath(kTestResourceFilename));
+
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+
+  auto* fetcher_a = CreateFetcher();
+  Resource* resource_a = MockResource::Fetch(fetch_params, fetcher_a, nullptr);
+  ASSERT_TRUE(resource_a);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource_a->IsLoaded());
+  EXPECT_TRUE(GetMemoryCache()->Contains(resource_a));
+
+  Resource* resource_a1 = MockResource::Fetch(fetch_params, fetcher_a, nullptr);
+  ASSERT_TRUE(resource_a1);
+  EXPECT_EQ(resource_a, resource_a1);
+
+  // Test histograms.
+  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      3 /* RevalidationPolicy::kLoad */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
+
+  // Create a new fetcher and load the same resource. It should be loaded again.
+  auto* fetcher_b = CreateFetcher();
+  Resource* resource_b = MockResource::Fetch(fetch_params, fetcher_b, nullptr);
+  EXPECT_NE(resource_a1, resource_b);
+  ASSERT_TRUE(resource_b);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource_b->IsLoaded());
+  EXPECT_TRUE(GetMemoryCache()->Contains(resource_b));
+  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
+                                    3);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      3 /* RevalidationPolicy::kLoad */, 2);
+
+  // (TODO: crbug.com/1127971) Using the first fetcher now should reuse the same
+  // resource as was earlier loaded by the same fetcher.
+  // EXPECT_EQ(resource_a1, resource_a2);
+  Resource* resource_a2 = MockResource::Fetch(fetch_params, fetcher_a, nullptr);
+  EXPECT_EQ(resource_b, resource_a2);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      0 /* RevalidationPolicy::kUse */, 2);
+
+  // Using the second fetcher now should reuse the same resource as was earlier
+  // loaded by the same fetcher.
+  Resource* resource_b1 = MockResource::Fetch(fetch_params, fetcher_b, nullptr);
+  EXPECT_EQ(resource_b, resource_b1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      0 /* RevalidationPolicy::kUse */, 3);
 }
 
 TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {

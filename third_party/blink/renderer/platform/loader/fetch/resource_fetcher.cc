@@ -742,7 +742,6 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     const FetchParameters& params,
     const ResourceFactory& factory,
     bool is_static_data,
-    bool in_cached_resources_map,
     bool same_top_frame_site_resource_cached) const {
   if (is_static_data)
     return;
@@ -751,11 +750,6 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     DEFINE_RESOURCE_HISTOGRAM("Preload.");
   } else {
     DEFINE_RESOURCE_HISTOGRAM("");
-
-    // Log metrics to evaluate effectiveness of the memory cache if it were
-    // scoped to the document.
-    if (in_cached_resources_map)
-      DEFINE_RESOURCE_HISTOGRAM("PerDocument.");
 
     // Log metrics to evaluate effectiveness of the memory cache if it was
     // partitioned by the top-frame site.
@@ -1046,6 +1040,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   bool same_top_frame_site_resource_cached = false;
+  bool in_cached_resources_map = cached_resources_map_.Contains(
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
+
   if (!is_stale_revalidation && !resource) {
     resource = MatchPreload(params, resource_type);
     if (resource) {
@@ -1054,8 +1051,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       // found, we may need to make it block the onload event.
       MakePreloadedResourceBlockOnloadIfNeeded(resource, params);
     } else if (IsMainThread()) {
-      resource = GetMemoryCache()->ResourceForURL(
-          params.Url(), GetCacheIdentifier(params.Url()));
+      if (base::FeatureList::IsEnabled(features::kScopeMemoryCachePerContext) &&
+          !in_cached_resources_map) {
+        resource = nullptr;
+      } else {
+        resource = GetMemoryCache()->ResourceForURL(
+            params.Url(), GetCacheIdentifier(params.Url()));
+      }
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
@@ -1069,11 +1071,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
   }
 
-  bool in_cached_resources_map = cached_resources_map_.Contains(
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
-
   UpdateMemoryCacheStats(resource, policy, params, factory, is_static_data,
-                         in_cached_resources_map,
                          same_top_frame_site_resource_cached);
 
   switch (policy) {
@@ -1265,9 +1263,12 @@ Resource* ResourceFetcher::CreateResourceForLoading(
     const ResourceFactory& factory) {
   const String cache_identifier =
       GetCacheIdentifier(params.GetResourceRequest().Url());
-  DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
-         !GetMemoryCache()->ResourceForURL(params.GetResourceRequest().Url(),
-                                           cache_identifier));
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kScopeMemoryCachePerContext)) {
+    DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
+           !GetMemoryCache()->ResourceForURL(params.GetResourceRequest().Url(),
+                                             cache_identifier));
+  }
 
   RESOURCE_LOADING_DVLOG(1) << "Loading Resource for "
                             << params.GetResourceRequest().Url().ElidedString();
@@ -1500,6 +1501,8 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
     bool is_static_data) const {
   const ResourceRequest& request = fetch_params.GetResourceRequest();
 
+  Resource* cached_resource_in_fetcher = CachedResource(request.Url());
+
   if (IsDownloadOrStreamRequest(request)) {
     return {RevalidationPolicy::kReload,
             "It is for download or for streaming."};
@@ -1621,7 +1624,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
   // validation. We restrict this only to images from memory cache which are the
   // same as the version in the current document.
   if (type == ResourceType::kImage &&
-      &existing_resource == CachedResource(request.Url())) {
+      &existing_resource == cached_resource_in_fetcher) {
     return {RevalidationPolicy::kUse,
             "Images can be reused without cache validation."};
   }

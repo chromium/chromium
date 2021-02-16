@@ -868,5 +868,11 @@ const base::Feature kTextFragmentColorChange{"TextFragmentColorChange",
 const base::Feature kDisableDocumentDomainByDefault{
     "DisableDocumentDomainByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Scopes the memory cache to a fetcher i.e. document/frame. Any resource cached
+// in the blink cache will only be reused if the most recent fetcher that
+// fetched it was the same as the current document.
+const base::Feature kScopeMemoryCachePerContext{
+    "ScopeMemoryCachePerContext", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

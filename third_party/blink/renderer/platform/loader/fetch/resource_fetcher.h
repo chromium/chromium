@@ -423,7 +423,6 @@ class PLATFORM_EXPORT ResourceFetcher
                               const FetchParameters&,
                               const ResourceFactory&,
                               bool is_static_data,
-                              bool in_cached_resources_map,
                               bool same_top_frame_site_resource_cached) const;
 
   void ScheduleStaleRevalidate(Resource* stale_resource);

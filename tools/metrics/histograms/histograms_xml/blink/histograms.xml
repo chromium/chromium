@@ -1737,6 +1737,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.PerDocument"
     enum="RevalidationPolicy" expires_after="2021-06-20">
+  <obsolete>
+    Removed in M89. Obsolete and unused. This has been replaced with
+    Blink.MemoryCache.RevalidationPolicy with feature
+    ScopeMemoryCachePerContext.
+  </obsolete>
   <owner>shivanisha@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
