@@ -21,6 +21,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageRead:
       return PAGE_READONLY;
     case PageReadWrite:
+    case PageReadWriteTagged:
       return PAGE_READWRITE;
     case PageReadExecute:
       return PAGE_EXECUTE_READ;

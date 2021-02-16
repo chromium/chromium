@@ -131,6 +131,17 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 }
 
+config("memory_tagging") {
+  if (current_cpu == "arm64" &&
+      (is_linux || is_chromeos || is_android || is_fuchsia)) {
+    # base/ has access to the MTE intrinsics because it needs to use them,
+    # but they're not backwards compatible. Use base::CPU::has_mte()
+    # beforehand to confirm or use indirect functions (ifuncs) to select
+    # an MTE-specific implementation at dynamic link-time.
+    cflags = [ "-march=armv8-a+memtag" ]
+  }
+}
+
 config("base_implementation") {
   defines = [ "BASE_IMPLEMENTATION" ]
   configs = [ "//build/config/compiler:wexit_time_destructors" ]
@@ -392,6 +403,8 @@ component("base") {
     "memory/shared_memory_tracker.cc",
     "memory/shared_memory_tracker.h",
     "memory/singleton.h",
+    "memory/tagging.cc",
+    "memory/tagging.h",
     "memory/unsafe_shared_memory_region.cc",
     "memory/unsafe_shared_memory_region.h",
     "memory/weak_ptr.cc",
@@ -1305,6 +1318,7 @@ component("base") {
 
   configs += [
     ":base_implementation",
+    ":memory_tagging",
     "//build/config:precompiled_headers",
     "//build/config/compiler:noshadowing",
     "//build/config/compiler:wglobal_constructors",
@@ -1881,8 +1895,10 @@ component("base") {
           "allocator/partition_allocator/partition_tls_win.cc",
         ]
       } else if (is_posix) {
-        sources +=
-            [ "allocator/partition_allocator/page_allocator_internals_posix.h" ]
+        sources += [
+          "allocator/partition_allocator/page_allocator_internals_posix.cc",
+          "allocator/partition_allocator/page_allocator_internals_posix.h",
+        ]
       } else if (is_fuchsia) {
         sources += [
           "allocator/partition_allocator/page_allocator_internals_fuchsia.h",
@@ -2796,6 +2812,7 @@ if (build_base_unittests) {
 
   test("base_unittests") {
     sources = [
+      "allocator/partition_allocator/arm_bti_test_functions.h",
       "allocator/tcmalloc_unittest.cc",
       "at_exit_unittest.cc",
       "atomicops_unittest.cc",
@@ -3558,20 +3575,16 @@ if (build_base_unittests) {
       ]
     }
 
+    if (target_cpu == "arm64") {
+      sources += [ "allocator/partition_allocator/arm_bti_test_functions.S" ]
+    }
+
     # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
     configs += [
+      ":memory_tagging",
       "//build/config/compiler:no_size_t_to_int_warning",
       "//build/config/compiler:noshadowing",
     ]
-
-    if (current_cpu == "arm64" &&
-        (is_linux || is_chromeos || is_android || is_fuchsia)) {
-      # base/ has access to the MTE intrinsics because it needs to use them,
-      # but they're not backwards compatible. Use base::CPU::has_mte()
-      # beforehand to confirm or use indirect functions (ifuncs) to select
-      # an MTE-specific implementation via at dynamic link-time.
-      cflags = [ "-march=armv8-a+memtag" ]
-    }
   }
 
   action("build_date") {
