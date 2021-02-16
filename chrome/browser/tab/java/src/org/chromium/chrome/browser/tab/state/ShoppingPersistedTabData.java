@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation
 import org.chromium.chrome.browser.page_annotations.PageAnnotation;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationUtils;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceFactory;
+import org.chromium.chrome.browser.page_annotations.ProductPriceUpdatePageAnnotation;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -89,6 +90,17 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting
     protected EmptyTabObserver mUrlUpdatedObserver;
+
+    @IntDef({PriceDropMethod.NONE, PriceDropMethod.LEGACY, PriceDropMethod.NEW})
+    @Retention(RetentionPolicy.SOURCE)
+    protected @interface PriceDropMethod {
+        int NONE = 0;
+        int LEGACY = 1;
+        int NEW = 2;
+    }
+
+    @VisibleForTesting
+    protected @PriceDropMethod int mPriceDropMethod = PriceDropMethod.NEW;
 
     // Lazy initialization of OptimizationGuideBridgeFactory
     private static class OptimizationGuideBridgeFactoryHolder {
@@ -209,12 +221,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     /**
      * Whether a BuyableProductAnnotation was found or not
      */
-    @IntDef({FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND})
+    @IntDef({FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND,
+            FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE})
     @Retention(RetentionPolicy.SOURCE)
     @interface FoundBuyableProductAnnotation {
         int NOT_FOUND = 0;
         int FOUND = 1;
-        int NUM_ENTRIES = 2;
+        int FOUND_WITH_PRICE_UPDATE = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**
@@ -240,7 +254,17 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
         BuyableProductPageAnnotation buyableProduct =
                 PageAnnotationUtils.getAnnotation(annotations, BuyableProductPageAnnotation.class);
-        if (buyableProduct != null) {
+
+        ProductPriceUpdatePageAnnotation productPriceUpdate = PageAnnotationUtils.getAnnotation(
+                annotations, ProductPriceUpdatePageAnnotation.class);
+
+        if (buyableProduct != null && productPriceUpdate != null) {
+            res.setPriceMicros(productPriceUpdate.getNewPriceMicros());
+            res.setPreviousPriceMicros(productPriceUpdate.getOldPriceMicros());
+            res.setCurrencyCode(productPriceUpdate.getCurrencyCode());
+            res.setLastUpdatedMs(System.currentTimeMillis());
+            foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE;
+        } else if (buyableProduct != null) {
             res.setPriceMicros(
                     buyableProduct.getCurrentPriceMicros(), previousShoppingPersistedTabData);
             res.setCurrencyCode(buyableProduct.getCurrencyCode());
@@ -253,7 +277,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);
         // Only persist this ShoppingPersistedTabData if it was correctly populated from the
         // response
-        if (foundBuyableProductAnnotation == FoundBuyableProductAnnotation.FOUND) {
+        if (foundBuyableProductAnnotation == FoundBuyableProductAnnotation.FOUND
+                || foundBuyableProductAnnotation
+                        == FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE) {
             res.enableSaving();
             return res;
         }
@@ -279,6 +305,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mPreviousPriceMicros = previousShoppingPersistedTabData.getPreviousPriceMicros();
             mLastPriceChangeTimeMs = previousShoppingPersistedTabData.getLastPriceChangeTimeMs();
         }
+        save();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void setPriceMicros(long priceMicros) {
+        mPriceMicros = priceMicros;
         save();
     }
 
@@ -325,7 +357,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * Deprecate getPrice and getPriceString(). Change price and previousPriceString
      * representations to be numeric to make drop comparison easier.
      */
-    public PriceDrop getPriceDrop() {
+    public PriceDrop getPriceDropLegacy() {
+        assert mPriceDropMethod == PriceDropMethod.LEGACY;
         if (mPriceMicros == NO_PRICE_KNOWN || mPreviousPriceMicros == NO_PRICE_KNOWN
                 || !isQualifyingPriceDrop() || isPriceChangeStale()) {
             return null;
@@ -335,6 +368,32 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (formattedPrice.equals(formattedPreviousPrice)) {
             return null;
         }
+        return new PriceDrop(formattedPrice, formattedPreviousPrice);
+    }
+
+    /**
+     * @return {@link PriceDrop} relating to the main offer in the page.
+     */
+    public PriceDrop getPriceDrop() {
+        assert mPriceDropMethod == PriceDropMethod.NEW;
+        if (!isValidPriceDropUpdate() || isPriceChangeStale()) {
+            return null;
+        }
+        return createPriceDrop(mPriceMicros, mPreviousPriceMicros);
+    }
+
+    private boolean isValidPriceDropUpdate() {
+        return mPriceMicros != NO_PRICE_KNOWN && mPreviousPriceMicros != NO_PRICE_KNOWN
+                && mPriceMicros < mPreviousPriceMicros;
+    }
+
+    private PriceDrop createPriceDrop(long priceMicros, long previousPriceMicros) {
+        String formattedPrice = formatPrice(priceMicros);
+        String formattedPreviousPrice = formatPrice(previousPriceMicros);
+        if (formattedPrice.equals(formattedPreviousPrice)) {
+            return null;
+        }
+
         return new PriceDrop(formattedPrice, formattedPreviousPrice);
     }
 
