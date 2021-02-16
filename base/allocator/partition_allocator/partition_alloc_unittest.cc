@@ -2960,6 +2960,36 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
 
 #endif
 
+// Test for crash http://crbug.com/1169003.
+TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
+  // Size is large enough to satisfy it from a single-slot slot span
+  size_t test_size =
+      SystemPageSize() * MaxSystemPagesPerSlotSpan() - kExtraAllocSize;
+  void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull, test_size,
+                                           nullptr);
+  EXPECT_TRUE(ptr);
+
+  // Create new root to simulate ConfigurePartitionRefCountSupport(false)
+
+  // Copied from ConfigurePartitionRefCountSupport()
+  allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
+                                PartitionPurgeDiscardUnusedSystemPages);
+
+  // Create a new root
+  auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>({
+      base::PartitionOptions::Alignment::kRegular,
+      base::PartitionOptions::ThreadCache::kDisabled,
+      base::PartitionOptions::Quarantine::kDisallowed,
+      base::PartitionOptions::RefCount::kDisabled,
+  });
+
+  // Realloc from |allocator.root()| into |new_root|.
+  void* ptr2 = new_root->ReallocFlags(PartitionAllocReturnNull, ptr,
+                                      test_size + 1024, nullptr);
+  EXPECT_TRUE(ptr2);
+  EXPECT_NE(ptr, ptr2);
+}
+
 TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
   size_t allocation_size = 64;
   // The very first allocation is never a fast path one, since it needs a new

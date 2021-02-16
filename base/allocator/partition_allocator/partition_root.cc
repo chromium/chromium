@@ -638,6 +638,51 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 }
 
 template <bool thread_safe>
+bool PartitionRoot<thread_safe>::TryReallocInPlace(void* ptr,
+                                                   SlotSpan* slot_span,
+                                                   size_t new_size) {
+  // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
+  // new size is a significant percentage smaller. We could do the same if we
+  // determine it is a win.
+  if (AllocationCapacityFromRequestedSize(new_size) !=
+      AllocationCapacityFromPtr(ptr))
+    return false;
+
+  // Trying to allocate |new_size| would use the same amount of
+  // underlying memory as we're already using, so re-use the allocation
+  // after updating statistics (and cookies, if present).
+  if (slot_span->CanStoreRawSize()) {
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
+    void* slot_start = AdjustPointerForExtrasSubtract(ptr);
+    internal::PartitionRefCount* old_ref_count;
+    if (allow_ref_count) {
+      PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
+      old_ref_count = internal::PartitionRefCountPointer(slot_start);
+    }
+#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
+    slot_span->SetRawSize(new_raw_size);
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
+    if (allow_ref_count) {
+      internal::PartitionRefCount* new_ref_count =
+          internal::PartitionRefCountPointer(slot_start);
+      PA_DCHECK(new_ref_count == old_ref_count);
+    }
+#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
+#if DCHECK_IS_ON()
+    // Write a new trailing cookie only when it is possible to keep track
+    // raw size (otherwise we wouldn't know where to look for it later).
+    if (allow_cookies) {
+      size_t usable_size = slot_span->GetUsableSize(this);
+      internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
+                                          usable_size);
+    }
+#endif
+  }
+  return ptr;
+}
+
+template <bool thread_safe>
 void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
                                                void* ptr,
                                                size_t new_size,
@@ -673,20 +718,21 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
         &old_usable_size, ptr);
   }
   if (LIKELY(!overridden)) {
-    auto* slot_span =
-        SlotSpan::FromSlotStartPtr(AdjustPointerForExtrasSubtract(ptr));
+    // |ptr| may have been allocated in another root.
+    SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
+    auto* old_root = PartitionRoot::FromSlotSpan(slot_span);
     bool success = false;
     {
-      internal::ScopedGuard<thread_safe> guard{lock_};
+      internal::ScopedGuard<thread_safe> guard{old_root->lock_};
       // TODO(palmer): See if we can afford to make this a CHECK.
       PA_DCHECK(IsValidSlotSpan(slot_span));
-      old_usable_size = slot_span->GetUsableSize(this);
+      old_usable_size = slot_span->GetUsableSize(old_root);
 
       if (UNLIKELY(slot_span->bucket->is_direct_mapped())) {
         // We may be able to perform the realloc in place by changing the
         // accessibility of memory pages and, if reducing the size, decommitting
         // them.
-        success = ReallocDirectMappedInPlace(slot_span, new_size);
+        success = old_root->ReallocDirectMappedInPlace(slot_span, new_size);
       }
     }
     if (success) {
@@ -697,44 +743,8 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       return ptr;
     }
 
-    // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
-    // new size is a significant percentage smaller. We could do the same if we
-    // determine it is a win.
-    if (AllocationCapacityFromRequestedSize(new_size) ==
-        AllocationCapacityFromPtr(ptr)) {
-      // Trying to allocate |new_size| would use the same amount of
-      // underlying memory as we're already using, so re-use the allocation
-      // after updating statistics (and cookies, if present).
-      if (slot_span->CanStoreRawSize()) {
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
-        void* slot_start = AdjustPointerForExtrasSubtract(ptr);
-        internal::PartitionRefCount* old_ref_count;
-        if (allow_ref_count) {
-          PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
-          old_ref_count = internal::PartitionRefCountPointer(slot_start);
-        }
-#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
-        size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
-        slot_span->SetRawSize(new_raw_size);
-#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
-        if (allow_ref_count) {
-          internal::PartitionRefCount* new_ref_count =
-              internal::PartitionRefCountPointer(slot_start);
-          PA_DCHECK(new_ref_count == old_ref_count);
-        }
-#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) && DCHECK_IS_ON()
-#if DCHECK_IS_ON()
-        // Write a new trailing cookie only when it is possible to keep track
-        // raw size (otherwise we wouldn't know where to look for it later).
-        if (allow_cookies) {
-          size_t usable_size = slot_span->GetUsableSize(this);
-          internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
-                                              usable_size);
-        }
-#endif
-      }
+    if (old_root->TryReallocInPlace(ptr, slot_span, new_size))
       return ptr;
-    }
   }
 
   // This realloc cannot be resized in-place. Sadness.

@@ -449,6 +449,7 @@ struct BASE_EXPORT PartitionRoot {
                                       bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  bool TryReallocInPlace(void* ptr, SlotSpan* slot_span, size_t new_size);
   bool ReallocDirectMappedInPlace(
       internal::SlotSpanMetadata<thread_safe>* slot_span,
       size_t requested_size) EXCLUSIVE_LOCKS_REQUIRED(lock_);
