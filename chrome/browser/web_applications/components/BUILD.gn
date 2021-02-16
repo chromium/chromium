@@ -56,6 +56,10 @@ source_set("components") {
     "web_app_id_constants.h",
     "web_app_install_utils.cc",
     "web_app_install_utils.h",
+    "web_app_origin_association_manager.cc",
+    "web_app_origin_association_manager.h",
+    "web_app_origin_association_task.cc",
+    "web_app_origin_association_task.h",
     "web_app_prefs_utils.cc",
     "web_app_prefs_utils.h",
     "web_app_protocol_handler_registration.cc",
@@ -147,6 +151,7 @@ source_set("components") {
       [ "//components/services/app_service/public/cpp:app_share_target" ]
 
   deps = [
+    "//base",
     "//build:chromeos_buildflags",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
@@ -157,6 +162,7 @@ source_set("components") {
     "//components/crx_file",
     "//components/keyed_service/content",
     "//components/pref_registry",
+    "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/mojom",
     "//components/site_engagement/content",
@@ -164,11 +170,17 @@ source_set("components") {
     "//components/user_manager:user_manager",
     "//components/webapps/browser",
     "//components/webapps/common:mojo_bindings",
+    "//components/webapps/services/web_app_origin_association:lib",
+    "//components/webapps/services/web_app_origin_association:service",
     "//content/public/browser",
     "//extensions/common:common_constants",
+    "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network/public/cpp",
     "//services/preferences/public/cpp",
     "//skia",
+    "//third_party/blink/public/common",
+    "//url",
   ]
 
   if (is_win) {
@@ -272,7 +284,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "web_app_url_loader_browsertest.cc" ]
+  sources = [
+    "web_app_origin_association_manager_browsertest.cc",
+    "web_app_url_loader_browsertest.cc",
+  ]
 
   if (is_linux || is_chromeos_lacros) {
     sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
@@ -282,10 +297,14 @@ source_set("browser_tests") {
 
   deps = [
     ":components",
+    "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/webapps/services/web_app_origin_association/test:test_support",
     "//net:test_support",
+    "//third_party/blink/public/common",
+    "//url",
   ]
 }

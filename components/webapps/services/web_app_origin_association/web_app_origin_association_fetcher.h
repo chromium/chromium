@@ -30,13 +30,13 @@ using FetchFileCallback =
 class WebAppOriginAssociationFetcher {
  public:
   WebAppOriginAssociationFetcher();
-  ~WebAppOriginAssociationFetcher();
+  virtual ~WebAppOriginAssociationFetcher();
   WebAppOriginAssociationFetcher(const WebAppOriginAssociationFetcher&) =
       delete;
   WebAppOriginAssociationFetcher& operator=(
       const WebAppOriginAssociationFetcher&) = delete;
 
-  void FetchWebAppOriginAssociationFile(
+  virtual void FetchWebAppOriginAssociationFile(
       const apps::UrlHandlerInfo& url_handler,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       FetchFileCallback callback);

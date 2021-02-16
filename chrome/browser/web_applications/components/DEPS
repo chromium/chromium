@@ -1,0 +1,9 @@
+include_rules = {
+  "+base",
+  "+chrome/browser",
+  "+components/webapps/services/web_app_origin_association",
+  "+mojo/public/cpp/bindings",
+  "+services/network/public/cpp",
+  "+third_party/blink/public/common",
+  "+url",
+}
