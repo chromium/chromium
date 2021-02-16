@@ -1341,7 +1341,7 @@ class GmailLabelClickStory2020(_GmailBrowsingStory):
   TAGS = [story_tags.YEAR_2020]
   SKIP_LOGIN = False
 
-  _UPDATES_SELECTOR = 'div[data-tooltip="Updates"]'
+  _IMPORTANT_SELECTOR = 'div[data-tooltip="Important"]'
 
   # Page event queries.
   LABEL_CLICK_BEGIN_EVENT = '''
@@ -1379,8 +1379,8 @@ class GmailLabelClickStory2020(_GmailBrowsingStory):
         "document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
         ".singleNodeValue.click();"
     )
-    action_runner.WaitForElement(selector=self._UPDATES_SELECTOR)
-    action_runner.ClickElement(selector=self._UPDATES_SELECTOR)
+    action_runner.WaitForElement(selector=self._IMPORTANT_SELECTOR)
+    action_runner.ClickElement(selector=self._IMPORTANT_SELECTOR)
     action_runner.WaitForJavaScriptCondition(self.LABEL_CLICK_BEGIN_EVENT)
     action_runner.WaitForJavaScriptCondition(self.LABEL_CLICK_END_EVENT)
 
