@@ -192,11 +192,18 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     }
   }
 
+  // If we know there's no service worker for the origin, let's skip asking
+  // the storage to check the existence.
+  bool skip_service_worker =
+      skip_service_worker_ ||
+      !handle_->context_wrapper()->MaybeHasRegistrationForOrigin(
+          url::Origin::Create(tentative_resource_request.url));
+
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
       context_core->AsWeakPtr(), handle_->container_host(),
-      request_destination_, skip_service_worker_,
+      request_destination_, skip_service_worker,
       handle_->service_worker_accessed_callback());
   request_handler_->MaybeCreateLoader(
       tentative_resource_request, browser_context, std::move(loader_callback),
