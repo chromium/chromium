@@ -598,6 +598,7 @@ crbug.com/591099 virtual/prefer_compositing_to_lcd_text/compositing/overflow/scr
 crbug.com/591099 paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Failure ]
 crbug.com/591099 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Failure ]
 
+crbug.com/591099 external/wpt/css/css-flexbox/flexbox-min-width-auto-005.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox_align-items-stretch-3.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-heights-006.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-heights-014.html [ Failure ]
