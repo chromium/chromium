@@ -17,11 +17,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/accessibility/ax_language_detection.h"
-#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -746,7 +744,7 @@ BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
     return GetRoot();
 
   if (obj->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
-    AXTreeID child_tree_id = AXTreeID::FromString(
+    ui::AXTreeID child_tree_id = ui::AXTreeID::FromString(
         obj->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
     const BrowserAccessibilityManager* child_manager =
         BrowserAccessibilityManager::FromID(child_tree_id);
@@ -951,7 +949,7 @@ void BrowserAccessibilityManager::SetSelection(
 }
 
 void BrowserAccessibilityManager::SetSelection(
-    const BrowserAccessibilityRange& range) {
+    const BrowserAccessibility::AXRange& range) {
   if (!delegate_ || range.IsNull())
     return;
 
@@ -1482,11 +1480,11 @@ void BrowserAccessibilityManager::RemoveObserver(ui::AXTreeObserver* observer) {
   ax_tree()->RemoveObserver(observer);
 }
 
-AXTreeID BrowserAccessibilityManager::GetTreeID() const {
+ui::AXTreeID BrowserAccessibilityManager::GetTreeID() const {
   return ax_tree_id();
 }
 
-AXTreeID BrowserAccessibilityManager::GetParentTreeID() const {
+ui::AXTreeID BrowserAccessibilityManager::GetParentTreeID() const {
   return GetTreeData().parent_tree_id;
 }
 
@@ -1523,7 +1521,7 @@ ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
         parent_manager->GetNodeFromTree(parent_tree_id, host_node_id);
     if (parent_node) {
       DCHECK_EQ(ax_tree_id_,
-                AXTreeID::FromString(parent_node->GetStringAttribute(
+                ui::AXTreeID::FromString(parent_node->GetStringAttribute(
                     ax::mojom::StringAttribute::kChildTreeId)));
       return parent_node;
     }

@@ -20,7 +20,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_position.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -54,6 +53,10 @@ class BrowserAccessibilityManager;
 ////////////////////////////////////////////////////////////////////////////////
 class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
  public:
+  using AXPosition = ui::AXNodePosition::AXPositionInstance;
+  using SerializedPosition = ui::AXNodePosition::SerializedPosition;
+  using AXRange = ui::AXRange<AXPosition::element_type>;
+
   // Creates a platform specific BrowserAccessibility. Ownership passes to the
   // caller.
   static BrowserAccessibility* Create();
@@ -359,36 +362,24 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // implement this functionality.
   std::string GetLiveRegionText() const;
 
-  // Creates a text position rooted at this object. Does not conver to a
-  // leaf text position - see CreatePositionForSelectionAt, below.
-  BrowserAccessibilityPosition::AXPositionInstance CreatePositionAt(
-      int offset,
-      ax::mojom::TextAffinity affinity =
-          ax::mojom::TextAffinity::kDownstream) const;
+  // Creates a text position rooted at this object. Does not convert to a
+  // leaf text position - see CreatePositionForSelectionAt, below. |offset|
+  // could only be a character offset, either in the object's inner text
+  // (Android and Mac), or in the object's hypertext (Linux ATK and Windows
+  // IA2).
+  AXPosition CreatePositionAt(int offset,
+                              ax::mojom::TextAffinity affinity =
+                                  ax::mojom::TextAffinity::kDownstream) const;
 
-  // |offset| could either be a text character or a child index in case of
-  // non-text objects. Converts to a leaf text position if you pass a
-  // character offset on a container node.
-  BrowserAccessibilityPosition::AXPositionInstance CreatePositionForSelectionAt(
-      int offset) const;
+  // |offset| could only be a character offset. Depending on the platform, the
+  // character offset could be either in the object's inner text (Android and
+  // Mac), or an offset in the object's hypertext (Linux ATK and Windows IA2).
+  // Converts to a leaf text position if you pass a character offset on a
+  // non-leaf node.
+  AXPosition CreatePositionForSelectionAt(int offset) const;
 
   // Gets the text offsets where new lines start.
   std::vector<int> GetLineStartOffsets() const;
-
-  gfx::NativeViewAccessible GetNativeViewAccessible() override;
-
-  // AXPosition Support
-
-  // Returns the text that is present inside this node, where the
-  // representation of text found in descendant nodes depends on the platform.
-  // For example some platforms may include descendant text while while other
-  // platforms may use a special character to represent descendant text.
-  // Prefer either GetHypertext or GetInnerText so it's clear which API is
-  // called.
-  //
-  // TODO(nektar): Move this method to AXNode when AXNodePosition and
-  // BrowserAccessibilityPosition are merged into one class.
-  virtual base::string16 GetText() const;
 
   base::string16 GetNameAsString16() const;
 
@@ -397,9 +388,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   const ui::AXNodeData& GetData() const override;
   const ui::AXTreeData& GetTreeData() const override;
   const ui::AXTree::Selection GetUnignoredSelection() const override;
-  ui::AXNodePosition::AXPositionInstance CreateTextPositionAt(
-      int offset) const override;
+  AXPosition CreateTextPositionAt(int offset) const override;
   gfx::NativeViewAccessible GetNSWindow() override;
+  gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() override;
   int GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(int index) override;
@@ -548,15 +539,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::string ToString() const;
 
  protected:
-  // The UIA tree formatter needs access to GetUniqueId() to identify the
-  // starting point for tree dumps.
-  friend class AccessibilityTreeFormatterUia;
-
-  using BrowserAccessibilityPositionInstance =
-      BrowserAccessibilityPosition::AXPositionInstance;
-  using AXPlatformRange =
-      ui::AXRange<BrowserAccessibilityPositionInstance::element_type>;
-
   virtual ui::TextAttributeList ComputeTextAttributes() const;
 
   // The manager of this tree of accessibility objects.
@@ -577,6 +559,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   ui::TextAttributeMap GetSpellingAndGrammarAttributes() const;
 
   std::string SubtreeToStringHelper(size_t level) override;
+
+  // The UIA tree formatter needs access to GetUniqueId() to identify the
+  // starting point for tree dumps.
+  friend class AccessibilityTreeFormatterUia;
 
  private:
   // Return the bounds after converting from this node's coordinate system

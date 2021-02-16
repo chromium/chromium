@@ -20,7 +20,7 @@ class OptionalNSObject;
 class CONTENT_EXPORT AccessibilityTreeFormatterMac
     : public ui::AXTreeFormatterBase {
  public:
-  explicit AccessibilityTreeFormatterMac();
+  AccessibilityTreeFormatterMac();
   ~AccessibilityTreeFormatterMac() override;
 
   base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
@@ -63,9 +63,11 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
   base::Value PopulateRect(NSRect) const;
   base::Value PopulateRange(NSRange) const;
   base::Value PopulateTextPosition(
-      BrowserAccessibilityPosition::AXPositionInstance::pointer,
-      const a11y::LineIndexer*) const;
-  base::Value PopulateTextMarkerRange(id, const a11y::LineIndexer*) const;
+      const BrowserAccessibility::AXPosition& position,
+      const a11y::LineIndexer* line_indexer) const;
+  base::Value PopulateTextMarkerRange(
+      id marker_range,
+      const a11y::LineIndexer* line_indexer) const;
   base::Value PopulateObject(id, const a11y::LineIndexer* line_indexer) const;
   base::Value PopulateArray(NSArray*,
                             const a11y::LineIndexer* line_indexer) const;

@@ -653,16 +653,16 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
             *after_iframe_node->CreatePositionAt(0));
 
   // Traverse the leaves of the AXTree forwards.
-  BrowserAccessibilityPosition::AXPositionInstance tree_position =
+  BrowserAccessibility::AXPosition tree_position =
       root_node->CreatePositionAt(0)->CreateNextLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
-  EXPECT_EQ(before_iframe_node, tree_position->GetAnchor());
+  EXPECT_EQ(before_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreateNextLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
-  EXPECT_EQ(inside_iframe_node, tree_position->GetAnchor());
+  EXPECT_EQ(inside_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreateNextLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
-  EXPECT_EQ(after_iframe_node, tree_position->GetAnchor());
+  EXPECT_EQ(after_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreateNextLeafTreePosition();
   EXPECT_TRUE(tree_position->IsNullPosition());
 
@@ -671,13 +671,13 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
                       ->CreatePositionAtEndOfAnchor()
                       ->AsLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
-  EXPECT_EQ(after_iframe_node, tree_position->GetAnchor());
+  EXPECT_EQ(after_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreatePreviousLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
-  EXPECT_EQ(inside_iframe_node, tree_position->GetAnchor());
+  EXPECT_EQ(inside_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreatePreviousLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
-  EXPECT_EQ(before_iframe_node, tree_position->GetAnchor());
+  EXPECT_EQ(before_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreatePreviousLeafTreePosition();
   EXPECT_TRUE(tree_position->IsNullPosition());
 }

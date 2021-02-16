@@ -18,7 +18,7 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_position.h"
+#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "content/common/render_accessibility.mojom-forward.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -28,6 +28,7 @@
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
@@ -40,7 +41,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
-class BrowserAccessibility;
+
 class BrowserAccessibilityDelegate;
 class BrowserAccessibilityManager;
 #if defined(OS_ANDROID)
@@ -135,12 +136,6 @@ struct BrowserAccessibilityFindInPageInfo {
 class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
                                                    public ui::AXTreeManager,
                                                    public WebContentsObserver {
- protected:
-  using BrowserAccessibilityPositionInstance =
-      BrowserAccessibilityPosition::AXPositionInstance;
-  using BrowserAccessibilityRange =
-      ui::AXRange<BrowserAccessibilityPositionInstance::element_type>;
-
  public:
   // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
@@ -300,7 +295,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   void SetScrollOffset(const BrowserAccessibility& node, gfx::Point offset);
   void SetValue(const BrowserAccessibility& node, const std::string& value);
   void SetSelection(const ui::AXActionData& action_data);
-  void SetSelection(const BrowserAccessibilityRange& range);
+  void SetSelection(const BrowserAccessibility::AXRange& range);
   void ShowContextMenu(const BrowserAccessibility& node);
   void SignalEndOfTest();
 
@@ -470,8 +465,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   ui::AXNode* GetNodeFromTree(ui::AXNodeID node_id) const override;
   void AddObserver(ui::AXTreeObserver* observer) override;
   void RemoveObserver(ui::AXTreeObserver* observer) override;
-  AXTreeID GetTreeID() const override;
-  AXTreeID GetParentTreeID() const override;
+  ui::AXTreeID GetTreeID() const override;
+  ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRootAsAXNode() const override;
   ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
   void WillBeRemovedFromMap() override;

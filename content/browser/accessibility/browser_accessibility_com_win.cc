@@ -39,11 +39,6 @@ const uint32_t kScreenReaderAndHTMLAccessibilityModes =
 
 namespace content {
 
-using BrowserAccessibilityPositionInstance =
-    BrowserAccessibilityPosition::AXPositionInstance;
-using AXPlatformRange =
-    ui::AXRange<BrowserAccessibilityPositionInstance::element_type>;
-
 void AddAccessibilityModeFlags(ui::AXMode mode_flags) {
   BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
       mode_flags);

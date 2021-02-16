@@ -55,9 +55,9 @@ const char kFailedToParseError[] = "_const_ERROR:FAILED_TO_PARSE";
 
 }  // namespace
 
-AccessibilityTreeFormatterMac::AccessibilityTreeFormatterMac() {}
+AccessibilityTreeFormatterMac::AccessibilityTreeFormatterMac() = default;
 
-AccessibilityTreeFormatterMac::~AccessibilityTreeFormatterMac() {}
+AccessibilityTreeFormatterMac::~AccessibilityTreeFormatterMac() = default;
 
 void AccessibilityTreeFormatterMac::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
@@ -241,7 +241,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
 
   // AXTextMarker
   if (content::IsAXTextMarker(value)) {
-    return PopulateTextPosition(content::AXTextMarkerToPosition(value).get(),
+    return PopulateTextPosition(content::AXTextMarkerToAXPosition(value),
                                 line_indexer);
   }
 
@@ -328,13 +328,15 @@ base::Value AccessibilityTreeFormatterMac::PopulateRange(
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
-    BrowserAccessibilityPosition::AXPositionInstance::pointer position,
+    const BrowserAccessibility::AXPosition& position,
     const LineIndexer* line_indexer) const {
-  if (position->IsNullPosition()) {
+  if (position->IsNullPosition())
     return base::Value(kNULLValue);
-  }
 
-  BrowserAccessibility* anchor = position->GetAnchor();
+  auto* manager = BrowserAccessibilityManager::FromID(position->tree_id());
+  DCHECK(manager) << "A non-null position should have an associated AX tree.";
+  BrowserAccessibility* anchor = manager->GetFromID(position->anchor_id());
+  DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
   BrowserAccessibilityCocoa* cocoa_anchor = ToBrowserAccessibilityCocoa(anchor);
 
   std::string affinity;
@@ -361,16 +363,18 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateTextMarkerRange(
-    id object,
+    id marker_range,
     const LineIndexer* line_indexer) const {
-  auto range = content::AXTextMarkerRangeToRange(object);
-  if (range.IsNull()) {
+  BrowserAccessibility::AXRange ax_range =
+      content::AXTextMarkerRangeToAXRange(marker_range);
+  if (ax_range.IsNull())
     return base::Value(kNULLValue);
-  }
 
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetPath("anchor", PopulateTextPosition(range.anchor(), line_indexer));
-  dict.SetPath("focus", PopulateTextPosition(range.focus(), line_indexer));
+  dict.SetPath("anchor",
+               PopulateTextPosition(ax_range.anchor()->Clone(), line_indexer));
+  dict.SetPath("focus",
+               PopulateTextPosition(ax_range.focus()->Clone(), line_indexer));
   return dict;
 }
 

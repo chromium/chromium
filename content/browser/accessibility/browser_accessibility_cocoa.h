@@ -13,6 +13,8 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_range.h"
 
 namespace content {
 
@@ -33,25 +35,27 @@ struct CONTENT_EXPORT AXTextEdit {
   base::scoped_nsprotocol<id> edit_text_marker;
 };
 
-// Returns true if the given object is AXTextMarker object.
-bool IsAXTextMarker(id);
+// Uses a system API to verify that the given object is an AXTextMarker object.
+bool IsAXTextMarker(id text_marker);
 
-// Returns true if the given object is AXTextMarkerRange object.
-bool IsAXTextMarkerRange(id);
+// Uses a system API to verify that the given object is an AXTextMarkerRange
+// object.
+bool IsAXTextMarkerRange(id marker_range);
 
-// Returns browser accessibility position for the given AXTextMarker.
-CONTENT_EXPORT BrowserAccessibilityPosition::AXPositionInstance AXTextMarkerToPosition(id);
+// Returns the AXNodePosition representing the given AXTextMarker.
+CONTENT_EXPORT BrowserAccessibility::AXPosition AXTextMarkerToAXPosition(
+    id text_marker);
 
-// Returns browser accessibility range for the given AXTextMarkerRange.
-BrowserAccessibilityPosition::AXRangeType AXTextMarkerRangeToRange(id);
+// Returns the AXRange representing the given AXTextMarkerRange.
+BrowserAccessibility::AXRange AXTextMarkerRangeToAXRange(id marker_range);
 
-// Returns AXTextMarker for the given browser accessibility position.
+// Returns an AXTextMarker representing the given position in the tree.
 id AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
                     int offset,
                     ax::mojom::TextAffinity affinity);
 
-// Returns AXTextMarkerRange for the given browser accessibility positions.
-id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
+// Returns an AXTextMarkerRange that spans the given AXTextMarkers.
+id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 
 }  // namespace content
 

@@ -66,10 +66,6 @@ void BrowserAccessibilityWin::OnLocationChanged() {
   GetCOM()->FireNativeEvent(EVENT_OBJECT_LOCATIONCHANGE);
 }
 
-base::string16 BrowserAccessibilityWin::GetText() const {
-  return GetHypertext();
-}
-
 base::string16 BrowserAccessibilityWin::GetHypertext() const {
   return GetCOM()->AXPlatformNodeWin::GetHypertext();
 }

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/browser_accessibility_cocoa.h"
+
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   AXTextEdit text_edit = [cocoa_text_field computeTextEdit];
   EXPECT_NE(text_edit.edit_text_marker, nil);
 
-  EXPECT_EQ(AXTextMarkerToPosition(text_edit.edit_text_marker)->ToString(),
+  EXPECT_EQ(AXTextMarkerToAXPosition(text_edit.edit_text_marker)->ToString(),
             "TextPosition anchor_id=4 text_offset=1 affinity=downstream "
             "annotated_text=B<>");
 }
