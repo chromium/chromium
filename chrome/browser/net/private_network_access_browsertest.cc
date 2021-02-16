@@ -5,16 +5,24 @@
 #include <map>
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,6 +74,18 @@ GURL PublicSecureURL(const net::EmbeddedTestServer& server) {
 
 GURL PublicNonSecureURL(const net::EmbeddedTestServer& server) {
   return NonSecureURL(server, kTreatAsPublicAddressPath);
+}
+
+// Similar to LocalNonSecure() but can be fetched by any origin.
+GURL LocalNonSecureWithCrossOriginCors(const net::EmbeddedTestServer& server) {
+  return SecureURL(server, "/cors-ok.txt");
+}
+
+// The returned script evaluates to a boolean indicating whether the fetch
+// succeeded or not.
+std::string FetchScript(const GURL& url) {
+  return content::JsReplace(
+      "fetch($1).then(response => true).catch(error => false)", url);
 }
 
 constexpr WebFeature kAllAddressSpaceFeatures[] = {
@@ -343,6 +363,139 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
   EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
+}
+
+// This test verifies that the chrome-untrusted:// scheme is considered local
+// for the purpose of Private Network Access computations.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       SpecialSchemeChromeUntrusted) {
+  // The only way to have a page with a loaded chrome-untrusted:// url without
+  // relying on platform specific or components features, is to use the
+  // new-tab-page host. chrome-untrusted://new-tab-page is restricted to iframes
+  // however so we load chrome://new-tab-page that embeds chrome-untrusted://
+  // frame(s) by default.
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), GURL("chrome://new-tab-page")));
+  std::vector<content::RenderFrameHost*> frames =
+      web_contents()->GetAllFrames();
+  ASSERT_GE(frames.size(), 2u);
+  content::RenderFrameHost* iframe = frames[1];
+  EXPECT_TRUE(iframe->GetLastCommittedURL().SchemeIs(
+      content::kChromeUIUntrustedScheme));
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
+
+  // TODO(crbug.com/591068, crbug.com/1167698): The chrome-untrusted:// page
+  // should be kLocal, and not require a Private Network Access CORS preflight.
+  // However we have not yet implemented the CORS preflight mechanism, and
+  // fixing the underlying issue will not change the test result. Once CORS
+  // preflight is implemented, review this test and delete this comment. Note:
+  // CSP is blocking javascript eval, unless we run it in an isolated world.
+  EXPECT_EQ(true, content::EvalJs(iframe, FetchScript(fetch_url),
+                                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                  content::ISOLATED_WORLD_ID_CONTENT_END));
+}
+
+// This test verifies that the devtools:// scheme is considered local for the
+// purpose of Private Network Access.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       SpecialSchemeDevtools) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), GURL("devtools://devtools/bundled/devtools_app.html")));
+  EXPECT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
+      content::kChromeDevToolsScheme));
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
+
+  // TODO(crbug.com/591068, crbug.com/1167698): The devtools:// page should be
+  // kLocal, and not require a Private Network Access CORS preflight. However we
+  // have not yet implemented the CORS preflight mechanism, and fixing the
+  // underlying issue will not change the test result. Once CORS preflight is
+  // implemented, review this test and delete this comment.
+  EXPECT_EQ(true, content::EvalJs(web_contents(), FetchScript(fetch_url)));
+}
+
+// This test verifies that the chrome-search:// scheme is considered local for
+// the purpose of Private Network Access.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       SpecialSchemeChromeSearch) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), GURL("chrome-search://local-ntp/local-ntp.html")));
+  ASSERT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
+      chrome::kChromeSearchScheme));
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
+
+  // TODO(crbug.com/591068, crbug.com/1167698): The chrome-search:// page should
+  // be kLocal, and not require a Private Network Access CORS preflight. However
+  // we have not yet implemented the CORS preflight mechanism, and fixing the
+  // underlying issue will not change the test result. Once CORS preflight is
+  // implemented, review this test and delete this comment. Note: CSP is
+  // blocking javascript eval, unless we run it in an isolated world.
+  EXPECT_EQ(true, content::EvalJs(web_contents(), FetchScript(fetch_url),
+                                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                  content::ISOLATED_WORLD_ID_CONTENT_END));
+}
+
+// This test verifies that the chrome-extension:// scheme is considered local
+// for the purpose of Private Network Access.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       SpecialSchemeChromeExtension) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  static constexpr char kPageFile[] = "page.html";
+
+  std::vector<base::Value> resources;
+  resources.emplace_back(std::string(kPageFile));
+  constexpr char kContents[] = R"(
+  <html>
+    <head>
+      <title>IPAddressSpace of chrome-extension:// schemes.</title>
+    </head>
+    <body>
+    </body>
+  </html>
+  )";
+  base::WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents,
+                  sizeof(kContents) - 1);
+
+  extensions::ExtensionBuilder builder("test");
+  builder.SetPath(temp_dir.GetPath())
+      .SetVersion("1.0")
+      .SetLocation(extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD)
+      .SetManifestKey("web_accessible_resources", std::move(resources));
+
+  extensions::ExtensionService* service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  scoped_refptr<const extensions::Extension> extension = builder.Build();
+  service->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
+
+  const GURL url = extension->GetResourceURL(kPageFile);
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
+      extensions::kExtensionScheme));
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
+
+  // TODO(crbug.com/591068, crbug.com/1167698): The chrome-extension:// page
+  // should be kLocal, and not require a Private Network Access CORS preflight.
+  // However we have not yet implemented the CORS preflight mechanism, and
+  // fixing the underlying issue will not change the test result. Once CORS
+  // preflight is implemented, review this test and delete this comment. Note:
+  // CSP is blocking javascript eval, unless we run it in an isolated world.
+  EXPECT_EQ(true, content::EvalJs(web_contents(), FetchScript(fetch_url),
+                                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                  content::ISOLATED_WORLD_ID_CONTENT_END));
 }
 
 }  // namespace

@@ -105,6 +105,10 @@ Content-type: text/html
 
 )";
 
+// Minimal response headers for an intercepted response to be an error page.
+constexpr base::StringPiece kMinimalErrorResponseHeaders =
+    "HTTP/1.0 404 Not Found";
+
 // Minimal response body containing an HTML document.
 constexpr base::StringPiece kMinimalHtmlBody = R"(
 <html>
@@ -122,42 +126,70 @@ void WriteResponseBody(base::StringPiece body,
             MOJO_RESULT_OK);
 }
 
-// Helper for InterceptorWithFakeEndpoint.
-bool MaybeInterceptWithFakeEndpoint(
+// Helper for MaybeInterceptWithFakeEndPoint.
+network::mojom::URLResponseHeadPtr BuildInterceptedResponseHead(
+    const net::IPEndPoint& endpoint,
+    bool should_succeed) {
+  auto response = network::mojom::URLResponseHead::New();
+  base::StringPiece headers_string =
+      should_succeed ? kMinimalResponseHeaders : kMinimalErrorResponseHeaders;
+  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers_string));
+  if (should_succeed)
+    response->headers->GetMimeType(&response->mime_type);
+  response->remote_endpoint = endpoint;
+  return response;
+}
+
+// Helper for InterceptorWithFakeEndPointInternal.
+bool MaybeInterceptWithFakeEndPoint(
     const GURL& intercepted_url,
     const net::IPEndPoint& endpoint,
+    bool should_succeed,
     content::URLLoaderInterceptor::RequestParams* params) {
   const GURL& request_url = params->url_request.url;
   if (request_url != intercepted_url) {
-    LOG(INFO) << "MaybeInterceptWithFakeEndpoint: ignoring request to "
+    LOG(INFO) << "MaybeInterceptWithFakeEndPoint: ignoring request to "
               << request_url;
     return false;
   }
 
-  LOG(INFO) << "MaybeInterceptWithFakeEndpoint: intercepting request to "
+  LOG(INFO) << "MaybeInterceptWithFakeEndPoint: intercepting request to "
             << request_url;
 
-  auto response = network::mojom::URLResponseHead::New();
-  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(kMinimalResponseHeaders));
-  response->headers->GetMimeType(&response->mime_type);
-  response->remote_endpoint = endpoint;
-  params->client->OnReceiveResponse(std::move(response));
-
+  params->client->OnReceiveResponse(
+      BuildInterceptedResponseHead(endpoint, should_succeed));
   WriteResponseBody(kMinimalHtmlBody, params->client.get());
   return true;
+}
+
+std::unique_ptr<content::URLLoaderInterceptor>
+InterceptorWithFakeEndPointInternal(const GURL& url,
+                                    const net::IPEndPoint& endpoint,
+                                    bool should_succeed) {
+  LOG(INFO) << "Starting to intercept requests to " << url
+            << " with fake endpoint " << endpoint.ToString();
+  return std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+      &MaybeInterceptWithFakeEndPoint, url, endpoint, should_succeed));
 }
 
 // The returned interceptor intercepts requests to |url|, fakes its network
 // endpoint to reflect the value of |endpoint|, and responds OK with a minimal
 // HTML body.
-std::unique_ptr<content::URLLoaderInterceptor> InterceptorWithFakeEndpoint(
+std::unique_ptr<content::URLLoaderInterceptor> InterceptorWithFakeEndPoint(
     const GURL& url,
     const net::IPEndPoint& endpoint) {
-  LOG(INFO) << "Starting to intercept requests to " << url
-            << " with fake endpoint " << endpoint.ToString();
-  return std::make_unique<content::URLLoaderInterceptor>(
-      base::BindRepeating(&MaybeInterceptWithFakeEndpoint, url, endpoint));
+  return InterceptorWithFakeEndPointInternal(url, endpoint,
+                                             /* should_succeed=*/true);
+}
+
+// The returned interceptor intercepts requests to |url|, fakes its network
+// endpoint to reflect the value of |endpoint|, and responds with a 404 error.
+std::unique_ptr<content::URLLoaderInterceptor> FailInterceptorWithFakeEndPoint(
+    const GURL& url,
+    const net::IPEndPoint& endpoint) {
+  return InterceptorWithFakeEndPointInternal(url, endpoint,
+                                             /* should_succeed=*/false);
 }
 
 // A |ContentBrowserClient| implementation that allows modifying the return
@@ -597,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   const GURL url = InsecureDefaultURL(*embedded_test_server());
 
   // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndpoint(
+  auto interceptor = InterceptorWithFakeEndPoint(
       url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -619,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   const GURL url = InsecureDefaultURL(*embedded_test_server());
 
   // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndpoint(
+  auto interceptor = InterceptorWithFakeEndPoint(
       url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -632,6 +664,120 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
             security_state->ip_address_space);
 
   EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
+}
+
+// This test verifies that the chrome:// scheme is considered local for the
+// purpose of Private Network Access.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       CommitsClientSecurityStateForSpecialSchemeChromeURL) {
+  // Not all chrome:// hosts are available in content/ but ukm is one of them.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("chrome://ukm")));
+  EXPECT_TRUE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  // TODO(crbug.com/1167698): This should be kLocal.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+// The view-source:// scheme should only ever appear in the display URL. It
+// shouldn't affect the IPAddressSpace computation. This test verifies that we
+// end up with the response IPAddressSpace.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    CommitsClientSecurityStateForSpecialSchemeViewSourcePublic) {
+  // Intercept the page load and pretend it came from a public IP.
+  const GURL url = SecureDefaultURL(*embedded_test_server());
+
+  // Use the same port as the server, so that the fetch is not cross-origin.
+  auto interceptor = InterceptorWithFakeEndPoint(
+      url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kViewSourceScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// Variation of above test with a private address.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    CommitsClientSecurityStateForSpecialSchemeViewSourcePrivate) {
+  // Intercept the page load and pretend it came from a private IP.
+  const GURL url = SecureDefaultURL(*embedded_test_server());
+
+  // Use the same port as the server, so that the fetch is not cross-origin.
+  auto interceptor = InterceptorWithFakeEndPoint(
+      url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kViewSourceScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+            security_state->ip_address_space);
+}
+
+// The chrome-error:// scheme should only ever appear in origins. It shouldn't
+// affect the IPAddressSpace computation. This test verifies that we end up with
+// the response IPAddressSpace.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    CommitsClientSecurityStateForSpecialSchemeChromeErrorPublic) {
+  // Intercept the page load and pretend it came from a public IP.
+  const GURL url = SecureDefaultURL(*embedded_test_server());
+
+  // Use the same port as the server, so that the fetch is not cross-origin.
+  auto interceptor = FailInterceptorWithFakeEndPoint(
+      url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
+
+  EXPECT_FALSE(NavigateToURL(shell(), url));
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// Variation of above test with a private address.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    CommitsClientSecurityStateForSpecialSchemeChromeErrorPrivate) {
+  // Intercept the page load and pretend it came from a public IP.
+  const GURL url = SecureDefaultURL(*embedded_test_server());
+
+  // Use the same port as the server, so that the fetch is not cross-origin.
+  auto interceptor = FailInterceptorWithFakeEndPoint(
+      url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
+
+  EXPECT_FALSE(NavigateToURL(shell(), url));
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+            security_state->ip_address_space);
 }
 
 namespace {
@@ -2326,7 +2472,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   const GURL url = InsecureDefaultURL(*embedded_test_server());
 
   // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndpoint(
+  auto interceptor = InterceptorWithFakeEndPoint(
       url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -2347,7 +2493,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   const GURL url = InsecureDefaultURL(*embedded_test_server());
 
   // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndpoint(
+  auto interceptor = InterceptorWithFakeEndPoint(
       url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
