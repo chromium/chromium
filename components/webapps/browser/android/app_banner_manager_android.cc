@@ -259,7 +259,8 @@ void AppBannerManagerAndroid::OnInstallEvent(
          a2hs_params.install_source ==
              WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB ||
          a2hs_params.install_source == WebappInstallSource::API_BROWSER_TAB ||
-         a2hs_params.install_source == WebappInstallSource::API_CUSTOM_TAB);
+         a2hs_params.install_source == WebappInstallSource::API_CUSTOM_TAB ||
+         a2hs_params.install_source == WebappInstallSource::DEVTOOLS);
 
   switch (event) {
     case AddToHomescreenInstaller::Event::INSTALL_STARTED:
