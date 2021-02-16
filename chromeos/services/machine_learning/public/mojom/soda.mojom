@@ -26,10 +26,10 @@ struct SodaConfig {
   uint32 sample_rate;
   // The api key for Soda library.
   string api_key;
-  // Load path to find the SODA content.
-  string load_path;
-  // File to load as the chrome-SODA library.
-  string? api_lib_location;
+  // Path to already-installed SODA library.
+  string library_dlc_path;
+  // Path to already-installed SODA language pack to use.
+  string language_dlc_path;
 };
 
 // From the endpointer, What kind of endpointer event to record.
