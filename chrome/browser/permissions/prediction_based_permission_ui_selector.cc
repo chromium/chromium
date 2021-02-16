@@ -88,6 +88,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   callback_ = std::move(callback);
+  last_request_grant_likelihood_ = base::nullopt;
+
   if (!IsAllowedToUseAssistedPrompts()) {
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
@@ -116,7 +118,6 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);
 
-  last_request_grant_likelihood_ = base::nullopt;
   request_ = std::make_unique<PredictionServiceRequest>(
       service, features,
       base::BindOnce(
