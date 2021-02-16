@@ -564,7 +564,7 @@ class CORE_EXPORT LayoutTableSection final
 template <>
 struct DowncastTraits<LayoutTableSection> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTableSection();
+    return object.IsTableSection() && !object.IsLayoutNGObject();
   }
 };
 

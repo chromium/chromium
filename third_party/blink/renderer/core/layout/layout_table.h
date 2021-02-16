@@ -676,7 +676,9 @@ inline LayoutTableSection* LayoutTable::TopSection() const {
 // To<LayoutTable>() helper.
 template <>
 struct DowncastTraits<LayoutTable> {
-  static bool AllowFrom(const LayoutObject& object) { return object.IsTable(); }
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsTable() && !object.IsLayoutNGObject();
+  }
 };
 
 }  // namespace blink

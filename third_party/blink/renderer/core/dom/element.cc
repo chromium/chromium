@@ -4258,7 +4258,7 @@ void Element::ForceLegacyLayoutInFormattingContext(
   for (Element* ancestor = this; !found_fc;) {
     ancestor =
         DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*ancestor));
-    if (!ancestor || ancestor->ShouldForceLegacyLayout())
+    if (!ancestor || ancestor->ShouldForceLegacyLayoutForChild())
       break;
     const ComputedStyle* style = ancestor->GetComputedStyle();
     if (style->Display() == EDisplay::kNone)

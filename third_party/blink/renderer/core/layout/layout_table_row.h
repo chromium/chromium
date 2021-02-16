@@ -228,7 +228,7 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
 template <>
 struct DowncastTraits<LayoutTableRow> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTableRow();
+    return object.IsTableRow() && !object.IsLayoutNGObject();
   }
 };
 

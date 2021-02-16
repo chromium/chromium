@@ -126,6 +126,10 @@ void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
+  // Only TablesNG table parts are allowed.
+  DCHECK(child->IsLayoutNGObject() ||
+         (!child->IsTableCaption() && !child->IsLayoutTableCol() &&
+          !child->IsTableSection()));
   bool wrap_in_anonymous_section = !child->IsTableCaption() &&
                                    !child->IsLayoutTableCol() &&
                                    !child->IsTableSection();
