@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -82,6 +83,9 @@ class TextIteratorTextNodeHandler {
 
   // Indicates if the text node is laid out with LayoutNG.
   bool uses_layout_ng_ = false;
+  // UnitVector for text_node_. This is available only if uses_layout_ng_.
+  NGOffsetMapping::UnitVector mapping_units_;
+  wtf_size_t mapping_units_index_;
 
   InlineTextBox* text_box_ = nullptr;
 
