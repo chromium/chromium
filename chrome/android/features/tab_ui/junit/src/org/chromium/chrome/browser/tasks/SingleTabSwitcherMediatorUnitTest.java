@@ -242,17 +242,17 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
-        assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed(false));
 
         mMediator.showOverview(true);
-        assertTrue(mMediator.onBackPressed());
+        assertTrue(mMediator.onBackPressed(false));
         verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
 
         doReturn(TabList.INVALID_TAB_INDEX).when(mTabModelSelector).getCurrentTabId();
-        assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed(false));
 
         doReturn(mTabId).when(mTabModelSelector).getCurrentTabId();
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed(false));
     }
 }

@@ -644,7 +644,7 @@ class StartSurfaceMediator
             return true;
         }
 
-        return mController.onBackPressed();
+        return mController.onBackPressed(mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
     }
 
     @Override

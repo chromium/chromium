@@ -216,7 +216,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean isOnHomepage) {
         if (overviewVisible() && !mTabModelSelector.isIncognitoSelected()
                 && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
             selectTheCurrentTab();
