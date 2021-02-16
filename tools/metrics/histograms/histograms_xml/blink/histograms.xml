@@ -1976,6 +1976,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Script.SchedulingType" enum="ScriptSchedulingType"
     expires_after="2021-07-11">
+  <obsolete>
+    Removed in M90 because we collected enough insights.
+  </obsolete>
   <owner>kouhei@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
