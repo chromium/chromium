@@ -22,6 +22,8 @@ extern const char kDisableSigninScopedDeviceId[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kAccountIdMigration;
+#else
+extern const base::Feature kForceAccountIdMigration;
 #endif
 
 }  // namespace switches

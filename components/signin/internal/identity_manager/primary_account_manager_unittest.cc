@@ -436,6 +436,42 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
             account_tracker()->GetMigrationState());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kForceAccountIdMigration);
+
+  ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
+            account_tracker()->GetMigrationState());
+  std::string email = "user@gmail.com";
+  std::string gaia_id = "account_gaia_id";
+
+  PrefService* client_prefs = signin_client()->GetPrefs();
+  client_prefs->SetInteger(prefs::kAccountIdMigrationState,
+                           AccountTrackerService::MIGRATION_NOT_STARTED);
+  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
+  update->Clear();
+  auto dict = std::make_unique<base::DictionaryValue>();
+  dict->SetString("account_id", email);
+  dict->SetString("email", email);
+  update->Append(std::move(dict));
+
+  account_tracker()->Shutdown();
+  account_tracker()->Initialize(prefs(), base::FilePath());
+
+  client_prefs->SetString(prefs::kGoogleServicesAccountId, email);
+
+  CreatePrimaryAccountManager();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_EQ("", user_prefs_.GetString(prefs::kGoogleServicesAccountId));
+  EXPECT_TRUE(account_tracker()->GetAccounts().empty());
+  EXPECT_EQ(AccountTrackerService::MIGRATION_DONE,
+            account_tracker()->GetMigrationState());
+}
+#endif
+
 TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsConsented) {
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());

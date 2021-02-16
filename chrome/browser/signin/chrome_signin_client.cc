@@ -75,6 +75,9 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // Allowed, because only used on Android and the primary account must be
     // cleared when the account is removed from device
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
+    // Allowed to force finish the account id migration.
+    signin_metrics::ACCOUNT_ID_MIGRATION,
+    // Allowed, for tests.
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST};
 
 SigninClient::SignoutDecision IsSignoutAllowed(

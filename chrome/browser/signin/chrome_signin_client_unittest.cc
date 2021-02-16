@@ -245,6 +245,9 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST:
       // Allow signout for tests that want to force it.
       return false;
+    case signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION:
+      // Allowed to force finish the account id migration.
+      return false;
     case signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES:
     case signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK:
       // There's no special-casing for these in ChromeSigninClient, as they only
@@ -326,6 +329,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
     signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
     signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
+    signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION,
 };
 static_assert(base::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,

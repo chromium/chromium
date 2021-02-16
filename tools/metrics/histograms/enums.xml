@@ -70009,6 +70009,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     Signout was forced because MobileIdentityConsistency feature is disabled
     when there's a primary account without sync consent.
   </int>
+  <int value="14" label="Force Account ID migration">
+    Signout was forced because account ID migration from email to Gaia ID was
+    forced.
+  </int>
 </enum>
 
 <enum name="SigninSource">
