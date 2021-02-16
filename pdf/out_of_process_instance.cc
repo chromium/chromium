@@ -855,18 +855,18 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
 }
 
 void OutOfProcessInstance::EnableAccessibility() {
-  if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
+  if (accessibility_state() == AccessibilityState::kLoaded)
     return;
 
-  if (accessibility_state_ == ACCESSIBILITY_STATE_OFF)
-    accessibility_state_ = ACCESSIBILITY_STATE_PENDING;
+  if (accessibility_state() == AccessibilityState::kOff)
+    set_accessibility_state(AccessibilityState::kPending);
 
   if (document_load_state_ == LOAD_STATE_COMPLETE)
     LoadAccessibility();
 }
 
 void OutOfProcessInstance::LoadAccessibility() {
-  accessibility_state_ = ACCESSIBILITY_STATE_LOADED;
+  set_accessibility_state(AccessibilityState::kLoaded);
   PP_PrivateAccessibilityDocInfo doc_info;
   doc_info.page_count = engine()->GetNumberOfPages();
   doc_info.text_accessible = PP_FromBool(
@@ -877,7 +877,7 @@ void OutOfProcessInstance::LoadAccessibility() {
   // A new document layout will trigger the creation of a new accessibility
   // tree, so |next_accessibility_page_index_| should be reset to ignore
   // outdated asynchronous calls of SendNextAccessibilityPage().
-  next_accessibility_page_index_ = 0;
+  set_next_accessibility_page_index(0);
   pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &doc_info);
 
   // If the document contents isn't accessible, don't send anything more.
@@ -898,9 +898,9 @@ void OutOfProcessInstance::LoadAccessibility() {
 
 void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
   // Outdated calls are ignored.
-  if (page_index != next_accessibility_page_index_)
+  if (page_index != next_accessibility_page_index())
     return;
-  ++next_accessibility_page_index_;
+  set_next_accessibility_page_index(next_accessibility_page_index() + 1);
 
   AccessibilityPageInfo page_info;
   std::vector<AccessibilityTextRunInfo> text_runs;
@@ -943,7 +943,7 @@ void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
   pp::PDF::SelectionChanged(GetPluginInstance(),
                             PP_MakeFloatPoint(l.x(), l.y()), left.height(),
                             PP_MakeFloatPoint(r.x(), r.y()), right.height());
-  if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
+  if (accessibility_state() == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
 }
 
@@ -1165,7 +1165,7 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
 
   // Reload the accessibility tree on layout changes because the relative page
   // bounds are no longer valid.
-  if (layout.dirty() && accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
+  if (layout.dirty() && accessibility_state() == AccessibilityState::kLoaded)
     LoadAccessibility();
 }
 
@@ -1501,7 +1501,7 @@ void OutOfProcessInstance::DocumentLoadComplete() {
   SendMetadata();
   SendLoadingProgress(/*percentage=*/100);
 
-  if (accessibility_state_ == ACCESSIBILITY_STATE_PENDING)
+  if (accessibility_state() == AccessibilityState::kPending)
     LoadAccessibility();
 
   if (!full_)
@@ -1835,7 +1835,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
                                              float old_device_scale) {
   RecalculateAreas(old_zoom, old_device_scale);
 
-  if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
+  if (accessibility_state() == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
 }
 

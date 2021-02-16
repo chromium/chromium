@@ -52,6 +52,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
                std::vector<gfx::Rect>& pending) override;
 
  protected:
+  enum class AccessibilityState {
+    kOff = 0,  // Off.
+    kPending,  // Enabled but waiting for doc to load.
+    kLoaded,   // Fully loaded.
+  };
+
   struct BackgroundPart {
     gfx::Rect location;
     uint32_t color;
@@ -169,6 +175,18 @@ class PdfViewPluginBase : public PDFEngine::Client,
     stop_scrolling_ = stop_scrolling;
   }
 
+  AccessibilityState accessibility_state() { return accessibility_state_; }
+  void set_accessibility_state(AccessibilityState state) {
+    accessibility_state_ = state;
+  }
+
+  int32_t next_accessibility_page_index() {
+    return next_accessibility_page_index_;
+  }
+  void set_next_accessibility_page_index(int32_t page_index) {
+    next_accessibility_page_index_ = page_index;
+  }
+
  private:
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
@@ -259,6 +277,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Whether the plugin has received a viewport changed message. Nothing should
   // be painted until this is received.
   bool received_viewport_message_ = false;
+
+  // The current state of accessibility.
+  AccessibilityState accessibility_state_ = AccessibilityState::kOff;
+
+  // The next accessibility page index, used to track interprocess calls when
+  // reconstructing the tree for new document layouts.
+  int32_t next_accessibility_page_index_ = 0;
 };
 
 }  // namespace chrome_pdf
