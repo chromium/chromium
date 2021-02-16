@@ -396,6 +396,36 @@ class HistoryBackendTest : public HistoryBackendTestBase {
       *transition2 = GetTransition(url2);
   }
 
+  // Adds SERVER_REDIRECT page transition.
+  // |url1| is the source URL and |url2| is the destination.
+  // |did_replace| is true if the transition is non-user initiated and the
+  // navigation entry for |url2| has replaced that for |url1|. The possibly
+  // updated transition code of the visit records for |url1| and |url2| is
+  // returned by filling in |*transition1| and |*transition2|, respectively,
+  // unless null. |time| is a time of the redirect.
+  void AddServerRedirect(const GURL& url1,
+                         const GURL& url2,
+                         bool did_replace,
+                         base::Time time,
+                         const base::string16& page2_title,
+                         int& transition1,
+                         int& transition2) {
+    ContextID dummy_context_id = reinterpret_cast<ContextID>(0x87654321);
+    history::RedirectList redirects;
+    redirects.push_back(url1);
+    redirects.push_back(url2);
+    ui::PageTransition redirect_transition = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_FORM_SUBMIT | ui::PAGE_TRANSITION_SERVER_REDIRECT);
+    HistoryAddPageArgs request(
+        url2, time, dummy_context_id, 0, url1, redirects, redirect_transition,
+        false, history::SOURCE_BROWSED, did_replace, true, false,
+        base::Optional<base::string16>(page2_title));
+    backend_->AddPage(request);
+
+    transition1 = GetTransition(url1);
+    transition2 = GetTransition(url2);
+  }
+
   int GetTransition(const GURL& url) {
     if (!url.is_valid())
       return 0;
@@ -970,6 +1000,45 @@ TEST_F(HistoryBackendTest, ClientRedirect) {
                     &transition1, &transition2);
   EXPECT_FALSE(transition1 & ui::PAGE_TRANSITION_CHAIN_END);
   EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
+}
+
+// Do not update original URL on form submission redirect
+TEST_F(HistoryBackendTest, FormSubmitRedirect) {
+  ASSERT_TRUE(backend_.get());
+  const base::string16 page1_title = base::UTF8ToUTF16("Form");
+  const base::string16 page2_title = base::UTF8ToUTF16("New Page");
+
+  // User goes to form page.
+  GURL url_a("http://www.google.com/a");
+  HistoryAddPageArgs request(url_a, base::Time::Now(), nullptr, 0, GURL(),
+                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, history::SOURCE_BROWSED, false, true, false,
+                             base::Optional<base::string16>(page1_title));
+  backend_->AddPage(request);
+
+  // Check that URL was added.
+  ASSERT_EQ(1, num_url_visited_notifications());
+  const URLVisitedList& visited_url_list = url_visited_notifications();
+  ASSERT_EQ(1u, visited_url_list.size());
+  const URLRow& visited_url = visited_url_list[0].second;
+  EXPECT_EQ(page1_title, visited_url.title());
+  ClearBroadcastedNotifications();
+
+  // User submits form and is redirected.
+  int transition1;
+  int transition2;
+  GURL url_b("http://google.com/b");
+  AddServerRedirect(url_a, url_b, false, base::Time::Now(), page2_title,
+                    transition1, transition2);
+  EXPECT_TRUE(transition1 & ui::PAGE_TRANSITION_CHAIN_START);
+  EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
+
+  // Check that first URL did not change, but the second did.
+  ASSERT_EQ(1, num_url_visited_notifications());
+  const URLVisitedList& visited_url_list2 = url_visited_notifications();
+  ASSERT_EQ(1u, visited_url_list2.size());
+  const URLRow& visited_url2 = visited_url_list2[0].second;
+  EXPECT_EQ(page2_title, visited_url2.title());
 }
 
 TEST_F(HistoryBackendTest, AddPagesWithDetails) {

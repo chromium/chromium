@@ -682,6 +682,14 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
           FormatUrlForRedirectComparison(redirects[0]) ==
               FormatUrlForRedirectComparison(redirects[1])) {
         transfer_typed_credit_from_first_to_second_url = true;
+      } else if (ui::PageTransitionCoreTypeIs(
+                     request_transition, ui::PAGE_TRANSITION_FORM_SUBMIT)) {
+        // If this is a form submission, the user was on the previous page and
+        // we should have saved the title and favicon already. Don't overwrite
+        // it with the redirected page. For example, a page titled "Create X"
+        // should not be updated to "Newly Created Item" on a successful POST
+        // when the new page is titled "Newly Created Item".
+        redirects.erase(redirects.begin());
       }
     }
 
