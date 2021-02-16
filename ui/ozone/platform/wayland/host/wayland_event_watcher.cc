@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 
+#include <cstring>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
