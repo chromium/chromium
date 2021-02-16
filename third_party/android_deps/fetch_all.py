@@ -49,14 +49,6 @@ _BUILD_GRADLE = 'build.gradle'
 # Location of the android_deps libs directory relative to custom 'android_deps' directory.
 _LIBS_DIR = 'libs'
 
-_JAVA_HOME = os.path.join(_CHROMIUM_SRC, 'third_party', 'jdk', 'current')
-_JETIFY_PATH = os.path.join(_CHROMIUM_SRC, 'third_party',
-                            'jetifier_standalone', 'bin',
-                            'jetifier-standalone')
-_JETIFY_CONFIG = os.path.join(_CHROMIUM_SRC, 'third_party',
-                              'jetifier_standalone', 'config',
-                              'ignore_R.config')
-
 _GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
 
 _GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'gradle_wrapper',
@@ -460,41 +452,6 @@ def _CreateAarInfos(aar_files):
             raise Exception('Command Failed: {}\n'.format(' '.join(cmd)))
 
 
-def _JetifyAll(files):
-    env = os.environ.copy()
-    env['JAVA_HOME'] = _JAVA_HOME
-
-    # Don't jetify support lib or androidx.
-    EXCLUDE = ('android_arch_', 'androidx_', 'com_android_support_',
-               'errorprone', 'jetifier')
-
-    jobs = []
-    for path in files:
-        if any(x in path for x in EXCLUDE):
-            continue
-        cmd = [_JETIFY_PATH, '-c', _JETIFY_CONFIG, '-i', path, '-o', path]
-        # Hide output: "You don't need to run Jetifier."
-        proc = subprocess.Popen(cmd,
-                                env=env,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                encoding='ascii')
-        jobs.append((cmd, proc))
-
-    num_required = 0
-    for cmd, proc in jobs:
-        output = proc.communicate()[0]
-        if proc.returncode:
-            raise Exception(
-                'Jetify failed for command: {}\nOutput:\n{}'.format(
-                    ' '.join(cmd), output))
-        if "You don't need to run Jetifier" not in output:
-            logging.info('Needed jetify: %s', cmd[-1])
-            num_required += 1
-    logging.info('Jetify was needed for %d out of %d files', num_required,
-                 len(jobs))
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -591,10 +548,7 @@ def main():
         ]
         RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
 
-        logging.info('# Jetify all libraries.')
         aar_files = FindInDirectory(build_libs_dir, '*.aar')
-        jar_files = FindInDirectory(build_libs_dir, '*.jar')
-        _JetifyAll(aar_files + jar_files)
 
         logging.info('# Generate Android .aar info files.')
         _CreateAarInfos(aar_files)
