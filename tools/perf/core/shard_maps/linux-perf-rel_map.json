@@ -1,0 +1,64 @@
+{
+    "0": {
+        "benchmarks": {
+            "system_health.common_desktop": {
+                "end": 29,
+                "abridged": false
+            }
+        },
+        "executables": {
+            "base_perftests": {
+                "path": "base_perftests",
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0"
+                ]
+            },
+            "load_library_perf_tests": {
+                "path": "load_library_perf_tests"
+            },
+            "media_perftests": {
+                "path": "media_perftests",
+                "arguments": [
+                    "--single-process-tests",
+                    "--test-launcher-retry-limit=0",
+                    "--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::*unoptimized_aligned"
+                ]
+            },
+            "performance_browser_tests": {
+                "path": "browser_tests",
+                "arguments": [
+                    "--full-performance-run",
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "--ui-test-action-timeout=60000",
+                    "--ui-test-action-max-timeout=60000",
+                    "--test-launcher-timeout=60000",
+                    "--gtest_filter=*/TabCapturePerformanceTest.*:*/CastV2PerformanceTest.*"
+                ]
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "system_health.common_desktop": {
+                "begin": 29,
+                "abridged": false
+            }
+        },
+        "executables": {
+            "tracing_perftests": {
+                "path": "tracing_perftests"
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 84,
+        "predicted_min_shard_time": 1194.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 1202.0,
+        "predicted_max_shard_index": 1,
+        "shard #0": 1194.0,
+        "shard #1": 1202.0
+    }
+}

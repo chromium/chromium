@@ -299,6 +299,10 @@ def _views_perftests(estimated_runtime=7):
                           flags=['--xvfb'],
                           estimated_runtime=estimated_runtime)
 
+_CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_desktop')
+])
+
 
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
@@ -458,9 +462,16 @@ _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite(
 # Linux
 LINUX = PerfPlatform(
     'linux-perf',
-    'Ubuntu-14.04, 8 core, NVIDIA Quadro P400',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
     _LINUX_BENCHMARK_CONFIGS,
     26,
+    'linux',
+    executables=_LINUX_EXECUTABLE_CONFIGS)
+LINUX_REL = PerfPlatform(
+    'linux-perf-rel',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+    _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP,
+    2,
     'linux',
     executables=_LINUX_EXECUTABLE_CONFIGS)
 

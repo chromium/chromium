@@ -575,6 +575,7 @@
       'android-builder-perf': 'official_goma_minimal_symbols_android',
       'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official',
       'linux-builder-perf': 'official_goma_linux_perf',
+      'linux-builder-perf-rel': 'official_goma_linux_perf',
       'mac-builder-perf': 'official_goma_mac_perf',
       'mac-arm-builder-perf': 'official_goma_mac_arm_perf',
       'win32-builder-perf': 'official_goma_x86_perf',
