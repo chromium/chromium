@@ -7689,6 +7689,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Local_State" label="Local State file"/>
   <suffix name="Preferences" label="Preferences file"/>
   <suffix name="Secure_Preferences" label="Secure Preferences file"/>
+  <suffix name="StructuredMetricsPersistentProto"
+      label="Structured metrics persistent proto"/>
   <affected-histogram name="ImportantFile.DeleteOnCloseError"/>
   <affected-histogram name="ImportantFile.FileCreateError"/>
   <affected-histogram name="ImportantFile.FileDeleteError"/>
