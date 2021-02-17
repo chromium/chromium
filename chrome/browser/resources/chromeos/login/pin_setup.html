@@ -13,7 +13,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <dom-module id="pin-setup-element">
@@ -23,10 +23,8 @@
         margin-top: 17px;
       }
     </style>
-    <oobe-dialog id="setup" role="dialog" has-buttons two-columns-adaptable
-        for-step="start,confirm">
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:lock"
-          icon2x="oobe-64:lock">
+    <oobe-adaptive-dialog id="setup" role="dialog" for-step="start,confirm">
+      <hd-iron-icon slot="icon" icon1x="oobe-32:lock" icon2x="oobe-64:lock">
       </hd-iron-icon>
       <h1 slot="title" for-step="start">
         [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
@@ -37,7 +35,7 @@
       <div slot="subtitle" for-step="start">
         [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
       </div>
-      <div slot="footer" class="flex-grow layout vertical center
+      <div slot="content" class="flex-grow layout vertical center
           center-justified">
         <setup-pin-keyboard id="pinKeyboard"
             enable-submit="{{enableSubmit_}}"
@@ -66,11 +64,10 @@
             on-click="onNextButton_" class="focus-on-show"
             for-step="start, confirm"></oobe-next-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="setup" role="dialog" has-buttons two-columns-adaptable
-        for-step="done" footer-shrinkable>
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:lock"
-          icon2x="oobe-64:lock">
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="setup" role="dialog" for-step="done"
+        footer-shrinkable>
+      <hd-iron-icon slot="icon" icon1x="oobe-32:lock" icon2x="oobe-64:lock">
       </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'discoverPinSetupTitle3')]]
@@ -83,7 +80,7 @@
           [[i18nDynamic(locale, 'discoverPinSetupSubtitle3WithLogin')]]
         </div>
       </div>
-      <div slot="footer" class="flex layout vertical center
+      <div slot="content" class="flex layout vertical center
           center-justified">
         <img id="done-illustration" class="oobe-illustration"
             srcset="images/pin_illustration_1x.svg 1x,
@@ -94,6 +91,6 @@
             class="focus-on-show" text-key="discoverPinSetupDone">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

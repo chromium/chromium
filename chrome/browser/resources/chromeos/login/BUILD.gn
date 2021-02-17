@@ -373,6 +373,7 @@ js_library("pin_setup") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_types",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard",
