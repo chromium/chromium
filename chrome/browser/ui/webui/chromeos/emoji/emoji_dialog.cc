@@ -26,6 +26,10 @@ EmojiPickerDialog::EmojiPickerDialog() {
 }
 
 void EmojiPickerDialog::Show() {
+  if (window) {
+    window->Focus();
+    return;
+  }
   ui::InputMethod* input_method =
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   const ui::TextInputClient* input_client =

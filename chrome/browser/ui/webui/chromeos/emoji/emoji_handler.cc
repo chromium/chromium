@@ -34,6 +34,7 @@ void EmojiHandler::HandleInsertEmoji(const base::ListValue* args) {
   // Hide emoji picker window to restore focus to original text field
   if (EmojiPickerDialog::window) {
     EmojiPickerDialog::window->Hide();
+    EmojiPickerDialog::window = nullptr;
   }
 
   ui::InputMethod* input_method =
