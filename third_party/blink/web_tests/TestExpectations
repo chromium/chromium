@@ -5568,15 +5568,16 @@ crbug.com/1163178 external/wpt/svg/embedded/image-embedding-svg-with-auto-height
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
 
+# COOP flaky test (timeout)
+crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
+
 # Sheriff 2020-12-22
-crbug.com/1161244 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
 crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
 crbug.com/1161352 [ Mac10.14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/search/search-appearance-basic.html [ Pass Timeout ]
 crbug.com/1161352 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Failure Timeout ]
 
 # Failing on Webkit Linux Leak only:
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Pass Failure ]
-
 
 # Sheriff 2021-01-08
 crbug.com/1164459 [ Mac ] virtual/synchronous_html_parser/external/wpt/preload/download-resources.html [ Pass Timeout ]

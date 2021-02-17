@@ -2477,7 +2477,6 @@ crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/iframe-popup-same
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/javascript-url.https.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/no-https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.https.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-redirect-cache.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Pass ]

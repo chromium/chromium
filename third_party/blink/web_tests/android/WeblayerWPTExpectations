@@ -1123,7 +1123,6 @@ crbug.com/1050754 external/wpt/html/canvas/offscreen/the-offscreen-canvas/size.a
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/javascript-url.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro_cross-origin.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro.https.html [ Timeout ]

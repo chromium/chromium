@@ -733,7 +733,6 @@ crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoin
 crbug.com/1046784 http/tests/devtools/sources/source-frame-toolbar-items.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
-crbug.com/1112304 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Slow ]
 crbug.com/1115091 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tenative.https.html [ Slow ]
 crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Slow ]
 crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
