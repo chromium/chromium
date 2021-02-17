@@ -59,11 +59,8 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   }
 
   void Write(uint64_t offset,
-             mojo::PendingRemote<blink::mojom::Blob> data,
+             mojo::ScopedDataPipeConsumerHandle stream,
              WriteCallback callback) override;
-  void WriteStream(uint64_t offset,
-                   mojo::ScopedDataPipeConsumerHandle stream,
-                   WriteStreamCallback callback) override;
 
   void Truncate(uint64_t length, TruncateCallback callback) override;
   // The writer will be destroyed upon completion.
@@ -94,11 +91,8 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
       blink::mojom::FileSystemAccessErrorPtr result);
 
   void WriteImpl(uint64_t offset,
-                 mojo::PendingRemote<blink::mojom::Blob> data,
+                 mojo::ScopedDataPipeConsumerHandle stream,
                  WriteCallback callback);
-  void WriteStreamImpl(uint64_t offset,
-                       mojo::ScopedDataPipeConsumerHandle stream,
-                       WriteStreamCallback callback);
   void DidWrite(WriteState* state,
                 base::File::Error result,
                 int64_t bytes,

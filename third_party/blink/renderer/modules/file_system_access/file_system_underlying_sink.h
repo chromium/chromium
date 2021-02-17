@@ -46,10 +46,6 @@ class FileSystemUnderlyingSink final : public UnderlyingSinkBase {
       uint64_t position,
       const ArrayBufferOrArrayBufferViewOrBlobOrUSVString& data,
       ExceptionState&);
-  ScriptPromise WriteBlob(ScriptState*,
-                          uint64_t position,
-                          Blob*,
-                          ExceptionState&);
   ScriptPromise Truncate(ScriptState*, uint64_t size, ExceptionState&);
   ScriptPromise Seek(ScriptState*, uint64_t offset, ExceptionState&);
   void WriteComplete(mojom::blink::FileSystemAccessErrorPtr result,

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
 
+#include "mojo/public/cpp/system/string_data_source.h"
+#include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
@@ -138,6 +141,192 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
   return ScriptPromise();
 }
 
+namespace {
+// Write operations generally consist of two separate operations, both of which
+// can result in an error:
+// 1) The data producer (be it a Blob or mojo::DataPipeProducer) writes data to
+//    a data pipe.
+// 2) The browser side file writer implementation reads data from the data pipe,
+//    and writes this to the file.
+//
+// Both operations can report errors in either order, and we have to wait for
+// both to report success before we can consider the combined write call to have
+// succeeded. This helper class listens for both complete events and signals
+// success when both succeeded, or an error when either operation failed.
+//
+// This class deletes itself after calling its callback.
+class WriterHelper : public base::SupportsWeakPtr<WriterHelper> {
+ public:
+  explicit WriterHelper(
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr result,
+                              uint64_t bytes_written)> callback)
+      : callback_(std::move(callback)) {}
+  virtual ~WriterHelper() = default;
+
+  // This method is called in response to the mojom Write call. It reports the
+  // result of the write operation from the point of view of the file system API
+  // implementation.
+  void WriteComplete(mojom::blink::FileSystemAccessErrorPtr result,
+                     uint64_t bytes_written) {
+    DCHECK(!write_result_);
+    write_result_ = std::move(result);
+    bytes_written_ = bytes_written;
+    MaybeCallCallbackAndDeleteThis();
+  }
+
+  // This method is called by renderer side code (in subclasses of this class)
+  // when we've finished producing data to be written.
+  void ProducerComplete(mojom::blink::FileSystemAccessErrorPtr result) {
+    DCHECK(!producer_result_);
+    producer_result_ = std::move(result);
+    MaybeCallCallbackAndDeleteThis();
+  }
+
+ private:
+  void MaybeCallCallbackAndDeleteThis() {
+    DCHECK(callback_);
+
+    if (!producer_result_.is_null() &&
+        producer_result_->status != mojom::blink::FileSystemAccessStatus::kOk) {
+      // Producing data failed, report that error.
+      std::move(callback_).Run(std::move(producer_result_), bytes_written_);
+      delete this;
+      return;
+    }
+
+    if (!write_result_.is_null() &&
+        write_result_->status != mojom::blink::FileSystemAccessStatus::kOk) {
+      // Writing failed, report that error.
+      std::move(callback_).Run(std::move(write_result_), bytes_written_);
+      delete this;
+      return;
+    }
+
+    if (!producer_result_.is_null() && !write_result_.is_null()) {
+      // Both operations succeeded, report success.
+      std::move(callback_).Run(std::move(write_result_), bytes_written_);
+      delete this;
+      return;
+    }
+
+    // Still waiting for the other operation to complete, so don't call the
+    // callback yet.
+  }
+
+  base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr result,
+                          uint64_t bytes_written)>
+      callback_;
+
+  mojom::blink::FileSystemAccessErrorPtr producer_result_;
+  mojom::blink::FileSystemAccessErrorPtr write_result_;
+  uint64_t bytes_written_ = 0;
+};
+
+// WriterHelper implementation that is used when data is being produced by a
+// mojo::DataPipeProducer, generally because the data was passed in as an
+// ArrayBuffer or String.
+class StreamWriterHelper : public WriterHelper {
+ public:
+  StreamWriterHelper(
+      std::unique_ptr<mojo::DataPipeProducer> producer,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr result,
+                              uint64_t bytes_written)> callback)
+      : WriterHelper(std::move(callback)), producer_(std::move(producer)) {}
+
+  void DataProducerComplete(MojoResult result) {
+    // Reset `producer_` to close the DataPipe. Without this the Write operation
+    // will never complete as it will keep waiting for more data.
+    producer_ = nullptr;
+
+    if (result == MOJO_RESULT_OK) {
+      ProducerComplete(mojom::blink::FileSystemAccessError::New(
+          mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK, ""));
+    } else {
+      ProducerComplete(mojom::blink::FileSystemAccessError::New(
+          mojom::blink::FileSystemAccessStatus::kOperationAborted,
+          base::File::FILE_OK, "Failed to write data to data pipe"));
+    }
+  }
+
+ private:
+  std::unique_ptr<mojo::DataPipeProducer> producer_;
+};
+
+// WriterHelper implementation that is used when data is being produced by a
+// Blob.
+class BlobWriterHelper : public mojom::blink::BlobReaderClient,
+                         public WriterHelper {
+ public:
+  BlobWriterHelper(
+      mojo::PendingReceiver<mojom::blink::BlobReaderClient> receiver,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr result,
+                              uint64_t bytes_written)> callback)
+      : WriterHelper(std::move(callback)),
+        receiver_(this, std::move(receiver)) {
+    receiver_.set_disconnect_handler(
+        WTF::Bind(&BlobWriterHelper::OnDisconnect, WTF::Unretained(this)));
+  }
+
+  // BlobReaderClient:
+  void OnCalculatedSize(uint64_t total_size,
+                        uint64_t expected_content_size) override {}
+  void OnComplete(int32_t status, uint64_t data_length) override {
+    complete_called_ = true;
+    // This error conversion matches what FileReaderLoader does. Failing to read
+    // a blob using FileReader should result in the same exception type as
+    // failing to read a blob here.
+    if (status == net::OK) {
+      ProducerComplete(mojom::blink::FileSystemAccessError::New(
+          mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK, ""));
+    } else if (status == net::ERR_FILE_NOT_FOUND) {
+      ProducerComplete(mojom::blink::FileSystemAccessError::New(
+          mojom::blink::FileSystemAccessStatus::kFileError,
+          base::File::FILE_ERROR_NOT_FOUND, ""));
+    } else {
+      ProducerComplete(mojom::blink::FileSystemAccessError::New(
+          mojom::blink::FileSystemAccessStatus::kFileError,
+          base::File::FILE_ERROR_IO, ""));
+    }
+  }
+
+ private:
+  void OnDisconnect() {
+    if (!complete_called_) {
+      // Disconnected without getting a read result, treat this as read failure.
+      ProducerComplete(mojom::blink::FileSystemAccessError::New(
+          mojom::blink::FileSystemAccessStatus::kOperationAborted,
+          base::File::FILE_OK, "Blob disconnected while reading"));
+    }
+  }
+
+  mojo::Receiver<mojom::blink::BlobReaderClient> receiver_;
+  bool complete_called_ = false;
+};
+
+// Creates a mojo data pipe, where the capacity of the data pipe is derived from
+// the provided `data_size`. Returns false and throws an exception if creating
+// the data pipe failed.
+bool CreateDataPipe(uint64_t data_size,
+                    ExceptionState& exception_state,
+                    mojo::ScopedDataPipeProducerHandle& producer,
+                    mojo::ScopedDataPipeConsumerHandle& consumer) {
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = BlobUtils::GetDataPipeCapacity(data_size);
+
+  MojoResult rv = CreateDataPipe(&options, &producer, &consumer);
+  if (rv != MOJO_RESULT_OK) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Failed to create datapipe");
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 ScriptPromise FileSystemUnderlyingSink::WriteData(
     ScriptState* script_state,
     uint64_t position,
@@ -145,49 +334,76 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
     ExceptionState& exception_state) {
   DCHECK(!data.IsNull());
 
-  auto blob_data = std::make_unique<BlobData>();
-  Blob* blob = nullptr;
-  if (data.IsArrayBuffer()) {
-    DOMArrayBuffer* array_buffer = data.GetAsArrayBuffer();
-    blob_data->AppendBytes(array_buffer->Data(), array_buffer->ByteLength());
-  } else if (data.IsArrayBufferView()) {
-    DOMArrayBufferView* array_buffer_view = data.GetAsArrayBufferView().Get();
-    blob_data->AppendBytes(array_buffer_view->BaseAddress(),
-                           array_buffer_view->byteLength());
-  } else if (data.IsBlob()) {
-    blob = data.GetAsBlob();
-  } else if (data.IsUSVString()) {
-    // Let the developer be explicit about line endings.
-    blob_data->AppendText(data.GetAsUSVString(),
-                          /*normalize_line_endings_to_native=*/false);
-  }
-
-  if (!blob) {
-    uint64_t size = blob_data->length();
-    blob = MakeGarbageCollected<Blob>(
-        BlobDataHandle::Create(std::move(blob_data), size));
-  }
-
-  return WriteBlob(script_state, position, blob, exception_state);
-}
-
-ScriptPromise FileSystemUnderlyingSink::WriteBlob(
-    ScriptState* script_state,
-    uint64_t position,
-    Blob* blob,
-    ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Object reached an invalid state");
     return ScriptPromise();
   }
+
+  std::unique_ptr<mojo::DataPipeProducer::DataSource> data_source;
+  if (data.IsArrayBuffer()) {
+    DOMArrayBuffer* array_buffer = data.GetAsArrayBuffer();
+    data_source = std::make_unique<mojo::StringDataSource>(
+        base::span<const char>(static_cast<const char*>(array_buffer->Data()),
+                               array_buffer->ByteLength()),
+        mojo::StringDataSource::AsyncWritingMode::
+            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+  } else if (data.IsArrayBufferView()) {
+    DOMArrayBufferView* array_buffer_view = data.GetAsArrayBufferView().Get();
+    data_source = std::make_unique<mojo::StringDataSource>(
+        base::span<const char>(
+            static_cast<const char*>(array_buffer_view->BaseAddress()),
+            array_buffer_view->byteLength()),
+        mojo::StringDataSource::AsyncWritingMode::
+            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+  } else if (data.IsUSVString()) {
+    data_source = std::make_unique<mojo::StringDataSource>(
+        StringUTF8Adaptor(data.GetAsUSVString()).AsStringPiece(),
+        mojo::StringDataSource::AsyncWritingMode::
+            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
+  }
+
+  DCHECK(data_source || data.IsBlob());
+  uint64_t data_size =
+      data_source ? data_source->GetLength() : data.GetAsBlob()->size();
+
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  if (!CreateDataPipe(data_size, exception_state, producer_handle,
+                      consumer_handle)) {
+    return ScriptPromise();
+  }
+
+  WriterHelper* helper;
+  if (data.IsBlob()) {
+    mojo::PendingRemote<mojom::blink::BlobReaderClient> reader_client;
+    helper =
+        new BlobWriterHelper(reader_client.InitWithNewPipeAndPassReceiver(),
+                             WTF::Bind(&FileSystemUnderlyingSink::WriteComplete,
+                                       WrapPersistent(this)));
+    data.GetAsBlob()->GetBlobDataHandle()->ReadAll(std::move(producer_handle),
+                                                   std::move(reader_client));
+  } else {
+    auto producer =
+        std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
+    auto* producer_ptr = producer.get();
+    helper = new StreamWriterHelper(
+        std::move(producer), WTF::Bind(&FileSystemUnderlyingSink::WriteComplete,
+                                       WrapPersistent(this)));
+    // Unretained is safe because the producer is owned by `helper`.
+    producer_ptr->Write(
+        std::move(data_source),
+        WTF::Bind(&StreamWriterHelper::DataProducerComplete,
+                  WTF::Unretained(static_cast<StreamWriterHelper*>(helper))));
+  }
+
+  writer_remote_->Write(
+      position, std::move(consumer_handle),
+      WTF::Bind(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
+
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = pending_operation_->Promise();
-  writer_remote_->Write(position, blob->AsMojoBlob(),
-                        WTF::Bind(&FileSystemUnderlyingSink::WriteComplete,
-                                  WrapPersistent(this)));
-  return result;
+  return pending_operation_->Promise();
 }
 
 ScriptPromise FileSystemUnderlyingSink::Truncate(

@@ -4,25 +4,16 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 
 // Represents an object to modify a file.
 interface FileSystemAccessFileWriter {
-  // Write data from |data| to the given |position| in the file being written
-  // to. Returns whether the operation succeeded and if so how many bytes were
-  // written.
-  // TODO(mek): This might need some way of reporting progress events back to
-  // the renderer.
-  Write(uint64 offset, pending_remote<Blob> data) => (FileSystemAccessError result,
-                                      uint64 bytes_written);
-
   // Write data from |stream| to the given |position| in the file being written
   // to. Returns whether the operation succeeded and if so how many bytes were
   // written.
   // TODO(mek): This might need some way of reporting progress events back to
   // the renderer.
-  WriteStream(uint64 offset, handle<data_pipe_consumer> stream) =>
+  Write(uint64 offset, handle<data_pipe_consumer> stream) =>
       (FileSystemAccessError result, uint64 bytes_written);
 
   // Changes the length of the file to be |length|. If |length| is larger than

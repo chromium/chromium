@@ -710,10 +710,13 @@ _CONFIG = [
         ],
     },
     {
-        'paths':
-        ['third_party/blink/renderer/core/fileapi/file_reader_loader.cc'],
+        'paths': [
+            'third_party/blink/renderer/core/fileapi/file_reader_loader.cc',
+            'third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.cc'
+        ],
         'allowed': [
-            'net::ERR_FILE_NOT_FOUND',
+            'net::ERR_.+',
+            'net::OK',
         ],
     },
     {

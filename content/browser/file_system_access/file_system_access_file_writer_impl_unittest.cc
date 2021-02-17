@@ -25,9 +25,6 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
-#include "storage/browser/blob/blob_data_builder.h"
-#include "storage/browser/blob/blob_impl.h"
-#include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_backend.h"
@@ -181,18 +178,6 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     EXPECT_TRUE(dir_.Delete());
   }
 
-  mojo::PendingRemote<blink::mojom::Blob> CreateBlob(
-      const std::string& contents) {
-    auto builder =
-        std::make_unique<storage::BlobDataBuilder>(base::GenerateGUID());
-    builder->AppendData(contents);
-    auto handle = blob_context_->AddFinishedBlob(std::move(builder));
-    mojo::PendingRemote<blink::mojom::Blob> result;
-    storage::BlobImpl::Create(std::move(handle),
-                              result.InitWithNewPipeAndPassReceiver());
-    return result;
-  }
-
   mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
     // Test with a relatively low capacity pipe to make sure it isn't all
     // written/read in one go.
@@ -239,13 +224,13 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     }
   }
 
-  FileSystemAccessStatus WriteBlobSync(
+  FileSystemAccessStatus WriteStreamSync(
       uint64_t position,
-      mojo::PendingRemote<blink::mojom::Blob> blob,
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
       uint64_t* bytes_written_out) {
     base::RunLoop loop;
     FileSystemAccessStatus result_out;
-    handle_->Write(position, std::move(blob),
+    handle_->Write(position, std::move(data_pipe),
                    base::BindLambdaForTesting(
                        [&](blink::mojom::FileSystemAccessErrorPtr result,
                            uint64_t bytes_written) {
@@ -253,24 +238,6 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
                          *bytes_written_out = bytes_written;
                          loop.Quit();
                        }));
-    loop.Run();
-    return result_out;
-  }
-
-  FileSystemAccessStatus WriteStreamSync(
-      uint64_t position,
-      mojo::ScopedDataPipeConsumerHandle data_pipe,
-      uint64_t* bytes_written_out) {
-    base::RunLoop loop;
-    FileSystemAccessStatus result_out;
-    handle_->WriteStream(position, std::move(data_pipe),
-                         base::BindLambdaForTesting(
-                             [&](blink::mojom::FileSystemAccessErrorPtr result,
-                                 uint64_t bytes_written) {
-                               result_out = result->status;
-                               *bytes_written_out = bytes_written;
-                               loop.Quit();
-                             }));
     loop.Run();
     return result_out;
   }
@@ -312,13 +279,9 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     return result_out;
   }
 
-  virtual bool WriteUsingBlobs() { return true; }
-
   FileSystemAccessStatus WriteSync(uint64_t position,
                                    const std::string& contents,
                                    uint64_t* bytes_written_out) {
-    if (WriteUsingBlobs())
-      return WriteBlobSync(position, CreateBlob(contents), bytes_written_out);
     return WriteStreamSync(position, CreateStream(contents), bytes_written_out);
   }
 
@@ -352,37 +315,6 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
   base::WeakPtr<FileSystemAccessFileWriterImpl> handle_;
 };
-
-class FileSystemAccessFileWriterImplWriteTest
-    : public FileSystemAccessFileWriterImplTest,
-      public testing::WithParamInterface<bool> {
- public:
-  bool WriteUsingBlobs() override { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(FileSystemAccessFileWriterImplTest,
-                         FileSystemAccessFileWriterImplWriteTest,
-                         ::testing::Bool());
-
-TEST_F(FileSystemAccessFileWriterImplTest, WriteInvalidBlob) {
-  // This test primarily verifies behavior of the browser process in the
-  // presence of a compromised renderer process. The situation this tests for
-  // normally can't occur. As such it doesn't really matter what status the
-  // write operation returns, the important part is that nothing crashes.
-
-  mojo::PendingRemote<blink::mojom::Blob> blob;
-  ignore_result(blob.InitWithNewPipeAndPassReceiver());
-
-  uint64_t bytes_written;
-  FileSystemAccessStatus result =
-      WriteBlobSync(0, std::move(blob), &bytes_written);
-  EXPECT_EQ(bytes_written, 0u);
-
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-
-  EXPECT_EQ("", ReadFile(test_file_url_));
-}
 
 TEST_F(FileSystemAccessFileWriterImplTest, HashSimpleOK) {
   uint64_t bytes_written;
@@ -455,7 +387,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, HashLargerFileOK) {
   loop.Run();
 }
 
-TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteValidEmptyString) {
+TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "", &bytes_written);
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
@@ -468,7 +400,7 @@ TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteValidEmptyString) {
   EXPECT_EQ("", ReadFile(test_file_url_));
 }
 
-TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteValidNonEmpty) {
+TEST_F(FileSystemAccessFileWriterImplTest, WriteValidNonEmpty) {
   std::string test_data("abcdefghijklmnopqrstuvwxyz");
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, test_data, &bytes_written);
@@ -482,7 +414,7 @@ TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteValidNonEmpty) {
   EXPECT_EQ(test_data, ReadFile(test_file_url_));
 }
 
-TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteWithOffsetInFile) {
+TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetInFile) {
   uint64_t bytes_written;
   FileSystemAccessStatus result;
 
@@ -501,7 +433,7 @@ TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteWithOffsetInFile) {
   EXPECT_EQ("1234abc890", ReadFile(test_file_url_));
 }
 
-TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteWithOffsetPastFile) {
+TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetPastFile) {
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(4, "abc", &bytes_written);
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
