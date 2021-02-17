@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/child_accounts/time_limit_override.h"
 
@@ -1313,11 +1314,11 @@ std::set<PolicyType> UpdatedPolicyTypes(const base::Value& old_policy,
   std::set<PolicyType> updated_policies;
   if (TimeUsageLimitFromPolicy(old_policy) !=
       TimeUsageLimitFromPolicy(new_policy)) {
-    updated_policies.emplace(PolicyType::kUsageLimit);
+    updated_policies.insert(PolicyType::kUsageLimit);
   }
   if (TimeWindowLimitFromPolicy(old_policy) !=
       TimeWindowLimitFromPolicy(new_policy)) {
-    updated_policies.emplace(PolicyType::kFixedLimit);
+    updated_policies.insert(PolicyType::kFixedLimit);
   }
 
   base::Optional<TimeLimitOverride> old_override =
@@ -1327,9 +1328,41 @@ std::set<PolicyType> UpdatedPolicyTypes(const base::Value& old_policy,
   // Override changes are added only when the new override has a duration.
   if (old_override != new_override && new_override &&
       new_override->duration()) {
-    updated_policies.emplace(PolicyType::kOverride);
+    updated_policies.insert(PolicyType::kOverride);
   }
   return updated_policies;
+}
+
+void GetEnabledTimeLimitPolicies(
+    std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
+        enabled_policies,
+    const base::Value& time_limit_prefs) {
+  DCHECK(time_limit_prefs.is_dict());
+  if (!enabled_policies)
+    return;
+  base::Optional<internal::TimeWindowLimit> time_window_limit =
+      TimeWindowLimitFromPolicy(time_limit_prefs);
+  if (time_window_limit && !time_window_limit->entries.empty()) {
+    enabled_policies->insert(
+        FamilyUserParentalControlMetrics::TimeLimitPolicyType::kBedTimeLimit);
+  }
+
+  base::Optional<internal::TimeUsageLimit> time_usage_limit =
+      TimeUsageLimitFromPolicy(time_limit_prefs);
+  if (time_usage_limit && !time_usage_limit->entries.empty()) {
+    enabled_policies->insert(FamilyUserParentalControlMetrics::
+                                 TimeLimitPolicyType::kScreenTimeLimit);
+  }
+
+  base::Optional<TimeLimitOverride> time_limit_override =
+      OverrideFromPolicy(time_limit_prefs);
+  base::Time now = base::Time::Now();
+  // Ignores the override time limit that is not created within 1 day.
+  if (time_limit_override && now > time_limit_override->created_at() &&
+      now - time_limit_override->created_at() < base::TimeDelta::FromDays(1)) {
+    enabled_policies->insert(FamilyUserParentalControlMetrics::
+                                 TimeLimitPolicyType::kOverrideTimeLimit);
+  }
 }
 
 }  // namespace usage_time_limit

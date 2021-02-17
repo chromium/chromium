@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/child_accounts/family_user_parental_control_metrics.h"
 #include "chromeos/settings/timezone_settings.h"
 
 namespace base {
@@ -201,6 +202,14 @@ base::TimeDelta GetTimeUsageLimitResetTime(const base::Value& time_limit);
 // dictionaries.
 std::set<PolicyType> UpdatedPolicyTypes(const base::Value& old_policy,
                                         const base::Value& new_policy);
+
+// Retrieves the the time limit polices in time_limit_prefs and inserts them to
+// `enabled_policies`. `time_limit_prefs` is the value of prefs::kUsageTimeLimit
+// which stores the usage time limit preference of a user.
+void GetEnabledTimeLimitPolicies(
+    std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
+        enabled_policies,
+    const base::Value& time_limit_prefs);
 
 }  // namespace usage_time_limit
 }  // namespace chromeos

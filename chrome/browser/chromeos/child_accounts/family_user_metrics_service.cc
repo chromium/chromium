@@ -4,10 +4,12 @@
 
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_app_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_chrome_activity_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_device_metrics.h"
+#include "chrome/browser/chromeos/child_accounts/family_user_parental_control_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_session_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -51,6 +53,12 @@ FamilyUserMetricsService::FamilyUserMetricsService(
   family_user_metrics_.push_back(
       std::make_unique<FamilyUserChromeActivityMetrics>(profile));
   family_user_metrics_.push_back(std::make_unique<FamilyUserDeviceMetrics>());
+
+  // Reports parental control metrics for child user only.
+  if (profile->IsChild()) {
+    family_user_metrics_.push_back(
+        std::make_unique<FamilyUserParentalControlMetrics>(profile));
+  }
 
   for (auto& family_user_metric : family_user_metrics_)
     AddObserver(family_user_metric.get());

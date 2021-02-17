@@ -74772,6 +74772,15 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Exceeded memory budget"/>
 </enum>
 
+<enum name="TimeLimitPolicyType">
+  <int value="0" label="No Time Limit"/>
+  <int value="1" label="Override Time Limit"/>
+  <int value="2" label="Bed Time Limit"/>
+  <int value="3" label="Screen Time Limit"/>
+  <int value="4" label="Web Time Limit"/>
+  <int value="5" label="App Time Limit"/>
+</enum>
+
 <enum name="TimeToInteractiveStatus">
   <int value="0" label="Recorded successfully"/>
   <int value="1" label="Not recorded because the page was backgrounded"/>

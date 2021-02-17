@@ -316,6 +316,23 @@ void AppTimeController::TimezoneChanged(const icu::TimeZone& timezone) {
   ScheduleForTimeLimitReset();
 }
 
+bool AppTimeController::HasAppTimeLimitRestriction() const {
+  return apps_with_limit_ > 0;
+}
+
+bool AppTimeController::HasWebTimeLimitRestriction() const {
+  if (!app_registry_->IsAppInstalled(GetChromeAppId()))
+    return false;
+
+  const base::Optional<app_time::AppLimit>& time_limit =
+      app_registry_->GetWebTimeLimit();
+  if (!time_limit.has_value())
+    return false;
+  const app_time::AppRestriction& restriction =
+      time_limit.value().restriction();
+  return restriction == app_time::AppRestriction::kTimeLimit;
+}
+
 void AppTimeController::RegisterProfilePrefObservers(
     PrefService* pref_service) {
   pref_registrar_ = std::make_unique<PrefChangeRegistrar>();

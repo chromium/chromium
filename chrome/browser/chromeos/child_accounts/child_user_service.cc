@@ -134,6 +134,23 @@ base::TimeDelta ChildUserService::GetWebTimeLimit() const {
   return app_time_controller_->web_time_enforcer()->time_limit();
 }
 
+void ChildUserService::GetEnabledAppTimeLimitPolicies(
+    std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
+        enabled_policies) {
+  if (!app_time_controller_ || !enabled_policies)
+    return;
+
+  if (app_time_controller_->HasWebTimeLimitRestriction()) {
+    enabled_policies->insert(
+        FamilyUserParentalControlMetrics::TimeLimitPolicyType::kWebTimeLimit);
+  }
+
+  if (app_time_controller_->HasAppTimeLimitRestriction()) {
+    enabled_policies->insert(
+        FamilyUserParentalControlMetrics::TimeLimitPolicyType::kAppTimeLimit);
+  }
+}
+
 void ChildUserService::Shutdown() {
   if (app_time_controller_) {
     app_time_controller_->app_registry()->SaveAppActivity();
