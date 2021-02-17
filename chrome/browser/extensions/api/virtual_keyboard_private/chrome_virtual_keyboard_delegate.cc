@@ -569,6 +569,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features->AppendString(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
+  features->AppendString(GenerateFeatureFlag(
+      "multipaste", base::FeatureList::IsEnabled(
+                        chromeos::features::kVirtualKeyboardMultipaste)));
 
   results->Set("features", std::move(features));
 
