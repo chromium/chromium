@@ -1,8 +1,11 @@
+CONSOLE WARNING: line 138: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: line 142: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
 CONSOLE WARNING: line 252: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 CONSOLE WARNING: line 347: The provided value 'fancy' is not a valid enum value of type ChannelCountMode.
 CONSOLE WARNING: line 353: The provided value 'undefined' is not a valid enum value of type ChannelInterpretation.
 CONSOLE WARNING: line 523: The provided value '9x' is not a valid enum value of type OverSampleType.
 CONSOLE WARNING: line 769: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: line 779: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
 CONSOLE WARNING: line 800: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
 This is a testharness.js-based test.
 PASS # AUDIT TASK RUNNER STARTED.

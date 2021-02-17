@@ -30,6 +30,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -84,6 +86,15 @@ ScriptProcessorHandler::ScriptProcessorHandler(
   }
 
   Initialize();
+
+  LocalDOMWindow* window = To<LocalDOMWindow>(Context()->GetExecutionContext());
+  if (window) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kDeprecation,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead."
+          " (https://bit.ly/audio-worklet)"));
+  }
 }
 
 scoped_refptr<ScriptProcessorHandler> ScriptProcessorHandler::Create(
