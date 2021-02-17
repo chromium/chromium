@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 
+#include "base/debug/debugger.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/crash/core/app/crashpad.h"
@@ -131,7 +132,8 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
 
 - (void)start {
   if (self.delay == 0 || self.running || !_enabled ||
-      tests_hook::DisableMainThreadFreezeDetection()) {
+      tests_hook::DisableMainThreadFreezeDetection() ||
+      base::debug::BeingDebugged()) {
     return;
   }
   self.running = YES;
