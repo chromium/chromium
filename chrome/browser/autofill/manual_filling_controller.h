@@ -71,6 +71,9 @@ class ManualFillingController {
   // Depending on the type of the given |accessory_sheet_data|, this updates a
   // accessory sheet. Controllers to handle touch events are determined by the
   // type of the sheet.
+  // TODO(crbug.com/1169167): Deprecated by querying data on demand and use
+  // AccessoryController::RegisterFillingSourceObserver to get this signal
+  // timely.
   virtual void RefreshSuggestions(
       const autofill::AccessorySheetData& accessory_sheet_data) = 0;
 
@@ -81,6 +84,9 @@ class ManualFillingController {
 
   // Reports for a source whether it provides suggestions or just default
   // options. The controller then updates the UI visibility accordingly.
+  // TODO(crbug.com/1169167): Use
+  // AccessoryController::RegisterFillingSourceObserver to get this signal from
+  // sheet controllers.
   virtual void UpdateSourceAvailability(FillingSource source,
                                         bool has_suggestions) = 0;
 

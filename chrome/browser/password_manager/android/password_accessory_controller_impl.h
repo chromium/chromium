@@ -43,6 +43,8 @@ class PasswordAccessoryControllerImpl
   ~PasswordAccessoryControllerImpl() override;
 
   // AccessoryController:
+  void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
+  base::Optional<autofill::AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(const autofill::UserInfo::Field& selection) override;
   void OnOptionSelected(autofill::AccessoryAction selected_action) override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,

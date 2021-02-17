@@ -100,6 +100,17 @@ base::string16 GetTitle(bool has_suggestions, const url::Origin& origin) {
 
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() = default;
 
+void PasswordAccessoryControllerImpl::RegisterFillingSourceObserver(
+    FillingSourceObserver observer) {
+  NOTIMPLEMENTED();
+}
+
+base::Optional<autofill::AccessorySheetData>
+PasswordAccessoryControllerImpl::GetSheetData() const {
+  NOTIMPLEMENTED();
+  return base::nullopt;
+}
+
 void PasswordAccessoryControllerImpl::OnFillingTriggered(
     const autofill::UserInfo::Field& selection) {
   if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),

@@ -25,6 +25,8 @@ class CreditCardAccessoryControllerImpl
   ~CreditCardAccessoryControllerImpl() override;
 
   // AccessoryController:
+  void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
+  base::Optional<autofill::AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(const UserInfo::Field& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;

@@ -17,12 +17,27 @@ class MockAddressAccessoryController
   MockAddressAccessoryController();
   ~MockAddressAccessoryController() override;
 
-  MOCK_METHOD1(OnFillingTriggered, void(const autofill::UserInfo::Field&));
-  MOCK_METHOD1(OnOptionSelected,
-               void(autofill::AccessoryAction selected_action));
-  MOCK_METHOD2(OnToggleChanged,
-               void(autofill::AccessoryAction toggled_action, bool enabled));
-  MOCK_METHOD0(RefreshSuggestions, void());
+  MOCK_METHOD(void,
+              RegisterFillingSourceObserver,
+              (FillingSourceObserver),
+              (override));
+  MOCK_METHOD(base::Optional<autofill::AccessorySheetData>,
+              GetSheetData,
+              (),
+              (const, override));
+  MOCK_METHOD(void,
+              OnFillingTriggered,
+              (const autofill::UserInfo::Field&),
+              (override));
+  MOCK_METHOD(void,
+              OnOptionSelected,
+              (autofill::AccessoryAction selected_action),
+              (override));
+  MOCK_METHOD(void,
+              OnToggleChanged,
+              (autofill::AccessoryAction toggled_action, bool enabled),
+              (override));
+  MOCK_METHOD(void, RefreshSuggestions, (), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAddressAccessoryController);

@@ -7,6 +7,9 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/optional.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
 // Interface for the portions of type-specific manual filling controllers (e.g.,
@@ -14,7 +17,25 @@
 // ManualFillingController.
 class AccessoryController {
  public:
+  using IsFillingSourceAvailable =
+      base::StrongAlias<class IsFillingSourceAvailableTag, bool>;
+  using FillingSourceObserver =
+      base::RepeatingCallback<void(AccessoryController*,
+                                   IsFillingSourceAvailable)>;
+
   virtual ~AccessoryController() = default;
+
+  // Registers the observer that needs to be notified whenever the availability
+  // or the content of a sheet changes.
+  virtual void RegisterFillingSourceObserver(
+      FillingSourceObserver observer) = 0;
+
+  // Reurns a base::nullopt if the accessory controller can't provide any data.
+  // If the controller can provide data, it returns a non-empty sheet that *can*
+  // be in a loading state while the data is being fetched.
+  // Use |RegisterFillingSourceObserver()| to repeatedly be notified about
+  // changes in the sheet data.
+  virtual base::Optional<autofill::AccessorySheetData> GetSheetData() const = 0;
 
   // Triggered when a user selects an item for filling. This handler is
   // responsible for propagating it so that it ultimately ends up in the form

@@ -76,6 +76,17 @@ CreditCardAccessoryControllerImpl::~CreditCardAccessoryControllerImpl() {
     personal_data_manager_->RemoveObserver(this);
 }
 
+void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
+    FillingSourceObserver observer) {
+  NOTIMPLEMENTED();
+}
+
+base::Optional<autofill::AccessorySheetData>
+CreditCardAccessoryControllerImpl::GetSheetData() const {
+  NOTIMPLEMENTED();
+  return base::nullopt;
+}
+
 void CreditCardAccessoryControllerImpl::OnFillingTriggered(
     const UserInfo::Field& selection) {
   if (!web_contents_->GetFocusedFrame())

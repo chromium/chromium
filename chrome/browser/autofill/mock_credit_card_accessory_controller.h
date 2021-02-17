@@ -21,13 +21,29 @@ class MockCreditCardAccessoryController
   MockCreditCardAccessoryController& operator=(
       const MockCreditCardAccessoryController&) = delete;
 
-  MOCK_METHOD1(OnFillingTriggered, void(const autofill::UserInfo::Field&));
-  MOCK_METHOD1(OnOptionSelected, void(autofill::AccessoryAction));
-  MOCK_METHOD2(OnToggleChanged, void(autofill::AccessoryAction, bool));
-  MOCK_METHOD0(RefreshSuggestions, void());
-  MOCK_METHOD0(OnPersonalDataChanged, void());
-  MOCK_METHOD3(OnCreditCardFetched,
-               void(bool, const autofill::CreditCard*, const base::string16&));
+  MOCK_METHOD(void,
+              RegisterFillingSourceObserver,
+              (FillingSourceObserver),
+              (override));
+  MOCK_METHOD(base::Optional<autofill::AccessorySheetData>,
+              GetSheetData,
+              (),
+              (const, override));
+  MOCK_METHOD(void,
+              OnFillingTriggered,
+              (const autofill::UserInfo::Field&),
+              (override));
+  MOCK_METHOD(void, OnOptionSelected, (autofill::AccessoryAction), (override));
+  MOCK_METHOD(void,
+              OnToggleChanged,
+              (autofill::AccessoryAction, bool),
+              (override));
+  MOCK_METHOD(void, RefreshSuggestions, (), (override));
+  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
+  MOCK_METHOD(void,
+              OnCreditCardFetched,
+              (bool, const autofill::CreditCard*, const base::string16&),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_CREDIT_CARD_ACCESSORY_CONTROLLER_H_

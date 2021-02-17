@@ -100,6 +100,17 @@ AddressAccessoryController* AddressAccessoryController::GetOrCreate(
   return AddressAccessoryControllerImpl::FromWebContents(web_contents);
 }
 
+void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
+    FillingSourceObserver observer) {
+  NOTIMPLEMENTED();
+}
+
+base::Optional<autofill::AccessorySheetData>
+AddressAccessoryControllerImpl::GetSheetData() const {
+  NOTIMPLEMENTED();
+  return base::nullopt;
+}
+
 void AddressAccessoryControllerImpl::OnFillingTriggered(
     const UserInfo::Field& selection) {
   // Since the data we fill is scoped to the profile and not to a frame, we can
