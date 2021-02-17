@@ -1,7 +1,7 @@
-jam@chromium.org
+dcheng@chromium.org
 oksamyt@chromium.org
 rockot@google.com
-sky@chromium.org
+rsesek@chromium.org
 
 # For Fuchsia-specific changes:
 per-file *_fuchsia*=file://build/fuchsia/OWNERS
