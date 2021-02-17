@@ -39,7 +39,8 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
         mSnackbarManager.showSnackbar(
                 Snackbar.make(mContext.getString(R.string.privacy_sandbox_snackbar_message), this,
                                 Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_PAGE_OPEN)
-                        .setAction(mContext.getString(R.string.more), null));
+                        .setAction(mContext.getString(R.string.more), null)
+                        .setSingleLine(false));
     }
 
     /**

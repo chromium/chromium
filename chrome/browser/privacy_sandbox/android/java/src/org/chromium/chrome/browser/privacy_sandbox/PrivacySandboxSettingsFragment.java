@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -14,6 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -23,8 +26,12 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  */
 public class PrivacySandboxSettingsFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+    public static final String EXPERIMENT_DESCRIPTION_PREFERENCE = "privacy_sandbox_description";
     public static final String TOGGLE_DESCRIPTION_PREFERENCE = "privacy_sandbox_toggle_description";
     public static final String TOGGLE_PREFERENCE = "privacy_sandbox_toggle";
+
+    public static final String PRIVACY_SANDBOX_URL =
+            "https://www.chromium.org/Home/chromium-privacy/privacy-sandbox";
 
     public static CharSequence getStatusString(Context context) {
         return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
@@ -40,6 +47,13 @@ public class PrivacySandboxSettingsFragment
         // Add all preferences and set the title.
         getActivity().setTitle(R.string.prefs_privacy_sandbox);
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences);
+        // Format the Privacy Sandbox description, which has a link.
+        findPreference(EXPERIMENT_DESCRIPTION_PREFERENCE)
+                .setSummary(SpanApplier.applySpans(
+                        getContext().getString(R.string.privacy_sandbox_description),
+                        new SpanInfo("<link>", "</link>",
+                                new NoUnderlineClickableSpan(getContext().getResources(),
+                                        (widget) -> openUrlInCct(PRIVACY_SANDBOX_URL)))));
         // Format the toggle description, which has bullet points.
         findPreference(TOGGLE_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
@@ -70,5 +84,13 @@ public class PrivacySandboxSettingsFragment
             if (!TOGGLE_PREFERENCE.equals(preference.getKey())) return false;
             return PrivacySandboxBridge.isPrivacySandboxManaged();
         };
+    }
+
+    private void openUrlInCct(String url) {
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        // TODO(crbug.com/1152351): update to use LaunchIntentDispatcher and IntentHandler to launch
+        // a Chrome Custom Tab as opposed to relying on the OS for browser picking.
+        customTabIntent.launchUrl(getContext(), Uri.parse(url));
     }
 }

@@ -16,7 +16,7 @@
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
-        android:summary="@string/privacy_sandbox_description"
+        android:key="privacy_sandbox_description"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
