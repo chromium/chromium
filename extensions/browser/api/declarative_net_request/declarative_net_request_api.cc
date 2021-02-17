@@ -432,7 +432,7 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
     // the action count for the extension's icon and show the default badge
     // text if set.
     if (use_action_count_as_badge_text)
-      action_tracker.OnPreferenceEnabled(extension_id());
+      action_tracker.OnActionCountAsBadgeTextPreferenceEnabled(extension_id());
     else {
       DCHECK(ExtensionsAPIClient::Get());
       ExtensionsAPIClient::Get()->ClearActionCount(browser_context(),

@@ -68,8 +68,8 @@ class ActionTracker {
   // Updates the action count for all tabs for the specified |extension_id|'s
   // extension action. Called when the extension calls setExtensionActionOptions
   // to enable setting the action count as badge text.
-  // TODO(karandeepb): Rename to OnActionCountAsBadgeTextPreferenceEnabled.
-  void OnPreferenceEnabled(const ExtensionId& extension_id) const;
+  void OnActionCountAsBadgeTextPreferenceEnabled(
+      const ExtensionId& extension_id) const;
 
   // Clears the TrackedInfo for the specified |extension_id| for all tabs.
   // Called when an extension's ruleset is removed.
