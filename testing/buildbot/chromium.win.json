@@ -1508,7 +1508,7 @@
           "can_use_on_swarming_builders": true,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -6011,7 +6011,7 @@
           ],
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -7635,7 +7635,7 @@
           "can_use_on_swarming_builders": true,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -9091,7 +9091,7 @@
           "can_use_on_swarming_builders": true,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },

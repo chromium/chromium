@@ -1887,7 +1887,7 @@
           ],
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -46849,7 +46849,7 @@
           ],
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -48945,7 +48945,7 @@
           ],
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -54116,7 +54116,7 @@
           ],
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -57500,7 +57500,7 @@
           "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 8
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
