@@ -80,9 +80,6 @@ ThreadState::ThreadState()
 ThreadState::~ThreadState() {
   DCHECK(!IsMainThread());
   DCHECK(IsCreationThread());
-}
-
-void ThreadState::RunTerminationGC() {
   cpp_heap_->Terminate();
 }
 

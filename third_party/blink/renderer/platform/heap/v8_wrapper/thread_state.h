@@ -96,8 +96,6 @@ class PLATFORM_EXPORT ThreadState final {
       BlinkGC::StackState stack_state =
           BlinkGC::StackState::kNoHeapPointersOnStack);
 
-  void RunTerminationGC();
-
   void SafePoint(BlinkGC::StackState);
 
   bool IsMainThread() const { return this == MainThreadState(); }
