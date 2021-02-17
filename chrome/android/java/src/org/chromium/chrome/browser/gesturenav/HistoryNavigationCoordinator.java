@@ -112,6 +112,7 @@ public class HistoryNavigationCoordinator
             @Override
             public void onDestroyed(Tab tab) {
                 mTab = null;
+                updateNavigationHandler();
             }
         };
 

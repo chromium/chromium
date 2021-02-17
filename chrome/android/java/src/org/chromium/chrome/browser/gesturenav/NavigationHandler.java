@@ -226,6 +226,7 @@ class NavigationHandler implements TouchEventObserver {
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     void navigate(boolean forward) {
+        if (mTab == null) return;
         if (forward) {
             mTab.goForward();
         } else {

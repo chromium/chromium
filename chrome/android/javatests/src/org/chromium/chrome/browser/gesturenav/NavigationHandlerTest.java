@@ -258,6 +258,19 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testSwipeAfterTabDestroy() {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+        TestThreadUtils.runOnUiThreadBlocking(currentTab()::destroy);
+
+        // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
+        // page. Make sure this won't crash after the current tab is destroyed.
+        Assert.assertFalse(mNavigationHandler.triggerUi(/*forward=*/false, 0, 0));
+    }
+
+    @Test
+    @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testEdgeSwipeIsNoopInTabSwitcher() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
