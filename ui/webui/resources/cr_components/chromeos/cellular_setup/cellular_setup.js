@@ -75,51 +75,43 @@ Polymer({
   /** @override */
   attached() {
     if (!this.currentPageName) {
-      const networkConfig =
-          network_config.MojoInterfaceProviderImpl.getInstance()
-              .getMojoServiceRemote();
-      networkConfig.getDeviceStateList().then(response => {
-        this.setCurrentPage_(response.result);
-      });
+      this.setCurrentPage_();
     }
   },
 
   /**
-   * @param {!Array<!chromeos.networkConfig.mojom.DeviceStateProperties>}
-   *     deviceStateList
+   * Sets current cellular setup flow, one of eSIM flow, pSIM flow or
+   * selection flow, depending on available pSIM and eSIM slots.
    * @private
    */
-  setCurrentPage_(deviceStateList) {
-    let pSimSlots = 0;
-    let eSimSlots = 0;
+  setCurrentPage_() {
+    const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
+    networkConfig.getDeviceStateList().then(response => {
+      const deviceStateList = response.result;
 
-    const device = deviceStateList.find(
-        (device) =>
-            device.type === chromeos.networkConfig.mojom.NetworkType.kCellular);
+      const deviceState = deviceStateList.find(
+          (device) => device.type ===
+              chromeos.networkConfig.mojom.NetworkType.kCellular);
 
-    if (!device || !device.simInfos) {
+      if (!deviceState) {
+        this.currentPageName =
+            cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
+        return;
+      }
+
+      const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
+
+      if (pSimSlots > 0 && eSimSlots === 0) {
+        this.currentPageName = cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
+        return;
+      } else if (pSimSlots === 0 && eSimSlots > 0) {
+        this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+        return;
+      }
       this.currentPageName =
           cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
-      return;
-    }
-
-    for (const simInfo of device.simInfos) {
-      if (simInfo.eid) {
-        eSimSlots++;
-        continue;
-      }
-      pSimSlots++;
-    }
-
-    if (pSimSlots > 0 && eSimSlots === 0) {
-      this.currentPageName = cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
-      return;
-    } else if (pSimSlots === 0 && eSimSlots > 0) {
-      this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
-      return;
-    }
-    this.currentPageName =
-        cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
+    });
   },
 
   /** @private */
