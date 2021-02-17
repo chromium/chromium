@@ -223,15 +223,12 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1172610")
     public void testTabsAreShown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         checkItemsDisplayed(true, true, true, true);
 
-        Matcher filesTabMatcher = allOf(
-                withText(equalToIgnoringCase("My Files")), isDescendantOfA(withId(R.id.tabs)));
-        Matcher prefetchTabMatcher = allOf(withText(equalToIgnoringCase("Explore Offline")),
-                isDescendantOfA(withId(R.id.tabs)));
+        Matcher filesTabMatcher = withText(equalToIgnoringCase("My Files"));
+        Matcher prefetchTabMatcher = withText(equalToIgnoringCase("Explore Offline"));
         onView(filesTabMatcher).check(matches(isDisplayed()));
         onView(prefetchTabMatcher).check(matches(isDisplayed()));
 
@@ -240,7 +237,7 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         checkItemsDisplayed(false, false, false, false);
 
         // Select My files tab, and verify the contents.
-        onView(filesTabMatcher).perform(ViewActions.click());
+        onView(filesTabMatcher).perform(ViewActions.scrollTo(), ViewActions.click());
         checkItemsDisplayed(true, true, true, true);
     }
 
