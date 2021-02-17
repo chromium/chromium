@@ -354,7 +354,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // not necessarily non-empty), even when the context is disabled.
   sk_sp<PaintRecord> EndRecording();
 
-  void SetDrawLooper(sk_sp<DrawLooper>);
+  void SetDrawLooper(sk_sp<SkDrawLooper>);
 
   void DrawFocusRing(const Vector<IntRect>&,
                      float width,

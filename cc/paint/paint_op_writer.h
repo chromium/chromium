@@ -26,7 +26,6 @@ struct Mailbox;
 namespace cc {
 
 class DrawImage;
-class DrawLooper;
 class PaintShader;
 
 class CC_PAINT_EXPORT PaintOpWriter {
@@ -68,7 +67,6 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const sk_sp<SkData>& data);
   void Write(const SkColorSpace* data);
   void Write(const SkSamplingOptions&);
-  void Write(const DrawLooper* looper);
   void Write(const PaintShader* shader, SkFilterQuality quality);
   void Write(const PaintFilter* filter);
   void Write(const sk_sp<SkTextBlob>& blob);

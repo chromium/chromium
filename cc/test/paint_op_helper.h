@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
-#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
 
@@ -415,10 +414,10 @@ class PaintOpHelper {
     return "SkPathEffect";
   }
 
-  static std::string SkiaTypeToString(const sk_sp<DrawLooper>& looper) {
+  static std::string SkiaTypeToString(const sk_sp<SkDrawLooper>& looper) {
     if (!looper)
       return "(nil)";
-    return "DrawLooper";
+    return "SkDrawLooper";
   }
 
   template <typename T>
@@ -489,10 +488,6 @@ class PaintOpHelper {
 
   static std::string ImageToString(const PaintImage& image) {
     return "<paint image>";
-  }
-
-  static std::string LooperToString(const sk_sp<cc::DrawLooper>& looper) {
-    return looper ? "<draw looper>" : "(nil)";
   }
 
   static std::string SkottieToString(scoped_refptr<SkottieWrapper> skottie) {
@@ -606,7 +601,8 @@ class PaintOpHelper {
         << PaintOpHelper::SkiaTypeToString(flags.getPathEffect());
     str << ", imageFilter="
         << PaintOpHelper::PaintFilterToString(flags.getImageFilter());
-    str << ", drawLooper=" << PaintOpHelper::LooperToString(flags.getLooper());
+    str << ", drawLooper="
+        << PaintOpHelper::SkiaTypeToString(flags.getLooper());
     str << ", isSimpleOpacity=" << flags.IsSimpleOpacity();
     str << ", supportsFoldingAlpha=" << flags.SupportsFoldingAlpha();
     str << ", isValid=" << flags.IsValid();

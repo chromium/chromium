@@ -34,10 +34,12 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/graphics/paint/draw_looper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
+
+class SkDrawLooper;
 
 namespace blink {
 
@@ -59,7 +61,7 @@ class PLATFORM_EXPORT DrawLooperBuilder final {
 
   // Creates the SkDrawLooper and passes ownership to the caller. The builder
   // should not be used any more after calling this method.
-  sk_sp<DrawLooper> DetachDrawLooper();
+  sk_sp<SkDrawLooper> DetachDrawLooper();
 
   void AddUnmodifiedContent();
   void AddShadow(const FloatSize& offset,
@@ -69,7 +71,7 @@ class PLATFORM_EXPORT DrawLooperBuilder final {
                  ShadowAlphaMode = kShadowRespectsAlpha);
 
  private:
-  cc::DrawLooperBuilder draw_looper_builder_;
+  SkLayerDrawLooper::Builder sk_draw_looper_builder_;
 
   // Implementing the copy constructor properly would require writing code to
   // copy the underlying SkLayerDrawLooper::Builder.
