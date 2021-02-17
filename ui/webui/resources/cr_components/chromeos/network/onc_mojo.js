@@ -192,6 +192,8 @@
         return 'Prohibited';
       case DeviceStateType.kUnavailable:
         return 'Unavailable';
+      case DeviceStateType.kInhibited:
+        return 'Inhibited';
     }
     assertNotReached('Unexpected enum value: ' + OncMojo.getEnumString(value));
     return '';
@@ -208,6 +210,7 @@
       case DeviceStateType.kDisabling:
       case DeviceStateType.kEnabling:
       case DeviceStateType.kUnavailable:
+      case DeviceStateType.kInhibited:
         return true;
       case DeviceStateType.kDisabled:
       case DeviceStateType.kEnabled:
