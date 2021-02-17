@@ -264,7 +264,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-03-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-02-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -273,7 +273,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-03-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-07-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMeSecondPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-03-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-07-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
