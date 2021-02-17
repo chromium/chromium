@@ -129,4 +129,18 @@ TEST_F(CSSPropertyTest, Surrogates) {
                                                   WritingMode::kHorizontalTb));
 }
 
+TEST_F(CSSPropertyTest, PairsWithIdenticalValues) {
+  const CSSValue* border_radius = css_test_helpers::ParseLonghand(
+      GetDocument(), GetCSSPropertyBorderTopLeftRadius(), "1% 1%");
+  const CSSValue* perspective_origin = css_test_helpers::ParseLonghand(
+      GetDocument(), GetCSSPropertyPerspectiveOrigin(), "1% 1%");
+
+  // Border radius drops identical values
+  EXPECT_EQ("1%", border_radius->CssText());
+  // Perspective origin keeps identical values
+  EXPECT_EQ("1% 1%", perspective_origin->CssText());
+  // Therefore, the values are different
+  EXPECT_NE(*border_radius, *perspective_origin);
+}
+
 }  // namespace blink
