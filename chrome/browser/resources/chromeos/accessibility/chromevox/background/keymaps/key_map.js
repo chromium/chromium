@@ -70,11 +70,8 @@ KeyMap = class {
 
   /**
    * Returns a collection of command, KeySequence bindings.
-   * @return {Array<Object<KeySequence>>} Array of all command, key bindings.
-   * @suppress {checkTypes} inconsistent return type
-   * found   : (Array<(Object<{command: string,
-   *                             sequence: (KeySequence|null)}>|null)>|null)
-   * required: (Array<(Object<(KeySequence|null)>|null)>|null)
+   * @return {Array<Object<{command: string, sequence: KeySequence}>>} Array of
+   *     all command, key bindings.
    */
   bindings() {
     return this.bindings_;
