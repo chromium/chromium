@@ -404,13 +404,16 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo {
-  [self updateSyncErrorsSection:YES];
-}
-
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo {
-  [self updateSyncErrorsSection:YES];
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self updateSyncErrorsSection:YES];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 #pragma mark - ManageSyncSettingsServiceDelegate

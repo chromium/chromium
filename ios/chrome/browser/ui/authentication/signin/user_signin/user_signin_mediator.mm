@@ -115,16 +115,6 @@
   // they open the settings through the link.
   self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
-  BOOL settingsLinkWasTapped =
-      [self.delegate userSigninMediatorGetSettingsLinkWasTapped];
-  if (!settingsLinkWasTapped) {
-    // FirstSetupComplete flag should be only turned on when the user agrees
-    // to start Sync.
-    self.syncSetupService->SetFirstSetupComplete(
-        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-    self.syncSetupService->CommitSyncChanges();
-  }
-
   sync_pb::UserConsentTypes::SyncConsent syncConsent;
   syncConsent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
                              UserConsentTypes_ConsentStatus_GIVEN);
@@ -143,6 +133,17 @@
       base::SysNSStringToUTF8([identity gaiaID]),
       base::SysNSStringToUTF8([identity userEmail]));
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
+  self.authenticationService->GrantSyncConsent(identity);
+
+  BOOL settingsLinkWasTapped =
+      [self.delegate userSigninMediatorGetSettingsLinkWasTapped];
+  if (!settingsLinkWasTapped) {
+    // FirstSetupComplete flag should be turned on after the authentication
+    // service has granted user consent to start Sync.
+    self.syncSetupService->SetFirstSetupComplete(
+        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+    self.syncSetupService->CommitSyncChanges();
+  }
 
   [self.delegate userSigninMediatorSigninFinishedWithResult:
                      SigninCoordinatorResultSuccess];

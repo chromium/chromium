@@ -1870,12 +1870,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // this happens.
   [self reloadData];
 }
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo {
-  [self signinStateDidChange];
-}
 
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo {
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
   [self signinStateDidChange];
 }
 

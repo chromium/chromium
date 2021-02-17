@@ -125,16 +125,16 @@ class UserSigninMediatorTest : public PlatformTest {
         .andDo(^(NSInvocation*) {
           [authentication_flow_ didFetchManagedStatus:nil];
         });
-    OCMExpect([performer_mock_
-                  shouldHandleMergeCaseForIdentity:identity_
-                                      browserState:browser_state_.get()])
-        .andReturn(NO);
     OCMExpect([performer_mock_ signInIdentity:identity_
                              withHostedDomain:nil
                                toBrowserState:browser_state_.get()])
         .andDo(^(NSInvocation*) {
           authentication_service()->SignIn(identity_);
         });
+    OCMExpect([performer_mock_
+                  shouldHandleMergeCaseForIdentity:identity_
+                                      browserState:browser_state_.get()])
+        .andReturn(NO);
   }
 
   // Sets up the sign-in failure expectations for the

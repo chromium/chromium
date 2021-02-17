@@ -285,12 +285,15 @@ AuthenticationService::GetLastKnownAccountsFromForeground() {
 ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
   // There is no authenticated identity if there is no signed in user or if the
   // user signed in via the client login flow.
-  if (!identity_manager_->HasPrimaryAccount()) {
+  if (!identity_manager_->HasPrimaryAccount(
+          signin::ConsentLevel::kNotRequired)) {
     return nil;
   }
 
   std::string authenticated_gaia_id =
-      identity_manager_->GetPrimaryAccountInfo().gaia;
+      identity_manager_
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+          .gaia;
   if (authenticated_gaia_id.empty())
     return nil;
 
@@ -331,33 +334,53 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
   // if there is already a signed in user. Check that there is no signed in
   // account or that the new signed in account matches the old one to avoid a
   // mismatch between the old and the new authenticated accounts.
-  if (!identity_manager_->HasPrimaryAccount()) {
+  if (!identity_manager_->HasPrimaryAccount(
+          signin::ConsentLevel::kNotRequired)) {
     DCHECK(identity_manager_->GetPrimaryAccountMutator());
-    const bool success =
-        identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-            account_id);
-    CHECK(success);
+    // Initial sign-in to Chrome does not automatically turn on Sync features.
+    // The Sync service will be enabled in a separate request to
+    // |GrantSyncConsent|.
+    identity_manager_->GetPrimaryAccountMutator()->SetUnconsentedPrimaryAccount(
+        account_id);
   }
 
   // The primary account should now be set to the expected account_id.
-  CHECK_EQ(account_id, identity_manager_->GetPrimaryAccountId());
+  CHECK_EQ(account_id, identity_manager_->GetPrimaryAccountId(
+                           signin::ConsentLevel::kNotRequired));
+  crash_keys::SetCurrentlySignedIn(true);
+}
+
+void AuthenticationService::GrantSyncConsent(ChromeIdentity* identity) {
+  DCHECK(ios::GetChromeBrowserProvider()
+             ->GetChromeIdentityService()
+             ->IsValidIdentity(identity));
+  DCHECK(
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kNotRequired));
+
+  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
+      base::SysNSStringToUTF8(identity.gaiaID),
+      base::SysNSStringToUTF8(identity.userEmail));
+  const bool success =
+      identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_id);
+
+  CHECK(success);
+  CHECK_EQ(account_id,
+           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
 
   // Kick-off sync: The authentication error UI (sign in infobar and warning
   // badge in settings screen) check the sync auth error state. Sync
   // needs to be kicked off so that it resets the auth error quickly once
   // |identity| is reauthenticated.
-  // TODO(msarda): Remove this code once the authentication error UI checks
-  // SigninGlobalError instead of the sync auth error state.
-  // crbug.com/289493
   sync_service_->GetUserSettings()->SetSyncRequested(true);
-  crash_keys::SetCurrentlySignedIn(true);
 }
 
 void AuthenticationService::SignOut(
     signin_metrics::ProfileSignout signout_source,
     bool force_clear_browsing_data,
     ProceduralBlock completion) {
-  if (!identity_manager_->HasPrimaryAccount()) {
+  if (!identity_manager_->HasPrimaryAccount(
+          signin::ConsentLevel::kNotRequired)) {
     if (completion)
       completion();
     return;
@@ -535,7 +558,8 @@ void AuthenticationService::HandleIdentityListChanged() {
 void AuthenticationService::HandleForgottenIdentity(
     ChromeIdentity* invalid_identity,
     bool should_prompt) {
-  if (!identity_manager_->HasPrimaryAccount()) {
+  if (!identity_manager_->HasPrimaryAccount(
+          signin::ConsentLevel::kNotRequired)) {
     // User is not signed in. Nothing to do here.
     return;
   }
@@ -577,7 +601,8 @@ bool AuthenticationService::IsAuthenticated() const {
 bool AuthenticationService::IsAuthenticatedIdentityManaged() const {
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo());
+          identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kNotRequired));
   if (!primary_account_info)
     return false;
 

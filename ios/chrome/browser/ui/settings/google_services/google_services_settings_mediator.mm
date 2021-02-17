@@ -1005,17 +1005,18 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo {
-  [self updateSyncSection:YES];
-  [self updateIdentitySectionAndNotifyConsumer];
-  [self updateLeakCheckItemAndReload];
-}
-
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo {
-  [self updateSyncSection:YES];
-  [self updateIdentitySectionAndNotifyConsumer];
-  [self updateLeakCheckItemAndReload];
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self updateSyncSection:YES];
+      [self updateIdentitySectionAndNotifyConsumer];
+      [self updateLeakCheckItemAndReload];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 #pragma mark - BooleanObserver

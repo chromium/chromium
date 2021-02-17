@@ -22,9 +22,7 @@
 // IdentityManager::Observer in identity_manager.h for the specification of
 // these semantics.
 
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo;
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo;
+- (void)onPrimaryAccountChanged:(const signin::PrimaryAccountChangeEvent&)event;
 - (void)onRefreshTokenUpdatedForAccount:(const CoreAccountInfo&)accountInfo;
 - (void)onRefreshTokenRemovedForAccount:(const CoreAccountId&)accountId;
 - (void)onRefreshTokensLoaded;

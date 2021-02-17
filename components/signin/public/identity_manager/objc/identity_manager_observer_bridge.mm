@@ -4,6 +4,9 @@
 
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 
+#include "base/feature_list.h"
+#include "components/signin/public/base/account_consistency_method.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -23,22 +26,8 @@ IdentityManagerObserverBridge::~IdentityManagerObserverBridge() {
 
 void IdentityManagerObserverBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if ([delegate_ respondsToSelector:@selector(onPrimaryAccountSet:)]) {
-        [delegate_ onPrimaryAccountSet:event.GetCurrentState().primary_account];
-      }
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      if ([delegate_ respondsToSelector:@selector(onPrimaryAccountCleared:)]) {
-        [delegate_
-            onPrimaryAccountCleared:event.GetPreviousState().primary_account];
-      }
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      NOTREACHED() << "ConsentLevel::kNotRequired is not yet supported on iOS. "
-                      "This code needs to be updated when it is supported.";
-      break;
+  if ([delegate_ respondsToSelector:@selector(onPrimaryAccountChanged:)]) {
+    [delegate_ onPrimaryAccountChanged:event];
   }
 }
 

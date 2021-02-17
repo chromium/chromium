@@ -41,6 +41,8 @@ void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
   authenticated_identity_ = identity;
 }
 
+void AuthenticationServiceFake::GrantSyncConsent(ChromeIdentity* identity) {}
+
 void AuthenticationServiceFake::SignOut(
     signin_metrics::ProfileSignout signout_source,
     bool force_clear_browsing_data,

@@ -90,9 +90,13 @@ class AuthenticationService : public KeyedService,
   // Virtual for testing.
   virtual void SignIn(ChromeIdentity* identity);
 
+  // Grants consent for |identity| to enable syncing the account.
+  virtual void GrantSyncConsent(ChromeIdentity* identity);
+
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed. If force_clear_browsing_data is true,
   // clears the browsing data unconditionally.
+  // Sync consent is automatically removed from all signed-out accounts.
   // Virtual for testing.
   virtual void SignOut(signin_metrics::ProfileSignout signout_source,
                        bool force_clear_browsing_data,

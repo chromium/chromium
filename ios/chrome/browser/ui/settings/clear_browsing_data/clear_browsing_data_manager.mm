@@ -334,7 +334,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
   // Google Account footer.
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(self.browserState);
-  if (identityManager->HasPrimaryAccount()) {
+  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
     [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
     [model setFooter:[self footerForGoogleAccountSectionItem]
         forSectionWithIdentifier:SectionIdentifierGoogleAccount];

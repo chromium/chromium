@@ -31,6 +31,12 @@ PrimaryAccountChangeEvent::PrimaryAccountChangeEvent(State previous_state,
 
 PrimaryAccountChangeEvent::~PrimaryAccountChangeEvent() = default;
 
+bool operator==(const PrimaryAccountChangeEvent& lhs,
+                const PrimaryAccountChangeEvent& rhs) {
+  return lhs.GetPreviousState() == rhs.GetPreviousState() &&
+         lhs.GetCurrentState() == rhs.GetCurrentState();
+}
+
 PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
     ConsentLevel consent_level) const {
   if (previous_state_ == current_state_)

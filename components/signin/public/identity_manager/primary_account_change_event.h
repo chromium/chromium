@@ -60,6 +60,9 @@ class PrimaryAccountChangeEvent {
 bool operator==(const PrimaryAccountChangeEvent::State& lhs,
                 const PrimaryAccountChangeEvent::State& rhs);
 
+bool operator==(const PrimaryAccountChangeEvent& lhs,
+                const PrimaryAccountChangeEvent& rhs);
+
 std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state);
 std::ostream& operator<<(std::ostream& os,

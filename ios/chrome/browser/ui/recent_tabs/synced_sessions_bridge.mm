@@ -45,14 +45,11 @@ void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
       // Ignored.
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       [owner_ reloadSessions];
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      NOTREACHED() << "ConsentLevel::kNotRequired is not yet supported on iOS. "
-                      "This code needs to be updated when it is supported.";
       break;
   }
 }

@@ -18,8 +18,7 @@
 @interface ObserverBridgeDelegateFake
     : NSObject <IdentityManagerObserverBridgeDelegate>
 
-@property(nonatomic, assign) NSInteger onPrimaryAccountSetCount;
-@property(nonatomic, assign) NSInteger onPrimaryAccountClearedCount;
+@property(nonatomic, assign) NSInteger onPrimaryAccountChangedCount;
 @property(nonatomic, assign) NSInteger onRefreshTokenUpdatedForAccountCount;
 @property(nonatomic, assign) NSInteger onRefreshTokenRemovedForAccountCount;
 @property(nonatomic, assign) NSInteger onRefreshTokensLoadedCount;
@@ -27,6 +26,7 @@
 @property(nonatomic, assign)
     NSInteger onEndBatchOfRefreshTokenStateChangesCount;
 
+@property(nonatomic, assign) signin::PrimaryAccountChangeEvent receivedEvent;
 @property(nonatomic, assign) CoreAccountInfo receivedPrimaryAccountInfo;
 @property(nonatomic, assign) CoreAccountId receivedAccountId;
 @property(nonatomic, assign)
@@ -37,15 +37,10 @@
 
 @implementation ObserverBridgeDelegateFake
 
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo {
-  ++self.onPrimaryAccountSetCount;
-  self.receivedPrimaryAccountInfo = primaryAccountInfo;
-}
-
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo {
-  ++self.onPrimaryAccountClearedCount;
-  self.receivedPrimaryAccountInfo = previousPrimaryAccountInfo;
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  ++self.onPrimaryAccountChangedCount;
+  self.receivedEvent = event;
 }
 
 - (void)onRefreshTokenUpdatedForAccount:(const CoreAccountInfo&)accountInfo {
@@ -102,8 +97,7 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   void TearDown() override {
     // Check no unexpected calls. None zero counter needs to be reset at the end
     // tests.
-    EXPECT_EQ(0, observer_bridge_delegate_.onPrimaryAccountSetCount);
-    EXPECT_EQ(0, observer_bridge_delegate_.onPrimaryAccountClearedCount);
+    EXPECT_EQ(0, observer_bridge_delegate_.onPrimaryAccountChangedCount);
     EXPECT_EQ(0,
               observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount);
     EXPECT_EQ(0,
@@ -140,11 +134,10 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountSet) {
                                                  signin::ConsentLevel::kSync);
   PrimaryAccountChangeEvent event_details(previous_state, current_state);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
-  EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountSetCount);
-  EXPECT_EQ(account_info_,
-            observer_bridge_delegate_.receivedPrimaryAccountInfo);
+  EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
+  EXPECT_EQ(event_details, observer_bridge_delegate_.receivedEvent);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onPrimaryAccountSetCount = 0;
+  observer_bridge_delegate_.onPrimaryAccountChangedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnPrimaryAccountChanged(), with clear
@@ -155,11 +148,10 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountCleared) {
   PrimaryAccountChangeEvent::State current_state;
   PrimaryAccountChangeEvent event_details(previous_state, current_state);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
-  EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountClearedCount);
-  EXPECT_EQ(account_info_,
-            observer_bridge_delegate_.receivedPrimaryAccountInfo);
+  EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
+  EXPECT_EQ(event_details, observer_bridge_delegate_.receivedEvent);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onPrimaryAccountClearedCount = 0;
+  observer_bridge_delegate_.onPrimaryAccountChangedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnRefreshTokenUpdatedForAccount()

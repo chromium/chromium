@@ -100,8 +100,6 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   void SetExpectationsForSignIn() {
-    EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
-                SetSyncRequested(true));
     EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup());
   }
 
@@ -635,7 +633,6 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialogInvalidCachedError) {
 // Tests that MDM dialog is shown when there is a cached error and a
 // corresponding error for the account.
 TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
-  SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
@@ -651,4 +648,31 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
 
   EXPECT_TRUE(
       authentication_service()->ShowMDMErrorDialogForIdentity(identity(0)));
+}
+
+TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
+  // Sign in.
+  SetExpectationsForSignIn();
+  authentication_service()->SignIn(identity(0));
+
+  EXPECT_NSEQ(identity(0),
+              authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kNotRequired));
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(authentication_service()->IsAuthenticated());
+
+  // Grant Sync consent.
+  EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
+              SetSyncRequested(true));
+  authentication_service()->GrantSyncConsent(identity(0));
+
+  EXPECT_NSEQ(identity(0),
+              authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kNotRequired));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(authentication_service()->IsAuthenticated());
 }
