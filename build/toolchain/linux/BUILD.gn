@@ -44,6 +44,9 @@ gcc_toolchain("arm64") {
   toolchain_args = {
     current_cpu = "arm64"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -62,6 +65,9 @@ gcc_toolchain("arm") {
   toolchain_args = {
     current_cpu = "arm"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -115,6 +121,9 @@ gcc_toolchain("x86") {
   toolchain_args = {
     current_cpu = "x86"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -185,6 +194,9 @@ gcc_toolchain("x64") {
   toolchain_args = {
     current_cpu = "x64"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -217,6 +229,9 @@ gcc_toolchain("mipsel") {
     cc_wrapper = ""
     current_cpu = "mipsel"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
     use_goma = false
   }
@@ -236,6 +251,9 @@ gcc_toolchain("mips64el") {
     cc_wrapper = ""
     current_cpu = "mips64el"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
     use_goma = false
   }
@@ -261,6 +279,9 @@ gcc_toolchain("s390x") {
   toolchain_args = {
     current_cpu = "s390x"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -277,6 +298,9 @@ gcc_toolchain("ppc64") {
   toolchain_args = {
     current_cpu = "ppc64"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -295,6 +319,9 @@ gcc_toolchain("mips") {
   toolchain_args = {
     current_cpu = "mips"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }
@@ -313,6 +340,9 @@ gcc_toolchain("mips64") {
   toolchain_args = {
     current_cpu = "mips64"
     current_os = "linux"
+
+    # reclient does not support gcc.
+    use_rbe = false
     is_clang = false
   }
 }

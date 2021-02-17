@@ -136,6 +136,9 @@ template("nacl_glibc_toolchain") {
 
     toolchain_args = {
       current_cpu = toolchain_cpu
+
+      # reclient does not support gcc.
+      use_rbe = false
       is_clang = false
       is_nacl_glibc = true
       use_lld = false
