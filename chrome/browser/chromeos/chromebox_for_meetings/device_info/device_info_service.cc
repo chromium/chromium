@@ -192,6 +192,8 @@ DeviceInfoService::DeviceInfoService()
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   CfmHotlineClient::Get()->AddObserver(this);
   current_policy_info_.reset();
+  // Device settings update may not be triggered in some cases
+  DeviceSettingsUpdated();
 }
 
 DeviceInfoService::~DeviceInfoService() {

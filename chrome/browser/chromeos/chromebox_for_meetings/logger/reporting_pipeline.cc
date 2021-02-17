@@ -48,6 +48,8 @@ ReportingPipeline::~ReportingPipeline() {
 void ReportingPipeline::Init() {
   CHECK(chromeos::DeviceSettingsService::IsInitialized());
   chromeos::DeviceSettingsService::Get()->AddObserver(this);
+  // Device settings update may not be triggered in some cases
+  DeviceSettingsUpdated();
 }
 
 void ReportingPipeline::Reset() {
