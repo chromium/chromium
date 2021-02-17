@@ -3975,6 +3975,15 @@
     "expiry_milestone": 90
   },
   {
+    "name": "password-reuse-detection",
+    "owners": [
+      "edchin",
+      "ajuma",
+      "chrome-safebrowsing-alerts@google.com"
+    ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "password-scripts-fetching",
     "owners": [ "kolos" ],
     "expiry_milestone": 90

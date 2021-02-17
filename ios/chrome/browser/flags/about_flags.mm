@@ -622,6 +622,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserFullscreenPromoCTAExperimentDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromoCTAExperiment)},
+    {"password-reuse-detection", flag_descriptions::kPasswordReuseDetectionName,
+     flag_descriptions::kPasswordReuseDetectionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordReuseDetectionEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

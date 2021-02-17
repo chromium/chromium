@@ -292,6 +292,11 @@ extern const char kOmniboxLocalHistoryZeroSuggestDescription[];
 extern const char kOmniboxNewImplementationName[];
 extern const char kOmniboxNewImplementationDescription[];
 
+// Title and description for the flag to enable PhishGuard password reuse
+// detection.
+extern const char kPasswordReuseDetectionName[];
+extern const char kPasswordReuseDetectionDescription[];
+
 // Title and description for the flag that enables the refactored new tab page.
 extern const char kRefactoredNTPName[];
 extern const char kRefactoredNTPDescription[];
