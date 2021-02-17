@@ -148,6 +148,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
       builder.SetOrthogonalFallbackInlineSize(
           IsHorizontalWritingMode(table_writing_mode) ? icb_size.height
                                                       : icb_size.width);
+      builder.SetAvailableSize({kIndefiniteSize, kIndefiniteSize});
     }
     NGConstraintSpace space = builder.ToConstraintSpace();
     // It'd be nice to avoid computing minmax if not needed, but the criteria
