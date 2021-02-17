@@ -45,8 +45,11 @@ bool DeviceIsPointing(device::BluetoothDeviceType device_type) {
 }
 
 bool DeviceIsPointing(const device::mojom::InputDeviceInfoPtr& info) {
-  return info->is_mouse || info->is_touchpad || info->is_touchscreen ||
-         info->is_tablet;
+  return info->is_mouse || info->is_touchpad;
+}
+
+bool DeviceIsTouchScreen(const device::mojom::InputDeviceInfoPtr& info) {
+  return info->is_touchscreen || info->is_tablet;
 }
 
 bool DeviceIsKeyboard(device::BluetoothDeviceType device_type) {
@@ -145,6 +148,11 @@ void HIDDetectionScreen::CleanupOnExit() {
 void HIDDetectionScreen::OnViewDestroyed(HIDDetectionView* view) {
   if (view_ == view)
     view_ = nullptr;
+}
+
+bool HIDDetectionScreen::ShouldEnableContinueButton() {
+  return !pointing_device_id_.empty() || !keyboard_device_id_.empty() ||
+         touchscreen_detected_;
 }
 
 void HIDDetectionScreen::CheckIsScreenRequired(
@@ -386,8 +394,7 @@ void HIDDetectionScreen::SendPointingDeviceNotification() {
   if (view_) {
     view_->SetMouseState(state);
     view_->SetPointingDeviceName(pointing_device_name_);
-    view_->SetContinueButtonEnabled(
-        !(pointing_device_id_.empty() && keyboard_device_id_.empty()));
+    view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
   }
 }
 
@@ -411,8 +418,7 @@ void HIDDetectionScreen::SendKeyboardDeviceNotification() {
     }
     view_->SetKeyboardState(state);
     view_->SetKeyboardDeviceName(keyboard_device_name_);
-    view_->SetContinueButtonEnabled(
-        !(pointing_device_id_.empty() && keyboard_device_id_.empty()));
+    view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
   }
 }
 
@@ -460,9 +466,10 @@ void HIDDetectionScreen::InputDeviceAdded(InputDeviceInfoPtr info) {
   if (is_hidden())
     return;
 
-  // TODO(merkulova): deal with all available device types, e.g. joystick.
-  if (!keyboard_device_id_.empty() && !pointing_device_id_.empty())
-    return;
+  if (!touchscreen_detected_ && DeviceIsTouchScreen(info_ref)) {
+    touchscreen_detected_ = true;
+    view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
+  }
 
   if (pointing_device_id_.empty() && DeviceIsPointing(info_ref)) {
     pointing_device_id_ = info_ref->id;
@@ -513,9 +520,10 @@ void HIDDetectionScreen::StartBTDiscoverySession() {
 
 void HIDDetectionScreen::ProcessConnectedDevicesList() {
   for (const auto& map_entry : devices_) {
-    if (!pointing_device_id_.empty() && !keyboard_device_id_.empty())
-      return;
-
+    if (!touchscreen_detected_ && DeviceIsTouchScreen(map_entry.second)) {
+      touchscreen_detected_ = true;
+      view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
+    }
     if (pointing_device_id_.empty() && DeviceIsPointing(map_entry.second)) {
       pointing_device_id_ = map_entry.second->id;
       if (view_)

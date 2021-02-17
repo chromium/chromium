@@ -72,7 +72,7 @@ class HIDDetectionScreen : public BaseScreen,
   }
 
  private:
-  friend class HIDDetectionScreenTest;
+  friend class HIDDetectionScreenChromeboxTest;
 
   // BaseScreen:
   bool MaybeSkip(WizardContext* context) override;
@@ -113,6 +113,8 @@ class HIDDetectionScreen : public BaseScreen,
   void OnContinueButtonClicked();
 
   void CleanupOnExit();
+
+  bool ShouldEnableContinueButton();
 
   // Types of dialog leaving scenarios for UMA metric.
   enum ContinueScenarioType {
@@ -246,6 +248,9 @@ class HIDDetectionScreen : public BaseScreen,
   // kept at a time and the instance that `discovery_session_` points to gets
   // replaced by a new one when a new discovery session is initiated.
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
+
+  // Does the screen has a touch screen available?
+  bool touchscreen_detected_ = false;
 
   // Current pointing device, if any. Device name is kept in screen context.
   std::string pointing_device_id_;

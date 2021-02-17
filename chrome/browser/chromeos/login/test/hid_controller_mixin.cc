@@ -11,9 +11,10 @@
 #include "chrome/browser/chromeos/login/screens/hid_detection_screen.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
-#include "services/device/public/mojom/input_service.mojom.h"
 
 using testing::_;
+
+namespace chromeos {
 
 namespace {
 
@@ -33,7 +34,6 @@ void SetUpBluetoothMock(
 
 }  // namespace
 
-namespace chromeos {
 namespace test {
 
 using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
@@ -41,6 +41,7 @@ using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
 // static
 const char HIDControllerMixin::kMouseId[] = "mouse";
 const char HIDControllerMixin::kKeyboardId[] = "keyboard";
+const char HIDControllerMixin::kTouchscreenId[] = "touchscreen";
 
 HIDControllerMixin::HIDControllerMixin(InProcessBrowserTestMixinHost* host)
     : InProcessBrowserTestMixin(host) {
@@ -66,22 +67,64 @@ void HIDControllerMixin::SetUpInProcessBrowserTestFixture() {
   testing::Mock::AllowLeak(mock_adapter_.get());
 }
 
-void HIDControllerMixin::AddUsbMouse(const std::string& mouse_id) {
+void HIDControllerMixin::AddMouse(device::mojom::InputDeviceType type) {
   auto mouse = device::mojom::InputDeviceInfo::New();
-  mouse->id = mouse_id;
+  mouse->id = kMouseId;
   mouse->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
-  mouse->type = device::mojom::InputDeviceType::TYPE_USB;
+  mouse->type = type;
   mouse->is_mouse = true;
   fake_input_service_manager_->AddDevice(std::move(mouse));
+  if (wait_until_idle_after_device_update_)
+    base::RunLoop().RunUntilIdle();
 }
 
-void HIDControllerMixin::AddUsbKeyboard(const std::string& keyboard_id) {
+void HIDControllerMixin::AddKeyboard(device::mojom::InputDeviceType type) {
   auto keyboard = device::mojom::InputDeviceInfo::New();
-  keyboard->id = keyboard_id;
+  keyboard->id = kKeyboardId;
   keyboard->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
-  keyboard->type = device::mojom::InputDeviceType::TYPE_USB;
+  keyboard->type = type;
   keyboard->is_keyboard = true;
   fake_input_service_manager_->AddDevice(std::move(keyboard));
+  if (wait_until_idle_after_device_update_)
+    base::RunLoop().RunUntilIdle();
+}
+
+void HIDControllerMixin::AddTouchscreen() {
+  auto touchscreen = device::mojom::InputDeviceInfo::New();
+  touchscreen->id = kTouchscreenId;
+  touchscreen->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
+  touchscreen->type = device::mojom::InputDeviceType::TYPE_UNKNOWN;
+  touchscreen->is_touchscreen = true;
+  fake_input_service_manager_->AddDevice(std::move(touchscreen));
+  if (wait_until_idle_after_device_update_)
+    base::RunLoop().RunUntilIdle();
+}
+
+void HIDControllerMixin::ConnectUSBDevices() {
+  AddMouse(device::mojom::InputDeviceType::TYPE_USB);
+  AddKeyboard(device::mojom::InputDeviceType::TYPE_USB);
+}
+
+void HIDControllerMixin::ConnectBTDevices() {
+  AddMouse(device::mojom::InputDeviceType::TYPE_BLUETOOTH);
+  AddKeyboard(device::mojom::InputDeviceType::TYPE_BLUETOOTH);
+}
+
+void HIDControllerMixin::RemoveMouse() {
+  fake_input_service_manager_->RemoveDevice(kMouseId);
+  if (wait_until_idle_after_device_update_)
+    base::RunLoop().RunUntilIdle();
+}
+
+void HIDControllerMixin::RemoveKeyboard() {
+  fake_input_service_manager_->RemoveDevice(kKeyboardId);
+  if (wait_until_idle_after_device_update_)
+    base::RunLoop().RunUntilIdle();
+}
+
+void HIDControllerMixin::RemoveDevices() {
+  RemoveMouse();
+  RemoveKeyboard();
 }
 
 }  // namespace test
