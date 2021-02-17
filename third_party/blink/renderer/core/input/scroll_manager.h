@@ -150,10 +150,8 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
                  const Node& current_node,
                  bool for_autoscroll);
 
-  // scroller_size is set only when scrolling non root scroller.
-  void ComputeScrollRelatedMetrics(
-      uint32_t* non_composited_main_thread_scrolling_reasons);
-  void RecordScrollRelatedMetrics(const WebGestureDevice);
+  uint32_t GetNonCompositedMainThreadScrollingReasons() const;
+  void RecordScrollRelatedMetrics(WebGestureDevice) const;
 
   WebGestureEvent SynthesizeGestureScrollBegin(
       const WebGestureEvent& update_event);

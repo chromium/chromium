@@ -451,16 +451,16 @@ void ScrollManager::CustomizedScroll(ScrollState& scroll_state) {
   scroll_state.distributeToScrollChainDescendant();
 }
 
-void ScrollManager::ComputeScrollRelatedMetrics(
-    uint32_t* non_composited_main_thread_scrolling_reasons) {
+uint32_t ScrollManager::GetNonCompositedMainThreadScrollingReasons() const {
   // When scrolling on the main thread, the scrollableArea may or may not be
   // composited. Either way, we have recorded either the reasons stored in
   // its layer or the reason NonFastScrollableRegion from the compositor
   // side. Here we record scrolls that occurred on main thread due to a
   // non-composited scroller.
   if (!scroll_gesture_handling_node_->GetLayoutObject())
-    return;
+    return 0;
 
+  uint32_t non_composited_main_thread_scrolling_reasons = 0;
   for (auto* cur_box =
            scroll_gesture_handling_node_->GetLayoutObject()->EnclosingBox();
        cur_box; cur_box = cur_box->ContainingBlock()) {
@@ -472,42 +472,22 @@ void ScrollManager::ComputeScrollRelatedMetrics(
     // TODO(bokan): This DCHECK is occasionally tripped. See crbug.com/944706.
     // DCHECK(!scrollable_area->UsesCompositedScrolling() ||
     //        !scrollable_area->GetNonCompositedMainThreadScrollingReasons());
-    *non_composited_main_thread_scrolling_reasons |=
+    non_composited_main_thread_scrolling_reasons |=
         scrollable_area->GetNonCompositedMainThreadScrollingReasons();
   }
+  return non_composited_main_thread_scrolling_reasons;
 }
 
-void ScrollManager::RecordScrollRelatedMetrics(const WebGestureDevice device) {
+void ScrollManager::RecordScrollRelatedMetrics(WebGestureDevice device) const {
   if (device != WebGestureDevice::kTouchpad &&
       device != WebGestureDevice::kTouchscreen) {
     return;
   }
 
-  uint32_t non_composited_main_thread_scrolling_reasons = 0;
-  ComputeScrollRelatedMetrics(&non_composited_main_thread_scrolling_reasons);
-
-  if (non_composited_main_thread_scrolling_reasons) {
-    DCHECK(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
-        non_composited_main_thread_scrolling_reasons));
-    // The enum in cc::MainThreadScrollingReason simultaneously defines actual
-    // bitmask values and indices into the bitmask, making this loop a bit
-    // confusing.
-    //
-    // This stems from the fact that kNotScrollingOnMain is recorded in the
-    // histograms as value 0. However, the 0th bit is not actually reserved and
-    // has a separate, well-defined meaning. kNotScrollingOnMain is only
-    // recorded when *no* bits are set.
-    //
-    // As such, when recording any reason that's not kNotScrollingOnMain (i.e.
-    // recording the index of a set bit), the index must be incremented by 1 to
-    // be recorded properly.
-    for (uint32_t i = cc::MainThreadScrollingReason::kNonCompositedReasonsFirst;
-         i <= cc::MainThreadScrollingReason::kNonCompositedReasonsLast; ++i) {
-      unsigned val = 1 << i;
-      if (non_composited_main_thread_scrolling_reasons & val) {
-        RecordScrollReasonMetric(device, i + 1);
-      }
-    }
+  if (uint32_t non_composited_main_thread_scrolling_reasons =
+          GetNonCompositedMainThreadScrollingReasons()) {
+    RecordScrollReasonsMetric(device,
+                              non_composited_main_thread_scrolling_reasons);
   }
 }
 

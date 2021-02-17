@@ -16,17 +16,13 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
       "Has background-attachment:fixed, "
       "Threaded scrolling is disabled, "
       "Scrollbar scrolling, "
-      "Frame overlay, "
-      "Handling scroll from main thread, "
       "Not opaque for text and LCD text, "
       "Can't paint scrolling background and LCD text, "
       "Non fast scrollable region, "
       "Failed hit test, "
       "No scrolling layer, "
       "Not scrollable, "
-      "Continuing main thread scroll, "
       "Non-invertible transform, "
-      "Page-based scrolling, "
       "Wheel event handler region, "
       "Touch event handler region",
       MainThreadScrollingReason::AsText(0xffffffffu));

@@ -842,46 +842,7 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
                     : cc::MainThreadScrollingReason::kTouchEventHandlerRegion);
   }
 
-  // Note: This is slightly different from |is_compositor_scroll| above because
-  // at this point, we've also included wheel handler region reasons which will
-  // scroll on the compositor but require blocking on the main thread. The
-  // histograms below don't consider this "not scrolling on main".
-  const bool is_unblocked_compositor_scroll =
-      reasons == cc::MainThreadScrollingReason::kNotScrollingOnMain;
-
-  if (is_unblocked_compositor_scroll) {
-    RecordScrollReasonMetric(
-        device, cc::MainThreadScrollingReason::kNotScrollingOnMain);
-  }
-
-  // The enum in cc::MainThreadScrollingReason simultaneously defines actual
-  // bitmask values and indices into the bitmask, making this loop a bit
-  // confusing.
-  //
-  // This stems from the fact that kNotScrollingOnMain is recorded in the
-  // histograms as value 0. However, the 0th bit is not actually reserved and
-  // has a separate, well-defined meaning. kNotScrollingOnMain is only recorded
-  // when *no* bits are set.
-  //
-  // As such, when recording any reason that's not kNotScrollingOnMain (i.e.
-  // recording the index of a set bit), the index must be incremented by 1 to be
-  // recorded properly.
-  for (uint32_t i = 0;
-       i < cc::MainThreadScrollingReason::kMainThreadScrollingReasonCount;
-       ++i) {
-    unsigned val = 1 << i;
-    if (reasons & val) {
-      if (val == cc::MainThreadScrollingReason::kHandlingScrollFromMainThread) {
-        // We only want to record "Handling scroll from main thread" reason if
-        // it's the only reason. If it's not the only reason, the "real" reason
-        // for scrolling on main is something else, and we only want to pay
-        // attention to that reason.
-        if (reasons & ~val)
-          continue;
-      }
-      RecordScrollReasonMetric(device, i + 1);
-    }
-  }
+  RecordScrollReasonsMetric(device, reasons);
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
