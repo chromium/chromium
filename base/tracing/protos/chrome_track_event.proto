@@ -13,7 +13,25 @@ enum ChromeAppState {
   APP_STATE_BACKGROUND = 2;
 }
 
+enum MemoryPressureLevel {
+  MEMORY_PRESSURE_LEVEL_NONE = 0;
+  MEMORY_PRESSURE_LEVEL_MODERATE = 1;
+  MEMORY_PRESSURE_LEVEL_CRITICAL = 2;
+}
+
+message ChromeMemoryPressureNotification {
+  optional MemoryPressureLevel level = 1;
+
+  // ID of interned source location where MemoryPressureListener was created
+  optional uint64 creation_location_iid = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1099
-  extend TrackEvent { optional ChromeAppState chrome_app_state = 1000; }
+  extend TrackEvent {
+    optional ChromeAppState chrome_app_state = 1000;
+
+    optional ChromeMemoryPressureNotification
+        chrome_memory_pressure_notification = 1001;
+  }
 }

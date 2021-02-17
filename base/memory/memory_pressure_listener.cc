@@ -88,10 +88,31 @@ MemoryPressureListener::~MemoryPressureListener() {
   GetMemoryPressureObserver()->RemoveObserver(this);
 }
 
+perfetto::protos::pbzero::MemoryPressureLevel to_proto_enum(
+    MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  using ProtoLevel = perfetto::protos::pbzero::MemoryPressureLevel;
+  switch (memory_pressure_level) {
+    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      return ProtoLevel::MEMORY_PRESSURE_LEVEL_NONE;
+    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      return ProtoLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
+    case MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      return ProtoLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  }
+}
+
 void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
-  TRACE_EVENT2("base", "MemoryPressureListener::Notify",
-               "listener_creation_info", creation_location_.ToString(), "level",
-               memory_pressure_level);
+  TRACE_EVENT(
+      "base", "MemoryPressureListener::Notify",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(to_proto_enum(memory_pressure_level));
+        data->set_creation_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx,
+                base::trace_event::TraceSourceLocation(creation_location_)));
+      });
   callback_.Run(memory_pressure_level);
 }
 
