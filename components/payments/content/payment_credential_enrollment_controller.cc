@@ -80,4 +80,6 @@ PaymentCredentialEnrollmentController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentCredentialEnrollmentController)
+
 }  // namespace payments
