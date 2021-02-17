@@ -183,7 +183,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                       int32_t result) override;
   void SendMessage(base::Value message) override;
   void InitImageData(const gfx::Size& size) override;
-  void OnGeometryChanged(double old_zoom, float old_device_scale) override;
   Image GetPluginImageData() const override;
   void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,

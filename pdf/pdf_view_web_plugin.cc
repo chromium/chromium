@@ -409,14 +409,6 @@ void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
   mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
 }
 
-void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
-                                         float old_device_scale) {
-  RecalculateAreas(old_zoom, old_device_scale);
-
-  // TODO(https://crbug.com/1144444): Add a Pepper-free implementation to update
-  // accessibility information in the viewport.
-}
-
 // TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set
 // accessibility document information.
 void PdfViewWebPlugin::SetAccessibilityDocInfo(

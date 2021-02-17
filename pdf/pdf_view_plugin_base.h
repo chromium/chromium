@@ -116,7 +116,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Updates the available area and the background parts, notifies the PDF
   // engine, and updates the accessibility information.
-  virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
+  void OnGeometryChanged(double old_zoom, float old_device_scale);
 
   // Returns the plugin-specific image data buffer.
   virtual Image GetPluginImageData() const;

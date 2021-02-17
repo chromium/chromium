@@ -177,6 +177,14 @@ void PdfViewPluginBase::InvalidateAfterPaintDone() {
       0);
 }
 
+void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
+                                          float old_device_scale) {
+  RecalculateAreas(old_zoom, old_device_scale);
+
+  if (accessibility_state_ == AccessibilityState::kLoaded)
+    PrepareAndSetAccessibilityViewportInfo();
+}
+
 void PdfViewPluginBase::UpdateGeometryOnViewChanged(
     const gfx::Rect& new_view_rect,
     float new_device_scale) {

@@ -1760,14 +1760,6 @@ void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
   recently_sent_find_update_ = false;
 }
 
-void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
-                                             float old_device_scale) {
-  RecalculateAreas(old_zoom, old_device_scale);
-
-  if (accessibility_state() == AccessibilityState::kLoaded)
-    PrepareAndSetAccessibilityViewportInfo();
-}
-
 Image OutOfProcessInstance::GetPluginImageData() const {
   return Image(pepper_image_data_);
 }
