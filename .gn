@@ -64,7 +64,6 @@ default_args = {
 # "gn check" or "gn gen --check".
 no_check_targets = [
   # //chrome/*, https://crbug.com/949535
-  "//chrome/browser/devtools:*",  # 114 errors
   "//chrome/browser/media/router/discovery:*",  # 26 errors
   "//chrome/browser/media/router:*",  # 225 errors
   "//chrome/browser/safe_browsing/android:*",  # 3 errors

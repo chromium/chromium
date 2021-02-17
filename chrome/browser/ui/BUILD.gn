@@ -598,6 +598,8 @@ static_library("ui") {
 
   # TODO(crbug/925153): Remove this circular dependency.
   allow_circular_includes_from = [
+    # TODO(crbug.com/1158905): Remove this circular dependency.
+    "//chrome/browser/devtools",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/profiling_host",

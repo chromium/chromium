@@ -738,6 +738,9 @@ static_library("extensions") {
   defines = []
 
   allow_circular_includes_from = [
+    # TODO(crbug.com/1158905): Remove this circular dependency.
+    "//chrome/browser/devtools",
+
     # Lots of APIs use headers from the list above.
     "//chrome/browser/extensions/api:api_registration",
 

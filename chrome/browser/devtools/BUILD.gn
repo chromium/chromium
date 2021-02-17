@@ -120,14 +120,33 @@ static_library("devtools") {
       "//chrome:resources",
       "//chrome:strings",
       "//chrome/app/theme:theme_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
       "//chrome/common",
+      "//components/guest_view/browser",
+      "//components/infobars/core",
+      "//components/javascript_dialogs",
+      "//components/keep_alive_registry",
+      "//components/keyed_service/content",
+      "//components/language/core/browser",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/sessions",
+      "//components/sync_preferences",
       "//components/viz/host",
+      "//components/web_modal",
+      "//components/zoom",
+      "//extensions/browser",
       "//net/server:http_server",
       "//skia",
       "//third_party/icu",
       "//third_party/leveldatabase",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/shell_dialogs",
     ]
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants" ]
+    }
     sources += [
       "chrome_devtools_manager_delegate.cc",
       "chrome_devtools_manager_delegate.h",
@@ -210,7 +229,12 @@ static_library("devtools") {
   if (!is_android) {
     deps += [
       ":protocol_generated_sources",
+      "//chrome/app:command_ids",
+      "//components/media_router/browser",
+      "//components/media_router/common/mojom:media_router",
+      "//components/security_state/content",
       "//components/subresource_filter/content/browser:browser",
+      "//components/webapps/browser",
       "//third_party/inspector_protocol:crdtp",
     ]
     sources += [
@@ -226,6 +250,7 @@ static_library("devtools") {
       "protocol/target_handler.h",
     ]
     if (is_chromeos_ash) {
+      deps += [ "//ash" ]
       sources += [
         "protocol/window_manager_handler.cc",
         "protocol/window_manager_handler.h",
@@ -242,12 +267,16 @@ static_library("devtools") {
 static_library("test_support") {
   sources = []
   deps = []
+  testonly = true
 
   if (!is_android) {
     deps += [
+      ":devtools",
       "//base",
+      "//chrome/browser:browser_process",
       "//chrome/browser/ui",
       "//content/public/browser",
+      "//content/test:test_support",
     ]
 
     sources += [
