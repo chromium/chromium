@@ -11,7 +11,9 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -75,9 +77,9 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
           base::StringPrintf(
               "%s/%s/", chrome_prefs::internals::kSettingsEnforcementTrialName,
               chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement));
-#if defined(OFFICIAL_BUILD) && (defined(OS_WIN) || defined(OS_MAC))
-      // In Windows and MacOS official builds, it is not possible to disable
-      // settings enforcement.
+#if defined(OS_WIN) || defined(OS_MAC)
+      // In Windows and MacOS builds, it is not possible to disable settings
+      // enforcement.
       unauthenticated_load_allowed_ = false;
 #endif
     } else {
@@ -141,15 +143,23 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
 
   void WaitForServicesToStart(int num_expected_extensions,
                               bool expect_extensions_enabled) {
+    extensions::ExtensionSystem* extension_system =
+        extensions::ExtensionSystem::Get(browser()->profile());
+    // Wait until the extension system is ready.
+    base::RunLoop run_loop;
+    extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
     if (!unauthenticated_load_allowed_)
       num_expected_extensions = 0;
     ASSERT_EQ(num_expected_extensions,
               GetNonComponentEnabledExtensionCount(browser()->profile()));
 
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
-    ASSERT_EQ(expect_extensions_enabled, service->extensions_enabled());
+    ASSERT_EQ(expect_extensions_enabled,
+              extension_system->extension_service()->extensions_enabled());
+
+    if (num_expected_extensions == 0)
+      return;
 
     extensions::UserScriptManager* manager =
         extensions::ExtensionSystem::Get(browser()->profile())
@@ -207,19 +217,16 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
 // ExtensionsStartupTest
 // Ensures that we can startup the browser with --enable-extensions and some
 // extensions installed and see them run and do basic things.
-typedef ExtensionStartupTestBase ExtensionsStartupTest;
+typedef ExtensionStartupTestBase ExtensionStartupTest;
 
-// Broken in official builds, http://crbug.com/474659
-IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_Test) {
+IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, Test) {
   WaitForServicesToStart(num_expected_extensions_, true);
   TestInjection(true, true);
 }
 
-// Broken in official builds, http://crbug.com/474659
-// Sometimes times out on Mac.  http://crbug.com/48151
 // Tests that disallowing file access on an extension prevents it from injecting
 // script into a page with a file URL.
-IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_NoFileAccess) {
+IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, NoFileAccess) {
   WaitForServicesToStart(num_expected_extensions_, true);
 
   // Keep a separate list of extensions for which to disable file access, since
