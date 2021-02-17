@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 
 namespace blink {
@@ -169,6 +170,165 @@ TEST(ToV8TraitsTest, EmptyString) {
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty_string);
   const char* const empty = "";
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty);
+}
+
+TEST(ToV8TraitsTest, Vector) {
+  const V8TestingScope scope;
+  Vector<String> string_vector;
+  string_vector.push_back("foo");
+  string_vector.push_back("bar");
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLStringV2>, "foo,bar", string_vector);
+}
+
+TEST(ToV8TraitsTest, HeapVector) {
+  const V8TestingScope scope;
+  HeapVector<Member<GarbageCollectedScriptWrappable>> heap_vector;
+  heap_vector.push_back(
+      MakeGarbageCollected<GarbageCollectedScriptWrappable>("hoge"));
+  heap_vector.push_back(
+      MakeGarbageCollected<GarbageCollectedScriptWrappable>("fuga"));
+  TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
+                   "hoge,fuga", heap_vector);
+
+  HeapVector<Member<GarbageCollectedScriptWrappable>>*
+      garbage_collected_heap_vector = &heap_vector;
+  TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
+                   "hoge,fuga", garbage_collected_heap_vector);
+}
+
+TEST(ToV8TraitsTest, BasicIDLTypeVectors) {
+  const V8TestingScope scope;
+
+  Vector<int32_t> int32_vector;
+  int32_vector.push_back(42);
+  int32_vector.push_back(23);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLLong>, "42,23", int32_vector);
+
+  Vector<int64_t> int64_vector;
+  int64_vector.push_back(31773);
+  int64_vector.push_back(404);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLLongLong>, "31773,404", int64_vector);
+
+  Vector<uint32_t> uint32_vector;
+  uint32_vector.push_back(1);
+  uint32_vector.push_back(2);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLUnsignedLong>, "1,2", uint32_vector);
+
+  Vector<uint64_t> uint64_vector;
+  uint64_vector.push_back(1001);
+  uint64_vector.push_back(2002);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLUnsignedLongLong>, "1001,2002",
+                   uint64_vector);
+
+  Vector<float> float_vector;
+  float_vector.push_back(0.125);
+  float_vector.push_back(1.);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLFloat>, "0.125,1", float_vector);
+
+  Vector<double> double_vector;
+  double_vector.push_back(2.3);
+  double_vector.push_back(4.2);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLDouble>, "2.3,4.2", double_vector);
+
+  Vector<bool> bool_vector;
+  bool_vector.push_back(true);
+  bool_vector.push_back(true);
+  bool_vector.push_back(false);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLBoolean>, "true,true,false",
+                   bool_vector);
+}
+
+TEST(ToV8TraitsTest, StringVectorVector) {
+  const V8TestingScope scope;
+
+  Vector<String> string_vector1;
+  string_vector1.push_back("foo");
+  string_vector1.push_back("bar");
+  Vector<String> string_vector2;
+  string_vector2.push_back("quux");
+
+  Vector<Vector<String>> compound_vector;
+  compound_vector.push_back(string_vector1);
+  compound_vector.push_back(string_vector2);
+
+  EXPECT_EQ(2U, compound_vector.size());
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLSequence<IDLStringV2>>, "foo,bar,quux",
+                   compound_vector);
+
+  v8::Local<v8::Value> actual;
+  ASSERT_TRUE(ToV8Traits<IDLSequence<IDLSequence<IDLStringV2>>>::ToV8(
+                  scope.GetScriptState(), compound_vector)
+                  .ToLocal(&actual))
+      << "ToV8 throws an exception.";
+  v8::Local<v8::Object> result =
+      actual->ToObject(scope.GetContext()).ToLocalChecked();
+  v8::Local<v8::Value> vector1 =
+      result->Get(scope.GetContext(), 0).ToLocalChecked();
+  EXPECT_TRUE(vector1->IsArray());
+  EXPECT_EQ(2U, vector1.As<v8::Array>()->Length());
+  v8::Local<v8::Value> vector2 =
+      result->Get(scope.GetContext(), 1).ToLocalChecked();
+  EXPECT_TRUE(vector2->IsArray());
+  EXPECT_EQ(1U, vector2.As<v8::Array>()->Length());
+}
+
+TEST(ToV8TraitsTest, PairVector) {
+  const V8TestingScope scope;
+  Vector<std::pair<String, int8_t>> pair_vector;
+  pair_vector.push_back(std::make_pair("one", 1));
+  pair_vector.push_back(std::make_pair("two", 2));
+  using ByteRecord = IDLRecord<IDLStringV2, IDLByte>;
+  TEST_TOV8_TRAITS(scope, ByteRecord, "[object Object]", pair_vector);
+  v8::Local<v8::Value> actual;
+  ASSERT_TRUE(ToV8Traits<ByteRecord>::ToV8(scope.GetScriptState(), pair_vector)
+                  .ToLocal(&actual))
+      << "ToV8 throws an exception.";
+  v8::Local<v8::Object> result =
+      actual->ToObject(scope.GetContext()).ToLocalChecked();
+  v8::Local<v8::Value> one =
+      result->Get(scope.GetContext(), V8String(scope.GetIsolate(), "one"))
+          .ToLocalChecked();
+  EXPECT_EQ(1, one->NumberValue(scope.GetContext()).FromJust());
+  v8::Local<v8::Value> two =
+      result->Get(scope.GetContext(), V8String(scope.GetIsolate(), "two"))
+          .ToLocalChecked();
+  EXPECT_EQ(2, two->NumberValue(scope.GetContext()).FromJust());
+}
+
+TEST(ToV8TraitsTest, PairHeapVector) {
+  const V8TestingScope scope;
+  HeapVector<std::pair<String, Member<GarbageCollectedScriptWrappable>>>
+      pair_heap_vector;
+  pair_heap_vector.push_back(std::make_pair(
+      "one", MakeGarbageCollected<GarbageCollectedScriptWrappable>("foo")));
+  pair_heap_vector.push_back(std::make_pair(
+      "two", MakeGarbageCollected<GarbageCollectedScriptWrappable>("bar")));
+  using HeapRecord = IDLRecord<IDLStringV2, GarbageCollectedScriptWrappable>;
+  TEST_TOV8_TRAITS(scope, HeapRecord, "[object Object]", pair_heap_vector);
+  v8::Local<v8::Value> actual;
+  ASSERT_TRUE(
+      ToV8Traits<HeapRecord>::ToV8(scope.GetScriptState(), pair_heap_vector)
+          .ToLocal(&actual))
+      << "ToV8 throws an exception.";
+  v8::Local<v8::Object> result =
+      actual->ToObject(scope.GetContext()).ToLocalChecked();
+  v8::Local<v8::Value> one =
+      result->Get(scope.GetContext(), V8String(scope.GetIsolate(), "one"))
+          .ToLocalChecked();
+  EXPECT_TRUE(one->IsObject());
+  EXPECT_EQ(String("foo"),
+            ToCoreString(one->ToString(scope.GetContext()).ToLocalChecked()));
+  v8::Local<v8::Value> two =
+      result->Get(scope.GetContext(), V8String(scope.GetIsolate(), "two"))
+          .ToLocalChecked();
+  EXPECT_TRUE(two->IsObject());
+  EXPECT_EQ(String("bar"),
+            ToCoreString(two->ToString(scope.GetContext()).ToLocalChecked()));
+
+  HeapVector<std::pair<String, Member<GarbageCollectedScriptWrappable>>>*
+      garbage_collected_pair_heap_vector = &pair_heap_vector;
+  TEST_TOV8_TRAITS(scope, HeapRecord, "[object Object]",
+                   garbage_collected_pair_heap_vector);
 }
 
 TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {

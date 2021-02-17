@@ -279,6 +279,152 @@ struct ToV8Traits<T,
   }
 };
 
+// Array
+
+namespace bindings {
+
+// Helper function for IDLSequence
+template <typename ElementIDLType, typename VectorType>
+inline v8::MaybeLocal<v8::Value> ToV8HelperSequence(ScriptState* script_state,
+                                                    const VectorType& vector) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Array> array;
+  {
+    v8::Context::Scope context_scope(script_state->GetContext());
+    array = v8::Array::New(isolate, SafeCast<int>(vector.size()));
+  }
+  v8::Local<v8::Context> context = script_state->GetContext();
+  uint32_t index = 0;
+  typename VectorType::const_iterator end = vector.end();
+  for (typename VectorType::const_iterator iter = vector.begin(); iter != end;
+       ++iter) {
+    v8::Local<v8::Value> v8_value;
+    if (!ToV8Traits<ElementIDLType>::ToV8(script_state, *iter)
+             .ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    bool is_property_created;
+    if (!array->CreateDataProperty(context, index++, v8_value)
+             .To(&is_property_created) ||
+        !is_property_created) {
+      return v8::Local<v8::Value>();
+    }
+  }
+  return array;
+}
+
+// Helper function for IDLRecord
+template <typename ValueIDLType, typename VectorType>
+inline v8::MaybeLocal<v8::Value> ToV8HelperRecord(ScriptState* script_state,
+                                                  const VectorType& vector) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Object> object;
+  {
+    v8::Context::Scope context_scope(script_state->GetContext());
+    object = v8::Object::New(isolate);
+  }
+  v8::Local<v8::Context> context = script_state->GetContext();
+  typename VectorType::const_iterator end = vector.end();
+  for (typename VectorType::const_iterator iter = vector.begin(); iter != end;
+       ++iter) {
+    v8::Local<v8::Value> v8_value;
+    if (!ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second)
+             .ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    bool is_property_created;
+    if (!object
+             ->CreateDataProperty(context, V8AtomicString(isolate, iter->first),
+                                  v8_value)
+             .To(&is_property_created) ||
+        !is_property_created) {
+      return v8::Local<v8::Value>();
+    }
+  }
+  return object;
+}
+
+}  // namespace bindings
+
+// IDLSequence
+template <typename T>
+struct ToV8Traits<IDLSequence<T>> {
+ private:
+  using ElementType =
+      std::conditional_t<std::is_base_of<IDLBase, T>::value,
+                         typename NativeValueTraits<T>::ImplType,
+                         T>;
+
+ public:
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const Vector<ElementType>& value) {
+    return bindings::ToV8HelperSequence<T>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<ElementType>>& value) {
+    return bindings::ToV8HelperSequence<T>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<ElementType>& value) {
+    return bindings::ToV8HelperSequence<T>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<ElementType>>* value) {
+    return bindings::ToV8HelperSequence<T>(script_state, *value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<ElementType>* value) {
+    return bindings::ToV8HelperSequence<T>(script_state, *value);
+  }
+};
+
+// IDLRecord
+// K must be based of IDL String types.
+template <typename K, typename V>
+struct ToV8Traits<IDLRecord<K, V>> {
+ private:
+  using ValueType = std::conditional_t<std::is_base_of<IDLBase, V>::value,
+                                       typename NativeValueTraits<V>::ImplType,
+                                       V>;
+
+ public:
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const Vector<std::pair<String, ValueType>>& value) {
+    return bindings::ToV8HelperRecord<V>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<std::pair<String, Member<ValueType>>>& value) {
+    return bindings::ToV8HelperRecord<V>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<std::pair<String, ValueType>>& value) {
+    return bindings::ToV8HelperRecord<V>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<std::pair<String, Member<ValueType>>>* value) {
+    return bindings::ToV8HelperRecord<V>(script_state, *value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<std::pair<String, ValueType>>* value) {
+    return bindings::ToV8HelperRecord<V>(script_state, *value);
+  }
+};
+
 // Nullable
 
 // IDLNullable<IDLNullable<T>> must not be used.
