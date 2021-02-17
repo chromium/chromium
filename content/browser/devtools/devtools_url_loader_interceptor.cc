@@ -1323,8 +1323,9 @@ void InterceptionJob::FollowRedirect(
   network::ResourceRequest* request = &create_loader_params_->request;
   const net::RedirectInfo& info = *response_metadata_->redirect_info;
   const auto current_origin = url::Origin::Create(request->url);
+  const auto new_origin = url::Origin::Create(info.new_url);
   if (request->request_initiator &&
-      (!url::Origin::Create(info.new_url).IsSameOriginWith(current_origin) &&
+      (!new_origin.IsSameOriginWith(current_origin) &&
        !request->request_initiator->IsSameOriginWith(current_origin))) {
     tainted_origin_ = true;
   }
@@ -1344,6 +1345,10 @@ void InterceptionJob::FollowRedirect(
   request->site_for_cookies = info.new_site_for_cookies;
   request->referrer_policy = info.new_referrer_policy;
   request->referrer = GURL(info.new_referrer);
+  if (request->trusted_params) {
+    request->trusted_params->isolation_info =
+        request->trusted_params->isolation_info.CreateForRedirect(new_origin);
+  }
   response_metadata_.reset();
 
   UpdateCORSFlag();
