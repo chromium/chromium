@@ -1449,6 +1449,11 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="In Session Idle"/>
 </enum>
 
+<enum name="AMDDeviceId">
+  <int value="26464" label="0x6760, Radeon HD 6490M"/>
+  <int value="26657" label="0x6821, Radeon R9 M370X"/>
+</enum>
+
 <enum name="Android.ChildProcessBindingStateCombination">
   <int value="0" label="No waived no moderate no strong"/>
   <int value="1" label="No waived no moderate has strong"/>
@@ -55102,6 +55107,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Skip"/>
   <int value="3" label="Sign In"/>
   <int value="4" label="Navigated Away Through Browser History"/>
+</enum>
+
+<enum name="NvidiaDeviceId">
+  <int value="4073" label="0x0FE9, GeForce GT 750M"/>
+  <int value="7825" label="0x1E91, RTX 2070 Super"/>
 </enum>
 
 <enum name="OAuth2BadRequestError">

@@ -285,6 +285,8 @@ struct GPU_EXPORT GPUInfo {
 
   bool UsesSwiftShader() const;
 
+  unsigned int GpuCount() const;
+
   // The amount of time taken to get from the process starting to the message
   // loop being pumped.
   base::TimeDelta initialization_time;

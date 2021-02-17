@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -352,6 +353,25 @@ uint32_t EstimateAmountOfTotalDiskSpaceMB() {
     }
   }
   return sum;
+}
+
+// Only record Nvidia and AMD GPUs.
+void RecordGpuHistogram(uint32_t vendor_id, uint32_t device_id) {
+  switch (vendor_id) {
+    case 0x10de:
+      base::SparseHistogram::FactoryGet(
+          "GPU.MultiGpu.Nvidia", base::HistogramBase::kUmaTargetedHistogramFlag)
+          ->Add(device_id);
+      break;
+    case 0x1002:
+      base::SparseHistogram::FactoryGet(
+          "GPU.MultiGpu.AMD", base::HistogramBase::kUmaTargetedHistogramFlag)
+          ->Add(device_id);
+      break;
+    default:
+      // Do nothing if it's not Nvidia/AMD.
+      break;
+  }
 }
 
 #if defined(OS_WIN)
@@ -921,6 +941,16 @@ void RecordDevicePerfInfoHistograms() {
                             device_perf_info->intel_gpu_generation);
   UMA_HISTOGRAM_BOOLEAN("GPU.SoftwareRendering",
                         device_perf_info->software_rendering);
+}
+
+void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info) {
+  if (gpu_info.GpuCount() < 2)
+    return;
+  // To simplify logic, if there are multiple GPUs identified on a device,
+  // assume AMD or Nvidia is the discrete GPU.
+  RecordGpuHistogram(gpu_info.gpu.vendor_id, gpu_info.gpu.device_id);
+  for (const auto& gpu : gpu_info.secondary_gpus)
+    RecordGpuHistogram(gpu.vendor_id, gpu.device_id);
 }
 
 #if defined(OS_WIN)

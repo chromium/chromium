@@ -92,6 +92,10 @@ GPU_EXPORT void CollectDevicePerfInfo(DevicePerfInfo* device_perf_info,
                                       bool in_browser_process);
 GPU_EXPORT void RecordDevicePerfInfoHistograms();
 
+// In a multi-gpu device, record the discrete gpu device id.
+// Currently only record for AMD/Nvidia GPUs.
+GPU_EXPORT void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info);
+
 #if defined(OS_WIN)
 GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
 GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);

@@ -888,6 +888,8 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
       "GPU.GPUInitializationTime.V3", gpu_info_.initialization_time,
       base::TimeDelta::FromMilliseconds(5), base::TimeDelta::FromSeconds(5),
       50);
+  UMA_HISTOGRAM_EXACT_LINEAR("GPU.GpuCount", gpu_info_.GpuCount(), 10);
+  RecordDiscreteGpuHistograms(gpu_info_);
 #if defined(OS_WIN)
   if (!dx_diagnostics.IsEmpty()) {
     gpu_info_.dx_diagnostics = dx_diagnostics;

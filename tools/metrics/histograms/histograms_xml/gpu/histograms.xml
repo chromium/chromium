@@ -712,6 +712,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.GpuCount" units="gpus" expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The number of GPUs a device has, excluding software renderers. Recorded when
+    GPU process launches and sends GPUInfo to browser process.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GPUInitializationTime.V2" units="ms"
     expires_after="2020-12-15">
   <obsolete>
@@ -881,6 +890,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The maximum number of multisampled anti-aliasing (MSAA) samples per pixel
     that the user's GPU can render.
+  </summary>
+</histogram>
+
+<histogram name="GPU.MultiGpu.AMD" enum="AMDDeviceId"
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    AMD device IDs from multi-gpu devices. Recorded when GPU process launches
+    and sends GPUInfo to browser process.
+  </summary>
+</histogram>
+
+<histogram name="GPU.MultiGpu.Nvidia" enum="NvidiaDeviceId"
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Nvidia device IDs from multi-gpu devices. Recorded when GPU process launches
+    and sends GPUInfo to browser process.
   </summary>
 </histogram>
 
