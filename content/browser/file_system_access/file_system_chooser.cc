@@ -38,23 +38,23 @@ namespace {
 // be visible. As such this can be adjusted as needed.
 constexpr int kMaxDescriptionLength = 64;
 
-std::string TypeToString(blink::mojom::ChooseFileSystemEntryType type) {
+std::string TypeToString(ui::SelectFileDialog::Type type) {
   switch (type) {
-    case blink::mojom::ChooseFileSystemEntryType::kOpenFile:
+    case ui::SelectFileDialog::SELECT_OPEN_FILE:
       return "OpenFile";
-    case blink::mojom::ChooseFileSystemEntryType::kOpenMultipleFiles:
+    case ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE:
       return "OpenMultipleFiles";
-    case blink::mojom::ChooseFileSystemEntryType::kSaveFile:
+    case ui::SelectFileDialog::SELECT_SAVEAS_FILE:
       return "SaveFile";
-    case blink::mojom::ChooseFileSystemEntryType::kOpenDirectory:
+    case ui::SelectFileDialog::SELECT_FOLDER:
       return "OpenDirectory";
+    default:
+      NOTREACHED();
+      return std::string();
   }
-  NOTREACHED();
-  return nullptr;
 }
 
-void RecordFileSelectionResult(blink::mojom::ChooseFileSystemEntryType type,
-                               int count) {
+void RecordFileSelectionResult(ui::SelectFileDialog::Type type, int count) {
   base::UmaHistogramCounts1000("NativeFileSystemAPI.FileChooserResult", count);
   base::UmaHistogramCounts1000(
       "NativeFileSystemAPI.FileChooserResult." + TypeToString(type), count);
@@ -170,13 +170,11 @@ bool GetFileTypesFromAcceptsOption(
 }
 
 ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
-    const std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>&
-        accepts,
-    bool include_accepts_all) {
+    const blink::mojom::AcceptsTypesInfoPtr& accepts_types_info) {
   ui::SelectFileDialog::FileTypeInfo file_types;
-  file_types.include_all_files = include_accepts_all;
+  file_types.include_all_files = accepts_types_info->include_accepts_all;
 
-  for (const auto& option : accepts) {
+  for (const auto& option : accepts_types_info->accepts) {
     std::vector<base::FilePath::StringType> extensions;
     base::string16 description;
 
@@ -199,19 +197,31 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
   return file_types;
 }
 
+ui::SelectFileDialog::Type ValidateType(ui::SelectFileDialog::Type type) {
+  switch (type) {
+    case ui::SelectFileDialog::SELECT_OPEN_FILE:
+    case ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE:
+    case ui::SelectFileDialog::SELECT_SAVEAS_FILE:
+    case ui::SelectFileDialog::SELECT_FOLDER:
+      return type;
+    default:
+      NOTREACHED();
+      return ui::SelectFileDialog::SELECT_NONE;
+  }
+}
+
 }  // namespace
 
 FileSystemChooser::Options::Options(
-    blink::mojom::ChooseFileSystemEntryType type,
-    std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-    bool include_accepts_all,
+    ui::SelectFileDialog::Type type,
+    blink::mojom::AcceptsTypesInfoPtr accepts_types_info,
     base::FilePath default_directory,
     base::FilePath suggested_name)
-    : type_(type),
-      file_types_(ConvertAcceptsToFileTypeInfo(accepts, include_accepts_all)),
+    : type_(ValidateType(type)),
+      file_types_(ConvertAcceptsToFileTypeInfo(accepts_types_info)),
       // Set `default_file_type_index_` to a reasonable default value.
       // This value will be updated if the extension of `suggested_name`
-      // matches an extension in `accepts`.
+      // matches an extension in `accepts_types_info->accepts`.
       default_file_type_index_(file_types_.extensions.empty() ? 0 : 1),
       default_path_(default_directory.Append(
           ResolveSuggestedNameExtension(std::move(suggested_name),
@@ -271,37 +281,19 @@ void FileSystemChooser::CreateAndShow(
   // TODO(https://crbug.com/878581): Better/more specific options to pass to
   //     SelectFile.
 
-  ui::SelectFileDialog::Type dialog_type = ui::SelectFileDialog::SELECT_NONE;
-  switch (options.type()) {
-    case blink::mojom::ChooseFileSystemEntryType::kOpenFile:
-      dialog_type = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      break;
-    case blink::mojom::ChooseFileSystemEntryType::kOpenMultipleFiles:
-      dialog_type = ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
-      break;
-    case blink::mojom::ChooseFileSystemEntryType::kSaveFile:
-      dialog_type = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
-      break;
-    case blink::mojom::ChooseFileSystemEntryType::kOpenDirectory:
-      dialog_type = ui::SelectFileDialog::SELECT_FOLDER;
-      break;
-  }
-  DCHECK_NE(dialog_type, ui::SelectFileDialog::SELECT_NONE);
-
   listener->dialog_->SelectFile(
-      dialog_type, /*title=*/base::string16(), options.default_path(),
+      options.type(), /*title=*/base::string16(), options.default_path(),
       &options.file_type_info(), options.default_file_type_index(),
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,
       /*params=*/nullptr);
 }
 
-FileSystemChooser::FileSystemChooser(
-    blink::mojom::ChooseFileSystemEntryType type,
-    ResultCallback callback,
-    base::ScopedClosureRunner fullscreen_block)
+FileSystemChooser::FileSystemChooser(ui::SelectFileDialog::Type type,
+                                     ResultCallback callback,
+                                     base::ScopedClosureRunner fullscreen_block)
     : callback_(std::move(callback)),
-      type_(type),
+      type_(ValidateType(type)),
       fullscreen_block_(std::move(fullscreen_block)) {}
 
 FileSystemChooser::~FileSystemChooser() {

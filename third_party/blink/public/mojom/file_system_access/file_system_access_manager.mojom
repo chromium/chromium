@@ -11,13 +11,6 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_err
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom";
 
-enum ChooseFileSystemEntryType {
-  kOpenFile,
-  kOpenMultipleFiles,
-  kSaveFile,
-  kOpenDirectory
-};
-
 enum WellKnownDirectory {
   kDefault,
   kDirDesktop,
@@ -38,6 +31,55 @@ struct ChooseFileSystemEntryAcceptsOption {
   array<string> extensions;
 };
 
+// If |include_accepts_all| is true, an "all files" option is included in the
+// dialog displayed to the user. If no valid options are present in |accepts|
+// |include_accepts_all| is treated as if it was true.
+struct AcceptsTypesInfo {
+  array<ChooseFileSystemEntryAcceptsOption> accepts;
+  bool include_accepts_all;
+};
+
+struct OpenFilePickerOptions {
+  AcceptsTypesInfo accepts_types_info;
+  bool can_select_multiple_files;
+};
+
+struct SaveFilePickerOptions {
+  AcceptsTypesInfo accepts_types_info;
+  string suggested_name;
+};
+
+struct DirectoryPickerOptions {};
+
+// Encapsulation of data from the FilePickerOptions idl spec:
+// https://wicg.github.io/file-system-access/#dictdef-filepickeroptions.
+union FilePickerOptions {
+  OpenFilePickerOptions open_file_picker_options;
+  SaveFilePickerOptions save_file_picker_options;
+  DirectoryPickerOptions directory_picker_options;
+};
+
+// See the documentation for how the `starting_directory` fields interact:
+// https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
+// |starting_directory_id| allows for specification of the "purpose" of a file
+// picker invocation. When an ID is specified, the picker will remember the
+// picked directory. The next time the matching ID is specified, the picker
+// will default to this directory. The ID cannot exceed 32 characters in
+// length and may only contain alphanumeric characters, '-', and '_'.
+// A maximum of 32 custom IDs is allowed per origin (LRU eviction).
+// |well_known_starting_directory| opens the file picker at a well-known
+// directory.
+// |starting_directory_token| is resolved into a file or directory by the
+// FileSystemAccessManager to be used as the starting directory for the file
+// picker. If the token is a file, its parent directory is used.
+// See the FileSystemAccessManager's ResolveDefaultDirectory() method for
+// how these fields are prioritized.
+struct CommonFilePickerOptions {
+  string starting_directory_id;
+  WellKnownDirectory well_known_starting_directory;
+  pending_remote<FileSystemAccessTransferToken>? starting_directory_token;
+};
+
 // Interface provided by the browser to the renderer as main entry point to the
 // File System Access API. The renderer can request this interface for a
 // specific worker or document, so the browser process will always be able to
@@ -51,31 +93,8 @@ interface FileSystemAccessManager {
   // Prompts the user to select a file from the local filesystem. Returns an
   // error code if something failed, or a list of the selected entries on
   // success.
-  // See the documentation for how the `starting_directory` fields interact:
-  // https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
-  // |starting_directory_id| allows for specification of the "purpose" of a file
-  // picker invocation. When an ID is specified, the picker will remember the
-  // picked directory. The next time the matching ID is specified, the picker
-  // will default to this directory. The ID cannot exceed 32 characters in
-  // length and may only contain alphanumeric characters, '-', and '_'.
-  // A maximum of 32 custom IDs is allowed per origin (LRU eviction).
-  // |well_known_starting_directory| opens the file picker at a well-known
-  // directory.
-  // |starting_directory_token| is resolved into a file or directory by the
-  // FileSystemAccessManager to be used as the starting directory for the file
-  // picker. If the token is a file, its parent directory is used.
-  // See the FileSystemAccessManager's ResolveDefaultDirectory() method for
-  // how these fields are prioritized.
-  // If |include_accepts_all| is true, a "all files" option is included in the
-  // dialog displayed to the user. If no valid options are present in |accepts|
-  // |include_accepts_all| is treated as if it was true.
-  ChooseEntries(ChooseFileSystemEntryType type,
-                array<ChooseFileSystemEntryAcceptsOption> accepts,
-                string starting_directory_id,
-                WellKnownDirectory well_known_starting_directory,
-                pending_remote<FileSystemAccessTransferToken>? starting_directory_token,
-                string suggested_name,  // Only allowed when type == kSaveFile.
-                bool include_accepts_all) =>
+  ChooseEntries(FilePickerOptions options,
+                CommonFilePickerOptions common_options) =>
       (FileSystemAccessError result,
        array<FileSystemAccessEntry> entries);
 

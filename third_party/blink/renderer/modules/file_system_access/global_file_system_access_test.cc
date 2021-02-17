@@ -57,15 +57,9 @@ class MockFileSystemAccessManager
   void GetSandboxedFileSystem(
       GetSandboxedFileSystemCallback callback) override {}
 
-  void ChooseEntries(
-      mojom::ChooseFileSystemEntryType type,
-      WTF::Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      const WTF::String& starting_directory_id,
-      mojom::WellKnownDirectory well_known_starting_directory,
-      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token,
-      const WTF::String& suggested_name,
-      bool include_accepts_all,
-      ChooseEntriesCallback callback) override {
+  void ChooseEntries(mojom::blink::FilePickerOptionsPtr options,
+                     mojom::blink::CommonFilePickerOptionsPtr common_options,
+                     ChooseEntriesCallback callback) override {
     if (choose_entries_response_callback_) {
       std::move(choose_entries_response_callback_).Run(std::move(callback));
     }

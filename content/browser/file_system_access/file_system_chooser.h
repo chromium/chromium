@@ -38,16 +38,14 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   class CONTENT_EXPORT Options {
    public:
-    Options(blink::mojom::ChooseFileSystemEntryType type,
-            std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>
-                accepts,
-            bool include_accepts_all,
+    Options(ui::SelectFileDialog::Type type,
+            blink::mojom::AcceptsTypesInfoPtr accepts_types_info,
             base::FilePath default_directory,
             base::FilePath suggested_name);
     Options(const Options&) = default;
     Options& operator=(const Options&) = default;
 
-    blink::mojom::ChooseFileSystemEntryType type() const { return type_; }
+    ui::SelectFileDialog::Type type() const { return type_; }
     const ui::SelectFileDialog::FileTypeInfo& file_type_info() const {
       return file_types_;
     }
@@ -59,7 +57,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
         base::FilePath suggested_name,
         ui::SelectFileDialog::FileTypeInfo& file_types);
 
-    blink::mojom::ChooseFileSystemEntryType type_;
+    ui::SelectFileDialog::Type type_;
     ui::SelectFileDialog::FileTypeInfo file_types_;
     int default_file_type_index_ = 0;
     base::FilePath default_path_;
@@ -70,7 +68,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
                             ResultCallback callback,
                             base::ScopedClosureRunner fullscreen_block);
 
-  FileSystemChooser(blink::mojom::ChooseFileSystemEntryType type,
+  FileSystemChooser(ui::SelectFileDialog::Type type,
                     ResultCallback callback,
                     base::ScopedClosureRunner fullscreen_block);
 
@@ -92,7 +90,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
   void FileSelectionCanceled(void* params) override;
 
   ResultCallback callback_;
-  blink::mojom::ChooseFileSystemEntryType type_;
+  ui::SelectFileDialog::Type type_;
   base::ScopedClosureRunner fullscreen_block_;
 
   scoped_refptr<ui::SelectFileDialog> dialog_;

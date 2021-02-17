@@ -101,16 +101,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   // blink::mojom::FileSystemAccessManager:
   void GetSandboxedFileSystem(GetSandboxedFileSystemCallback callback) override;
-  void ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType type,
-      std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      const std::string& starting_directory_id,
-      blink::mojom::WellKnownDirectory well_known_starting_directory,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
-          starting_directory_token,
-      const std::string& suggested_name,
-      bool include_accepts_all,
-      ChooseEntriesCallback callback) override;
+  void ChooseEntries(blink::mojom::FilePickerOptionsPtr options,
+                     blink::mojom::CommonFilePickerOptionsPtr common_options,
+                     ChooseEntriesCallback callback) override;
   void GetFileHandleFromToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileHandle>
@@ -269,21 +262,14 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   ~FileSystemAccessManagerImpl() override;
   void ResolveDefaultDirectory(
       const BindingContext& context,
-      blink::mojom::ChooseFileSystemEntryType type,
-      std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      const std::string& starting_directory_id,
-      blink::mojom::WellKnownDirectory well_known_starting_directory,
-      const std::string& suggested_name,
-      bool include_accepts_all,
+      blink::mojom::FilePickerOptionsPtr options,
+      blink::mojom::CommonFilePickerOptionsPtr common_options,
       ChooseEntriesCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_starting_directory_token);
   void SetDefaultPathAndShowPicker(
       const BindingContext& context,
-      blink::mojom::ChooseFileSystemEntryType type,
-      std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      const std::string& suggested_name,
-      bool include_accepts_all,
-      const std::string& starting_directory_id,
+      blink::mojom::FilePickerOptionsPtr options,
+      blink::mojom::CommonFilePickerOptionsPtr common_options,
       base::FilePath default_directory,
       ChooseEntriesCallback callback,
       base::File::Error result);

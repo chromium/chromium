@@ -31,10 +31,10 @@ class FileSystemChooserTest : public testing::Test {
     std::vector<FileSystemChooser::ResultEntry> result;
     FileSystemChooser::CreateAndShow(
         /*web_contents=*/nullptr,
-        FileSystemChooser::Options(
-            blink::mojom::ChooseFileSystemEntryType::kOpenFile,
-            std::move(accepts), include_accepts_all, base::FilePath(),
-            base::FilePath()),
+        FileSystemChooser::Options(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                   blink::mojom::AcceptsTypesInfo::New(
+                                       std::move(accepts), include_accepts_all),
+                                   base::FilePath(), base::FilePath()),
         base::BindLambdaForTesting(
             [&](blink::mojom::FileSystemAccessErrorPtr,
                 std::vector<FileSystemChooser::ResultEntry> entries) {

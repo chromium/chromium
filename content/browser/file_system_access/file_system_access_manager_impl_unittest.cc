@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 
 namespace content {
@@ -1156,14 +1157,21 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
 
-  base::RunLoop loop;
-  manager_remote->ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType::kOpenFile, /*accepts=*/{},
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
       /*starting_directory_id=*/std::string(),
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(),
-      /*suggested_name=*/std::string(),
-      /*include_accepts_all=*/true,
+      /*starting_directory_token=*/mojo::NullRemote());
+
+  base::RunLoop loop;
+  manager_remote->ChooseEntries(
+      blink::mojom::FilePickerOptions::NewOpenFilePickerOptions(
+          std::move(open_file_picker_options)),
+      std::move(common_file_picker_options),
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1229,14 +1237,21 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
                   FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
 
-  base::RunLoop loop;
-  manager_remote->ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType::kSaveFile, /*accepts=*/{},
+  auto save_file_picker_options = blink::mojom::SaveFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*suggested_name=*/std::string());
+  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
       /*starting_directory_id=*/std::string(),
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(),
-      /*suggested_name=*/std::string(),
-      /*include_accepts_all=*/true,
+      /*starting_directory_token=*/mojo::NullRemote());
+
+  base::RunLoop loop;
+  manager_remote->ChooseEntries(
+      blink::mojom::FilePickerOptions::NewSaveFilePickerOptions(
+          std::move(save_file_picker_options)),
+      std::move(common_file_picker_options),
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1299,14 +1314,17 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(allow_grant_));
 
-  base::RunLoop loop;
-  manager_remote->ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, /*accepts=*/{},
+  auto directory_picker_options = blink::mojom::DirectoryPickerOptions::New();
+  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
       /*starting_directory_id=*/std::string(),
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(),
-      /*suggested_name=*/std::string(),
-      /*include_accepts_all=*/true,
+      /*starting_directory_token=*/mojo::NullRemote());
+
+  base::RunLoop loop;
+  manager_remote->ChooseEntries(
+      blink::mojom::FilePickerOptions::NewDirectoryPickerOptions(
+          std::move(directory_picker_options)),
+      std::move(common_file_picker_options),
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1335,14 +1353,17 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
 
   // Specifying a `starting_directory_id` with invalid characters should trigger
   // a bad message callback.
-  mojo::test::BadMessageObserver bad_message_observer;
-  manager_remote->ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, /*accepts=*/{},
+  auto directory_picker_options = blink::mojom::DirectoryPickerOptions::New();
+  auto common_file_picker_options = blink::mojom::CommonFilePickerOptions::New(
       /*starting_directory_id=*/"inv*l!d <hars",
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(),
-      /*suggested_name=*/std::string(),
-      /*include_accepts_all=*/true, base::DoNothing());
+      /*starting_directory_token=*/mojo::NullRemote());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  manager_remote->ChooseEntries(
+      blink::mojom::FilePickerOptions::NewDirectoryPickerOptions(
+          std::move(directory_picker_options)),
+      std::move(common_file_picker_options), base::DoNothing());
   EXPECT_EQ("Invalid starting directory ID in browser",
             bad_message_observer.WaitForBadMessage());
 }
