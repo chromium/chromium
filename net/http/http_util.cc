@@ -787,11 +787,17 @@ std::string HttpUtil::ExpandLanguageList(const std::string& language_prefs) {
     const std::string& language = languages[i];
     builder.AddLanguageCode(language);
 
-    // Extract the base language
+    // Extract the primary language subtag.
     const std::string& base_language = GetBaseLanguageCode(language);
 
-    // Look ahead and add the base language if the next language is not part
-    // of the same family.
+    // Skip 'x' and 'i' as a primary language subtag per RFC 5646 section 2.1.1.
+    if (base_language == "x" || base_language == "i")
+      continue;
+
+    // Look ahead and add the primary language subtag as a language if the next
+    // language is not part of the same family. This may not be perfect because
+    // an input of "en-US,fr,en" will yield "en-US,en,fr,en" and later make "en"
+    // a higher priority than "fr" despite the original preference.
     const size_t j = i + 1;
     if (j >= size || GetBaseLanguageCode(languages[j]) != base_language) {
       builder.AddLanguageCode(base_language);

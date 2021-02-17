@@ -1633,6 +1633,12 @@ TEST(HttpUtilTest, ExpandLanguageList) {
             HttpUtil::ExpandLanguageList("en-US,fr-CA,it,fr,es-AR,it-IT"));
   // Trims a whitespace.
   EXPECT_EQ("en-US,en,fr", HttpUtil::ExpandLanguageList("en-US, fr"));
+
+  // Do not expand the single character subtag 'x' as a language.
+  EXPECT_EQ("x-private-agreement-subtags",
+            HttpUtil::ExpandLanguageList("x-private-agreement-subtags"));
+  // Do not expand the single character subtag 'i' as a language.
+  EXPECT_EQ("i-klingon", HttpUtil::ExpandLanguageList("i-klingon"));
 }
 
 }  // namespace net
