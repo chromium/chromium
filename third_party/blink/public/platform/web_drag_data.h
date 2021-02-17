@@ -33,7 +33,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -47,7 +47,7 @@ class WebVector;
 
 using FileSystemAccessDropData =
     base::RefCountedData<blink::CrossVariantMojoRemote<
-        mojom::FileSystemAccessDragDropTokenInterfaceBase>>;
+        mojom::FileSystemAccessDataTransferTokenInterfaceBase>>;
 
 // Holds data that may be exchanged through a drag-n-drop operation. It is
 // inexpensive to copy a WebDragData object.

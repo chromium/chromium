@@ -6,8 +6,8 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
@@ -52,18 +52,18 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
 
   // Since tokens are move-only, we need to create a clone in order
   // to preserve the state of `data_object_item` for future calls.
-  mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken>
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
       token_remote = data_object_item.CloneFileSystemAccessEntryToken();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  // We need to move `nfs_manager` into GetEntryFromDragDropToken in order
+  // We need to move `nfs_manager` into GetEntryFromDataTransferToken in order
   // to keep it in scope long enough for the callback to be executed. To do this
   // we extract `raw_nfs_manager` from `nfs_manager` and move `nfs_manager` into
-  // the GetEntryFromDragDropToken callback.
+  // the GetEntryFromDataTransferToken callback.
   auto* raw_nfs_manager = nfs_manager.get();
-  raw_nfs_manager->GetEntryFromDragDropToken(
+  raw_nfs_manager->GetEntryFromDataTransferToken(
       std::move(token_remote),
       WTF::Bind(
           [](mojo::Remote<mojom::blink::FileSystemAccessManager>,

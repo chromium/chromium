@@ -15,8 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
-#include "content/browser/file_system_access/file_system_access_drag_drop_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
@@ -39,7 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 
@@ -227,14 +227,14 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     return result;
   }
 
-  void GetEntryFromDropTokenFileTest(
+  void GetEntryFromDataTransferTokenFileTest(
       const base::FilePath& file_path,
       FileSystemAccessEntryFactory::PathType path_type,
       const std::string& expected_file_contents) {
     // Create a token representing a dropped file at `file_path`.
-    mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         token_remote;
-    manager_->CreateFileSystemAccessDragDropToken(
+    manager_->CreateFileSystemAccessDataTransferToken(
         path_type, file_path, kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -257,7 +257,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     // FileSystemAccessFileHandle in `file_remote`.
     base::RunLoop await_token_resolution;
     blink::mojom::FileSystemAccessEntryPtr file_system_access_entry;
-    manager_remote_->GetEntryFromDragDropToken(
+    manager_remote_->GetEntryFromDataTransferToken(
         std::move(token_remote),
         base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessEntryPtr
                                            returned_file_system_access_entry) {
@@ -278,13 +278,13 @@ class FileSystemAccessManagerImplTest : public testing::Test {
               expected_file_contents);
   }
 
-  void GetEntryFromDropTokenDirectoryTest(
+  void GetEntryFromDataTransferTokenDirectoryTest(
       const base::FilePath& dir_path,
       FileSystemAccessEntryFactory::PathType path_type,
       const std::string& expected_child_file_name) {
-    mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         token_remote;
-    manager_->CreateFileSystemAccessDragDropToken(
+    manager_->CreateFileSystemAccessDataTransferToken(
         path_type, dir_path, kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
@@ -307,7 +307,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     // FileSystemAccessDirectoryHandle in `dir_remote`.
     base::RunLoop await_token_resolution;
     blink::mojom::FileSystemAccessEntryPtr file_system_access_entry;
-    manager_remote_->GetEntryFromDragDropToken(
+    manager_remote_->GetEntryFromDataTransferToken(
         std::move(token_remote),
         base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessEntryPtr
                                            returned_file_system_access_entry) {
@@ -949,44 +949,45 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_ExternalFile) {
 }
 
 // FileSystemAccessManager should successfully resolve a
-// FileSystemAccessDragDropToken representing a file in the user's file system
-// into a valid Remote<blink::mojom::FileSystemAccessFileHandle>, given
+// FileSystemAccessDataTransferToken representing a file in the user's file
+// system into a valid Remote<blink::mojom::FileSystemAccessFileHandle>, given
 // that the PID is valid.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_File_ValidPID) {
+       GetEntryFromDataTransferToken_File_ValidPID) {
   // Create a file and write some text into it.
   const base::FilePath file_path = dir_.GetPath().AppendASCII("mr_file");
   const std::string file_contents = "Deleted code is debugged code.";
   ASSERT_TRUE(base::WriteFile(file_path, file_contents));
 
-  GetEntryFromDropTokenFileTest(
+  GetEntryFromDataTransferTokenFileTest(
       file_path, FileSystemAccessEntryFactory::PathType::kLocal, file_contents);
 }
 
 // FileSystemAccessManager should successfully resolve a
-// FileSystemAccessDragDropToken representing a FileSystemAccessDirectoryEntry
-// into a valid Remote<blink::mojom::FileSystemAccessDirectoryHandle>, given
-// that the PID is valid.
+// FileSystemAccessDataTransferToken representing a
+// FileSystemAccessDirectoryEntry into a valid
+// Remote<blink::mojom::FileSystemAccessDirectoryHandle>, given that the PID is
+// valid.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_Directory_ValidPID) {
-  // Create a directory and create a FileSystemAccessDragDropToken representing
-  // the new directory.
+       GetEntryFromDataTransferToken_Directory_ValidPID) {
+  // Create a directory and create a FileSystemAccessDataTransferToken
+  // representing the new directory.
   const base::FilePath dir_path = dir_.GetPath().AppendASCII("mr_dir");
   ASSERT_TRUE(base::CreateDirectory(dir_path));
   const std::string child_file_name = "child-file-name.txt";
   ASSERT_TRUE(base::WriteFile(dir_path.AppendASCII(child_file_name), ""));
 
-  GetEntryFromDropTokenDirectoryTest(
+  GetEntryFromDataTransferTokenDirectoryTest(
       dir_path, FileSystemAccessEntryFactory::PathType::kLocal,
       child_file_name);
 }
 
 // FileSystemAccessManager should successfully resolve a
-// FileSystemAccessDragDropToken representing a file in the user's file system
-// into a valid Remote<blink::mojom::FileSystemAccessFileHandle>, given
+// FileSystemAccessDataTransferToken representing a file in the user's file
+// system into a valid Remote<blink::mojom::FileSystemAccessFileHandle>, given
 // that the PID is valid.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_File_ExternalPath) {
+       GetEntryFromDataTransferToken_File_ExternalPath) {
   // Create a file and write some text into it.
   const base::FilePath file_path = dir_.GetPath().AppendASCII("mr_file");
   const std::string file_contents = "Deleted code is debugged code.";
@@ -996,19 +997,20 @@ TEST_F(FileSystemAccessManagerImplTest,
       base::FilePath::FromUTF8Unsafe(kTestMountPoint)
           .Append(file_path.BaseName());
 
-  GetEntryFromDropTokenFileTest(
+  GetEntryFromDataTransferTokenFileTest(
       virtual_file_path, FileSystemAccessEntryFactory::PathType::kExternal,
       file_contents);
 }
 
 // FileSystemAccessManager should successfully resolve a
-// FileSystemAccessDragDropToken representing a FileSystemAccessDirectoryEntry
-// into a valid Remote<blink::mojom::FileSystemAccessDirectoryHandle>, given
-// that the PID is valid.
+// FileSystemAccessDataTransferToken representing a
+// FileSystemAccessDirectoryEntry into a valid
+// Remote<blink::mojom::FileSystemAccessDirectoryHandle>, given that the PID is
+// valid.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_Directory_ExternalPath) {
-  // Create a directory and create a FileSystemAccessDragDropToken representing
-  // the new directory.
+       GetEntryFromDataTransferToken_Directory_ExternalPath) {
+  // Create a directory and create a FileSystemAccessDataTransferToken
+  // representing the new directory.
   const base::FilePath dir_path = dir_.GetPath().AppendASCII("mr_dir");
   ASSERT_TRUE(base::CreateDirectory(dir_path));
   const std::string child_file_name = "child-file-name.txt";
@@ -1018,86 +1020,89 @@ TEST_F(FileSystemAccessManagerImplTest,
       base::FilePath::FromUTF8Unsafe(kTestMountPoint)
           .Append(dir_path.BaseName());
 
-  GetEntryFromDropTokenDirectoryTest(
+  GetEntryFromDataTransferTokenDirectoryTest(
       virtual_dir_path, FileSystemAccessEntryFactory::PathType::kExternal,
       child_file_name);
 }
 
 // FileSystemAccessManager should refuse to resolve a
-// FileSystemAccessDragDropToken representing a file on the user's file system
-// if the PID of the redeeming process doesn't match the one assigned at
+// FileSystemAccessDataTransferToken representing a file on the user's file
+// system if the PID of the redeeming process doesn't match the one assigned at
 // creation.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_File_InvalidPID) {
+       GetEntryFromDataTransferToken_File_InvalidPID) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("mr_file");
   ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
 
-  // Create a FileSystemAccessDragDropToken with a PID different than the
+  // Create a FileSystemAccessDataTransferToken with a PID different than the
   // process attempting to redeem to the token.
-  mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
-  manager_->CreateFileSystemAccessDragDropToken(
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+      token_remote;
+  manager_->CreateFileSystemAccessDataTransferToken(
       FileSystemAccessEntryFactory::PathType::kLocal, file_path,
       /*renderer_id=*/kBindingContext.process_id() - 1,
       token_remote.InitWithNewPipeAndPassReceiver());
 
-  // Try to redeem the FileSystemAccessDragDropToken for a
+  // Try to redeem the FileSystemAccessDataTransferToken for a
   // FileSystemAccessFileHandle, expecting `bad_message_observer` to intercept
   // a bad message callback.
   mojo::test::BadMessageObserver bad_message_observer;
-  manager_remote_->GetEntryFromDragDropToken(std::move(token_remote),
-                                             base::DoNothing());
+  manager_remote_->GetEntryFromDataTransferToken(std::move(token_remote),
+                                                 base::DoNothing());
   EXPECT_EQ("Invalid renderer ID.", bad_message_observer.WaitForBadMessage());
 }
 
 // FileSystemAccessManager should refuse to resolve a
-// FileSystemAccessDragDropToken representing a directory on the user's file
+// FileSystemAccessDataTransferToken representing a directory on the user's file
 // system if the PID of the redeeming process doesn't match the one assigned at
 // creation.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_Directory_InvalidPID) {
+       GetEntryFromDataTransferToken_Directory_InvalidPID) {
   const base::FilePath& kDirPath = dir_.GetPath().AppendASCII("mr_directory");
   ASSERT_TRUE(base::CreateDirectory(kDirPath));
 
-  // Create a FileSystemAccessDragDropToken with an PID different than the
+  // Create a FileSystemAccessDataTransferToken with an PID different than the
   // process attempting to redeem to the token.
-  mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
-  manager_->CreateFileSystemAccessDragDropToken(
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+      token_remote;
+  manager_->CreateFileSystemAccessDataTransferToken(
       FileSystemAccessEntryFactory::PathType::kLocal, kDirPath,
       /*renderer_id=*/kBindingContext.process_id() - 1,
       token_remote.InitWithNewPipeAndPassReceiver());
 
-  // Try to redeem the FileSystemAccessDragDropToken for a
+  // Try to redeem the FileSystemAccessDataTransferToken for a
   // FileSystemAccessFileHandle, expecting `bad_message_observer` to intercept
   // a bad message callback.
   mojo::test::BadMessageObserver bad_message_observer;
-  manager_remote_->GetEntryFromDragDropToken(std::move(token_remote),
-                                             base::DoNothing());
+  manager_remote_->GetEntryFromDataTransferToken(std::move(token_remote),
+                                                 base::DoNothing());
   EXPECT_EQ("Invalid renderer ID.", bad_message_observer.WaitForBadMessage());
 }
 
 // FileSystemAccessManager should refuse to resolve a
-// FileSystemAccessDragDropToken if the value of the token was not recognized
-// by the FileSystemAccessManager.
+// FileSystemAccessDataTransferToken if the value of the token was not
+// recognized by the FileSystemAccessManager.
 TEST_F(FileSystemAccessManagerImplTest,
-       GetEntryFromDragDropToken_UnrecognizedToken) {
+       GetEntryFromDataTransferToken_UnrecognizedToken) {
   const base::FilePath& kDirPath = dir_.GetPath().AppendASCII("mr_directory");
   ASSERT_TRUE(base::CreateDirectory(kDirPath));
 
-  // Create a FileSystemAccessDragDropToken without registering it to the
+  // Create a FileSystemAccessDataTransferToken without registering it to the
   // FileSystemAccessManager.
-  mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token_remote;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+      token_remote;
   auto drag_drop_token_impl =
-      std::make_unique<FileSystemAccessDragDropTokenImpl>(
+      std::make_unique<FileSystemAccessDataTransferTokenImpl>(
           manager_.get(), FileSystemAccessEntryFactory::PathType::kLocal,
           kDirPath, kBindingContext.process_id(),
           token_remote.InitWithNewPipeAndPassReceiver());
 
-  // Try to redeem the FileSystemAccessDragDropToken for a
+  // Try to redeem the FileSystemAccessDataTransferToken for a
   // FileSystemAccessFileHandle, expecting `bad_message_observer` to intercept
   // a bad message callback.
   mojo::test::BadMessageObserver bad_message_observer;
-  manager_remote_->GetEntryFromDragDropToken(std::move(token_remote),
-                                             base::DoNothing());
+  manager_remote_->GetEntryFromDataTransferToken(std::move(token_remote),
+                                                 base::DoNothing());
   EXPECT_EQ("Unrecognized drag drop token.",
             bad_message_observer.WaitForBadMessage());
 }

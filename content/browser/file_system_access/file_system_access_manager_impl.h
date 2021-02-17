@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -40,7 +40,7 @@ namespace content {
 class FileSystemAccessFileHandleImpl;
 class FileSystemAccessDirectoryHandleImpl;
 class FileSystemAccessTransferTokenImpl;
-class FileSystemAccessDragDropTokenImpl;
+class FileSystemAccessDataTransferTokenImpl;
 class FileSystemAccessFileWriterImpl;
 class StoragePartitionImpl;
 
@@ -112,9 +112,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessDirectoryHandle>
           directory_handle_receiver) override;
-  void GetEntryFromDragDropToken(
-      mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token,
-      GetEntryFromDragDropTokenCallback token_resolved_callback) override;
+  void GetEntryFromDataTransferToken(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+          token,
+      GetEntryFromDataTransferTokenCallback token_resolved_callback) override;
 
   // storage::mojom::FileSystemAccessContext:
   void SerializeHandle(
@@ -182,15 +183,15 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
 
-  // Creates an instance of FileSystemAccessDragDropTokenImpl with `file_path`
-  // and `renderer_id` and attaches the instance to `receiver`. The `receiver`'s
-  // associated remote can be redeemed for a FileSystemAccessEntry object by a
-  // process with ID matching `renderer_id`.
-  void CreateFileSystemAccessDragDropToken(
+  // Creates an instance of FileSystemAccessDataTransferTokenImpl with
+  // `file_path` and `renderer_id` and attaches the instance to `receiver`. The
+  // `receiver`'s associated remote can be redeemed for a FileSystemAccessEntry
+  // object by a process with ID matching `renderer_id`.
+  void CreateFileSystemAccessDataTransferToken(
       PathType path_type,
       const base::FilePath& file_path,
       int renderer_id,
-      mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
           receiver);
 
   // Given a mojom transfer token, looks up the token in our internal list of
@@ -234,9 +235,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // a token that doesn't exist.
   void RemoveToken(const base::UnguessableToken& token);
 
-  // Remove `token` from `drag_drop_tokens_`. It is an error to try to remove a
-  // token that doesn't exist.
-  void RemoveDragDropToken(const base::UnguessableToken& token);
+  // Remove `token` from `data_transfer_tokens_`. It is an error to try to
+  // remove a token that doesn't exist.
+  void RemoveDataTransferToken(const base::UnguessableToken& token);
 
   SharedHandleState GetSharedHandleStateForPath(
       const base::FilePath& path,
@@ -331,25 +332,25 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       FileSystemAccessTransferTokenImpl* resolved_token);
 
   // Calls `token_resolved_callback` with a FileSystemAccessEntry object
-  // that's at the file path of the FileSystemAccessDragDropToken with token
+  // that's at the file path of the FileSystemAccessDataTransferToken with token
   // value `token`. If no such token exists, calls
   // `failed_token_redemption_callback`.
-  void ResolveDragDropToken(
-      mojo::Remote<blink::mojom::FileSystemAccessDragDropToken>,
+  void ResolveDataTransferToken(
+      mojo::Remote<blink::mojom::FileSystemAccessDataTransferToken>,
       const BindingContext& binding_context,
-      GetEntryFromDragDropTokenCallback token_resolved_callback,
+      GetEntryFromDataTransferTokenCallback token_resolved_callback,
       mojo::ReportBadMessageCallback failed_token_redemption_callback,
       const base::UnguessableToken& token);
 
   // Calls `token_resolved_callback` with a FileSystemAccessEntry representing
   // the file/directory at `file_path`. Called by
-  // FileSystemAccessManager::ResolveDragDropToken after it looks up
+  // FileSystemAccessManager::ResolveDataTransferToken after it looks up
   // whether the token's file path refers to a file or directory.
-  void ResolveDragDropTokenWithFileType(
+  void ResolveDataTransferTokenWithFileType(
       const BindingContext& binding_context,
       const base::FilePath& file_path,
       FileSystemURLAndFSHandle url,
-      GetEntryFromDragDropTokenCallback token_resolved_callback,
+      GetEntryFromDataTransferTokenCallback token_resolved_callback,
       FileSystemAccessPermissionContext::HandleType file_type);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -387,13 +388,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
            std::unique_ptr<FileSystemAccessTransferTokenImpl>>
       transfer_tokens_;
 
-  // This map is used to associate FileSystemAccessDragDropTokenImpl instances
-  // with UnguessableTokens so that this class can find an associated
-  // FileSystemAccessDragDropTokenImpl for a
-  // mojo::PendingRemote<FileSystemAccessDragDropToken>.
+  // This map is used to associate FileSystemAccessDataTransferTokenImpl
+  // instances with UnguessableTokens so that this class can find an associated
+  // FileSystemAccessDataTransferTokenImpl for a
+  // mojo::PendingRemote<FileSystemAccessDataTransferToken>.
   std::map<base::UnguessableToken,
-           std::unique_ptr<FileSystemAccessDragDropTokenImpl>>
-      drag_drop_tokens_;
+           std::unique_ptr<FileSystemAccessDataTransferTokenImpl>>
+      data_transfer_tokens_;
 
   base::Optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_;

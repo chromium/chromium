@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -102,10 +102,10 @@ bool StructTraits<
   item.storage_type = blink::WebDragData::Item::kStorageTypeFilename;
   item.filename_data = blink::FilePathToWebString(filename_data);
   item.display_name_data = blink::FilePathToWebString(display_name_data);
-  mojo::PendingRemote<::blink::mojom::blink::FileSystemAccessDragDropToken>
+  mojo::PendingRemote<::blink::mojom::blink::FileSystemAccessDataTransferToken>
       file_system_access_token(
           data.TakeFileSystemAccessToken<mojo::PendingRemote<
-              ::blink::mojom::blink::FileSystemAccessDragDropToken>>());
+              ::blink::mojom::blink::FileSystemAccessDataTransferToken>>());
   item.file_system_access_entry =
       base::MakeRefCounted<::blink::FileSystemAccessDropData>(
           std::move(file_system_access_token));
@@ -182,7 +182,7 @@ WTF::String StructTraits<blink::mojom::DragItemFileSystemFileDataView,
 }
 
 //  static
-mojo::PendingRemote<blink::mojom::blink::FileSystemAccessDragDropToken>
+mojo::PendingRemote<blink::mojom::blink::FileSystemAccessDataTransferToken>
 StructTraits<blink::mojom::DragItemFileDataView, blink::WebDragData::Item>::
     file_system_access_token(const blink::WebDragData::Item& item) {
   // Should never have to send a transfer token information from the renderer

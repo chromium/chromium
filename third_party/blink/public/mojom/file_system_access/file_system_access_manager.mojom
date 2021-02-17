@@ -9,7 +9,7 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_dir
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom";
 
 enum WellKnownDirectory {
   kDefault,
@@ -115,12 +115,12 @@ interface FileSystemAccessManager {
     pending_remote<FileSystemAccessTransferToken> token,
     pending_receiver<FileSystemAccessDirectoryHandle> directory_handle);
 
-  // Used to redeem FileSystemAccessDragDropToken that are passed to the
-  // renderer from the browser during a drag and drop operation. Token
-  // redemption can fail if the id of the process trying to redeem the token
-  // does not match the id assigned to the token at creation or if the
+  // Used to redeem FileSystemAccessDataTransferToken that are passed to the
+  // renderer from the browser during a drag-and-drop or clipboard operation.
+  // Token redemption can fail if the id of the process trying to redeem the
+  // token does not match the id assigned to the token at creation or if the
   // FileSystemAccessManager does not have record of the token.
-  GetEntryFromDragDropToken(
-    pending_remote<FileSystemAccessDragDropToken> token
+  GetEntryFromDataTransferToken(
+    pending_remote<FileSystemAccessDataTransferToken> token
   )  => (FileSystemAccessEntry entry);
 };

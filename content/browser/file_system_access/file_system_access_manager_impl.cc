@@ -20,8 +20,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
+#include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
-#include "content/browser/file_system_access/file_system_access_drag_drop_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
@@ -45,7 +45,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "url/origin.h"
@@ -522,53 +522,53 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
           common_options->starting_directory_id, std::move(callback)));
 }
 
-void FileSystemAccessManagerImpl::CreateFileSystemAccessDragDropToken(
+void FileSystemAccessManagerImpl::CreateFileSystemAccessDataTransferToken(
     PathType path_type,
     const base::FilePath& file_path,
     int renderer_id,
-    mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
         receiver) {
-  auto drag_drop_token_impl =
-      std::make_unique<FileSystemAccessDragDropTokenImpl>(
+  auto data_transfer_token_impl =
+      std::make_unique<FileSystemAccessDataTransferTokenImpl>(
           this, path_type, file_path, renderer_id, std::move(receiver));
-  auto token = drag_drop_token_impl->token();
-  drag_drop_tokens_.emplace(token, std::move(drag_drop_token_impl));
+  auto token = data_transfer_token_impl->token();
+  data_transfer_tokens_.emplace(token, std::move(data_transfer_token_impl));
 }
 
-void FileSystemAccessManagerImpl::GetEntryFromDragDropToken(
-    mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken> token,
-    GetEntryFromDragDropTokenCallback token_resolved_callback) {
-  mojo::Remote<blink::mojom::FileSystemAccessDragDropToken> drop_token_remote(
-      std::move(token));
+void FileSystemAccessManagerImpl::GetEntryFromDataTransferToken(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken> token,
+    GetEntryFromDataTransferTokenCallback token_resolved_callback) {
+  mojo::Remote<blink::mojom::FileSystemAccessDataTransferToken>
+      data_transfer_token_remote(std::move(token));
 
   // Get a failure callback in case this token ends up not being valid (i.e.
   // unrecognized token or wrong renderer process ID).
   mojo::ReportBadMessageCallback failed_token_redemption_callback =
       receivers_.GetBadMessageCallback();
 
-  // Must pass `drop_token_remote` into GetInternalId in order to ensure it
-  // stays in scope long enough for the callback to be called.
-  auto* raw_drop_token_remote = drop_token_remote.get();
-  raw_drop_token_remote->GetInternalId(
+  // Must pass `data_transfer_token_remote` into GetInternalId in order to
+  // ensure it stays in scope long enough for the callback to be called.
+  auto* raw_data_transfer_token_remote = data_transfer_token_remote.get();
+  raw_data_transfer_token_remote->GetInternalId(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
-              &FileSystemAccessManagerImpl::ResolveDragDropToken,
-              weak_factory_.GetWeakPtr(), std::move(drop_token_remote),
+              &FileSystemAccessManagerImpl::ResolveDataTransferToken,
+              weak_factory_.GetWeakPtr(), std::move(data_transfer_token_remote),
               receivers_.current_context(), std::move(token_resolved_callback),
               std::move(failed_token_redemption_callback)),
           base::UnguessableToken()));
 }
 
-void FileSystemAccessManagerImpl::ResolveDragDropToken(
-    mojo::Remote<blink::mojom::FileSystemAccessDragDropToken>,
+void FileSystemAccessManagerImpl::ResolveDataTransferToken(
+    mojo::Remote<blink::mojom::FileSystemAccessDataTransferToken>,
     const BindingContext& binding_context,
-    GetEntryFromDragDropTokenCallback token_resolved_callback,
+    GetEntryFromDataTransferTokenCallback token_resolved_callback,
     mojo::ReportBadMessageCallback failed_token_redemption_callback,
     const base::UnguessableToken& token) {
-  auto drag_token_impl = drag_drop_tokens_.find(token);
+  auto data_transfer_token_impl = data_transfer_tokens_.find(token);
 
   // Call `token_resolved_callback` with an error if the token isn't registered.
-  if (drag_token_impl == drag_drop_tokens_.end()) {
+  if (data_transfer_token_impl == data_transfer_tokens_.end()) {
     std::move(failed_token_redemption_callback)
         .Run("Unrecognized drag drop token.");
     return;
@@ -576,35 +576,35 @@ void FileSystemAccessManagerImpl::ResolveDragDropToken(
 
   // Call `token_resolved_callback` with an error if the process redeeming the
   // token isn't the same process that the token is registered to.
-  if (drag_token_impl->second->renderer_process_id() !=
+  if (data_transfer_token_impl->second->renderer_process_id() !=
       binding_context.process_id()) {
     std::move(failed_token_redemption_callback).Run("Invalid renderer ID.");
     return;
   }
 
   // Look up whether the file path that's associated with the token is a file or
-  // directory and call ResolveDragDropTokenWithFileType with the result.
+  // directory and call ResolveDataTransferTokenWithFileType with the result.
   FileSystemURLAndFSHandle url = CreateFileSystemURLFromPath(
-      binding_context.origin, drag_token_impl->second->path_type(),
-      drag_token_impl->second->file_path());
+      binding_context.origin, data_transfer_token_impl->second->path_type(),
+      data_transfer_token_impl->second->file_path());
   auto fs_url = url.url;
   operation_runner().PostTaskWithThisObject(
       FROM_HERE,
       base::BindOnce(
           &GetHandleTypeFromUrl, fs_url,
-          base::BindOnce(
-              &FileSystemAccessManagerImpl::ResolveDragDropTokenWithFileType,
-              weak_factory_.GetWeakPtr(), binding_context,
-              drag_token_impl->second->file_path(), std::move(url),
-              std::move(token_resolved_callback)),
+          base::BindOnce(&FileSystemAccessManagerImpl::
+                             ResolveDataTransferTokenWithFileType,
+                         weak_factory_.GetWeakPtr(), binding_context,
+                         data_transfer_token_impl->second->file_path(),
+                         std::move(url), std::move(token_resolved_callback)),
           base::SequencedTaskRunnerHandle::Get()));
 }
 
-void FileSystemAccessManagerImpl::ResolveDragDropTokenWithFileType(
+void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
     const BindingContext& binding_context,
     const base::FilePath& file_path,
     FileSystemURLAndFSHandle url,
-    GetEntryFromDragDropTokenCallback token_resolved_callback,
+    GetEntryFromDataTransferTokenCallback token_resolved_callback,
     HandleType file_type) {
   SharedHandleState shared_handle_state = GetSharedHandleStateForPath(
       file_path, binding_context.origin, std::move(url.file_system), file_type,
@@ -1270,11 +1270,11 @@ void FileSystemAccessManagerImpl::RemoveToken(
   DCHECK_EQ(1u, count_removed);
 }
 
-void FileSystemAccessManagerImpl::RemoveDragDropToken(
+void FileSystemAccessManagerImpl::RemoveDataTransferToken(
     const base::UnguessableToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  size_t count_removed = drag_drop_tokens_.erase(token);
+  size_t count_removed = data_transfer_tokens_.erase(token);
   DCHECK_EQ(1u, count_removed);
 }
 

@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -229,12 +229,13 @@ bool DataObjectItem::HasFileSystemAccessEntry() const {
   return static_cast<bool>(file_system_access_entry_);
 }
 
-mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken>
+mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
 DataObjectItem::CloneFileSystemAccessEntryToken() const {
   DCHECK(HasFileSystemAccessEntry());
-  mojo::Remote<mojom::blink::FileSystemAccessDragDropToken> token_cloner(
+  mojo::Remote<mojom::blink::FileSystemAccessDataTransferToken> token_cloner(
       std::move(file_system_access_entry_->data));
-  mojo::PendingRemote<mojom::blink::FileSystemAccessDragDropToken> token_clone;
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
+      token_clone;
   token_cloner->Clone(token_clone.InitWithNewPipeAndPassReceiver());
   file_system_access_entry_->data = token_cloner.Unbind();
   return token_clone;

@@ -82,10 +82,10 @@ class MockFileSystemAccessManager
       mojo::PendingReceiver<mojom::blink::FileSystemAccessDirectoryHandle>)
       override {}
 
-  void GetEntryFromDragDropToken(
-      mojo::PendingRemote<blink::mojom::blink::FileSystemAccessDragDropToken>
-          token,
-      GetEntryFromDragDropTokenCallback callback) override {}
+  void GetEntryFromDataTransferToken(
+      mojo::PendingRemote<
+          blink::mojom::blink::FileSystemAccessDataTransferToken> token,
+      GetEntryFromDataTransferTokenCallback callback) override {}
 
  private:
   void BindFileSystemAccessManager(mojo::ScopedMessagePipeHandle handle) {
