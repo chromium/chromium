@@ -13,7 +13,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/util.h"
-#include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 
@@ -129,7 +128,11 @@ class VectorBuffer {
             typename std::enable_if<base::is_trivially_copyable<T2>::value,
                                     int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
-    CHECK(!RangesOverlap(from_begin, from_end, to));
+    CHECK(!RangesOverlap(from_begin, from_end, to))
+        // TODO(crbug.com/1172816): Remove logging once root cause is found.
+        << "from_begin: " << from_begin << ", from_end: " << from_end
+        << ", to: " << to;
+
     memcpy(
         to, from_begin,
         CheckSub(get_uintptr(from_end), get_uintptr(from_begin)).ValueOrDie());
@@ -171,12 +174,6 @@ class VectorBuffer {
   static bool RangesOverlap(const T* from_begin,
                             const T* from_end,
                             const T* to) {
-#if defined(ADDRESS_SANITIZER)
-    // TODO(crbug.com/1172816): Remove logging once root cause is found.
-    VLOG(1) << "from_begin: " << from_begin;
-    VLOG(1) << "from_end: " << from_end;
-    VLOG(1) << "to: " << to;
-#endif
     const auto from_begin_uintptr = get_uintptr(from_begin);
     const auto from_end_uintptr = get_uintptr(from_end);
     const auto to_uintptr = get_uintptr(to);
