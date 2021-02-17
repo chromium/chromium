@@ -131,9 +131,14 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
      */
     this.launcherSearch_ = new LauncherSearch();
 
-    // Initialize listeners.
-    chrome.runtime.onMessageExternal.addListener(
-        this.onExternalMessageReceived_.bind(this));
+    // Initialize listeners for importer.handlePhotosAppMessage messages to
+    // the files app back-end. FIXME: no SWA backend, no photos import, by
+    // the looks...
+    if (!window.isSWA) {
+      chrome.runtime.onMessageExternal.addListener(
+          this.onExternalMessageReceived_.bind(this));
+    }
+
     chrome.contextMenus.onClicked.addListener(
         this.onContextMenuClicked_.bind(this));
 
