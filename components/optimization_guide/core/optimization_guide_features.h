@@ -171,6 +171,12 @@ bool IsModelDownloadingEnabled();
 // client should download models using highest priority.
 bool IsUnrestrictedModelDownloadingEnabled();
 
+// Returns whether the feature to annotate page content is enabled.
+bool IsPageContentAnnotationEnabled();
+
+// Returns the max size that should be requested for a page content text dump.
+uint64_t MaxSizeForPageContentTextDump();
+
 }  // namespace features
 }  // namespace optimization_guide
 

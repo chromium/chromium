@@ -35,6 +35,12 @@ class PageTextObserver : public content::WebContentsObserver,
  public:
   ~PageTextObserver() override;
 
+  // Retrieves the instance of PageTextObserver that was attached
+  // to the specified WebContents. If no instance was attached, creates one,
+  // and attaches it to the specified WebContents.
+  static PageTextObserver* GetOrCreateForWebContents(
+      content::WebContents* web_contents);
+
   // Contains all the information that is needed to request a text dump by a
   // consumer.
   struct ConsumerTextDumpRequest {
@@ -68,9 +74,9 @@ class PageTextObserver : public content::WebContentsObserver,
   };
 
   // Adds or removes a consumer. Consumers must remain valid between calling Add
-  // and Remove.
-  void AddConsumer(Consumer* consumer);
-  void RemoveConsumer(Consumer* consumer);
+  // and Remove. Virtual for testing.
+  virtual void AddConsumer(Consumer* consumer);
+  virtual void RemoveConsumer(Consumer* consumer);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;

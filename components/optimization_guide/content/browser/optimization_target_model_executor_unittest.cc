@@ -174,7 +174,7 @@ TEST_F(OptimizationTargetModelExecutorTest,
   model_executor()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             base::Optional<std::vector<float>> output) {
+             const base::Optional<std::vector<float>>& output) {
             EXPECT_FALSE(output.has_value());
             run_loop->Quit();
           },
@@ -200,7 +200,7 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
   model_executor()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             base::Optional<std::vector<float>> output) {
+             const base::Optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
 
             std::vector<float> expected_output = {

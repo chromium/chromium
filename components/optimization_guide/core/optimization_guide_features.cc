@@ -64,6 +64,10 @@ const base::Feature kOptimizationTargetPrediction{
 const base::Feature kOptimizationGuideModelDownloading{
     "OptimizationGuideModelDownloading", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables page content to be annotated.
+const base::Feature kPageContentAnnotations{"PageContentAnnotations",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 size_t MaxHintsFetcherTopHostBlocklistSize() {
   // The blocklist will be limited to the most engaged hosts and will hold twice
   // (2*N) as many hosts that the HintsFetcher request hints for. The extra N
@@ -326,6 +330,15 @@ bool IsUnrestrictedModelDownloadingEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kOptimizationGuideModelDownloading, "unrestricted_model_downloading",
       false);
+}
+
+bool IsPageContentAnnotationEnabled() {
+  return base::FeatureList::IsEnabled(kPageContentAnnotations);
+}
+
+uint64_t MaxSizeForPageContentTextDump() {
+  return static_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
+      kPageContentAnnotations, "max_size_for_text_dump_in_bytes", 1024));
 }
 
 }  // namespace features

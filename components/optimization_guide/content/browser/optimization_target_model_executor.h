@@ -54,7 +54,7 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   // Executes the model using |input| and invokes |callback| when completed.
   // TODO(crbug/1173328): Add a way to surface errors.
   using ExecutionCallback =
-      base::OnceCallback<void(base::Optional<OutputType>)>;
+      base::OnceCallback<void(const base::Optional<OutputType>&)>;
   void ExecuteModelWithInput(ExecutionCallback callback, InputTypes... input) {
     // base::Unretained is safe here since the execution will not run if
     // |model_execution_task_runner_| gets destructed.

@@ -231,6 +231,14 @@ PageTextObserver::PageTextObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 PageTextObserver::~PageTextObserver() = default;
 
+PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
+    content::WebContents* web_contents) {
+  // CreateForWebContents doesn't do anything if it has already been created
+  // for |web_contents| already.
+  PageTextObserver::CreateForWebContents(web_contents);
+  return PageTextObserver::FromWebContents(web_contents);
+}
+
 void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   if (consumers_.empty()) {
     return;
