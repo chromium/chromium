@@ -7037,10 +7037,67 @@
     # Will replicate chromium_linux_gtests with OZONE_X11 variant.
     # Unfortunatelly, we can't have chromium_linux_gtests matrix
     # compound test added here as the script that generates config
-    # doesn't permit so. Thus, this will be a mirrored list of tests
+    # doesn't permit so. Thus, this is a mirrored list of tests
     # from chromium_linux_gtests.
+    # TODO(msisov): add vr_platform_specific_chromium_gtests as well.
+    # They are failing on Ozone/X11 tester now.
     'linux_ozone_x11_ci_tests': {
       'aura_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'chromium_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'chromium_gtests_for_devices_with_graphical_output': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'chromium_gtests_for_linux_and_chromeos_only': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'chromium_gtests_for_linux_and_mac_only': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'chromium_gtests_for_linux_only': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'chromium_gtests_for_win_and_linux_only': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'linux_flavor_specific_chromium_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'linux_specific_xr_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'non_android_and_cast_and_chromeos_chromium_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'non_android_chromium_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'weblayer_gtests': {
         'variants': [
           'OZONE_X11',
         ]
@@ -7050,18 +7107,8 @@
           'OZONE_X11',
         ]
       },
-      'linux_ozone_wayland_and_x11_gtests': {
-        'variants': [
-          'OZONE_X11',
-        ]
-      },
-      'linux_ozone_common_gtests': {
-        'variants': [
-          'OZONE_X11',
-        ]
-      },
     },
-
+    
     # These tests run on Ozone/X11 CQ tester.
     # Only essential tests are running as long as
     # the capacity is limited.

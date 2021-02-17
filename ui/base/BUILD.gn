@@ -922,7 +922,7 @@ test("ui_base_unittests") {
   }
 
   data = []
-  data_deps = []
+  data_deps = [ "//testing/buildbot/filters:ui_base_unittests_filters" ]
   deps = [
     ":ui_base_test_resources_grit",
     ":ui_base_unittests_bundle_data",
