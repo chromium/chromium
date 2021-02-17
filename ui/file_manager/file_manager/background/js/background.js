@@ -131,12 +131,16 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
      */
     this.launcherSearch_ = new LauncherSearch();
 
-    // Initialize listeners for importer.handlePhotosAppMessage messages to
-    // the files app back-end. FIXME: no SWA backend, no photos import, by
-    // the looks...
     if (!window.isSWA) {
+      // Initialize listener for importer.handlePhotosAppMessage messages to
+      // the files app back-end. FIXME: Files SWA needs to support photos
+      // import workflow.
       chrome.runtime.onMessageExternal.addListener(
           this.onExternalMessageReceived_.bind(this));
+      // FIXME: chrome.contextMenus not enabled for Files SWA yet. See service
+      // onContextMenuClicked_ for adding "New Window" item to the OS shelf.
+      chrome.contextMenus.onClicked.addListener(
+          this.onContextMenuClicked_.bind(this));
     }
 
     chrome.contextMenus.onClicked.addListener(
