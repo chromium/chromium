@@ -790,6 +790,9 @@ class MEDIA_GPU_EXPORT V4L2Device
   // exposed by the device.
   base::Optional<struct v4l2_ext_control> GetCtrl(uint32_t ctrl_id);
 
+  // Set periodic keyframe placement (group of pictures length)
+  bool SetGOPLength(uint32_t gop_length);
+
  protected:
   friend class base::RefCountedThreadSafe<V4L2Device>;
   V4L2Device();

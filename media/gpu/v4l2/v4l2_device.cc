@@ -2258,6 +2258,31 @@ base::Optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
   return ctrl;
 }
 
+bool V4L2Device::SetGOPLength(uint32_t gop_length) {
+  if (!SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
+                   {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_GOP_SIZE, gop_length)})) {
+    // Some platforms allow setting the GOP length to 0 as
+    // a way of turning off keyframe placement.  If the platform
+    // does not support turning off periodic keyframe placement,
+    // set the GOP to the maximum supported value.
+    if (gop_length == 0) {
+      v4l2_query_ext_ctrl queryctrl;
+      memset(&queryctrl, 0, sizeof(queryctrl));
+
+      queryctrl.id = V4L2_CTRL_CLASS_MPEG | V4L2_CID_MPEG_VIDEO_GOP_SIZE;
+      if (Ioctl(VIDIOC_QUERY_EXT_CTRL, &queryctrl) == 0) {
+        VPLOGF(3) << "Unable to set GOP to 0, instead using max : "
+                  << queryctrl.maximum;
+        return SetExtCtrls(
+            V4L2_CTRL_CLASS_MPEG,
+            {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_GOP_SIZE, queryctrl.maximum)});
+      }
+    }
+    return false;
+  }
+  return true;
+}
+
 class V4L2Request {
  public:
   // Apply the passed controls to the request.
