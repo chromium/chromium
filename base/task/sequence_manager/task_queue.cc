@@ -14,6 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/time/time.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace base {
 namespace sequence_manager {
