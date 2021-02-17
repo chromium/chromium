@@ -1,0 +1,270 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/payments/payment_credential_enrollment_dialog_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/payments/content/payment_credential_enrollment_model.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/label.h"
+
+namespace payments {
+
+class PaymentCredentialEnrollmentDialogViewTest
+    : public InProcessBrowserTest,
+      public PaymentCredentialEnrollmentDialogView::ObserverForTest {
+ public:
+  enum DialogEvent : int {
+    DIALOG_OPENED,
+    DIALOG_CLOSED,
+  };
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void CreateModel() {
+    // TODO(crbug.com/1176368): Use l10n strings.
+    model_.set_title(base::UTF8ToUTF16(
+        "Use Touch ID to verify and complete your purchase?"));
+
+    model_.set_description(
+        base::UTF8ToUTF16("Save payment information to this device and skip "
+                          "bank verification next "
+                          "time when you use Touch ID to verify your payment "
+                          "with Visa ••••4444."));
+
+    model_.set_accept_button_label(base::UTF8ToUTF16("Use Touch ID"));
+    model_.set_cancel_button_label(base::UTF8ToUTF16("No thanks"));
+  }
+
+  void InvokePaymentCredentialEnrollmentUI() {
+    content::WebContents* web_contents = GetActiveWebContents();
+
+    // The PaymentCredentialEnrollmentDialogView object is memory managed by the
+    // views:: machinery, so this test just holds a WeakPtr.
+    dialog_view_ = (new PaymentCredentialEnrollmentDialogView(
+                        /*observer_for_test=*/this))
+                       ->GetWeakPtr();
+
+    ResetEventWaiter(DialogEvent::DIALOG_OPENED);
+    dialog_view_->ShowDialog(
+        web_contents, model_.GetWeakPtr(),
+        base::BindOnce(
+            &PaymentCredentialEnrollmentDialogViewTest::AcceptCallback,
+            base::Unretained(this)),
+        base::BindOnce(
+            &PaymentCredentialEnrollmentDialogViewTest::CancelCallback,
+            base::Unretained(this)));
+    event_waiter_->Wait();
+
+    // The web-modal dialog should be open.
+    web_modal::WebContentsModalDialogManager*
+        web_contents_modal_dialog_manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(
+                web_contents);
+    EXPECT_TRUE(web_contents_modal_dialog_manager->IsDialogActive());
+  }
+
+  void ExpectLabelText(
+      const base::string16& text,
+      PaymentCredentialEnrollmentDialogView::DialogViewID view_id) {
+    EXPECT_EQ(text, static_cast<views::Label*>(
+                        dialog_view_->GetViewByID(static_cast<int>(view_id)))
+                        ->GetText());
+  }
+
+  void ExpectViewMatchesModel() {
+    ASSERT_NE(dialog_view_, nullptr);
+
+    EXPECT_EQ(model_.accept_button_label(),
+              dialog_view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK));
+
+    EXPECT_EQ(model_.cancel_button_label(),
+              dialog_view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+
+    EXPECT_TRUE(dialog_view_->GetViewByID(static_cast<int>(
+        PaymentCredentialEnrollmentDialogView::DialogViewID::HEADER_ICON)));
+
+    EXPECT_EQ(model_.progress_bar_visible(),
+              dialog_view_
+                  ->GetViewByID(
+                      static_cast<int>(PaymentCredentialEnrollmentDialogView::
+                                           DialogViewID::PROGRESS_BAR))
+                  ->GetVisible());
+
+    ExpectLabelText(model_.title(),
+                    PaymentCredentialEnrollmentDialogView::DialogViewID::TITLE);
+
+    ExpectLabelText(
+        model_.description(),
+        PaymentCredentialEnrollmentDialogView::DialogViewID::DESCRIPTION);
+  }
+
+  void ClickAcceptAndWait() {
+    ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+
+    dialog_view_->AcceptDialog();
+    event_waiter_->Wait();
+
+    // Expect accept button pressed and accept callback called
+    EXPECT_TRUE(accept_pressed_);
+    EXPECT_FALSE(cancel_pressed_);
+    EXPECT_TRUE(accept_called_);
+    EXPECT_FALSE(cancel_called_);
+  }
+
+  void ClickCancelAndWait() {
+    ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+
+    dialog_view_->CancelDialog();
+    event_waiter_->Wait();
+
+    // Expect cancel button pressed and cancel callback called
+    EXPECT_TRUE(cancel_pressed_);
+    EXPECT_FALSE(accept_pressed_);
+    EXPECT_TRUE(cancel_called_);
+    EXPECT_FALSE(accept_called_);
+  }
+
+  void CloseDialogAndWait() {
+    ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+
+    dialog_view_->HideDialog();
+    event_waiter_->Wait();
+
+    // Expect no button pressed and cancel callback called
+    EXPECT_FALSE(cancel_pressed_);
+    EXPECT_FALSE(accept_pressed_);
+    EXPECT_TRUE(cancel_called_);
+    EXPECT_FALSE(accept_called_);
+  }
+
+  void ResetEventWaiter(DialogEvent event) {
+    event_waiter_ = std::make_unique<autofill::EventWaiter<DialogEvent>>(
+        std::list<DialogEvent>{event});
+  }
+
+  void AcceptCallback() { accept_called_ = true; }
+
+  void CancelCallback() { cancel_called_ = true; }
+
+  // PaymentCredentialEnrollmentDialogView::ObserverForTest:
+  void OnDialogOpened() override {
+    if (event_waiter_)
+      event_waiter_->OnEvent(DialogEvent::DIALOG_OPENED);
+  }
+
+  void OnDialogClosed() override {
+    if (event_waiter_)
+      event_waiter_->OnEvent(DialogEvent::DIALOG_CLOSED);
+  }
+
+  void OnAcceptButtonPressed() override { accept_pressed_ = true; }
+
+  void OnCancelButtonPressed() override { cancel_pressed_ = true; }
+
+ protected:
+  std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
+
+  PaymentCredentialEnrollmentModel model_;
+  base::WeakPtr<PaymentCredentialEnrollmentDialogView> dialog_view_;
+
+  bool accept_called_ = false;
+  bool cancel_called_ = false;
+
+  bool accept_pressed_ = false;
+  bool cancel_pressed_ = false;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       AcceptButtonTest) {
+  CreateModel();
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  ClickAcceptAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       CancelButtonTest) {
+  CreateModel();
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  ClickCancelAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       CloseDialogTest) {
+  CreateModel();
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       ProgressBarVisible) {
+  CreateModel();
+  model_.set_progress_bar_visible(true);
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       ShowProgressBar) {
+  CreateModel();
+
+  ASSERT_FALSE(model_.progress_bar_visible());
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  model_.set_progress_bar_visible(true);
+  model_.set_accept_button_enabled(false);
+  model_.set_cancel_button_enabled(false);
+  dialog_view_->OnModelUpdated();
+
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       OnModelUpdated) {
+  CreateModel();
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  model_.set_title(base::UTF8ToUTF16("Test Title"));
+  model_.set_description(base::UTF8ToUTF16("Test description"));
+  model_.set_accept_button_label(base::UTF8ToUTF16("Test accept"));
+  model_.set_cancel_button_label(base::UTF8ToUTF16("Test cancel"));
+
+  dialog_view_->OnModelUpdated();
+
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+}  // namespace payments

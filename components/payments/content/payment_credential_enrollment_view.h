@@ -15,7 +15,6 @@ class WebContents;
 namespace payments {
 
 class PaymentCredentialEnrollmentModel;
-class PaymentUIObserver;
 
 // Draws the user interface in the payment credential enrollment flow. Owned by
 // the SecurePaymentConfirmationController.
@@ -24,8 +23,7 @@ class PaymentCredentialEnrollmentView {
   using AcceptCallback = base::OnceCallback<void()>;
   using CancelCallback = base::OnceCallback<void()>;
 
-  static base::WeakPtr<PaymentCredentialEnrollmentView> Create(
-      const PaymentUIObserver* payment_ui_observer);
+  static base::WeakPtr<PaymentCredentialEnrollmentView> Create();
 
   virtual ~PaymentCredentialEnrollmentView() = 0;
 

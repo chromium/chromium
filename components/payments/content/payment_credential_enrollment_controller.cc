@@ -33,8 +33,7 @@ void PaymentCredentialEnrollmentController::ShowDialog() {
 
   // TODO(crbug.com/1176368): Set dialog strings on the model.
 
-  view_ =
-      PaymentCredentialEnrollmentView::Create(/*payment_ui_observer=*/nullptr);
+  view_ = PaymentCredentialEnrollmentView::Create();
   view_->ShowDialog(
       web_contents(), model_.GetWeakPtr(),
       base::BindOnce(&PaymentCredentialEnrollmentController::OnConfirm,

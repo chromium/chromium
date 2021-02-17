@@ -8,8 +8,7 @@ namespace payments {
 
 // static
 base::WeakPtr<PaymentCredentialEnrollmentView>
-PaymentCredentialEnrollmentView::Create(
-    const PaymentUIObserver* payment_ui_observer) {
+PaymentCredentialEnrollmentView::Create() {
   return nullptr;
 }
 

@@ -11,10 +11,6 @@
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace gfx {
-struct VectorIcon;
-}
-
 namespace views {
 class ProgressBar;
 }
@@ -78,8 +74,6 @@ class SecurePaymentConfirmationDialogView
   void OnDialogAccepted();
   void OnDialogCancelled();
   void OnDialogClosed();
-
-  const gfx::VectorIcon& GetFingerprintIcon() const;
 
   void InitChildViews();
 
