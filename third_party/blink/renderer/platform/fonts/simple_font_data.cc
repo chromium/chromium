@@ -324,7 +324,9 @@ void SimpleFontData::ComputeNormalizedTypoAscentAndDescent() const {
                                            font_metrics.FloatDescent())) {
     return;
   }
-  NOTREACHED();
+
+  // We shouldn't be here unless the height is zero or lower.
+  DCHECK_LE(font_metrics.Height(), 0);
 }
 
 bool SimpleFontData::TrySetNormalizedTypoAscentAndDescent(float ascent,
