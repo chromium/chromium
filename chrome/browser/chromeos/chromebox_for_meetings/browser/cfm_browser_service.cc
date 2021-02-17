@@ -7,9 +7,12 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "chrome/browser/memory_details.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+
+#include "chrome/browser/chromeos/chromebox_for_meetings/browser/cfm_memory_details.h"
 
 namespace chromeos {
 namespace cfm {
@@ -79,6 +82,10 @@ void CfmBrowserService::GetVariationsData(GetVariationsDataCallback callback) {
   std::move(callback).Run(
       std::move(field_trial_parameters), std::move(field_trial_states),
       std::move(enabled_features), std::move(disabled_features));
+}
+
+void CfmBrowserService::GetMemoryDetails(GetMemoryDetailsCallback callback) {
+  CfmMemoryDetails::Collect(std::move(callback));
 }
 
 void CfmBrowserService::OnMojoDisconnect() {

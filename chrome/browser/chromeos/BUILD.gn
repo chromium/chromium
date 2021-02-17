@@ -3181,6 +3181,8 @@ source_set("chromeos") {
     sources += [
       "chromebox_for_meetings/browser/cfm_browser_service.cc",
       "chromebox_for_meetings/browser/cfm_browser_service.h",
+      "chromebox_for_meetings/browser/cfm_memory_details.cc",
+      "chromebox_for_meetings/browser/cfm_memory_details.h",
       "chromebox_for_meetings/cfm_chrome_services.cc",
       "chromebox_for_meetings/cfm_chrome_services.h",
       "chromebox_for_meetings/device_info/device_info_service.cc",

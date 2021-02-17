@@ -40,6 +40,7 @@ class CfmBrowserService : public CfmObserver,
 
   // mojom::CfmBrowser:
   void GetVariationsData(GetVariationsDataCallback callback) override;
+  void GetMemoryDetails(GetMemoryDetailsCallback callback) override;
 
   // Disconnect handler for |mojom::CfmBrowser|
   virtual void OnMojoDisconnect();
@@ -50,6 +51,10 @@ class CfmBrowserService : public CfmObserver,
 
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::CfmBrowser> receivers_;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<CfmBrowserService> weak_ptr_factory_{this};
 };
 
 }  // namespace cfm
