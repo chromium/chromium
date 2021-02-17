@@ -379,7 +379,7 @@
     },
     {
       name: "CompositeRelativeKeyframes",
-      status: "stable",
+      // Controlled by base::Feature::kCompositeRelativeKeyframes.
     },
     {
       name: "CompositeSVG",

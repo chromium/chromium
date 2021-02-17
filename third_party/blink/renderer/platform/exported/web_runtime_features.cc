@@ -76,6 +76,10 @@ void WebRuntimeFeatures::EnableCompositeBGColorAnimation(bool enable) {
   RuntimeEnabledFeatures::SetCompositeBGColorAnimationEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableCompositeRelativeKeyframes(bool enable) {
+  RuntimeEnabledFeatures::SetCompositeRelativeKeyframesEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebNfc(bool enable) {
   RuntimeEnabledFeatures::SetWebNFCEnabled(enable);
 }

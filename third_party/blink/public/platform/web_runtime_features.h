@@ -94,6 +94,8 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableClickPointerEvent(bool enable);
   BLINK_PLATFORM_EXPORT static void EnableCompositeBGColorAnimation(
       bool enable);
+  BLINK_PLATFORM_EXPORT static void EnableCompositeRelativeKeyframes(
+      bool enable);
   BLINK_PLATFORM_EXPORT static void EnableCookieDeprecationMessages(bool);
   BLINK_PLATFORM_EXPORT static void EnableCookiesWithoutSameSiteMustBeSecure(
       bool);
