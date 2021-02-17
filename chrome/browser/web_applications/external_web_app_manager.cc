@@ -208,6 +208,36 @@ base::Optional<std::string> GetDisableReason(
     }
   }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Remove if it's a default app and the apps to replace are not installed and
+  // default extension apps are not performing new installation.
+  if (options.gate_on_feature && !options.uninstall_and_replace.empty() &&
+      !extensions::DidDefaultAppsPerformNewInstallation(profile)) {
+    for (const AppId& app_id : options.uninstall_and_replace) {
+      // First time migration and the app to replace is uninstalled as it passed
+      // the last code block. Save the information that the app was
+      // uninstalled by user.
+      if (!WasMigrationRun(profile, *options.gate_on_feature)) {
+        if (extensions::IsDefaultAppId(app_id)) {
+          MarkDefaultAppAsUninstalled(profile, app_id);
+          return options.install_url.spec() +
+                 "disabled because it's default app and apps to replace were "
+                 "uninstalled.";
+        }
+      } else {
+        // Not first time migration, can't determine if the app to replace is
+        // uninstalled by user as the migration is already run, use the pref
+        // saved in first migration.
+        if (WasDefaultAppUninstalled(profile, app_id)) {
+          return options.install_url.spec() +
+                 "disabled because it's default app and apps to replace were "
+                 "uninstalled.";
+        }
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Remove if any apps to replace were previously uninstalled.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExternalExtensionUninstalled(profile, app_id)) {
@@ -236,6 +266,9 @@ void ExternalWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kWebAppsLastPreinstallSynchronizeVersion,
                                "");
+  registry->RegisterListPref(prefs::kWebAppsMigratedDefaultApps);
+  registry->RegisterListPref(prefs::kWebAppsDidMigrateDefaultChromeApps);
+  registry->RegisterListPref(prefs::kWebAppsUninstalledDefaultChromeApps);
 }
 
 void ExternalWebAppManager::SkipStartupForTesting() {
@@ -293,8 +326,14 @@ void ExternalWebAppManager::LoadAndSynchronizeForTesting(
 }
 
 void ExternalWebAppManager::LoadAndSynchronize(SynchronizeCallback callback) {
-  Load(base::BindOnce(&ExternalWebAppManager::Synchronize,
-                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  // Make sure ExtensionSystem is ready to know if default apps new installation
+  // will be performed.
+  extensions::OnExtensionSystemReady(
+      profile_,
+      base::BindOnce(
+          &ExternalWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&ExternalWebAppManager::Synchronize,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void ExternalWebAppManager::Load(ConsumeInstallOptions callback) {
@@ -427,15 +466,23 @@ void ExternalWebAppManager::Synchronize(
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(pending_app_manager_);
 
+  std::map<GURL, std::vector<AppId>> desired_uninstalls;
+  for (const auto& entry : desired_apps_install_options) {
+    if (!entry.uninstall_and_replace.empty())
+      desired_uninstalls.emplace(entry.install_url,
+                                 entry.uninstall_and_replace);
+  }
   pending_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
       base::BindOnce(&ExternalWebAppManager::OnExternalWebAppsSynchronized,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(desired_uninstalls)));
 }
 
 void ExternalWebAppManager::OnExternalWebAppsSynchronized(
     PendingAppManager::SynchronizeCallback callback,
+    std::map<GURL, std::vector<AppId>> desired_uninstalls,
     std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   // Note that we are storing the Chrome version (milestone number) instead of a
@@ -448,11 +495,24 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
   for (const auto& url_and_result : install_results) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramInstallResult,
                               url_and_result.second.code);
-    if (url_and_result.second.did_uninstall_and_replace)
+    if (url_and_result.second.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
+      auto iter = desired_uninstalls.find(url_and_result.first);
+      DCHECK(iter != desired_uninstalls.end());
+      for (const auto& uninstalled_id : iter->second) {
+        MarkAppAsMigratedToWebApp(profile_, uninstalled_id, true);
+      }
+    }
   }
   UMA_HISTOGRAM_COUNTS_100(kHistogramUninstallAndReplaceCount,
                            uninstall_and_replace_count);
+
+  SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
+                  IsExternalAppInstallFeatureEnabled(
+                      kMigrateDefaultChromeAppToWebAppsGSuite.name));
+  SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsNonGSuite.name,
+                  IsExternalAppInstallFeatureEnabled(
+                      kMigrateDefaultChromeAppToWebAppsNonGSuite.name));
 
   if (callback) {
     std::move(callback).Run(std::move(install_results),

@@ -3,10 +3,21 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/extension_status_utils.h"
+
+#include "base/one_shot_event.h"
+#include "chrome/browser/extensions/default_apps.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/constants.h"
+
+namespace {
+
+const char* g_default_app_for_testing = nullptr;
+
+}  // namespace
 
 namespace extensions {
 
@@ -40,6 +51,35 @@ bool IsExternalExtensionUninstalled(content::BrowserContext* context,
   auto* prefs = ExtensionPrefs::Get(context);
   // May be nullptr in unit tests.
   return prefs && prefs->IsExternalExtensionUninstalled(extension_id);
+}
+
+void OnExtensionSystemReady(content::BrowserContext* context,
+                            base::OnceClosure callback) {
+  ExtensionSystem::Get(context)->ready().Post(FROM_HERE, std::move(callback));
+}
+
+bool DidDefaultAppsPerformNewInstallation(Profile* profile) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  return default_apps::Provider::DidPerformNewInstallationForProfile(profile);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+bool IsDefaultAppId(const std::string& app_id) {
+  if (g_default_app_for_testing && app_id == g_default_app_for_testing)
+    return true;
+
+  return app_id == extension_misc::kGmailAppId ||
+         app_id == extension_misc::kGoogleDocAppId ||
+         app_id == extension_misc::kDriveHostedAppId ||
+         app_id == extension_misc::kGoogleSheetsAppId ||
+         app_id == extension_misc::kGoogleSlidesAppId ||
+         app_id == extension_misc::kYoutubeAppId;
+}
+
+void SetDefaultAppIdForTesting(const char* app_id) {
+  g_default_app_for_testing = app_id;
 }
 
 }  // namespace extensions

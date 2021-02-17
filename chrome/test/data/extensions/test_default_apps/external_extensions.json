@@ -1,0 +1,7 @@
+{
+  "kbmnembihfiondgfjekmnmcbddelicoi": {
+    "external_crx": "test.crx",
+    "external_version": "1.0.0.0",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsNonGSuite"
+  }
+}

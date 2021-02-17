@@ -17,6 +17,8 @@ class FilePath;
 class Value;
 }  // namespace base
 
+class Profile;
+
 namespace web_app {
 
 class FileUtilsWrapper;
@@ -46,6 +48,23 @@ bool IsReinstallPastMilestoneNeeded(
     base::StringPiece last_preinstall_synchronize_milestone_str,
     base::StringPiece current_milestone_str,
     int force_reinstall_for_milestone);
+
+// Returns and sets whether the app indicated by `app_id` was migrated to a
+// web app.
+bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id);
+void MarkAppAsMigratedToWebApp(Profile* profile,
+                               const std::string& app_id,
+                               bool was_migrated);
+
+// Returns and sets whether the app indicated by `app_id` was unisntalled
+bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id);
+void MarkDefaultAppAsUninstalled(Profile* profile, const std::string& app_id);
+
+// Returns and sets whether the migration was run for the feature.
+bool WasMigrationRun(Profile* profile, base::StringPiece feature_name);
+void SetMigrationRun(Profile* profile,
+                     base::StringPiece feature_name,
+                     bool was_migrated);
 
 }  // namespace web_app
 

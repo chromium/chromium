@@ -4706,6 +4706,10 @@ TEST_F(ExtensionServiceTest, DefaultAppsInstall) {
   InitializeEmptyExtensionService();
 
   {
+    // Initializing the ExtensionService will have set the default app
+    // state; reset it for the sake of testing.
+    profile()->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
+                                      default_apps::kUnknown);
     std::string json_data =
         "{"
         "  \"ldnnhddmnhbkjipkidpdiheffobcpfmf\" : {"

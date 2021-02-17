@@ -49,15 +49,30 @@ class Provider : public extensions::ExternalProviderImpl {
            extensions::Manifest::Location download_location,
            int creation_flags);
 
-  bool ShouldInstallInProfile();
-
   // ExternalProviderImpl overrides:
   void VisitRegisteredExtension() override;
   void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) override;
 
+  static bool DidPerformNewInstallationForProfile(Profile* profile);
+
+  // Exposed for testing.
+  bool default_apps_enabled() const { return default_apps_enabled_; }
+  bool is_migration() const { return is_migration_; }
+  bool perform_new_installation() const { return perform_new_installation_; }
+
  private:
-  Profile* profile_;
-  bool is_migration_;
+  // Initializes state for the Provider based on the profile.
+  void InitProfileState();
+
+  // The associated profile.
+  Profile* profile_ = nullptr;
+  // Whether default apps are enabled for the profile.
+  bool default_apps_enabled_ = false;
+  // Whether this is the first run since a migration from Chrome 22-ish.
+  bool is_migration_ = false;
+  // Whether this class should perform a new installation, such as for a
+  // new profile.
+  bool perform_new_installation_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Provider);
 };
