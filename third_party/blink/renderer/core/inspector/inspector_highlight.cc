@@ -716,7 +716,8 @@ bool IsLayoutNGFlexibleBox(const LayoutObject& layout_object) {
 }
 
 bool IsLayoutNGFlexItem(const LayoutObject& layout_object) {
-  return IsLayoutNGFlexibleBox(*layout_object.Parent()) &&
+  return !layout_object.GetNode()->IsDocumentNode() &&
+         IsLayoutNGFlexibleBox(*layout_object.Parent()) &&
          To<LayoutBox>(layout_object).IsFlexItemIncludingNG();
 }
 
