@@ -661,6 +661,9 @@ cr.define('device_page_tests', function() {
       let pointersPage;
 
       setup(function() {
+        // TODO(crbug.com/1114828): remove this flag setting once the flag has
+        // been removed and this suite merged with the PointingStick suite.
+        loadTimeData.overrideValues({separatePointingStickSettings: false});
         return showAndGetDeviceSubpage('pointers', settings.routes.POINTERS)
             .then(function(page) {
               pointersPage = page;
