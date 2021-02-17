@@ -2804,6 +2804,22 @@ const char kContextualSearchDefinitionsDescription[] =
     "Enables touch-activated contextual definitions of words on a page to be "
     "presented in the caption of the Touch to Search Bar.";
 
+const char kContextualSearchLiteralSearchTapName[] =
+    "Contextual Search literal search with tap";
+const char kContextualSearchLiteralSearchTapDescription[] =
+    "Enables Contextual Search to be activated with a single tap and produce "
+    "a literal search. This is intended to be used in conjunction with the "
+    "long-press resolve feature to allow both gestures to trigger a form of "
+    "Touch to Search.";
+
+const char kContextualSearchLongpressPanelHelpName[] =
+    "Contextual Search long-press In-Panel-Help";
+const char kContextualSearchLongpressPanelHelpDescription[] =
+    "Adds a help section that appears directly within the panel that promotes "
+    "using the longpress gesture instead of the tap gesture. This is intended "
+    "to be used in conjunction with the long-press resolve feature to help "
+    "users transition to the other gesture.";
+
 const char kContextualSearchLongpressResolveName[] =
     "Contextual Search long-press Resolves";
 const char kContextualSearchLongpressResolveDescription[] =

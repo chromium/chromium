@@ -44172,6 +44172,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:enabled"/>
   <int value="-1042579955" label="ChromeOSParentalControlsSettings:enabled"/>
   <int value="-1041650038" label="enable-forced-migration-to-tabbed-mode"/>
+  <int value="-1041150041" label="ContextualSearchLiteralSearchTap:disabled"/>
   <int value="-1040000888" label="ContextMenuSearchWithGoogleLens:disabled"/>
   <int value="-1039889738" label="NativeNotifications:enabled"/>
   <int value="-1039555838" label="GamepadExtensions:enabled"/>
@@ -46773,6 +46774,7 @@ from previous Chrome versions.
   <int value="1393722373" label="SaveEditedPDFForm:disabled"/>
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
   <int value="1394925480" label="SharesheetContentPreviews:enabled"/>
+  <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
   <int value="1398148960" label="LanguageSettingsUpdate:disabled"/>
