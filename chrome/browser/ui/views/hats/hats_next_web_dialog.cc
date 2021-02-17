@@ -33,6 +33,7 @@
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -42,6 +43,7 @@ constexpr gfx::Size HatsNextWebDialog::kMaxSize;
 // WebView which contains the WebContents displaying the HaTS Next survey.
 class HatsNextWebDialog::HatsWebView : public views::WebView {
  public:
+  METADATA_HEADER(HatsWebView);
   HatsWebView(content::BrowserContext* browser_context,
               Browser* browser,
               HatsNextWebDialog* dialog)
@@ -112,6 +114,9 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   HatsNextWebDialog* dialog_;
   Browser* browser_;
 };
+
+BEGIN_METADATA(HatsNextWebDialog, HatsWebView, views::WebView)
+END_METADATA
 
 HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
                                      const std::string& trigger_id,

@@ -7,18 +7,20 @@
 
 #include "base/macros.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class OmniboxPopupHandler;
 
 // A WebView to display suggestions in the Views autocomplete popup.
 class WebUIOmniboxPopupView : public views::WebView {
  public:
+  METADATA_HEADER(WebUIOmniboxPopupView);
   explicit WebUIOmniboxPopupView(content::BrowserContext* browser_context);
+  WebUIOmniboxPopupView(const WebUIOmniboxPopupView&) = delete;
+  WebUIOmniboxPopupView& operator=(const WebUIOmniboxPopupView&) = delete;
   ~WebUIOmniboxPopupView() override = default;
 
   OmniboxPopupHandler* GetWebUIHandler();
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIOmniboxPopupView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_WEBUI_OMNIBOX_POPUP_VIEW_H_

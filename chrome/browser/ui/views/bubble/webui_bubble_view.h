@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace content {
@@ -23,6 +24,7 @@ class BrowserContext;
 class WebUIBubbleView : public views::WebView,
                         public ui::MojoBubbleWebUIController::Embedder {
  public:
+  METADATA_HEADER(WebUIBubbleView);
   class Host {
    public:
     virtual void ShowUI() = 0;

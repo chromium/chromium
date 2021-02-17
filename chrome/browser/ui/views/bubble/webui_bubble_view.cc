@@ -7,6 +7,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -76,3 +77,6 @@ void WebUIBubbleView::CloseUI() {
   if (host_)
     host_->CloseUI();
 }
+
+BEGIN_METADATA(WebUIBubbleView, views::WebView)
+END_METADATA

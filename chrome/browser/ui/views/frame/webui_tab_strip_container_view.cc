@@ -73,6 +73,8 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -188,6 +190,7 @@ bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
 
 class WebUITabStripWebView : public views::WebView {
  public:
+  METADATA_HEADER(WebUITabStripWebView);
   explicit WebUITabStripWebView(content::BrowserContext* context)
       : views::WebView(context) {}
 
@@ -218,6 +221,9 @@ class WebUITabStripWebView : public views::WebView {
     return false;
   }
 };
+
+BEGIN_METADATA(WebUITabStripWebView, views::WebView)
+END_METADATA
 
 }  // namespace
 

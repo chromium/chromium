@@ -240,7 +240,7 @@ ExtensionDialog::ExtensionDialog(
   // |extension_view_|.
   DCHECK(extension_view_);
   extension_view_->SetPreferredSize(init_params.size);
-  extension_view_->set_minimum_size(init_params.min_size);
+  extension_view_->SetMinimumSize(init_params.min_size);
   extension_view_->SetVisible(true);
 
   // Ensure the DOM JavaScript can respond immediately to keyboard shortcuts.

@@ -18,6 +18,7 @@
 #include "extensions/common/view_type.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -68,6 +69,28 @@ void ExtensionViewViews::VisibilityChanged(View* starting_from,
   }
 }
 
+gfx::Size ExtensionViewViews::GetMinimumSize() const {
+  return minimum_size_.value_or(GetPreferredSize());
+}
+
+void ExtensionViewViews::SetMinimumSize(const gfx::Size& minimum_size) {
+  if (minimum_size_ && minimum_size_.value() == minimum_size)
+    return;
+  minimum_size_ = minimum_size;
+  OnPropertyChanged(&minimum_size_,
+                    views::kPropertyEffectsPreferredSizeChanged);
+}
+
+void ExtensionViewViews::SetContainer(
+    ExtensionViewViews::Container* container) {
+  container_ = container;
+  OnPropertyChanged(&container_, views::kPropertyEffectsPreferredSizeChanged);
+}
+
+ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {
+  return container_;
+}
+
 gfx::NativeView ExtensionViewViews::GetNativeView() {
   return holder()->native_view();
 }
@@ -113,10 +136,6 @@ gfx::NativeCursor ExtensionViewViews::GetCursor(const ui::MouseEvent& event) {
   return gfx::kNullCursor;
 }
 
-gfx::Size ExtensionViewViews::GetMinimumSize() const {
-  return minimum_size_.value_or(GetPreferredSize());
-}
-
 void ExtensionViewViews::PreferredSizeChanged() {
   View::PreferredSizeChanged();
   if (container_)
@@ -127,3 +146,8 @@ void ExtensionViewViews::OnWebContentsAttached() {
   host_->CreateRendererSoon();
   SetVisible(false);
 }
+
+BEGIN_METADATA(ExtensionViewViews, views::WebView)
+ADD_PROPERTY_METADATA(gfx::Size, MinimumSize)
+ADD_PROPERTY_METADATA(ExtensionViewViews::Container*, Container)
+END_METADATA

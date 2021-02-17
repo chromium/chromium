@@ -132,7 +132,8 @@ void ExtensionPopup::OnWindowActivated(
 #endif  // defined(USE_AURA)
 
 void ExtensionPopup::OnExtensionSizeChanged(ExtensionViewViews* view) {
-  SizeToContents();
+  if (GetWidget())
+    SizeToContents();
 }
 
 gfx::Size ExtensionPopup::GetMinBounds() {
@@ -235,7 +236,7 @@ ExtensionPopup::ExtensionPopup(
 
   extension_view_ =
       AddChildView(std::make_unique<ExtensionViewViews>(host_.get()));
-  extension_view_->set_container(this);
+  extension_view_->SetContainer(this);
   extension_view_->Init();
 
   // See comments in OnWidgetActivationChanged().
