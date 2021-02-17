@@ -75,13 +75,17 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
                   apps::MakeWindowInfo(display::kDefaultDisplayId));
     return;
   }
+
   // No FLH app installed, so try to launch Play Store to FLH app install page.
-  // If there is no Play Store available  LaunchPlayStoreWithUrl() will return
-  // false.
-  if (arc::LaunchPlayStoreWithUrl(
-          chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL)) {
+  if (registry.GetAppType(arc::kPlayStoreAppId) !=
+      apps::mojom::AppType::kUnknown) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE,
+        GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+        apps::mojom::LaunchSource::kFromChromeInternal);
     return;
   }
+
   // As a last resort, launch browser to the family link site.
   NavigateParams params(profile_, GURL(kFamilyLinkSiteURL),
                         ui::PAGE_TRANSITION_FROM_API);

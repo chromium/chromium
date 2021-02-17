@@ -11,6 +11,9 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -85,7 +88,14 @@ ArcAppReinstallAppResult::~ArcAppReinstallAppResult() = default;
 
 void ArcAppReinstallAppResult::Open(int /*event_flags*/) {
   RecordAction(base::UserMetricsAction("ArcAppReinstall_Clicked"));
-  arc::LaunchPlayStoreWithUrl(id());
+
+  DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      ProfileManager::GetPrimaryUserProfile()));
+  apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile())
+      ->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, GURL(id()),
+                         apps::mojom::LaunchSource::kFromChromeInternal);
+
   observer_->OnOpened(package_name_);
 }
 

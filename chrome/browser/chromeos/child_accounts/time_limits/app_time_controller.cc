@@ -14,6 +14,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_service_wrapper.h"
@@ -591,8 +593,12 @@ void AppTimeController::OpenFamilyLinkApp() {
   }
   // No Family Link Help app installed, so try to launch Play Store to Family
   // Link Help app install page.
-  arc::LaunchPlayStoreWithUrl(
-      chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL);
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+      arc::kPlayStoreAppId, ui::EF_NONE,
+      GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+      apps::mojom::LaunchSource::kFromChromeInternal);
 }
 
 void AppTimeController::ShowNotificationForApp(

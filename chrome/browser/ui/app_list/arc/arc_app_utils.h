@@ -116,9 +116,6 @@ bool LaunchAndroidSettingsApp(content::BrowserContext* context,
                               int event_flags,
                               int64_t display_id);
 
-// Launch Play Store app.
-bool LaunchPlayStoreWithUrl(const std::string& url);
-
 // Launches an ARC app.
 bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,

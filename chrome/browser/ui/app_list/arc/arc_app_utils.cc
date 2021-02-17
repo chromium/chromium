@@ -261,18 +261,6 @@ bool LaunchAndroidSettingsApp(content::BrowserContext* context,
       UserInteractionType::APP_STARTED_FROM_SETTINGS, display_id);
 }
 
-bool LaunchPlayStoreWithUrl(const std::string& url) {
-  arc::mojom::IntentHelperInstance* instance =
-      GET_INTENT_HELPER_INSTANCE(HandleUrl);
-  if (!instance) {
-    VLOG(1) << "Cannot find a mojo instance, ARC is unreachable or mojom"
-            << " version mismatch";
-    return false;
-  }
-  instance->HandleUrl(url, kPlayStorePackage);
-  return true;
-}
-
 bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
