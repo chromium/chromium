@@ -11,23 +11,27 @@
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 
 namespace base {
 
 namespace internal {
 
 void BackupRefPtrImpl::AcquireInternal(void* ptr) {
+  DCHECK(features::IsPartitionAllocGigaCageEnabled());
   void* slot_start = PartitionAllocGetSlotStart(ptr);
   PartitionRefCountPointer(slot_start)->Acquire();
 }
 
 void BackupRefPtrImpl::ReleaseInternal(void* ptr) {
+  DCHECK(features::IsPartitionAllocGigaCageEnabled());
   void* slot_start = PartitionAllocGetSlotStart(ptr);
   if (PartitionRefCountPointer(slot_start)->Release())
     PartitionAllocFreeForRefCounting(slot_start);
 }
 
 bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
+  DCHECK(features::IsPartitionAllocGigaCageEnabled());
   void* slot_start = PartitionAllocGetSlotStart(ptr);
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
