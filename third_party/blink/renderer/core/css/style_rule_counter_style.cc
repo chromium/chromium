@@ -65,50 +65,66 @@ bool StyleRuleCounterStyle::HasValidSymbols() const {
   }
 }
 
-bool StyleRuleCounterStyle::SetSystem(const CSSValue* system) {
-  CounterStyleSystem old_system =
-      CounterStyle::ToCounterStyleSystemEnum(system_);
-  CounterStyleSystem new_system =
-      CounterStyle::ToCounterStyleSystemEnum(system);
-
-  // If the attribute being set is system, and the new value would change the
-  // algorithm used, do nothing and abort these steps.
-  if (old_system != new_system)
-    return false;
-
-  // Except 'fixed' and 'extends', other systems have nothing to modify.
-  if (new_system != CounterStyleSystem::kFixed &&
-      new_system != CounterStyleSystem::kUnresolvedExtends)
-    return false;
-
-  system_ = system;
-  DCHECK(HasValidSymbols());
-
-  ++version_;
-  return true;
+Member<const CSSValue>& StyleRuleCounterStyle::GetDescriptorReference(
+    AtRuleDescriptorID descriptor_id) {
+  switch (descriptor_id) {
+    case AtRuleDescriptorID::System:
+      return system_;
+    case AtRuleDescriptorID::Negative:
+      return negative_;
+    case AtRuleDescriptorID::Prefix:
+      return prefix_;
+    case AtRuleDescriptorID::Suffix:
+      return suffix_;
+    case AtRuleDescriptorID::Range:
+      return range_;
+    case AtRuleDescriptorID::Pad:
+      return pad_;
+    case AtRuleDescriptorID::Fallback:
+      return fallback_;
+    case AtRuleDescriptorID::Symbols:
+      return symbols_;
+    case AtRuleDescriptorID::AdditiveSymbols:
+      return additive_symbols_;
+    case AtRuleDescriptorID::SpeakAs:
+      return speak_as_;
+    default:
+      NOTREACHED();
+      return speak_as_;
+  }
 }
 
-bool StyleRuleCounterStyle::SetSymbols(const CSSValue* symbols) {
-  const CSSValue* original_symbols = symbols_;
-  symbols_ = symbols;
-  if (!HasValidSymbols()) {
-    symbols_ = original_symbols;
+bool StyleRuleCounterStyle::NewValueInvalidOrEqual(
+    AtRuleDescriptorID descriptor_id,
+    const CSSValue* new_value) {
+  Member<const CSSValue>& original_value =
+      GetDescriptorReference(descriptor_id);
+  if (DataEquivalent(original_value.Get(), new_value))
     return false;
+
+  switch (descriptor_id) {
+    case AtRuleDescriptorID::System:
+      // If the attribute being set is system, and the new value would change
+      // the algorithm used, do nothing and abort these steps.
+      return CounterStyle::ToCounterStyleSystemEnum(system_) ==
+             CounterStyle::ToCounterStyleSystemEnum(new_value);
+    case AtRuleDescriptorID::Symbols:
+    case AtRuleDescriptorID::AdditiveSymbols: {
+      // If the returned value would cause the @counter-style rule to become
+      // invalid, do nothing and abort these steps.
+      base::AutoReset<Member<const CSSValue>> auto_reset(&original_value,
+                                                         new_value);
+      return HasValidSymbols();
+    }
+    default:
+      return true;
   }
-  ++version_;
-  return true;
 }
 
-bool StyleRuleCounterStyle::SetAdditiveSymbols(
-    const CSSValue* additive_symbols) {
-  const CSSValue* original_additive_symbols = additive_symbols_;
-  additive_symbols_ = additive_symbols;
-  if (!HasValidSymbols()) {
-    additive_symbols_ = original_additive_symbols;
-    return false;
-  }
+void StyleRuleCounterStyle::SetDescriptorValue(AtRuleDescriptorID descriptor_id,
+                                               const CSSValue* new_value) {
+  GetDescriptorReference(descriptor_id) = new_value;
   ++version_;
-  return true;
 }
 
 void StyleRuleCounterStyle::TraceAfterDispatch(blink::Visitor* visitor) const {

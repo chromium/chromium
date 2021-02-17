@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_COUNTER_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_COUNTER_STYLE_H_
 
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
@@ -34,49 +35,13 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   const CSSValue* GetAdditiveSymbols() const { return additive_symbols_; }
   const CSSValue* GetSpeakAs() const { return speak_as_; }
 
+  // Returns false if the new value is invalid or equivalent to the old value.
+  bool NewValueInvalidOrEqual(AtRuleDescriptorID, const CSSValue*);
+  void SetDescriptorValue(AtRuleDescriptorID, const CSSValue*);
+
   void SetName(const AtomicString& name) {
     name_ = name;
     ++version_;
-  }
-
-  // Returns false if the setter fails due to invalid new value.
-  bool SetSystem(const CSSValue* system);
-  bool SetNegative(const CSSValue* negative) {
-    negative_ = negative;
-    ++version_;
-    return true;
-  }
-  bool SetPrefix(const CSSValue* prefix) {
-    prefix_ = prefix;
-    ++version_;
-    return true;
-  }
-  bool SetSuffix(const CSSValue* suffix) {
-    suffix_ = suffix;
-    ++version_;
-    return true;
-  }
-  bool SetRange(const CSSValue* range) {
-    range_ = range;
-    ++version_;
-    return true;
-  }
-  bool SetPad(const CSSValue* pad) {
-    pad_ = pad;
-    ++version_;
-    return true;
-  }
-  bool SetFallback(const CSSValue* fallback) {
-    fallback_ = fallback;
-    ++version_;
-    return true;
-  }
-  bool SetSymbols(const CSSValue* symbols);
-  bool SetAdditiveSymbols(const CSSValue* additive_symbols);
-  bool SetSpeakAs(const CSSValue* speak_as) {
-    speak_as_ = speak_as;
-    ++version_;
-    return true;
   }
 
   bool HasFailedOrCanceledSubresources() const {
@@ -91,6 +56,8 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  Member<const CSSValue>& GetDescriptorReference(AtRuleDescriptorID);
+
   AtomicString name_;
   Member<const CSSValue> system_;
   Member<const CSSValue> negative_;

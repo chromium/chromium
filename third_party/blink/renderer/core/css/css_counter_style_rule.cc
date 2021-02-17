@@ -184,55 +184,16 @@ void CSSCounterStyleRule::SetterInternal(
   CSSParserTokenRange token_range(tokens);
   CSSValue* new_value = AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
       descriptor_id, token_range, context);
-  if (!new_value)
+  if (!new_value ||
+      !counter_style_rule_->NewValueInvalidOrEqual(descriptor_id, new_value))
     return;
 
-  switch (descriptor_id) {
-    case AtRuleDescriptorID::System:
-      if (!counter_style_rule_->SetSystem(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Negative:
-      if (!counter_style_rule_->SetNegative(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Prefix:
-      if (!counter_style_rule_->SetPrefix(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Suffix:
-      if (!counter_style_rule_->SetSuffix(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Range:
-      if (!counter_style_rule_->SetRange(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Pad:
-      if (!counter_style_rule_->SetPad(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Fallback:
-      if (!counter_style_rule_->SetFallback(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::Symbols:
-      if (!counter_style_rule_->SetSymbols(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::AdditiveSymbols:
-      if (!counter_style_rule_->SetAdditiveSymbols(new_value))
-        return;
-      break;
-    case AtRuleDescriptorID::SpeakAs:
-      if (!counter_style_rule_->SetSpeakAs(new_value))
-        return;
-      break;
-    default:
-      NOTREACHED();
-      return;
-  }
+  // TODO(xiaochengh): RuleMutationScope causes all rules of the tree scope to
+  // be re-collected and the entire CounterStyleMap rebuilt, while we only need
+  // to dirty one CounterStyle. Try to improve.
+  CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
 
+  counter_style_rule_->SetDescriptorValue(descriptor_id, new_value);
   if (Document* document = style_sheet->OwnerDocument())
     document->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
