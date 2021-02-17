@@ -97,7 +97,7 @@ void SavePasswordMessageDelegate::CreateMessage(
   base::string16 description;
   if (account_info.has_value()) {
     description = l10n_util::GetStringFUTF16(
-        IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
+        IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT,
         pending_credentials.username_value, masked_password,
         base::UTF8ToUTF16(account_info.value().email));
   } else {
