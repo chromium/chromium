@@ -410,19 +410,6 @@ void DesktopMediaPickerDialogView::AcceptSpecificSource(DesktopMediaID source) {
   AcceptSource();
 }
 
-void DesktopMediaPickerDialogView::SelectTab(
-    content::DesktopMediaID::Type source_type) {
-  if (!tabbed_pane_)
-    return;
-
-  for (size_t i = 0; i < source_types_.size(); i++) {
-    if (source_types_[i] == source_type) {
-      tabbed_pane_->SelectTabAt(i);
-      return;
-    }
-  }
-}
-
 void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   PreferredSizeChanged();
   // TODO(pbos): Ideally this would use shared logic similar to

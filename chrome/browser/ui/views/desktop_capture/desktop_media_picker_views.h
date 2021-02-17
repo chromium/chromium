@@ -44,7 +44,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void AcceptSource();
   void AcceptSpecificSource(content::DesktopMediaID source);
   void OnSourceListLayoutChanged();
-  void SelectTab(content::DesktopMediaID::Type source_type);
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
