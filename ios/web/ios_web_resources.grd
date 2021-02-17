@@ -9,7 +9,7 @@
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_IOS_MOJO_BINDINGS_JS" file="${root_gen_dir}/mojo/public/js/mojo_bindings.js" flattenhtml="true" type="BINDATA" use_base_dir="false" />
+      <include name="IDR_IOS_MOJO_BINDINGS_JS" file="${root_gen_dir}/mojo/public/js/mojo_bindings.js" type="BINDATA" use_base_dir="false" />
     </includes>
   </release>
 </grit>

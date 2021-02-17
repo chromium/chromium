@@ -8,11 +8,11 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_MOJO_TEST_HTML" file="data/mojo_test.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MOJO_TEST_JS" file="data/mojo_test.js" type="BINDATA" compress="gzip" />
-      <include name="IDR_MOJO_TEST_MOJO_JS" file="${root_gen_dir}/ios/web/test/mojo_test.mojom.js" use_base_dir="false" type="BINDATA" compress="gzip" />
-      <include name="IDR_WEBUI_TEST_HTML" file="data/webui_test.html" flattenhtml="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_WEBUI_TEST_HTML_2" file="data/webui_test_2.html" flattenhtml="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_MOJO_TEST_HTML" file="data/mojo_test.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_MOJO_TEST_JS" file="data/mojo_test.js" type="BINDATA" />
+      <include name="IDR_MOJO_TEST_MOJO_JS" file="${root_gen_dir}/ios/web/test/mojo_test.mojom.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_WEBUI_TEST_HTML" file="data/webui_test.html" type="BINDATA" />
+      <include name="IDR_WEBUI_TEST_HTML_2" file="data/webui_test_2.html" type="BINDATA" />
     </includes>
   </release>
 </grit>
