@@ -61,6 +61,8 @@ struct ShortcutInfo {
   // This enum is used to back a UMA histogram, and must be treated as
   // append-only.
   // A Java counterpart will be generated for this enum.
+  // Some enum values are duplicated in
+  // org.chromium.webapk.lib.common.WebApkConstants.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ShortcutSource
   enum Source {
