@@ -272,4 +272,55 @@ id<GREYMatcher> NoBookmarksLabel() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+// Tests to sign out with a non managed account without syncing.
+// TODO(crbug.com/1166148) This test needs to be moved back into
+// accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
+- (void)testSignOutWithNonManagedAccountFromNoneSyncingAccount {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  // Add a bookmark.
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Sign out.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Assert that the no bookmarks label is not present.
+  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests to sign out with a managed account without syncing.
+// TODO(crbug.com/1166148) This test needs to be moved back into
+// accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
+- (void)testSignOutWithManagedAccountFromNoneSyncingAccount {
+  // Sign In |fakeManagedIdentity|.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Sign out.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Assert that the no bookmarks label is not present.
+  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
+      assertWithMatcher:grey_nil()];
+}
+
 @end
