@@ -384,7 +384,8 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   computeDialogSaveDisabled_() {
-    return !this.dialogTileUrl_ || normalizeUrl(this.dialogTileUrl_) === null ||
+    return !this.dialogTileUrl_.trim() ||
+        normalizeUrl(this.dialogTileUrl_) === null ||
         this.dialogShortcutAlreadyExists_;
   }
 

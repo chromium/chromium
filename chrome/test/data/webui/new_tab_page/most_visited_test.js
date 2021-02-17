@@ -367,6 +367,12 @@ suite('NewTabPageMostVisitedTest', () => {
 
       inputUrl.value = '';
       assertTrue(saveButton.disabled);
+
+      inputUrl.value = 'url';
+      assertFalse(saveButton.disabled);
+
+      inputUrl.value = '                                \n\n\n        ';
+      assertTrue(saveButton.disabled);
     });
 
     test('cancel closes dialog', () => {
