@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #define DAWN_OBJECTS                          \
   X(BindGroup, bindGroup)                     \
@@ -82,8 +83,13 @@ class DawnObjectBase {
   // Flush commands up until now on this object's parent device immediately.
   void FlushNow();
 
+  // GPUObjectBase mixin implementation
+  const String& label() const { return label_; }
+  void setLabel(const String& value);
+
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  String label_;
 };
 
 class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {

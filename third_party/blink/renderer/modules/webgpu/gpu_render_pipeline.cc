@@ -280,9 +280,11 @@ GPURenderPipeline* GPURenderPipeline::Create(
     return nullptr;
   }
 
-  return MakeGarbageCollected<GPURenderPipeline>(
+  GPURenderPipeline* pipeline = MakeGarbageCollected<GPURenderPipeline>(
       device, device->GetProcs().deviceCreateRenderPipeline(
                   device->GetHandle(), &dawn_desc_info.dawn_desc));
+  pipeline->setLabel(webgpu_desc->label());
+  return pipeline;
 }
 
 GPURenderPipeline::GPURenderPipeline(GPUDevice* device,

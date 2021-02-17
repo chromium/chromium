@@ -49,9 +49,11 @@ GPUComputePipeline* GPUComputePipeline::Create(
   WGPUComputePipelineDescriptor dawn_desc =
       AsDawnType(webgpu_desc, &label, &computeStageDescriptor);
 
-  return MakeGarbageCollected<GPUComputePipeline>(
+  GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetProcs().deviceCreateComputePipeline(
                   device->GetHandle(), &dawn_desc));
+  pipeline->setLabel(webgpu_desc->label());
+  return pipeline;
 }
 
 GPUComputePipeline::GPUComputePipeline(GPUDevice* device,

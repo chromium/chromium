@@ -156,9 +156,11 @@ GPUCommandEncoder* GPUCommandEncoder::Create(
     dawn_desc_ptr = &dawn_desc;
   }
 
-  return MakeGarbageCollected<GPUCommandEncoder>(
+  GPUCommandEncoder* encoder = MakeGarbageCollected<GPUCommandEncoder>(
       device, device->GetProcs().deviceCreateCommandEncoder(device->GetHandle(),
                                                             dawn_desc_ptr));
+  encoder->setLabel(webgpu_desc->label());
+  return encoder;
 }
 
 GPUCommandEncoder::GPUCommandEncoder(GPUDevice* device,
@@ -211,9 +213,11 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.depthStencilAttachment = nullptr;
   }
 
-  return MakeGarbageCollected<GPURenderPassEncoder>(
+  GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
       device_,
       GetProcs().commandEncoderBeginRenderPass(GetHandle(), &dawn_desc));
+  encoder->setLabel(descriptor->label());
+  return encoder;
 }
 
 GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
@@ -225,9 +229,11 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUComputePassEncoder>(
+  GPUComputePassEncoder* encoder = MakeGarbageCollected<GPUComputePassEncoder>(
       device_,
       GetProcs().commandEncoderBeginComputePass(GetHandle(), &dawn_desc));
+  encoder->setLabel(descriptor->label());
+  return encoder;
 }
 
 void GPUCommandEncoder::copyBufferToBuffer(GPUBuffer* src,

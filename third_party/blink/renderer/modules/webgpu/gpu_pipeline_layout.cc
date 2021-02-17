@@ -35,9 +35,11 @@ GPUPipelineLayout* GPUPipelineLayout::Create(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUPipelineLayout>(
+  GPUPipelineLayout* layout = MakeGarbageCollected<GPUPipelineLayout>(
       device, device->GetProcs().deviceCreatePipelineLayout(device->GetHandle(),
                                                             &dawn_desc));
+  layout->setLabel(webgpu_desc->label());
+  return layout;
 }
 
 GPUPipelineLayout::GPUPipelineLayout(GPUDevice* device,

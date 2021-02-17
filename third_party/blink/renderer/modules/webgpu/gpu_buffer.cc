@@ -68,9 +68,11 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
     dawn_desc.size = std::min(dawn_desc.size, kGuaranteedBufferOOMSize);
   }
 
-  return MakeGarbageCollected<GPUBuffer>(
+  GPUBuffer* buffer = MakeGarbageCollected<GPUBuffer>(
       device, dawn_desc.size,
       device->GetProcs().deviceCreateBuffer(device->GetHandle(), &dawn_desc));
+  buffer->setLabel(webgpu_desc->label());
+  return buffer;
 }
 
 GPUBuffer::GPUBuffer(GPUDevice* device,

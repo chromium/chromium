@@ -81,6 +81,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
   GetProcs().deviceSetDeviceLostCallback(GetHandle(),
                                          lost_callback_->UnboundCallback(),
                                          lost_callback_->AsUserdata());
+
+  setLabel(descriptor->label());
 }
 
 void GPUDevice::InjectError(WGPUErrorType type, const char* message) {

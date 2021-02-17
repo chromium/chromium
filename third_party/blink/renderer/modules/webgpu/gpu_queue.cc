@@ -161,8 +161,10 @@ GPUFence* GPUQueue::createFence(const GPUFenceDescriptor* descriptor) {
     desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUFence>(
+  GPUFence* fence = MakeGarbageCollected<GPUFence>(
       device_, GetProcs().queueCreateFence(GetHandle(), &desc));
+  fence->setLabel(descriptor->label());
+  return fence;
 }
 
 void GPUQueue::writeBuffer(GPUBuffer* buffer,

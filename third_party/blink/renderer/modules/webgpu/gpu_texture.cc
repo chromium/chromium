@@ -100,10 +100,12 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   std::string label;
   WGPUTextureDescriptor dawn_desc = AsDawnType(webgpu_desc, &label, device);
 
-  return MakeGarbageCollected<GPUTexture>(
+  GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
       device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
       dawn_desc.format);
+  texture->setLabel(webgpu_desc->label());
+  return texture;
 }
 
 // static
@@ -215,8 +217,10 @@ GPUTextureView* GPUTexture::createView(
 
   std::string label;
   WGPUTextureViewDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
-  return MakeGarbageCollected<GPUTextureView>(
+  GPUTextureView* view = MakeGarbageCollected<GPUTextureView>(
       device_, GetProcs().textureCreateView(GetHandle(), &dawn_desc));
+  view->setLabel(webgpu_desc->label());
+  return view;
 }
 
 void GPUTexture::destroy() {

@@ -16,3 +16,4 @@
     [CallWith=ScriptState] void unmap();
     [CallWith=ScriptState] void destroy();
 };
+GPUBuffer includes GPUObjectBase;

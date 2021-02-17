@@ -41,6 +41,7 @@
 
     attribute EventHandler onuncapturederror;
 };
+GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
     "none",

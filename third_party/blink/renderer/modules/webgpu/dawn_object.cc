@@ -27,6 +27,11 @@ const DawnProcTable& DawnObjectBase::GetProcs() const {
   return dawn_control_client_->GetProcs();
 }
 
+void DawnObjectBase::setLabel(const String& value) {
+  // TODO: Relay label changes to Dawn
+  label_ = value;
+}
+
 void DawnObjectBase::EnsureFlush() {
   bool needs_flush = false;
   GetInterface()->EnsureAwaitingFlush(&needs_flush);

@@ -9,3 +9,4 @@
 ] interface GPUComputePipeline {
     GPUBindGroupLayout getBindGroupLayout(GPUIndex32 index);
 };
+GPUComputePipeline includes GPUObjectBase;

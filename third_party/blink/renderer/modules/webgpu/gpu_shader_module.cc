@@ -55,9 +55,11 @@ GPUShaderModule* GPUShaderModule::Create(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUShaderModule>(
+  GPUShaderModule* shader = MakeGarbageCollected<GPUShaderModule>(
       device, device->GetProcs().deviceCreateShaderModule(device->GetHandle(),
                                                           &dawn_desc));
+  shader->setLabel(webgpu_desc->label());
+  return shader;
 }
 
 GPUShaderModule::GPUShaderModule(GPUDevice* device,

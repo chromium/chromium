@@ -9,3 +9,4 @@
 ] interface GPURenderPipeline {
     GPUBindGroupLayout getBindGroupLayout(GPUIndex32 index);
 };
+GPURenderPipeline includes GPUObjectBase;

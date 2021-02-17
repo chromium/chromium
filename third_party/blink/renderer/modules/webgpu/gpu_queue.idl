@@ -44,3 +44,4 @@
         GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 };
+GPUQueue includes GPUObjectBase;

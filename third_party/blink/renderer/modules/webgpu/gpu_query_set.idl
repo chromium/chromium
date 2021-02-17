@@ -9,3 +9,4 @@
 ] interface GPUQuerySet {
     void destroy();
 };
+GPUQuerySet includes GPUObjectBase;

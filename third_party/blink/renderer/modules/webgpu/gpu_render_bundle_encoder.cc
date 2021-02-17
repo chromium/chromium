@@ -44,9 +44,12 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPURenderBundleEncoder>(
-      device, device->GetProcs().deviceCreateRenderBundleEncoder(
-                  device->GetHandle(), &dawn_desc));
+  GPURenderBundleEncoder* encoder =
+      MakeGarbageCollected<GPURenderBundleEncoder>(
+          device, device->GetProcs().deviceCreateRenderBundleEncoder(
+                      device->GetHandle(), &dawn_desc));
+  encoder->setLabel(webgpu_desc->label());
+  return encoder;
 }
 
 GPURenderBundleEncoder::GPURenderBundleEncoder(

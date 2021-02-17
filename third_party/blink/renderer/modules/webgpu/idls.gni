@@ -93,6 +93,7 @@ modules_dictionary_idl_files = [
 ]
 
 modules_dependency_idl_files = [
+  "gpu_object_base.idl",
   "gpu_programmable_pass_encoder.idl",
   "gpu_render_encoder_base.idl",
   "navigator_gpu.idl",

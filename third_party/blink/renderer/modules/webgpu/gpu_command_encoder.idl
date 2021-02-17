@@ -47,3 +47,4 @@
 
     GPUCommandBuffer finish(optional GPUCommandBufferDescriptor descriptor = {});
 };
+GPUCommandEncoder includes GPUObjectBase;

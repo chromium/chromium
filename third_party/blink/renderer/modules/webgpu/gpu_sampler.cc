@@ -52,9 +52,11 @@ GPUSampler* GPUSampler::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
   std::string label;
   WGPUSamplerDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
-  return MakeGarbageCollected<GPUSampler>(
+  GPUSampler* sampler = MakeGarbageCollected<GPUSampler>(
       device,
       device->GetProcs().deviceCreateSampler(device->GetHandle(), &dawn_desc));
+  sampler->setLabel(webgpu_desc->label());
+  return sampler;
 }
 
 GPUSampler::GPUSampler(GPUDevice* device, WGPUSampler sampler)

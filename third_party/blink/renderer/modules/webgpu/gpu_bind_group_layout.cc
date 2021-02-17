@@ -125,9 +125,11 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUBindGroupLayout>(
+  GPUBindGroupLayout* layout = MakeGarbageCollected<GPUBindGroupLayout>(
       device, device->GetProcs().deviceCreateBindGroupLayout(
                   device->GetHandle(), &dawn_desc));
+  layout->setLabel(webgpu_desc->label());
+  return layout;
 }
 
 GPUBindGroupLayout::GPUBindGroupLayout(GPUDevice* device,
