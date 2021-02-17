@@ -261,7 +261,6 @@ bool FillStateSelectControl(const base::string16& value,
         AlternativeStateNameMap::GetInstance()->GetEntry(
             AlternativeStateNameMap::CountryCode(country_code),
             AlternativeStateNameMap::StateName(value));
-    full_names.push_back(value);
     if (state_entry) {
       for (const auto& abbr : state_entry->abbreviations())
         abbreviations.push_back(base::UTF8ToUTF16(abbr));
@@ -269,6 +268,8 @@ bool FillStateSelectControl(const base::string16& value,
         full_names.push_back(base::UTF8ToUTF16(state_entry->canonical_name()));
       for (const auto& alternative_name : state_entry->alternative_names())
         full_names.push_back(base::UTF8ToUTF16(alternative_name));
+    } else {
+      full_names.push_back(value);
     }
   } else {
     base::string16 full;

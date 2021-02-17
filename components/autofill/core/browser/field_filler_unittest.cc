@@ -1719,4 +1719,32 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
   EXPECT_EQ(ASCIIToUTF16("Bavari"), field.value);
 }
 
+// Tests that Autofill does not wrongly fill the state when the appropriate
+// state is not in the list of selection options given that the abbreviation is
+// saved in the profile.
+TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting(
+      "US", "Colorado",
+      {{.canonical_name = "Colorado",
+        .abbreviations = {"CO"},
+        .alternative_names = {}}});
+  std::vector<const char*> kState = {"Connecticut", "California"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CO"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16(""), field.value);
+}
+
 }  // namespace autofill
