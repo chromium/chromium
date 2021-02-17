@@ -328,7 +328,7 @@ const base::Feature kOmniboxPedalSuggestions{"OmniboxPedalSuggestions",
 
 // Feature used to enable the keyword search button.
 const base::Feature kOmniboxKeywordSearchButton{
-    "OmniboxKeywordSearchButton", enabled_by_default_desktop_only};
+    "OmniboxKeywordSearchButton", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables new UI changes indicating focus and hover states.
 const base::Feature kOmniboxRefinedFocusState{
