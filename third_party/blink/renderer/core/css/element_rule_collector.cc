@@ -208,7 +208,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
       auto* evaluator = style_recalc_context_.cq_evaluator;
 
-      if (!evaluator || !evaluator->Eval(*container_query)) {
+      if (!evaluator || !evaluator->EvalAndAdd(*container_query)) {
         rejected++;
         continue;
       }

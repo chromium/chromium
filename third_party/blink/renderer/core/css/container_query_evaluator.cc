@@ -30,21 +30,31 @@ bool ContainerQueryEvaluator::Eval(
   return media_query_evaluator_->Eval(*container_query.media_queries_);
 }
 
+void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
+  results_.Set(&query, result);
+}
+
 bool ContainerQueryEvaluator::ContainerChanged(PhysicalSize size,
                                                PhysicalAxes contained_axes) {
   if (size_ == size && contained_axes_ == contained_axes)
     return false;
 
-  // TODO(crbug.com/1145970): Keep a list of dependent queries, actually
-  // evaluate them against the new size, and see if the new size makes an
-  // actual difference.
   SetData(size, contained_axes);
+
+  if (!ResultsChanged())
+    return false;
+
+  // We can clear the results here because we will always recaculate the style
+  // of all descendants which depend on this evaluator whenever we return
+  // 'true' from this function, so the results will always be repopulated.
+  results_.clear();
 
   return true;
 }
 
 void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_evaluator_);
+  visitor->Trace(results_);
 }
 
 void ContainerQueryEvaluator::SetData(PhysicalSize size,
@@ -56,6 +66,14 @@ void ContainerQueryEvaluator::SetData(PhysicalSize size,
   cached_values->OverrideViewportDimensions(size_.width, size_.height);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(*cached_values);
+}
+
+bool ContainerQueryEvaluator::ResultsChanged() const {
+  for (const auto& result : results_) {
+    if (Eval(*result.key) != result.value)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace blink
