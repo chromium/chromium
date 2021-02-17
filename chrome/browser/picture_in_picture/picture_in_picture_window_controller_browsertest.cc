@@ -2088,22 +2088,22 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Play/Pause button in the Picture-in-Picture window
 // calls the Media Session actions "play" and "pause" handler functions.
-// TODO(https://crbug.com/1178749) flaky test
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_PlayPauseHandlersCalled) {
+                       PlayPauseHandlersCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
-  ASSERT_TRUE(result);
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('play');"));
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('pause');"));
-  base::RunLoop().RunUntilIdle();
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      active_web_contents, "ensureVideoIsPlaying();", &result));
+  ASSERT_TRUE(result);
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPlaying);
 
   // Simulates user clicking "Play/Pause" and check that the "pause" handler
   // function is called.
@@ -2114,6 +2114,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
                 .WaitAndGetTitle());
 
   EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.pause();"));
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPaused);
 
   // Simulates user clicking "Play/Pause" and check that the "play" handler
   // function is called.
