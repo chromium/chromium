@@ -813,7 +813,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)setDiscoverFeed:(UIViewController*)discoverFeed {
-  DCHECK(_discoverFeed != discoverFeed);
   _discoverFeed = discoverFeed;
   _discoverItem.discoverFeed = _discoverFeed;
   // The UICollectionView -reloadData method is a no-op if it is called at the
