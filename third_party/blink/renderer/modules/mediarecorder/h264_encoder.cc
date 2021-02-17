@@ -55,9 +55,12 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
     base::TimeTicks capture_timestamp) {
   TRACE_EVENT0("media", "H264Encoder::EncodeOnEncodingTaskRunner");
   DCHECK(encoding_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_NV12 ||
+         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420);
 
-  if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+  if (frame->format() == media::PIXEL_FORMAT_NV12)
     frame = ConvertToI420ForSoftwareEncoder(frame);
+  DCHECK(frame->IsMappable());
 
   const gfx::Size frame_size = frame->visible_rect().size();
   if (!openh264_encoder_ || configured_size_ != frame_size) {
