@@ -55,6 +55,14 @@ interface SSLPrivateKey {
        array<uint8> input) => (int32 net_error, array<uint8> signature);
 };
 
+// The |credentials| output parameter is given to URLRequest::SetAuth()
+// through this mojo interface. It is not set when URLRequest::CancelAuth()
+// needs to be called.
+interface AuthChallengeResponder {
+   // Called in response to an authentication request. See
+   // AuthenticationAndCertificateObserver::OnAuthRequired.
+   OnAuthCredentials(AuthCredentials? credentials);
+};
 
 // This interface is used by an URLLoaderFactory to provide notification
 // of authentication and certificate events. This is typically implemented
@@ -85,6 +93,25 @@ interface AuthenticationAndCertificateObserver {
       network.mojom.SSLCertRequestInfo cert_info,
       pending_remote<ClientCertificateResponder> cert_responder);
 
+  // Called when we receive an authentication failure.
+  // The |auth_challenge_responder| will respond to auth challenge with
+  // credentials. |head_headers| can provide response headers for the response
+  // which has elicited this auth request, if applicable.
+  //
+  // |window_id| indicates the frame making the request, see
+  // network::ResourceRequest::fetch_window_id. This parameter is only set
+  // when the request is from a service worker to identify the origin window.
+  // The is not needed for frame based requests because they have their own
+  // URLLoaderFactory and a unique AuthenticationAndCertificateObserver for each
+  // frame.
+  OnAuthRequired(
+      mojo_base.mojom.UnguessableToken? window_id,
+      uint32 request_id,
+      url.mojom.Url url,
+      bool first_auth_attempt,
+      AuthChallengeInfo auth_info,
+      HttpResponseHeaders? head_headers,
+      pending_remote<AuthChallengeResponder> auth_challenge_responder);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

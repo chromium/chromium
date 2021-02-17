@@ -713,38 +713,12 @@ struct URLLoaderFactoryParams {
   string debug_tag = "";
 };
 
-// The |credentials| output parameter is given to URLRequest::SetAuth()
-// through this mojo interface. It is not set when URLRequest::CancelAuth()
-// needs to be called.
-interface AuthChallengeResponder {
-   OnAuthCredentials(AuthCredentials? credentials);
-};
-
 // Callback interface for NetworkContext when routing identifiers aren't
 // available. Otherwise generally callbacks from the network service go on
 // NetworkServiceClient.
 //
 // Implemented by the browser process.
 interface NetworkContextClient {
-  // Called when we receive an authentication failure.
-  // The |auth_challenge_responder| will respond to auth challenge with
-  // credentials. |head| can provide response headers for the response
-  // which has elicited this auth request, if applicable.
-  //
-  // |window_id| or else |process_id| and |routing_id| indicates
-  // the frame making the request, see
-  // network::ResourceRequest::fetch_window_id.
-  OnAuthRequired(
-      mojo_base.mojom.UnguessableToken? window_id,
-      int32 process_id,
-      int32 routing_id,
-      uint32 request_id,
-      url.mojom.Url url,
-      bool first_auth_attempt,
-      AuthChallengeInfo auth_info,
-      URLResponseHead? head,
-      pending_remote<AuthChallengeResponder> auth_challenge_responder);
-
   // Called when file uploading was requested.
   // If the process that requested the uploads has permission to read all of
   // the files referenced by |file_paths|, the callback arguments will be

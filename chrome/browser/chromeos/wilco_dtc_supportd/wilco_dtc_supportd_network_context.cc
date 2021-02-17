@@ -95,6 +95,20 @@ void WilcoDtcSupportdNetworkContextImpl::OnCertificateRequested(
   cert_responder->ContinueWithoutCertificate();
 }
 
+void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
+    const base::Optional<base::UnguessableToken>& window_id,
+    uint32_t request_id,
+    const GURL& url,
+    bool first_auth_attempt,
+    const net::AuthChallengeInfo& auth_info,
+    const scoped_refptr<net::HttpResponseHeaders>& head_headers,
+    mojo::PendingRemote<network::mojom::AuthChallengeResponder>
+        auth_challenge_responder) {
+  mojo::Remote<network::mojom::AuthChallengeResponder>
+      auth_challenge_responder_remote(std::move(auth_challenge_responder));
+  auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
+}
+
 void WilcoDtcSupportdNetworkContextImpl::Clone(
     mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
         observer) {

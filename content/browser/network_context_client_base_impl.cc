@@ -82,22 +82,6 @@ void NetworkContextOnFileUploadRequested(
 NetworkContextClientBase::NetworkContextClientBase() = default;
 NetworkContextClientBase::~NetworkContextClientBase() = default;
 
-void NetworkContextClientBase::OnAuthRequired(
-    const base::Optional<base::UnguessableToken>& window_id,
-    int32_t process_id,
-    int32_t routing_id,
-    uint32_t request_id,
-    const GURL& url,
-    bool first_auth_attempt,
-    const net::AuthChallengeInfo& auth_info,
-    network::mojom::URLResponseHeadPtr head,
-    mojo::PendingRemote<network::mojom::AuthChallengeResponder>
-        auth_challenge_responder) {
-  mojo::Remote<network::mojom::AuthChallengeResponder>
-      auth_challenge_responder_remote(std::move(auth_challenge_responder));
-  auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
-}
-
 void NetworkContextClientBase::OnFileUploadRequested(
     int32_t process_id,
     bool async,

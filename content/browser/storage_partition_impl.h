@@ -240,17 +240,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
 
   // network::mojom::NetworkContextClient interface.
-  void OnAuthRequired(
-      const base::Optional<base::UnguessableToken>& window_id,
-      int32_t process_id,
-      int32_t routing_id,
-      uint32_t request_id,
-      const GURL& url,
-      bool first_auth_attempt,
-      const net::AuthChallengeInfo& auth_info,
-      network::mojom::URLResponseHeadPtr head,
-      mojo::PendingRemote<network::mojom::AuthChallengeResponder>
-          auth_challenge_responder) override;
   void OnFileUploadRequested(int32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
@@ -296,6 +285,15 @@ class CONTENT_EXPORT StoragePartitionImpl
   void Clone(mojo::PendingReceiver<
              network::mojom::AuthenticationAndCertificateObserver> listener)
       override;
+  void OnAuthRequired(
+      const base::Optional<base::UnguessableToken>& window_id,
+      uint32_t request_id,
+      const GURL& url,
+      bool first_auth_attempt,
+      const net::AuthChallengeInfo& auth_info,
+      const scoped_refptr<net::HttpResponseHeaders>& head_headers,
+      mojo::PendingRemote<network::mojom::AuthChallengeResponder>
+          auth_challenge_responder) override;
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter() {
     return url_loader_factory_getter_;
