@@ -74,6 +74,9 @@ extern const char kAllowInsecureLocalhostDescription[];
 extern const char kAllowSyncXHRInPageDismissalName[];
 extern const char kAllowSyncXHRInPageDismissalDescription[];
 
+extern const char kAnimatedImageResumeName[];
+extern const char kAnimatedImageResumeDescription[];
+
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 

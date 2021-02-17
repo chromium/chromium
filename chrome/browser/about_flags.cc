@@ -6818,6 +6818,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(feature_engagement::kIPHDesktopSnoozeFeature)},
 #endif  // defined(TOOLKIT_VIEWS)
 
+    {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
+     flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},
+
 #if !defined(OS_ANDROID)
     {"sct-auditing", flag_descriptions::kSCTAuditingName,
      flag_descriptions::kSCTAuditingDescription, kOsDesktop,

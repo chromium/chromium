@@ -130,6 +130,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "animated-image-resume",
+    "owners": [ "cblume", "vmpstr" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "app-cache",
     "owners": [ "enne" ],
     "expiry_milestone": 90
