@@ -7759,6 +7759,25 @@
             ]
         }
     ],
+    "WebRTC-VP9-PerformanceFlags": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "use_per_layer_speed,min_pixel_count:0|129600,base_layer_speed:5|7,high_layer_speed:8|8,deblock_mode:1|0,_V3"
+                }
+            ]
+        }
+    ],
     "WebRTC-Video-MinVideoBitrate": [
         {
             "platforms": [
