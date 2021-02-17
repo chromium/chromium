@@ -24,7 +24,7 @@
 }
 
 - (void)dispatchNotification:(NSDictionary*)data {
-  // TODO(knollr): Implement.
+  [[self serviceProxy] deliverNotification:data];
 }
 
 - (void)closeNotificationWithId:(NSString*)notificationId

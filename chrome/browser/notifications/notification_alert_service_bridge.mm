@@ -127,7 +127,22 @@ void DispatchGetAllNotificationsReply(
 }
 
 - (void)deliverNotification:(NSDictionary*)notificationData {
-  // TODO(knollr): implement.
+  NSString* notificationId =
+      [notificationData objectForKey:notification_constants::kNotificationId];
+  NSString* profileId = [notificationData
+      objectForKey:notification_constants::kNotificationProfileId];
+  bool incognito = [[notificationData
+      objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+  // TODO(knollr): Pass properties from |notificationData| into
+  // |notification|.
+  auto notification = notifications::mojom::Notification::New();
+  auto profileIdentifier = notifications::mojom::ProfileIdentifier::New(
+      base::SysNSStringToUTF8(profileId), incognito);
+  notification->id = notifications::mojom::NotificationIdentifier::New(
+      base::SysNSStringToUTF8(notificationId), std::move(profileIdentifier));
+
+  _service->DisplayNotification(std::move(notification));
 }
 
 - (void)closeNotificationWithId:(NSString*)notificationId

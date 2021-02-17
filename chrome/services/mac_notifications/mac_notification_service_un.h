@@ -30,6 +30,8 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   ~MacNotificationServiceUN() override;
 
   // notifications::mojom::MacNotificationService:
+  void DisplayNotification(
+      notifications::mojom::NotificationPtr notification) override;
   void GetDisplayedNotifications(
       notifications::mojom::ProfileIdentifierPtr profile,
       GetDisplayedNotificationsCallback callback) override;

@@ -25,6 +25,10 @@ class MockNotificationService
     : public notifications::mojom::MacNotificationService {
  public:
   MOCK_METHOD(void,
+              DisplayNotification,
+              (notifications::mojom::NotificationPtr),
+              (override));
+  MOCK_METHOD(void,
               GetDisplayedNotifications,
               (notifications::mojom::ProfileIdentifierPtr,
                GetDisplayedNotificationsCallback),
@@ -91,6 +95,25 @@ TEST_F(NotificationAlertServiceBridgeTest, DisconnectHandler) {
   base::RunLoop run_loop;
   EXPECT_CALL(on_disconnect_, Run).WillOnce([&]() { run_loop.Quit(); });
   provider_receiver_.reset();
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, DeliverNotification) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_service_, DisplayNotification)
+      .WillOnce([&](notifications::mojom::NotificationPtr notification) {
+        EXPECT_EQ("notificationId", notification->id->id);
+        EXPECT_EQ("profileId", notification->id->profile->id);
+        EXPECT_TRUE(notification->id->profile->incognito);
+        run_loop.Quit();
+      });
+
+  // TODO(knollr): pass and verify expected notification data.
+  [bridge_ deliverNotification:@{
+    notification_constants::kNotificationId : @"notificationId",
+    notification_constants::kNotificationProfileId : @"profileId",
+    notification_constants::kNotificationIncognito : @YES,
+  }];
   run_loop.Run();
 }
 

@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 @interface AlertNSNotificationCenterDelegate
@@ -35,6 +37,25 @@ MacNotificationServiceNS::MacNotificationServiceNS(
 
 MacNotificationServiceNS::~MacNotificationServiceNS() {
   [notification_center_ setDelegate:nil];
+}
+
+void MacNotificationServiceNS::DisplayNotification(
+    notifications::mojom::NotificationPtr notification) {
+  base::scoped_nsobject<NSUserNotification> toast(
+      [[NSUserNotification alloc] init]);
+
+  // TODO(knollr): Fill with values from |notification|.
+  [toast setTitle:@"title"];
+  [toast setSubtitle:@"subtitle"];
+  [toast setInformativeText:@"informative"];
+  [toast setUserInfo:GetMacNotificationUserInfo(notification)];
+
+  NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(
+      notification->id->profile->incognito, notification->id->profile->id,
+      notification->id->id));
+  [toast setIdentifier:notification_id];
+
+  [notification_center_ deliverNotification:toast.get()];
 }
 
 void MacNotificationServiceNS::GetDisplayedNotifications(

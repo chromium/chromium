@@ -162,6 +162,48 @@ class MacNotificationServiceUNTest : public testing::Test {
   std::unique_ptr<MacNotificationServiceUN> service_;
 };
 
+TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
+  if (@available(macOS 10.14, *)) {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    // Verify notification content.
+    [[mock_notification_center_ expect]
+        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                           UNNotificationRequest* request) {
+          EXPECT_NSEQ(@"i|profileId|notificationId", [request identifier]);
+          NSDictionary* user_info = [[request content] userInfo];
+          EXPECT_NSEQ(
+              @"notificationId",
+              [user_info objectForKey:notification_constants::kNotificationId]);
+          EXPECT_NSEQ(
+              @"profileId",
+              [user_info
+                  objectForKey:notification_constants::kNotificationProfileId]);
+          EXPECT_TRUE([[user_info
+              objectForKey:notification_constants::kNotificationIncognito]
+              boolValue]);
+
+          quit_closure.Run();
+          return YES;
+        }]
+         withCompletionHandler:[OCMArg any]];
+
+    // Create and display a new notification.
+    auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
+        "profileId", /*incognito=*/true);
+    auto notification_identifier =
+        notifications::mojom::NotificationIdentifier::New(
+            "notificationId", std::move(profile_identifier));
+    auto notification = notifications::mojom::Notification::New(
+        std::move(notification_identifier));
+    service_remote_->DisplayNotification(std::move(notification));
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+}
+
 TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
   if (@available(macOS 10.14, *)) {
     auto notifications = SetupNotifications();

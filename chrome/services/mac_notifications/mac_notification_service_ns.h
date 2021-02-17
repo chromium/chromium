@@ -30,6 +30,8 @@ class MacNotificationServiceNS
   ~MacNotificationServiceNS() override;
 
   // notifications::mojom::MacNotificationService:
+  void DisplayNotification(
+      notifications::mojom::NotificationPtr notification) override;
   void GetDisplayedNotifications(
       notifications::mojom::ProfileIdentifierPtr profile,
       GetDisplayedNotificationsCallback callback) override;

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,6 +42,46 @@ MacNotificationServiceUN::MacNotificationServiceUN(
 
 MacNotificationServiceUN::~MacNotificationServiceUN() {
   [notification_center_ setDelegate:nil];
+}
+
+void MacNotificationServiceUN::DisplayNotification(
+    notifications::mojom::NotificationPtr notification) {
+  base::scoped_nsobject<UNMutableNotificationContent> content(
+      [[UNMutableNotificationContent alloc] init]);
+
+  // TODO(knollr): Fill with actual values from |notification|.
+  [content setTitle:@"title"];
+  [content setSubtitle:@"subtitle"];
+  [content setBody:@"body"];
+  [content setUserInfo:GetMacNotificationUserInfo(notification)];
+
+  std::string notification_id = DeriveMacNotificationId(
+      notification->id->profile->incognito, notification->id->profile->id,
+      notification->id->id);
+
+  // This uses a private API to prevent notifications from dismissing after
+  // clicking on them. This only affects the default action though, other action
+  // buttons will still dismiss the notification on click.
+  if ([content respondsToSelector:@selector
+               (shouldPreventNotificationDismissalAfterDefaultAction)]) {
+    [content setValue:@YES
+               forKey:@"shouldPreventNotificationDismissalAfterDefaultAction"];
+  }
+
+  NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:notification_id_ns
+                                           content:content.get()
+                                           trigger:nil];
+
+  auto completion_handler = ^(NSError* _Nullable error) {
+    // TODO(knollr): Add UMA logging for display errors.
+    if (error != nil) {
+      DVLOG(1) << "Displaying notification did not succeed";
+    }
+  };
+  [notification_center_ addNotificationRequest:request
+                         withCompletionHandler:completion_handler];
 }
 
 void MacNotificationServiceUN::GetDisplayedNotifications(

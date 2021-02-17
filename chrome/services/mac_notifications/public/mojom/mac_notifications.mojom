@@ -31,10 +31,17 @@ struct NotificationActionInfo {
   // TODO(knollr): Fill struct.
 };
 
+// Represents a notification to be shown to the user via the helper app.
+struct Notification {
+  NotificationIdentifier id;
+  // TODO(knollr): Fill struct.
+};
+
 // Interface to control notifications shown by the helper app. Implemented by
 // the helper app and called from the browser process.
 interface MacNotificationService {
-  // TODO(knollr): Add remaining methods to show notifications.
+  // Display the |notification| via the system notification center.
+  DisplayNotification(Notification notification);
 
   // Gets a list of notification ids that are currently shown in the system
   // notification center. If a |profile| is passed, the list is filtered to only
