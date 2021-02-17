@@ -189,6 +189,11 @@ cr.define('cellular_setup', function() {
      */
     handleProfileInstallResponse_(response) {
       this.showPageLoadingIndicator_ = false;
+      // This will be moved to updateButtonBarState_ once we add intermediate
+      // states.
+      this.set('buttonState.forward', cellularSetup.ButtonState.ENABLED);
+      this.set('buttonState.backward', cellularSetup.ButtonState.ENABLED);
+
       if (response.result ===
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode) {
@@ -346,6 +351,11 @@ cr.define('cellular_setup', function() {
     navigateForward() {
       this.showError_ = false;
       this.showPageLoadingIndicator_ = true;
+      // This will be moved to updateButtonBarState_ once we add intermediate
+      // states.
+      this.set('buttonState.forward', cellularSetup.ButtonState.DISABLED);
+      this.set('buttonState.backward', cellularSetup.ButtonState.DISABLED);
+
       switch (this.state_) {
         case ESimUiState.ACTIVATION_CODE_ENTRY:
           // Assume installing the profile doesn't require a confirmation
