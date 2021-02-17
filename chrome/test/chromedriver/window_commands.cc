@@ -2335,9 +2335,19 @@ Status ExecuteAddCookie(Session* session,
   std::string domain;
   if (!GetOptionalString(cookie, "domain", &domain))
     return Status(kInvalidArgument, "invalid 'domain'");
-  if (session->w3c_compliant)
-    if (!domain.empty() && domain[0] != '.' && !url::HostIsIPAddress(domain))
-      domain.insert(0, 1, '.');
+  if (session->w3c_compliant && !domain.empty() &&
+      !url::HostIsIPAddress(domain)) {
+    if (domain[0] == '.')
+      domain = domain.substr(1);
+
+    if (domain.size() < 2)
+      return Status(kInvalidCookieDomain, "invalid 'domain'");
+
+    if (!GURL(url).DomainIs(domain))
+      return Status(kInvalidCookieDomain, "Cookie 'domain' mismatch");
+
+    domain.insert(0, 1, '.');
+  }
   std::string path("/");
   if (!GetOptionalString(cookie, "path", &path))
     return Status(kInvalidArgument, "invalid 'path'");
