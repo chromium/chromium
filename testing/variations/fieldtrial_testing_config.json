@@ -2463,7 +2463,7 @@
             ]
         }
     ],
-    "DesktopReadLater": [
+    "DesktopReadingList": [
         {
             "platforms": [
                 "chromeos",
