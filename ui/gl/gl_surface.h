@@ -267,6 +267,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual bool SupportsProtectedVideo() const;
 
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
+
   // Set the rectangle that will be drawn into on the surface, returning
   // success. If failed, it is possible that the context is no longer current.
   virtual bool SetDrawRectangle(const gfx::Rect& rect);
@@ -389,6 +393,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool BuffersFlipped() const override;
   bool SupportsDCLayers() const override;
   bool SupportsProtectedVideo() const override;
+  bool SupportsOverridePlatformSize() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   gfx::Vector2d GetDrawOffset() const override;
   void SetRelyOnImplicitSync() override;

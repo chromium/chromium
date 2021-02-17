@@ -197,6 +197,10 @@ bool GLSurface::SupportsProtectedVideo() const {
   return false;
 }
 
+bool GLSurface::SupportsOverridePlatformSize() const {
+  return false;
+}
+
 bool GLSurface::SetDrawRectangle(const gfx::Rect& rect) {
   return false;
 }
@@ -467,6 +471,10 @@ bool GLSurfaceAdapter::SupportsDCLayers() const {
 
 bool GLSurfaceAdapter::SupportsProtectedVideo() const {
   return surface_->SupportsProtectedVideo();
+}
+
+bool GLSurfaceAdapter::SupportsOverridePlatformSize() const {
+  return surface_->SupportsOverridePlatformSize();
 }
 
 bool GLSurfaceAdapter::SetDrawRectangle(const gfx::Rect& rect) {

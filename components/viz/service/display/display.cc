@@ -734,7 +734,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
       last_render_pass.output_rect.size() != current_surface_size &&
       last_render_pass.damage_rect == last_render_pass.output_rect &&
       !current_surface_size.IsEmpty()) {
-    // Resize the output rect to the current surface size so that we won't
+    // Resize the |output_rect| to the |current_surface_size| so that we won't
     // skip the draw and so that the GL swap won't stretch the output.
     last_render_pass.output_rect.set_size(current_surface_size);
     last_render_pass.damage_rect = last_render_pass.output_rect;

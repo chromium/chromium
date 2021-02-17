@@ -182,6 +182,10 @@ bool GbmSurfacelessWayland::SupportsPlaneGpuFences() const {
   return true;
 }
 
+bool GbmSurfacelessWayland::SupportsOverridePlatformSize() const {
+  return true;
+}
+
 gfx::SurfaceOrigin GbmSurfacelessWayland::GetOrigin() const {
   // GbmSurfacelessWayland's y-axis is flipped compare to GL - (0,0) is at top
   // left corner.

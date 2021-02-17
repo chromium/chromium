@@ -195,7 +195,8 @@ void RootCompositorFrameSinkImpl::DisableSwapUntilResize(
 #endif
 
 void RootCompositorFrameSinkImpl::Resize(const gfx::Size& size) {
-  display_->Resize(size);
+  if (!display_->resize_based_on_root_surface())
+    display_->Resize(size);
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayColorMatrix(
@@ -333,8 +334,13 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
     CompositorFrame frame,
     base::Optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
-  if (support_->last_activated_local_surface_id() != local_surface_id)
+  if (support_->last_activated_local_surface_id() != local_surface_id) {
     display_->SetLocalSurfaceId(local_surface_id, frame.device_scale_factor());
+    // Resize the |display_| to the root compositor frame |output_rect| so that
+    // we won't show root surface gutters.
+    if (display_->resize_based_on_root_surface())
+      display_->Resize(frame.render_pass_list.back()->output_rect.size());
+  }
 
   const auto result = support_->MaybeSubmitCompositorFrame(
       local_surface_id, std::move(frame), std::move(hit_test_region_list),
