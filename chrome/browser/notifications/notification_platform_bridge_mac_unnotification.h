@@ -16,6 +16,7 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_image_retainer.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
 
 @class UNNotificationBuilder;
 @class UNNotificationCenterDelegate;
@@ -59,6 +60,9 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
   // Remove the closed alert notification.
   void DoCloseAlert(Profile* profile, const std::string& notification_id);
 
+  // Called when a notification has been closed from the notification center.
+  void OnNotificationClosed(std::string notification_id);
+
   // Process notification request that got delivered successfully.
   void DeliveredSuccessfully(
       const std::string& notification_id,
@@ -97,14 +101,6 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
   // An object that keeps temp files alive long enough for macOS to pick up.
   NotificationImageRetainer image_retainer_;
 
-  // An object that carries the categories for the notifications.
-  base::scoped_nsobject<NSMutableSet> categories_;
-
-  // An object that maps a notification to the category it's carrying, this is
-  // used to update categories for notifications being redelivered to avoid
-  // multiple categories for the same notification.
-  base::scoped_nsobject<NSMutableDictionary> delivered_categories_;
-
   // An object that carries the delivered notifications to compare with the
   // actual delivered notifications in the notification center.
   base::scoped_nsobject<NSMutableDictionary> delivered_notifications_;
@@ -112,6 +108,9 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
   // An object used to synchronize the notifications by polling over them every
   // |kSynchronizationInterval| minutes.
   base::RepeatingTimer synchronize_displayed_notifications_timer_;
+
+  // Category manager for action buttons.
+  NotificationCategoryManager category_manager_;
 
   base::WeakPtrFactory<NotificationPlatformBridgeMacUNNotification>
       weak_factory_{this};

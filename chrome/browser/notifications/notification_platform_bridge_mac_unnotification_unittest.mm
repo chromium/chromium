@@ -506,11 +506,12 @@ TEST_F(UNNotificationPlatformBridgeMacTest,
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
                      notification, nullptr);
 
-    [center_ getNotificationCategoriesWithCompletionHandler:^(
-                 NSSet<UNNotificationCategory*>* categories) {
-      ASSERT_EQ(1u, [categories count]);
-      EXPECT_NSEQ(@"id1", [[categories anyObject] identifier]);
-    }];
+    ASSERT_EQ(1u, [[center_ categories] count]);
+    NSString* category_id = [[[center_ categories] anyObject] identifier];
+
+    ASSERT_EQ(1u, [[center_ notifications] count]);
+    EXPECT_NSEQ(category_id, [[[[center_ notifications][0] request] content]
+                                 categoryIdentifier]);
   }
 }
 
@@ -521,10 +522,8 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestCloseRemovesCategory) {
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
                      first_notification, nullptr);
 
-    [center_ getNotificationCategoriesWithCompletionHandler:^(
-                 NSSet<UNNotificationCategory*>* categories) {
-      EXPECT_EQ(1u, [categories count]);
-    }];
+    ASSERT_EQ(1u, [[center_ categories] count]);
+    NSString* category_id = [[[center_ categories] anyObject] identifier];
 
     bridge_->Close(profile_, "id1");
     // RunLoop is used here to ensure that Close has finished executing before
@@ -538,11 +537,9 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestCloseRemovesCategory) {
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
                      second_notification, nullptr);
 
-    [center_ getNotificationCategoriesWithCompletionHandler:^(
-                 NSSet<UNNotificationCategory*>* categories) {
-      ASSERT_EQ(1u, [categories count]);
-      EXPECT_NSEQ(@"id2", [[categories anyObject] identifier]);
-    }];
+    // Expect that there is now a new category.
+    ASSERT_EQ(1u, [[center_ categories] count]);
+    EXPECT_NSNE(category_id, [[[center_ categories] anyObject] identifier]);
   }
 }
 
