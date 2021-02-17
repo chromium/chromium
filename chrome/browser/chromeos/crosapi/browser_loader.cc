@@ -163,7 +163,9 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   component_manager_->Load(
       GetLacrosComponentName(),
       component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kForce,
+      // If a compatible installation exists, use that and download any updates
+      // in the background.
+      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
