@@ -4458,6 +4458,40 @@
             ]
         }
     ],
+    "MigrateDefaultChromeAppToWebAppsGSuite": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210111",
+                    "enable_features": [
+                        "MigrateDefaultChromeAppToWebAppsGSuite"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MigrateDefaultChromeAppToWebAppsNonGSuite": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210111",
+                    "enable_features": [
+                        "MigrateDefaultChromeAppToWebAppsNonGSuite"
+                    ]
+                }
+            ]
+        }
+    ],
     "MixedFormInterstitial": [
         {
             "platforms": [
