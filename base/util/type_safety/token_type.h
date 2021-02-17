@@ -65,7 +65,7 @@ class TokenType : public base::StrongAlias<TypeMarker, base::UnguessableToken> {
   template <bool kAllowImplicitConversion2 = kAllowImplicitConversion,
             typename = std::enable_if_t<kAllowImplicitConversion2>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr operator const base::UnguessableToken&() const& {
+  operator const base::UnguessableToken&() const& {
     return this->value();
   }
 };

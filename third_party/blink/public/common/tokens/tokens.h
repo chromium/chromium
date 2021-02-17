@@ -48,9 +48,7 @@ class FrameToken : public MultiToken<LocalFrameToken, RemoteFrameToken> {
 
   // Allow implicit casting down to base::UnguessableToken during the migration.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr operator const base::UnguessableToken&() const& {
-    return this->value();
-  }
+  operator const base::UnguessableToken&() const& { return this->value(); }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
