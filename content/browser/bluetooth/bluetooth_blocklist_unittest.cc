@@ -11,6 +11,15 @@ using device::BluetoothUUID;
 
 namespace content {
 
+namespace {
+#ifdef OFFICIAL_BUILD
+// The official build does not print the reason a CHECK failed.
+const char kInvalidUUIDErrorRegex[] = "";
+#else
+const char kInvalidUUIDErrorRegex[] = "uuid.IsValid\\(\\)";
+#endif
+}  // namespace
+
 class BluetoothBlocklistTest : public ::testing::Test {
  public:
   BluetoothBlocklistTest() : list_(BluetoothBlocklist::Get()) {
@@ -52,32 +61,30 @@ TEST_F(BluetoothBlocklistTest, ExcludeWritesUUID) {
   EXPECT_TRUE(list_.IsExcludedFromWrites(exclude_writes_uuid));
 }
 
-TEST_F(BluetoothBlocklistTest, InvalidUUID) {
-#ifdef OFFICIAL_BUILD
-  // The official build does not print the reason a CHECK failed.
-  const char kErrorRegex[] = "";
-#else
-  const char kErrorRegex[] = "uuid.IsValid\\(\\)";
-#endif
+TEST_F(BluetoothBlocklistTest, EmptyStringUUID) {
   BluetoothUUID empty_string_uuid("");
   EXPECT_DEATH_IF_SUPPORTED(
       list_.Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
-      kErrorRegex);
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid), kErrorRegex);
+      kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
   EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(empty_string_uuid),
-                            kErrorRegex);
+                            kInvalidUUIDErrorRegex);
   EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(empty_string_uuid),
-                            kErrorRegex);
+                            kInvalidUUIDErrorRegex);
+}
 
+TEST_F(BluetoothBlocklistTest, InvalidUUID) {
   BluetoothUUID invalid_string_uuid("Not a valid UUID string.");
   EXPECT_DEATH_IF_SUPPORTED(
       list_.Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
-      kErrorRegex);
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid), kErrorRegex);
+      kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid),
+                            kInvalidUUIDErrorRegex);
   EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(invalid_string_uuid),
-                            kErrorRegex);
+                            kInvalidUUIDErrorRegex);
   EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(invalid_string_uuid),
-                            kErrorRegex);
+                            kInvalidUUIDErrorRegex);
 }
 
 // Abreviated UUIDs used to create, or test against, the blocklist work

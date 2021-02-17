@@ -325,15 +325,12 @@ cast_test_group("cast_tests") {
       gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
     }
     if (enable_assistant && !is_cast_desktop_build) {
-      # Temporarily disable InvalidUUID and DefaultConstructor on assistant
-      # device builds. Cause of failure is unclear, but it's highly likely it's
-      # related to them being DEATH tests. These were passing until the
-      # is_official_build flag was enabled. These tests are considered
-      # non-critical in this context. (b/62469368)
-      gtest_excludes += [
-        "BluetoothBlocklistTest.InvalidUUID",
-        "WebBluetoothDeviceIdTest.DefaultConstructor",
-      ]
+      # Temporarily disable DefaultConstructor on assistant device builds. Cause
+      # of failure is unclear, but it's highly likely it's related to them being
+      # DEATH tests. These were passing until the is_official_build flag was
+      # enabled. These tests are considered non-critical in this context.
+      # (b/62469368)
+      gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
     }
   }
   filters += [ content_unittests_filter ]

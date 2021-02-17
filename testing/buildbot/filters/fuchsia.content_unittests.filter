@@ -1,7 +1,6 @@
 # Being ported, https://crbug.com/754861.
 
 # https://crbug.com/780317 - Flakily timeout under QEMU s/w emulation of ARM64.
--BluetoothBlocklistTest.InvalidUUID
 -WebBluetoothDeviceIdTest.DefaultConstructor
 
 # https://crbug.com/761214
