@@ -31,6 +31,7 @@ To specify the site for each iframe, you can use a simple identifier like "a"
 or "b", and ".com" will be automatically appended. You can also specify a port
 number to use for each site by using a label like "a:12345". If no port number
 is given, the port will default to the port number of the top level frame.
+You can also specify an arbitrary full URL for any bottommost leaf frame.
 
 These options are supported:
 
@@ -102,6 +103,15 @@ function borderColorForSite(site) {
   return pastelColorForFirstCharacter(site, .32);
 }
 
+function isUrl(siteString) {
+  try {
+    var url = new URL(siteString);
+  } catch (e) {
+    if (e instanceof TypeError)
+      return false;
+  }
+  return true;
+}
 
 /**
  * Extract the specified port number, if any. Returns empty string if not
@@ -228,7 +238,9 @@ function main() {
   var goCrossSite = !window.location.protocol.startsWith('file');
   var queryString = decodeURIComponent(window.location.search.substring(1));
   var frameTree = TreeParserUtil.parse(queryString);
-  var currentSite = canonicalizeSiteAndPort(frameTree.value, "");
+  var currentSite = isUrl(frameTree.value)
+                      ? frameTree.value
+                      : canonicalizeSiteAndPort(frameTree.value, "");
 
   // Render text unless the attribute "no-text-render" is specified, in which
   // case load some bytes anyway in order to trigger histogram recording for
@@ -246,13 +258,17 @@ function main() {
 
   for (var i = 0; i < frameTree.children.length; i++) {
     // Compute the URL for this iframe.
-    var siteAndPort = canonicalizeSiteAndPort(frameTree.children[i].value, window.location.port);
-    var subtreeString = TreeParserUtil.flatten(frameTree.children[i]);
-    var url = '';
-    url += window.location.protocol + '//';              // scheme (preserved)
-    url += goCrossSite ? siteAndPort : window.location.host;    // host and port
-    url += window.location.pathname;                     // path (preserved)
-    url += '?' + encodeURIComponent(subtreeString);      // query
+    let url = frameTree.children[i].value;
+    let siteAndPort = url;
+    if (!isUrl(url)) {
+      siteAndPort = canonicalizeSiteAndPort(url, window.location.port);
+      const subtreeString = TreeParserUtil.flatten(frameTree.children[i]);
+      url = '';
+      url += window.location.protocol + '//';              // scheme (preserved)
+      url += goCrossSite ? siteAndPort : window.location.host;    // host and port
+      url += window.location.pathname;                     // path (preserved)
+      url += '?' + encodeURIComponent(subtreeString);      // query
+    }
 
     // Construct the iframe.
     var iframe = document.createElement('iframe');
