@@ -19,7 +19,9 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/timer/timer.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -535,9 +537,18 @@ class LoginPasswordView::AlternateIconsView : public views::View {
   AlternateIconsView(const AlternateIconsView&) = delete;
   AlternateIconsView& operator=(const AlternateIconsView&) = delete;
   ~AlternateIconsView() override {
-    // TODO(crbug.com/1166246): Check that the crashes were due to layer
-    // animator was destroyed before the observer.
-    DCHECK(layer());
+    // TODO(crbug.com/1166246): Check that the crashes were due to the fact
+    // that the layer animator was destroyed before the observer.
+    std::string channel;
+    if (!base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
+                                           &channel)) {
+      return;
+    }
+    if (channel == crosapi::kReleaseChannelBeta ||
+        channel == crosapi::kReleaseChannelDev ||
+        channel == crosapi::kReleaseChannelCanary) {
+      CHECK(layer());
+    }
   }
 
   void ScheduleAnimation(views::View* shown_now, views::View* shown_after) {

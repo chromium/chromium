@@ -1819,6 +1819,7 @@ component("ash") {
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/sensors:buildflags",
+    "//chromeos/crosapi/cpp",
     "//chromeos/dbus",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/constants",
