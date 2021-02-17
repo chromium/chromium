@@ -2783,14 +2783,17 @@ extern const char kVaapiJpegImageDecodeAccelerationDescription[];
 extern const char kVaapiWebPImageDecodeAccelerationName[];
 extern const char kVaapiWebPImageDecodeAccelerationDescription[];
 
+extern const char kVirtualKeyboardName[];
+extern const char kVirtualKeyboardDescription[];
+
 extern const char kVirtualKeyboardBorderedKeyName[];
 extern const char kVirtualKeyboardBorderedKeyDescription[];
 
 extern const char kVirtualKeyboardDisabledName[];
 extern const char kVirtualKeyboardDisabledDescription[];
 
-extern const char kVirtualKeyboardName[];
-extern const char kVirtualKeyboardDescription[];
+extern const char kVirtualKeyboardMultipasteName[];
+extern const char kVirtualKeyboardMultipasteDescription[];
 
 extern const char kVmCameraMicIndicatorsAndNotificationsName[];
 extern const char kVmCameraMicIndicatorsAndNotificationsDescription[];

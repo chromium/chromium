@@ -315,6 +315,8 @@ extern const base::Feature kUseSearchClickForRightClick;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardBorderedKey;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVirtualKeyboardMultipaste;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVmCameraMicIndicatorsAndNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperWebUI;

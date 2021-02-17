@@ -4753,6 +4753,11 @@ const char kVaapiWebPImageDecodeAccelerationName[] =
 const char kVaapiWebPImageDecodeAccelerationDescription[] =
     "Enable or disable decode acceleration of WebP images using the VA-API.";
 
+const char kVirtualKeyboardName[] = "Virtual Keyboard";
+const char kVirtualKeyboardDescription[] =
+    "Always show virtual keyboard regardless of having a physical keyboard "
+    "present";
+
 const char kVirtualKeyboardBorderedKeyName[] = "Virtual Keyboard Bordered Key";
 const char kVirtualKeyboardBorderedKeyDescription[] =
     "Show virtual keyboard with bordered key";
@@ -4762,10 +4767,9 @@ const char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
-const char kVirtualKeyboardName[] = "Virtual Keyboard";
-const char kVirtualKeyboardDescription[] =
-    "Always show virtual keyboard regardless of having a physical keyboard "
-    "present";
+const char kVirtualKeyboardMultipasteName[] = "Virtual Keyboard MultiPaste";
+const char kVirtualKeyboardMultipasteDescription[] =
+    "Show virtual keyboard with multipaste UI";
 
 const char kVmCameraMicIndicatorsAndNotificationsName[] =
     "VM camera/mic indicators/notifications";
