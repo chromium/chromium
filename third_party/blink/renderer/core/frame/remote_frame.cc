@@ -89,6 +89,13 @@ RemoteFrame* RemoteFrame::FromFrameToken(const RemoteFrameToken& frame_token) {
   return FromFrameToken(frame_token.value());
 }
 
+// static
+RemoteFrame* RemoteFrame::FromFrameToken(const FrameToken& frame_token) {
+  if (!frame_token.Is<RemoteFrameToken>())
+    return nullptr;
+  return FromFrameToken(frame_token.GetAs<RemoteFrameToken>());
+}
+
 RemoteFrame::RemoteFrame(
     RemoteFrameClient* client,
     Page& page,
@@ -96,7 +103,7 @@ RemoteFrame::RemoteFrame(
     Frame* parent,
     Frame* previous_sibling,
     FrameInsertType insert_type,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     WindowAgentFactory* inheriting_agent_factory,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider)
@@ -122,9 +129,9 @@ RemoteFrame::RemoteFrame(
   // TODO(crbug.com/1094850): Remove this check once the renderer is correctly
   // handling errors during the creation of HTML portal elements, which would
   // otherwise cause RemoteFrame() being created with empty frame tokens.
-  if (!frame_token.is_empty()) {
+  if (!frame_token.value().is_empty()) {
     auto frame_tracking_result = GetRemoteFramesMap().insert(
-        base::UnguessableTokenHash()(frame_token), this);
+        RemoteFrameToken::Hasher()(frame_token), this);
     CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
   }
 
@@ -396,9 +403,9 @@ void RemoteFrame::ForwardPostMessage(
     base::Optional<base::UnguessableToken> cluster_id,
     scoped_refptr<const SecurityOrigin> target_security_origin,
     LocalFrame* source_frame) {
-  base::Optional<base::UnguessableToken> source_token;
+  base::Optional<blink::LocalFrameToken> source_token;
   if (source_frame)
-    source_token = source_frame->GetFrameToken();
+    source_token = source_frame->GetLocalFrameToken();
 
   String source_origin = message_event->origin();
   String target_origin = g_empty_string;

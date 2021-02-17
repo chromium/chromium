@@ -68,7 +68,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
   void AdvanceFocusInFrame(blink::mojom::FocusType focus_type,
-                           const base::Optional<base::UnguessableToken>&
+                           const base::Optional<blink::RemoteFrameToken>&
                                source_frame_token) override;
   void AdvanceFocusInForm(blink::mojom::FocusType focus_type) override;
   void ReportContentSecurityPolicyViolation(
@@ -76,7 +76,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override;
   void OnScreensChange() override;
   void PostMessageEvent(
-      const base::Optional<base::UnguessableToken>& source_frame_token,
+      const base::Optional<blink::RemoteFrameToken>& source_frame_token,
       const base::string16& source_origin,
       const base::string16& target_origin,
       blink::TransferableMessage message) override;

@@ -215,8 +215,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
       frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
-      insert_type, GetFrameToken(), window_agent_factory, interface_registry_,
-      associated_interface_provider_));
+      insert_type, GetRemoteFrameToken(), window_agent_factory,
+      interface_registry_, associated_interface_provider_));
 
   // If this is not a top-level frame, we need to send FrameVisualProperties to
   // the remote renderer process. Some of the properties are inherited from the

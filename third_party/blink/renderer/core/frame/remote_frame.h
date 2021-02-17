@@ -44,9 +44,10 @@ class CORE_EXPORT RemoteFrame final : public Frame,
                                       public mojom::blink::RemoteFrame {
  public:
   // Returns the RemoteFrame for the given |frame_token|.
-  // TODO(crbug.com/1096617): Remove the UnguessableToken version of this.
+  // TODO(crbug.com/1096617): Remove unneeded versions of this.
   static RemoteFrame* FromFrameToken(const base::UnguessableToken& frame_token);
   static RemoteFrame* FromFrameToken(const RemoteFrameToken& frame_token);
+  static RemoteFrame* FromFrameToken(const FrameToken& frame_token);
 
   // For a description of |inheriting_agent_factory| go see the comment on the
   // Frame constructor.
@@ -56,7 +57,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
               Frame* parent,
               Frame* previous_sibling,
               FrameInsertType insert_type,
-              const base::UnguessableToken& frame_token,
+              const RemoteFrameToken& frame_token,
               WindowAgentFactory* inheriting_agent_factory,
               InterfaceRegistry*,
               AssociatedInterfaceProvider*);
@@ -219,7 +220,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void WasAttachedAsRemoteMainFrame();
 
   RemoteFrameToken GetRemoteFrameToken() const {
-    return RemoteFrameToken(GetFrameToken());
+    return GetFrameToken().GetAs<RemoteFrameToken>();
   }
 
   const viz::LocalSurfaceId& GetLocalSurfaceId() const;

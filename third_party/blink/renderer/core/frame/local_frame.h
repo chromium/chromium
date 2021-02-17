@@ -159,9 +159,10 @@ class CORE_EXPORT LocalFrame final
       public mojom::blink::HighPriorityLocalFrame {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
-  // TODO(crbug.com/1096617): Remove the UnguessableToken version of this.
+  // TODO(crbug.com/1096617): Remove unneeded versions of this.
   static LocalFrame* FromFrameToken(const base::UnguessableToken& frame_token);
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
+  static LocalFrame* FromFrameToken(const FrameToken& frame_token);
 
   // For a description of |inheriting_agent_factory| go see the comment on the
   // Frame constructor.
@@ -172,7 +173,7 @@ class CORE_EXPORT LocalFrame final
       Frame* parent,
       Frame* previous_sibling,
       FrameInsertType insert_type,
-      const base::UnguessableToken& frame_token,
+      const LocalFrameToken& frame_token,
       WindowAgentFactory* inheriting_agent_factory,
       InterfaceRegistry*,
       std::unique_ptr<blink::PolicyContainer> policy_container,
@@ -649,7 +650,7 @@ class CORE_EXPORT LocalFrame final
       blink::mojom::blink::MediaPlayerActionPtr action) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
-      const base::Optional<base::UnguessableToken>& source_frame_token) final;
+      const base::Optional<RemoteFrameToken>& source_frame_token) final;
   void AdvanceFocusInForm(mojom::blink::FocusType focus_type) final;
   void ReportContentSecurityPolicyViolation(
       network::mojom::blink::CSPViolationPtr csp_violation) final;
@@ -661,7 +662,7 @@ class CORE_EXPORT LocalFrame final
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
   void OnScreensChange() final;
   void PostMessageEvent(
-      const base::Optional<base::UnguessableToken>& source_frame_token,
+      const base::Optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message) final;
@@ -698,7 +699,7 @@ class CORE_EXPORT LocalFrame final
 #endif
   void InstallCoopAccessMonitor(
       network::mojom::blink::CoopAccessReportType report_type,
-      const base::UnguessableToken& accessed_window,
+      const FrameToken& accessed_window,
       mojo::PendingRemote<
           network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
       bool endpoint_defined,
@@ -750,7 +751,7 @@ class CORE_EXPORT LocalFrame final
   }
 
   LocalFrameToken GetLocalFrameToken() const {
-    return LocalFrameToken(GetFrameToken());
+    return GetFrameToken().GetAs<LocalFrameToken>();
   }
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const {
