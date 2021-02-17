@@ -26,7 +26,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    For users known to be already enrolled in Advanced Proection, records the
+    For users known to be already enrolled in Advanced Protection, records the
     service error of refreshing OAuth2 access token during fetching the user's
     advanced protection status. Logged once a day and will retry on transient
     failures. This is a subset of
@@ -35,8 +35,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.AdvancedProtection.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="M90">
-  <owner>drubey@chromium.org</owner>
+    enum="GoogleServiceAuthError" expires_after="2021-07-18">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the service error of refreshing OAuth2 access token during fetching
