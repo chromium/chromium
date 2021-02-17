@@ -379,6 +379,8 @@ static_library("renderer") {
 
   if (!is_android) {
     sources += [
+      "cart/commerce_hint_agent.cc",
+      "cart/commerce_hint_agent.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
@@ -388,9 +390,11 @@ static_library("renderer") {
     ]
 
     deps += [
+      "//chrome/common/cart:mojo_bindings",
       "//chrome/common/search:generate_chrome_colors_info",
       "//chrome/common/search:generate_colors_info",
       "//components/crx_file",
+      "//components/search:search",
     ]
   }
 

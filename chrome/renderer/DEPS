@@ -41,6 +41,7 @@ include_rules = [
   "+components/plugins/renderer",
   "+components/printing/common",
   "+components/printing/renderer",
+  "+components/search/ntp_features.h",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/content/common",
@@ -93,5 +94,9 @@ specific_include_rules = {
     "+chrome/browser/ui",
     "+chrome/browser/ui/tabs",
     "+content/public/browser/browser_task_traits.h",
+  ],
+  "commerce_hint_agent_browsertest\.cc" : [
+    "+chrome/browser/cart",
+    "+chrome/browser/persisted_state_db/profile_proto_db.h",
   ],
 }
