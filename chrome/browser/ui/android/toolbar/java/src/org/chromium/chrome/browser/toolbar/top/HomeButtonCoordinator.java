@@ -88,7 +88,7 @@ public class HomeButtonCoordinator {
             public void onPageLoadFinished(Tab tab, GURL url) {
                 handlePageLoadFinished(url);
             }
-        });
+        }, /*swapCallback=*/null);
         CohortUtils.tagCohortGroupIfTriggered(tracker,
                 FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, COHORT_FEATURE_NAME_PARAM_NAME);
     }

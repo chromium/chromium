@@ -10,7 +10,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -45,14 +44,8 @@ public class TopToolbarOverlayMediator {
     /** A means of populating draw info for the progress bar. */
     private final Callback<ClipDrawableProgressBar.DrawingInfo> mProgressInfoCallback;
 
-    /** Provides current tab. */
-    private final ObservableSupplier<Tab> mTabSupplier;
-
     /** An observer that watches for changes in the active tab. */
     private final CurrentTabObserver mTabObserver;
-
-    /** A callback to invoke upon activity tab switching. */
-    private final Callback<Tab> mActivityTabCallback;
 
     /** Access to the current state of the browser controls. */
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -64,9 +57,6 @@ public class TopToolbarOverlayMediator {
 
     /** The view state for this overlay. */
     private final PropertyModel mModel;
-
-    /** Callback controller for cancelable callbacks. */
-    private final CallbackController mCallbackController;
 
     /** Whether the active layout has its own toolbar to display instead of this one. */
     private boolean mLayoutHasOwnToolbar;
@@ -83,11 +73,9 @@ public class TopToolbarOverlayMediator {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
-        mTabSupplier = tabSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mModel = model;
-        mCallbackController = new CallbackController();
 
         mSceneChangeObserver = new LayoutStateObserver() {
             @Override
@@ -102,7 +90,15 @@ public class TopToolbarOverlayMediator {
         };
         mLayoutStateProvider.addObserver(mSceneChangeObserver);
 
-        mTabObserver = new CurrentTabObserver(mTabSupplier, new EmptyTabObserver() {
+        // Keep an observer attached to the visible tab (and only the visible tab) to update
+        // properties including theme color.
+        Callback<Tab> activityTabCallback = (tab) -> {
+            if (tab == null) return;
+            updateVisibility();
+            updateThemeColor(tab);
+            updateProgress();
+        };
+        mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
                 updateThemeColor(tab);
@@ -118,19 +114,9 @@ public class TopToolbarOverlayMediator {
                 updateVisibility();
                 updateThemeColor(tab);
             }
-        });
+        }, activityTabCallback);
 
-        // Keep an observer attached to the visible tab (and only the visible tab) to update
-        // properties including theme color.
-        mActivityTabCallback = mCallbackController.makeCancelable(tab -> {
-            if (tab == null) return;
-            updateVisibility();
-            updateThemeColor(tab);
-            updateProgress();
-        });
-
-        mTabSupplier.addObserver(mActivityTabCallback);
-        mActivityTabCallback.onResult(mTabSupplier.get());
+        activityTabCallback.onResult(tabSupplier.get());
         mTabObserver.triggerWithCurrentTab();
 
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
@@ -228,10 +214,7 @@ public class TopToolbarOverlayMediator {
 
     /** Clean up any state and observers. */
     void destroy() {
-        mCallbackController.destroy();
         mTabObserver.destroy();
-        mActivityTabCallback.onResult(null);
-        mTabSupplier.removeObserver(mActivityTabCallback);
 
         mLayoutStateProvider.removeObserver(mSceneChangeObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);

@@ -95,7 +95,7 @@ public class ToggleTabStackButtonCoordinator {
             public void onPageLoadFinished(Tab tab, GURL url) {
                 handlePageLoadFinished();
             }
-        });
+        }, /*swapCallback=*/null);
 
         CohortUtils.tagCohortGroupIfTriggered(tracker, FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
                 COHORT_FEATURE_NAME_PARAM_NAME);

@@ -162,7 +162,7 @@ public class ToolbarButtonInProductHelpController
                         Profile.fromWebContents(tab.getWebContents()));
                 tracker.notifyEvent(EventConstants.USER_HAS_SEEN_DINO);
             }
-        });
+        }, /*swapCallback=*/null);
     }
 
     public void destroy() {

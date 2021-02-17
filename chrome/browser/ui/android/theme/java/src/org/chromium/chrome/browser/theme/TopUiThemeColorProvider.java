@@ -71,20 +71,21 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
             Supplier<Integer> activityThemeColorSupplier, BooleanSupplier isTabletSupplier,
             PreviewChecker previewChecker) {
         super(context);
-        mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int themeColor) {
-                updateColor(tab, themeColor, true);
-            }
+        mTabObserver = new CurrentTabObserver(tabSupplier,
+                new EmptyTabObserver() {
+                    @Override
+                    public void onDidChangeThemeColor(Tab tab, int themeColor) {
+                        updateColor(tab, themeColor, true);
+                    }
 
-            @Override
-            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                recordMetaThemeHistogramForTab(tab);
-            }
-        });
-        tabSupplier.addObserver((tab) -> {
-            if (tab != null) updateColor(tab, tab.getThemeColor(), false);
-        });
+                    @Override
+                    public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                        recordMetaThemeHistogramForTab(tab);
+                    }
+                },
+                (tab) -> {
+                    if (tab != null) updateColor(tab, tab.getThemeColor(), false);
+                });
         mActivityThemeColorSupplier = activityThemeColorSupplier;
         mIsTabletSupplier = isTabletSupplier;
         mPreviewChecker = previewChecker;

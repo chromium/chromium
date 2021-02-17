@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -92,9 +91,8 @@ public class TopToolbarOverlayMediatorTest {
                 false);
         mMediator.setIsAndroidViewVisible(true);
 
-        // Ensure the observer is added to the initial tab. We have 2 observers added -
-        // one for various tab observer events, the other for tab switching itself.
-        verify(mTabSupplier, times(2)).addObserver(mActivityTabObserverCaptor.capture());
+        // Ensure the observer is added to the initial tab.
+        verify(mTabSupplier).addObserver(mActivityTabObserverCaptor.capture());
         setTabSupplierTab(mTab);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());

@@ -93,9 +93,8 @@ public class LoadProgressMediator {
             public void onCrash(Tab tab) {
                 finishLoadProgress(false);
             }
-        });
+        }, this::onNewTabObserved);
 
-        tabSupplier.addObserver(this::onNewTabObserved);
         onNewTabObserved(tabSupplier.get());
     }
 
