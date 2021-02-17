@@ -958,24 +958,15 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
   void LoadIconWithIconLoader(const std::string& app_id,
-                              int update_count,
                               AppServiceAppIconLoader& icon_loader,
                               FakeAppIconLoaderDelegate& delegate) {
-    size_t current_update_count = delegate.update_image_count();
     icon_loader.FetchImage(app_id);
-    EXPECT_EQ(current_update_count, delegate.update_image_count());
-    delegate.WaitForIconUpdates(update_count);
+    delegate.WaitForIconUpdates(1);
+    content::RunAllTasksUntilIdle();
 
     // Validate loaded image.
-    EXPECT_EQ(update_count + current_update_count,
-              delegate.update_image_count());
     ValidateIcon(delegate.images()[app_id],
                  extension_misc::EXTENSION_ICON_MEDIUM);
-
-    // No more updates are expected.
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(update_count + current_update_count,
-              delegate.update_image_count());
   }
 
   void CreateFakeApps(int total_count, std::vector<std::string>& app_ids) {
@@ -983,8 +974,6 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     AppServiceAppIconLoader icon_loader(
         profile(), extension_misc::EXTENSION_ICON_MEDIUM, &delegate);
 
-    const std::vector<ui::ScaleFactor>& scale_factors =
-        ui::GetSupportedScaleFactors();
     int current_count = 0;
     while (current_count < total_count) {
       // The id should start from 3 to avoid duplicate with the 3 existing fake
@@ -993,7 +982,8 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
       app_ids.emplace_back(app_id);
 
       // Wait AppServiceAppItem to finish loading icon.
-      model_updater()->WaitForIconUpdates(scale_factors.size() + 1);
+      model_updater()->WaitForIconUpdates(1);
+      content::RunAllTasksUntilIdle();
 
       size_t index;
       EXPECT_TRUE(model_updater()->FindItemIndexForTest(app_id, &index));
@@ -1002,21 +992,11 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
       ValidateIcon(item->icon(),
                    ash::AppListConfig::instance().grid_icon_dimension());
 
-      size_t update_count = model_updater()->update_image_count();
-      // No more updates are expected.
-      base::RunLoop().RunUntilIdle();
-      EXPECT_EQ(update_count, model_updater()->update_image_count());
+      LoadIconWithIconLoader(app_id, icon_loader, delegate);
 
-      LoadIconWithIconLoader(app_id, scale_factors.size() + 1, icon_loader,
-                             delegate);
-
-      // There should be 2 more updates for model_updater(), because fetch
+      // There could be 2 more updates for model_updater(), because fetch
       // the icon image for the size extension_misc::EXTENSION_ICON_MEDIUM.
-      size_t new_update_count = model_updater()->update_image_count();
-      if (new_update_count < update_count + 2) {
-        model_updater()->WaitForIconUpdates(update_count + 2 -
-                                            new_update_count);
-      }
+      content::RunAllTasksUntilIdle();
 
       current_count++;
     }
@@ -2693,8 +2673,7 @@ TEST_P(ArcDefaultAppTest, LoadAdaptiveIcon) {
   VerifyIcon(src_image_skia, model_updater()->FindItem(app_id)->icon());
 }
 
-// TODO(crbug.com/1132117) Disabled due to flake.
-TEST_P(ArcAppModelIconTest, DISABLED_LoadManyIcons) {
+TEST_P(ArcAppModelIconTest, LoadManyIcons) {
   if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
     return;
 
@@ -2720,8 +2699,7 @@ TEST_P(ArcAppModelIconTest, DISABLED_LoadManyIcons) {
   EXPECT_GE(kMaxSimultaneousIconRequests, max_arc_app_icon_request_count());
 }
 
-// TODO(crbug.com/1132117) Disabled due to flake.
-TEST_P(ArcAppModelIconTest, DISABLED_LoadManyIconsWithSomeBadIcons) {
+TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
   if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
     return;
 
