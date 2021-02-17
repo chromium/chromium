@@ -43,10 +43,8 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
   source->DisableTrustedTypesCSP();
 
   // Add all settings resources.
-  for (size_t i = 0; i < kChromeosCameraAppResourcesSize; i++) {
-    source->AddResourcePath(kChromeosCameraAppResources[i].path,
-                            kChromeosCameraAppResources[i].id);
-  }
+  source->AddResourcePaths(base::make_span(kChromeosCameraAppResources,
+                                           kChromeosCameraAppResourcesSize));
 
   source->AddResourcePath("js/mojo/mojo_bindings_lite.js",
                           IDR_MOJO_MOJO_BINDINGS_LITE_JS);

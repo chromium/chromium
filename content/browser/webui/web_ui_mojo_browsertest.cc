@@ -92,8 +92,7 @@ class TestWebUIController : public WebUIController {
           network::mojom::CSPDirectiveName::ScriptSrc,
           "script-src chrome://resources 'self' 'unsafe-eval';");
       data_source->DisableTrustedTypesCSP();
-      for (const webui::ResourcePath& resource : kMojoWebUiResources)
-        data_source->AddResourcePath(resource.path, resource.id);
+      data_source->AddResourcePaths(kMojoWebUiResources);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_HTML);
       WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                            data_source);

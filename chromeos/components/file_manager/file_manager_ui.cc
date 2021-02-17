@@ -53,10 +53,8 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   source->SetDefaultResource(IDR_FILE_MANAGER_SWA_MAIN_HTML);
 
   // Add chrome://file-manager content.
-  for (size_t i = 0; i < kChromeosFileManagerResourcesSize; i++) {
-    source->AddResourcePath(kChromeosFileManagerResources[i].path,
-                            kChromeosFileManagerResources[i].id);
-  }
+  source->AddResourcePaths(base::make_span(kChromeosFileManagerResources,
+                                           kChromeosFileManagerResourcesSize));
 
   AddFilesAppResources(source, kFileManagerResources,
                        kFileManagerResourcesSize);

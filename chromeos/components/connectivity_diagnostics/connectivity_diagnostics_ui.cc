@@ -27,10 +27,7 @@ namespace {
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const webui::ResourcePath> resources,
                           int default_resource) {
-  for (const auto& resource : resources) {
-    source->AddResourcePath(resource.path, resource.id);
-  }
-
+  source->AddResourcePaths(resources);
   source->SetDefaultResource(default_resource);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
