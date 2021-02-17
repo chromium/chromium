@@ -5,17 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_PROCESSOR_H_
 
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
+class ExceptionState;
 class MediaStreamVideoTrackUnderlyingSource;
 class MediaStreamAudioTrackUnderlyingSource;
-class ScriptState;
+class MediaStreamTrack;
 class ReadableStream;
+class ScriptState;
+class UnderlyingSinkBase;
+class WritableStream;
 
 class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -38,21 +41,26 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
 
   // MediaStreamTrackProcessor interface
   ReadableStream* readable(ScriptState* script_state);
+  WritableStream* writableControl(ScriptState* script_state);
 
-  MediaStreamTrack* input_track() { return input_track_; }
+  MediaStreamTrack* InputTrack() { return input_track_; }
 
   void Trace(Visitor* visitor) const override;
 
  private:
   void CreateVideoSourceStream(ScriptState* script_state);
   void CreateAudioSourceStream(ScriptState* script_state);
+  void CreateVideoControlStream(ScriptState* script_state);
+  void CreateAudioControlStream(ScriptState* script_state);
 
   class UnderlyingSourceCloser;
 
   Member<MediaStreamTrack> input_track_;
   Member<MediaStreamVideoTrackUnderlyingSource> video_underlying_source_;
   Member<MediaStreamAudioTrackUnderlyingSource> audio_underlying_source_;
+  Member<UnderlyingSinkBase> signal_underlying_sink_;
   Member<ReadableStream> source_stream_;
+  Member<WritableStream> control_stream_;
   Member<UnderlyingSourceCloser> source_closer_;
   uint16_t buffer_size_;
 };

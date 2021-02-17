@@ -13,10 +13,14 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_signal.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
@@ -55,6 +59,17 @@ PushableMediaStreamVideoSource* CreatePushableVideoSource() {
   return pushable_video_source;
 }
 
+MockMediaStreamVideoSource* CreateMockVideoSource() {
+  MockMediaStreamVideoSource* mock_video_source =
+      new MockMediaStreamVideoSource();
+  MediaStreamSource* media_stream_source =
+      MakeGarbageCollected<MediaStreamSource>(
+          "source_id", MediaStreamSource::kTypeVideo, "source_name",
+          /*remote=*/false);
+  media_stream_source->SetPlatformSource(base::WrapUnique(mock_video_source));
+  return mock_video_source;
+}
+
 MediaStreamTrack* CreateVideoMediaStreamTrack(ExecutionContext* context,
                                               MediaStreamVideoSource* source) {
   return MakeGarbageCollected<MediaStreamTrack>(
@@ -65,7 +80,7 @@ MediaStreamTrack* CreateVideoMediaStreamTrack(ExecutionContext* context,
 
 MediaStreamTrack* CreateAudioMediaStreamTrack(
     ExecutionContext* context,
-    std::unique_ptr<PushableMediaStreamAudioSource> source) {
+    std::unique_ptr<MediaStreamAudioSource> source) {
   auto* source_ptr = source.get();
 
   MediaStreamSource* media_stream_source =
@@ -80,6 +95,32 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
   source_ptr->ConnectToTrack(component);
 
   return MakeGarbageCollected<MediaStreamTrack>(context, component);
+}
+
+ScriptValue CreateRequestFrameChunk(ScriptState* script_state) {
+  MediaStreamTrackSignal* signal = MediaStreamTrackSignal::Create();
+  signal->setSignalType("request-frame");
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8(signal, script_state->GetContext()->Global(),
+                          script_state->GetIsolate()));
+}
+
+ScriptValue CreateSetMinFrameRateChunk(ScriptState* script_state,
+                                       double frame_rate) {
+  MediaStreamTrackSignal* signal = MediaStreamTrackSignal::Create();
+  signal->setSignalType("set-min-frame-rate");
+  signal->setFrameRate(frame_rate);
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8(signal, script_state->GetContext()->Global(),
+                          script_state->GetIsolate()));
+}
+
+ScriptValue CreateInvalidSignalChunk(ScriptState* script_state) {
+  MediaStreamTrackSignal* signal = MediaStreamTrackSignal::Create();
+  signal->setSignalType("set-min-frame-rate");
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8(signal, script_state->GetContext()->Global(),
+                          script_state->GetIsolate()));
 }
 
 }  // namespace
@@ -108,15 +149,13 @@ TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
                                       pushable_video_source),
           exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  EXPECT_EQ(track_processor->input_track()
-                ->Component()
-                ->Source()
-                ->GetPlatformSource(),
-            pushable_video_source);
+  EXPECT_EQ(
+      track_processor->InputTrack()->Component()->Source()->GetPlatformSource(),
+      pushable_video_source);
 
   MockMediaStreamVideoSink mock_video_sink;
   mock_video_sink.ConnectToTrack(
-      WebMediaStreamTrack(track_processor->input_track()->Component()));
+      WebMediaStreamTrack(track_processor->InputTrack()->Component()));
   EXPECT_EQ(mock_video_sink.number_of_frames(), 0);
   EXPECT_EQ(mock_video_sink.last_frame(), nullptr);
 
@@ -159,7 +198,7 @@ TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
                                       std::move(pushable_audio_source)),
           exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  MediaStreamComponent* component = track_processor->input_track()->Component();
+  MediaStreamComponent* component = track_processor->InputTrack()->Component();
   EXPECT_EQ(component->Source()->GetPlatformSource(), pushable_source_ptr);
 
   MockMediaStreamAudioSink mock_audio_sink;
@@ -192,6 +231,80 @@ TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
                                                 WebMediaStreamTrack(component));
 }
 
+TEST_F(MediaStreamTrackProcessorTest, VideoControlSignalsAreForwarded) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  MockMediaStreamVideoSource* mock_video_source = CreateMockVideoSource();
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(
+          script_state,
+          CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(),
+                                      mock_video_source),
+          exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_EQ(
+      track_processor->InputTrack()->Component()->Source()->GetPlatformSource(),
+      mock_video_source);
+  mock_video_source->StartMockedSource();
+
+  EXPECT_CALL(*mock_video_source, OnRequestRefreshFrame());
+  auto* writer = track_processor->writableControl(script_state)
+                     ->getWriter(script_state, exception_state);
+  ScriptPromiseTester request_frame_tester(
+      script_state,
+      writer->write(script_state, CreateRequestFrameChunk(script_state),
+                    exception_state));
+  request_frame_tester.WaitUntilSettled();
+  EXPECT_TRUE(request_frame_tester.IsFulfilled());
+  EXPECT_FALSE(exception_state.HadException());
+
+  MediaStreamVideoTrack* platform_track =
+      MediaStreamVideoTrack::From(track_processor->InputTrack()->Component());
+  EXPECT_FALSE(platform_track->min_frame_rate().has_value());
+  const double min_frame_rate = 15.0;
+  ScriptPromiseTester set_min_frame_rate_tester(
+      script_state,
+      writer->write(script_state,
+                    CreateSetMinFrameRateChunk(script_state, min_frame_rate),
+                    exception_state));
+  set_min_frame_rate_tester.WaitUntilSettled();
+  EXPECT_TRUE(set_min_frame_rate_tester.IsFulfilled());
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(platform_track->min_frame_rate().has_value());
+  EXPECT_EQ(platform_track->min_frame_rate().value(), min_frame_rate);
+
+  ScriptPromiseTester invalid_signal_tester(
+      script_state,
+      writer->write(script_state, CreateInvalidSignalChunk(script_state),
+                    exception_state));
+  invalid_signal_tester.WaitUntilSettled();
+  EXPECT_TRUE(invalid_signal_tester.IsRejected());
+}
+
+TEST_F(MediaStreamTrackProcessorTest, AudioControlSignalsAreRejected) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(
+          script_state,
+          CreateAudioMediaStreamTrack(v8_scope.GetExecutionContext(),
+                                      std::make_unique<MediaStreamAudioSource>(
+                                          Thread::MainThread()->GetTaskRunner(),
+                                          /*is_local=*/true)),
+          exception_state);
+
+  auto* writer = track_processor->writableControl(script_state)
+                     ->getWriter(script_state, exception_state);
+  ScriptPromiseTester tester(
+      script_state,
+      writer->write(script_state, CreateRequestFrameChunk(script_state),
+                    exception_state));
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
 TEST_F(MediaStreamTrackProcessorTest, CanceledReadableDisconnects) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
@@ -207,12 +320,12 @@ TEST_F(MediaStreamTrackProcessorTest, CanceledReadableDisconnects) {
 
   // Initially the track has no sinks.
   MediaStreamVideoTrack* video_track =
-      MediaStreamVideoTrack::From(track_processor->input_track()->Component());
+      MediaStreamVideoTrack::From(track_processor->InputTrack()->Component());
   EXPECT_EQ(video_track->CountSinks(), 0u);
 
   MockMediaStreamVideoSink mock_video_sink;
   mock_video_sink.ConnectToTrack(
-      WebMediaStreamTrack(track_processor->input_track()->Component()));
+      WebMediaStreamTrack(track_processor->InputTrack()->Component()));
   EXPECT_EQ(mock_video_sink.number_of_frames(), 0);
   EXPECT_EQ(mock_video_sink.last_frame(), nullptr);
   EXPECT_EQ(video_track->CountSinks(), 1u);

@@ -7,10 +7,13 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_track_underlying_source.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_underlying_source.h"
+#include "third_party/blink/renderer/modules/mediastream/video_track_signal_underlying_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -18,6 +21,38 @@
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
+
+namespace {
+
+// Trivial sink for audio control signals.
+class NullUnderlyingSink : public UnderlyingSinkBase {
+ public:
+  // UnderlyingSinkBase overrides.
+  ScriptPromise start(ScriptState* script_state,
+                      WritableStreamDefaultController* controller,
+                      ExceptionState& exception_state) override {
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  ScriptPromise write(ScriptState* script_state,
+                      ScriptValue chunk,
+                      WritableStreamDefaultController* controller,
+                      ExceptionState& exception_state) override {
+    exception_state.ThrowTypeError("Invalid audio signal");
+    return ScriptPromise();
+  }
+  ScriptPromise abort(ScriptState* script_state,
+                      ScriptValue reason,
+                      ExceptionState& exception_state) override {
+    return ScriptPromise::CastUndefined(script_state);
+  }
+  ScriptPromise close(ScriptState* script_state,
+                      ExceptionState& exception_state) override {
+    return ScriptPromise::CastUndefined(script_state);
+  }
+};
+
+}  // namespace
 
 // A MediaStreamTrack Observer which closes the provided
 // VideoTrackUnderlyingSource whenever the provided track is ended.
@@ -61,12 +96,27 @@ ReadableStream* MediaStreamTrackProcessor::readable(ScriptState* script_state) {
     return source_stream_;
 
   if (input_track_->Component()->Source()->GetType() ==
-      MediaStreamSource::kTypeVideo)
+      MediaStreamSource::kTypeVideo) {
     CreateVideoSourceStream(script_state);
-  else
+  } else {
     CreateAudioSourceStream(script_state);
+  }
 
   return source_stream_;
+}
+
+WritableStream* MediaStreamTrackProcessor::writableControl(
+    ScriptState* script_state) {
+  if (control_stream_)
+    return control_stream_;
+
+  if (input_track_->Component()->Source()->GetType() ==
+      MediaStreamSource::kTypeVideo) {
+    CreateVideoControlStream(script_state);
+  } else {
+    CreateAudioControlStream(script_state);
+  }
+  return control_stream_;
 }
 
 void MediaStreamTrackProcessor::CreateVideoSourceStream(
@@ -91,6 +141,23 @@ void MediaStreamTrackProcessor::CreateAudioSourceStream(
           script_state, input_track_->Component(), buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, audio_underlying_source_, /*high_water_mark=*/0);
+}
+
+void MediaStreamTrackProcessor::CreateVideoControlStream(
+    ScriptState* script_state) {
+  DCHECK(!control_stream_);
+  signal_underlying_sink_ =
+      MakeGarbageCollected<VideoTrackSignalUnderlyingSink>(input_track_);
+  control_stream_ = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, signal_underlying_sink_, /*high_water_mark=*/1u);
+}
+
+void MediaStreamTrackProcessor::CreateAudioControlStream(
+    ScriptState* script_state) {
+  DCHECK(!control_stream_);
+  signal_underlying_sink_ = MakeGarbageCollected<NullUnderlyingSink>();
+  control_stream_ = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, signal_underlying_sink_, /*high_water_mark=*/1u);
 }
 
 MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
@@ -140,7 +207,9 @@ void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(input_track_);
   visitor->Trace(audio_underlying_source_);
   visitor->Trace(video_underlying_source_);
+  visitor->Trace(signal_underlying_sink_);
   visitor->Trace(source_stream_);
+  visitor->Trace(control_stream_);
   visitor->Trace(source_closer_);
   ScriptWrappable::Trace(visitor);
 }
