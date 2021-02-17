@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -36,6 +37,8 @@
 namespace chromeos {
 namespace cfm {
 namespace {
+
+constexpr char kReleaseVersion[] = "13671.0.2020";
 
 class CfmDeviceInfoServiceTest : public ::testing::Test {
  public:
@@ -183,13 +186,19 @@ TEST_F(CfmDeviceInfoServiceTest, TestPolicyInfo) {
 
 TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
   base::RunLoop run_loop;
+
+  base::SysInfo::SetChromeOSVersionInfoForTest(
+      base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s\n", kReleaseVersion),
+      base::Time::Now());
+
   const auto& details_remote = GetDeviceInfoRemote();
   run_loop.RunUntilIdle();
 
   base::RunLoop mojo_loop;
   details_remote->GetSysInfo(
       base::BindLambdaForTesting([&](mojom::SysInfoPtr info_ptr) {
-        ASSERT_GE(info_ptr->num_proc, 1);
+        ASSERT_FALSE(info_ptr.is_null());
+        EXPECT_EQ(info_ptr->release_version, kReleaseVersion);
         mojo_loop.Quit();
       }));
   mojo_loop.Run();
