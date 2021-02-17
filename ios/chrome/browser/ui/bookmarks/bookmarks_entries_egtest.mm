@@ -6,17 +6,23 @@
 #import <XCTest/XCTest.h>
 
 #include "base/ios/ios_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "build/build_config.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/http_server/http_server.h"
+#include "ios/web/public/test/http_server/http_server_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,6 +41,19 @@ using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
+using chrome_test_util::WindowWithNumber;
+
+namespace {
+char kURL1[] = "http://firstURL";
+char kTitle1[] = "Page 1";
+char kResponse1[] = "Test Page 1 content";
+char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
+
+// Matcher for the add bookmark button in the tools menu.
+id<GREYMatcher> AddBookmarkButton() {
+  return grey_accessibilityID(kToolsMenuAddToBookmarks);
+}
+}  // namespace
 
 // Bookmark entries integration tests for Chrome.
 @interface BookmarksEntriesTestCase : WebHttpServerChromeTestCase
@@ -1114,6 +1133,66 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_longPress()];
 
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
+}
+
+- (void)testBookmarksSyncInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  GURL URL1 = web::test::HttpServer::MakeUrl(kURL1);
+
+  std::map<GURL, std::string> responses;
+  responses[URL1] = base::StringPrintf(kPageFormat, kTitle1, kResponse1);
+  web::test::SetUpSimpleHttpServer(responses);
+
+  [BookmarkEarlGrey clearBookmarksPositionCache];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Open bookmark panel in a second window
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Load url in first window and bookmark it.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGrey loadURL:URL1 inWindowWithNumber:0];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:AddBookmarkButton()];
+
+  // Assert it appeared in second window's list.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Open bookmark panel in first window also.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Delete item from first window.
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_nil()];
+
+  // And make sure it has disappeared from second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Helpers
