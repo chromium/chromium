@@ -22,23 +22,14 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
  public:
   METADATA_HEADER(WindowCycleTabSlider);
 
-  enum ModeSwitchSource { BUTTON, KEYBOARD, USER_PREFS };
-
   WindowCycleTabSlider();
   WindowCycleTabSlider(const WindowCycleTabSlider&) = delete;
   WindowCycleTabSlider& operator=(const WindowCycleTabSlider&) = delete;
   ~WindowCycleTabSlider() override = default;
 
-  // Updates user prefs when users switch the button.
-  void OnModeChanged(bool per_desk,
-                     WindowCycleTabSlider::ModeSwitchSource source);
-
-  // Displays or hides the highlight on the active button selector during
-  // keyboard navigation.
-  void SetHighlightVisibility(bool focus);
-
-  // views::View:
-  // void OnPaintBackground(gfx::Canvas* canvas) override;
+  // Sets |is_focused_| to |focus| and displays or hides the highlight on the
+  // active button selector during keyboard navigation.
+  void SetFocus(bool focus);
 
   // Updates UI when user prefs change.
   void OnModePrefsChanged();
@@ -48,6 +39,7 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
   const views::View::Views& GetTabSliderButtonsForTesting() const;
+  bool is_focused() const { return is_focused_; }
 
  private:
   // Updates the active button selector with moving animation from the
@@ -65,6 +57,8 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
   views::View* active_button_selector_;
 
   // The highlight border, the focus ring, of the active button selector.
+  // The border shows up when the tab slider is focused during keyboard
+  // navigation.
   WmHighlightItemBorder* highlight_border_;
 
   // The view that contains the tab slider buttons.
@@ -72,6 +66,9 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
 
   WindowCycleTabSliderButton* all_desks_tab_slider_button_;
   WindowCycleTabSliderButton* current_desk_tab_slider_button_;
+
+  // True if the tab slider is focused when using keyboard navigation.
+  bool is_focused_ = false;
 };
 
 }  // namespace ash

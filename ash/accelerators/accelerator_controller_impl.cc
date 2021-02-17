@@ -284,7 +284,7 @@ void HandleCycleBackwardMRU(const ui::Accelerator& accelerator) {
     base::RecordAction(base::UserMetricsAction("Accel_PrevWindow_Tab"));
 
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
-      WindowCycleController::BACKWARD);
+      WindowCycleController::WindowCyclingDirection::kBackward);
 }
 
 void HandleCycleForwardMRU(const ui::Accelerator& accelerator) {
@@ -292,7 +292,7 @@ void HandleCycleForwardMRU(const ui::Accelerator& accelerator) {
     base::RecordAction(base::UserMetricsAction("Accel_NextWindow_Tab"));
 
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
-      WindowCycleController::FORWARD);
+      WindowCycleController::WindowCyclingDirection::kForward);
 }
 
 void HandleActivateDesk(const ui::Accelerator& accelerator) {
