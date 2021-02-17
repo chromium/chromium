@@ -14305,8 +14305,18 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSadFrameTabReload,
-                       ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {
+// This test is flaky on Win7.
+// TODO(crbug.com/1179074): Deflake it and enable this test back.
+#if defined(OS_WIN)
+#define MAYBE_ChildFrameCrashMetrics_KilledWhileHiddenThenShown \
+  DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown
+#else
+#define MAYBE_ChildFrameCrashMetrics_KilledWhileHiddenThenShown \
+  ChildFrameCrashMetrics_KilledWhileHiddenThenShown
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTestWithoutSadFrameTabReload,
+    MAYBE_ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {
   // Set-up a frame tree that helps verify what the metrics tracks:
   // 1) frames (12 frames are affected if B process gets killed) or
   // 2) widgets (10 b widgets and 1 c widget are affected if B is killed) or
