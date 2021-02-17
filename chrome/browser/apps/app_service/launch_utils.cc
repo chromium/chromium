@@ -250,6 +250,10 @@ apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info) {
+  if (!window_info) {
+    return nullptr;
+  }
+
   arc::mojom::WindowInfoPtr arc_window_info = arc::mojom::WindowInfo::New();
   arc_window_info->window_id = window_info->window_id;
   arc_window_info->state = window_info->state;
