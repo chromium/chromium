@@ -343,8 +343,15 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
 // blink::mojom::FrameWidget::EnableDeviceEmulation, which calls
 // RenderWidget::Resize on the renderer side.  The test fakes this by directly
 // sending the resize message to the widget.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ScreenOrientationInPendingMainFrame \
+  DISABLED_ScreenOrientationInPendingMainFrame
+#else
+#define MAYBE_ScreenOrientationInPendingMainFrame \
+  ScreenOrientationInPendingMainFrame
+#endif
 IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
-                       ScreenOrientationInPendingMainFrame) {
+                       MAYBE_ScreenOrientationInPendingMainFrame) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 #if USE_AURA || defined(OS_ANDROID)
