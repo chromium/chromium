@@ -100,13 +100,6 @@ namespace content {
 namespace {
 
 const char kDisabledReasonForTest[] = "DisabledByBackForwardCacheBrowserTest";
-const char kSameSiteNavigationDidSwapHistogramName[] =
-    "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap";
-const char kEligibilityDuringCommitHistogramName[] =
-    "BackForwardCache.ProactiveSameSiteBISwap.EligibilityDuringCommit";
-const char kUnloadRunsAfterCommitHistogramName[] =
-    "BackForwardCache.ProactiveSameSiteBISwap.UnloadRunsAfterCommit";
-
 // hash for std::unordered_map.
 struct FeatureHash {
   size_t operator()(base::Feature feature) const {
@@ -400,13 +393,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
                          T sample,
                          base::HistogramBase::Count expected_count) {
     histogram_tester_.ExpectBucketCount(name, sample, expected_count);
-  }
-
-  template <typename T>
-  void ExpectUniqueSample(base::StringPiece name,
-                          T sample,
-                          base::HistogramBase::Count expected_count) {
-    histogram_tester_.ExpectUniqueSample(name, sample, expected_count);
   }
 
   // Do not fail this test if a message from a renderer arrives at the browser
@@ -5260,14 +5246,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestSkipSameSiteUnload,
 
   // 1) Navigate to A1 and add an unload handler.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  // We won't do a proactive BrowsingInstance swap for the initial navigation.
-  // The initial navigation is a same-site navigation iff site isolation is on,
-  // so we will track it as  "same-site navigation but we did not swap BIs" in
-  // that case.
-  int initial_same_site_false_bucket_count =
-      AreAllSitesIsolatedForTesting() ? 1 : 0;
-  ExpectUniqueSample(kSameSiteNavigationDidSwapHistogramName, false,
-                     initial_same_site_false_bucket_count);
 
   RenderFrameHostImpl* rfh_a1 = current_frame_host();
   EXPECT_TRUE(ExecJs(rfh_a1, "window.onunload = () => {} "));
@@ -5278,15 +5256,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestSkipSameSiteUnload,
   // We should not swap RFHs and A1 should not be in the back-forward cache.
   EXPECT_EQ(rfh_a1, rfh_a2);
   EXPECT_FALSE(rfh_a1->IsInBackForwardCache());
-
-  // We didn't do a BrowsingInstance swap for the navigation, so we should not
-  // record any metrics related to same-site BrowsingInstance swaps, except for
-  // the one that tracks the fact that we didn't do a same-site proactive
-  // BrowsingInstance swap.
-  ExpectUniqueSample(kSameSiteNavigationDidSwapHistogramName, false,
-                     initial_same_site_false_bucket_count + 1);
-  ExpectTotalCount(kUnloadRunsAfterCommitHistogramName, 0);
-  ExpectTotalCount(kEligibilityDuringCommitHistogramName, 0);
 }
 
 // We won't cache pages with an unload handler in a same-SiteInstance subframe
@@ -5368,47 +5337,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestSkipSameSiteUnload,
   // We should swap RFHs and A should be in the back-forward cache.
   EXPECT_NE(rfh_a, rfh_b);
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-}
-
-// We will cache pages with unload handler on same-site navigations when
-// skip_same_site_if_unload_exists is set to false.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       SameSiteNavigationFromPageWithUnload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
-
-  // 1) Navigate to A1 and add an unload handler.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  RenderFrameHostImpl* rfh_a1 = current_frame_host();
-  EXPECT_TRUE(ExecJs(rfh_a1, "window.onunload = () => {} "));
-  // We won't do a proactive BrowsingInstance swap for the initial navigation.
-  // The initial navigation is a same-site navigation iff site isolation is on,
-  // so we will track it as  "same-site navigation but we did not swap BIs" in
-  // that case.
-  int initial_same_site_false_bucket_count =
-      AreAllSitesIsolatedForTesting() ? 1 : 0;
-  ExpectUniqueSample(kSameSiteNavigationDidSwapHistogramName, false,
-                     initial_same_site_false_bucket_count);
-
-  // 2) Navigate to A2.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-  RenderFrameHostImpl* rfh_a2 = current_frame_host();
-  // We should swap RFHs and A1 should be in the back-forward cache.
-  EXPECT_NE(rfh_a1, rfh_a2);
-  EXPECT_TRUE(rfh_a1->IsInBackForwardCache());
-
-  // We did a same-site BrowsingInstance swap for the navigation, so we should
-  // record metrics related to same-site BrowsingInstance swaps.
-  ExpectBucketCount(kSameSiteNavigationDidSwapHistogramName, true, 1);
-  ExpectBucketCount(kSameSiteNavigationDidSwapHistogramName, false,
-                    initial_same_site_false_bucket_count);
-  // We have an unload handler on A1, but it will not be run as the page is
-  // stored in the back-forward cache.
-  ExpectUniqueSample(kUnloadRunsAfterCommitHistogramName, false, 1);
-  // The page is still eligible for back forward cache during commit, so
-  // we should note it as such in the metrics.
-  ExpectUniqueSample(kEligibilityDuringCommitHistogramName, true, 1);
 }
 
 // Sub-frame doesn't transition from LifecycleState::kInBackForwardCache to
@@ -8653,61 +8581,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(
       "not_dispatched",
       EvalJs(main_frame_3, "localStorage.getItem('visibilitychange_storage')"));
-}
-
-// Test histogram values related to same-site navigations when a page became
-// ineligible for back-forward cache in between navigation start and commit.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ProactiveSameSiteBISwapHistogramsEligibilityChanged) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
-
-  // 1) Navigate to A1.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  RenderFrameHostImpl* rfh_a1 = current_frame_host();
-  RenderFrameDeletedObserver rfh_a1_deleted_observer(rfh_a1);
-  // We didn't do a proactive BrowsingInstance swap. The initial navigation is a
-  // same-site navigation iff site isolation is on, so we will track it as
-  // "same-site navigation but we did not swap BIs" in that case.
-  int initial_same_site_false_bucket_count =
-      AreAllSitesIsolatedForTesting() ? 1 : 0;
-  ExpectUniqueSample(kSameSiteNavigationDidSwapHistogramName, false,
-                     initial_same_site_false_bucket_count);
-
-  // 2) Make A1 ineligible for bfcache just before committing the next
-  // navigation.
-  ReadyToCommitNavigationCallback disable_rfh_a1_callback(
-      web_contents(),
-      base::BindOnce(
-          [](RenderFrameHostImpl* rfh_a1, NavigationHandle* navigation_handle) {
-            BackForwardCache::DisableForRenderFrameHost(
-                rfh_a1->GetGlobalFrameRoutingId(), kDisabledReasonForTest);
-          },
-          rfh_a1));
-
-  // 3) Navigate to A2.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-  RenderFrameHostImpl* rfh_a2 = current_frame_host();
-
-  // We should swap RFHs because A1 was eligible when the navigation started,
-  // but A1 should not end up in the back-forward cache because it became
-  // ineligible just before committing.
-  EXPECT_NE(rfh_a1, rfh_a2);
-  // |rfh_a1| should eventually get deleted.
-  rfh_a1_deleted_observer.WaitUntilDeleted();
-
-  // We did a same-site BrowsingInstance swap for the navigation, so we should
-  // record metrics related to same-site BrowsingInstance swaps.
-  ExpectBucketCount(kSameSiteNavigationDidSwapHistogramName, true, 1);
-  ExpectBucketCount(kSameSiteNavigationDidSwapHistogramName, false,
-                    initial_same_site_false_bucket_count);
-  // We don't have an unload handler on A1 so no unload handlers will run after
-  // commit.
-  ExpectUniqueSample(kUnloadRunsAfterCommitHistogramName, false, 1);
-  // A1 was no longer eligible for back forward cache during commit, so we
-  // should note it as such in the metrics.
-  ExpectUniqueSample(kEligibilityDuringCommitHistogramName, false, 1);
 }
 
 // Tests that we're getting the correct TextInputState and focus updates when a

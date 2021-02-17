@@ -1597,14 +1597,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     bool cross_origin_opener_policy_mismatch,
     bool should_replace_current_entry,
     bool is_speculative,
-    bool* did_same_site_proactive_browsing_instance_swap,
     std::string* reason) {
   const GURL& dest_url = dest_url_info.url;
-  // Make sure |did_same_site_proactive_browsing_instance_swap| is initialized
-  // to false at first, as the function might return early before setting this
-  // to the actual value (and if we return early, the actual value will always
-  // be false).
-  *did_same_site_proactive_browsing_instance_swap = false;
 
   // On renderer-initiated navigations, when the frame initiating the navigation
   // and the frame being navigated differ, |source_instance| is set to the
@@ -1727,7 +1721,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     }
   }
 
-  *did_same_site_proactive_browsing_instance_swap =
+  bool is_same_site_proactive_swap =
       (should_swap_result ==
        ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap);
   bool reuse_current_process_if_possible = false;
@@ -1745,7 +1739,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   if (IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled() &&
       proactive_swap &&
       (!current_instance->RequiresDedicatedProcess() ||
-       *did_same_site_proactive_browsing_instance_swap)) {
+       is_same_site_proactive_swap)) {
     reuse_current_process_if_possible = true;
   }
 
@@ -1755,8 +1749,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // Note 2: This doesn't cover cross-site navigations. Cross-site process-reuse
   // is being experimented independently and is covered in path #1 above.
   // See crbug.com/1122974 for further details.
-  if (IsSameSiteBackForwardCacheEnabled() &&
-      *did_same_site_proactive_browsing_instance_swap) {
+  if (IsSameSiteBackForwardCacheEnabled() && is_same_site_proactive_swap) {
     reuse_current_process_if_possible = true;
   }
 
@@ -2769,7 +2762,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
   // fixed.
   bool is_reload =
       NavigationTypeUtils::IsReload(request->common_params().navigation_type);
-  bool did_same_site_proactive_browsing_instance_swap = false;
 
   CoopCoepCrossOriginIsolatedInfo cross_origin_isolated_info =
       GetCoopCoepCrossOriginIsolationInfo(request);
@@ -2786,13 +2778,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->common_params().should_replace_current_entry,
       request->state() < NavigationRequest::NavigationState::
                              WILL_REDIRECT_REQUEST /* is_speculative */,
-      &did_same_site_proactive_browsing_instance_swap, reason);
-
-  // Save whether we're doing a same-site proactive BrowsingInstance swap or not
-  // for this navigation. This will be used at DidCommitNavigation time for
-  // logging metrics.
-  request->set_did_same_site_proactive_browsing_instance_swap(
-      did_same_site_proactive_browsing_instance_swap);
+      reason);
 
   // If the NavigationRequest's dest_site_instance was present but incorrect,
   // then ensure no sensitive state is kept on the request. This can happen for

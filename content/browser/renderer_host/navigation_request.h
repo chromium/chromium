@@ -363,16 +363,6 @@ class CONTENT_EXPORT NavigationRequest
     common_params_->navigation_start = time;
   }
 
-  bool did_same_site_proactive_browsing_instance_swap() {
-    return did_same_site_proactive_browsing_instance_swap_;
-  }
-
-  void set_did_same_site_proactive_browsing_instance_swap(
-      bool did_same_site_proactive_browsing_instance_swap) {
-    did_same_site_proactive_browsing_instance_swap_ =
-        did_same_site_proactive_browsing_instance_swap;
-  }
-
   void set_is_cross_browsing_instance(bool is_cross_browsing_instance) {
     commit_params_->is_cross_browsing_instance = is_cross_browsing_instance;
   }
@@ -1568,10 +1558,6 @@ class CONTENT_EXPORT NavigationRequest
   // If true, changes to the user-agent override require a reload. If false, a
   // reload is not necessary.
   bool ua_change_requires_reload_ = true;
-
-  // Whether we're doing a same-site proactive BrowsingInstance swap for this
-  // navigation.
-  bool did_same_site_proactive_browsing_instance_swap_ = false;
 
   // Controls whether or not an error page is displayed on error. If set to
   // true, an error will be treated as if the user simply cancelled the

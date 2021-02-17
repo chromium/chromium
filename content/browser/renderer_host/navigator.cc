@@ -325,41 +325,6 @@ void Navigator::DidNavigate(
   // At this point we have already chosen a SiteInstance for this navigation, so
   // set |origin_requests_isolation| = false in the conversion to UrlInfo below.
   const UrlInfo url_info(params.url, false /* origin_requests_isolation */);
-  bool is_cross_document_same_site_navigation =
-      !is_same_document_navigation &&
-      old_frame_host->IsNavigationSameSite(
-          url_info, render_frame_host->GetSiteInstance()
-                        ->GetCoopCoepCrossOriginIsolatedInfo());
-
-  if (is_cross_document_same_site_navigation) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap",
-        navigation_request->did_same_site_proactive_browsing_instance_swap());
-  }
-
-  if (navigation_request->did_same_site_proactive_browsing_instance_swap()) {
-    // If we did a same-site cross-BrowsingInstance main frame navigation, we
-    // might be introducing a web-observable behavior change if we need to
-    // unload the old frame (if we can't store the page in the back-forward
-    // cache), because on normal same-site navigations the unloading of the old
-    // RenderFrameHost happens before commit. We're measuring how often this
-    // case happens to determine the risk of this change.
-    DCHECK(old_frame_host.get());
-    DCHECK_NE(old_frame_host.get(), render_frame_host);
-    DCHECK(frame_tree_node->IsMainFrame());
-    DCHECK(!old_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
-        render_frame_host->GetSiteInstance()));
-    DCHECK(is_cross_document_same_site_navigation);
-    bool can_store_in_back_forward_cache =
-        controller_.GetBackForwardCache().CanStorePageNow(old_frame_host.get());
-    UMA_HISTOGRAM_BOOLEAN(
-        "BackForwardCache.ProactiveSameSiteBISwap.EligibilityDuringCommit",
-        can_store_in_back_forward_cache);
-    UMA_HISTOGRAM_BOOLEAN(
-        "BackForwardCache.ProactiveSameSiteBISwap.UnloadRunsAfterCommit",
-        !can_store_in_back_forward_cache &&
-            old_frame_host->UnloadHandlerExistsInSameSiteInstanceSubtree());
-  }
 
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive

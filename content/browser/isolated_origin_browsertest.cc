@@ -4192,68 +4192,6 @@ IN_PROC_BROWSER_TEST_F(
                   .allows_any_site());
 }
 
-// Test that we're not tracking whether we did a proactive BrowsingInstance
-// swap, bfcache eligibility, and whether unload runs after commit or not for
-// same-site navigations where we did a BrowsingInstance swap due to dynamic
-// isolation (instead of doing it proactively due to
-// ProactivelySwapBrowsingInstance).
-IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
-                       ProactiveSameSiteBISwapHistogramsNotModified) {
-  // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
-    return;
-  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  const char kSameSiteNavigationDidSwapHistogramName[] =
-      "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap";
-  const char kEligibilityDuringCommitHistogramName[] =
-      "BackForwardCache.ProactiveSameSiteBISwap.EligibilityDuringCommit";
-  const char kUnloadRunsAfterCommitHistogramName[] =
-      "BackForwardCache.ProactiveSameSiteBISwap.UnloadRunsAfterCommit";
-  base::HistogramTester histogram_tester;
-
-  // 1) Navigate to a.com/title1.html.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
-  scoped_refptr<SiteInstance> first_instance =
-      root->current_frame_host()->GetSiteInstance();
-  histogram_tester.ExpectTotalCount(kSameSiteNavigationDidSwapHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kEligibilityDuringCommitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(kUnloadRunsAfterCommitHistogramName, 0);
-
-  // Add unload handler to A1.
-  EXPECT_TRUE(
-      ExecJs(web_contents->GetMainFrame(), "window.onunload = () => {} "));
-
-  // Start isolating a.com.
-  BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(url_a1)},
-                             IsolatedOriginSource::TEST, context);
-
-  // 2) Navigate same-site from a.com/title1.html to a.com/title2.html, which
-  // should trigger a BrowsingInstance swap due to dynamic isolation.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-  scoped_refptr<SiteInstance> second_instance =
-      root->current_frame_host()->GetSiteInstance();
-  EXPECT_NE(first_instance, second_instance);
-  EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
-
-  // We didn't do a same-site proactive BrowsingInstance swap. Since this
-  histogram_tester.ExpectUniqueSample(kSameSiteNavigationDidSwapHistogramName,
-                                      false, 1);
-  // There's no unload handler in A1 but we should not save anything to
-  // UnloadRunsAfterCommit (as it only cares about proactive BrowsingInstance
-  // swap cases).
-  histogram_tester.ExpectTotalCount(kUnloadRunsAfterCommitHistogramName, 0);
-  // A1's eligibility/ineligibility for bfcache should not be counted in
-  // EligibilityDuringCommitAfterBISwap histogram (as it only cares about
-  // proactive BrowsingInstance swap cases).
-  histogram_tester.ExpectTotalCount(kEligibilityDuringCommitHistogramName, 0);
-}
-
 // This class allows intercepting the BroadcastChannelProvider::ConnectToChannel
 // method and changing the |origin| parameter before passing the call to the
 // real implementation of BroadcastChannelProvider.

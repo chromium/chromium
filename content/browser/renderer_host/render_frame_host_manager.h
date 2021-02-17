@@ -687,7 +687,6 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool cross_origin_opener_policy_mismatch,
       bool should_replace_current_entry,
       bool is_speculative,
-      bool* did_same_site_proactive_browsing_instance_swap,
       std::string* reason);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given
