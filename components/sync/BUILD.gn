@@ -123,7 +123,6 @@ static_library("test_support_nigori") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "base/bind_to_task_runner_unittest.cc",
     "base/client_tag_hash_unittest.cc",
     "base/enum_set_unittest.cc",
     "base/immutable_unittest.cc",
