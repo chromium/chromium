@@ -308,16 +308,23 @@ void FontMatchingMetrics::PublishUkmMetrics() {
       .SetSystemFontFamilyFailures(ukm::GetExponentialBucketMin(
           SetIntersection(failed_font_families_, system_font_families_).size(),
           kUkmFontLoadCountBucketSpacing))
+      .SetSystemFontFamilyTotal(ukm::GetExponentialBucketMin(
+          system_font_families_.size(), kUkmFontLoadCountBucketSpacing))
       .SetWebFontFamilySuccesses(ukm::GetExponentialBucketMin(
           SetIntersection(successful_font_families_, web_font_families_).size(),
           kUkmFontLoadCountBucketSpacing))
       .SetWebFontFamilyFailures(ukm::GetExponentialBucketMin(
           SetIntersection(failed_font_families_, web_font_families_).size(),
           kUkmFontLoadCountBucketSpacing))
+      .SetWebFontFamilyTotal(ukm::GetExponentialBucketMin(
+          web_font_families_.size(), kUkmFontLoadCountBucketSpacing))
       .SetLocalFontFailures(ukm::GetExponentialBucketMin(
           local_fonts_failed_.size(), kUkmFontLoadCountBucketSpacing))
       .SetLocalFontSuccesses(ukm::GetExponentialBucketMin(
           local_fonts_succeeded_.size(), kUkmFontLoadCountBucketSpacing))
+      .SetLocalFontTotal(ukm::GetExponentialBucketMin(
+          local_fonts_succeeded_.size() + local_fonts_failed_.size(),
+          kUkmFontLoadCountBucketSpacing))
       .Record(ukm_recorder_);
   UMA_HISTOGRAM_COUNTS_10000("Blink.Fonts.FontFamilyMatchAttempts.System",
                              system_font_families_.size());

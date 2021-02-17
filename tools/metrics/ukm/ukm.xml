@@ -4745,6 +4745,20 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="LocalFontTotal">
+    <summary>
+      The count of total attempts (failed + succeeded) to match @font-face
+      src:local rules.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="SystemFontFamilyFailures">
     <summary>
       The count of system font family match attempts that failed.
@@ -4771,6 +4785,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="SystemFontFamilyTotal">
+    <summary>
+      Total count of system font family match attempts (succeeded + failed).
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="WebFontFamilyFailures">
     <summary>
       The count of web font family match attempts that failed.
@@ -4787,6 +4814,19 @@ be describing additional metrics about the same event.
   <metric name="WebFontFamilySuccesses">
     <summary>
       The count of web font family match attempts that succeeded.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebFontFamilyTotal">
+    <summary>
+      Total count of web font family match attempts (succeeded + failed).
     </summary>
     <aggregation>
       <history>
