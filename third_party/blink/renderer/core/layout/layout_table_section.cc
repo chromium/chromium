@@ -446,7 +446,7 @@ void LayoutTableSection::DistributeWholeExtraRowSpanHeightToPercentRows(
     row_pos_[row + 1] += accumulated_position_increase;
   }
 
-  DCHECK(!round(remainder)) << "remainder was " << remainder;
+  DCHECK_LT(remainder, 2.0) << "remainder was " << remainder;
 
   extra_row_spanning_height -= accumulated_position_increase;
 }
@@ -477,7 +477,7 @@ void LayoutTableSection::DistributeExtraRowSpanHeightToAutoRows(
     row_pos_[row + 1] += accumulated_position_increase;
   }
 
-  DCHECK(!round(remainder)) << "remainder was " << remainder;
+  DCHECK_LT(remainder, 2.0) << "remainder was " << remainder;
 
   extra_row_spanning_height -= accumulated_position_increase;
 }
@@ -509,7 +509,7 @@ void LayoutTableSection::DistributeExtraRowSpanHeightToRemainingRows(
     row_pos_[row + 1] += accumulated_position_increase;
   }
 
-  DCHECK(!round(remainder)) << "remainder was " << remainder;
+  DCHECK_LT(remainder, 2.0) << "remainder was " << remainder;
 
   extra_row_spanning_height -= accumulated_position_increase;
 }
@@ -779,7 +779,7 @@ void LayoutTableSection::DistributeRowSpanHeightToRows(
           spanning_rows_height.row_height);
     }
 
-    DCHECK(!extra_row_spanning_height);
+    DCHECK_LT(abs(extra_row_spanning_height), 2);
 
     // Getting total changed height in the table
     extra_height_to_propagate =
