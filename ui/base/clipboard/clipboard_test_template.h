@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -101,7 +100,7 @@ class ClipboardTest : public PlatformTest {
   std::unique_ptr<PlatformEventSource> event_source_;
 #endif
   // Clipboard has a protected destructor, so scoped_ptr doesn't work here.
-  CheckedPtr<Clipboard> clipboard_ = nullptr;
+  Clipboard* clipboard_ = nullptr;
 };
 
 // A mock delegate for testing.

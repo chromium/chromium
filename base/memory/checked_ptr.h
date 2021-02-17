@@ -21,6 +21,7 @@
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #endif
@@ -139,6 +140,7 @@ struct BackupRefPtrImpl {
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
     if (IsSupportedAndNotNull(ptr)) {
+      DCHECK(features::IsPartitionAllocGigaCageEnabled());
       DCHECK(ptr != nullptr);
       AcquireInternal(ptr);
     }
@@ -151,6 +153,7 @@ struct BackupRefPtrImpl {
     void* ptr = reinterpret_cast<void*>(wrapped_ptr);
 
     if (IsSupportedAndNotNull(ptr)) {
+      DCHECK(features::IsPartitionAllocGigaCageEnabled());
       DCHECK(ptr != nullptr);
       ReleaseInternal(ptr);
     }
@@ -171,6 +174,7 @@ struct BackupRefPtrImpl {
 #if DCHECK_IS_ON()
     void* ptr = reinterpret_cast<void*>(wrapped_ptr);
     if (IsSupportedAndNotNull(ptr)) {
+      DCHECK(features::IsPartitionAllocGigaCageEnabled());
       DCHECK(ptr != nullptr);
       DCHECK(IsPointeeAlive(ptr));
     }

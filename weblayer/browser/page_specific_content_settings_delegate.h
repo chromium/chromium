@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 #define WEBLAYER_BROWSER_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
 namespace weblayer {
@@ -55,7 +54,7 @@ class PageSpecificContentSettingsDelegate
   void OnServiceWorkerAccessAllowed(const url::Origin& origin) override;
   void OnWebDatabaseAccessAllowed(const url::Origin& origin) override;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace weblayer

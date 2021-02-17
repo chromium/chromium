@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -189,7 +188,7 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-  CheckedPtr<base::MockOneShotTimer> fake_timer_;
+  base::MockOneShotTimer* fake_timer_;
   std::unique_ptr<ForceInstalledMetrics> metrics_;
 };
 

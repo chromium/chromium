@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
@@ -59,7 +58,7 @@ class ChromeWebContentsViewDelegateViews
   // The chrome specific delegate that receives events from WebDragDest.
   std::unique_ptr<content::WebDragDestDelegate> bookmark_handler_;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -217,12 +216,12 @@ class PrivacySandboxSettings : public KeyedService,
  private:
   base::ObserverList<Observer>::Unchecked observers_;
 
-  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
-  CheckedPtr<content_settings::CookieSettings> cookie_settings_;
-  CheckedPtr<PrefService> pref_service_;
-  CheckedPtr<policy::PolicyService> policy_service_;
-  CheckedPtr<syncer::SyncService> sync_service_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  HostContentSettingsMap* host_content_settings_map_;
+  content_settings::CookieSettings* cookie_settings_;
+  PrefService* pref_service_;
+  policy::PolicyService* policy_service_;
+  syncer::SyncService* sync_service_;
+  signin::IdentityManager* identity_manager_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};

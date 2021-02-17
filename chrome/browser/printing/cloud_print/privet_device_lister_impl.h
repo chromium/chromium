@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 #include "chrome/browser/printing/cloud_print/privet_device_lister.h"
 
@@ -42,7 +41,7 @@ class PrivetDeviceListerImpl
   void OnDeviceCacheFlushed(const std::string& service_type) override;
 
  private:
-  const CheckedPtr<PrivetDeviceLister::Delegate> delegate_;
+  PrivetDeviceLister::Delegate* const delegate_;
   std::unique_ptr<local_discovery::ServiceDiscoveryDeviceLister> device_lister_;
 };
 

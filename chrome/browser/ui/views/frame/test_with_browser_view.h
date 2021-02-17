@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -39,7 +38,7 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
   BrowserView* browser_view() { return browser_view_; }
 
  private:
-  CheckedPtr<BrowserView> browser_view_;  // Not owned.
+  BrowserView* browser_view_;  // Not owned.
   base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWithBrowserView);

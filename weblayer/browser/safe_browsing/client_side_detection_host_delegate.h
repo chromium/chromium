@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 namespace weblayer {
@@ -27,7 +26,7 @@ class ClientSideDetectionHostDelegate
       override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHostDelegate);
 };

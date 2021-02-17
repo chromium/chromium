@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -252,23 +251,23 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   static TranslateBubbleView* translate_bubble_view_;
 
-  CheckedPtr<views::View> translate_view_ = nullptr;
-  CheckedPtr<views::View> error_view_ = nullptr;
-  CheckedPtr<views::View> advanced_view_source_ = nullptr;
-  CheckedPtr<views::View> advanced_view_target_ = nullptr;
+  views::View* translate_view_ = nullptr;
+  views::View* error_view_ = nullptr;
+  views::View* advanced_view_source_ = nullptr;
+  views::View* advanced_view_target_ = nullptr;
 
   std::unique_ptr<SourceLanguageComboboxModel> source_language_combobox_model_;
   std::unique_ptr<TargetLanguageComboboxModel> target_language_combobox_model_;
 
-  CheckedPtr<views::Combobox> source_language_combobox_ = nullptr;
-  CheckedPtr<views::Combobox> target_language_combobox_ = nullptr;
+  views::Combobox* source_language_combobox_ = nullptr;
+  views::Combobox* target_language_combobox_ = nullptr;
 
-  CheckedPtr<views::Checkbox> always_translate_checkbox_ = nullptr;
-  CheckedPtr<views::Checkbox> advanced_always_translate_checkbox_ = nullptr;
-  CheckedPtr<views::TabbedPane> tabbed_pane_ = nullptr;
+  views::Checkbox* always_translate_checkbox_ = nullptr;
+  views::Checkbox* advanced_always_translate_checkbox_ = nullptr;
+  views::TabbedPane* tabbed_pane_ = nullptr;
 
-  CheckedPtr<views::LabelButton> advanced_done_button_source_ = nullptr;
-  CheckedPtr<views::LabelButton> advanced_done_button_target_ = nullptr;
+  views::LabelButton* advanced_done_button_source_ = nullptr;
+  views::LabelButton* advanced_done_button_target_ = nullptr;
 
   // Default source/target language without user interaction.
   int previous_source_language_index_;

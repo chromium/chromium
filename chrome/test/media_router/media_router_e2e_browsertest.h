@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "chrome/test/media_router/test_media_sinks_observer.h"
 #include "components/media_router/browser/media_router.h"
@@ -61,7 +60,7 @@ class MediaRouterE2EBrowserTest : public MediaRouterIntegrationBrowserTest {
   void OpenMediaPage();
 
  private:
-  CheckedPtr<MediaRouter> media_router_;
+  MediaRouter* media_router_;
   std::unique_ptr<TestMediaSinksObserver> observer_;
   MediaRoute::Id route_id_;
 };

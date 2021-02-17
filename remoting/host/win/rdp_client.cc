@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
@@ -79,7 +78,7 @@ class RdpClient::Core
 
   // Event handler receiving notification about connection state. The pointer is
   // cleared when Disconnect() methods is called, stopping any further updates.
-  CheckedPtr<RdpClient::EventHandler> event_handler_;
+  RdpClient::EventHandler* event_handler_;
 
   // Hosts the RDP ActiveX control.
   std::unique_ptr<RdpClientWindow> rdp_client_window_;

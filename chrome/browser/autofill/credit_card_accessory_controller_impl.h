@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 
 #include "base/memory/weak_ptr.h"
@@ -69,11 +68,11 @@ class CreditCardAccessoryControllerImpl
 
   // Pointers to cards owned by PersonalDataManager.
   std::vector<CreditCard*> cards_cache_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   base::WeakPtr<ManualFillingController> mf_controller_;
-  const CheckedPtr<PersonalDataManager> personal_data_manager_;
-  CheckedPtr<autofill::AutofillManager> af_manager_for_testing_ = nullptr;
-  CheckedPtr<autofill::AutofillDriver> af_driver_for_testing_ = nullptr;
+  PersonalDataManager* const personal_data_manager_;
+  autofill::AutofillManager* af_manager_for_testing_ = nullptr;
+  autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

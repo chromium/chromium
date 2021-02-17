@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -171,7 +170,7 @@ class BLINK_COMMON_EXPORT WebMessagePort : public mojo::MessageReceiver {
   bool is_closed_ = true;
   bool is_errored_ = false;
   bool is_transferable_ = false;
-  CheckedPtr<MessageReceiver> receiver_ = nullptr;
+  MessageReceiver* receiver_ = nullptr;
 };
 
 // A very simple message format. This is a subset of a TransferableMessage, as

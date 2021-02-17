@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
@@ -88,7 +87,7 @@ class InstallStoppedWnd : public CAxDialogImpl<InstallStoppedWnd>,
 
   THREAD_CHECKER(thread_checker_);
 
-  CheckedPtr<WTL::CMessageLoop> message_loop_ = nullptr;
+  WTL::CMessageLoop* message_loop_ = nullptr;
   HWND parent_ = nullptr;
 
   WTL::CFont default_font_;
@@ -193,7 +192,7 @@ class ProgressWnd : public CompleteWnd, public InstallProgressObserver {
 
   std::unique_ptr<InstallStoppedWnd> install_stopped_wnd_;
 
-  CheckedPtr<ProgressWndEvents> events_sink_ = nullptr;
+  ProgressWndEvents* events_sink_ = nullptr;
   std::vector<base::string16> post_install_urls_;
   bool is_canceled_ = false;
 

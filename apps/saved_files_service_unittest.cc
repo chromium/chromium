@@ -6,7 +6,6 @@
 
 #include "apps/saved_files_service.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -83,8 +82,8 @@ class SavedFilesServiceUnitTest : public testing::Test {
   }
 
   extensions::TestExtensionEnvironment env_;
-  CheckedPtr<const extensions::Extension> extension_;
-  CheckedPtr<SavedFilesService> service_;
+  const extensions::Extension* extension_;
+  SavedFilesService* service_;
   base::FilePath path_;
 };
 

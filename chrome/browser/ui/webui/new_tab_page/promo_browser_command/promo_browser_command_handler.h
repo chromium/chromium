@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,7 +52,7 @@ class PromoBrowserCommandHandler
   virtual void NavigateToURL(const GURL& url,
                              WindowOpenDisposition disposition);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<promo_browser_command::mojom::CommandHandler> page_handler_;
 };

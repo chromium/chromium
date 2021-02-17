@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
@@ -118,7 +117,7 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
  private:
-  CheckedPtr<Browser> customized_browser_ = nullptr;
+  Browser* customized_browser_ = nullptr;
   DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;

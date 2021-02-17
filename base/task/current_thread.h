@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
@@ -153,8 +152,7 @@ class BASE_EXPORT CurrentThread {
     ~ScopedAllowApplicationTasksInNativeNestedLoop();
 
    private:
-    const CheckedPtr<sequence_manager::internal::SequenceManagerImpl>
-        sequence_manager_;
+    sequence_manager::internal::SequenceManagerImpl* const sequence_manager_;
     const bool previous_state_;
   };
 

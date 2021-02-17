@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -288,11 +287,11 @@ class VIEWS_EXPORT MenuController
     ~State();
 
     // The selected menu item.
-    CheckedPtr<MenuItemView> item = nullptr;
+    MenuItemView* item = nullptr;
 
     // Used to capture a hot tracked child button when a nested menu is opened
     // and to restore the hot tracked state when exiting a nested menu.
-    CheckedPtr<Button> hot_button = nullptr;
+    Button* hot_button = nullptr;
 
     // If item has a submenu this indicates if the submenu is showing.
     bool submenu_open = false;

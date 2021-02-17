@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class NativeWindowTracker;
@@ -51,8 +50,8 @@ class ExtensionInstallPromptShowParams {
  private:
   void WebContentsDestroyed();
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<content::WebContents> parent_web_contents_;
+  Profile* profile_;
+  content::WebContents* parent_web_contents_;
   bool parent_web_contents_destroyed_;
   gfx::NativeWindow parent_window_;
 

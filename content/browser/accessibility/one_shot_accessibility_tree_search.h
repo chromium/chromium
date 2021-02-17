@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -137,9 +136,9 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   void SearchByIteratingOverChildren();
   bool Matches(BrowserAccessibility* node);
 
-  CheckedPtr<BrowserAccessibilityManager> tree_;
-  CheckedPtr<BrowserAccessibility> scope_node_;
-  CheckedPtr<BrowserAccessibility> start_node_;
+  BrowserAccessibilityManager* tree_;
+  BrowserAccessibility* scope_node_;
+  BrowserAccessibility* start_node_;
   Direction direction_;
   int result_limit_;
   bool immediate_descendants_only_;

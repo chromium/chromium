@@ -5,7 +5,6 @@
 #include "components/viz/service/display/display_resource_provider_gl.h"
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -36,7 +35,7 @@ class ScopedSetActiveTexture {
   }
 
  private:
-  CheckedPtr<GLES2Interface> gl_;
+  GLES2Interface* gl_;
   GLenum unit_;
 };
 

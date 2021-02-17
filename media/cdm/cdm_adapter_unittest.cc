@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -181,7 +180,7 @@ class CdmAdapterTestBase : public testing::Test,
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   StrictMock<MockCdmClient> cdm_client_;
-  CheckedPtr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper_ = nullptr;
+  StrictMock<MockCdmAuxiliaryHelper>* cdm_helper_ = nullptr;
 
   // Keep track of the loaded CDM.
   scoped_refptr<ContentDecryptionModule> cdm_;
@@ -355,8 +354,8 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
     ASSERT_TRUE(cdm_host_proxy_);
   }
 
-  CheckedPtr<MockLibraryCdm> mock_library_cdm_ = nullptr;
-  CheckedPtr<CdmHostProxy> cdm_host_proxy_ = nullptr;
+  MockLibraryCdm* mock_library_cdm_ = nullptr;
+  CdmHostProxy* cdm_host_proxy_ = nullptr;
 };
 
 // Instantiate test cases

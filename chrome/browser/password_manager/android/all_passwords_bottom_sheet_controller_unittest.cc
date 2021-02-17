@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/types/pass_key.h"
@@ -142,7 +141,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
   TestingProfile profile_;
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
-  CheckedPtr<MockAllPasswordsBottomSheetView> mock_view_;
+  MockAllPasswordsBottomSheetView* mock_view_;
   DismissCallback dissmissal_callback_;
   std::unique_ptr<AllPasswordsBottomSheetController> all_passwords_controller_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_ =

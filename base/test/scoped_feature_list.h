@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -135,7 +134,7 @@ class ScopedFeatureList final {
 
   bool init_called_ = false;
   std::unique_ptr<FeatureList> original_feature_list_;
-  CheckedPtr<base::FieldTrialList> original_field_trial_list_ = nullptr;
+  base::FieldTrialList* original_field_trial_list_ = nullptr;
   std::string original_params_;
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
 

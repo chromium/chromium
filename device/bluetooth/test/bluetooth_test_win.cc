@@ -18,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -152,7 +151,7 @@ class TestBluetoothDeviceWinrt : public BluetoothDeviceWinrt {
   }
 
  private:
-  CheckedPtr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
+  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
 };
 
 class TestBluetoothAdapterWinrt : public BluetoothAdapterWinrt {
@@ -216,7 +215,7 @@ class TestBluetoothAdapterWinrt : public BluetoothAdapterWinrt {
   ComPtr<IBluetoothAdapter> adapter_;
   ComPtr<IDeviceInformation> device_information_;
   ComPtr<FakeBluetoothLEAdvertisementWatcherWinrt> watcher_;
-  CheckedPtr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
+  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
 };
 
 BLUETOOTH_ADDRESS

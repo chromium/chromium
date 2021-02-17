@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -25,8 +24,8 @@ class DeviceTrustService : public KeyedService {
   explicit DeviceTrustService(Profile* profile);
   ~DeviceTrustService() override;
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<PrefService> prefs_;
+  Profile* profile_;
+  PrefService* prefs_;
 };
 
 }  // namespace policy

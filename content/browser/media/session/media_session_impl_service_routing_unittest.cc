@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/media/session/media_session_impl.h"
 
 #include <map>
@@ -94,7 +93,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
 
   const media_session::mojom::MediaAudioVideoState audio_video_state_;
 
@@ -208,8 +207,8 @@ class MediaSessionImplServiceRoutingTest
     return empty_metadata_.source_title;
   }
 
-  CheckedPtr<TestRenderFrameHost> main_frame_;
-  CheckedPtr<TestRenderFrameHost> sub_frame_;
+  TestRenderFrameHost* main_frame_;
+  TestRenderFrameHost* sub_frame_;
 
   using ServiceMap = std::map<TestRenderFrameHost*,
                               std::unique_ptr<MockMediaSessionServiceImpl>>;

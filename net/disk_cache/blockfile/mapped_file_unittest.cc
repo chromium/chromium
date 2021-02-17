@@ -4,7 +4,6 @@
 
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "net/disk_cache/disk_cache_test_base.h"
@@ -27,8 +26,8 @@ class FileCallbackTest: public disk_cache::FileIOCallback {
 
  private:
   int id_;
-  CheckedPtr<MessageLoopHelper> helper_;
-  CheckedPtr<int> max_id_;
+  MessageLoopHelper* helper_;
+  int* max_id_;
 };
 
 void FileCallbackTest::OnFileIOComplete(int bytes_copied) {

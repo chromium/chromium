@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -163,7 +162,7 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
   // Raw pointer to owning DnsConfigService. This must never be accessed inside
   // DoWork(), since service may be destroyed while SerialWorker is running
   // on worker thread.
-  const CheckedPtr<DnsConfigServiceAndroid> service_;
+  DnsConfigServiceAndroid* const service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
   base::Optional<DnsConfig> dns_config_;
 };

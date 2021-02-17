@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_TAB_USAGE_SCENARIO_TRACKER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "content/public/browser/visibility.h"
@@ -58,7 +57,7 @@ class TabUsageScenarioTracker : public TabStatsObserver,
                   content::Visibility initial_visibility);
 
   // Non-owning. Needs to outlive this class.
-  CheckedPtr<UsageScenarioDataStoreImpl> usage_scenario_data_store_
+  UsageScenarioDataStoreImpl* usage_scenario_data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keep track of the visible web-contents.

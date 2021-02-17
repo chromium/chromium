@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -46,7 +45,7 @@ class TabStripModelChange {
   };
 
   struct ContentsWithIndexAndWillBeDeleted {
-    CheckedPtr<content::WebContents> contents;
+    content::WebContents* contents;
     int index;
 
     // The specified WebContents are being closed (and eventually destroyed).
@@ -56,7 +55,7 @@ class TabStripModelChange {
   };
 
   struct ContentsWithIndex {
-    CheckedPtr<content::WebContents> contents;
+    content::WebContents* contents;
     int index;
   };
 
@@ -132,7 +131,7 @@ class TabStripModelChange {
   // changes the existing selection model by calling
   // Move(from_index, to_index, 1).
   struct Move : public Delta {
-    CheckedPtr<content::WebContents> contents;
+    content::WebContents* contents;
     int from_index;
     int to_index;
   };
@@ -140,8 +139,8 @@ class TabStripModelChange {
   // The WebContents was replaced at the specified index. This is invoked when
   // prerendering swaps in a prerendered WebContents.
   struct Replace : public Delta {
-    CheckedPtr<content::WebContents> old_contents;
-    CheckedPtr<content::WebContents> new_contents;
+    content::WebContents* old_contents;
+    content::WebContents* new_contents;
     int index;
   };
 
@@ -189,8 +188,8 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  CheckedPtr<content::WebContents> old_contents = nullptr;
-  CheckedPtr<content::WebContents> new_contents = nullptr;
+  content::WebContents* old_contents = nullptr;
+  content::WebContents* new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;
@@ -227,8 +226,8 @@ struct TabGroupChange {
   struct VisualsChange : public Delta {
     VisualsChange();
     ~VisualsChange() override;
-    CheckedPtr<const tab_groups::TabGroupVisualData> old_visuals;
-    CheckedPtr<const tab_groups::TabGroupVisualData> new_visuals;
+    const tab_groups::TabGroupVisualData* old_visuals;
+    const tab_groups::TabGroupVisualData* new_visuals;
   };
 
   TabGroupChange(tab_groups::TabGroupId group,

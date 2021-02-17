@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -42,7 +41,7 @@ class InitializationSubTask : public DatabaseTask {
     std::string unique_id;
 
     // The results to report.
-    CheckedPtr<BackgroundFetchInitializationData> initialization_data;
+    BackgroundFetchInitializationData* initialization_data;
   };
 
   InitializationSubTask(DatabaseTaskHost* host,

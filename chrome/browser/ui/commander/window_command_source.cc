@@ -6,7 +6,6 @@
 
 #include <numeric>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -21,7 +20,7 @@ namespace {
 // Intermediate result type for browser windows that are eligible to be
 // presented to the user as an option for a particular command.
 struct WindowMatch {
-  CheckedPtr<Browser> browser;
+  Browser* browser;
   base::string16 title;
   std::vector<gfx::Range> matched_ranges;
   double score;

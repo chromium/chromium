@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -158,18 +157,18 @@ class WebAppIntegrationBrowserTestBase {
   WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
   PageActionIconView* pwa_install_view() { return pwa_install_view_; }
 
-  CheckedPtr<InProcessBrowserTest> in_process_browser_test_;
+  InProcessBrowserTest* in_process_browser_test_;
   std::unique_ptr<StateSnapshot> before_action_state_;
   std::unique_ptr<StateSnapshot> after_action_state_;
   base::flat_map<std::string, bool> site_installability_map_;
-  CheckedPtr<Browser> app_browser_ = nullptr;
+  Browser* app_browser_ = nullptr;
   std::vector<AppId> app_ids_;
   std::vector<std::string> testing_actions_;
   NavigateToSiteResult last_navigation_result_;
   AppId active_app_id_;
   net::EmbeddedTestServer https_server_;
   base::FilePath test_data_dir_;
-  CheckedPtr<PageActionIconView> pwa_install_view_ = nullptr;
+  PageActionIconView* pwa_install_view_ = nullptr;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

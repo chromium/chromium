@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
@@ -486,7 +485,7 @@ class EventGenerator {
 
   std::unique_ptr<EventGeneratorDelegate> delegate_;
   gfx::Point current_screen_location_;
-  CheckedPtr<EventTarget> current_target_ = nullptr;
+  EventTarget* current_target_ = nullptr;
   int flags_ = 0;
   bool grab_ = false;
 

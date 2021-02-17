@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/profiler/stack_sampling_profiler_test_util.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -80,7 +79,7 @@ class TestProfileBuilder : public ProfileBuilder {
   }
 
  private:
-  const CheckedPtr<ModuleCache> module_cache_;
+  ModuleCache* const module_cache_;
   CompletedCallback callback_;
   std::vector<Frame> sample_;
 };

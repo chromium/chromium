@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/client/focus_client.h"
@@ -33,8 +32,8 @@ class TestFocusClient : public client::FocusClient,
   // Overridden from WindowObserver:
   void OnWindowDestroying(Window* window) override;
 
-  CheckedPtr<Window> root_window_;
-  CheckedPtr<Window> focused_window_ = nullptr;
+  Window* root_window_;
+  Window* focused_window_ = nullptr;
   base::ScopedObservation<Window, WindowObserver> observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;

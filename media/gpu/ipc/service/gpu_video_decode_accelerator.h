@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -116,7 +115,7 @@ class GpuVideoDecodeAccelerator
   // Unowned pointer to the underlying gpu::CommandBufferStub.  |this| is
   // registered as a DestuctionObserver of |stub_| and will self-delete when
   // |stub_| is destroyed.
-  const CheckedPtr<gpu::CommandBufferStub> stub_;
+  gpu::CommandBufferStub* const stub_;
 
   // The underlying VideoDecodeAccelerator.
   std::unique_ptr<VideoDecodeAccelerator> video_decode_accelerator_;

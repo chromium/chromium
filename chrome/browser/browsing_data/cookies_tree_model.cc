@@ -1215,7 +1215,7 @@ CookieTreeCookiesNode* CookieTreeHostNode::GetOrCreateCookiesNode() {
   if (cookies_child_)
     return cookies_child_;
   cookies_child_ = new CookieTreeCookiesNode;
-  AddChildSortedByTitle(base::WrapUnique(cookies_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(cookies_child_));
   return cookies_child_;
 }
 
@@ -1223,7 +1223,7 @@ CookieTreeDatabasesNode* CookieTreeHostNode::GetOrCreateDatabasesNode() {
   if (databases_child_)
     return databases_child_;
   databases_child_ = new CookieTreeDatabasesNode;
-  AddChildSortedByTitle(base::WrapUnique(databases_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(databases_child_));
   return databases_child_;
 }
 
@@ -1232,7 +1232,7 @@ CookieTreeLocalStoragesNode*
   if (local_storages_child_)
     return local_storages_child_;
   local_storages_child_ = new CookieTreeLocalStoragesNode;
-  AddChildSortedByTitle(base::WrapUnique(local_storages_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(local_storages_child_));
   return local_storages_child_;
 }
 
@@ -1241,7 +1241,7 @@ CookieTreeSessionStoragesNode*
   if (session_storages_child_)
     return session_storages_child_;
   session_storages_child_ = new CookieTreeSessionStoragesNode;
-  AddChildSortedByTitle(base::WrapUnique(session_storages_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(session_storages_child_));
   return session_storages_child_;
 }
 
@@ -1249,7 +1249,7 @@ CookieTreeAppCachesNode* CookieTreeHostNode::GetOrCreateAppCachesNode() {
   if (appcaches_child_)
     return appcaches_child_;
   appcaches_child_ = new CookieTreeAppCachesNode;
-  AddChildSortedByTitle(base::WrapUnique(appcaches_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(appcaches_child_));
   return appcaches_child_;
 }
 
@@ -1257,7 +1257,7 @@ CookieTreeIndexedDBsNode* CookieTreeHostNode::GetOrCreateIndexedDBsNode() {
   if (indexed_dbs_child_)
     return indexed_dbs_child_;
   indexed_dbs_child_ = new CookieTreeIndexedDBsNode;
-  AddChildSortedByTitle(base::WrapUnique(indexed_dbs_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(indexed_dbs_child_));
   return indexed_dbs_child_;
 }
 
@@ -1265,7 +1265,7 @@ CookieTreeFileSystemsNode* CookieTreeHostNode::GetOrCreateFileSystemsNode() {
   if (file_systems_child_)
     return file_systems_child_;
   file_systems_child_ = new CookieTreeFileSystemsNode;
-  AddChildSortedByTitle(base::WrapUnique(file_systems_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(file_systems_child_));
   return file_systems_child_;
 }
 
@@ -1274,7 +1274,7 @@ CookieTreeQuotaNode* CookieTreeHostNode::UpdateOrCreateQuotaNode(
   if (quota_child_)
     return quota_child_;
   quota_child_ = new CookieTreeQuotaNode(quota_info);
-  AddChildSortedByTitle(base::WrapUnique(quota_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(quota_child_));
   return quota_child_;
 }
 
@@ -1283,7 +1283,7 @@ CookieTreeHostNode::GetOrCreateServiceWorkersNode() {
   if (service_workers_child_)
     return service_workers_child_;
   service_workers_child_ = new CookieTreeServiceWorkersNode;
-  AddChildSortedByTitle(base::WrapUnique(service_workers_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(service_workers_child_));
   return service_workers_child_;
 }
 
@@ -1292,7 +1292,7 @@ CookieTreeHostNode::GetOrCreateSharedWorkersNode() {
   if (shared_workers_child_)
     return shared_workers_child_;
   shared_workers_child_ = new CookieTreeSharedWorkersNode;
-  AddChildSortedByTitle(base::WrapUnique(shared_workers_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(shared_workers_child_));
   return shared_workers_child_;
 }
 
@@ -1301,7 +1301,7 @@ CookieTreeHostNode::GetOrCreateCacheStoragesNode() {
   if (cache_storages_child_)
     return cache_storages_child_;
   cache_storages_child_ = new CookieTreeCacheStoragesNode;
-  AddChildSortedByTitle(base::WrapUnique(cache_storages_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(cache_storages_child_));
   return cache_storages_child_;
 }
 
@@ -1310,7 +1310,7 @@ CookieTreeHostNode::GetOrCreateMediaLicensesNode() {
   if (media_licenses_child_)
     return media_licenses_child_;
   media_licenses_child_ = new CookieTreeMediaLicensesNode();
-  AddChildSortedByTitle(base::WrapUnique(media_licenses_child_.get()));
+  AddChildSortedByTitle(base::WrapUnique(media_licenses_child_));
   return media_licenses_child_;
 }
 

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -126,7 +125,7 @@ class EntriesBuilder {
   }
 
  private:
-  CheckedPtr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_ref_;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_ref_;
   scoped_refptr<content::FileSystemAccessEntryFactory> entry_factory_;
   content::FileSystemAccessEntryFactory::BindingContext context_;
 };

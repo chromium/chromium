@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -57,11 +56,11 @@ class ExpandableContainerView : public views::View {
   void ToggleDetailLevel();
 
   // The view that expands or collapses when |details_link_| is clicked.
-  CheckedPtr<DetailsView> details_view_ = nullptr;
+  DetailsView* details_view_ = nullptr;
 
   // The 'Show Details' link, which changes to 'Hide Details' when the details
   // section is expanded.
-  CheckedPtr<views::Link> details_link_ = nullptr;
+  views::Link* details_link_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXPANDABLE_CONTAINER_VIEW_H_

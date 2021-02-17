@@ -20,7 +20,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -108,13 +107,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     InitParams(InitParams&&);
     InitParams& operator=(InitParams&&);
 
-    CheckedPtr<LayerTreeHostClient> client = nullptr;
-    CheckedPtr<LayerTreeHostSchedulingClient> scheduling_client = nullptr;
-    CheckedPtr<TaskGraphRunner> task_graph_runner = nullptr;
-    CheckedPtr<const LayerTreeSettings> settings = nullptr;
+    LayerTreeHostClient* client = nullptr;
+    LayerTreeHostSchedulingClient* scheduling_client = nullptr;
+    TaskGraphRunner* task_graph_runner = nullptr;
+    LayerTreeSettings const* settings = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
-    CheckedPtr<MutatorHost> mutator_host = nullptr;
-    CheckedPtr<RasterDarkModeFilter> dark_mode_filter = nullptr;
+    MutatorHost* mutator_host = nullptr;
+    RasterDarkModeFilter* dark_mode_filter = nullptr;
 
     // The image worker task runner is used to schedule image decodes. The
     // compositor thread may make sync calls to this thread, analogous to the

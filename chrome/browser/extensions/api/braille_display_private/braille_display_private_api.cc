@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
@@ -39,8 +38,8 @@ class BrailleDisplayPrivateAPI::DefaultEventDelegate
   bool HasListener() override;
 
  private:
-  CheckedPtr<EventRouter::Observer> observer_;
-  CheckedPtr<Profile> profile_;
+  EventRouter::Observer* observer_;
+  Profile* profile_;
 };
 
 BrailleDisplayPrivateAPI::BrailleDisplayPrivateAPI(

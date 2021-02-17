@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/buildflags.h"
@@ -79,7 +78,7 @@ class MojoRendererFactory final : public RendererFactory {
  private:
   // InterfaceFactory or InterfaceProvider used to create or connect to remote
   // renderer.
-  CheckedPtr<media::mojom::InterfaceFactory> interface_factory_ = nullptr;
+  media::mojom::InterfaceFactory* interface_factory_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MojoRendererFactory);
 };

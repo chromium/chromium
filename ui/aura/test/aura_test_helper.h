@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/wm/core/wm_state.h"
@@ -80,7 +79,7 @@ class AuraTestHelper {
   std::unique_ptr<wm::WMState> wm_state_ = std::make_unique<wm::WMState>();
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
   std::unique_ptr<Env> env_;
-  CheckedPtr<ui::ContextFactory> context_factory_to_restore_ = nullptr;
+  ui::ContextFactory* context_factory_to_restore_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<TestScreen> test_screen_;
   std::unique_ptr<WindowTreeHost> host_;

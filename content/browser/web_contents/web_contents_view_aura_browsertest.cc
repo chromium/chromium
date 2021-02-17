@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -296,7 +295,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
-  CheckedPtr<RenderWidgetHostImpl> drop_target_widget_;
+  RenderWidgetHostImpl* drop_target_widget_;
 
   // A closure indicating that async drop operation has completed.
   base::OnceClosure async_drop_closure_;
@@ -356,7 +355,7 @@ class SpuriousMouseMoveEventObserver
   }
 
  private:
-  CheckedPtr<RenderWidgetHost> host_;
+  RenderWidgetHost* host_;
 
   DISALLOW_COPY_AND_ASSIGN(SpuriousMouseMoveEventObserver);
 };

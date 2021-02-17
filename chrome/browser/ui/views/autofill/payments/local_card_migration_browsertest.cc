@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -525,9 +524,9 @@ class LocalCardMigrationBrowserTest
     }
   }
 
-  CheckedPtr<LocalCardMigrationManager> local_card_migration_manager_;
+  LocalCardMigrationManager* local_card_migration_manager_;
 
-  CheckedPtr<PersonalDataManager> personal_data_;
+  PersonalDataManager* personal_data_;
   PersonalDataLoadedObserverMock personal_data_observer_;
 
   std::unique_ptr<ProfileSyncServiceHarness> harness_;

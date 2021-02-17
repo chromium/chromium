@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/files/file.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -141,7 +140,7 @@ class BASE_EXPORT MemoryMappedFile {
   void CloseHandles();
 
   File file_;
-  CheckedPtr<uint8_t> data_;
+  uint8_t* data_;
   size_t length_;
 
 #if defined(OS_WIN)

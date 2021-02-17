@@ -67,7 +67,6 @@ cat ~/scratch/rewriter.out \
     | sort | uniq > ~/scratch/automated-fields-to-ignore.txt
 cat ~/scratch/automated-fields-to-ignore.txt \
     tools/clang/rewrite_raw_ptr_fields/manual-fields-to-ignore.txt \
-    | grep -v "base::FileDescriptorWatcher::Controller::watcher_" \
     >> ~/scratch/combined-fields-to-ignore.txt
 
 # Main rewrite.

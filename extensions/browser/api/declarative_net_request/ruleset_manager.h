@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -158,14 +157,14 @@ class RulesetManager {
   base::flat_set<ExtensionRulesetData> rulesets_;
 
   // Non-owning pointer to BrowserContext.
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // Guaranteed to be valid through-out the lifetime of this instance.
-  const CheckedPtr<ExtensionPrefs> prefs_;
-  const CheckedPtr<PermissionHelper> permission_helper_;
+  ExtensionPrefs* const prefs_;
+  PermissionHelper* const permission_helper_;
 
   // Non-owning pointer to TestObserver.
-  CheckedPtr<TestObserver> test_observer_ = nullptr;
+  TestObserver* test_observer_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

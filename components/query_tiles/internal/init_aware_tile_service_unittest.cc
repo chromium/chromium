@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "components/query_tiles/internal/tile_service_impl.h"
@@ -108,21 +107,21 @@ class InitAwareTileServiceTest : public testing::Test {
   void GetQueryTiles() {
     auto callback =
         base::BindOnce(&MockInitializableTileService::GetTilesCallbackStub,
-                       base::Unretained(mock_service_.get()));
+                       base::Unretained(mock_service_));
     init_aware_service()->GetQueryTiles(std::move(callback));
   }
 
   void GetTile() {
     auto callback =
         base::BindOnce(&MockInitializableTileService::TileCallbackStub,
-                       base::Unretained(mock_service_.get()));
+                       base::Unretained(mock_service_));
     init_aware_service()->GetTile("id", std::move(callback));
   }
 
   void StartFetchForTiles() {
     auto callback = base::BindOnce(
         &MockInitializableTileService::BackgroundTaskFinishedCallbackStub,
-        base::Unretained(mock_service_.get()));
+        base::Unretained(mock_service_));
     init_aware_service()->StartFetchForTiles(false /*is_from_reduced_mode*/,
                                              std::move(callback));
   }
@@ -131,7 +130,7 @@ class InitAwareTileServiceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  CheckedPtr<MockInitializableTileService> mock_service_;
+  MockInitializableTileService* mock_service_;
   std::unique_ptr<InitAwareTileService> init_aware_service_;
 };
 

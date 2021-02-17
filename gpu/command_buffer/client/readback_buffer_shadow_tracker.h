@@ -8,7 +8,6 @@
 #include <GLES2/gl2.h>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gpu {
@@ -85,8 +84,8 @@ class ReadbackBufferShadowTracker {
   BufferList buffers_written_but_not_fenced_;
   uint64_t buffer_shadow_serial_ = 1;
 
-  CheckedPtr<MappedMemoryManager> mapped_memory_;
-  CheckedPtr<GLES2CmdHelper> helper_;
+  MappedMemoryManager* mapped_memory_;
+  GLES2CmdHelper* helper_;
 
   DISALLOW_COPY_AND_ASSIGN(ReadbackBufferShadowTracker);
 };

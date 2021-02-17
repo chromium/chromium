@@ -19,7 +19,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -647,7 +646,7 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
   std::vector<std::unique_ptr<WebSocketFrame>> stored_frames_;
   CompletionOnceCallback read_callback_;
   // Owned by the caller of ReadFrames().
-  CheckedPtr<std::vector<std::unique_ptr<WebSocketFrame>>> read_frames_;
+  std::vector<std::unique_ptr<WebSocketFrame>>* read_frames_;
   std::vector<scoped_refptr<IOBuffer>> buffers_;
   // True if we should close the connection.
   bool done_;
@@ -769,7 +768,7 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
   url::Origin origin;
   SiteForCookies site_for_cookies;
   IsolationInfo isolation_info;
-  CheckedPtr<URLRequestContext> url_request_context;
+  URLRequestContext* url_request_context;
   std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate;
 };
 

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -152,7 +151,7 @@ class ReadingListModel {
     virtual ~ScopedReadingListBatchUpdate();
 
    private:
-    CheckedPtr<ReadingListModel> model_;
+    ReadingListModel* model_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedReadingListBatchUpdate);
   };

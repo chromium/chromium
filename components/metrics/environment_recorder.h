@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -50,7 +49,7 @@ class EnvironmentRecorder {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  CheckedPtr<PrefService> local_state_;
+  PrefService* local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(EnvironmentRecorder);
 };

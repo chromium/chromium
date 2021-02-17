@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_TESTER_VIEWS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"
 
 namespace autofill {
@@ -24,7 +23,7 @@ class CardUnmaskPromptViewTesterViews : public CardUnmaskPromptViewTester {
   void EnterCVCAndAccept() override;
 
  private:
-  CheckedPtr<CardUnmaskPromptViews> view_;
+  CardUnmaskPromptViews* view_;
 
   DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptViewTesterViews);
 };

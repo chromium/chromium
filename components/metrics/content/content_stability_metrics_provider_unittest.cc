@@ -4,7 +4,6 @@
 
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/metrics/content/extensions_helper.h"
@@ -50,7 +49,7 @@ class MockExtensionsHelper : public ExtensionsHelper {
   }
 
  private:
-  CheckedPtr<content::RenderProcessHost> host_ = nullptr;
+  content::RenderProcessHost* host_ = nullptr;
 };
 
 }  // namespace

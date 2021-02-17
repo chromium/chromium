@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace net {
@@ -73,7 +72,7 @@ class SSLClientAuthObserver {
 
   static std::set<SSLClientAuthObserver*>& GetActiveObservers();
 
-  CheckedPtr<const content::BrowserContext> browser_context_;
+  const content::BrowserContext* browser_context_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   std::unique_ptr<content::ClientCertificateDelegate> delegate_;
 

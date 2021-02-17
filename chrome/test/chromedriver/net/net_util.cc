@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -78,9 +77,9 @@ class SyncUrlFetcher {
 
  private:
   GURL url_;
-  CheckedPtr<network::mojom::URLLoaderFactory> url_loader_factory_;
+  network::mojom::URLLoaderFactory* url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-  CheckedPtr<std::string> response_;
+  std::string* response_;
   base::WaitableEvent event_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   bool success_;

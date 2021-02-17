@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "headless/public/headless_browser.h"
@@ -81,7 +80,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
-  CheckedPtr<HeadlessBrowserImpl> browser_;  // Not owned.
+  HeadlessBrowserImpl* browser_;  // Not owned.
 
   // We store the callback here because we may call it from the I/O thread.
   HeadlessBrowser::Options::AppendCommandLineFlagsCallback

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 #include "components/sync/model/model_type_store.h"
@@ -60,7 +59,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client_;
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
-  CheckedPtr<SyncInvalidationsService> sync_invalidations_service_;
+  SyncInvalidationsService* sync_invalidations_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceImpl);
 };

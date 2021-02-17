@@ -23,7 +23,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
@@ -152,7 +151,7 @@ CronetURLRequestContext::CronetURLRequestContext(
 
 CronetURLRequestContext::~CronetURLRequestContext() {
   DCHECK(!GetNetworkTaskRunner()->BelongsToCurrentThread());
-  GetNetworkTaskRunner()->DeleteSoon(FROM_HERE, network_tasks_.get());
+  GetNetworkTaskRunner()->DeleteSoon(FROM_HERE, network_tasks_);
 }
 
 CronetURLRequestContext::NetworkTasks::NetworkTasks(
@@ -187,8 +186,8 @@ void CronetURLRequestContext::InitRequestContextOnInitThread() {
   GetNetworkTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CronetURLRequestContext::NetworkTasks::Initialize,
-                     base::Unretained(network_tasks_.get()),
-                     GetNetworkTaskRunner(), GetFileThread()->task_runner(),
+                     base::Unretained(network_tasks_), GetNetworkTaskRunner(),
+                     GetFileThread()->task_runner(),
                      std::move(proxy_config_service)));
 }
 
@@ -210,11 +209,11 @@ void CronetURLRequestContext::ConfigureNetworkQualityEstimatorForTesting(
     bool use_smaller_responses,
     bool disable_offline_check) {
   PostTaskToNetworkThread(
-      FROM_HERE, base::BindOnce(&CronetURLRequestContext::NetworkTasks::
-                                    ConfigureNetworkQualityEstimatorForTesting,
-                                base::Unretained(network_tasks_.get()),
-                                use_local_host_requests, use_smaller_responses,
-                                disable_offline_check));
+      FROM_HERE,
+      base::BindOnce(&CronetURLRequestContext::NetworkTasks::
+                         ConfigureNetworkQualityEstimatorForTesting,
+                     base::Unretained(network_tasks_), use_local_host_requests,
+                     use_smaller_responses, disable_offline_check));
 }
 
 void CronetURLRequestContext::NetworkTasks::ProvideRTTObservations(
@@ -234,7 +233,7 @@ void CronetURLRequestContext::ProvideRTTObservations(bool should) {
       FROM_HERE,
       base::BindOnce(
           &CronetURLRequestContext::NetworkTasks::ProvideRTTObservations,
-          base::Unretained(network_tasks_.get()), should));
+          base::Unretained(network_tasks_), should));
 }
 
 void CronetURLRequestContext::NetworkTasks::ProvideThroughputObservations(
@@ -254,7 +253,7 @@ void CronetURLRequestContext::ProvideThroughputObservations(bool should) {
       FROM_HERE,
       base::BindOnce(
           &CronetURLRequestContext::NetworkTasks::ProvideThroughputObservations,
-          base::Unretained(network_tasks_.get()), should));
+          base::Unretained(network_tasks_), should));
 }
 
 void CronetURLRequestContext::NetworkTasks::InitializeNQEPrefs() const {
@@ -473,7 +472,7 @@ class CronetURLRequestContext::ContextGetter
   ~ContextGetter() override { DCHECK(cronet_context_->IsOnNetworkThread()); }
 
   // CronetURLRequestContext associated with this ContextGetter.
-  const CheckedPtr<CronetURLRequestContext> cronet_context_;
+  CronetURLRequestContext* const cronet_context_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextGetter);
 };
@@ -496,7 +495,7 @@ void CronetURLRequestContext::PostTaskToNetworkThread(
       posted_from,
       base::BindOnce(
           &CronetURLRequestContext::NetworkTasks::RunTaskAfterContextInit,
-          base::Unretained(network_tasks_.get()), std::move(callback)));
+          base::Unretained(network_tasks_), std::move(callback)));
 }
 
 void CronetURLRequestContext::NetworkTasks::RunTaskAfterContextInit(
@@ -534,8 +533,7 @@ bool CronetURLRequestContext::StartNetLogToFile(const std::string& file_name,
   PostTaskToNetworkThread(
       FROM_HERE,
       base::BindOnce(&CronetURLRequestContext::NetworkTasks::StartNetLog,
-                     base::Unretained(network_tasks_.get()), file_path,
-                     log_all));
+                     base::Unretained(network_tasks_), file_path, log_all));
   return true;
 }
 
@@ -546,7 +544,7 @@ void CronetURLRequestContext::StartNetLogToDisk(const std::string& dir_name,
       FROM_HERE,
       base::BindOnce(
           &CronetURLRequestContext::NetworkTasks::StartNetLogToBoundedFile,
-          base::Unretained(network_tasks_.get()), dir_name, log_all, max_size));
+          base::Unretained(network_tasks_), dir_name, log_all, max_size));
 }
 
 void CronetURLRequestContext::StopNetLog() {
@@ -554,7 +552,7 @@ void CronetURLRequestContext::StopNetLog() {
   PostTaskToNetworkThread(
       FROM_HERE,
       base::BindOnce(&CronetURLRequestContext::NetworkTasks::StopNetLog,
-                     base::Unretained(network_tasks_.get())));
+                     base::Unretained(network_tasks_)));
 }
 
 int CronetURLRequestContext::default_load_flags() const {

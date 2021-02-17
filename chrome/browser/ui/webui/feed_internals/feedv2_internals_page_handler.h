@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,8 +54,8 @@ class FeedV2InternalsPageHandler : public feed_internals::mojom::PageHandler {
   mojo::Receiver<feed_internals::mojom::PageHandler> receiver_;
 
   // Services that provide the data and functionality.
-  CheckedPtr<feed::FeedStreamApi> feed_stream_;
-  CheckedPtr<PrefService> pref_service_;
+  feed::FeedStreamApi* feed_stream_;
+  PrefService* pref_service_;
 
   base::WeakPtrFactory<FeedV2InternalsPageHandler> weak_ptr_factory_{this};
 };

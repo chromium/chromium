@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_REQUEST_H_
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_REQUEST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -96,7 +95,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
 
   // The reason for deep scanning.
   DeepScanTrigger trigger_;
@@ -106,7 +105,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // The download protection service that initiated this upload. The
   // |download_service_| owns this class.
-  CheckedPtr<DownloadProtectionService> download_service_;
+  DownloadProtectionService* download_service_;
 
   // The time when uploading starts.
   base::TimeTicks upload_start_time_;

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_DEFAULT_APPS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
@@ -66,7 +65,7 @@ class Provider : public extensions::ExternalProviderImpl {
   void InitProfileState();
 
   // The associated profile.
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   // Whether default apps are enabled for the profile.
   bool default_apps_enabled_ = false;
   // Whether this is the first run since a migration from Chrome 22-ish.

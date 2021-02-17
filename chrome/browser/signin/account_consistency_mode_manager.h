@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/buildflag.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
@@ -84,7 +83,7 @@ class AccountConsistencyModeManager : public KeyedService {
   static signin::AccountConsistencyMethod ComputeAccountConsistencyMethod(
       Profile* profile);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   signin::AccountConsistencyMethod account_consistency_;
   bool account_consistency_initialized_;
 

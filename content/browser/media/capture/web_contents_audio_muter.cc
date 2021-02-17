@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -128,7 +127,7 @@ class WebContentsAudioMuter::MuteDestination
     return nullptr;
   }
 
-  const CheckedPtr<WebContents> web_contents_;
+  WebContents* const web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(MuteDestination);
 };

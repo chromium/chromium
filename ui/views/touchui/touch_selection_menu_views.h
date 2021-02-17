@@ -6,7 +6,6 @@
 #define UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
@@ -61,8 +60,8 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   void OnPaint(gfx::Canvas* canvas) override;
   void WindowClosing() override;
 
-  CheckedPtr<TouchSelectionMenuRunnerViews> owner_;
-  const CheckedPtr<ui::TouchSelectionMenuClient> client_;
+  TouchSelectionMenuRunnerViews* owner_;
+  ui::TouchSelectionMenuClient* const client_;
 
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuViews);
 };

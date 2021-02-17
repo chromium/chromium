@@ -10,7 +10,6 @@
 #include <random>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
@@ -117,8 +116,8 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
    private:
     // These fields may only be used on the compositor thread.
-    const CheckedPtr<GpuRasterBufferProvider> client_;
-    CheckedPtr<GpuRasterBacking> backing_;
+    GpuRasterBufferProvider* const client_;
+    GpuRasterBacking* backing_;
 
     // These fields are for use on the worker thread.
     const gfx::Size resource_size_;
@@ -160,14 +159,14 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
       bool depends_on_at_raster_decodes,
       RasterQuery* query);
 
-  const CheckedPtr<viz::ContextProvider> compositor_context_provider_;
-  const CheckedPtr<viz::RasterContextProvider> worker_context_provider_;
+  viz::ContextProvider* const compositor_context_provider_;
+  viz::RasterContextProvider* const worker_context_provider_;
   const bool use_gpu_memory_buffer_resources_;
   const viz::ResourceFormat tile_format_;
   const gfx::Size max_tile_size_;
   const bool enable_oop_rasterization_;
 
-  const CheckedPtr<RasterQueryQueue> pending_raster_queries_;
+  RasterQueryQueue* const pending_raster_queries_;
 
   // Accessed with the worker context lock acquired.
   std::mt19937 random_generator_;

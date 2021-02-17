@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/isolation_context.h"
@@ -223,7 +222,7 @@ class CONTENT_EXPORT BrowsingInstance final
 
   // The process to use for any SiteInstance in this BrowsingInstance that
   // doesn't require a dedicated process.
-  CheckedPtr<RenderProcessHost> default_process_;
+  RenderProcessHost* default_process_;
 
   // SiteInstance to use if a URL does not correspond to an instance in
   // |site_instance_map_| and it does not require a dedicated process.
@@ -231,7 +230,7 @@ class CONTENT_EXPORT BrowsingInstance final
   // should only be set if kProcessSharingWithStrictSiteInstances is not
   // enabled. This is a raw pointer to avoid a reference cycle between the
   // BrowsingInstance and the SiteInstanceImpl.
-  CheckedPtr<SiteInstanceImpl> default_site_instance_;
+  SiteInstanceImpl* default_site_instance_;
 
   // The cross-origin isolation status of the BrowsingInstance. This indicates
   // whether this BrowsingInstance is hosting only cross-origin isolated pages

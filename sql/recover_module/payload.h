@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "sql/recover_module/pager.h"
 
@@ -105,7 +104,7 @@ class LeafPayloadReader {
   //
   // Raw pointer usage is acceptable because this instance's owner is expected
   // to ensure that the DatabasePageReader outlives this.
-  const CheckedPtr<DatabasePageReader> db_reader_;
+  DatabasePageReader* const db_reader_;
 
   // Total size of the current payload.
   int64_t payload_size_;

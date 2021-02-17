@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/filter/filter_source_stream.h"
 #include "ui/base/template_expressions.h"
 
@@ -53,7 +52,7 @@ class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
   std::string output_;
 
   // A map of i18n replacement keys and translations.
-  CheckedPtr<const TemplateReplacements> replacements_;
+  const TemplateReplacements* replacements_;
 
   DISALLOW_COPY_AND_ASSIGN(I18nSourceStream);
 };

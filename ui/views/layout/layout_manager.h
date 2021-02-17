@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
 

@@ -21,7 +21,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -125,7 +124,7 @@ class GLHelperBenchmark : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<GLInProcessContext> context_;
-  CheckedPtr<gles2::GLES2Interface> gl_;
+  gles2::GLES2Interface* gl_;
   std::unique_ptr<GLHelper> helper_;
   std::unique_ptr<GLHelperScaling> helper_scaling_;
   base::circular_deque<GLHelperScaling::ScaleOp> x_ops_, y_ops_;

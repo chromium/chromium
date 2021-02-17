@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -567,10 +566,10 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
  protected:
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  CheckedPtr<FakeIndexedDBMetadataCoding> metadata_coding_ = nullptr;
+  FakeIndexedDBMetadataCoding* metadata_coding_ = nullptr;
   scoped_refptr<MockIndexedDBCallbacks> request_;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
-  CheckedPtr<IndexedDBTransaction> transaction_ = nullptr;
+  IndexedDBTransaction* transaction_ = nullptr;
   DisjointRangeLockManager lock_manager_;
   bool error_called_ = false;
 

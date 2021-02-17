@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -42,7 +41,7 @@ class ReauthWebContentsObserver : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  const CheckedPtr<SigninReauthViewController> delegate_;
+  SigninReauthViewController* const delegate_;
 };
 
 ReauthWebContentsObserver::ReauthWebContentsObserver(
@@ -284,7 +283,7 @@ void SigninReauthViewController::RecordClickOnce(UserAction click_action) {
 signin::ReauthTabHelper* SigninReauthViewController::GetReauthTabHelper() {
   content::WebContents* web_contents = reauth_web_contents_
                                            ? reauth_web_contents_.get()
-                                           : raw_reauth_web_contents_.get();
+                                           : raw_reauth_web_contents_;
   if (!web_contents)
     return nullptr;
 

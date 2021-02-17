@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 
@@ -83,10 +82,10 @@ class ScopedObservation {
   }
 
  private:
-  const CheckedPtr<Observer> observer_;
+  Observer* const observer_;
 
   // The observed source, if any.
-  CheckedPtr<Source> source_ = nullptr;
+  Source* source_ = nullptr;
 };
 
 }  // namespace base

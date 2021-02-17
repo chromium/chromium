@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -57,7 +56,7 @@ class DiceBubbleSyncPromoView : public views::View {
   void EnableSync();
 
   // Delegate, to handle clicks on the sign-in buttons.
-  CheckedPtr<BubbleSyncPromoDelegate> delegate_;
-  CheckedPtr<DiceSigninButtonView> signin_button_view_ = nullptr;
+  BubbleSyncPromoDelegate* delegate_;
+  DiceSigninButtonView* signin_button_view_ = nullptr;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SYNC_DICE_BUBBLE_SYNC_PROMO_VIEW_H_

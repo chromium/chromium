@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_LOOKALIKES_DIGITAL_ASSET_LINKS_CROSS_VALIDATOR_H_
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
 #include "url/gurl.h"
@@ -51,7 +50,7 @@ class DigitalAssetLinkCrossValidator {
   const url::Origin target_domain_;
   base::TimeDelta timeout_;
   base::Time start_time_;
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
   ResultCallback callback_;
 
   std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>

@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
@@ -467,7 +466,7 @@ class InstallStageTracker : public KeyedService {
                                 FailureReason reason,
                                 const InstallationData& data);
 
-  CheckedPtr<const content::BrowserContext> browser_context_;
+  const content::BrowserContext* browser_context_;
 
   std::map<ExtensionId, InstallationData> installation_data_map_;
 

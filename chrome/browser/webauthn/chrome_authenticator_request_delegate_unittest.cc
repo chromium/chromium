@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -48,7 +47,7 @@ class TestAuthenticatorModelObserver
   void OnModelDestroyed() override { model_ = nullptr; }
 
  private:
-  CheckedPtr<AuthenticatorRequestDialogModel> model_;
+  AuthenticatorRequestDialogModel* model_;
   AuthenticatorRequestDialogModel::Step last_step_;
 };
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "extensions/shell/browser/root_window_controller.h"
-#include "base/memory/checked_ptr.h"
 
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -59,7 +58,7 @@ class FillLayout : public aura::LayoutManager {
     SetChildBoundsDirect(child, requested_bounds);
   }
 
-  CheckedPtr<aura::Window> owner_;  // Not owned.
+  aura::Window* owner_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(FillLayout);
 };

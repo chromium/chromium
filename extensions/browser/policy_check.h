@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_POLICY_CHECK_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "extensions/browser/preload_check.h"
 
@@ -31,7 +30,7 @@ class PolicyCheck : public PreloadCheck {
   base::string16 GetErrorMessage() const override;
 
  private:
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   base::string16 error_;
 
   DISALLOW_COPY_AND_ASSIGN(PolicyCheck);

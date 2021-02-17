@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -37,8 +36,8 @@ class ArrayDataViewImpl<
   const T* data() const { return data_->storage(); }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 template <typename T>
@@ -55,8 +54,8 @@ class ArrayDataViewImpl<
   bool operator[](size_t index) const { return data_->at(index); }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 template <typename T>
@@ -82,8 +81,8 @@ class ArrayDataViewImpl<
   }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 template <typename T>
@@ -110,8 +109,8 @@ class ArrayDataViewImpl<
   }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 template <typename T>
@@ -133,8 +132,8 @@ class ArrayDataViewImpl<
   }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 template <typename T>
@@ -161,8 +160,8 @@ class ArrayDataViewImpl<
   }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 template <typename T>
@@ -186,8 +185,8 @@ class ArrayDataViewImpl<
   }
 
  protected:
-  CheckedPtr<Data_> data_;
-  CheckedPtr<Message> message_;
+  Data_* data_;
+  Message* message_;
 };
 
 }  // namespace internal
