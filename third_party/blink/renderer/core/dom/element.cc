@@ -3199,6 +3199,9 @@ void Element::RebuildFirstLetterLayoutTree() {
   // up here for #outer after AttachLayoutTree is called on #inner at which
   // point the layout sub-tree is available for deciding on creating the
   // ::first-letter.
+  StyleEngine::AllowMarkForReattachFromRebuildLayoutTreeScope scope(
+      GetDocument().GetStyleEngine());
+
   UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRebuildLayoutTree);
   if (PseudoElement* element = GetPseudoElement(kPseudoIdFirstLetter)) {
     WhitespaceAttacher whitespace_attacher;
@@ -3223,8 +3226,11 @@ void Element::RebuildMarkerLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     // The layout tree rebuilding for markers should be done similarly to how
     // it is done for ::first-letter.
     if (LayoutObject* layout_object = GetLayoutObject()) {
-      if (layout_object->IsListItem() && !marker->GetLayoutObject())
+      if (layout_object->IsListItem() && !marker->GetLayoutObject()) {
+        StyleEngine::AllowMarkForReattachFromRebuildLayoutTreeScope scope(
+            GetDocument().GetStyleEngine());
         marker->SetNeedsReattachLayoutTree();
+      }
     }
 
     if (marker->NeedsRebuildLayoutTree(whitespace_attacher))
@@ -4986,6 +4992,7 @@ void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
   if (text_node_changed || remaining_text_layout_object->PreviousSibling() !=
                                element->GetLayoutObject())
     change = change.ForceReattachLayoutTree();
+
   element->RecalcStyle(change, style_recalc_context);
 
   if (element->NeedsReattachLayoutTree() &&
