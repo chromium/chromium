@@ -145,6 +145,9 @@ void PaintPreviewRecorderImpl::OnDestruct() {
 
 void PaintPreviewRecorderImpl::BindPaintPreviewRecorder(
     mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder> receiver) {
+  // Capture requests can occur multiple times on the same frame. If the browser
+  // has released its endpoint and creates a new one this needs to be reset.
+  paint_preview_recorder_receiver_.reset();
   paint_preview_recorder_receiver_.Bind(std::move(receiver));
 }
 
