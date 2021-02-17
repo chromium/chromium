@@ -1416,4 +1416,115 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   loop6.Run();
 }
 
+TEST_F(IndexedDBDispatcherHostTest, DatabaseOperationSequencing) {
+  const int64_t kDBVersion = 1;
+  const int64_t kTransactionId = 1;
+  const base::string16 kObjectStoreName1 = base::ASCIIToUTF16("os1");
+  const base::string16 kObjectStoreName2 = base::ASCIIToUTF16("os2");
+  const base::string16 kObjectStoreName3 = base::ASCIIToUTF16("os3");
+
+  std::unique_ptr<TestDatabaseConnection> connection;
+  IndexedDBDatabaseMetadata metadata;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+
+  // Open the connection, which will initiate the "upgrade" transaction.
+  base::RunLoop loop;
+  context_impl_->IDBTaskRunner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // Open connection.
+        connection = std::make_unique<TestDatabaseConnection>(
+            context_impl_->IDBTaskRunner(), ToOrigin(kOrigin),
+            base::UTF8ToUTF16(kDatabaseName), kDBVersion, kTransactionId);
+
+        EXPECT_CALL(*connection->open_callbacks,
+                    MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
+                                        IndexedDBDatabaseMetadata::NO_VERSION,
+                                        blink::mojom::IDBDataLoss::None,
+                                        std::string(""), _))
+            .WillOnce(testing::DoAll(MoveArgPointee<0>(&pending_database),
+                                     testing::SaveArg<4>(&metadata),
+                                     QuitLoop(&loop)));
+
+        // Queue open request message.
+        connection->Open(idb_mojo_factory_.get());
+      }));
+  loop.Run();
+
+  ASSERT_TRUE(pending_database.is_valid());
+  EXPECT_EQ(connection->version, metadata.version);
+  EXPECT_EQ(connection->db_name, metadata.name);
+
+  EXPECT_EQ(0ULL, metadata.object_stores.size());
+
+  // Within the "upgrade" transaction, create/delete/create object store. This
+  // should leave only one store around if everything is processed in the
+  // correct order.
+  IndexedDBDatabaseMetadata metadata2;
+  int64_t object_store_id = 1001;
+
+  base::RunLoop loop2;
+  base::RepeatingClosure quit_closure2 =
+      base::BarrierClosure(2, loop2.QuitClosure());
+  context_impl_->IDBTaskRunner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ::testing::InSequence dummy;
+        EXPECT_CALL(*connection->connection_callbacks, Complete(kTransactionId))
+            .Times(1)
+            .WillOnce(RunClosure(quit_closure2));
+        EXPECT_CALL(
+            *connection->open_callbacks,
+            MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
+            .Times(1)
+            .WillOnce(testing::DoAll(testing::SaveArg<1>(&metadata2),
+                                     RunClosure(std::move(quit_closure2))));
+
+        connection->database.Bind(std::move(pending_database));
+        ASSERT_TRUE(connection->database.is_bound());
+        ASSERT_TRUE(connection->version_change_transaction.is_bound());
+
+        // This will cause a CreateObjectStoreOperation to be queued and
+        // run synchronously...
+        connection->version_change_transaction->CreateObjectStore(
+            ++object_store_id, kObjectStoreName1, blink::IndexedDBKeyPath(),
+            /*auto_increment=*/false);
+
+        // The following operations will queue operations, but the
+        // operations will run asynchronously.
+
+        // First, delete the previous store. Ensure that this succeeds
+        // even if the previous action completed synchronously.
+        connection->version_change_transaction->DeleteObjectStore(
+            object_store_id);
+
+        // Ensure that a create/delete pair where both parts are queued
+        // succeeds.
+        connection->version_change_transaction->CreateObjectStore(
+            ++object_store_id, kObjectStoreName2, blink::IndexedDBKeyPath(),
+            /*auto_increment=*/false);
+        connection->version_change_transaction->DeleteObjectStore(
+            object_store_id);
+
+        // This store is left over, just to verify that everything
+        // ran correctly.
+        connection->version_change_transaction->CreateObjectStore(
+            ++object_store_id, kObjectStoreName3, blink::IndexedDBKeyPath(),
+            /*auto_increment=*/false);
+
+        connection->version_change_transaction->Commit(0);
+      }));
+  loop2.Run();
+
+  EXPECT_EQ(1ULL, metadata2.object_stores.size());
+  EXPECT_EQ(metadata2.object_stores[object_store_id].name, kObjectStoreName3);
+
+  // Close the connection to finish the test nicely.
+  base::RunLoop loop3;
+  context_impl_->IDBTaskRunner()->PostTask(FROM_HERE,
+                                           base::BindLambdaForTesting([&]() {
+                                             connection.reset();
+                                             loop3.Quit();
+                                           }));
+  loop3.Run();
+}
+
 }  // namespace content
