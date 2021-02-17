@@ -30,6 +30,17 @@ namespace blink {
 template <typename T, typename SFINAEHelper = void>
 struct ToV8Traits;
 
+// Any
+template <>
+struct ToV8Traits<IDLAny> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const ScriptValue& script_value)
+      WARN_UNUSED_RESULT {
+    DCHECK(!script_value.IsEmpty());
+    return script_value.V8Value();
+  }
+};
+
 // Boolean
 template <>
 struct ToV8Traits<IDLBoolean> {
@@ -582,6 +593,28 @@ struct ToV8Traits<IDLNullable<T>,
     if (!enumeration)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, *enumeration);
+  }
+};
+
+// Union types
+
+namespace bindings {
+
+// Helper function for Union
+template <typename T>
+inline v8::MaybeLocal<v8::Value> ToV8HelperUnion(ScriptState* script_state,
+                                                 const T& value) {
+  return ToV8(value, script_state->GetContext()->Global(),
+              script_state->GetIsolate());
+}
+
+}  // namespace bindings
+
+template <typename T>
+struct ToV8Traits<IDLUnionNotINT<T>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const T& value) WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperUnion(script_state, value);
   }
 };
 

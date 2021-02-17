@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string_or_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_address_space.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
@@ -40,6 +41,18 @@ void TestToV8Traits(const V8TestingScope& scope,
         << actual_string.Utf8() << "\nExpected: " << expected;
     return;
   }
+}
+
+TEST(ToV8TraitsTest, Any) {
+  const V8TestingScope scope;
+  ScriptValue value(scope.GetIsolate(),
+                    v8::Number::New(scope.GetIsolate(), 1234.0));
+  v8::Local<v8::Value> actual1;
+  ASSERT_TRUE(ToV8Traits<IDLAny>::ToV8(scope.GetScriptState(), value)
+                  .ToLocal(&actual1));
+  EXPECT_FALSE(actual1.IsEmpty());
+  double actual_as_number1 = actual1.As<v8::Number>()->Value();
+  EXPECT_EQ(1234.0, actual_as_number1);
 }
 
 TEST(ToV8TraitsTest, Boolean) {
@@ -417,6 +430,14 @@ TEST(ToV8TraitsTest, NullableEnumeration) {
       V8AddressSpace::Create("public");
   TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "public",
                    v8_address_space);
+}
+
+TEST(ToV8TraitsTest, Union) {
+  const V8TestingScope scope;
+  const FileOrUSVStringOrFormData usv_string =
+      FileOrUSVStringOrFormData::FromUSVString("https://example.com/");
+  TEST_TOV8_TRAITS(scope, IDLUnionNotINT<FileOrUSVStringOrFormData>,
+                   "https://example.com/", usv_string);
 }
 
 }  // namespace
