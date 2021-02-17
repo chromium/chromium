@@ -495,7 +495,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
                                   g_env->NumTemporalLayers(), g_env->Bitrate());
   config.input_storage_type =
-      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
   auto encoder = CreateVideoEncoder(nv12_video, config);
 
@@ -532,7 +532,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
                                   g_env->Bitrate() / 4);
   config.output_resolution = output_resolution;
   config.input_storage_type =
-      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
   auto encoder = CreateVideoEncoder(nv12_video, config);
   encoder->Encode();
@@ -573,7 +573,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
                                   g_env->NumTemporalLayers(), g_env->Bitrate());
   config.output_resolution = original_resolution;
   config.input_storage_type =
-      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
   auto encoder = CreateVideoEncoder(nv12_expanded_video.get(), config);
   encoder->Encode();
@@ -614,7 +614,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
                                   g_env->NumTemporalLayers(), g_env->Bitrate());
   config.output_resolution = original_resolution;
   config.input_storage_type =
-      VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
   auto encoder = CreateVideoEncoder(nv12_expanded_video.get(), config);
   encoder->Encode();

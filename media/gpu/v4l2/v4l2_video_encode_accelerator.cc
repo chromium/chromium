@@ -283,7 +283,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
 
   native_input_mode_ =
       config.storage_type.value_or(Config::StorageType::kShmem) ==
-      Config::StorageType::kDmabuf;
+      Config::StorageType::kGpuMemoryBuffer;
 
   input_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   output_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
@@ -509,7 +509,7 @@ bool V4L2VideoEncodeAccelerator::InitInputMemoryType(const Config& config) {
       case Config::StorageType::kShmem:
         input_memory_type_ = V4L2_MEMORY_USERPTR;
         break;
-      case Config::StorageType::kDmabuf:
+      case Config::StorageType::kGpuMemoryBuffer:
         input_memory_type_ = V4L2_MEMORY_DMABUF;
         break;
     }

@@ -60,7 +60,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     if (is_rgb)
       config.input_format = PIXEL_FORMAT_NV12;
-    config.storage_type = VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+    config.storage_type =
+        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 #endif
 
@@ -203,7 +204,7 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
   // storage, so we don't care about mismatches on other platforms.
   if (input_buffer_preference_ == InputBufferKind::Any) {
     if (vea_config.storage_type ==
-        VideoEncodeAccelerator::Config::StorageType::kDmabuf) {
+        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer) {
       input_buffer_preference_ = InputBufferKind::GpuMemBuf;
     } else {
       input_buffer_preference_ = InputBufferKind::CpuMemBuf;

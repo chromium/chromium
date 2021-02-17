@@ -309,7 +309,8 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
     // Currently the VAAPI and V4L2 VEA support only native input mode with NV12
     // DMA-buf buffers.
     pixel_format = media::PIXEL_FORMAT_NV12;
-    storage_type = media::VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+    storage_type =
+        media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 
   const media::VideoEncodeAccelerator::Config config(

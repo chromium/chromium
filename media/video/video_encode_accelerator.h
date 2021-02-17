@@ -133,9 +133,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // or as generated (e.g. screen capture).
     enum class ContentType { kCamera, kDisplay };
     // Indicates the storage type of a video frame provided on Encode().
-    // kShmem if a video frame is mapped in user space.
-    // kDmabuf if a video frame is referred by dmabuf.
-    enum class StorageType { kShmem, kDmabuf };
+    // kShmem if a video frame has a shared memory.
+    // kGpuMemoryBuffer if a video frame has a GpuMemoryBuffer.
+    enum class StorageType { kShmem, kGpuMemoryBuffer };
 
     struct MEDIA_EXPORT SpatialLayer {
       // The encoder dimension of the spatial layer.

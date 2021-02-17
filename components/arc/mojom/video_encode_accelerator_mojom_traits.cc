@@ -42,7 +42,8 @@ bool EnumTraits<arc::mojom::VideoFrameStorageType,
       *output = media::VideoEncodeAccelerator::Config::StorageType::kShmem;
       return true;
     case arc::mojom::VideoFrameStorageType::DMABUF:
-      *output = media::VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+      *output =
+          media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
       return true;
   }
   return false;

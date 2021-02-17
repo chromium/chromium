@@ -291,7 +291,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   }
 
   if (config.storage_type.value_or(Config::StorageType::kShmem) ==
-      Config::StorageType::kDmabuf) {
+      Config::StorageType::kGpuMemoryBuffer) {
 #if !defined(USE_OZONE)
     VLOGF(1) << "Native mode is only available on OZONE platform.";
     return false;

@@ -83,7 +83,7 @@ struct VideoEncodeAcceleratorConfig {
   // See media::VideoEncodeAccelerator::Config::StorageType
   enum StorageType {
     kShmem,
-    kDmabuf
+    kGpuMemoryBuffer,
   };
 
   VideoPixelFormat input_format;

@@ -167,8 +167,9 @@ EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
            media::VideoEncodeAccelerator::Config::StorageType>::
     ToMojom(media::VideoEncodeAccelerator::Config::StorageType input) {
   switch (input) {
-    case media::VideoEncodeAccelerator::Config::StorageType::kDmabuf:
-      return media::mojom::VideoEncodeAcceleratorConfig_StorageType::kDmabuf;
+    case media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer:
+      return media::mojom::VideoEncodeAcceleratorConfig_StorageType::
+          kGpuMemoryBuffer;
     case media::VideoEncodeAccelerator::Config::StorageType::kShmem:
       return media::mojom::VideoEncodeAcceleratorConfig_StorageType::kShmem;
   }
@@ -185,8 +186,10 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
     case media::mojom::VideoEncodeAcceleratorConfig_StorageType::kShmem:
       *output = media::VideoEncodeAccelerator::Config::StorageType::kShmem;
       return true;
-    case media::mojom::VideoEncodeAcceleratorConfig_StorageType::kDmabuf:
-      *output = media::VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+    case media::mojom::VideoEncodeAcceleratorConfig_StorageType::
+        kGpuMemoryBuffer:
+      *output =
+          media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
       return true;
   }
   NOTREACHED();

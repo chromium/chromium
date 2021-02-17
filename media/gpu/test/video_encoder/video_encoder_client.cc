@@ -280,7 +280,7 @@ void VideoEncoderClient::RequireBitstreamBuffers(
   if (video_->Resolution() != encoder_client_config_.output_resolution) {
     // Scaling case. Scaling is currently only supported when using Dmabufs.
     EXPECT_EQ(encoder_client_config_.input_storage_type,
-              VideoEncodeAccelerator::Config::StorageType::kDmabuf);
+              VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
     coded_size = video_->Resolution();
   }
 
@@ -301,7 +301,7 @@ void VideoEncoderClient::RequireBitstreamBuffers(
       /*visible_rect=*/video_->VisibleRect(),
       /*natural_size=*/encoder_client_config_.output_resolution, frame_rate,
       encoder_client_config_.input_storage_type ==
-              VideoEncodeAccelerator::Config::StorageType::kDmabuf
+              VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer
           ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
           : VideoFrame::STORAGE_MOJO_SHARED_BUFFER,
       gpu_memory_buffer_factory_);

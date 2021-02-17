@@ -621,7 +621,8 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
     // Use import mode for camera when GpuMemoryBuffer-based video capture is
     // enabled.
     pixel_format = media::PIXEL_FORMAT_NV12;
-    storage_type = media::VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+    storage_type =
+        media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
     use_native_input_ = true;
   }
   const media::VideoEncodeAccelerator::Config config(
