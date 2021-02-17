@@ -88,6 +88,10 @@ class UrlHandlerPrefs {
                  const base::FilePath& profile_path,
                  const apps::UrlHandlers& url_handlers);
 
+  void UpdateWebApp(const AppId& app_id,
+                    const base::FilePath& profile_path,
+                    const apps::UrlHandlers& url_handlers);
+
   void RemoveWebApp(const AppId& app_id, const base::FilePath& profile_path);
 
   void RemoveProfile(const base::FilePath& profile_path);

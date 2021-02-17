@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -50,6 +51,30 @@ bool UrlMatchesOrigin(const GURL& url,
   }
 }
 
+// Return if |url_path| matches any path in |paths|. A path in |paths| can
+// contain one wildcard * at the end.
+// |url_path| always starts with a '/', as it's the result of GURL::path().
+bool UrlPathMatches(const std::string& url_path, const base::Value& paths) {
+  if (!paths.is_list())
+    return false;
+
+  for (const auto& path : paths.GetList()) {
+    std::string path_str = path.GetString();
+    if (path_str.back() == '*') {
+      // Remove the wildcard and check if it's the same as the first several
+      // characters of |url_path|.
+      path_str = path_str.substr(0, path_str.length() - 1);
+      if (base::StartsWith(url_path, path_str))
+        return true;
+    } else {
+      // |path_str| doesn't contain a wildcard, check for an exact match.
+      if (path_str == url_path)
+        return true;
+    }
+  }
+  return false;
+}
+
 // Given a list of handlers that matched an origin, apply the rules in each
 // handler against |url| and return only handlers that match |url|.
 // |origin_trimmed| indicates if the input URL's origin had to be shortened to
@@ -83,11 +108,30 @@ base::Optional<std::vector<UrlHandlerPrefs::Match>> FilterMatches(
         continue;
     }
 
-    // TODO(crbug/1072058): Filter results by matching against "paths" and
-    // "exclude_paths" lists. This would give developers finer control of what
-    // URLs trigger URL handling behavior.
+    const std::string& url_path = url.path();
+    bool path_matches = true;
+    const base::Value* const paths = handler.FindListKey(kPaths);
 
-    matches.emplace_back(*app_id, *profile_path);
+    bool paths_exist = paths && paths->is_list() && !paths->GetList().empty();
+    if (paths_exist)
+      path_matches = UrlPathMatches(url_path, *paths);
+
+    const base::Value* const exclude_paths = handler.FindListKey(kExcludePaths);
+    bool exclude_paths_exist = exclude_paths && exclude_paths->is_list() &&
+                               !exclude_paths->GetList().empty();
+    if (exclude_paths_exist) {
+      bool match_exclude_path = UrlPathMatches(url_path, *exclude_paths);
+      // If |paths| and |exclude_paths| are both not empty, only |url_path|
+      // that matches a path and does not match an exclude path is considered
+      // a match.
+      // If |paths| is empty and |exclude_paths| is not, |url_path| that does
+      // not match any exclude path is considered a match.
+      path_matches = paths_exist ? (path_matches && !match_exclude_path)
+                                 : !match_exclude_path;
+    }
+
+    if (path_matches)
+      matches.emplace_back(*app_id, *profile_path);
   }
   return matches;
 }
@@ -137,6 +181,14 @@ base::Optional<std::vector<UrlHandlerPrefs::Match>> FindMatches(
   return matches;
 }
 
+base::Value GetPathsValue(const std::vector<std::string>& paths) {
+  base::Value paths_value(base::Value::Type::LIST);
+  for (const auto& path : paths)
+    paths_value.Append(path);
+
+  return paths_value;
+}
+
 base::Value NewHandler(const AppId& app_id,
                        const base::FilePath& profile_path,
                        const apps::UrlHandlerInfo& info) {
@@ -144,12 +196,11 @@ base::Value NewHandler(const AppId& app_id,
   value.SetStringKey(kAppId, app_id);
   value.SetKey(kProfilePath, util::FilePathToValue(profile_path));
   value.SetBoolKey(kHasOriginWildcard, info.has_origin_wildcard);
-  // TODO(crbug/1072058): Set paths and exclude paths from origin association
-  // data when it is available.
-  base::Value paths(base::Value::Type::LIST);
-  base::Value exclude_paths(base::Value::Type::LIST);
-  value.SetKey(kPaths, std::move(paths));
-  value.SetKey(kExcludePaths, std::move(exclude_paths));
+
+  // Set paths and exclude paths from associated app.
+  value.SetKey(kPaths, GetPathsValue(info.paths));
+  value.SetKey(kExcludePaths, GetPathsValue(info.exclude_paths));
+
   // TODO(crbug/1072058): Set "user_permission" field when implementing user
   // settings in the chrome://settings page.
   return value;
@@ -184,6 +235,7 @@ void RemoveEntries(base::Value& pref_value,
   if (!pref_value.is_dict())
     return;
 
+  std::vector<std::string> origins_to_remove;
   for (auto origin_value : pref_value.DictItems()) {
     base::Value::ListStorage handlers = origin_value.second.TakeList();
     handlers.erase(
@@ -198,9 +250,12 @@ void RemoveEntries(base::Value& pref_value,
     if (!handlers.empty()) {
       origin_value.second = base::Value(std::move(handlers));
     } else {
-      pref_value.RemoveKey(origin_value.first);
+      origins_to_remove.push_back(origin_value.first);
     }
   }
+
+  for (const auto& origin_to_remove : origins_to_remove)
+    pref_value.RemoveKey(origin_to_remove);
 }
 }  // namespace
 
@@ -265,6 +320,15 @@ void UrlHandlerPrefs::AddWebApp(const AppId& app_id,
       pref_value->SetKey(origin.Serialize(), std::move(new_handlers));
     }
   }
+}
+
+void UrlHandlerPrefs::UpdateWebApp(const AppId& app_id,
+                                   const base::FilePath& profile_path,
+                                   const apps::UrlHandlers& url_handlers) {
+  // TODO(crbug/1072058): Handle "user_permission" field when it is
+  // implemented.
+  RemoveWebApp(app_id, profile_path);
+  AddWebApp(app_id, profile_path, url_handlers);
 }
 
 void UrlHandlerPrefs::RemoveWebApp(const AppId& app_id,
