@@ -346,12 +346,12 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   if (!is_supported) {
-    NotifyError("D3D11VideoDecoder does not support this config");
+    NotifyError(StatusCode::kD3D11DoesNotSupportConfig);
     return;
   }
 
   if (config.is_encrypted()) {
-    NotifyError("D3D11VideoDecoder does not support encrypted stream");
+    NotifyError(StatusCode::kD3D11DoesNotSupportEncryption);
     return;
   }
 
@@ -375,13 +375,13 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (!device_) {
     // This happens if, for example, if chrome is configured to use
     // D3D9 for ANGLE.
-    NotifyError("ANGLE did not provide D3D11 device");
+    NotifyError(StatusCode::kD3D11CouldNotGetAngleDevice);
     return;
   }
 
   if (!GetD3D11FeatureLevel(device_, gpu_workarounds_,
                             &usable_feature_level_)) {
-    NotifyError("D3D11 feature level not supported");
+    NotifyError(StatusCode::kD3D11InsufficientFeatureLevel);
     return;
   }
 
@@ -409,7 +409,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   hr = device_.As(&video_device_);
   if (!SUCCEEDED(hr)) {
-    NotifyError("Failed to get video device");
+    NotifyError(StatusCode::kD3D11VideoDeviceCreationFailed);
     return;
   }
 
@@ -423,7 +423,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                     std::move(video_decoder_or_error).value());
 
   if (!SUCCEEDED(hr)) {
-    NotifyError("Failed to get device context");
+    NotifyError(StatusCode::kD3D11AcceleratedDecoderInitializationFailed);
     return;
   }
 
@@ -495,7 +495,7 @@ void D3D11VideoDecoder::OnGpuInitComplete(
   DCHECK_EQ(state_, State::kInitializing);
 
   if (!success) {
-    NotifyError("Gpu init failed");
+    NotifyError(StatusCode::kD3D11GpuInitializationFailed);
     return;
   }
 
@@ -892,11 +892,6 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
 void D3D11VideoDecoder::SetDecoderCB(const SetAcceleratorDecoderCB& cb) {
   set_accelerator_decoder_cb_ = cb;
-}
-
-// TODO(tmathmeyer): Please don't add new uses of this overload.
-void D3D11VideoDecoder::NotifyError(const char* reason) {
-  NotifyError(Status(StatusCode::kDecoderInitializeNeverCompleted, reason));
 }
 
 void D3D11VideoDecoder::NotifyError(const Status& reason) {

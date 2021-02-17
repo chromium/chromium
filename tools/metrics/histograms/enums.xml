@@ -50027,7 +50027,14 @@ Called by update_use_counter_css.py.-->
   <int value="807" label="SubmitDecoderBuffersFailed"/>
   <int value="808" label="GetQuantBufferFailed"/>
   <int value="809" label="ReleaseQuantBufferFailed"/>
-  <int value="816" label="SliceTooBigForBitstreamBuffer"/>
+  <int value="816" label="BitstreamBufferSliceTooBig"/>
+  <int value="817" label="D3D11DoesNotSupportConfig"/>
+  <int value="818" label="D3D11DoesNotSupportEncryption"/>
+  <int value="819" label="D3D11CouldNotGetAngleDevice"/>
+  <int value="820" label="D3D11InsufficientFeatureLevel"/>
+  <int value="821" label="D3D11VideoDeviceCreationFailed"/>
+  <int value="822" label="D3D11AcceleratedDecoderInitializationFailed"/>
+  <int value="823" label="D3D11GpuInitializationFailed"/>
   <int value="1025" label="MojoDecoderNoWrappedDecoder"/>
   <int value="1026" label="MojoDecoderStoppedBeforeInitDone"/>
   <int value="1027" label="MojoDecoderUnsupported"/>
@@ -50085,6 +50092,9 @@ Called by update_use_counter_css.py.-->
   <int value="2325" label="PipelineErrorExternalRendererFailed"/>
   <int value="2326" label="PipelineErrorDemuxerErrorDetectedHLS"/>
   <int value="2561" label="UnsupportedFrameFormatError"/>
+  <int value="2816" label="DecoderStreamInErrorState"/>
+  <int value="2817" label="DecoderStreamReinitFailed"/>
+  <int value="2818" label="DecoderStreamDemuxerError"/>
 </enum>
 
 <enum name="MediaStreamRequestResult">
