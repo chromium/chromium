@@ -10,30 +10,26 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
-namespace {
-
-class TestWebUIBubbleManager : public WebUIBubbleManagerBase {
- public:
-  explicit TestWebUIBubbleManager(Browser* browser)
-      : WebUIBubbleManagerBase(BrowserView::GetBrowserViewForBrowser(browser)),
-        browser_context_(browser->profile()) {}
-  TestWebUIBubbleManager(const TestWebUIBubbleManager&) = delete;
-  const TestWebUIBubbleManager& operator=(const TestWebUIBubbleManager&) =
-      delete;
-  ~TestWebUIBubbleManager() override = default;
-
- private:
-  std::unique_ptr<WebUIBubbleView> CreateWebView() override {
-    return std::make_unique<WebUIBubbleView>(
-        browser_context_,
-        anchor_view()->GetWidget()->GetWorkAreaBoundsInScreen().size());
-  }
-
-  content::BrowserContext* browser_context_;
+class TestWebUIController : public ui::MojoBubbleWebUIController {
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
+WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
-}  // namespace
+template <>
+class BubbleContentsWrapperT<TestWebUIController>
+    : public BubbleContentsWrapper {
+ public:
+  BubbleContentsWrapperT(const GURL& webui_url,
+                         content::BrowserContext* browser_context,
+                         int task_manager_string_id,
+                         bool enable_extension_apis = false)
+      : BubbleContentsWrapper(browser_context,
+                              task_manager_string_id,
+                              enable_extension_apis) {}
+  void ReloadWebContents() override {}
+};
 
 class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
  public:
@@ -46,20 +42,23 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   // content::BrowserTestBase:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    bubble_manager_ = std::make_unique<TestWebUIBubbleManager>(browser());
+    bubble_manager_ =
+        std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
+            BrowserView::GetBrowserViewForBrowser(browser()),
+            browser()->profile(), GURL("chrome://test"), 1, false);
   }
   void TearDownOnMainThread() override {
     auto* widget = bubble_manager_->GetBubbleWidget();
     if (widget)
       widget->CloseNow();
-    bubble_manager()->ResetWebViewForTesting();
+    bubble_manager()->ResetContentsWrapperForTesting();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  TestWebUIBubbleManager* bubble_manager() { return bubble_manager_.get(); }
+  WebUIBubbleManager* bubble_manager() { return bubble_manager_.get(); }
 
  private:
-  std::unique_ptr<TestWebUIBubbleManager> bubble_manager_;
+  std::unique_ptr<WebUIBubbleManager> bubble_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, CreateAndCloseBubble) {

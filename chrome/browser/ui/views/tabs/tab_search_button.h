@@ -54,7 +54,7 @@ class TabSearchButton : public NewTabButton,
   bool ShowTabSearchBubble(bool triggered_by_keyboard_shortcut = false);
   void CloseTabSearchBubble();
 
-  WebUIBubbleManagerBase* webui_bubble_manager_for_testing() {
+  WebUIBubbleManager* webui_bubble_manager_for_testing() {
     return &webui_bubble_manager_;
   }
   const base::Optional<base::TimeTicks>& bubble_created_time_for_testing()
@@ -69,7 +69,7 @@ class TabSearchButton : public NewTabButton,
  private:
   void ButtonPressed(const ui::Event& event);
 
-  WebUIBubbleManager<TabSearchUI> webui_bubble_manager_;
+  WebUIBubbleManagerT<TabSearchUI> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;
 

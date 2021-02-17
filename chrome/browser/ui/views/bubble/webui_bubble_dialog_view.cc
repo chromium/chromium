@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 
+#include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
@@ -16,36 +19,63 @@ namespace {
 // that match those set by ExtensionPopup.
 constexpr gfx::Size kMinSize(25, 25);
 
-}  // namespace
+// WebUIBubbleView provides the functionality needed to embed a WebContents
+// within a Views hierarchy.
+class WebUIBubbleView : public views::WebView {
+ public:
+  explicit WebUIBubbleView(content::WebContents* web_contents) {
+    SetWebContents(web_contents);
+    // Allow the embedder to handle accelerators not handled by the WebContents.
+    set_allow_accelerators(true);
+    SetPreferredSize(web_contents->GetSize());
+  }
+  ~WebUIBubbleView() override = default;
 
-// static.
-base::WeakPtr<WebUIBubbleDialogView>
-WebUIBubbleDialogView::CreateWebUIBubbleDialog(
-    std::unique_ptr<WebUIBubbleDialogView> bubble_view) {
-  auto weak_ptr = bubble_view->weak_factory_.GetWeakPtr();
-  BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  return weak_ptr;
-}
+  // WebView:
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    // Ignores context menu.
+    return true;
+  }
+};
+
+}  // namespace
 
 WebUIBubbleDialogView::WebUIBubbleDialogView(
     views::View* anchor_view,
-    std::unique_ptr<WebUIBubbleView> web_view)
+    BubbleContentsWrapper* contents_wrapper)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
-      web_view_(AddChildView(std::move(web_view))) {
-  web_view_->set_host(this);
+      contents_wrapper_(contents_wrapper),
+      web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
+          contents_wrapper_->web_contents()))) {
+  DCHECK(!contents_wrapper_->GetHost());
+  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+  contents_wrapper_->ReloadWebContents();
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_margins(gfx::Insets());
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-WebUIBubbleDialogView::~WebUIBubbleDialogView() = default;
+WebUIBubbleDialogView::~WebUIBubbleDialogView() {
+  ClearContentsWrapper();
+}
 
-std::unique_ptr<WebUIBubbleView> WebUIBubbleDialogView::RemoveWebView() {
-  DCHECK(web_view_);
-  auto* web_view = web_view_;
-  web_view_ = nullptr;
-  web_view->set_host(nullptr);
-  return RemoveChildViewT(web_view);
+void WebUIBubbleDialogView::ClearContentsWrapper() {
+  if (!contents_wrapper_)
+    return;
+  DCHECK_EQ(this, contents_wrapper_->GetHost().get());
+  DCHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents());
+  web_view_->SetWebContents(nullptr);
+  contents_wrapper_->SetHost(nullptr);
+  contents_wrapper_ = nullptr;
+}
+
+base::WeakPtr<WebUIBubbleDialogView> WebUIBubbleDialogView::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void WebUIBubbleDialogView::OnWidgetClosing(views::Widget* widget) {
+  ClearContentsWrapper();
 }
 
 gfx::Size WebUIBubbleDialogView::CalculatePreferredSize() const {
@@ -58,11 +88,11 @@ gfx::Size WebUIBubbleDialogView::CalculatePreferredSize() const {
 
 void WebUIBubbleDialogView::AddedToWidget() {
   BubbleDialogDelegateView::AddedToWidget();
+  bubble_widget_observation_.Observe(GetWidget());
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
 }
 
 void WebUIBubbleDialogView::ShowUI() {
-  SetVisible(true);
   DCHECK(GetWidget());
   GetWidget()->Show();
   web_view_->GetWebContents()->Focus();
@@ -74,8 +104,17 @@ void WebUIBubbleDialogView::CloseUI() {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void WebUIBubbleDialogView::OnWebViewSizeChanged() {
+void WebUIBubbleDialogView::ResizeDueToAutoResize(content::WebContents* source,
+                                                  const gfx::Size& new_size) {
+  web_view_->SetPreferredSize(new_size);
   SizeToContents();
+}
+
+bool WebUIBubbleDialogView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, GetFocusManager());
 }
 
 BEGIN_METADATA(WebUIBubbleDialogView, views::BubbleDialogDelegateView)

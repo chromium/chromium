@@ -102,9 +102,11 @@ class ReadLaterButton : public views::LabelButton,
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_model_scoped_observation_{this};
 
-  std::unique_ptr<WebUIBubbleManager<ReadLaterUI>> webui_bubble_manager_;
+  std::unique_ptr<WebUIBubbleManagerT<ReadLaterUI>> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;
+
+  std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
@@ -95,11 +94,11 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
                                       base::Unretained(this)),
                   l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE)),
       browser_(browser),
-      webui_bubble_manager_(std::make_unique<WebUIBubbleManager<ReadLaterUI>>(
-          IDS_READ_LATER_TITLE,
+      webui_bubble_manager_(std::make_unique<WebUIBubbleManagerT<ReadLaterUI>>(
           this,
           browser->profile(),
           GURL(chrome::kChromeUIReadLaterURL),
+          IDS_READ_LATER_TITLE,
           true)),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("ReadingList.WindowDisplayedDuration",
@@ -206,12 +205,13 @@ void ReadLaterButton::ButtonPressed() {
       // SetHighlighted(false) here.
       SetHighlighted(false);
     } else {
-      auto web_view = std::make_unique<WebUIBubbleView>(
-          browser_->profile(),
-          browser_view->GetWidget()->GetWorkAreaBoundsInScreen().size());
-      web_view->LoadURL<ReadLaterUI>(GURL(chrome::kChromeUIReadLaterURL));
-      auto bubble_view =
-          std::make_unique<WebUIBubbleDialogView>(this, std::move(web_view));
+      contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
+          GURL(chrome::kChromeUIReadLaterURL), browser_->profile(),
+          IDS_READ_LATER_TITLE, true);
+
+      DCHECK(!contents_wrapper_->GetHost());
+      auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
+          this, contents_wrapper_.get());
       read_later_side_panel_bubble_ = bubble_view.get();
       browser_view->side_panel()->AddContent(std::move(bubble_view));
       SetHighlighted(true);
