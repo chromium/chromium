@@ -204,7 +204,8 @@ float BenchmarkIsPurchase(base::StringPiece str) {
 }
 
 // TSAN builds are 20~50X slower than Release build.
-#if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER)
+#if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
 #else
 #define MAYBE_RegexBenchmark RegexBenchmark
