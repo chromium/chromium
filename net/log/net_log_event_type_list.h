@@ -1943,11 +1943,11 @@ EVENT_TYPE(QUIC_SESSION_STOP_WAITING_FRAME_RECEIVED)
 //   }
 EVENT_TYPE(QUIC_SESSION_STOP_WAITING_FRAME_SENT)
 
-// Session recevied a RST_STREAM frame.
+// Session received a RST_STREAM frame.
 //   {
 //     "offset": <Offset in the byte stream which triggered the reset>,
 //     "quic_rst_stream_error": <quic::QuicRstStreamErrorCode in the frame>,
-//     "details": <Human readable description>,
+//     "stream_id": <The stream id which this frame refers to>,
 //   }
 EVENT_TYPE(QUIC_SESSION_RST_STREAM_FRAME_RECEIVED)
 
@@ -1955,7 +1955,7 @@ EVENT_TYPE(QUIC_SESSION_RST_STREAM_FRAME_RECEIVED)
 //   {
 //     "offset": <Offset in the byte stream which triggered the reset>,
 //     "quic_rst_stream_error": <quic::QuicRstStreamErrorCode in the frame>,
-//     "details": <Human readable description>,
+//     "stream_id": <The stream id which this frame refers to>,
 //   }
 EVENT_TYPE(QUIC_SESSION_RST_STREAM_FRAME_SENT)
 
@@ -2109,14 +2109,14 @@ EVENT_TYPE(QUIC_SESSION_CRYPTO_FRAME_RECEIVED)
 // Session sent a STOP_SENDING frame.
 //  {
 //    "stream_id": <The stream id>,
-//    "application_error_code": <The application error code>
+//    "rsr_stream_error_code": <quic::QuicRstStreamErrorCode in the frame>
 //  }
 EVENT_TYPE(QUIC_SESSION_STOP_SENDING_FRAME_SENT)
 
 // Session received a STOP_SENDING frame.
 //  {
 //    "stream_id": <The stream id>,
-//    "application_error_code": <The application error code>
+//    "rsr_stream_error_code": <Tquic::QuicRstStreamErrorCode in the frame>
 //  }
 EVENT_TYPE(QUIC_SESSION_STOP_SENDING_FRAME_RECEIVED)
 
