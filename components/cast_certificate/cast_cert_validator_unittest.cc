@@ -65,7 +65,7 @@ void RunTest(CastCertError expected_result,
              const std::string& optional_signed_data_file_name) {
   base::test::TaskEnvironment te;
   auto certs = ReadCertificateChainFromFile(
-      testing::GetCastTestCertsCertsDirectory().AppendASCII(certs_file_name));
+      testing::GetCastCertificatesSubDirectory().AppendASCII(certs_file_name));
 
   std::unique_ptr<net::TrustStoreInMemory> trust_store;
 

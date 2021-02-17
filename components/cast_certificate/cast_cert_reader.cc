@@ -5,6 +5,7 @@
 #include "components/cast_certificate/cast_cert_reader.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "net/cert/internal/common_cert_errors.h"
 #include "net/cert/pem.h"
@@ -41,14 +42,12 @@ std::vector<std::string> ReadCertificateChainFromFile(
     return {};
   }
 
-  std::vector<std::string> pem_headers;
-  pem_headers.push_back("CERTIFICATE");
-
   std::vector<std::string> certs;
-  net::PEMTokenizer pem_tokenizer(file_data, pem_headers);
+  net::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
   while (pem_tokenizer.GetNext())
     certs.push_back(pem_tokenizer.data());
 
+  CHECK(!certs.empty());
   return certs;
 }
 

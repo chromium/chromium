@@ -32,9 +32,10 @@ base::NoDestructor<std::vector<std::string>> certs;
 
 static bool InitializeOnce() {
   *certs = cast_certificate::ReadCertificateChainFromFile(
-      cast_certificate::testing::GetCastTestCertsCertsDirectory().AppendASCII(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
           "chromecast_gen1.pem"));
-  DCHECK(certs->size() >= 1);
+  CHECK(certs->size() >= 1)
+      << "We should always have at least one certificate.";
   return true;
 }
 

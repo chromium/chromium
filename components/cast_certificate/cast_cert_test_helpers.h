@@ -17,11 +17,11 @@
 namespace cast_certificate {
 namespace testing {
 
-// Returns components/test/data/cast_certificates
-base::FilePath GetCastTestCertsDirectory();
+// Returns components/test/data/cast_certificate
+const base::FilePath& GetCastCertificateDirectory();
 
-// Returns components/test/data/cast_certificates/certificates
-base::FilePath GetCastTestCertsCertsDirectory();
+// Returns components/test/data/cast_certificate/certificates
+const base::FilePath& GetCastCertificatesSubDirectory();
 
 // Helper structure that describes a message and its various signatures.
 struct SignatureTestData {
