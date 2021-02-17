@@ -124,6 +124,25 @@ int GetNoticeCardClicksCount(const PrefService& pref_service) {
   return pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
 }
 
+void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  for (const auto& exp : experiments) {
+    value.SetStringKey(exp.first, exp.second);
+  }
+  pref_service.Set(kExperiments, value);
+}
+
+Experiments GetExperiments(PrefService& pref_service) {
+  auto* value = pref_service.Get(kExperiments);
+  Experiments experiments;
+  if (!value->is_dict())
+    return experiments;
+  for (const auto& kv : value->DictItems()) {
+    experiments[kv.first] = kv.second.GetString();
+  }
+  return experiments;
+}
+
 }  // namespace prefs
 
 }  // namespace feed

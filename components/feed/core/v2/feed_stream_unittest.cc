@@ -700,6 +700,7 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     prefetched_images_.push_back(url);
     prefetch_image_call_count_++;
   }
+  void RegisterExperiments(const Experiments& experiments) override {}
 
   // For tests.
 
@@ -3091,6 +3092,20 @@ TEST_F(FeedStreamTest, UnloadOnlyOneOfMultipleModels) {
 
   EXPECT_TRUE(stream_->GetModel(kWebFeedStream));
   EXPECT_FALSE(stream_->GetModel(kInterestStream));
+}
+
+TEST_F(FeedStreamTest, ExperimentsAreClearedOnClearAll) {
+  Experiments e;
+  e["Trial1"] = "Group1";
+  e["Trial2"] = "Group2";
+  prefs::SetExperiments(e, profile_prefs_);
+
+  stream_->OnCacheDataCleared();  // triggers ClearAll().
+  WaitForIdleTaskQueue();
+
+  Experiments empty;
+  Experiments got = prefs::GetExperiments(profile_prefs_);
+  EXPECT_EQ(got, empty);
 }
 
 // Keep instantiations at the bottom.

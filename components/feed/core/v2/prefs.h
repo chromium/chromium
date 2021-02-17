@@ -62,6 +62,9 @@ void IncrementNoticeCardClicksCount(PrefService& pref_service);
 
 int GetNoticeCardClicksCount(const PrefService& pref_service);
 
+void SetExperiments(const Experiments& experiments, PrefService& pref_service);
+Experiments GetExperiments(PrefService& pref_service);
+
 }  // namespace prefs
 }  // namespace feed
 

@@ -186,6 +186,8 @@ void LoadStreamTask::QueryRequestComplete(
   MetricsReporter::NoticeCardFulfilled(isNoticeCardFulfilled);
 
   stream_->GetMetadata()->MaybeUpdateSessionId(response_data.session_id);
+  if (response_data.experiments)
+    experiments_ = *response_data.experiments;
 
   if (load_type_ != LoadType::kBackgroundRefresh) {
     auto model = std::make_unique<StreamModel>();
@@ -218,6 +220,7 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   result.loaded_new_content_from_network = loaded_new_content_from_network_;
   result.latencies = std::move(latencies_);
   result.upload_actions_result = std::move(upload_actions_result_);
+  result.experiments = experiments_;
   std::move(done_callback_).Run(std::move(result));
   TaskComplete();
 }

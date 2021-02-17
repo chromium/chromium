@@ -282,8 +282,12 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   stream.surface_updater->LoadStreamComplete(stream.model != nullptr,
                                              result.final_status);
 
-  if (result.loaded_new_content_from_network && prefetch_service_)
-    prefetch_service_->NewSuggestionsAvailable();
+  if (result.loaded_new_content_from_network) {
+    if (result.stream_type.IsInterest())
+      UpdateExperiments(result.experiments);
+    if (prefetch_service_)
+      prefetch_service_->NewSuggestionsAvailable();
+  }
 }
 
 void FeedStream::OnEnterBackground() {
@@ -315,6 +319,11 @@ std::string FeedStream::GetSessionId() const {
 
 void FeedStream::PrefetchImage(const GURL& url) {
   delegate_->PrefetchImage(url);
+}
+
+void FeedStream::UpdateExperiments(Experiments experiments) {
+  delegate_->RegisterExperiments(experiments);
+  prefs::SetExperiments(experiments, *profile_prefs_);
 }
 
 void FeedStream::AttachSurface(SurfaceInterface* surface) {
@@ -788,8 +797,12 @@ void FeedStream::ExecuteRefreshTask() {
 
 void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   metrics_reporter_->OnBackgroundRefresh(result.final_status);
-  if (result.loaded_new_content_from_network && prefetch_service_)
-    prefetch_service_->NewSuggestionsAvailable();
+  if (result.loaded_new_content_from_network) {
+    if (result.stream_type.IsInterest())
+      UpdateExperiments(result.experiments);
+    if (prefetch_service_)
+      prefetch_service_->NewSuggestionsAvailable();
+  }
 
   // Add prefetch images to task queue without waiting to finish
   // since we treat them as best-effort.
@@ -806,6 +819,8 @@ void FeedStream::ClearAll() {
 
 void FeedStream::FinishClearAll() {
   prefs::ClearClientInstanceId(*profile_prefs_);
+  // Clear any experiments stored.
+  prefs::SetExperiments({}, *profile_prefs_);
   metadata_.Populate(feedstore::Metadata());
   delegate_->ClearAll();
 }
@@ -990,4 +1005,5 @@ void FeedStream::ReportStreamScrollStart() {
 void FeedStream::ReportOtherUserAction(FeedUserActionType action_type) {
   metrics_reporter_->OtherUserAction(action_type);
 }
+
 }  // namespace feed

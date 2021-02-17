@@ -14,6 +14,7 @@
 #include "chrome/browser/android/feed/v2/refresh_task_scheduler_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +35,6 @@
 #include "google_apis/google_api_keys.h"
 
 namespace feed {
-namespace {
 const char kFeedv2Folder[] = "feedv2";
 
 class FeedServiceDelegateImpl : public FeedService::Delegate {
@@ -50,9 +50,16 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
   void PrefetchImage(const GURL& url) override {
     FeedServiceBridge::PrefetchImage(url);
   }
+  void RegisterExperiments(const Experiments& experiments) override {
+    // Note that this does not affect the contents of the X-Client-Data
+    // by design. We do not provide the variations IDs from the backend
+    // and do not attach them to the X-Client-Data header.
+    for (const auto& exp : experiments) {
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(exp.first,
+                                                                exp.second);
+    }
+  }
 };
-
-}  // namespace
 
 // static
 FeedService* FeedServiceFactory::GetForBrowserContext(

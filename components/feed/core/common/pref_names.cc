@@ -34,6 +34,7 @@ const char kMetricsData[] = "feedv2.metrics_data";
 const char kClientInstanceId[] = "feedv2.client_instance_id";
 // This pref applies to all discover APIs despite the string.
 const char kDiscoverAPIEndpointOverride[] = "feedv2.actions_endpoint_override";
+const char kExperiments[] = "feedv2.experiments";
 
 }  // namespace prefs
 
@@ -88,7 +89,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardViewsCount, 0);
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardClicksCount, 0);
-
+  registry->RegisterDictionaryPref(feed::prefs::kExperiments);
   RegisterObsoletePrefsFeb_2021(registry);
 }
 

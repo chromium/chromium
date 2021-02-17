@@ -66,6 +66,7 @@ class FeedStream : public FeedStreamApi,
     virtual void ClearAll() = 0;
     virtual bool IsSignedIn() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
+    virtual void RegisterExperiments(const Experiments& experiments) = 0;
   };
 
   // Forwards to |feed::TranslateWireResponse()| by default. Can be overridden
@@ -349,6 +350,7 @@ class FeedStream : public FeedStreamApi,
   Stream& GetStream(const StreamType& type);
   Stream* FindStream(const StreamType& type);
   const Stream* FindStream(const StreamType& type) const;
+  void UpdateExperiments(Experiments experiments);
 
   // Unowned.
 

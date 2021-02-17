@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/packing.pb.h"
+#include "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.pb.h"
 #include "components/feed/core/proto/v2/wire/data_operation.pb.h"
 #include "components/feed/core/proto/v2/wire/feature.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_response.pb.h"
@@ -318,6 +319,15 @@ RefreshResponseData TranslateWireResponse(
     session_id = response_metadata.session_id();
   }
 
+  base::Optional<Experiments> experiments = base::nullopt;
+  if (response_metadata.experiments_size() > 0) {
+    Experiments e;
+    for (feedwire::Experiment exp : response_metadata.experiments()) {
+      e[exp.trial_name()] = exp.group_name();
+    }
+    experiments = std::move(e);
+  }
+
   MetricsReporter::ActivityLoggingEnabled(response_metadata.logging_enabled());
   MetricsReporter::NoticeCardFulfilledObsolete(
       response_metadata.privacy_notice_fulfilled());
@@ -326,6 +336,7 @@ RefreshResponseData TranslateWireResponse(
   response_data.model_update_request = std::move(result);
   response_data.request_schedule = std::move(global_data.request_schedule);
   response_data.session_id = std::move(session_id);
+  response_data.experiments = std::move(experiments);
 
   return response_data;
 }

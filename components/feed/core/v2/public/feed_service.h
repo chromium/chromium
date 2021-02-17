@@ -73,6 +73,8 @@ class FeedService : public KeyedService {
     virtual void ClearAll() = 0;
     // Fetch the image and store it in the disk cache.
     virtual void PrefetchImage(const GURL& url) = 0;
+    // Register the synthetic field experiments for UMA.
+    virtual void RegisterExperiments(const Experiments& experiments) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.

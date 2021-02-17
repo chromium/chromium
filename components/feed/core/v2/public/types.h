@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_
 
+#include <map>
 #include <string>
 
 #include "base/optional.h"
@@ -33,6 +34,10 @@ struct DisplayMetrics {
 using EphemeralChangeId = util::IdTypeU32<class EphemeralChangeIdClass>;
 using SurfaceId = util::IdTypeU32<class SurfaceIdClass>;
 using ImageFetchId = util::IdTypeU32<class ImageFetchIdClass>;
+
+// A map of trial names (key) to group names (value) that is
+// sent from the server.
+typedef std::map<std::string, std::string> Experiments;
 
 struct NetworkResponseInfo {
   NetworkResponseInfo();

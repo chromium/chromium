@@ -59,6 +59,9 @@ class LoadStreamTask : public offline_pages::Task {
 
     // Result of the upload actions task.
     std::unique_ptr<UploadActionsTask::Result> upload_actions_result;
+
+    // Experiments information from the server.
+    Experiments experiments;
   };
 
   LoadStreamTask(LoadType load_type,
@@ -91,6 +94,7 @@ class LoadStreamTask : public offline_pages::Task {
   base::Optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
   base::TimeDelta stored_content_age_;
+  Experiments experiments_;
 
   std::unique_ptr<LoadLatencyTimes> latencies_;
   base::TimeTicks task_creation_time_;

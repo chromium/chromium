@@ -177,6 +177,24 @@ TEST(ProtocolTranslatorTest, PrivacyNoticeFulfilled) {
   }
 }
 
+TEST(ProtocolTranslatorTest, ExperimentsAreTranslated) {
+  Experiments expected;
+  expected["Trial1"] = "Group1";
+
+  feedwire::Response response = EmptyWireResponse();
+  auto* exp = response.mutable_feed_response()
+                  ->mutable_feed_response_metadata()
+                  ->mutable_chrome_feed_response_metadata()
+                  ->add_experiments();
+  exp->set_trial_name("Trial1");
+  exp->set_group_name("Group1");
+
+  RefreshResponseData refresh = TranslateWireResponse(response);
+  ASSERT_TRUE(refresh.experiments.has_value());
+
+  EXPECT_EQ(refresh.experiments.value(), expected);
+}
+
 TEST(ProtocolTranslatorTest, MissingResponseVersion) {
   feedwire::Response response = EmptyWireResponse();
   response.set_response_version(feedwire::Response::UNKNOWN_RESPONSE_VERSION);

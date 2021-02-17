@@ -18,6 +18,7 @@ namespace feed {
 // See components/feed/core/v2/public/types.h.
 using ::feed::ChromeInfo;
 using ::feed::EphemeralChangeId;
+using ::feed::Experiments;
 
 // Uniquely identifies a revision of a |feedstore::Content|. If Content changes,
 // it is assigned a new revision number.

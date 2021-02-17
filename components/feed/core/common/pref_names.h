@@ -56,6 +56,8 @@ extern const char kMetricsData[];
 extern const char kClientInstanceId[];
 // The pref name for the Discover API endpoint override.
 extern const char kDiscoverAPIEndpointOverride[];
+// The pref name for storing the server experiments the client is in.
+extern const char kExperiments[];
 
 }  // namespace prefs
 
