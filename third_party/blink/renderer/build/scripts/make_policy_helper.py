@@ -23,8 +23,15 @@ class FeaturePolicyFeatureWriter(json5_generator.Writer):
         # might be different.
         document_policy_features = []
 
+        def to_devtools_enum_format(feature_policy_name):
+            """ Convert '-' separated feature_policy_name to cammel case devtool enum name """
+            return ''.join(
+                [name.capitalize() for name in feature_policy_name.split('-')])
+
         for feature in self.json5_file.name_dictionaries:
             if feature['feature_policy_name']:
+                feature['devtools_enum_name'] = to_devtools_enum_format(
+                    feature['feature_policy_name'])
                 feature_policy_features.append(feature)
             elif feature['document_policy_name']:
                 document_policy_features.append(feature)

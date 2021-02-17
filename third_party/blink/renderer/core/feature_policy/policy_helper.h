@@ -92,6 +92,11 @@ bool DisabledByOriginTrial(const String&, FeatureContext*);
 // trial (it is origin trial controlled, and the origin trial is not enabled).
 bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature,
                            FeatureContext*);
+
+// Converts |mojom::blink::FeaturePolicyFeature| to enum used in devtools
+// protocol.
+String PermissionsPolicyFeatureToProtocol(mojom::blink::FeaturePolicyFeature);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FEATURE_POLICY_POLICY_HELPER_H_

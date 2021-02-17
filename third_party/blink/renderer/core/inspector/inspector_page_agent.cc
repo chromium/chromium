@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy_devtools_support.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -837,6 +838,76 @@ Response InspectorPageAgent::setBypassCSP(bool enabled) {
   return Response::Success();
 }
 
+namespace {
+
+std::unique_ptr<protocol::Page::PermissionsPolicyBlockLocator>
+CreatePermissionsPolicyBlockLocator(
+    const blink::FeaturePolicyBlockLocator& locator) {
+  protocol::Page::PermissionsPolicyBlockReason reason;
+  switch (locator.reason) {
+    case blink::FeaturePolicyBlockReason::kHeader:
+      reason = protocol::Page::PermissionsPolicyBlockReasonEnum::Header;
+      break;
+    case blink::FeaturePolicyBlockReason::kIframeAttribute:
+      reason =
+          protocol::Page::PermissionsPolicyBlockReasonEnum::IframeAttribute;
+      break;
+  }
+
+  return protocol::Page::PermissionsPolicyBlockLocator::create()
+      .setFrameId(locator.frame_id)
+      .setBlockReason(reason)
+      .build();
+}
+}  // namespace
+
+Response InspectorPageAgent::getPermissionsPolicyState(
+    const String& frame_id,
+    std::unique_ptr<
+        protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>*
+        states) {
+  LocalFrame* frame =
+      IdentifiersFactory::FrameById(inspected_frames_, frame_id);
+
+  if (!frame)
+    return Response::ServerError("No frame for given id found in this target");
+
+  const blink::FeaturePolicy* feature_policy =
+      frame->GetSecurityContext()->GetFeaturePolicy();
+
+  if (!feature_policy)
+    return Response::ServerError("Frame not ready");
+
+  auto feature_states = std::make_unique<
+      protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>();
+
+  for (const auto& entry : blink::GetDefaultFeatureNameMap()) {
+    const String& feature_name = entry.key;
+    const mojom::blink::FeaturePolicyFeature feature = entry.value;
+
+    if (blink::DisabledByOriginTrial(feature_name, frame->DomWindow()))
+      continue;
+
+    base::Optional<blink::FeaturePolicyBlockLocator> locator =
+        blink::TraceFeaturePolicyBlockSource(frame, feature);
+
+    std::unique_ptr<protocol::Page::PermissionsPolicyFeatureState>
+        feature_state =
+            protocol::Page::PermissionsPolicyFeatureState::create()
+                .setFeature(blink::PermissionsPolicyFeatureToProtocol(feature))
+                .setAllowed(!locator.has_value())
+                .build();
+
+    if (locator.has_value())
+      feature_state->setLocator(CreatePermissionsPolicyBlockLocator(*locator));
+
+    feature_states->push_back(std::move(feature_state));
+  }
+
+  *states = std::move(feature_states);
+  return Response::Success();
+}
+
 Response InspectorPageAgent::setDocumentContent(const String& frame_id,
                                                 const String& html) {
   LocalFrame* frame =
@@ -1133,6 +1204,7 @@ CreateGatedAPIFeaturesArray(LocalDOMWindow* window) {
   // and performance.profile() once they are gated/available, respectively.
   return features;
 }
+
 }  // namespace
 
 std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(

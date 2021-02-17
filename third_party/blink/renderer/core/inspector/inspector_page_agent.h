@@ -142,6 +142,12 @@ class CORE_EXPORT InspectorPageAgent final
                                         const String& html) override;
   protocol::Response setBypassCSP(bool enabled) override;
 
+  protocol::Response getPermissionsPolicyState(
+      const String& frame_id,
+      std::unique_ptr<
+          protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>*)
+      override;
+
   protocol::Response startScreencast(Maybe<String> format,
                                      Maybe<int> quality,
                                      Maybe<int> max_width,

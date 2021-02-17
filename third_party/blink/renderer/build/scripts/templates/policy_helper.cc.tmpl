@@ -6,9 +6,11 @@
 #include "third_party/blink/renderer/core/feature_policy/policy_helper.h"
 
 #include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -108,6 +110,18 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
   }
   {% endfor %}
   return false;
+}
+
+String PermissionsPolicyFeatureToProtocol(mojom::blink::FeaturePolicyFeature feature) {
+  switch (feature) {
+    {% for feature in feature_policy_features %}
+    case mojom::blink::FeaturePolicyFeature::k{{feature.name}}:
+      return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
+    {% endfor %}
+    case mojom::blink::FeaturePolicyFeature::kNotFound:
+      NOTREACHED();
+      return "";
+  }
 }
 
 }  // namespace blink
