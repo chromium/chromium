@@ -961,8 +961,10 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
 }
 
 void DocumentLoader::HandleRedirect(
-    const WebNavigationParams::RedirectInfo& redirect) {
-  const KURL url_before_redirect = url_;
+    WebNavigationParams::RedirectInfo& redirect) {
+  ResourceResponse redirect_response =
+      redirect.redirect_response.ToResourceResponse();
+  const KURL& url_before_redirect = redirect_response.CurrentRequestUrl();
   url_ = redirect.new_url;
   const KURL& url_after_redirect = url_;
 
@@ -998,8 +1000,6 @@ void DocumentLoader::HandleRedirect(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
 
-  ResourceResponse redirect_response =
-      redirect.redirect_response.ToResourceResponse();
   navigation_timing_info_->AddRedirect(redirect_response, url_after_redirect);
 
   DCHECK(!GetTiming().FetchStart().is_null());
