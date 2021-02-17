@@ -91,15 +91,18 @@ void DmServerUploader::OnStart() {
     Complete(Status(error::INVALID_ARGUMENT, "handler was null"));
     return;
   }
-  // Early exit if we don't have any records.
-  // TODO(b/170054326) Allow empty records list if encryption keys delivery is
-  // requested and return OK in this case.
-  if (encrypted_records_->empty()) {
+  // Early exit if we don't have any records and do not need encryption key.
+  if (encrypted_records_->empty() && !need_encryption_key_) {
     Complete(
         Status(error::INVALID_ARGUMENT, "No records received for upload."));
     return;
   }
-  ProcessRecords();
+
+  if (!encrypted_records_->empty()) {
+    ProcessRecords();
+  }
+
+  HandleRecords();
 }
 
 void DmServerUploader::ProcessRecords() {
@@ -131,8 +134,6 @@ void DmServerUploader::ProcessRecords() {
 
   // Discarding the remaining records.
   encrypted_records_->resize(records_added);
-
-  HandleRecords();
 }
 
 void DmServerUploader::HandleRecords() {
