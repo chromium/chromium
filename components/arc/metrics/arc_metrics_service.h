@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
@@ -115,6 +116,13 @@ class ArcMetricsService : public KeyedService,
 
   void AddAppKillObserver(AppKillObserver* obs);
   void RemoveAppKillObserver(AppKillObserver* obs);
+
+  // Finds the boot_progress_arc_upgraded event, removes it from |events|, and
+  // returns the event time. If the boot_progress_arc_upgraded event is not
+  // found, base::nullopt is returned. This function is public for testing
+  // purposes.
+  base::Optional<base::TimeTicks> GetArcStartTimeFromEvents(
+      std::vector<mojom::BootProgressEventPtr>& events);
 
  private:
   // Adapter to be able to also observe ProcessInstance events.

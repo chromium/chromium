@@ -44,6 +44,7 @@ constexpr base::TimeDelta kRequestProcessListPeriod =
 constexpr char kArcProcessNamePrefix[] = "org.chromium.arc.";
 constexpr char kGmsProcessNamePrefix[] = "com.google.android.gms";
 constexpr char kBootProgressEnableScreen[] = "boot_progress_enable_screen";
+constexpr char kBootProgressArcUpgraded[] = "boot_progress_arc_upgraded";
 
 std::string BootTypeToString(mojom::BootType boot_type) {
   switch (boot_type) {
@@ -237,12 +238,11 @@ void ArcMetricsService::ReportBootProgress(
 
   if (IsArcVmEnabled()) {
     // For VM builds, do not call into session_manager since we don't use it
-    // for the builds. Using base::TimeTicks() is fine for now because 1) the
-    // clocks in host and guest are not synchronized, and 2) the guest does not
-    // support mini container.
-    // TODO(yusukes): Once the guest supports mini container (details TBD), we
-    // should have the guest itself report the timing of the upgrade.
-    OnArcStartTimeRetrieved(std::move(events), boot_type, base::TimeTicks());
+    // for the builds. The upgrade time is included in the events vector so we
+    // can extract it here.
+    base::Optional<base::TimeTicks> arc_start_time =
+        GetArcStartTimeFromEvents(events);
+    OnArcStartTimeRetrieved(std::move(events), boot_type, arc_start_time);
     return;
   }
 
@@ -344,13 +344,12 @@ void ArcMetricsService::ReportArcCorePriAbiMigBootTime(
   const base::TimeTicks durationTicks = duration + base::TimeTicks();
 
   // For VM builds, do not call into session_manager since we don't use it
-  // for the builds. Using base::TimeTicks() is fine for now because 1) the
-  // clocks in host and guest are not synchronized, and 2) the guest does not
-  // support mini container.
-  // TODO(b/172266394): Guest should itself report the timing of the upgrade.
-  if(IsArcVmEnabled()) {
-      OnArcStartTimeForPriAbiMigration(std::move(durationTicks), base::TimeTicks());
-      return;
+  // for the builds. Currently the VM does not report ABI migration boot time.
+  // TODO(vraheja): once ABI migration is reported for VM, we can return the
+  // duration directly from the guest.
+  if (IsArcVmEnabled()) {
+    LOG(WARNING) << "Unexpected mojo call";
+    return;
   }
 
   // Retrieve ARC full container's start time from session manager.
@@ -409,6 +408,21 @@ void ArcMetricsService::AddAppKillObserver(AppKillObserver* obs) {
 void ArcMetricsService::RemoveAppKillObserver(AppKillObserver* obs) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   app_kill_observers_.RemoveObserver(obs);
+}
+
+base::Optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
+    std::vector<mojom::BootProgressEventPtr>& events) {
+  mojom::BootProgressEventPtr arc_upgraded_event;
+  for (auto it = events.begin(); it != events.end(); ++it) {
+    if (!(*it)->event.compare(kBootProgressArcUpgraded)) {
+      arc_upgraded_event = std::move(*it);
+      events.erase(it);
+      return base::TimeDelta::FromMilliseconds(
+                 arc_upgraded_event->uptimeMillis) +
+             base::TimeTicks();
+    }
+  }
+  return base::nullopt;
 }
 ArcMetricsService::ProcessObserver::ProcessObserver(
     ArcMetricsService* arc_metrics_service)
