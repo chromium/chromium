@@ -7,24 +7,24 @@ import("//build/config/android/rules.gni")
 # Library groups
 java_group("android_support_v4_java") {
   deps = [
-    ":androidx_core_core_java",
-    ":androidx_drawerlayout_drawerlayout_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_interpolator_interpolator_java",
-    ":androidx_lifecycle_lifecycle_common_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_java",
-    ":androidx_media_media_java",
-    ":androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
+    "//third_party/androidx:androidx_media_media_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   ]
 }
 
 java_group("android_support_v7_appcompat_java") {
   deps = [
     ":android_support_v4_java",
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_appcompat_appcompat_resources_java",
-    ":androidx_vectordrawable_vectordrawable_animated_java",
-    ":androidx_vectordrawable_vectordrawable_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
   ]
 }
 
@@ -152,256 +152,6 @@ android_aar_prebuilt("android_arch_lifecycle_viewmodel_java") {
 
   # https://crbug.com/887942#c1
   ignore_proguard_configs = true
-}
-
-java_group("androidx_activity_activity_java") {
-  deps = [ "//third_party/androidx:androidx_activity_activity_java" ]
-}
-
-java_group("androidx_annotation_annotation_java") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-}
-
-java_group("androidx_annotation_annotation_experimental_java") {
-  deps = [
-    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
-  ]
-}
-
-java_group("androidx_appcompat_appcompat_java") {
-  deps = [ "//third_party/androidx:androidx_appcompat_appcompat_java" ]
-}
-
-java_group("androidx_appcompat_appcompat_resources_java") {
-  deps =
-      [ "//third_party/androidx:androidx_appcompat_appcompat_resources_java" ]
-}
-
-java_group("androidx_arch_core_core_common_java") {
-  deps = [ "//third_party/androidx:androidx_arch_core_core_common_java" ]
-}
-
-java_group("androidx_asynclayoutinflater_asynclayoutinflater_java") {
-  deps = [ "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java" ]
-}
-
-java_group("androidx_cardview_cardview_java") {
-  deps = [ "//third_party/androidx:androidx_cardview_cardview_java" ]
-}
-
-java_group("androidx_collection_collection_java") {
-  deps = [ "//third_party/androidx:androidx_collection_collection_java" ]
-}
-
-java_group("androidx_concurrent_concurrent_futures_java") {
-  deps =
-      [ "//third_party/androidx:androidx_concurrent_concurrent_futures_java" ]
-}
-
-java_group("androidx_coordinatorlayout_coordinatorlayout_java") {
-  deps = [
-    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
-  ]
-}
-
-java_group("androidx_core_core_java") {
-  deps = [ "//third_party/androidx:androidx_core_core_java" ]
-}
-
-java_group("androidx_core_core_animation_java") {
-  deps = [ "//third_party/androidx:androidx_core_core_animation_java" ]
-}
-
-java_group("androidx_customview_customview_java") {
-  deps = [ "//third_party/androidx:androidx_customview_customview_java" ]
-}
-
-java_group("androidx_drawerlayout_drawerlayout_java") {
-  deps = [ "//third_party/androidx:androidx_drawerlayout_drawerlayout_java" ]
-}
-
-java_group("androidx_exifinterface_exifinterface_java") {
-  deps = [ "//third_party/androidx:androidx_exifinterface_exifinterface_java" ]
-}
-
-java_group("androidx_fragment_fragment_java") {
-  deps = [ "//third_party/androidx:androidx_fragment_fragment_java" ]
-}
-
-java_group("androidx_gridlayout_gridlayout_java") {
-  deps = [ "//third_party/androidx:androidx_gridlayout_gridlayout_java" ]
-}
-
-java_group("androidx_interpolator_interpolator_java") {
-  deps = [ "//third_party/androidx:androidx_interpolator_interpolator_java" ]
-}
-
-java_group("androidx_leanback_leanback_java") {
-  deps = [ "//third_party/androidx:androidx_leanback_leanback_java" ]
-}
-
-java_group("androidx_leanback_leanback_preference_java") {
-  deps = [ "//third_party/androidx:androidx_leanback_leanback_preference_java" ]
-}
-
-java_group("androidx_legacy_legacy_support_core_utils_java") {
-  deps = [
-    "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
-  ]
-}
-
-java_group("androidx_legacy_legacy_support_v4_java") {
-  deps = [ "//third_party/androidx:androidx_legacy_legacy_support_v4_java" ]
-}
-
-java_group("androidx_lifecycle_lifecycle_common_java") {
-  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_common_java" ]
-}
-
-java_group("androidx_lifecycle_lifecycle_common_java8_java") {
-  deps = [
-    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java8_java",
-  ]
-}
-
-java_group("androidx_lifecycle_lifecycle_livedata_java") {
-  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java" ]
-}
-
-java_group("androidx_lifecycle_lifecycle_livedata_core_java") {
-  deps = [
-    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
-  ]
-}
-
-java_group("androidx_lifecycle_lifecycle_runtime_java") {
-  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java" ]
-}
-
-java_group("androidx_lifecycle_lifecycle_viewmodel_java") {
-  deps =
-      [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java" ]
-}
-
-java_group("androidx_localbroadcastmanager_localbroadcastmanager_java") {
-  deps = [ "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java" ]
-}
-
-java_group("androidx_media_media_java") {
-  deps = [ "//third_party/androidx:androidx_media_media_java" ]
-}
-
-java_group("androidx_mediarouter_mediarouter_java") {
-  deps = [ "//third_party/androidx:androidx_mediarouter_mediarouter_java" ]
-}
-
-java_group("androidx_multidex_multidex_java") {
-  deps = [ "//third_party/androidx:androidx_multidex_multidex_java" ]
-}
-
-java_group("androidx_preference_preference_java") {
-  deps = [ "//third_party/androidx:androidx_preference_preference_java" ]
-}
-
-java_group("androidx_recyclerview_recyclerview_java") {
-  deps = [ "//third_party/androidx:androidx_recyclerview_recyclerview_java" ]
-}
-
-java_group("androidx_savedstate_savedstate_java") {
-  deps = [ "//third_party/androidx:androidx_savedstate_savedstate_java" ]
-}
-
-java_group("androidx_slice_slice_builders_java") {
-  deps = [ "//third_party/androidx:androidx_slice_slice_builders_java" ]
-}
-
-java_group("androidx_slice_slice_core_java") {
-  deps = [ "//third_party/androidx:androidx_slice_slice_core_java" ]
-}
-
-java_group("androidx_swiperefreshlayout_swiperefreshlayout_java") {
-  deps = [ "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java" ]
-}
-
-java_group("androidx_test_core_java") {
-  deps = [ "//third_party/androidx:androidx_test_core_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_espresso_espresso_contrib_java") {
-  deps =
-      [ "//third_party/androidx:androidx_test_espresso_espresso_contrib_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_espresso_espresso_core_java") {
-  deps = [ "//third_party/androidx:androidx_test_espresso_espresso_core_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_espresso_espresso_intents_java") {
-  deps =
-      [ "//third_party/androidx:androidx_test_espresso_espresso_intents_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_espresso_espresso_web_java") {
-  deps = [ "//third_party/androidx:androidx_test_espresso_espresso_web_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_ext_junit_java") {
-  deps = [ "//third_party/androidx:androidx_test_ext_junit_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_monitor_java") {
-  deps = [ "//third_party/androidx:androidx_test_monitor_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_rules_java") {
-  deps = [ "//third_party/androidx:androidx_test_rules_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_runner_java") {
-  deps = [ "//third_party/androidx:androidx_test_runner_java" ]
-  testonly = true
-}
-
-java_group("androidx_test_uiautomator_uiautomator_java") {
-  deps = [ "//third_party/androidx:androidx_test_uiautomator_uiautomator_java" ]
-  testonly = true
-}
-
-java_group("androidx_transition_transition_java") {
-  deps = [ "//third_party/androidx:androidx_transition_transition_java" ]
-}
-
-java_group("androidx_tvprovider_tvprovider_java") {
-  deps = [ "//third_party/androidx:androidx_tvprovider_tvprovider_java" ]
-}
-
-java_group("androidx_vectordrawable_vectordrawable_java") {
-  deps =
-      [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_java" ]
-}
-
-java_group("androidx_vectordrawable_vectordrawable_animated_java") {
-  deps = [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java" ]
-}
-
-java_group("androidx_viewpager2_viewpager2_java") {
-  deps = [ "//third_party/androidx:androidx_viewpager2_viewpager2_java" ]
-}
-
-java_group("androidx_viewpager_viewpager_java") {
-  deps = [ "//third_party/androidx:androidx_viewpager_viewpager_java" ]
-}
-
-java_group("androidx_webkit_webkit_java") {
-  deps = [ "//third_party/androidx:androidx_webkit_webkit_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -653,13 +403,13 @@ android_aar_prebuilt("google_play_services_auth_java") {
   aar_path = "libs/com_google_android_gms_play_services_auth/play-services-auth-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
   deps = [
-    ":androidx_fragment_fragment_java",
-    ":androidx_loader_loader_java",
     ":google_play_services_auth_api_phone_java",
     ":google_play_services_auth_base_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_loader_loader_java",
   ]
 }
 
@@ -679,10 +429,10 @@ android_aar_prebuilt("google_play_services_auth_base_java") {
   aar_path = "libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
   deps = [
-    ":androidx_collection_collection_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_collection_collection_java",
   ]
 }
 
@@ -691,11 +441,11 @@ android_aar_prebuilt("google_play_services_base_java") {
   aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-17.5.0.aar"
   info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
   deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
   bytecode_rewriter_target =
       "//build/android/bytecode:fragment_activity_replacer"
@@ -706,9 +456,9 @@ android_aar_prebuilt("google_play_services_basement_java") {
   aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-17.5.0.aar"
   info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
   deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
 
   # https://crbug.com/989505
@@ -723,12 +473,12 @@ android_aar_prebuilt("google_play_services_cast_java") {
   aar_path = "libs/com_google_android_gms_play_services_cast/play-services-cast-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
   deps = [
-    ":androidx_core_core_java",
-    ":androidx_mediarouter_mediarouter_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_flags_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
   ]
 }
 
@@ -737,16 +487,16 @@ android_aar_prebuilt("google_play_services_cast_framework_java") {
   aar_path = "libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_cast_framework/com_google_android_gms_play_services_cast_framework.info"
   deps = [
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_media_media_java",
-    ":androidx_mediarouter_mediarouter_java",
-    ":androidx_recyclerview_recyclerview_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_cast_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_media_media_java",
+    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   ]
 }
 
@@ -766,13 +516,13 @@ android_aar_prebuilt("google_play_services_gcm_java") {
   aar_path = "libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"
   deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_iid_java",
     ":google_play_services_stats_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
   ]
 }
 
@@ -781,12 +531,12 @@ android_aar_prebuilt("google_play_services_iid_java") {
   aar_path = "libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
   deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_stats_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }
 
@@ -857,18 +607,18 @@ android_aar_prebuilt("com_google_android_material_material_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_annotation_annotation_experimental_java",
-    ":androidx_annotation_annotation_java",
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_cardview_cardview_java",
-    ":androidx_coordinatorlayout_coordinatorlayout_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_lifecycle_lifecycle_runtime_java",
-    ":androidx_recyclerview_recyclerview_java",
-    ":androidx_transition_transition_java",
-    ":androidx_vectordrawable_vectordrawable_java",
-    ":androidx_viewpager2_viewpager2_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_cardview_cardview_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_transition_transition_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/androidx:androidx_viewpager2_viewpager2_java",
   ]
 
   # Reduce binary size. https:crbug.com/954584
@@ -1016,8 +766,6 @@ android_aar_prebuilt("google_firebase_firebase_messaging_java") {
   aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
   info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
   deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
     ":google_android_datatransport_transport_api_java",
     ":google_firebase_firebase_common_java",
     ":google_firebase_firebase_components_java",
@@ -1031,6 +779,8 @@ android_aar_prebuilt("google_firebase_firebase_messaging_java") {
     ":google_play_services_cloud_messaging_java",
     ":google_play_services_stats_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 
   # We removed the datatransport dependency to reduce binary size.
@@ -1261,7 +1011,6 @@ java_prebuilt("org_robolectric_robolectric_java") {
   enable_bytecode_checks = false
   testonly = true
   deps = [
-    ":androidx_test_monitor_java",
     ":javax_annotation_javax_annotation_api_java",
     ":javax_inject_javax_inject_java",
     ":org_robolectric_annotations_java",
@@ -1273,6 +1022,7 @@ java_prebuilt("org_robolectric_robolectric_java") {
     ":org_robolectric_shadows_framework_java",
     ":org_robolectric_utils_java",
     ":org_robolectric_utils_reflector_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/bouncycastle:bouncycastle_java",
   ]
   bypass_platform_checks = true
@@ -1385,63 +1135,6 @@ android_aar_prebuilt("android_arch_lifecycle_livedata_core_java") {
     ":android_arch_core_runtime_java",
     ":android_arch_lifecycle_common_java",
   ]
-}
-
-java_group("androidx_arch_core_core_runtime_java") {
-  deps = [ "//third_party/androidx:androidx_arch_core_core_runtime_java" ]
-}
-
-java_group("androidx_cursoradapter_cursoradapter_java") {
-  deps = [ "//third_party/androidx:androidx_cursoradapter_cursoradapter_java" ]
-}
-
-java_group("androidx_documentfile_documentfile_java") {
-  deps = [ "//third_party/androidx:androidx_documentfile_documentfile_java" ]
-}
-
-java_group("androidx_legacy_legacy_support_core_ui_java") {
-  deps =
-      [ "//third_party/androidx:androidx_legacy_legacy_support_core_ui_java" ]
-}
-
-java_group("androidx_lifecycle_lifecycle_viewmodel_savedstate_java") {
-  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java" ]
-}
-
-java_group("androidx_loader_loader_java") {
-  deps = [ "//third_party/androidx:androidx_loader_loader_java" ]
-}
-
-java_group("androidx_palette_palette_java") {
-  deps = [ "//third_party/androidx:androidx_palette_palette_java" ]
-}
-
-java_group("androidx_print_print_java") {
-  deps = [ "//third_party/androidx:androidx_print_print_java" ]
-}
-
-java_group("androidx_remotecallback_remotecallback_java") {
-  deps =
-      [ "//third_party/androidx:androidx_remotecallback_remotecallback_java" ]
-}
-
-java_group("androidx_slidingpanelayout_slidingpanelayout_java") {
-  deps = [
-    "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java",
-  ]
-}
-
-java_group("androidx_test_espresso_espresso_idling_resource_java") {
-  deps = [ "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java" ]
-  testonly = true
-}
-
-java_group("androidx_tracing_tracing_java") {
-  deps = [ "//third_party/androidx:androidx_tracing_tracing_java" ]
-}
-
-java_group("androidx_versionedparcelable_versionedparcelable_java") {
-  deps = [ "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1782,7 +1475,7 @@ android_aar_prebuilt("google_android_datatransport_transport_api_java") {
     ":*",
     "//third_party/androidx:*",
   ]
-  deps = [ ":androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1797,11 +1490,11 @@ android_aar_prebuilt("google_play_services_clearcut_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_core_core_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_phenotype_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }
 
@@ -1851,10 +1544,10 @@ android_aar_prebuilt("google_play_services_phenotype_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_core_core_java",
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }
 
@@ -1884,8 +1577,8 @@ android_aar_prebuilt("google_play_services_stats_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_legacy_legacy_support_core_utils_java",
     ":google_play_services_basement_java",
+    "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
   ]
 }
 
@@ -2055,8 +1748,8 @@ android_aar_prebuilt("google_firebase_firebase_components_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_annotation_annotation_java",
     ":google_firebase_firebase_annotations_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   # Can't find com.google.firebase.components.Component$ComponentType.
@@ -2076,7 +1769,7 @@ java_prebuilt("google_firebase_firebase_encoders_java") {
     ":*",
     "//third_party/androidx:*",
   ]
-  deps = [ ":androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2091,8 +1784,8 @@ android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_annotation_annotation_java",
     ":google_firebase_firebase_encoders_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 
@@ -2108,9 +1801,6 @@ android_aar_prebuilt("google_firebase_firebase_iid_java") {
     "//third_party/androidx:*",
   ]
   deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
     ":google_firebase_firebase_common_java",
     ":google_firebase_firebase_components_java",
     ":google_firebase_firebase_iid_interop_java",
@@ -2120,6 +1810,9 @@ android_aar_prebuilt("google_firebase_firebase_iid_java") {
     ":google_play_services_cloud_messaging_java",
     ":google_play_services_stats_java",
     ":google_play_services_tasks_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
   ]
 }
 
@@ -2957,7 +2650,6 @@ java_prebuilt("org_robolectric_shadows_framework_java") {
   ]
   testonly = true
   deps = [
-    ":androidx_test_monitor_java",
     ":com_android_support_support_annotations_java",
     ":org_robolectric_annotations_java",
     ":org_robolectric_pluginapi_java",
@@ -2966,6 +2658,7 @@ java_prebuilt("org_robolectric_shadows_framework_java") {
     ":org_robolectric_utils_java",
     ":org_robolectric_utils_reflector_java",
     "//third_party/accessibility_test_framework:accessibility_test_framework_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/icu4j:icu4j_java",
     "//third_party/sqlite4java:sqlite4java_java",
   ]

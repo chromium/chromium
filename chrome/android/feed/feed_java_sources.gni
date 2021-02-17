@@ -8,15 +8,15 @@ feed_deps = [
   "//base:base_java",
   "//chrome/android/feed:chrome_feed_java_resources",
   "//third_party/android_deps:android_support_v7_appcompat_java",
-  "//third_party/android_deps:androidx_annotation_annotation_java",
-  "//third_party/android_deps:androidx_cardview_cardview_java",
-  "//third_party/android_deps:androidx_collection_collection_java",
-  "//third_party/android_deps:androidx_interpolator_interpolator_java",
-  "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-  "//third_party/android_deps:androidx_swiperefreshlayout_swiperefreshlayout_java",
   "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
   "//third_party/android_deps:javax_inject_javax_inject_java",
   "//third_party/android_deps:protobuf_lite_runtime_java",
+  "//third_party/androidx:androidx_annotation_annotation_java",
+  "//third_party/androidx:androidx_cardview_cardview_java",
+  "//third_party/androidx:androidx_collection_collection_java",
+  "//third_party/androidx:androidx_interpolator_interpolator_java",
+  "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+  "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
 ]
 
 feed_java_sources = [
