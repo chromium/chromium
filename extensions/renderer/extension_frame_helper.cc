@@ -391,8 +391,6 @@ bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(ExtensionMsg_Response, OnExtensionResponse)
     IPC_MESSAGE_HANDLER(ExtensionMsg_MessageInvoke, OnExtensionMessageInvoke)
     IPC_MESSAGE_HANDLER(ExtensionMsg_AppWindowClosed, OnAppWindowClosed)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_SetSpatialNavigationEnabled,
-                        OnSetSpatialNavigationEnabled)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -499,7 +497,7 @@ void ExtensionFrameHelper::OnAppWindowClosed(bool send_onclosed) {
                                                         "onAppWindowClosed");
 }
 
-void ExtensionFrameHelper::OnSetSpatialNavigationEnabled(bool enabled) {
+void ExtensionFrameHelper::SetSpatialNavigationEnabled(bool enabled) {
   render_frame()
       ->GetRenderView()
       ->GetWebView()

@@ -101,6 +101,7 @@ class ExtensionFrameHelper
 
   // mojom::LocalFrame:
   void SetFrameName(const std::string& name) override;
+  void SetSpatialNavigationEnabled(bool enabled) override;
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
@@ -170,7 +171,6 @@ class ExtensionFrameHelper
                                 const std::string& function_name,
                                 const base::ListValue& args);
   void OnAppWindowClosed(bool send_onclosed);
-  void OnSetSpatialNavigationEnabled(bool enabled);
 
   // Type of view associated with the RenderFrame.
   ViewType view_type_ = VIEW_TYPE_INVALID;

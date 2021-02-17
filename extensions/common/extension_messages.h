@@ -701,10 +701,6 @@ IPC_MESSAGE_CONTROL1(ExtensionMsg_WatchPages,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_TransferBlobs,
                      std::vector<std::string> /* blob_uuids */)
 
-// Enable or disable spatial navigation.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_SetSpatialNavigationEnabled,
-                    bool /* spatial_nav_enabled */)
-
 // Messages sent from the renderer to the browser:
 
 // A renderer sends this message when an extension process starts an API

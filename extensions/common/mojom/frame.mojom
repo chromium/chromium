@@ -9,4 +9,7 @@ module extensions.mojom;
 interface LocalFrame {
   // Sets the top-level frame to the provided name.
   SetFrameName(string frame_name);
+
+  // Enables or disables spatial navigation.
+  SetSpatialNavigationEnabled(bool spatial_nav_enabled);
 };
