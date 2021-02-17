@@ -404,9 +404,9 @@ js_library("user_creation") {
 js_library("saml_confirm_password") {
   deps = [
     "components:oobe_modal_dialog",
-    "components/oobe_dialog:oobe_dialog",
-    "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
+    "components/oobe_loading_dialog:oobe_loading_dialog",
     "//ui/login:login_ui_tools",
   ]
 }
