@@ -203,6 +203,13 @@ bool ForceInstalledTracker::IsMisconfiguration(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // REPLACED_BY_SYSTEM_APP is a misconfiguration because these apps are legacy
+  // apps and are replaced by system apps.
+  if (installation_data.failure_reason ==
+      InstallStageTracker::FailureReason::REPLACED_BY_SYSTEM_APP) {
+    return true;
+  }
+
   // REPLACED_BY_ARC_APP error is a misconfiguration if ARC++ is enabled for
   // the device.
   if (profile_->GetPrefs()->IsManagedPreference(arc::prefs::kArcEnabled) &&

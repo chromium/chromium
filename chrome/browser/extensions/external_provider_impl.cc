@@ -65,6 +65,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "components/arc/arc_util.h"
+#include "extensions/common/constants.h"
 #else
 #include "chrome/browser/extensions/default_apps.h"
 #endif
@@ -228,6 +229,14 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     const base::DictionaryValue* extension = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (extension_id == extension_misc::kCameraAppId) {
+      unsupported_extensions.insert(extension_id);
+      install_stage_tracker->ReportFailure(
+          extension_id,
+          InstallStageTracker::FailureReason::REPLACED_BY_SYSTEM_APP);
+      continue;
+    }
+
     if (ShouldUninstallExtensionReplacedByArcApp(extension_id)) {
       VLOG(1) << "Extension with key: " << extension_id << " was replaced "
               << "by a default ARC app, and will be uninstalled.";

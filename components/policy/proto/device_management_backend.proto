@@ -2942,6 +2942,7 @@ message ExtensionInstallReportLogEvent {
     CRX_FETCH_URL_EMPTY = 25;
     CRX_FETCH_URL_INVALID = 26;
     OVERRIDDEN_BY_SETTINGS = 27;
+    REPLACED_BY_SYSTEM_APP = 28;
   }
 
   //  Stage of extension installing process. See InstallStageTracker::Stage for

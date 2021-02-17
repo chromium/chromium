@@ -630,6 +630,32 @@ TEST_F(ForceInstalledMetricsTest,
                                       1);
 }
 
+// Verifies that extension failing with REPLACED_BY_SYSTEM_APP error is
+// considered as a misconfiguration in ChromeOS.
+TEST_F(ForceInstalledMetricsTest,
+       ExtensionsFailureReplacedBySystemAppIsMisconfiguration) {
+  SetupForceList(true);
+  install_stage_tracker()->ReportFailure(
+      kExtensionId1,
+      InstallStageTracker::FailureReason::REPLACED_BY_SYSTEM_APP);
+  scoped_refptr<const Extension> ext2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::PENDING);
+  registry()->AddEnabled(ext2.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  histogram_tester_.ExpectBucketCount(
+      kFailureReasonsCWS,
+      InstallStageTracker::FailureReason::REPLACED_BY_SYSTEM_APP, 1);
+  bool expected_non_misconfiguration_failure = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  expected_non_misconfiguration_failure = false;
+#endif
+  histogram_tester_.ExpectBucketCount(kPossibleNonMisconfigurationFailures,
+                                      expected_non_misconfiguration_failure, 1);
+}
+
 // Reporting info when the force installed extension fails to install with error
 // CRX_FETCH_URL_EMPTY due to no updates from the server.
 TEST_F(ForceInstalledMetricsTest, ExtensionsNoUpdatesInfoReporting) {
