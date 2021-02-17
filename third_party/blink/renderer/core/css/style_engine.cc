@@ -2027,6 +2027,10 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},
               style_recalc_context);
 
+  // Nodes are marked for whitespace reattachment for DOM removal only. This set
+  // should have been cleared before layout.
+  DCHECK(!NeedsWhitespaceReattachment());
+
   if (container.ChildNeedsReattachLayoutTree()) {
     DCHECK(layout_tree_rebuild_root_.GetRootNode());
     if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
