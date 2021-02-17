@@ -77,9 +77,6 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
   PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
   PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
-  page->slot_span_metadata.bucket = &metadata->bucket;
-  auto* next_entry = new (slot) PartitionFreelistEntry();
-  page->slot_span_metadata.SetFreelistHead(next_entry);
 
   PA_DCHECK(!metadata->bucket.active_slot_spans_head);
   PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
@@ -87,6 +84,11 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
   PA_DCHECK(!metadata->bucket.num_full_slot_spans);
   metadata->bucket.slot_size = slot_size;
+
+  new (&page->slot_span_metadata)
+      SlotSpanMetadata<thread_safe>(&metadata->bucket);
+  auto* next_entry = new (slot) PartitionFreelistEntry();
+  page->slot_span_metadata.SetFreelistHead(next_entry);
 
   auto* map_extent = &metadata->direct_map_extent;
   map_extent->map_size = map_size;
@@ -336,8 +338,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
-  // The bucket never changes. We set it up once.
-  slot_span->bucket = this;
+  new (slot_span) SlotSpanMetadata<thread_safe>(this);
   slot_span->empty_cache_index = -1;
 
   slot_span->Reset();

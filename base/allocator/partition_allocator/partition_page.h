@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_
 
 #include <string.h>
+#include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/object_bitmap.h"
@@ -87,15 +88,20 @@ using QuarantineBitmap =
 //   from the empty list on to the active list.
 template <bool thread_safe>
 struct __attribute__((packed)) SlotSpanMetadata {
-  PartitionFreelistEntry* freelist_head;
-  SlotSpanMetadata<thread_safe>* next_slot_span;
-  PartitionBucket<thread_safe>* bucket;
+  PartitionFreelistEntry* freelist_head = nullptr;
+  SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
+  PartitionBucket<thread_safe>* const bucket;
 
   // Deliberately signed, 0 for empty or decommitted slot spans, -n for full
   // slot spans:
-  int16_t num_allocated_slots;
-  uint16_t num_unprovisioned_slots;
-  int16_t empty_cache_index;  // -1 if not in the empty cache.
+  int16_t num_allocated_slots = 0;
+  uint16_t num_unprovisioned_slots = 0;
+  int8_t empty_cache_index = 0;  // -1 if not in the empty cache.
+                                 // < kMaxFreeableSpans.
+  static_assert(kMaxFreeableSpans < std::numeric_limits<int8_t>::max(), "");
+  const bool can_store_raw_size;
+
+  explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
@@ -116,7 +122,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
   ALWAYS_INLINE static SlotSpanMetadata* FromSlotInnerPtr(void* ptr);
 
   // Checks if it is feasible to store raw_size.
-  ALWAYS_INLINE bool CanStoreRawSize() const;
+  ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size; }
   // The caller is responsible for ensuring that raw_size can be stored before
   // calling Set/GetRawSize.
   ALWAYS_INLINE void SetRawSize(size_t raw_size);
@@ -194,7 +200,12 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // Note, this declaration is kept in the header as opposed to an anonymous
   // namespace so the getter can be fully inlined.
   static SlotSpanMetadata sentinel_slot_span_;
+  // For the sentinel.
+  constexpr SlotSpanMetadata() noexcept
+      : bucket(nullptr), can_store_raw_size(false) {}
 };
+static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
+              "SlotSpanMetadata must fit into a Page Metadata slot.");
 
 // Metadata of a non-first partition page in a slot span.
 struct SubsequentPageMetadata {
@@ -480,13 +491,6 @@ SlotSpanMetadata<thread_safe>::FromSlotStartPtr(void* slot_start) {
   auto* page = PartitionPage<thread_safe>::FromSlotStartPtr(slot_start);
   PA_DCHECK(!page->slot_span_metadata_offset);
   return &page->slot_span_metadata;
-}
-
-template <bool thread_safe>
-ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::CanStoreRawSize() const {
-  // The answer is the same for all slot spans in a bucket, because it's based
-  // on the slot size.
-  return bucket->CanStoreRawSize();
 }
 
 template <bool thread_safe>

@@ -115,6 +115,11 @@ SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
 }
 
 template <bool thread_safe>
+SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
+    PartitionBucket<thread_safe>* bucket)
+    : bucket(bucket), can_store_raw_size(bucket->CanStoreRawSize()) {}
+
+template <bool thread_safe>
 DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
