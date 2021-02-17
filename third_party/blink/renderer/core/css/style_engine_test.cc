@@ -4149,4 +4149,15 @@ TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
   EXPECT_TRUE(recalc_root->NeedsStyleRecalc());
 }
 
+TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
+  ScopedCSSAtRuleCounterStyleForTest scope(true);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
+
+  GetDocument().body()->setInnerHTML("<style>@counter-style foo {}</style>");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
+}
+
 }  // namespace blink

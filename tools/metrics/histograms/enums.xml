@@ -31429,6 +31429,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3806" label="InsertHTMLCommandOnInput"/>
   <int value="3807" label="InsertHTMLCommandOnTextarea"/>
   <int value="3808" label="InsertHTMLCommandOnReadWritePlainText"/>
+  <int value="3809" label="CSSAtRuleCounterStyle"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
