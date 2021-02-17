@@ -7,8 +7,10 @@
 #include <functional>
 #include <memory>
 
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/printing/print_backend_service.h"
 #include "chrome/common/printing/printer_capabilities.h"
@@ -25,11 +27,39 @@ namespace printing {
 
 namespace {
 
+// Used as a callback to `StartGetPrinters` in tests.
+// Increases `call_count` and records values returned by `StartGetPrinters`.
+// TODO(crbug.com/1171579) Get rid of use of base::ListValue.
+void RecordPrinterList(size_t& call_count,
+                       std::unique_ptr<base::ListValue>& printers_out,
+                       const base::ListValue& printers) {
+  ++call_count;
+  printers_out.reset(printers.DeepCopy());
+}
+
+// Used as a callback to StartGetPrinters in tests.
+// Records that the test is done.
+void RecordPrintersDone(bool& is_done_out) {
+  is_done_out = true;
+}
+
 void RecordGetCapability(bool& capabilities_set,
                          base::Value& capabilities_out,
                          base::Value capability) {
   capabilities_out = capability.Clone();
   capabilities_set = true;
+}
+
+// Converts JSON string to base::ListValue object.
+// On failure, returns NULL and fills `error` string.
+std::unique_ptr<base::ListValue> GetJSONAsListValue(
+    const base::StringPiece& json,
+    std::string& error) {
+  auto ret = base::ListValue::From(
+      JSONStringValueDeserializer(json).Deserialize(nullptr, &error));
+  if (!ret)
+    error = "Value is not a list.";
+  return ret;
 }
 
 }  // namespace
@@ -65,6 +95,21 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
     }
   }
 
+  void AddPrinter(const std::string& id,
+                  const std::string& display_name,
+                  const std::string& description,
+                  bool is_default) {
+    auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
+    caps->papers.emplace_back(
+        PrinterSemanticCapsAndDefaults::Paper{"bar", "vendor", {600, 600}});
+    auto basic_info = std::make_unique<PrinterBasicInfo>(
+        id, display_name, description,
+        /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});
+
+    print_backend()->AddValidPrinter(id, std::move(caps),
+                                     std::move(basic_info));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -80,26 +125,83 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
 
 INSTANTIATE_TEST_SUITE_P(All, LocalPrinterHandlerDefaultTest, testing::Bool());
 
+TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
+  AddPrinter("printer1", "default1", "description1", true);
+  AddPrinter("printer2", "non-default2", "description2", false);
+  AddPrinter("printer3", "non-default3", "description3", false);
+
+  size_t call_count = 0;
+  std::unique_ptr<base::ListValue> printers;
+  bool is_done = false;
+
+  local_printer_handler_->StartGetPrinters(
+      base::BindRepeating(&RecordPrinterList, std::ref(call_count),
+                          std::ref(printers)),
+      base::BindOnce(&RecordPrintersDone, std::ref(is_done)));
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(call_count, 1u);
+  EXPECT_TRUE(is_done);
+  ASSERT_TRUE(printers);
+
+  constexpr base::StringPiece expected_list = R"(
+    [
+      {
+        "deviceName": "printer1",
+        "printerDescription": "description1",
+        "printerName": "default1",
+        "printerOptions": {}
+      },
+      {
+        "deviceName": "printer2",
+        "printerDescription": "description2",
+        "printerName": "non-default2",
+        "printerOptions": {}
+      },
+      {
+        "deviceName": "printer3",
+        "printerDescription": "description3",
+        "printerName": "non-default3",
+        "printerOptions": {}
+      }
+    ]
+  )";
+  std::string error;
+  std::unique_ptr<base::ListValue> expected_printers(
+      GetJSONAsListValue(expected_list, error));
+  ASSERT_TRUE(expected_printers) << "Error deserializing printers: " << error;
+  EXPECT_EQ(*printers, *expected_printers);
+}
+
+TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
+  size_t call_count = 0;
+  std::unique_ptr<base::ListValue> printers;
+  bool is_done = false;
+
+  // Do not add any printers before attempt to get printer list.
+  local_printer_handler_->StartGetPrinters(
+      base::BindRepeating(&RecordPrinterList, std::ref(call_count),
+                          std::ref(printers)),
+      base::BindOnce(&RecordPrintersDone, std::ref(is_done)));
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(call_count, 0u);
+  EXPECT_TRUE(is_done);
+  EXPECT_FALSE(printers);
+}
+
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
 TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
-  // Add printer to `test_backend`.
-  const std::string kDestinationId = "printer1";
-  auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
-  caps->papers.push_back({"foo", "vendor", {600, 600}});
-  auto basic_info = std::make_unique<PrinterBasicInfo>(
-      kDestinationId, /*display_name=*/"foo", /*printer_description=*/"",
-      /*printer_status=*/0, /*is_default=*/true, PrinterBasicInfoOptions{});
-
-  print_backend()->AddValidPrinter(kDestinationId, std::move(caps),
-                                   std::move(basic_info));
+  AddPrinter("printer1", "default1", "description1", true);
 
   bool did_fetch_caps = false;
   base::Value fetched_caps;
   local_printer_handler_->StartGetCapability(
-      kDestinationId,
-      base::BindOnce(&RecordGetCapability, std::ref(did_fetch_caps),
-                     std::ref(fetched_caps)));
+      "printer1", base::BindOnce(&RecordGetCapability, std::ref(did_fetch_caps),
+                                 std::ref(fetched_caps)));
 
   task_environment_.RunUntilIdle();
 

@@ -56,10 +56,23 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 #endif
 }
 
+void OnDidEnumeratePrinters(
+    PrinterHandler::AddedPrintersCallback added_printers_callback,
+    PrinterHandler::GetPrintersDoneCallback done_callback,
+    const base::Optional<PrinterList>& printer_list) {
+  const bool have_printers = printer_list.has_value();
+  if (!have_printers)
+    LOG(WARNING) << "Failure enumerating local printers.";
+
+  ConvertPrinterListForCallback(
+      std::move(added_printers_callback), std::move(done_callback),
+      have_printers ? printer_list.value() : PrinterList());
+}
+
 void OnDidFetchCapabilities(
     const std::string& device_name,
     bool has_secure_protocol,
-    LocalPrinterHandlerDefault::GetCapabilityCallback callback,
+    PrinterHandler::GetCapabilityCallback callback,
     const base::Optional<PrinterBasicInfo>& printer_info,
     const base::Optional<PrinterSemanticCapsAndDefaults::Papers>&
         user_defined_papers,
@@ -171,15 +184,24 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
 void LocalPrinterHandlerDefault::StartGetPrinters(
     AddedPrintersCallback callback,
     GetPrintersDoneCallback done_callback) {
-  VLOG(1) << "Enumerate printers start";
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&EnumeratePrintersAsync,
-                     g_browser_process->GetApplicationLocale()),
-      base::BindOnce(&ConvertPrinterListForCallback, std::move(callback),
-                     std::move(done_callback)));
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    VLOG(1) << "Enumerate printers start via service";
+    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
+                           /*printer_name=*/std::string())
+        ->EnumeratePrinters(base::BindOnce(&OnDidEnumeratePrinters,
+                                           std::move(callback),
+                                           std::move(done_callback)));
+  } else {
+    VLOG(1) << "Enumerate printers start in-process";
+    base::PostTaskAndReplyWithResult(
+        task_runner_.get(), FROM_HERE,
+        base::BindOnce(&EnumeratePrintersAsync,
+                       g_browser_process->GetApplicationLocale()),
+        base::BindOnce(&ConvertPrinterListForCallback, std::move(callback),
+                       std::move(done_callback)));
+  }
 }
 
 void LocalPrinterHandlerDefault::StartGetCapability(
