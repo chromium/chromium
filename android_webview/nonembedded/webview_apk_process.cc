@@ -18,8 +18,8 @@ namespace android_webview {
 
 // static
 WebViewApkProcess* WebViewApkProcess::GetInstance() {
-  CHECK_EQ(base::android::GetLibraryProcessType(),
-           base::android::PROCESS_WEBVIEW_NONEMBEDDED);
+  // TODO(crbug.com/1179303): Add check to assert this is only loaded by
+  // LibraryProcessType PROCESS_WEBVIEW_NONEMBEDDED.
   static base::NoDestructor<WebViewApkProcess> instance;
   return instance.get();
 }
