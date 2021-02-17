@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/util/status.h"
@@ -23,7 +24,8 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
   // By default encryption is disabled, until server can support decryption.
   static const char kEncryptedReporting[];
 
-  EncryptionModule();
+  explicit EncryptionModule(base::TimeDelta renew_encryption_key_period =
+                                base::TimeDelta::FromDays(1));
   EncryptionModule(const EncryptionModule& other) = delete;
   EncryptionModule& operator=(const EncryptionModule& other) = delete;
 
@@ -47,6 +49,10 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
   // or even changing the key is OK at any time.
   bool has_encryption_key() const;
 
+  // Returns `true` if encryption key has not been set yet or it is too old
+  // (received more than |renew_encryption_key_period| ago).
+  bool need_encryption_key() const;
+
   // Returns 'true' if |kEncryptedReporting| feature is enabled.
   // To be removed once encryption becomes mandatory.
   static bool is_enabled();
@@ -57,10 +63,13 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
  private:
   friend base::RefCountedThreadSafe<EncryptionModule>;
 
-  // Lazy flag indicating public assymmetric key has been set.
-  // Initialized as `false`, set to `true` after |UpdateAsymmetricKey| is called
-  // for the first time.
-  std::atomic<bool> has_encryption_key_{false};
+  // Timestamp of the last public asymmetric key update by
+  // |UpdateAsymmetricKey|. Initial value base::TimeTicks() indicates key is not
+  // set yet.
+  std::atomic<base::TimeTicks> last_encryption_key_update_{base::TimeTicks()};
+
+  // Period of encryption key update.
+  const base::TimeDelta renew_encryption_key_period_;
 
   // Encryptor.
   scoped_refptr<Encryptor> encryptor_;

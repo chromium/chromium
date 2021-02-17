@@ -121,15 +121,11 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   static StatusOr<std::unique_ptr<UploaderInterface>> ProvideUploader(
       Priority priority,
       Storage* storage) {
-    // TODO(b/170054326): Add periodic key request.
-    // if (time to update key) {
-    //   need_encryption_key = true;
-    // }
     ASSIGN_OR_RETURN(
         std::unique_ptr<UploaderInterface> uploader,
         storage->start_upload_cb_.Run(
             priority, EncryptionModule::is_enabled() &&
-                          !storage->encryption_module_->has_encryption_key()));
+                          storage->encryption_module_->need_encryption_key()));
     return std::make_unique<QueueUploaderInterface>(priority,
                                                     std::move(uploader));
   }

@@ -35,6 +35,7 @@ using ::testing::_;
 using ::testing::Between;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Ne;
 using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
@@ -529,8 +530,6 @@ class StorageTest
     if (expect_to_need_key_) {
       // Set uploader expectations for any queue; expect no records and need
       // key. Make sure no uploads happen, and key is requested.
-      // This is the only point test expectation where need_encryption_key is
-      // true.
       EXPECT_CALL(set_mock_uploader_expectations_,
                   Call(_, /*need_encryption_key=*/Eq(true), NotNull()))
           .WillOnce(WithArg<2>(Invoke([](MockUploadClient* mock_upload_client) {
@@ -556,7 +555,9 @@ class StorageTest
   void CreateTestStorageOrDie(
       const StorageOptions& options,
       scoped_refptr<EncryptionModule> encryption_module =
-          base::MakeRefCounted<EncryptionModule>()) {
+          base::MakeRefCounted<EncryptionModule>(
+              /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
+                  30))) {
     ASSERT_FALSE(storage_) << "StorageTest already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
         CreateTestStorage(options, encryption_module);
@@ -741,6 +742,65 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
+  // Run the test only when encryption is enabled.
+  if (!is_encryption_enabled()) {
+    return;
+  }
+
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+  WriteStringOrDie(MANUAL_BATCH, kData[0]);
+  WriteStringOrDie(MANUAL_BATCH, kData[1]);
+  WriteStringOrDie(MANUAL_BATCH, kData[2]);
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Ne(MANUAL_BATCH), /*need_encryption_key=*/_, NotNull()))
+      .WillRepeatedly(WithArgs<0, 2>(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetEmpty client(mock_upload_client);
+          })));
+  EXPECT_CALL(
+      set_mock_uploader_expectations_,
+      Call(Eq(MANUAL_BATCH), /*need_encryption_key=*/Eq(false), NotNull()))
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(priority, mock_upload_client)
+                .Required(0, kData[0])
+                .Required(1, kData[1])
+                .Required(2, kData[2]);
+          })));
+
+  // Trigger upload with no key update.
+  EXPECT_OK(storage_->Flush(MANUAL_BATCH));
+
+  // Write more data.
+  WriteStringOrDie(MANUAL_BATCH, kMoreData[0]);
+  WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
+  WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
+
+  // Wait for a long time to trigger encryption key request on the next upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30 + 1));
+
+  // Set uploader expectations with encryption key request.
+  EXPECT_CALL(
+      set_mock_uploader_expectations_,
+      Call(Eq(MANUAL_BATCH), /*need_encryption_key=*/Eq(true), NotNull()))
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(priority, mock_upload_client)
+                .Required(0, kData[0])
+                .Required(1, kData[1])
+                .Required(2, kData[2])
+                .Required(3, kMoreData[0])
+                .Required(4, kMoreData[1])
+                .Required(5, kMoreData[2]);
+          })));
+
+  // Trigger upload with key update after a long wait.
+  EXPECT_OK(storage_->Flush(MANUAL_BATCH));
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {

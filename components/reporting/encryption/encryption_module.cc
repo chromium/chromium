@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -55,7 +56,8 @@ bool EncryptionModule::is_enabled() {
   return base::FeatureList::IsEnabled(kEncryptedReportingFeature);
 }
 
-EncryptionModule::EncryptionModule() {
+EncryptionModule::EncryptionModule(base::TimeDelta renew_encryption_key_period)
+    : renew_encryption_key_period_(renew_encryption_key_period) {
   auto encryptor_result = Encryptor::Create();
   DCHECK(encryptor_result.ok());
   encryptor_ = std::move(encryptor_result.ValueOrDie());
@@ -111,7 +113,8 @@ void EncryptionModule::UpdateAsymmetricKey(
           [](EncryptionModule* encryption_module,
              base::OnceCallback<void(Status)> response_cb, Status status) {
             if (status.ok()) {
-              encryption_module->has_encryption_key_.store(true);
+              encryption_module->last_encryption_key_update_.store(
+                  base::TimeTicks::Now());
             }
             std::move(response_cb).Run(status);
           },
@@ -119,7 +122,13 @@ void EncryptionModule::UpdateAsymmetricKey(
 }
 
 bool EncryptionModule::has_encryption_key() const {
-  return has_encryption_key_.load();
+  return !last_encryption_key_update_.load().is_null();
+}
+
+bool EncryptionModule::need_encryption_key() const {
+  return !has_encryption_key() ||
+         last_encryption_key_update_.load() + renew_encryption_key_period_ <
+             base::TimeTicks::Now();
 }
 
 }  // namespace reporting

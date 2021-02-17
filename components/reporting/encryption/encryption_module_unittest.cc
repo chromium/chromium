@@ -153,13 +153,14 @@ class EncryptionModuleTest : public ::testing::Test {
     return Status::StatusOK();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   scoped_refptr<EncryptionModule> encryption_module_;
   scoped_refptr<Decryptor> decryptor_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {
@@ -206,12 +207,44 @@ TEST_F(EncryptionModuleTest, EncryptionDisabled) {
   EXPECT_FALSE(encrypted_result.ValueOrDie().has_encryption_info());
 }
 
-TEST_F(EncryptionModuleTest, NoPublicKey) {
+TEST_F(EncryptionModuleTest, PublicKeyUpdate) {
   constexpr char kTestString[] = "ABCDEF";
 
-  // Attempt to encrypt the test string.
-  const auto encrypted_result = EncryptSync(kTestString);
+  // No key yet, attempt to encrypt the test string.
+  ASSERT_FALSE(encryption_module_->has_encryption_key());
+  ASSERT_TRUE(encryption_module_->need_encryption_key());
+  auto encrypted_result = EncryptSync(kTestString);
   EXPECT_EQ(encrypted_result.status().error_code(), error::NOT_FOUND);
+
+  // Register new pair of private key and public value.
+  ASSERT_OK(AddNewKeyPair());
+  ASSERT_TRUE(encryption_module_->has_encryption_key());
+  ASSERT_FALSE(encryption_module_->need_encryption_key());
+
+  // Encrypt the test string using the last public value.
+  encrypted_result = EncryptSync(kTestString);
+  ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
+
+  // Simulate short wait. Key is still available and not needed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(8));
+  ASSERT_TRUE(encryption_module_->has_encryption_key());
+  ASSERT_FALSE(encryption_module_->need_encryption_key());
+  encrypted_result = EncryptSync(kTestString);
+  ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
+
+  // Simulate long wait. Key is still available, but is needed now.
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  ASSERT_TRUE(encryption_module_->has_encryption_key());
+  ASSERT_TRUE(encryption_module_->need_encryption_key());
+  encrypted_result = EncryptSync(kTestString);
+  ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
+
+  // Register one more pair of private key and public value.
+  ASSERT_OK(AddNewKeyPair());
+  ASSERT_TRUE(encryption_module_->has_encryption_key());
+  ASSERT_FALSE(encryption_module_->need_encryption_key());
+  encrypted_result = EncryptSync(kTestString);
+  ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
 }
 
 TEST_F(EncryptionModuleTest, EncryptAndDecryptMultiple) {
@@ -555,6 +588,5 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
                 ::testing::StrEq(kTestStrings[i]));
   }
 }
-
 }  // namespace
 }  // namespace reporting
