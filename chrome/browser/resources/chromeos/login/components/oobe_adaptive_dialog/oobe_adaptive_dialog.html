@@ -27,7 +27,7 @@
   Example:
     <style include="oobe-dialog-host"></style>
     <oobe-adaptive-dialog on-show-dialog="onTestDialogShown_" has-buttons>
-      <iron-icon ... slot="oobe-icon">
+      <iron-icon ... slot="icon">
       <h1 slot="title">Title</h1>
       <div slot="subtitle">Subtitle</div>
       <div slot="content">
@@ -49,8 +49,8 @@
   images of different DPI, |oobe-icon-1x| and |oobe-icon-2x| should be used
   instead. For example:
 
-      <iron-icon icon="icon1" ... slot="oobe-icon" class="oobe-icon-1x">
-      <iron-icon icon-"icon2" ... slot="oobe-icon" class="oobe-icon-2x">
+      <iron-icon icon="icon1" ... slot="icon" class="oobe-icon-1x">
+      <iron-icon icon-"icon2" ... slot="icon" class="oobe-icon-2x">
 
   Attributes:
     no-lazy           - prevents lazy instantiation of the dialog.

@@ -76,7 +76,7 @@ js_library("oobe_welcome") {
     "components:fake_oobe",
     "components:login_screen_behavior",
     "components:oobe_modal_dialog",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/js/cr/ui:dialogs",
   ]
