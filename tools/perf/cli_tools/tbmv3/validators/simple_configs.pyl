@@ -14,16 +14,23 @@
   'console_error': {
     'v2_metric': 'consoleErrorMetric',
     'v3_metric': 'console_error_metric',
+    # Optional precision value for comparing float. Applies to all histograms.
+    # This is 1e-3 by default.
+    # Using 1e-7 for console_error because these are technically ints.
+    'float_precision': 1e-7,
     'histogram_mappings': {
       # mappings are 'v2_histogram: 'v3_histogram'.
       'console:error:all': 'console_error::all_errors',
       'console:error:js': 'console_error::js_errors',
-      'console:error:network': 'console_error::network_errors',
+      # We can also override precision for a single histogram.
+      'console:error:network': ('console_error::network_errors', 1e-6),
     },
   },
   'reported_by_page': {
     'v2_metric': 'reportedByPageMetric',
     'v3_metric': 'reported_by_page',
+    # 1 microsecond precision - default for ms unit histograms.
+    'float_precision': 1e-3,
     'histogram_mappings': {
       # mappings are 'v2_histogram: 'v3_histogram'.
       'reported_by_page:time_to_viewable': 'reported_by_page::time_to_viewable',
@@ -34,6 +41,9 @@
   'blink_gc_metric': {
     'v2_metric': 'blinkGcMetric',
     'v3_metric': 'blink_gc_metric',
+    # Precision is lower than a microsecond because the way cpu time is
+    # computed in TBMv3 leads to small differences. See b/178379929.
+    'float_precision': 1e-2,
     'histogram_mappings': {
       # mappings are 'v2_histogram: 'v3_histogram'.
       'blink-gc-atomic-pause-mark-epilogue': 'blink_gc::blink_gc_atomic_pause_mark_epilogue',

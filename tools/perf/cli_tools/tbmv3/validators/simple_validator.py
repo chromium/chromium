@@ -47,13 +47,27 @@ def CompareHistograms(test_ctx):
   v2_histograms = test_ctx.RunTBMv2(v2_metric)
   v3_histograms = test_ctx.RunTBMv3(v3_metric)
 
-  for v2_hist_name, v3_hist_name in config['histogram_mappings'].items():
+  metric_precision = config['float_precision']
+
+  for v2_hist_name, v3_hist_info in config['histogram_mappings'].items():
+    if isinstance(v3_hist_info, str):
+      v3_hist_name = v3_hist_info
+      precision = metric_precision
+    elif isinstance(v3_hist_info, tuple):
+      v3_hist_name = v3_hist_info[0]
+      precision = v3_hist_info[1]
+    else:
+      raise Exception('v3_histogram must be either string of v3_histogram '
+                      ' name of (v3_hist_name, precision) tuple.')
+
     v2_hist = GetHistogram(v2_histograms, v2_hist_name, v2_metric, 'v2')
     v3_hist = GetHistogram(v3_histograms, v3_hist_name, v3_metric, 'v3')
 
     try:
-      utils.AssertHistogramStatsAlmostEqual(test_ctx, v2_hist, v3_hist)
-      utils.AssertHistogramSamplesAlmostEqual(test_ctx, v2_hist, v3_hist)
+      utils.AssertHistogramStatsAlmostEqual(test_ctx, v2_hist, v3_hist,
+                                            precision)
+      utils.AssertHistogramSamplesAlmostEqual(test_ctx, v2_hist, v3_hist,
+                                              precision)
     except AssertionError as err:
       message = (
           'Error comparing TBMv2 histogram %s with TBMv3 histogram %s: %s' %

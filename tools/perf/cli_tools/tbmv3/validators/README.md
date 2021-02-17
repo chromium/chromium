@@ -12,9 +12,10 @@ In `simple_configs.pyl`, you can define a validator. This is the syntax:
   '<validator_name>': {
     'v2_metric': '<tbmv2_metric_name>',
     'v3_metric': '<tbmv3_metric_name>',
+    'float_precision': <optional>
     'histogram_mappings': {
       '<v2_histogram_1>': '<v3_histogram_1>',
-      '<v2_histogram_2>': '<v3_histogram_2>',
+      '<v2_histogram_2>': ('<v3_histogram_2>', <precision>),
       ...
     },
   },
@@ -22,14 +23,16 @@ In `simple_configs.pyl`, you can define a validator. This is the syntax:
 ```
 
 For each histogram mapping defined, the validator will check all the major
-statistics (mean, sum, max, min, count) match up to 3 decimal places, and also
-each sample value match up to 3 decimal places.
+statistics (mean, sum, max, min, count), and all sample values match up. The
+default precision for float comparison is 1e3. You can override the precision
+for all histograms by providing 'float_precision', or for a specific histogram
+by using the `'<v2_histogram_2>': ('<v3_histogram_2>', <precision>)` syntax.
 
 ## Script validator
 
-If you want to do more complex checks (e.g. you want more decimal places, you
-don't want to check all the samples values are equal because some samples were
-dropped in the tbmv2 metric etc), you can opt for a script validator.
+If you want to do more complex checks (e.g. you don't want to check all the
+samples values are equal because some samples were dropped in the tbmv2 metric
+etc), you can opt for a script validator.
 
 To write a script validator, write a python file in this directory with a
 CompareHistogram method. The method takes in one argument: test_ctx.
