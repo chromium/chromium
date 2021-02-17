@@ -845,6 +845,8 @@
       'win-angle-rel-64': 'gpu_fyi_tests_release_trybot',
       'win-angle-deqp-rel-32': 'angle_deqp_release_trybot_x86',
       'win-angle-deqp-rel-64': 'angle_deqp_release_trybot',
+      'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
+      'win-angle-x64-try': 'angle_specific_release_trybot',
     },
 
     'tryserver.chrome': {

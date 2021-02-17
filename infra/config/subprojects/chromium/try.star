@@ -623,6 +623,12 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
+    name = "win-angle-chromium-x64-try",
+    os = os.WINDOWS_ANY,
+    executable = "recipe:angle_chromium_trybot",
+)
+
+try_.chromium_angle_builder(
     name = "win-angle-deqp-rel-32",
     os = os.WINDOWS_ANY,
 )
@@ -640,6 +646,12 @@ try_.chromium_angle_builder(
 try_.chromium_angle_builder(
     name = "win-angle-rel-64",
     os = os.WINDOWS_ANY,
+)
+
+try_.chromium_angle_builder(
+    name = "win-angle-x64-try",
+    os = os.WINDOWS_ANY,
+    executable = "recipe:angle_chromium_trybot",
 )
 
 try_.chromium_chromiumos_builder(
