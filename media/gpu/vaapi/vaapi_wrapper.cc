@@ -2796,6 +2796,7 @@ bool VaapiWrapper::Initialize(CodecMode mode,
     return false;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (encryption_scheme != EncryptionScheme::kUnencrypted) {
     DCHECK(!required_attribs.empty());
     // We need to adjust the attribute for encryption scheme.
@@ -2807,6 +2808,7 @@ bool VaapiWrapper::Initialize(CodecMode mode,
       }
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VAStatus va_res =
       vaCreateConfig(va_display_, va_profile, entrypoint,

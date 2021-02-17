@@ -5,13 +5,6 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_VIDEO_DECODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_VAAPI_VIDEO_DECODER_DELEGATE_H_
 
-// TODO(jkardatzke): Remove this once the transition to the new upstream
-// protected content API is complete. This is used to bridge a transition
-// between the libva pull request we used, and what actually landed upstream.
-#ifndef LEGACY_UPSTREAM_PROTECTED_LIBVA
-#define LEGACY_UPSTREAM_PROTECTED_LIBVA
-#endif
-
 #include <map>
 #include <memory>
 #include <string>
@@ -32,7 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -99,12 +92,14 @@ class VaapiVideoDecoderDelegate {
   // |subsamples| is for the current slice. |size| is the size of the slice
   // data. This should be called if IsEncrypted() is true even if the current
   // data is not encrypted (i.e. |subsamples| is empty).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ProtectedSessionState SetupDecryptDecode(
       bool full_sample,
       size_t size,
       VAEncryptionParameters* crypto_params,
       std::vector<VAEncryptionSegmentInfo>* segments,
       const std::vector<SubsampleEntry>& subsamples);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns true if we are handling encrypted content, in which case
   // SetupDecryptDecode() should be called for every slice.
@@ -149,7 +144,7 @@ class VaapiVideoDecoderDelegate {
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;

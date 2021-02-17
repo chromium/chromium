@@ -25,7 +25,7 @@ namespace {
 constexpr base::TimeDelta kKeyRetrievalMaxPeriod =
     base::TimeDelta::FromMinutes(1);
 }  // namespace
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -49,7 +49,7 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (cdm_context)
     chromeos_cdm_context_ = cdm_context->GetChromeOsCdmContext();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   memset(&src_region_, 0, sizeof(src_region_));
   memset(&dst_region_, 0, sizeof(dst_region_));
 }
@@ -101,6 +101,7 @@ bool VaapiVideoDecoderDelegate::SetDecryptConfig(
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 VaapiVideoDecoderDelegate::ProtectedSessionState
 VaapiVideoDecoderDelegate::SetupDecryptDecode(
     bool full_sample,
@@ -109,7 +110,6 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     std::vector<VAEncryptionSegmentInfo>* segments,
     const std::vector<SubsampleEntry>& subsamples) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crypto_params);
   DCHECK(segments);
   if (protected_session_state_ == ProtectedSessionState::kInProcess ||
@@ -233,11 +233,9 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
          DecryptConfig::kDecryptionKeySize);
   crypto_params->key_blob_size = DecryptConfig::kDecryptionKeySize;
   crypto_params->segment_info = &segments->front();
-#else  // if BUILDFLAG(IS_CHROMEOS_ASH)
-  protected_session_state_ = ProtectedSessionState::kFailed;
-#endif
   return protected_session_state_;
 }
+#endif  // if BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool VaapiVideoDecoderDelegate::NeedsProtectedSessionRecovery() {
   if (!IsEncryptedSession() || !vaapi_wrapper_->IsProtectedSessionDead() ||

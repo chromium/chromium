@@ -46,97 +46,9 @@ extern "C" {
  * @{
  */
 
-#ifdef LEGACY_UPSTREAM_PROTECTED_LIBVA
-/**
- *
- * A protected content function for processing cipher protected content.
- *
- **/
-#define VAEntrypointProtectedContent ((VAEntrypoint)0x1000)
-
-/**
- * \brief Cipher algorithm of the protected session.
- *
- * This attribute specifies the cipher algorithm of the protected session. It
- * could be AES, etc.... It depends on IHV's implementation.
- */
-#define VAConfigAttribProtectedContentCipherAlgorithm \
-  ((VAConfigAttribType)0x10003)
-/**
- * \brief Cipher block size of the protected session.
- *
- * This attribute specifies the block size of the protected session. It could be
- * 128, 192, or 256. It depends on IHV's implementation.
- */
-#define VAConfigAttribProtectedContentCipherBlockSize \
-  ((VAConfigAttribType)0x10004)
-/**
- * \brief Cipher mode of the protected session.
- *
- * This attribute specifies the cipher mode of the protected session. It could
- * be CBC, CTR, etc... It depends on IHV's implementation.
- */
-#define VAConfigAttribProtectedContentCipherMode ((VAConfigAttribType)0x10005)
-/**
- * \brief Decryption sample type of the protected session.
- *
- * This attribute specifies the decryption sample type of the protected session.
- * It could be fullsample or subsample. It depends on IHV's implementation.
- */
-#define VAConfigAttribProtectedContentCipherSampleType \
-  ((VAConfigAttribType)0x10006)
-
-/**
- * \brief Special usage attribute of the protected session.
- *
- * The attribute specifies the flow for the protected session could be used. For
- * example, it could be Widevine usages or something else. It dpends on IHV's
- * implementation.
- */
-#define VAConfigAttribProtectedContentUsage ((VAConfigAttribType)0x10007)
-
-/** \brief Encryption parameters buffer for content protection usage */
-#define VAEncryptionParameterBufferType ((VABufferType)0x20001)
-
-#endif  // LEGACY_UPSTREAM_PROTECTED_LIBVA
-
 /**\brief CENC status paramter, used for vendor content protection only.
  * The buffer corresponds to #VACencStatusParameters for va/cp*/
 #define VACencStatusParameterBufferType ((VABufferType)0x20002)
-
-#ifdef LEGACY_UPSTREAM_PROTECTED_LIBVA
-/** attribute values for VAConfigAttribEncryption */
-#define VA_ENCRYPTION_TYPE_NONE 0x00000000
-#define VA_ENCRYPTION_TYPE_FULLSAMPLE_CBC 0x00000002
-#define VA_ENCRYPTION_TYPE_FULLSAMPLE_CTR 0x00000008
-#define VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR 0x00000010
-#define VA_ENCRYPTION_TYPE_SUBSAMPLE_CBC 0x00000020
-
-/** attribute values for VAConfigAttribContentProtectionSessionMode */
-#define VA_PC_SESSION_MODE_NONE 0x00000000
-
-/** attribute values for VAConfigAttribContentProtectionSessionType */
-#define VA_PC_SESSION_TYPE_NONE 0x00000000
-
-/** attribute values for VAConfigAttribContentProtectionCipherAlgorithm */
-#define VA_PC_CIPHER_AES 0x00000001
-
-/** attribute values for VAConfigAttribContentProtectionCipherBlockSize */
-#define VA_PC_BLOCK_SIZE_128 0x00000001
-#define VA_PC_BLOCK_SIZE_256 0x00000004
-
-/** attribute values for VAConfigAttribContentProtectionCipherMode */
-#define VA_PC_CIPHER_MODE_CBC 0x00000002
-#define VA_PC_CIPHER_MODE_CTR 0x00000004
-
-/** attribute values for VAConfigAttribContentProtectionUsage */
-#define VA_PC_USAGE_DEFAULT 0x00000000
-
-/** attribute values for VAConfigAttribContentProtectionCipherSampleType */
-#define VA_PC_SAMPLE_TYPE_FULLSAMPLE 0x00000001
-#define VA_PC_SAMPLE_TYPE_SUBSAMPLE 0x00000002
-
-#endif  // LEGACY_UPSTREAM_PROTECTED_LIBVA
 
 /** \brief TeeExec Function Codes. */
 #define VA_TEE_EXEC_TEE_FUNCID_HW_UPDATE 0x40000002
@@ -155,67 +67,6 @@ typedef enum {
   /** \brief Indicate encryption operation is unsupport. */
   VA_ENCRYPTION_STATUS_UNSUPPORT
 } VAEncryptionStatus;
-
-#ifdef LEGACY_UPSTREAM_PROTECTED_LIBVA
-/** \brief structure for encrypted segment info. */
-typedef struct _VAEncryptionSegmentInfo {
-  /** \brief  The offset relative to the start of the bitstream input in
-   *  bytes of the start of the segment*/
-  uint32_t segment_start_offset;
-  /** \brief  The length of the segments in bytes*/
-  uint32_t segment_length;
-  /** \brief  The length in bytes of the remainder of an incomplete block
-   *  from a previous segment*/
-  uint32_t partial_aes_block_size;
-  /** \brief  The length in bytes of the initial clear data */
-  uint32_t init_byte_length;
-  /** \brief  This will be AES 128 counter for secure decode and secure
-   *  encode when numSegments equals 1 */
-  uint8_t aes_cbc_iv_or_ctr[16];
-  /** \brief Reserved bytes for future use, must be zero */
-  uint32_t va_reserved[VA_PADDING_MEDIUM];
-} VAEncryptionSegmentInfo;
-
-/** \brief encryption parameters, corresponding to
- * #VAEncryptionParameterBufferType*/
-typedef struct _VAEncryptionParameters {
-  /** \brief Encryption type, attribute values. */
-  uint32_t encryption_type;
-  /** \brief The number of sengments */
-  uint32_t num_segments;
-  /** \brief Pointer of segments */
-  VAEncryptionSegmentInfo* segment_info;
-  /** \brief The status report index for CENC workload.
-   *  The value is to indicate CENC workload and needs to be
-   *  different for each CENC workload */
-  uint32_t status_report_index;
-  /** \brief CENC counter length */
-  uint32_t size_of_length;
-  /** \brief Wrapped decrypt blob (Snd)kb */
-  uint8_t wrapped_decrypt_blob[16];
-  /** \brief Wrapped Key blob info (Sne)kb */
-  uint8_t wrapped_encrypt_blob[16];
-  /** \brief Indicates the number of 16-byte BLOCKS that are encrypted in any
-   *  given encrypted region of segments.
-   *  If this value is zero:
-   *    1. All bytes in encrypted region of segments are encrypted, i.e. the
-   *       CENC or CBC1 scheme is being used
-   *    2. blocks_stripe_clear must also be zero.
-   *  If this value is non-zero, blocks_stripe_clear must also be non-zero. */
-  uint32_t blocks_stripe_encrypted;
-  /** \brief Indicates the number of 16-byte BLOCKS that are clear in any given
-   *  encrypted region of segments, as defined by the CENS and CBCS schemes in
-   *  the common encryption spec.
-   *  If this value is zero, all bytes in encrypted region of segments are
-   *  encrypted, i.e. the CENC or CBC1 scheme is being used.
-   */
-  uint32_t blocks_stripe_clear;
-  /* Forwards compatibility */
-  uint32_t key_blob_size;
-  /** \brief Reserved bytes for future use, must be zero */
-  uint32_t va_reserved[VA_PADDING_MEDIUM - sizeof(uint32_t)];
-} VAEncryptionParameters;
-#endif  // LEGACY_UPSTREAM_PROTECTED_LIBVA
 
 /** \brief cenc status parameters, corresponding to
  * #VACencStatusParameterBufferType*/

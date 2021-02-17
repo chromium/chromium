@@ -79,7 +79,9 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 
   VAPictureParameterBufferHEVC pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   memset(&crypto_params_, 0, sizeof(crypto_params_));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   int highest_tid = sps->sps_max_sub_layers_minus1;
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
@@ -304,6 +306,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
     return DecodeStatus::kFail;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsEncryptedSession()) {
     const ProtectedSessionState state =
         SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params_,
@@ -316,6 +319,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
       return DecodeStatus::kTryAgain;
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   memset(&slice_param_, 0, sizeof(slice_param_));
 
   slice_param_.slice_data_size = slice_hdr->nalu_size;
@@ -438,7 +442,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   slice_param_.slice_data_num_emu_prevn_bytes =
       slice_hdr->header_emulation_prevention_bytes;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   last_slice_data_ = data;
   last_slice_size_ = size;
@@ -454,11 +458,13 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
     return DecodeStatus::kFail;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsEncryptedSession() &&
       !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
                                     sizeof(crypto_params_), &crypto_params_)) {
     return DecodeStatus::kFail;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VaapiH265Picture* vaapi_pic = pic->AsVaapiH265Picture();
   CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
@@ -476,7 +482,9 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       vaapi_pic->GetVADecodeSurfaceID());
   ref_pic_list_pocs_.clear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
@@ -503,7 +511,9 @@ void H265VaapiVideoDecoderDelegate::Reset() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   vaapi_wrapper_->DestroyPendingBuffers();
   ref_pic_list_pocs_.clear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   last_slice_data_ = nullptr;
 }
 

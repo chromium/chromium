@@ -5,16 +5,10 @@
 #ifndef MEDIA_GPU_VAAPI_H265_VAAPI_VIDEO_DECODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_H265_VAAPI_VIDEO_DECODER_DELEGATE_H_
 
-// TODO(jkardatzke): Remove this once the transition to the new upstream
-// protected content API is complete. This is used to bridge a transition
-// between the libva pull request we used, and what actually landed upstream.
-#ifndef LEGACY_UPSTREAM_PROTECTED_LIBVA
-#define LEGACY_UPSTREAM_PROTECTED_LIBVA
-#endif
-
 #include <va/va.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/chromeos_buildflags.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
@@ -95,6 +89,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   const uint8_t* last_slice_data_{nullptr};
   size_t last_slice_size_{0};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We need to hold onto this memory here because it's referenced by the
   // mapped buffer in libva across calls. It is filled in SubmitSlice() and
   // stays alive until SubmitDecode() or Reset().
@@ -103,6 +98,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // We need to retain this for the multi-slice case since that will aggregate
   // the encryption details across all the slices.
   VAEncryptionParameters crypto_params_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace media

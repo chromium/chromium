@@ -4,13 +4,6 @@
 
 #include "media/gpu/vaapi/h264_vaapi_video_decoder_delegate.h"
 
-// TODO(jkardatzke): Remove this once the transition to the new upstream
-// protected content API is complete. This is used to bridge a transition
-// between the libva pull request we used, and what actually landed upstream.
-#ifndef LEGACY_UPSTREAM_PROTECTED_LIBVA
-#define LEGACY_UPSTREAM_PROTECTED_LIBVA
-#endif
-
 #include <va/va.h>
 
 #include "base/memory/aligned_memory.h"
@@ -103,7 +96,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
                "H264VaapiVideoDecoderDelegate::SubmitFrameMetadata");
   VAPictureParameterBufferH264 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   memset(&crypto_params_, 0, sizeof(crypto_params_));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   full_sample_ = false;
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
@@ -224,6 +219,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   // extract the slice header parameters of interest and return them to the
   // caller.
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   VAEncryptionParameters crypto_params = {};
   // Don't use the VAEncryptionSegmentInfo vector in the class since we do not
   // need to hold this data across calls.
@@ -357,6 +353,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   slice_header_out->full_sample_index =
       status_buf->status_report_index_feedback;
   return DecodeStatus::kOk;
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return DecodeStatus::kFail;
+#endif
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
@@ -384,6 +383,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
                : DecodeStatus::kFail;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsEncryptedSession()) {
     const ProtectedSessionState state = SetupDecryptDecode(
         /*full_sample=*/false, size, &crypto_params_, &encryption_segment_info_,
@@ -396,6 +396,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
       return DecodeStatus::kTryAgain;
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   VASliceParameterBufferH264 slice_param;
   memset(&slice_param, 0, sizeof(slice_param));
 
@@ -496,11 +497,13 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitDecode");
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsEncryptedSession() && !full_sample_ &&
       !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
                                     sizeof(crypto_params_), &crypto_params_)) {
     return DecodeStatus::kFail;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
   CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
   VAProcPipelineParameterBuffer proc_buffer;
@@ -516,7 +519,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
 
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       vaapi_pic->GetVADecodeSurfaceID());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
@@ -540,7 +545,9 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
 
 void H264VaapiVideoDecoderDelegate::Reset() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   vaapi_wrapper_->DestroyPendingBuffers();
 }
 

@@ -10,13 +10,6 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_WRAPPER_H_
 #define MEDIA_GPU_VAAPI_VAAPI_WRAPPER_H_
 
-// TODO(jkardatzke): Remove this once the transition to the new upstream
-// protected content API is complete. This is used to bridge a transition
-// between the libva pull request we used, and what actually landed upstream.
-#ifndef LEGACY_UPSTREAM_PROTECTED_LIBVA
-#define LEGACY_UPSTREAM_PROTECTED_LIBVA
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <va/va.h>
