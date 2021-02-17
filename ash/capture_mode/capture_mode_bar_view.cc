@@ -23,6 +23,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -100,6 +101,9 @@ CaptureModeBarView::CaptureModeBarView()
   separator_1_->SetPreferredHeight(kSeparatorHeight);
   separator_2_->SetColor(separator_color);
   separator_2_->SetPreferredHeight(kSeparatorHeight);
+
+  close_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
 }
 
 CaptureModeBarView::~CaptureModeBarView() = default;
