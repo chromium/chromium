@@ -2897,16 +2897,23 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     return;
   }
 
+  StyleRecalcContext child_recalc_context = style_recalc_context;
+
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    if (layout_object->IsContainerForContainerQueries())
+      child_recalc_context.cq_evaluator = GetContainerQueryEvaluator();
+  }
+
   if (child_change.TraversePseudoElements(*this)) {
-    UpdatePseudoElement(kPseudoIdBackdrop, child_change, style_recalc_context);
-    UpdatePseudoElement(kPseudoIdMarker, child_change, style_recalc_context);
-    UpdatePseudoElement(kPseudoIdBefore, child_change, style_recalc_context);
+    UpdatePseudoElement(kPseudoIdBackdrop, child_change, child_recalc_context);
+    UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
+    UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
   }
 
   if (child_change.TraverseChildren(*this)) {
     SelectorFilterParentScope filter_scope(*this);
     if (ShadowRoot* root = GetShadowRoot()) {
-      root->RecalcDescendantStyles(child_change, style_recalc_context);
+      root->RecalcDescendantStyles(child_change, child_recalc_context);
       // Sad panda. This is only to clear ensured ComputedStyles for elements
       // outside the flat tree for getComputedStyle() in the cases where we
       // kSubtreeStyleChange. Style invalidation and kLocalStyleChange will
@@ -2914,17 +2921,17 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       // in Element::EnsureComputedStyle().
       if (child_change.RecalcDescendants()) {
         RecalcDescendantStyles(StyleRecalcChange::kClearEnsured,
-                               style_recalc_context);
+                               child_recalc_context);
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-      slot->RecalcStyleForSlotChildren(child_change, style_recalc_context);
+      slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
     } else {
-      RecalcDescendantStyles(child_change, style_recalc_context);
+      RecalcDescendantStyles(child_change, child_recalc_context);
     }
   }
 
   if (child_change.TraversePseudoElements(*this)) {
-    UpdatePseudoElement(kPseudoIdAfter, child_change, style_recalc_context);
+    UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
 
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
@@ -4564,6 +4571,16 @@ DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
 DisplayLockContext& Element::EnsureDisplayLockContext() {
   SetHasDisplayLockContext();
   return *EnsureElementRareData().EnsureDisplayLockContext(this);
+}
+
+ContainerQueryEvaluator* Element::GetContainerQueryEvaluator() const {
+  if (HasRareData())
+    return GetElementRareData()->GetContainerQueryEvaluator();
+  return nullptr;
+}
+
+void Element::SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
+  EnsureElementRareData().SetContainerQueryEvaluator(evaluator);
 }
 
 // Step 1 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()

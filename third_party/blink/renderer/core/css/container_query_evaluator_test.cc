@@ -7,6 +7,9 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -33,7 +36,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     ContainerQuery* container_query = ParseContainer(query);
     DCHECK(container_query);
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>(
-        width, height, contained_axes);
+        PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
     return evaluator->Eval(*container_query);
   }
 
@@ -71,6 +74,79 @@ TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
     EXPECT_FALSE(Eval(query, 100.0, 99.0, both));
     EXPECT_FALSE(Eval(query, 99.0, 100.0, both));
   }
+}
+
+TEST_F(ContainerQueryEvaluatorTest, ContainerChanged) {
+  PhysicalSize size_100(LayoutUnit(100), LayoutUnit(100));
+  PhysicalSize size_200(LayoutUnit(200), LayoutUnit(200));
+
+  ContainerQuery* container_query_100 = ParseContainer("(min-width: 100px)");
+  ContainerQuery* container_query_200 = ParseContainer("(min-width: 200px)");
+  ASSERT_TRUE(container_query_100);
+  ASSERT_TRUE(container_query_200);
+
+  auto* evaluator =
+      MakeGarbageCollected<ContainerQueryEvaluator>(size_100, horizontal);
+  ASSERT_TRUE(evaluator);
+
+  EXPECT_TRUE(evaluator->Eval(*container_query_100));
+  EXPECT_FALSE(evaluator->Eval(*container_query_200));
+
+  EXPECT_FALSE(evaluator->ContainerChanged(size_100, horizontal));
+  EXPECT_TRUE(evaluator->Eval(*container_query_100));
+  EXPECT_FALSE(evaluator->Eval(*container_query_200));
+
+  EXPECT_TRUE(evaluator->ContainerChanged(size_200, horizontal));
+  EXPECT_TRUE(evaluator->Eval(*container_query_100));
+  EXPECT_TRUE(evaluator->Eval(*container_query_200));
+
+  EXPECT_FALSE(evaluator->ContainerChanged(size_200, horizontal));
+  EXPECT_TRUE(evaluator->Eval(*container_query_100));
+  EXPECT_TRUE(evaluator->Eval(*container_query_200));
+
+  EXPECT_TRUE(evaluator->ContainerChanged(size_200, vertical));
+  EXPECT_FALSE(evaluator->Eval(*container_query_100));
+  EXPECT_FALSE(evaluator->Eval(*container_query_200));
+}
+
+TEST_F(ContainerQueryEvaluatorTest, NoSizeChangeInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        contain: size layout;
+        width: 500px;
+        height: 500px;
+      }
+      @container (min-width: 500px) {
+        div { z-index:1; }
+      }
+    </style>
+    <div id=container>
+      <div id=div></div>
+      <div id=div></div>
+      <div id=div></div>
+      <div id=div></div>
+      <div id=div></div>
+      <div id=div></div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(container->GetContainerQueryEvaluator());
+
+  // Causes re-layout, but the size does not change
+  container->SetInlineStyleProperty(CSSPropertyID::kFloat, "left");
+
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  UpdateAllLifecyclePhasesForTest();
+
+  unsigned after_count = GetStyleEngine().StyleForElementCount();
+
+  // Only #container should be affected. In particular, we should not
+  // recalc any style for <div> children of #container.
+  ASSERT_EQ(1u, after_count - before_count);
 }
 
 }  // namespace blink

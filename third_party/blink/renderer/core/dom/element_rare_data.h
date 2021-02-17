@@ -45,6 +45,7 @@
 
 namespace blink {
 
+class ContainerQueryEvaluator;
 class Element;
 class HTMLElement;
 class ResizeObservation;
@@ -201,6 +202,12 @@ class ElementRareData : public NodeRareData {
   DisplayLockContext* GetDisplayLockContext() const {
     return display_lock_context_;
   }
+  ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
+    return container_query_evaluator_;
+  }
+  void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
+    container_query_evaluator_ = evaluator;
+  }
 
   const AtomicString& GetNonce() const { return nonce_; }
   void SetNonce(const AtomicString& nonce) { nonce_ = nonce; }
@@ -235,6 +242,7 @@ class ElementRareData : public NodeRareData {
   Member<AccessibleNode> accessible_node_;
 
   Member<DisplayLockContext> display_lock_context_;
+  Member<ContainerQueryEvaluator> container_query_evaluator_;
   bool did_attach_internals_ = false;
   bool should_force_legacy_layout_for_child_ = false;
   bool style_should_force_legacy_layout_ = false;

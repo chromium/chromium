@@ -927,6 +927,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
   DisplayLockContext& EnsureDisplayLockContext();
 
+  ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
+  void SetContainerQueryEvaluator(ContainerQueryEvaluator*);
+
   bool ChildStyleRecalcBlockedByDisplayLock() const;
 
   // Activates all activatable (for a given reason) locked ancestors for this
