@@ -73,7 +73,7 @@ ThreadState::ThreadState()
                                  kV8DOMWrapperObjectIndex,
                                  gin::GinEmbedder::kEmbedderBlink)})),
       allocation_handle_(cpp_heap_->GetAllocationHandle()),
-      heap_handle(cpp_heap_->GetHeapHandle()),
+      heap_handle_(cpp_heap_->GetHeapHandle()),
       thread_id_(CurrentThread()) {
   *(thread_specific_.Get()) = this;
 }
