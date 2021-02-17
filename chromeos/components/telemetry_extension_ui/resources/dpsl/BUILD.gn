@@ -24,7 +24,7 @@ js_library("dpsl") {
     "telemetry_requester.js",
   ]
   deps = [
-    ":interface_definitions",
+    ":namespace",
     ":types",
   ]
 }
@@ -32,6 +32,6 @@ js_library("dpsl") {
 js_library("types") {
 }
 
-js_library("interface_definitions") {
+js_library("namespace") {
   deps = [ "//chromeos/components/system_apps/public/js:message_pipe" ]
 }
