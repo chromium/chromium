@@ -247,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerKeepAliveBrowserTest,
   ASSERT_EQ(profile1, [ac lastProfile]);
 
   // |profile1| is active.
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
       profile1, ProfileKeepAliveOrigin::kAppControllerMac));
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
@@ -255,6 +256,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerKeepAliveBrowserTest,
   // Make |profile2| active.
   [ac windowChangedToProfile:profile2];
   ASSERT_EQ(profile2, [ac lastProfile]);
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       profile1, ProfileKeepAliveOrigin::kAppControllerMac));
   EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
