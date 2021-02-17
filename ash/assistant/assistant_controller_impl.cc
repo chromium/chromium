@@ -21,6 +21,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"

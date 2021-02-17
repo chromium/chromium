@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

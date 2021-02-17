@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 
 namespace ash {
 

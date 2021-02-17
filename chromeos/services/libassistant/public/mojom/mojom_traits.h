@@ -8,9 +8,9 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/shared/utils.h"
+#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
 

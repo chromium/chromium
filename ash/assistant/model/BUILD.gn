@@ -50,6 +50,7 @@ component("model") {
     "//ash/public/cpp",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/libassistant/public/cpp:structs",
     "//ui/accessibility/mojom",
     "//ui/gfx/geometry",
   ]

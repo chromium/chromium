@@ -13,7 +13,6 @@ component("shared") {
 
   sources = [
     "constants.h",
-    "utils.cc",
     "utils.h",
   ]
 
@@ -23,5 +22,8 @@ component("shared") {
     sources += [ "constants.cc" ]
   }
 
-  deps = [ "//base:base" ]
+  deps = [
+    "//base:base",
+    "//chromeos/services/libassistant/public/cpp:structs",
+  ]
 }

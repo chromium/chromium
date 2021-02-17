@@ -1833,6 +1833,7 @@ component("ash") {
     "//chromeos/network",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/libassistant/public/cpp:structs",
     "//chromeos/services/multidevice_setup/public/mojom",
     "//chromeos/services/nearby/public/cpp",
     "//chromeos/services/network_config/public/cpp",

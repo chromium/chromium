@@ -15,7 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

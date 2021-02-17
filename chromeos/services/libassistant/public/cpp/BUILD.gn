@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The structures used by the mojom API.
+component("structs") {
+  defines = [ "IS_LIBASSISTANT_PUBLIC_STRUCTS_IMPL" ]
+
+  sources = [
+    "android_app_info.cc",
+    "android_app_info.h",
+    "assistant_feedback.cc",
+    "assistant_feedback.h",
+    "assistant_notification.cc",
+    "assistant_notification.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//url",
+  ]
+}

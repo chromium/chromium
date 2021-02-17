@@ -12,12 +12,14 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
-#include "chromeos/services/assistant/public/shared/utils.h"
+#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace chromeos {
 namespace assistant {
+
+struct AssistantFeedback;
 
 // Describes an Assistant interaction.
 struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionMetadata {
@@ -136,22 +138,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   // Assistant has started waiting. This occur during execution of a routine to
   // give the user time to digest a response before continuing execution.
   virtual void OnWaitStarted() {}
-};
-
-//  Details for Assistant feedback.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantFeedback {
-  AssistantFeedback();
-  ~AssistantFeedback();
-
-  // User input to be sent with the feedback report.
-  std::string description;
-
-  // Whether user consent to send debug info.
-  bool assistant_debug_info_allowed{false};
-
-  // Screenshot if allowed by user.
-  // Raw data (non-encoded binary octets)
-  std::vector<uint8_t> screenshot_png;
 };
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {

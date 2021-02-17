@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
 
 #include <string>
 #include <vector>
@@ -16,7 +16,8 @@ namespace chromeos {
 namespace assistant {
 
 // Models a notification button.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantNotificationButton {
+struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS)
+    AssistantNotificationButton {
   // Display text of the button.
   std::string label;
 
@@ -36,7 +37,7 @@ enum class AssistantNotificationPriority {
 };
 
 // Models an Assistant notification.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantNotification {
+struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantNotification {
   AssistantNotification();
   AssistantNotification(const AssistantNotification&);
   AssistantNotification& operator=(const AssistantNotification&);
@@ -103,4 +104,4 @@ struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantNotification {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_
