@@ -41,7 +41,6 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -61,7 +60,6 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -102,13 +100,11 @@
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/update_client/update_client_errors.h"
-#include "components/variations/service/variations_service.h"
 #include "components/version_info/version_info.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
@@ -148,7 +144,6 @@
 #include "extensions/common/switches.h"
 #include "media/media_buildflags.h"
 #include "net/base/net_errors.h"
-#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -232,11 +227,6 @@ bool IsWebGLEnabled(content::WebContents* contents) {
       "domAutomationController.send(context != null);",
       &result));
   return result;
-}
-
-bool IsNetworkPredictionEnabled(PrefService* prefs) {
-  return chrome_browser_net::CanPrefetchAndPrerenderUI(prefs) ==
-      chrome_browser_net::NetworkPredictionStatus::ENABLED;
 }
 
 }  // namespace
@@ -406,31 +396,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_IncognitoEnabled) {
   EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, NetworkPrediction) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-
-  // Enabled by default.
-  EXPECT_TRUE(IsNetworkPredictionEnabled(prefs));
-
-  // Disable by old, deprecated policy.
-  PolicyMap policies;
-  policies.Set(key::kDnsPrefetchingEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_FALSE(IsNetworkPredictionEnabled(prefs));
-
-  // Enabled by new policy, this should override old one.
-  policies.Set(key::kNetworkPredictionOptions, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(chrome_browser_net::NETWORK_PREDICTION_ALWAYS),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_TRUE(IsNetworkPredictionEnabled(prefs));
-}
-
 IN_PROC_BROWSER_TEST_F(PolicyTest, UrlKeyedAnonymizedDataCollection) {
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetBoolean(
@@ -462,44 +427,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DISABLED_DisableScreenshotsFile) {
   // Check if trying to take a screenshot fails when disabled by policy.
   TestScreenshotFile(false);
   ASSERT_EQ(CountScreenshots(), screenshot_count + 1);
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_SessionLengthLimit) {
-  // Indicate that the session started 2 hours ago and no user activity has
-  // occurred yet.
-  g_browser_process->local_state()->SetInt64(
-      prefs::kSessionStartTime,
-      (base::Time::Now() - base::TimeDelta::FromHours(2)).ToInternalValue());
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, SessionLengthLimit) {
-  content::MockNotificationObserver observer;
-  content::NotificationRegistrar registrar;
-  registrar.Add(&observer,
-                chrome::NOTIFICATION_APP_TERMINATING,
-                content::NotificationService::AllSources());
-
-  // Set the session length limit to 3 hours. Verify that the session is not
-  // terminated.
-  EXPECT_CALL(observer, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _))
-      .Times(0);
-  PolicyMap policies;
-  policies.Set(key::kSessionLengthLimit, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(kThreeHoursInMs), nullptr);
-  UpdateProviderPolicy(policies);
-  base::RunLoop().RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&observer);
-
-  // Decrease the session length limit to 1 hour. Verify that the session is
-  // terminated immediately.
-  EXPECT_CALL(observer, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _));
-  policies.Set(key::kSessionLengthLimit, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(kOneHourInMs), nullptr);
-  UpdateProviderPolicy(policies);
-  base::RunLoop().RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&observer);
 }
 
 // Disabled, see http://crbug.com/554728.
@@ -609,36 +536,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
   // Policy should allow ending tasks again.
   EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Similar to PolicyTest but sets the proper policy before the browser is
-// started.
-class PolicyVariationsServiceTest : public PolicyTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    policies.Set(key::kVariationsRestrictParameter, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::Value("restricted"), nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PolicyVariationsServiceTest, VariationsURLIsValid) {
-  const std::string default_variations_url =
-      variations::VariationsService::GetDefaultVariationsServerURLForTesting();
-
-  const GURL url =
-      g_browser_process->variations_service()->GetVariationsServerURL(
-          variations::VariationsService::HttpOptions::USE_HTTPS);
-  EXPECT_TRUE(base::StartsWith(url.spec(), default_variations_url,
-                               base::CompareCase::SENSITIVE));
-  std::string value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "restrict", &value));
-  EXPECT_EQ("restricted", value);
-}
-#endif  // !defined(CHROME_OS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the hardware acceleration mode policy before the browser is started.
