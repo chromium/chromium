@@ -31,6 +31,21 @@ constexpr auto kJankThreshold = base::TimeDelta::FromMilliseconds(100);
 // This value is copied from queueing_time_estimator.cc:kInvalidPeriodThreshold.
 constexpr auto kSuspendInterval = base::TimeDelta::FromSeconds(30);
 
+constexpr char kLatencyEventCategory[] = "latency";
+
+// The name emitted for a large UI jank event. Also reused as the scope string
+// for these events, to ensure their ID's don't collide with any other event.
+constexpr char kLargeUIJankEvent[] = "Large UI Jank";
+
+// The name emitted for a large IO jank event. Also reused as the scope string
+// for these events, to ensure their ID's don't collide with any other event.
+constexpr char kLargeIOJankEvent[] = "Large IO Jank";
+
+// The names emitted for JankyInterval measurement events.
+constexpr char kJankyIntervalEvent[] = "JankyInterval";
+constexpr char kJankyIntervalsPerThirtySeconds2Event[] =
+    "JankyIntervalsPerThirtySeconds2";
+
 // Given a |jank|, finds each janky slice between |start_time| and |end_time|,
 // and adds it to |janky_slices|.
 void AddJankySlices(std::set<int>* janky_slices,
@@ -94,12 +109,13 @@ void Calculator::TaskOrEventFinishedOnUIThread(
     GetQueueAndExecutionJanksOnUIThread().emplace_back(queue_time,
                                                        execution_finish_time);
     // Emit a trace event to highlight large janky slices.
+    const auto trace_id = TRACE_ID_WITH_SCOPE(
+        kLargeUIJankEvent, TRACE_ID_LOCAL(g_num_large_ui_janks_));
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "latency", "Large UI Jank", TRACE_ID_LOCAL(g_num_large_ui_janks_),
-        queue_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "latency", "Large UI Jank", TRACE_ID_LOCAL(g_num_large_ui_janks_),
-        execution_finish_time);
+        kLatencyEventCategory, kLargeUIJankEvent, trace_id, queue_time);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kLatencyEventCategory,
+                                                   kLargeUIJankEvent, trace_id,
+                                                   execution_finish_time);
     g_num_large_ui_janks_++;
 
     if (execution_finish_time - execution_start_time >= kJankThreshold) {
@@ -124,12 +140,13 @@ void Calculator::TaskOrEventFinishedOnIOThread(
     queue_and_execution_janks_on_io_thread_.emplace_back(queue_time,
                                                          execution_finish_time);
     // Emit a trace event to highlight large janky slices.
+    const auto trace_id = TRACE_ID_WITH_SCOPE(
+        kLargeIOJankEvent, TRACE_ID_LOCAL(g_num_large_io_janks_));
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "latency", "Large IO Jank", TRACE_ID_LOCAL(g_num_large_io_janks_),
-        queue_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "latency", "Large IO Jank", TRACE_ID_LOCAL(g_num_large_io_janks_),
-        execution_finish_time);
+        kLatencyEventCategory, kLargeIOJankEvent, trace_id, queue_time);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kLatencyEventCategory,
+                                                   kLargeIOJankEvent, trace_id,
+                                                   execution_finish_time);
     g_num_large_io_janks_++;
 
     if (execution_finish_time - execution_start_time >= kJankThreshold) {
@@ -218,19 +235,21 @@ void Calculator::EmitJankyIntervalsMeasurementTraceEvent(
     base::TimeTicks end_time,
     size_t amount_of_slices) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "latency", "JankyIntervalsPerThirtySeconds2", TRACE_ID_LOCAL(this),
-      start_time, "amount_of_slices", amount_of_slices);
+      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds2Event,
+      TRACE_ID_LOCAL(this), start_time, "amount_of_slices", amount_of_slices);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "latency", "JankyIntervalsPerThirtySeconds2", TRACE_ID_LOCAL(this),
-      end_time);
+      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds2Event,
+      TRACE_ID_LOCAL(this), end_time);
 }
 
 void Calculator::EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
                                                   base::TimeTicks end_time) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "latency", "JankyInterval", TRACE_ID_LOCAL(this), start_time);
+      kLatencyEventCategory, kJankyIntervalEvent, TRACE_ID_LOCAL(this),
+      start_time);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "latency", "JankyInterval", TRACE_ID_LOCAL(this), end_time);
+      kLatencyEventCategory, kJankyIntervalEvent, TRACE_ID_LOCAL(this),
+      end_time);
 }
 
 base::TimeTicks Calculator::GetLastCalculationTime() {
@@ -335,7 +354,7 @@ void Calculator::CalculateResponsiveness(
     // If the 'latency' tracing category is enabled, emit trace events for the
     // measurement duration and the janky slices.
     bool tracing_enabled;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("latency", &tracing_enabled);
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED(kLatencyEventCategory, &tracing_enabled);
     if (tracing_enabled) {
       EmitResponsivenessTraceEvents(jank_type, start_time,
                                     current_interval_end_time, janky_slices);
