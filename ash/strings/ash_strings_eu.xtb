@@ -11,6 +11,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> gehitu da</translation>
 <translation id="1047017786576569492">partziala</translation>
 <translation id="1047773237499189053">Eginbide berri bat eskuragarri dago. Erabili gora egiteko gezi-tekla informazio gehiago lortzeko.</translation>
+<translation id="1052916631016577720">Elementuak eskaneatzeko aukera</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Gailu mugikorra: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4351433414020964307">Laguntzailea kargatzen ari da…</translation>
 <translation id="4356930093361201197">kontraste handiko modua</translation>
 <translation id="4371348193907997655">Igortzeko eginbidearen ezarpenak</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="4378551569595875038">Konektatzen…</translation>
 <translation id="4379531060876907730">Hauek dira arkatzaren tresnak</translation>
 <translation id="4389184120735010762">Lupa ainguratuaren lasterbidea sakatu duzu. Aktibatu egin nahi duzu?</translation>
@@ -587,6 +589,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6043212731627905357">Monitore honek arazoak ditu <ph name="DEVICE_TYPE" /> gailuarekin (ez da bateragarria).</translation>
 <translation id="6043994281159824495">Amaitu saioa</translation>
 <translation id="6047696787498798094">Pantaila-partekatzea gelditu egingo da beste erabiltzaile batera aldatzen zarenean. Jarraitu nahi duzu?</translation>
+<translation id="6050368268239407309">Aurkezpenetarako tresnak</translation>
 <translation id="6054305421211936131">Hasi saioa txartel adimendunarekin</translation>
 <translation id="6059276912018042191">Azkenaldian erabilitako Chrome-ko fitxak</translation>
 <translation id="6062360702481658777">Saioa automatikoki amaituko da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan.</translation>

@@ -11,6 +11,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" />: dodato</translation>
 <translation id="1047017786576569492">delimično</translation>
 <translation id="1047773237499189053">Dostupna je nova funkcija. Koristite taster sa strelicom nagore da biste saznali više.</translation>
+<translation id="1052916631016577720">Skeniranje stavki</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilni: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4351433414020964307">Pomoćnik se učitava...</translation>
 <translation id="4356930093361201197">režim visokog kontrasta</translation>
 <translation id="4371348193907997655">Podešavanja prebacivanja</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala <ph name="SIGNAL_STRENGTH" /> odsto</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
 <translation id="4379531060876907730">Ovo su alatke za pisaljku</translation>
 <translation id="4389184120735010762">Pritisnuli ste tastersku prečicu za montiranu lupu ekrana. Želite li da je uključite?</translation>
@@ -586,6 +588,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6043212731627905357">Ovaj monitor nije kompatibilan sa uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>
 <translation id="6043994281159824495">Odjavi me odmah</translation>
 <translation id="6047696787498798094">Deljenje ekrana će se prekinuti kada prebacite na drugog korisnika. Želite li da nastavite?</translation>
+<translation id="6050368268239407309">Alatke za prezentaciju</translation>
 <translation id="6054305421211936131">Prijavite se pomoću pametne kartice</translation>
 <translation id="6059276912018042191">Nedavne Chrome kartice</translation>
 <translation id="6062360702481658777">Automatski ćete biti odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>

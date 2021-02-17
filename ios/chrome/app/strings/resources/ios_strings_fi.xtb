@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Verkkosivustot näyttävät tekstin valitsemallasi kielellä, kun se on mahdollista.</translation>
 <translation id="1952728750904661634">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="1965935827552890526">Siirry toiseen avoimeen Chrome-ikkunaan ja viimeistele aloittamasi.</translation>
+<translation id="1973912524893600642">Säilytä data</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1989112275319619282">Selaa</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
@@ -299,6 +300,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4038354071007134711">Mikään laitteen sovellus ei voi avata tiedostoa.</translation>
 <translation id="4042870976416480368">Hae sivulta</translation>
 <translation id="4049507953662678203">Varmista, että käytössäsi on verkkoyhteys, ja yritä uudelleen.</translation>
+<translation id="4079195788735381731">Organisaatiosi on kirjannut sinut ulos</translation>
 <translation id="4082688844002261427">Määritä, miten selaushistoria personoi hakua, mainoksia ja muita</translation>
 <translation id="408404951701638773">Hakukenttä on nyt helpommin käytettävissä</translation>
 <translation id="411254640334432676">Lataus epäonnistui.</translation>
@@ -411,6 +413,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5339316356165661760">Laita synkronointi päälle</translation>
+<translation id="5360976571138293719">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
 <translation id="5388358297987318779">Avaa kuva</translation>
 <translation id="5407969256130905701">Hylkää muutokset</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
@@ -496,6 +499,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6254066287920239840">Avaa linkit sovelluksessa selaimen sijaan.</translation>
 <translation id="6255097610484507482">Luottokortin muokkaus</translation>
 <translation id="6284652193729350524">Tarjoudu kääntämään <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Avaa <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ja valitse Selaussuoja.</translation>
 <translation id="6303969859164067831">Kirjaudu ulos ja poista synkronointi käytöstä</translation>
 <translation id="6308436439357671616">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle.</translation>
 <translation id="6324528485781869530">Vaihda synkronointitiliä</translation>

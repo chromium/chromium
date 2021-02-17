@@ -107,6 +107,7 @@
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> ਟੈਸਟ</translation>
 <translation id="3712633734921637892">ਬੈਟਰੀ ਬਚਾਉਣ ਜਾਂ ਤਾਪਮਾਨ ਘਟਾਉਣ ਲਈ CPU ਦੀ ਗਤੀ ਨੂੰ ਫ਼ਿਲਹਾਲ ਸੀਮਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ਸਮੀਖਿਆਵਾਂ)</translation>
 <translation id="3748026146096797577">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">ਪ੍ਰਿੰਟਰ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
 <translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
+<translation id="4155551848414053977">ਪੱਕਾ ਕਰੋ ਕਿ ਸਕੈਨਰ ਚਾਲੂ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਜਾਂ ਕਿਸੇ ਸਿੱਧੇ ਕਨੈਕਸ਼ਨ ਰਾਹੀਂ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="4170700058716978431">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6189418609903030344">ਵਰਤੋਂ ਨਾਲ ਬੈਟਰੀ ਦੀ ਸਮਰੱਥਾ ਵਿੱਚ ਕਮੀ ਆਉਂਦੀ ਹੈ</translation>
 <translation id="6191293864534840972">ਨੁਕਸਦਾਰ ਨਾਮ ਸਰਵਰ</translation>
+<translation id="6223752125779001553">ਕੋਈ ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6232017090690406397">ਬੈਟਰੀ</translation>
 <translation id="6325525973963619867">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="636850387210749493">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਐਨਰੌਲਮੈਂਟ</translation>

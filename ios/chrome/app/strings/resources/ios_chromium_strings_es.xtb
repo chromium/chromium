@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">No compatible con Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
 <translation id="3805899903892079518">Chromium no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
+<translation id="3946918322491238254">Podrás seguir viendo todos los marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="4099085513035183040">No compatible con Chromium Beta</translation>
 <translation id="4166206055865952171">Establecer Chromium como navegador predeterminado</translation>
 <translation id="4555020257205549924">Si esta función está activada, Chromium ofrecerá la posibilidad de traducir páginas escritas en otros idiomas con el Traductor de Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5308226104666789935">Chromium no puede comprobar si hay actualizaciones</translation>
 <translation id="5521125884468363740">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chromium</translation>
+<translation id="5544795779875591523">Elige si quieres borrar o conservar tus datos de Chromium en este dispositivo</translation>
 <translation id="5573014823074921752">Consejo sobre Chromium: Para ver más opciones de pestañas, mantén pulsado el botón Mostrar pestañas en la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no puede comprobar tus contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Se quitarán de Chromium esta cuenta y los datos sin guardar.</translation>
+<translation id="894437814105052438">Si cierras sesión, Chromium no sincronizará ningún dato nuevo con tu cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="921174536258924340">Chromium no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
+<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chromium en este dispositivo.</translation>
 </translationbundle>

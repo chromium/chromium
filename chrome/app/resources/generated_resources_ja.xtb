@@ -2464,7 +2464,6 @@
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3742666961763734085">この名前の組織部門が見つかりません。もう一度お試しください。</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
-<translation id="3746127522257263495">Android アプリで G Suite for Education アカウントを追加することはできません。</translation>
 <translation id="3747077776423672805">アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。</translation>
 <translation id="3748706263662799310">バグを報告</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -5861,7 +5860,6 @@
 <translation id="7696063401938172191">「<ph name="PHONE_NAME" />」で次の操作を行います。</translation>
 <translation id="7697166915480294040">画面の共有中は詳細が表示されません</translation>
 <translation id="7697598343108519171">カメラを使用して QR コードをスキャンする</translation>
-<translation id="7699968112832915395">アカウントを追加できません</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701869757853594372">USER の操作</translation>
 <translation id="7701928712056789451">これらのアイテムは安全でない可能性があります</translation>

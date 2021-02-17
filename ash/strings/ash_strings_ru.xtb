@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">Добавлено устройство <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">часть экрана</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
+<translation id="1052916631016577720">Сканирование</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
 <translation id="1059194134494239015">Разрешение экрана <ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">MAC-адрес мобильного устройства: <ph name="ADDRESS" /></translation>
@@ -187,7 +188,7 @@
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
 <translation id="2536159006530886390">Ошибка подключения к Интернету.</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
-<translation id="255671100581129685">Google Ассистент не работает в сеансе общего доступа.</translation>
+<translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
 <translation id="2582112259361606227">Перезагрузить и обновить</translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Загрузка Ассистента…</translation>
 <translation id="4356930093361201197">Режим высокой контрастности</translation>
 <translation id="4371348193907997655">Настройки трансляции</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Выйти</translation>
 <translation id="6047696787498798094">Если перейти к другому пользователю, доступ к экрану будет закрыт. Продолжить?</translation>
+<translation id="6050368268239407309">Инструменты для презентаций</translation>
 <translation id="6054305421211936131">Войти с помощью смарт-карты</translation>
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>
 <translation id="6062360702481658777">Выход из системы будет выполнен автоматически через <ph name="LOGOUT_TIME_LEFT" />.</translation>

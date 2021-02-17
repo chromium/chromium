@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Abrir enlace en <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="1139343347646843679">No se ha podido configurar Linux. Ponte en contacto con tu administrador.</translation>
+<translation id="1139923033416533844">Uso de memoria</translation>
 <translation id="1140351953533677694">Acceder a tus dispositivos en serie y Bluetooth</translation>
 <translation id="114036956334641753">Audio y subtítulos</translation>
 <translation id="1140746652461896221">Bloquea contenido en cualquier página web que visites</translation>
@@ -677,6 +678,7 @@
 <translation id="1734212868489994726">Azul claro</translation>
 <translation id="1734230530703461088">No se han podido cargar las extensiones dentro del límite de tiempo. Ponte en contacto con tu administrador.</translation>
 <translation id="1734824808160898225">Es posible que <ph name="PRODUCT_NAME" /> no se pueda mantener actualizado</translation>
+<translation id="173522743738009831">Información sobre la zona de pruebas de privacidad</translation>
 <translation id="173628468822554835">Entendido. De forma predeterminada, los sitios nuevos a los que accedas no te enviarán notificaciones.</translation>
 <translation id="1736419249208073774">Más información</translation>
 <translation id="1737968601308870607">Incluir error</translation>
@@ -999,6 +1001,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
+<translation id="2111810003053064883">Los anunciantes pueden analizar la efectividad de los anuncios sin hacer un seguimiento de los sitios que visitas.</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
 <translation id="2113921862428609753">Acceso a la información de la entidad emisora</translation>
@@ -1028,6 +1031,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2138398485845393913">La conexión con "<ph name="DEVICE_NAME" />" sigue en curso</translation>
 <translation id="2139545522194199494">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, conectar</translation>
 <translation id="2139919072249842737">Botón de configuración</translation>
+<translation id="2140788884185208305">Estado de la batería</translation>
 <translation id="214169863967063661">Abrir la configuración de apariencia</translation>
 <translation id="2142328300403846845">Abrir enlace como</translation>
 <translation id="2142582065325732898">Activa la función <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver pestañas recientes de Chrome. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
@@ -1542,6 +1546,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2712173769900027643">Solicitar permiso</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">solicitud de llave de seguridad</translation>
 <translation id="2715751256863167692">Esta actualización recupera la configuración de tu Chromebook y elimina los datos de usuario actuales.</translation>
 <translation id="2716986496990888774">Este ajuste está gestionado por un padre o una madre.</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
@@ -2001,6 +2006,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3238192140106069382">Conectando y verificando</translation>
 <translation id="3239373508713281971">Se ha quitado el límite de tiempo de <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Selecciona el directorio raíz de las extensiones que quieras empaquetar. Para actualizar una extensión, debes seleccionar también el archivo de clave privada que se va a volver a usar.</translation>
+<translation id="3242905690080165035">La zona de pruebas de privacidad sigue en desarrollo y está disponible en ciertas regiones. Por ahora, los sitios pueden usar la zona de pruebas de privacidad y seguir utilizando tecnologías web actuales, como las cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Seguir silenciando el sonido</translation>
 <translation id="3246107497225150582">{0,plural, =1{Actualizar dispositivo dentro de 1 día}other{Actualizar dispositivo dentro de # días}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: error de red</translation>
@@ -2161,6 +2167,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3428419049384081277">Has iniciado sesión</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión</translation>
 <translation id="3428800329481094896">Obteniendo las claves SSH del contenedor de Linux</translation>
+<translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Añade esta página a marcadores para encontrarla fácilmente en otro momento</translation>
 <translation id="3432227430032737297">Quitar todas las que se muestran</translation>
@@ -2457,7 +2464,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3742055079367172538">Captura de pantalla hecha</translation>
 <translation id="3742666961763734085">No se puede encontrar una unidad organizativa con ese nombre. Inténtalo de nuevo.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
-<translation id="3746127522257263495">No es posible añadir una cuenta de G Suite para Centros Educativos en aplicaciones Android, porque no es compatible.</translation>
 <translation id="3747077776423672805">Para desinstalar aplicaciones, ve a Ajustes &gt; Google Play Store &gt; Gestionar las preferencias de Android &gt; Aplicaciones o Administrador de aplicaciones. A continuación, toca la aplicación que quieras desinstalar (es posible que tengas que deslizar el dedo hacia la derecha o hacia la izquierda para encontrar la aplicación) y toca Desinstalar o Inhabilitar.</translation>
 <translation id="3748706263662799310">Notifica un error</translation>
 <translation id="3752582316358263300">Aceptar...</translation>
@@ -3143,6 +3149,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4541662893742891060">No se ha podido conectar a este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
 <translation id="4541810033354695636">realidad aumentada</translation>
 <translation id="4542520061254486227">Leer tus datos en <ph name="WEBSITE_1" /> y en <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Cuando haya miles de usuarios con un interés similar (como una multitud en un concierto), los anunciantes podrán saberlo y seleccionar anuncios para esa multitud, en lugar de para cada persona de forma individual.</translation>
 <translation id="4543778593405494224">Administrador de certificados</translation>
 <translation id="4544174279960331769">Avatar azul predeterminado</translation>
 <translation id="4545028762441890696">Para volver a habilitarla, acepta los nuevos permisos:</translation>
@@ -3191,6 +3198,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4582563038311694664">Recuperar configuración completa</translation>
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617"><ph name="URL" /> no se ha podido abrir en un navegador alternativo. Ponte en contacto con el administrador del sistema.</translation>
+<translation id="4587645918878093912">A día de hoy, los sitios web dependen de varias tecnologías (por ejemplo, las cookies de terceros) para ofrecer servicios importantes, como mostrar anuncios relevantes o medir el rendimiento de un sitio web.</translation>
 <translation id="4589713469967853491">Registros escritos correctamente en el directorio Descargas.</translation>
 <translation id="4590324241397107707">Almacenamiento en bases de datos</translation>
 <translation id="4592891116925567110">Aplicación de dibujo con lápiz óptico</translation>
@@ -4617,6 +4625,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6271348838875430303">corrección deshecha</translation>
 <translation id="6272643420381259437">Se ha producido un error (<ph name="ERROR" />) al descargar el complemento</translation>
 <translation id="6273677812470008672">Calidad</translation>
+<translation id="6275846828483490454">La zona de pruebas de privacidad es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.</translation>
 <translation id="6276210637549544171">El proxy <ph name="PROXY_SERVER" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="6277105963844135994">Tiempo de espera de red agotado</translation>
 <translation id="6277518330158259200">H&amp;acer captura de pantalla</translation>
@@ -5271,6 +5280,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7018275672629230621">Leer y modificar tu historial de navegación</translation>
 <translation id="7019805045859631636">Rápida</translation>
 <translation id="7022562585984256452">Se ha establecido tu página de inicio.</translation>
+<translation id="7023206482239788111">La zona de pruebas de privacidad conserva la vitalidad de la Web abierta creando mejores formas de ofrecer estos servicios, sin inutilizar los sitios e impidiendo que se te hagan seguimientos ocultos en la Web.</translation>
 <translation id="7025082428878635038">Te presentamos una nueva forma de navegar con gestos</translation>
 <translation id="7025190659207909717">Administración de servicio de datos para móviles</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todas en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todas ({COUNT}) en una ventana de &amp;incógnito}}</translation>
@@ -5449,6 +5459,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7234010996000898150">Cancelando restauración de Linux</translation>
 <translation id="7235716375204803342">Recuperando actividades...</translation>
 <translation id="7235737137505019098">Tu llave de seguridad no tiene suficiente espacio libre para más cuentas.</translation>
+<translation id="7238640585329759787">Si habilitas esta opción, los sitios podrán utilizar las técnicas de protección de la privacidad que se muestran aquí para ofrecer su contenido y sus servicios. Entre estas técnicas, se incluyen alternativas al seguimiento entre sitios web. Es posible que se añadan más pruebas a lo largo del tiempo.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
 <translation id="7240339475467890413">¿Quieres conectarte a un nuevo punto de acceso?</translation>
 <translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar el certificado de cliente.</translation>
@@ -5848,7 +5859,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7696063401938172191">En tu "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Los detalles se ocultan mientras compartes tu pantalla</translation>
 <translation id="7697598343108519171">Usar cámara para escanear código QR</translation>
-<translation id="7699968112832915395">No se puede añadir la cuenta</translation>
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7701869757853594372">EL USUARIO administra</translation>
 <translation id="7701928712056789451">Es posible que estos elementos sean peligrosos</translation>
@@ -6109,6 +6119,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7968833647796919681">Habilitar recogida de datos de rendimiento</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7969046989155602842">Comando</translation>
+<translation id="7970618607181090249">Pantalla táctil detectada</translation>
 <translation id="7970673414865679092">Detalles de la red Ethernet</translation>
 <translation id="7970882136539140748">No se puede guardar tu tarjeta en este momento</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
@@ -6547,6 +6558,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8480082892550707549">Aunque hayas descargado archivos de este sitio web previamente, puede que no sea seguro temporalmente (pirateado). Intenta descargar de nuevo este archivo más tarde.</translation>
 <translation id="8480869669560681089">Dispositivo de <ph name="VENDOR_NAME" /> desconocido</translation>
 <translation id="8481187309597259238">Confirmar permiso de USB</translation>
+<translation id="8481980314595922412">Las funciones de prueba están activadas</translation>
 <translation id="8487678622945914333">Acercar</translation>
 <translation id="8489156414266187072">Las sugerencias personales solo se muestran en tu cuenta</translation>
 <translation id="8490896350101740396">Las siguientes aplicaciones de kiosco (<ph name="UPDATED_APPS" />) se han actualizado. Reinicia el dispositivo para completar el proceso de actualización.</translation>
@@ -6930,6 +6942,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8892168913673237979">¡Todo listo!</translation>
 <translation id="8893801527741465188">Desinstalación completada</translation>
 <translation id="8893928184421379330">No se ha podido reconocer el dispositivo <ph name="DEVICE_LABEL" />.</translation>
+<translation id="8894761918470382415">Protección de acceso a datos desde periféricos</translation>
 <translation id="8895454554629927345">Lista de marcadores</translation>
 <translation id="8898786835233784856">Seleccionar siguiente pestaña</translation>
 <translation id="8898822736010347272">Envía a Google las URL de las páginas que visitas, información limitada del sistema y contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>
@@ -7056,6 +7069,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9031549947500880805">Crea copias de seguridad en Google Drive. Recupera tus datos de forma sencilla o cambia de dispositivo en cualquier momento. La copia de seguridad también incluye datos de las aplicaciones.</translation>
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
+<translation id="903386633044383289">Conéctate a dispositivos</translation>
 <translation id="9037818663270399707">Tu conexión no es privada para todo el tráfico de red</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Te queda 1 intento.}other{Te quedan # intentos.}}</translation>
@@ -7188,6 +7202,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9180281769944411366">Iniciando el contenedor de Linux. Este proceso puede tardar unos minutos.</translation>
 <translation id="9180380851667544951">El sitio web puede compartir tu pantalla</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicaciones}}</translation>
+<translation id="9185818139207739329">Habilitar las pruebas de la zona de pruebas de privacidad</translation>
 <translation id="9186963452600581158">Iniciar sesión con la cuenta de Google de un niño/a</translation>
 <translation id="9188732951356337132">Enviar datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos recogidos también ayudarán a las aplicaciones y los colaboradores de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Usar un teléfono Android como llave de seguridad</translation>
@@ -7235,6 +7250,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartiendo audio y una pestaña de Chrome.</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
+<translation id="949052952791086881">Tu administrador requiere que este usuario inicie sesión si el dispositivo tiene conexión a Internet.</translation>
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="956500788634395331">Tienes protección frente a extensiones potencialmente dañinas</translation>
 <translation id="957960681186851048">Este sitio web ha intentado descargar varios archivos automáticamente</translation>

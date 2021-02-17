@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Cartes acceptées</translation>
 <translation id="1021753677514347426">Ce problème est dû à un certificat installé sur votre appareil par vous-même ou par quelqu'un d'autre. Ce certificat est utilisé pour surveiller et intercepter des réseaux, et n'est pas approuvé par Chromium. Bien qu'il existe des cas légitimes de surveillance (sur un réseau scolaire ou d'entreprise, par exemple), Chromium souhaite s'assurer que vous êtes au courant de cette activité, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire sur n'importe quel navigateur ou application qui accède au Web.</translation>
 <translation id="1024111578869940408">Les pirates informatiques tentent parfois d'imiter des sites en modifiant l'adresse Web de façon subtile pour que le changement passe inaperçu.</translation>
+<translation id="1028781062521375153">Voir les détails</translation>
 <translation id="1030706264415084469"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre appareil</translation>
 <translation id="1032854598605920125">Faire pivoter vers la droite</translation>
 <translation id="1036348656032585052">Désactiver</translation>
@@ -146,6 +147,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1462951478840426066">Utiliser les polices installées sur votre ordinateur pour créer des contenus haute fidélité</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">À gauche</translation>
+<translation id="1468653229182955856">Saisissez le code <ph name="ONE_TIME_CODE" /> pour passer de <ph name="EMBEDDED_ORIGIN" /> à <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Plus</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1640180200866533862">Règles relatives aux utilisateurs</translation>
 <translation id="1640244768702815859">Essayez de <ph name="BEGIN_LINK" />consulter la page d'accueil du site<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Retarder la sortie jusqu'à</translation>
+<translation id="164212631332220697">Vous paierez avec "<ph name="CARD_DETAIL" />".</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1645368109819982629">Protocole incompatible</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1008,6 +1011,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4879725228911483934">Ouvrir et positionner des fenêtres sur vos écrans</translation>
 <translation id="4880827082731008257">Rechercher dans l'historique</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
+<translation id="4885256590493466218">Vous paierez avec "<ph name="CARD_DETAIL" />".</translation>
 <translation id="4889420713887366944">Bouton "Ouvrir une fenêtre de navigation privée" : appuyer sur Entrée pour ouvrir une nouvelle fenêtre de navigation privée</translation>
 <translation id="4892518386797173871">Arrière</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1977,6 +1981,7 @@ Informations supplémentaires :
 <translation id="8742371904523228557">Votre code pour <ph name="ORIGIN" /> est <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Ajouter cet onglet aux favoris</translation>
 <translation id="8751426954251315517">Veuillez réessayer plus tard</translation>
+<translation id="8757526089434340176">Offre Google Pay disponible</translation>
 <translation id="8759274551635299824">Carte arrivée à expiration</translation>
 <translation id="87601671197631245">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe, vos messages ou vos cartes de crédit, lorsqu'elles lui sont transmises.</translation>
 <translation id="8761567432415473239">La fonctionnalité de navigation sécurisée a récemment permis de <ph name="BEGIN_LINK" />détecter des programmes dangereux<ph name="END_LINK" /> sur le site <ph name="SITE" />.</translation>

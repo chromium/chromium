@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> को जोड़ा गया</translation>
 <translation id="1047017786576569492">पार्शियल</translation>
 <translation id="1047773237499189053">नई सुविधा उपलब्ध है, ज़्यादा जानने के लिए अप ऐरो बटन इस्तेमाल करें.</translation>
+<translation id="1052916631016577720">आइटम स्कैन</translation>
 <translation id="1056775291175587022">नेटवर्क नहीं है</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">मोबाइल (सेल्युलर): <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4351433414020964307">Assistant सेवा लोड हो रही है...</translation>
 <translation id="4356930093361201197">ज़्यादा कॉन्ट्रास्ट (हाई कॉन्ट्रास्ट) वाला मोड</translation>
 <translation id="4371348193907997655">कास्ट करने की सेटिंग</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत है</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4379531060876907730">ये आपके स्टाइलस टूल हैं</translation>
 <translation id="4389184120735010762">आपने 'सामग्री को बड़ा दिखाने वाली डॉक की गई सेवा' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
@@ -587,6 +589,7 @@
 <translation id="6043212731627905357">यह मॉनीटर आपके <ph name="DEVICE_TYPE" /> के साथ काम नहीं कर रहा है (मॉनीटर समर्थित नहीं है).</translation>
 <translation id="6043994281159824495">अब प्रस्थान करें</translation>
 <translation id="6047696787498798094">किसी दूसरे उपयोगकर्ता पर स्‍विच करने से स्‍क्रीन शेयर होना बंद हो जाएगा. क्या आप शेयर करना जारी रखना चाहते हैं?</translation>
+<translation id="6050368268239407309">प्रज़ेंटेशन टूल</translation>
 <translation id="6054305421211936131">स्मार्ट कार्ड से साइन इन करें</translation>
 <translation id="6059276912018042191">Chrome पर हाल ही में खोले गए टैब</translation>
 <translation id="6062360702481658777">आप <ph name="LOGOUT_TIME_LEFT" /> में अपने आप प्रस्थान कर जाएंगे.</translation>
@@ -933,7 +936,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> का इस्तेमाल करें</translation>
 <translation id="899350903320462459">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को <ph name="LOGIN_ID" /> के तौर पर अनलॉक करें</translation>
 <translation id="9017320285115481645">Family Link का अभिभावक ऐक्सेस कोड डालें.</translation>
-<translation id="9024331582947483881">पूर्ण स्क्रीन</translation>
+<translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> के लिए सेटिंग खोलें</translation>
 <translation id="9056839673611986238">डिवाइस बहाल कर दिया जाएगा</translation>
 <translation id="9063800855227801443">गोपनीय कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>

@@ -107,6 +107,7 @@
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
+<translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">‏בשלב זה, המהירות של יחידת העיבוד המרכזית (CPU) מוגבלת כדי לחסוך בסוללה או להנמיך את הטמפרטורה</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
 <translation id="3748026146096797577">לא מחובר</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">מדפסת</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
+<translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
@@ -237,6 +239,7 @@
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6189418609903030344">קיבולת הסוללה יורדת ככל שמשתמשים בה</translation>
 <translation id="6191293864534840972">שרתי שמות שגויים</translation>
+<translation id="6223752125779001553">אין סורקים זמינים</translation>
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>

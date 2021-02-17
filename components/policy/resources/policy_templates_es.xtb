@@ -997,6 +997,11 @@ Si se le asigna el valor "False", la pantalla de privacidad siempre estará inha
 Si se asigna un valor a esta política, el usuario no podrá anularlo.
 
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
+<translation id="241739814668386424"> Si se inhabilita esta política, el usuario no podrá conectar totalmente su dispositivo periférico Thunderbolt/USB4 mediante la tunelización de PCIe.
+
+      Si se habilita esta política, el usuario podrá conectar totalmente su dispositivo periférico Thunderbolt/USB4 mediante la tunelización de PCIe.
+
+      Esta política está inhabilitada de forma predeterminada.</translation>
 <translation id="2421677964966613267">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
 
       Si no se le asigna ningún valor, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> se aplicará en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
@@ -1446,6 +1451,27 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Las URL deben tener una estructura de HTTPS (por ejemplo, https://example.com).
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2972531017545674240">Si se establece esta política, se especifica una lista de aplicaciones web que se instalan de forma silenciosa, sin intervención del usuario, y este no puede desinstalarlas ni desactivarlas.
+
+      Cada elemento de la lista es un objeto con un elemento obligatorio:
+      <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
+
+      y 3 elementos opcionales:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una ventana nueva)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (True: si quieres crear accesos directos del escritorio
+      de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
+      tienes permitido anular el nombre de la aplicación si no es una
+      aplicación web progresiva (PWA), o el nombre de la aplicación instalado
+      temporalmente si es una PWA, pero se requiere autenticación para que la
+      instalación pueda completarse)
+
+      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
@@ -4138,13 +4164,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se inhabilita, se elimina el icono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
-<translation id="6793420507738858152">Si está habilitada, la función <ph name="PRODUCT_NAME" /> envía encabezados de solicitud granulares con información sobre el entorno y el navegador del usuario.
-
-      Esta función es adicional, pero los nuevos encabezados podrían afectar a la funcionalidad de algunos sitios web que restringen el número de caracteres que pueden tener las solicitudes.
-
-      Si se habilita esta política o no se le asigna ningún valor, se habilitará la función <ph name="PRODUCT_NAME" />. Si no se habilita esta política, dicha función no estará disponible.
-
-      Esta política de empresa sirve para una adaptación a corto plazo y estará disponible como mínimo hasta la versión 91 de Chrome.</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
@@ -4665,6 +4684,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7407441173422042771">Esta política controla la predicción de red en <ph name="PRODUCT_NAME" />. Permite controlar tanto la precarga de DNS como la conexión previa de SSL y TCP, así como la carga previa de páginas web.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se define, se habilita la predicción de red, pero el usuario puede cambiarlo.</translation>
+<translation id="7412456346709338637">Habilita el acceso a datos desde periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permitir conexiones de acceso remoto a este equipo</translation>
 <translation id="7417972229667085380">Porcentaje que permite ajustar el retraso de inactividad en el modo de presentación (política obsoleta)</translation>
 <translation id="7421483919690710988">Establecer tamaño de caché de disco de medios en bytes</translation>
@@ -5459,6 +5479,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       "1412.24.34": actualiza solo a esta versión específica
 
       Advertencia: No se recomienda configurar restricciones de versiones porque pueden evitar que los usuarios reciban actualizaciones de software y correcciones de seguridad muy importantes. Restringir las actualizaciones al prefijo de una versión específica podría suponer un riesgo para los usuarios.</translation>
+<translation id="8510545352780142790">Inhabilita la tunelización de PCIe. Los dispositivos periféricos Thunderbolt/USB4 compatibles funcionarán a plena capacidad.</translation>
 <translation id="8519264904050090490">URLs de excepción manual de usuario administrado</translation>
 <translation id="8519516251436131647">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad.
 
@@ -5496,6 +5517,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
           Si no se establece esta política, se utiliza un valor de tiempo predeterminado.
 
           El valor de esta política debe especificarse en milisegundos.</translation>
+<translation id="8599956038998209006">Habilita la tunelización de PCIe desde dispositivos periféricos Thunderbolt/USB4, lo que limita las funciones de los dispositivos</translation>
 <translation id="8603454805657060638">Establecer esta política permite que el administrador cambie la dirección MAC (control de acceso al medio) cuando se conecte un dispositivo a la base. Cuando una base está conectada a algunos modelos de dispositivo, se usa de forma predeterminada la dirección MAC designada de la base del dispositivo para identificarlo en Ethernet.
 
       Si se selecciona "DeviceDockMacAddress" o no se establece esta política, se usará la dirección MAC designada de la base del dispositivo.

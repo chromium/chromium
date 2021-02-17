@@ -107,6 +107,7 @@
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="3712633734921637892">CPU-ს სიჩქარე ამჟამად შეზღუდულია ბატარეის დაზოგვის ან ტემპერატურის შემცირების მიზნით</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
 <translation id="3748026146096797577">არ არის დაკავშირებული</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">პრინტერი</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
+<translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
 <translation id="4170700058716978431">ვერ შესრულდა</translation>
 <translation id="4176463684765177261">გამორთული</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
@@ -237,7 +239,9 @@
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6189418609903030344">ბატარეის მოცულობა იკლებს მისი გამოყენების შესაბამისად</translation>
 <translation id="6191293864534840972">სახელების სერვერი არასწორად არის ფორმირებული</translation>
+<translation id="6223752125779001553">სკანერები მიუწვდომელია</translation>
 <translation id="6232017090690406397">ბატარეა</translation>
+<translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>

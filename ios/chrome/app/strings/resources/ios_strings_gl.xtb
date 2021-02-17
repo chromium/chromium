@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
 <translation id="1952728750904661634">Iniciar sesión cunha conta xestionada</translation>
 <translation id="1965935827552890526">Acaba o que estabas facendo na outra ventá de Chrome que tiñas aberta.</translation>
+<translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
@@ -299,6 +300,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
+<translation id="4079195788735381731">A túa organización pechou a túa sesión</translation>
 <translation id="4082688844002261427">Controla como se utiliza o historial de navegación para personalizar a Busca, os anuncios e moito máis</translation>
 <translation id="408404951701638773">Agora é máis fácil acceder á barra de busca</translation>
 <translation id="411254640334432676">Erro na descarga.</translation>
@@ -411,6 +413,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
+<translation id="5360976571138293719">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
@@ -496,6 +499,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6254066287920239840">Abre as ligazóns na aplicación en vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar tarxeta</translation>
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>
 <translation id="6303969859164067831">Pechar sesión e desactivar a sincronización</translation>
 <translation id="6308436439357671616">Permíteche tirar e cargar fotos.</translation>
 <translation id="6324528485781869530">Cambiar de conta de sincronización</translation>

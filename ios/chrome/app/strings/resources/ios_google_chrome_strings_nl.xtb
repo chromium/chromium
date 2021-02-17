@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1282031177488366470">Help de functies en prestaties van Chrome verbeteren</translation>
+<translation id="1314663809820920746">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen blijven zichtbaar op dit apparaat. Als je wijzigingen aanbrengt, worden deze niet gesynchroniseerd met je Google-account.</translation>
 <translation id="1479202195792305274">Chrome kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="1504372625950710826">Chrome kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="1682483655351012182">Je Chrome-gegevens synchroniseren</translation>
@@ -37,6 +38,7 @@
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
 <translation id="4249068189593983585">Chrome-tip. Voor meer tabbladopties tik je op de werkbalk onder- of bovenaan het scherm op de knop 'Tabbladen weergeven' en houd je deze vast.</translation>
+<translation id="4354293865557736921">Wil je je Chrome-gegevens voor dit apparaat verwijderen of behouden?</translation>
 <translation id="4523886039239821078">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder de volgende add-ons:</translation>
 <translation id="4633328489441962921">Chrome kan niet checken op updates</translation>
 <translation id="4698415050768537821">Chrome kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
@@ -54,6 +56,7 @@
 <translation id="6238746320622508509">Laat Chrome je incognitotabbladen vergrendelen.</translation>
 <translation id="6573431926118603307">Tabbladen die je op andere apparaten in Chrome hebt geopend, worden hier weergegeven.</translation>
 <translation id="6600954340915313787">Gekopieerd naar Chrome</translation>
+<translation id="6634107063912726160">Als je uitlogt, synchroniseert Chrome geen nieuwe gegevens met je Google-account. Eerder gesynchroniseerde gegevens blijven in het account staan.</translation>
 <translation id="6648150602980899529">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chrome-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chrome, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="6676840375528380067">Je Chrome-gegevens van dit apparaat wissen?</translation>
 <translation id="6822673484890854830">Chrome kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
@@ -73,6 +76,7 @@
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
 <translation id="8045508249136869751">Chrome instellen als je standaardbrowser: open 'Instellingen', tik op 'Standaard browser-app' en selecteer 'Chrome'.</translation>
+<translation id="8109233255338845204">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chrome-gegevens worden verwijderd van dit apparaat.</translation>
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="840168496893712993">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder deze add-ons.</translation>

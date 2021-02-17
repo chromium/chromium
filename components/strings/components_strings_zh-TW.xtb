@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">接受的信用卡</translation>
 <translation id="1021753677514347426">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chromium 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chromium 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入不易察覺的細微變更來仿冒網站。</translation>
+<translation id="1028781062521375153">查看詳細資料</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在你的裝置上永久儲存大量資料</translation>
 <translation id="1032854598605920125">順時針旋轉</translation>
 <translation id="1036348656032585052">關閉</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">使用電腦上的字型，方便你建立高傳真內容</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
+<translation id="1468653229182955856">你的驗證碼是 <ph name="ONE_TIME_CODE" />；如要以 <ph name="EMBEDDED_ORIGIN" /> 的身分繼續使用 <ph name="TOP_ORIGIN" />，就必須輸入這組驗證碼</translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">使用者政策</translation>
 <translation id="1640244768702815859">請嘗試<ph name="BEGIN_LINK" />造訪網站首頁<ph name="END_LINK" />。</translation>
 <translation id="1641976391427233992">延遲輸出直到</translation>
+<translation id="164212631332220697">使用 <ph name="CARD_DETAIL" /> 結帳付款。</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1645368109819982629">不支援的通訊協定</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -999,6 +1002,7 @@
 <translation id="4879725228911483934">在你的畫面中開啟和放置視窗</translation>
 <translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="4885256590493466218">使用 <ph name="CARD_DETAIL" /> 結帳付款</translation>
 <translation id="4889420713887366944">「開啟無痕式視窗」按鈕，按下 Enter 鍵即可開啟新的無痕式視窗進行私密瀏覽</translation>
 <translation id="4892518386797173871">後方</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
@@ -1968,6 +1972,7 @@
 <translation id="8742371904523228557">你的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8751426954251315517">請稍後再試</translation>
+<translation id="8757526089434340176">提供 Google Pay 優惠</translation>
 <translation id="8759274551635299824">這張信用卡已過期</translation>
 <translation id="87601671197631245">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼、訊息或信用卡資訊) 可能會外洩。</translation>
 <translation id="8761567432415473239">Google 安全瀏覽最近在「<ph name="SITE" />」<ph name="BEGIN_LINK" />發現了有害程式<ph name="END_LINK" />。</translation>

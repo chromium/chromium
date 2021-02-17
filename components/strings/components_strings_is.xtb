@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Gild greiðslukort</translation>
 <translation id="1021753677514347426">Þetta vandamál tengist vottorði sem þú eða einhver annar setti upp í tækinu þínu. Vitað er að þetta vottorð er notað til að fylgjast með og grípa inn í netkerfi og Chromium treystir því ekki. Þrátt fyrir að notkun þess geti í einhverjum tilvikum átt rétt á sér, svo sem á skóla- eða fyrirtækjaneti, vill Chromium tryggja að þú vitir af því, þótt þú getir ekki komið í veg fyrir notkun þess. Eftirlit getur átt sér stað í öllum vöfrum eða forritum sem nota vefinn.</translation>
 <translation id="1024111578869940408">Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera illgreinanlegar breytingar á vefslóðinni.</translation>
+<translation id="1028781062521375153">Sjá upplýsingar</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tækinu þínu</translation>
 <translation id="1032854598605920125">Snúa réttsælis</translation>
 <translation id="1036348656032585052">Slökkva</translation>
@@ -146,6 +147,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1462951478840426066">Notaðu leturgerðirnar í tölvunni svo þú getir búið til hágæðaefni.</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> er kóðinn þinn fyrir <ph name="EMBEDDED_ORIGIN" /> til að halda áfram á <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Sýna meira</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1640180200866533862">Notendareglur</translation>
 <translation id="1640244768702815859">Prófaðu að <ph name="BEGIN_LINK" />fara á heimasíðu vefsvæðisins<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Fresta úttaki til</translation>
+<translation id="164212631332220697">Greiddu með <ph name="CARD_DETAIL" /> þegar þú gengur frá kaupunum.</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1645368109819982629">Óstuddar samskiptareglur</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1011,6 +1014,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="4879725228911483934">Opna og setja glugga á skjáinn</translation>
 <translation id="4880827082731008257">Leitarferill</translation>
 <translation id="4881695831933465202">Opna</translation>
+<translation id="4885256590493466218">Greiddu með <ph name="CARD_DETAIL" /> þegar þú gengur frá kaupunum</translation>
 <translation id="4889420713887366944">Hnappurinn Opna huliðsglugga, ýttu á Enter til að opna nýjan huliðsglugga og fara huldu höfði</translation>
 <translation id="4892518386797173871">Aftari</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1980,6 +1984,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er kóðinn þinn fyrir <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Setja þennan flipa í bókamerki</translation>
 <translation id="8751426954251315517">Reyndu aftur síðar</translation>
+<translation id="8757526089434340176">Google Pay tilboð í boði</translation>
 <translation id="8759274551635299824">Kortið er útrunnið</translation>
 <translation id="87601671197631245">Þetta vefsvæði notar úrelta öryggisstillingu sem gæti sett upplýsingarnar þínar í hættu (til dæmis aðgangsorð, skilaboð eða kreditkort) þegar þær eru sendar til vefsvæðisins.</translation>
 <translation id="8761567432415473239">Örugg vefskoðun Google <ph name="BEGIN_LINK" />fann skaðleg forrit<ph name="END_LINK" /> á <ph name="SITE" /> nýlega.</translation>

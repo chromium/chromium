@@ -11,6 +11,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
 <translation id="1047017786576569492">separa</translation>
 <translation id="1047773237499189053">Ciri baharu tersedia, gunakan kekunci Anak panah ke atas untuk mengetahui lebih lanjut.</translation>
+<translation id="1052916631016577720">Pengimbasan Item</translation>
 <translation id="1056775291175587022">0 rangkaian</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Selular: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4351433414020964307">Pembantu sedang dimuatkan...</translation>
 <translation id="4356930093361201197">mod kontras tinggi</translation>
 <translation id="4371348193907997655">Tetapan Cast</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" /> peratus</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4379531060876907730">Berikut ialah alatan stilus anda</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
@@ -587,6 +589,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6043212731627905357">Monitor ini tidak serasi dengan <ph name="DEVICE_TYPE" /> anda (monitor tidak disokong).</translation>
 <translation id="6043994281159824495">Log keluar sekarang</translation>
 <translation id="6047696787498798094">Perkongsian skrin akan berhenti apabila anda beralih kepada pengguna lain. Adakah anda ingin meneruskan?</translation>
+<translation id="6050368268239407309">Alatan pembentangan</translation>
 <translation id="6054305421211936131">Daftar masuk dengan kad pintar</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6062360702481658777">Anda akan dilog keluar secara automatik dalam masa <ph name="LOGOUT_TIME_LEFT" />.</translation>

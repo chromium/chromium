@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Tarxetas aceptadas</translation>
 <translation id="1021753677514347426">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chromium non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chromium quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="1024111578869940408">Ás veces, os atacantes imitan sitios facendo cambios no enderezo web que son difíciles de ver.</translation>
+<translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1032854598605920125">Xirar  á dereita</translation>
 <translation id="1036348656032585052">Desactivar</translation>
@@ -146,6 +147,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1462951478840426066">Usar os tipos de letra do teu ordenador para que poidas crear contido de alta fidelidade</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Esquerda</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> é o código que debes usar en <ph name="EMBEDDED_ORIGIN" /> para continuar en <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostrar máis</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1640180200866533862">Políticas de usuario</translation>
 <translation id="1640244768702815859">Proba a <ph name="BEGIN_LINK" />visitar a páxina de inicio do sitio<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Atrasar saída ata</translation>
+<translation id="164212631332220697">Paga con este método (<ph name="CARD_DETAIL" />) ao procesar a compra</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645368109819982629">Protocolo non compatible</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1007,6 +1010,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4879725228911483934">Abrir e colocar ventás nas túas pantallas</translation>
 <translation id="4880827082731008257">Historial de busca</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> ao procesar a compra</translation>
 <translation id="4889420713887366944">Botón Abrir ventá do modo de incógnito. Preme Intro para abrir una nova ventá do modo de incógnito e navegar de forma privada</translation>
 <translation id="4892518386797173871">Traseira</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1976,6 +1980,7 @@ Detalles adicionais:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é o teu código para <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Engadir esta pestana aos marcadores</translation>
 <translation id="8751426954251315517">Téntao de novo a próxima vez</translation>
+<translation id="8757526089434340176">Hai unha oferta de Google Pay dispoñible</translation>
 <translation id="8759274551635299824">Esta tarxeta caducou</translation>
 <translation id="87601671197631245">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais, mensaxes ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="8761567432415473239">A navegación segura de Google <ph name="BEGIN_LINK" />atopou programas prexudiciais<ph name="END_LINK" /> recentemente en <ph name="SITE" />.</translation>

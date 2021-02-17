@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Spletna mesta bodo besedilo prikazala v izbranem jeziku, če je mogoče.</translation>
 <translation id="1952728750904661634">Prijava z upravljanim računom</translation>
 <translation id="1965935827552890526">Končajte, kar ste počeli v drugem odprtem oknu v Chromu.</translation>
+<translation id="1973912524893600642">Ohrani podatke</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
@@ -299,6 +300,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4038354071007134711">Nobena aplikacija v tej napravi ne more odpreti datoteke.</translation>
 <translation id="4042870976416480368">Najdi na strani</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
+<translation id="4079195788735381731">Organizacija vas je odjavila</translation>
 <translation id="4082688844002261427">Nadziranje, kako se zgodovina brskanja uporabi za prilagajanje Iskanja Google, oglasov in drugega</translation>
 <translation id="408404951701638773">Vrstico za iskanje je zdaj preprosteje doseči</translation>
 <translation id="411254640334432676">Prenos ni uspel.</translation>
@@ -411,6 +413,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5339316356165661760">Vklopi sinhronizacijo</translation>
+<translation id="5360976571138293719">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelek <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Odpri sliko</translation>
 <translation id="5407969256130905701">Zavrzi spremembe</translation>
 <translation id="5416022985862681400">Zadnjih 7 dni</translation>
@@ -496,6 +499,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6254066287920239840">Povezave namesto v brskalniku odpri v aplikaciji.</translation>
 <translation id="6255097610484507482">Urejanje kreditne kartice</translation>
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Če želite vklopiti Varno brskanje, odprite <ph name="BEGIN_LINK" />Google storitve<ph name="END_LINK" /> in se dotaknite »Varno brskanje«.</translation>
 <translation id="6303969859164067831">Odjava in izklop sinhronizacije</translation>
 <translation id="6308436439357671616">S tem je mogoče fotografirati in nalagati fotografije.</translation>
 <translation id="6324528485781869530">Preklop med računi za sinhronizacijo</translation>

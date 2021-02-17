@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">אתרים יציגו טקסט בשפה המועדפת שלך, כשזה אפשרי.</translation>
 <translation id="1952728750904661634">כניסה עם חשבון מנוהל</translation>
 <translation id="1965935827552890526">‏יש לסיים את הפעילות בחלון Chrome הפתוח הנוסף.</translation>
+<translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">אין במכשיר זה אף אפליקציה שניתן לפתוח באמצעותה את הקובץ.</translation>
 <translation id="4042870976416480368">חיפוש בדף</translation>
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
+<translation id="4079195788735381731">התבצעה יציאה מהחשבון על ידי הארגון שלך</translation>
 <translation id="4082688844002261427">שליטה באופן שבו היסטוריית הגלישה משמשת להתאמה אישית של החיפוש, המודעות ועוד</translation>
 <translation id="408404951701638773">עכשיו קל יותר להגיע אל סרגל החיפוש</translation>
 <translation id="411254640334432676">ההורדה נכשלה.</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5339316356165661760">הפעלת הסנכרון</translation>
+<translation id="5360976571138293719">‏הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים ניתן למצוא בדף <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">פתיחת תמונה</translation>
 <translation id="5407969256130905701">ביטול השינויים</translation>
 <translation id="5416022985862681400">7 הימים האחרונים</translation>
@@ -496,6 +499,7 @@
 <translation id="6254066287920239840">פתיחת קישורים באפליקציה ולא בדפדפן.</translation>
 <translation id="6255097610484507482">עריכת כרטיס אשראי</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6308436439357671616">אישור זה מאפשר לך לצלם ולעדכן תמונות.</translation>
 <translation id="6324528485781869530">החלפת חשבון לסנכרון</translation>

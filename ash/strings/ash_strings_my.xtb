@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ကို ထည့်ထားသည်</translation>
 <translation id="1047017786576569492">တစ်စိတ်တစ်ပိုင်း</translation>
 <translation id="1047773237499189053">ဝန်ဆောင်မှုအသစ် ရနိုင်သည်၊ ပိုမိုလေ့လာရန် အပေါ်ညွှန်မြားကို အသုံးပြုပါ။</translation>
+<translation id="1052916631016577720">စကင်ဖတ်ရန်</translation>
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />− <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ဆယ်လူလာ− <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Assistant ကို ဖွင့်နေပါသည်...</translation>
 <translation id="4356930093361201197">အရောင်ခြားနားချက်မြင့်သော မုဒ်</translation>
 <translation id="4371348193907997655">ကာစ်ဆက်တင်များ</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /> ရာခိုင်နှုန်း</translation>
 <translation id="4378551569595875038">ချိတ်ဆက်ရန်...</translation>
 <translation id="4379531060876907730">ဤအရာများသည် သင်၏ စတိုင်လက်စ်ကိရိယာများ ဖြစ်သည်</translation>
 <translation id="4389184120735010762">တပ်ဆင်ထားသည့် မှန်ဘီလူးအတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">ဤမော်နီတာသည် သင့် <ph name="DEVICE_TYPE" /> နှင့် ကိုက်ညီမှုမရှိပါ (မော်နီတာကို ပံ့ပိုးမထားပါ)။</translation>
 <translation id="6043994281159824495">ယခု ထွက်ခွာရန်</translation>
 <translation id="6047696787498798094">တစ်ခြားအသုံးပြုသူ အဖြစ် သင်ပြောင်းလဲပါက မျက်နှာပြင်ဝေမျှနေခြင်း ရပ်သွားမည်။ သင် ဆက်လက်သွားလိုပါသလား?</translation>
+<translation id="6050368268239407309">တင်ပြမှု တူးလ်များ</translation>
 <translation id="6054305421211936131">အဆင့်မြင့်ကတ်ဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="6059276912018042191">လတ်တလော Chrome တဘ်များ</translation>
 <translation id="6062360702481658777">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အကြာတွင် အလိုအလျောက် ထွက်ခွာမည်။</translation>

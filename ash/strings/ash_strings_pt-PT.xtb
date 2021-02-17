@@ -11,6 +11,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
 <translation id="1047017786576569492">parcial</translation>
 <translation id="1047773237499189053">Nova funcionalidade disponível, utilize a tecla da seta para cima para saber mais.</translation>
+<translation id="1052916631016577720">Análise de itens</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Telemóvel: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4351433414020964307">A carregar o Assistente...</translation>
 <translation id="4356930093361201197">modo de alto contraste</translation>
 <translation id="4371348193907997655">Definições de transmissão</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal a <ph name="SIGNAL_STRENGTH" /> por cento</translation>
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4379531060876907730">Estas são as suas ferramentas da caneta stylus</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
@@ -586,6 +588,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6043212731627905357">Este monitor está em conflito com o seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
 <translation id="6043994281159824495">Terminar sessão agora</translation>
 <translation id="6047696787498798094">A partilha do ecrã será interrompida quando mudar para outro utilizador. Pretende continuar?</translation>
+<translation id="6050368268239407309">Ferramentas de apresentação</translation>
 <translation id="6054305421211936131">Iniciar sessão com cartão inteligente</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
 <translation id="6062360702481658777">A sessão será terminada automaticamente dentro de <ph name="LOGOUT_TIME_LEFT" />.</translation>

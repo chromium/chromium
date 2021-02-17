@@ -1422,6 +1422,22 @@
       網址必須採用 HTTPS 架構，例如「https://example.com」。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="2972531017545674240">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
+
+      這項政策的每個清單項目都是一個物件，由下列必要元素組成：
+      <ph name="URL_LABEL" /> (要安裝的網頁應用程式網址)
+
+      3 個選擇性元素：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (如要建立 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面捷徑，請設為 True)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 90 以上版本，可用於針對不是漸進式網頁應用程式 (PWA) 的應用程式覆寫名稱，或是針對暫時性安裝，而且需經過驗證才能完成安裝的 PWA 應用程式覆寫名稱)
+
+      如需將應用程式固定到 <ph name="PRODUCT_OS_NAME" />檔案櫃，請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 政策。</translation>
 <translation id="2976429807269247880">舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
 <translation id="2985927503455169394">使用 Google 助理入門使用體驗的預設模式</translation>
 <translation id="2987155890997901449">啟用 ARC</translation>
@@ -4065,13 +4081,6 @@
       如果將這項政策設為停用，則會從工具列中移除瀏覽器實驗功能圖示。
 
       無論這項政策設為啟用或停用，chrome://flags 和其他開啟/關閉瀏覽器功能的方法都能正常運作。</translation>
-<translation id="6793420507738858152">如果設為啟用，<ph name="PRODUCT_NAME" /> 功能會傳送詳細的要求標頭，提供使用者瀏覽器和環境的相關資訊。
-
-      這是附加功能，但因為有些網站會限制要求所包含的字元，新標頭可能會導致這類網站無法正常運作。
-
-      如果將這項政策設為啟用或不設定，系統會開啟 <ph name="PRODUCT_NAME" /> 功能。如果將這項政策設為停用，則無法使用該功能。
-
-      這項企業政策只是暫時性措施，至少在 Chrome 91 版前都可供使用。</translation>
 <translation id="6795485990775913659">只在 PIN 碼停用時允許列印</translation>
 <translation id="6800181452282128474">不向 Quirks Server 發送查詢</translation>
 <translation id="6810445994095397827">封鎖這些網站的 JavaScript</translation>

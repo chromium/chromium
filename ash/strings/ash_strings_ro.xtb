@@ -11,6 +11,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1037492556044956303">S-a adăugat <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">parțială</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
+<translation id="1052916631016577720">Scanarea elementelor</translation>
 <translation id="1056775291175587022">Nicio rețea</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Celular: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4351433414020964307">Asistentul se încarcă...</translation>
 <translation id="4356930093361201197">mod de contrast ridicat</translation>
 <translation id="4371348193907997655">Setări pentru proiectare</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Se conectează</translation>
 <translation id="4379531060876907730">Acestea sunt instrumentele pentru creion</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
@@ -586,6 +588,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
 <translation id="6047696787498798094">Permiterea accesului la ecran încetează când comuți la alt utilizator. Dorești să continui?</translation>
+<translation id="6050368268239407309">Instrumente de prezentare</translation>
 <translation id="6054305421211936131">Conectează-te cu cardul inteligent</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="6062360702481658777">Veți fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>

@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">ৱেবছাইটবোৰে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাত পাঠবোৰ দেখুৱাব।</translation>
 <translation id="1952728750904661634">পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="1965935827552890526">Chromeৰ খোলা থকা অন্য ৱিণ্ড’ত আপুনি কি কৰি আছিল সেয়া সমাপ্ত কৰক।</translation>
+<translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1989112275319619282">ব্ৰাউজ কৰক</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">এই ডিভাইচটোত থকা কোনো এপ্লিকেশ্বনে ফাইলটো খুলিব নোৱাৰে।</translation>
 <translation id="4042870976416480368">পৃষ্ঠাত বিচাৰক</translation>
 <translation id="4049507953662678203">আপোনাৰ নেটৱৰ্ক সংযোগ থকাটো নিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
+<translation id="4079195788735381731">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক ছাইন আউট কৰিছে</translation>
 <translation id="4082688844002261427">Search, বিজ্ঞাপন আৰু অন্য সুবিধাসমূহ ব্যক্তিকৃত কৰিবলৈ আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস কেনেদৰে ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="408404951701638773">সন্ধান বাৰডাল বিচাৰি পোৱাটো এতিয়া সহজ</translation>
 <translation id="411254640334432676">ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5339316356165661760">ছিংক অন কৰক</translation>
+<translation id="5360976571138293719">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />Google সেৱা<ph name="END_LINK" /> চাওক।</translation>
 <translation id="5388358297987318779">প্ৰতিচ্ছবি খোলক</translation>
 <translation id="5407969256130905701">সালসলনিবোৰ অগ্ৰাহ্য কৰক</translation>
 <translation id="5416022985862681400">যোৱা ৭দিনৰ</translation>
@@ -496,6 +499,7 @@
 <translation id="6254066287920239840">ব্ৰাউজাৰৰ পৰিৱৰ্তে এপত লিংকসমূহ খোলক৷</translation>
 <translation id="6255097610484507482">ক্ৰেডিট কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
+<translation id="6293101329759844770">সুৰক্ষিত ব্ৰাউজিং অন কৰিবলৈ <ph name="BEGIN_LINK" />Google সেৱা<ph name="END_LINK" /> খোলক আৰু সুৰক্ষিত ব্ৰাউজিঙত টিপক।</translation>
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
 <translation id="6308436439357671616">ইয়াৰ জৰিয়তে আপুনি ফট’ তুলিব আৰু আপল’ড কৰিব পাৰে।</translation>
 <translation id="6324528485781869530">বেলেগ ছিংক একাউণ্ট ব্যৱহাৰ কৰক</translation>

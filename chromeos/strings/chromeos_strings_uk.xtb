@@ -107,6 +107,7 @@
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
+<translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="3712633734921637892">Наразі швидкість ЦП обмежена, оскільки потрібно заощадити заряд акумулятора або знизити температуру</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
+<translation id="4155551848414053977">Переконайтеся, що сканер увімкнений і доступний у мережі або через пряме з'єднання</translation>
 <translation id="4170700058716978431">НЕ ПРОЙДЕНО</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
@@ -237,6 +239,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6189418609903030344">Ємність акумулятора зменшується внаслідок використання</translation>
 <translation id="6191293864534840972">Неправильні сервери імен</translation>
+<translation id="6223752125779001553">Немає доступних сканерів</translation>
 <translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>

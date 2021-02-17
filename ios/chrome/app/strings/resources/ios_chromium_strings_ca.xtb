@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
+<translation id="3946918322491238254">Encara pots veure les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en aquest dispositiu. Si fas canvis, no se sincronitzaran amb el teu compte.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4166206055865952171">Estableix Chromium com a predeterminat</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
 <translation id="5521125884468363740">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió i activa la sincronització</translation>
+<translation id="5544795779875591523">Vols esborrar les dades de Chromium d'aquest dispositiu o conservar-les?</translation>
 <translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
+<translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="921174536258924340">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
+<translation id="994708389219151914">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium s'esborraran d'aquest dispositiu.</translation>
 </translationbundle>

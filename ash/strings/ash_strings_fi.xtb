@@ -11,6 +11,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> lisätty</translation>
 <translation id="1047017786576569492">osittainen</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
+<translation id="1052916631016577720">Kohteen skannaus</translation>
 <translation id="1056775291175587022">Ei verkkoja</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Matkapuhelin: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4351433414020964307">Assistantia ladataan…</translation>
 <translation id="4356930093361201197">suurikontrastinen tila</translation>
 <translation id="4371348193907997655">Striimausasetukset</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> prosenttia</translation>
 <translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4379531060876907730">Tässä ovat näyttökynätyökalusi</translation>
 <translation id="4389184120735010762">Painoit kiinnitetyn suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
@@ -586,6 +588,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
 <translation id="6043994281159824495">Kirjaudu ulos nyt</translation>
 <translation id="6047696787498798094">Näytön jakaminen loppuu, kun vaihdat toiseen käyttäjään. Haluatko jatkaa?</translation>
+<translation id="6050368268239407309">Esitystyökalut</translation>
 <translation id="6054305421211936131">Kirjaudu sisään älykortilla</translation>
 <translation id="6059276912018042191">Viimeaikaiset Chrome-välilehdet</translation>
 <translation id="6062360702481658777">Sinut kirjataan ulos automaattisesti, aikaa jäljellä <ph name="LOGOUT_TIME_LEFT" />.</translation>

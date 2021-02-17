@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Quan sigui possible, els llocs web mostraran el text en el teu idioma preferit.</translation>
 <translation id="1952728750904661634">Inicieu la sessió amb un compte gestionat</translation>
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
+<translation id="1973912524893600642">Conserva les dades</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
@@ -299,6 +300,7 @@ Segueix aquests passos:</translation>
 <translation id="4038354071007134711">Cap aplicació del dispos. no pot obrir el fitxer.</translation>
 <translation id="4042870976416480368">Cerca a la pàgina</translation>
 <translation id="4049507953662678203">Assegureu-vos que teniu una connexió a la xarxa i torneu-ho a provar.</translation>
+<translation id="4079195788735381731">La teva organització t'ha tancat la sessió</translation>
 <translation id="4082688844002261427">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca, els anuncis i molt més</translation>
 <translation id="408404951701638773">Ara és més fàcil accedir a la barra de cerca</translation>
 <translation id="411254640334432676">S'ha produït un error durant la baixada.</translation>
@@ -411,6 +413,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
+<translation id="5360976571138293719">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Obre una imatge</translation>
 <translation id="5407969256130905701">Descarta els canvis</translation>
 <translation id="5416022985862681400">7 darrers dies</translation>
@@ -496,6 +499,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6254066287920239840">Obre els enllaços a l'aplicació en comptes del navegador.</translation>
 <translation id="6255097610484507482">Edita la targeta de crèdit</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Per activar la funció Navegació segura, obre la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" /> i toca Navegació segura.</translation>
 <translation id="6303969859164067831">Tanca la sessió i desactiva la sincronització</translation>
 <translation id="6308436439357671616">Això et permet fer i penjar fotos.</translation>
 <translation id="6324528485781869530">Canvia de compte de sincronització</translation>

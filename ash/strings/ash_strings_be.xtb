@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">Прылада "<ph name="DEVICE_NAME" />" дададзена</translation>
 <translation id="1047017786576569492">частка экрана</translation>
 <translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
+<translation id="1052916631016577720">Праверка элементаў</translation>
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Сотавая прылада: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Ідзе загрузка Памочніка...</translation>
 <translation id="4356930093361201197">рэжым высокай кантраснасці</translation>
 <translation id="4371348193907997655">Налады трансляцыі</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4379531060876907730">Гэта інструменты стыла</translation>
 <translation id="4389184120735010762">Вы націснулі спалучэнне клавіш для прыстыкаванай лупы. Уключыць яе?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">Гэты манітор не падыходзіць да прылады <ph name="DEVICE_TYPE" /> (манітор не падтрымліваецца).</translation>
 <translation id="6043994281159824495">Выйсці</translation>
 <translation id="6047696787498798094">Пры пераключэнні на іншага карыстальніка абагульванне экрана перастане працаваць. Працягнуць?</translation>
+<translation id="6050368268239407309">Інструменты прэзентацыі</translation>
 <translation id="6054305421211936131">Увайсці з дапамогай разумнай карткі</translation>
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>

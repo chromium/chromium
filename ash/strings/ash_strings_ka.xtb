@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> დამატებულია</translation>
 <translation id="1047017786576569492">ნაწილობრივი</translation>
 <translation id="1047773237499189053">ხელმისაწვდომია ახალი ფუნქცია, დამატებითი ინფორმაციისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
+<translation id="1052916631016577720">ერთეულის სკანირება</translation>
 <translation id="1056775291175587022">ქსელები არ არის</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ფიჭური: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">ასისტენტი იტვირთება...</translation>
 <translation id="4356930093361201197">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="4371348193907997655">ტრანსლირების პარამეტრები</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" /> პროცენტი</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
 <translation id="4379531060876907730">ეს არის თქვენი სტილუსის ხელსაწყოები</translation>
 <translation id="4389184120735010762">თქვენ დააჭირეთ ჩამაგრებული ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">ეს მონიტორი თქვენს <ph name="DEVICE_TYPE" />-თან თავსებადი არ არის (მონიტორი მხარდაუჭერელია).</translation>
 <translation id="6043994281159824495">გამოსვლა</translation>
 <translation id="6047696787498798094">ეკრანის გაზიარება შეწყდება, როდესაც გადართავთ სხვა მომხმარებელზე. გსურთ გააგრძელოთ?</translation>
+<translation id="6050368268239407309">პრეზენტაციის ხელსაწყოები</translation>
 <translation id="6054305421211936131">სმარტ-ბარათით შესვლა</translation>
 <translation id="6059276912018042191">Chrome-ის ბოლოდროინდელი ჩანართები</translation>
 <translation id="6062360702481658777">თქვენ ავტომატურად გამოხვალთ ამ პერიოდში: <ph name="LOGOUT_TIME_LEFT" />.</translation>

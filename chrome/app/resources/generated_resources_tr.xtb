@@ -2457,7 +2457,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
 <translation id="3742666961763734085">Belirtilen ada sahip bir kuruluş birimi bulunamadı. Lütfen tekrar deneyin.</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
-<translation id="3746127522257263495">Android uygulamalarında Eğitim için G Suite hesabının eklenmesi desteklenmez.</translation>
 <translation id="3747077776423672805">Uygulamaları kaldırmak için Ayarlar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Uygulamalar veya Uygulama yöneticisi'ne gidin. Daha sonra, yüklemesini kaldırmak istediğiniz uygulamaya dokunun (uygulamayı bulmak için sağa veya sola doğru hızlıca kaydırmanız gerekebilir). Ardından, Yüklemeyi Kaldır veya Devre Dışı Bırak'a dokunun.</translation>
 <translation id="3748706263662799310">Hata bildir</translation>
 <translation id="3752582316358263300">Tamam...</translation>
@@ -5850,7 +5849,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
 <translation id="7697166915480294040">Ekranınızı paylaşırken ayrıntılar gizlenir</translation>
 <translation id="7697598343108519171">QR kodunu taramak için kamerayı kullan</translation>
-<translation id="7699968112832915395">Hesap eklenemiyor</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701869757853594372">KULLANICI İşleyicileri</translation>
 <translation id="7701928712056789451">Bu öğeler tehlikeli olabilir</translation>

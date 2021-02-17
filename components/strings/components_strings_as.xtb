@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">গ্ৰহণ কৰা কাৰ্ডসমূহ</translation>
 <translation id="1021753677514347426">আপোনাৰ ডিভাইচটোত আপুনি অথবা অন্য কোনোবাই ইনষ্টল কৰা এখন প্ৰমাণপত্ৰৰ বাবে এই সমস্যাটো হয়। এই প্ৰমাণপত্ৰখন নেটৱৰ্কসমূহ নিৰীক্ষণ আৰু বাধাগ্ৰস্ত কৰিবলৈ ব্যৱহাৰ কৰা হয় বুলি জনা যায় আৰু এইখনক Chromiumএ বিশ্বাস নকৰে। যদিও কোনো বিদ্যালয় অথবা কোম্পানীৰ নেটৱৰ্কত নিৰীক্ষণ কৰাৰ দৰে কিছুমান বৈধ উদাহৰণ পোৱা যায়, Chromiumএ আপুনি এই বিষয়ে অৱগত হৈ থকাটো নিশ্চিত কৰিবলৈ বিচাৰে, যদিওবা আপুনি সেয়া বন্ধ কৰিব নোৱাৰে। ৱেব এক্সেছ কৰা যিকোনো ব্ৰাউজাৰ অথবা এপ্লিকেশ্বন নিৰীক্ষণ কৰা হ’ব পাৰে।</translation>
 <translation id="1024111578869940408">আক্ৰমণকাৰীসকলে কেতিয়াবা ৱেব ঠিকনাত সহজে চকুত নপৰা সালসলনি কৰি ছাইটসমূহ নকল কৰিব পাৰে।</translation>
+<translation id="1028781062521375153">সবিশেষ চাওক</translation>
 <translation id="1030706264415084469"><ph name="URL" />এ আপোনাৰ ডিভাইচত চিৰদিনৰ বাবে ডাঙৰ ডেটা সঞ্চয় কৰিব বিচাৰে</translation>
 <translation id="1032854598605920125">ঘড়ীৰ কাঁটাৰ দিশত ঘূৰাওক</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">আপোনাৰ কম্পিউটাৰত থকা ফ’ণ্ট ব্যৱহাৰ কৰক যাতে আপুনি উচ্চমানৰ সমল সৃষ্টি কৰিব পাৰে</translation>
 <translation id="1463543813647160932">৫x৭</translation>
 <translation id="1467432559032391204">বাওঁফালে</translation>
+<translation id="1468653229182955856"><ph name="TOP_ORIGIN" />ত অব্যাহত ৰাখিবলৈ <ph name="EMBEDDED_ORIGIN" />ৰ বাবে আপোনাৰ ক’ডটো হৈছে <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">অধিক দেখুৱাওক</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">ব্যৱহাৰকাৰীৰ নীতি</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />ছাইটটোৰ গৃহপৃষ্ঠা<ph name="END_LINK" />লৈ গৈ চাওক।</translation>
 <translation id="1641976391427233992">এই সময়লৈ আউপুট বিলম্ব কৰক</translation>
+<translation id="164212631332220697">চেকআউট কৰাৰ সময়ত <ph name="CARD_DETAIL" />ৰ জৰিয়তে পৰিশোধ কৰক।</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645368109819982629">অসমৰ্থিত প্ৰ’ট’কল</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1005,6 +1008,7 @@
 <translation id="4879725228911483934">ৱিণ্ড’সমূহ খোলক আৰু আপোনাৰ স্ক্ৰীনসমূহত ৰাখক</translation>
 <translation id="4880827082731008257">সন্ধানৰ ইতিহাস</translation>
 <translation id="4881695831933465202">খোলক</translation>
+<translation id="4885256590493466218">চেকআউট কৰাৰ সময়ত <ph name="CARD_DETAIL" />ৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4889420713887366944">ইনক’গনিট’ ৱিণ্ড’ খোলক বুটাম, ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবৰ বাবে এখন নতুন ইনক’গনিট’ ৱিণ্ড’ খুলিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="4892518386797173871">পাছফাল</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1969,6 +1973,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> হৈছে <ph name="ORIGIN" />ৰ ক’ড</translation>
 <translation id="874918643257405732">এই টেবটো বুকমার্ক কৰক</translation>
 <translation id="8751426954251315517">অনুগ্ৰহ কৰি পৰৱৰ্তী সময়ত পুনৰ চেষ্টা কৰক</translation>
+<translation id="8757526089434340176">Google Payৰ অফাৰ উপলব্ধ</translation>
 <translation id="8759274551635299824">কার্ডখনৰ ম্যাদ উকলিল</translation>
 <translation id="87601671197631245">এই ছাইটটোৱে সুৰক্ষা সম্পৰ্কীয় এটা পুৰণি কনফিগাৰেশ্বন ব্যৱহাৰ কৰে, যিটোৱে আপোনাৰ তথ্য (উদাহৰণস্বৰূপে, পাছৱৰ্ড, বার্তা অথবা ক্ৰেডিট কাৰ্ডসমূহ) এই ছাইটটোলৈ পঠিওৱা হ’লে সেয়া ফাদিল কৰিব পাৰে।</translation>
 <translation id="8761567432415473239">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="SITE" />ত <ph name="BEGIN_LINK" />কিছুমান ক্ষতিকাৰক প্ৰ’গাম বিচাৰি পাইছিল<ph name="END_LINK" />।</translation>

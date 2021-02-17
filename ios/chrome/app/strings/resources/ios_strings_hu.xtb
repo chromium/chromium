@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">A webhelyek szövege a preferált nyelven jelenik meg, ha lehetséges.</translation>
 <translation id="1952728750904661634">Bejelentkezés felügyelt fiókkal</translation>
 <translation id="1965935827552890526">A másik megnyitott Chrome-ablakban fejezze be, amit csinál.</translation>
+<translation id="1973912524893600642">Adatok megőrzése</translation>
 <translation id="1974060860693918893">Speciális</translation>
 <translation id="1989112275319619282">Böngészés</translation>
 <translation id="2015722694326466240">A jelszavak megtekintéséhez előbb be kell állítania az eszközön a biztonsági kódot.</translation>
@@ -299,6 +300,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="4038354071007134711">Nincs alkalmazás, amellyel megnyitható ez a fájl.</translation>
 <translation id="4042870976416480368">Keresés az oldalon</translation>
 <translation id="4049507953662678203">Győződjön meg róla, hogy rendelkezik hálózati kapcsolattal, majd próbálja újra.</translation>
+<translation id="4079195788735381731">Szervezete kijelentkeztette</translation>
 <translation id="4082688844002261427">Annak beállítása, hogy a rendszer hogyan szabja személyre a Keresést, a hirdetéseket és egyebeket a böngészési előzmények alapján</translation>
 <translation id="408404951701638773">Mostantól egyszerűbb a keresés a keresősávban</translation>
 <translation id="411254640334432676">A letöltés sikertelen.</translation>
@@ -411,6 +413,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5327248766486351172">Név</translation>
 <translation id="5339316356165661760">Szinkronizálás bekapcsolása</translation>
+<translation id="5360976571138293719">A <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, a biztonságra és az adatgyűjtésre vonatkozóan.</translation>
 <translation id="5388358297987318779">Kép megnyitása</translation>
 <translation id="5407969256130905701">Módosítások elvetése</translation>
 <translation id="5416022985862681400">Legutóbbi 7 nap</translation>
@@ -496,6 +499,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6254066287920239840">Linkek megnyitása az alkalmazásban a böngésző helyett.</translation>
 <translation id="6255097610484507482">Hitelkártya módosítása</translation>
 <translation id="6284652193729350524">A(z) <ph name="LANGUAGE" /> nyelvű oldalak lefordításának felajánlása</translation>
+<translation id="6293101329759844770">A Biztonságos Böngészés bekapcsolásához nyissa meg a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> szakaszt, majd koppintson a Biztonságos Böngészés lehetőségre.</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
 <translation id="6308436439357671616">Lehetővé teszi a fotók készítését és feltöltését.</translation>
 <translation id="6324528485781869530">Szinkronizált fiók váltása</translation>

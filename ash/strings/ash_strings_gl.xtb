@@ -11,6 +11,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1037492556044956303">Engadiuse <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">parcial</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
+<translation id="1052916631016577720">Escanear elemento</translation>
 <translation id="1056775291175587022">Non se atoparon redes</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Móbil: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4351433414020964307">O Asistente está cargando...</translation>
 <translation id="4356930093361201197">o modo de alto contraste</translation>
 <translation id="4371348193907997655">Configuración da emisión</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensidade do sinal: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4379531060876907730">Estas son as túas ferramentas de lapis óptico</translation>
 <translation id="4389184120735010762">Premiches o atallo de teclado para a lupa ancorada. Queres activala?</translation>
@@ -587,6 +589,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6043212731627905357">Este monitor non funciona co dispositivo <ph name="DEVICE_TYPE" /> (o monitor non é compatible).</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
 <translation id="6047696787498798094">O uso compartido da pantalla deterase cando cambies a outro usuario. Queres continuar?</translation>
+<translation id="6050368268239407309">Ferramentas de presentación</translation>
 <translation id="6054305421211936131">Inicia sesión coa tarxeta intelixente</translation>
 <translation id="6059276912018042191">Pestanas recentes de Chrome</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>

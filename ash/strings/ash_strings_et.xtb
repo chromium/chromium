@@ -11,6 +11,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> lisati</translation>
 <translation id="1047017786576569492">osaline</translation>
 <translation id="1047773237499189053">Uued funktsioonid on saadaval. Lisateabe saamiseks kasutage ülesnoolt.</translation>
+<translation id="1052916631016577720">Üksuse skannimine</translation>
 <translation id="1056775291175587022">Võrke ei ole</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobiilseade: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4351433414020964307">Assistenti laaditakse …</translation>
 <translation id="4356930093361201197">suure kontrastsusega režiim</translation>
 <translation id="4371348193907997655">Ülekandmise seaded</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /> protsenti</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4379531060876907730">Need on teie elektronpliiatsi tööriistad</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
@@ -587,6 +589,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6043212731627905357">See monitor ei toimi teie seadmega <ph name="DEVICE_TYPE" /> (seda monitori ei toetata).</translation>
 <translation id="6043994281159824495">Logi nüüd välja</translation>
 <translation id="6047696787498798094">Teisele kasutajale lülitumine peatab ekraani jagamise. Kas soovite jätkata?</translation>
+<translation id="6050368268239407309">Esitluse tööriistad</translation>
 <translation id="6054305421211936131">Logi sisse kiipkaardiga</translation>
 <translation id="6059276912018042191">Hiljutised Chrome'i vahelehed</translation>
 <translation id="6062360702481658777">Teid logitakse automaatselt välja <ph name="LOGOUT_TIME_LEFT" /> pärast.</translation>

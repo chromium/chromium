@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Kartu yang diterima</translation>
 <translation id="1021753677514347426">Masalah ini terjadi karena sertifikat yang diinstal di perangkat oleh Anda atau orang lain. Sertifikat ini diketahui sebagai sertifikat yang digunakan untuk memantau dan melakukan intersepsi jaringan dan tidak dipercaya oleh Chromium. Walau terdapat beberapa kasus pemantauan yang sah, seperti pada jaringan sekolah atau perusahaan, Chromium ingin memastikan Anda menyadari terjadinya masalah tersebut, meskipun Anda tidak dapat menghentikannya. Pemantauan dapat terjadi di browser atau aplikasi yang mengakses web.</translation>
 <translation id="1024111578869940408">Penyerang terkadang meniru situs dengan membuat perubahan yang sulit terlihat pada alamat web.</translation>
+<translation id="1028781062521375153">Lihat detail</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ingin menyimpan data berukuran besar di perangkat Anda secara permanen</translation>
 <translation id="1032854598605920125">Putar searah jarum jam</translation>
 <translation id="1036348656032585052">Matikan</translation>
@@ -146,6 +147,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1462951478840426066">Menggunakan font di komputer Anda agar Anda dapat membuat konten dengan kualitas akurasi tinggi</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Kiri</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> adalah kode Anda untuk <ph name="EMBEDDED_ORIGIN" /> guna melanjutkan di <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Tampilkan lainnya</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1640180200866533862">Kebijakan pengguna</translation>
 <translation id="1640244768702815859">Coba <ph name="BEGIN_LINK" />buka beranda situs<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Tunda keluaran hingga</translation>
+<translation id="164212631332220697">Bayar dengan <ph name="CARD_DETAIL" /> saat checkout.</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1645368109819982629">Protokol yang tidak didukung</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1000,6 +1003,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4879725228911483934">Membuka dan menempatkan jendela di layar Anda</translation>
 <translation id="4880827082731008257">Telusuri histori</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="4885256590493466218">Bayar dengan <ph name="CARD_DETAIL" /> saat checkout</translation>
 <translation id="4889420713887366944">Tombol Buka Jendela Samaran, tekan Enter untuk membuka jendela Samaran Chrome baru untuk menjelajah secara pribadi</translation>
 <translation id="4892518386797173871">Belakang</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1965,6 +1969,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> adalah kode Anda untuk <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Bookmark tab ini</translation>
 <translation id="8751426954251315517">Coba lagi lain waktu</translation>
+<translation id="8757526089434340176">Penawaran Google Pay tersedia</translation>
 <translation id="8759274551635299824">Kartu sudah tidak aktif</translation>
 <translation id="87601671197631245">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi, pesan, atau kartu kredit) saat dikirimkan ke situs ini.</translation>
 <translation id="8761567432415473239">Google Safe Browsing baru-baru ini <ph name="BEGIN_LINK" />menemukan program berbahaya<ph name="END_LINK" /> di <ph name="SITE" />.</translation>

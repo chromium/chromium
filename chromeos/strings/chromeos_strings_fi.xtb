@@ -107,6 +107,7 @@
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
+<translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">CPU-nopeutta rajoitetaan nyt akun säästämiseksi tai lämpötilan laskemiseksi</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
 <translation id="3748026146096797577">Ei yhteyttä</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Tulostin</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
+<translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
 <translation id="4170700058716978431">EPÄONNISTUI</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
@@ -237,6 +239,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
+<translation id="6223752125779001553">Skannereita ei saatavilla</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>

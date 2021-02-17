@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Quando possível, os Websites apresentam o texto no seu idioma preferido.</translation>
 <translation id="1952728750904661634">Iniciar sessão com uma conta gerida</translation>
 <translation id="1965935827552890526">Termine o que estava a fazer na outra janela do Chrome aberta.</translation>
+<translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
@@ -299,6 +300,7 @@ Siga os passos abaixo:</translation>
 <translation id="4038354071007134711">Nenhuma app neste disp. pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Localizar na página</translation>
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
+<translation id="4079195788735381731">A sua entidade terminou a sua sessão</translation>
 <translation id="4082688844002261427">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa, os anúncios e muito mais</translation>
 <translation id="408404951701638773">Agora é mais fácil aceder à barra de pesquisa</translation>
 <translation id="411254640334432676">A transferência falhou.</translation>
@@ -411,6 +413,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Ativar sincronização</translation>
+<translation id="5360976571138293719">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Abrir Imagem</translation>
 <translation id="5407969256130905701">Rejeitar alterações</translation>
 <translation id="5416022985862681400">Últimos 7 dias</translation>
@@ -496,6 +499,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6254066287920239840">Abrir links na aplicação em vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
 <translation id="6303969859164067831">Terminar sessão e desativar a sincronização</translation>
 <translation id="6308436439357671616">Isto permite-lhe tirar e carregar fotos.</translation>
 <translation id="6324528485781869530">Mudar conta de sincronização</translation>

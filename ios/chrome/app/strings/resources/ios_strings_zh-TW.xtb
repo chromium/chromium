@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
 <translation id="1952728750904661634">使用受管理的帳戶登入</translation>
 <translation id="1965935827552890526">請完成你在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
+<translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
+<translation id="4079195788735381731">貴機構已將你登出帳戶</translation>
 <translation id="4082688844002261427">控管 Google 如何使用你的瀏覽記錄，為你提供個人化的搜尋服務、廣告和其他內容</translation>
 <translation id="408404951701638773">現在使用搜尋列更加方便了</translation>
 <translation id="411254640334432676">下載失敗。</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
+<translation id="5360976571138293719">如需與隱私權、安全性和資料收集相關的其他設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5416022985862681400">過去 7 天</translation>
@@ -496,6 +499,7 @@
 <translation id="6254066287920239840">使用應用程式開啟連結，而不要在瀏覽器中開啟。</translation>
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
+<translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6308436439357671616">可讓你拍照並上傳相片。</translation>
 <translation id="6324528485781869530">切換同步處理帳戶</translation>

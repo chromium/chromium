@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Tidak disokong pada Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
+<translation id="3946918322491238254">Anda masih boleh melihat semua penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika anda perubahan dibuat, perubahan itu tidak akan disegerakkan ke akaun anda.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
 <translation id="4166206055865952171">Jadikan Chromium sebagai Penyemak Imbas Lalai Anda</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="5521125884468363740">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chromium, log masuk dan hidupkan penyegerakan</translation>
+<translation id="5544795779875591523">Pilih sama ada anda hendak mengosongkan data Chromium anda daripada peranti ini atau mengekalkan data tersebut.</translation>
 <translation id="5573014823074921752">Petua Chromium. Untuk melihat lebih banyak pilihan tab, sentuh &amp; tahan butang Tunjukkan Tab dalam bar alat, yang terletak di bahagian bawah atau atas skrin anda.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat menyemak kata laluan anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8663480472502753423">Pastikan Chromium terkini</translation>
 <translation id="8776843108004031667">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chromium.</translation>
+<translation id="894437814105052438">Apabila anda log keluar, Chromium tidak akan menyegerakkan sebarang data baharu ke Akaun Google anda. Data yang disegerakkan sebelumnya akan dikekalkan dalam akaun.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
 <translation id="9089354809943900324">Chromium sudah usang</translation>
 <translation id="921174536258924340">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
+<translation id="994708389219151914">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chromium anda akan dikosongkan daripada peranti ini.</translation>
 </translationbundle>

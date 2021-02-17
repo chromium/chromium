@@ -2457,7 +2457,6 @@
 <translation id="3742055079367172538">ቅጽበታዊ ገጽ እይታ ተነስቷል</translation>
 <translation id="3742666961763734085">ይህ ስም ያለው ድርጅታዊ አሃድ ማግኘት አልተቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
-<translation id="3746127522257263495">በማይደገፍ የAndroid መተግበሪያ ውስጥ የG Suite for Education መለያን ማከል አይደገፍም።</translation>
 <translation id="3747077776423672805">መተግበሪያዎችን ለማስወገድ ወደ ቅንብሮች &gt; &gt; Google Play መደብር &gt; የAndroid ምርጫዎችን ያስተዳድሩ &gt;መተግበሪያዎች ወይም የመተግበሪያ አስተዳዳሪ ይሂዱ። ከዚያ ለማራገፍ የሚፈልጉትን መተግበሪያ መታ ያድርጉ (መተግበሪያውን ለማግኘት ወደ ቀኝ ወይም ወደ ግራ ማንሸራተት ሊኖርብዎት ይችላል)። ከዚያ አራግፍ ወይም አሰናክል የሚለውን መታ ያድርጉ።</translation>
 <translation id="3748706263662799310">ስህተት ሪፖርት አድርግ</translation>
 <translation id="3752582316358263300">እሺ...</translation>
@@ -5847,7 +5846,6 @@
 <translation id="7696063401938172191">በእርስዎ «<ph name="PHONE_NAME" />» ላይ፦</translation>
 <translation id="7697166915480294040">የእርስዎን ማያ ገጽ በሚያጋሩበት ጊዜ ዝርዝሮች ይደበቃሉ</translation>
 <translation id="7697598343108519171">የQR ኮድ ለመቃኘት ካሜራ ይጠቀሙ</translation>
-<translation id="7699968112832915395">መለያን ማከል አይቻልም</translation>
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7701869757853594372">USER መያዣዎች</translation>
 <translation id="7701928712056789451">እነዚህ ንጥሎች አደገኛ ሊሆኑ ይችላሉ</translation>
@@ -6934,6 +6932,7 @@ nil</translation>
 <translation id="8892168913673237979">ሁሉም ዝግጁ!</translation>
 <translation id="8893801527741465188">ማራገፍ ተጠናቅቋል</translation>
 <translation id="8893928184421379330">ይቅርታ፣ መሣሪያ <ph name="DEVICE_LABEL" /> ሊታወቅ አልቻለም።</translation>
+<translation id="8894761918470382415">ለተቀጥላ ክፍሎች የውሂብ መዳረሻ ጥበቃ</translation>
 <translation id="8895454554629927345">የእልባት ዝርዝር</translation>
 <translation id="8898786835233784856">ቀጣይ ትርን ምረጥ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
@@ -7239,6 +7238,7 @@ nil</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> የChrome ትር እና ኦዲዮ እያጋራ ነው።</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="947329552760389097">&amp;አባለ ነገሮችን መርምር</translation>
+<translation id="949052952791086881">መሣሪያው መስመር ላይ ሳለ አስተዳዳሪዎ እኚህ ተጠቃሚ በመለያ እንዲገቡ ይፈልግባቸዋል</translation>
 <translation id="951991426597076286">አትቀበል</translation>
 <translation id="956500788634395331">እርስዎ ጎጂ ሊሆኑ ከሚችሉ ቅጥያዎች ተጠብቀዋል</translation>
 <translation id="957960681186851048">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር ለማውረድ ሞክሯል</translation>

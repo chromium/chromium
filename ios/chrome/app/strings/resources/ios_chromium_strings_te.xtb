@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium కెనరీలో సపోర్ట్ చేయదు</translation>
 <translation id="3639997914391704523">మీరు మీ Google ఖాతాతో సైన్ ఇన్ చేసినప్పుడు, Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయగలదు.</translation>
 <translation id="3805899903892079518">Chromium మీ ఫోటోలు లేదా వీడియోలకు యాక్సెస్‌ను కలిగి లేదు. iOS సెట్టింగ్‌లు &gt; గోప్యత &gt; ఫోటోల్లో యాక్సెస్‌ను ప్రారంభించండి.</translation>
+<translation id="3946918322491238254">ఈ పరికరంలో మీరు ఇప్పటికీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌లను చూడవచ్చు. మీరు ఏవైనా మార్పులు చేస్తే, అవి మీ ఖాతాకు సింక్ చేయబడవు.</translation>
 <translation id="4099085513035183040">Chromium బీటాలో సపోర్ట్ చేయదు</translation>
 <translation id="4166206055865952171">Chromiumను మీ ఆటోమేటిక్ బ్రౌజర్‌గా చేయండి</translation>
 <translation id="4555020257205549924">ఈ లక్షణం ప్రారంభించినప్పుడు, Chromium ఇతర భాషల్లో వ్రాసిన పేజీలకు Google అనువాదం ఉపయోగించి అనువాదాన్ని ఆఫర్ చేస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chromium వాటిని చెక్ చేయగలదు.</translation>
 <translation id="5308226104666789935">Chromium అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేదు</translation>
 <translation id="5521125884468363740">మీరు Chromiumను ఎక్కడ ఉపయోగించినా, మీ ట్యాబ్‌లను చూసేందుకు, సైన్ ఇన్ చేసి సింక్‌ను ఆన్ చేయండి</translation>
+<translation id="5544795779875591523">ఈ పరికరం నుండి మీ Chromium డేటాను క్లియర్ చేయాలా లేదా ఉంచాలా అనే దాన్ని ఎంచుకోండి?</translation>
 <translation id="5573014823074921752">Chromium చిట్కా. మరిన్ని ట్యాబ్ ఎంపికల కోసం, మీ స్క్రీన్‌లో పైన కానీ దిగువన కానీ ఉండే సాధనాల బార్‌లో ట్యాబ్‌లను చూపు బటన్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి.</translation>
 <translation id="5700709190537129682">Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది</translation>
 <translation id="5777187867430702742">Chromium పేజీ</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">కాపీరైట్ <ph name="YEAR" /> Chromium రచయితలు. అన్ని హ‌క్కులు రిజ‌ర్వ్ చేయ‌బ‌డ్డాయి.</translation>
 <translation id="8663480472502753423">Chromiumను అప్‌డేట్‌గా ఉంచండి</translation>
 <translation id="8776843108004031667">ఈ ఖాతా, ఇంకా ఏదైనా సేవ్ చేయని డేటా Chromium నుండి తీసివేయబడతాయి.</translation>
+<translation id="894437814105052438">మీరు సైన్ అవుట్ చేసినప్పుడు, మీ Google ఖాతాకు ఎలాంటి కొత్త డేటాను Chromium సింక్ చేయదు. ఇంతకుముందు సింక్ చేయబడిన డేటా ఖాతాలో ఉండిపోతుంది.</translation>
 <translation id="9022552996538154597">Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="921174536258924340">Chromiumకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి లేదా <ph name="BEGIN_LINK" />మీ Google ఖాతాలో పాస్‌వర్డ్‌లను చెక్ చేయండి.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium రచయితలు</translation>
+<translation id="994708389219151914">మీ ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, కాబట్టి మీ Chromium డేటా ఈ పరికరం నుండి క్లియర్ చేయబడుతుంది.</translation>
 </translationbundle>

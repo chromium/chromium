@@ -11,6 +11,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1037492556044956303">Dodan je uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">djelomičnо</translation>
 <translation id="1047773237499189053">Dostupna je nova značajka, saznajte više pritiskom strelice prema gore.</translation>
+<translation id="1052916631016577720">Skeniranje stavke</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobitel: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4351433414020964307">Asistent se učitava...</translation>
 <translation id="4356930093361201197">način visokog kontrasta</translation>
 <translation id="4371348193907997655">Postavke emitiranja</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala: <ph name="SIGNAL_STRENGTH" /> posto</translation>
 <translation id="4378551569595875038">Povezivanje...</translation>
 <translation id="4379531060876907730">Ovo su vaši alati za pisaljke</translation>
 <translation id="4389184120735010762">Pritisnuli ste tipkovni prečac za usidreno povećalo. Želite li ga uključiti?</translation>
@@ -586,6 +588,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6043212731627905357">Ovaj se monitor ne podudara s vašim uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>
 <translation id="6043994281159824495">Odjavi se odmah</translation>
 <translation id="6047696787498798094">Dijeljenje zaslona prekinut će se kad se prebacite na drugog korisnika. Želite li nastaviti?</translation>
+<translation id="6050368268239407309">Alati za prezentaciju</translation>
 <translation id="6054305421211936131">Prijava pomoću pametne kartice</translation>
 <translation id="6059276912018042191">Nedavne Chromeove kartice</translation>
 <translation id="6062360702481658777">Automatski ćete se odjaviti za <ph name="LOGOUT_TIME_LEFT" />.</translation>

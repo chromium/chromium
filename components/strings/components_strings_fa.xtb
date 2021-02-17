@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">کارت‌های قابل‌ قبول</translation>
 <translation id="1021753677514347426">‏علت این مشکل وجود یکی از گواهی‌هایی است که شما یا فردی دیگر در دستگاهتان نصب کرده‌اید. از این گواهی برای نظارت بر شبکه‌ها و رهگیری آن‌ها استفاده می‌شود و مورداعتماد Chromium نیست. علی‌رغم وجود برخی موارد قانونی برای نظارت، مثلاً نظارت بر شبکه‌های مدارس و شرکت‌ها، Chromium می‌خواهد مطمئن شود که شما از این جریان آگاهی دارید، حتی اگر نتوانید آن را متوقف کنید. نظارت ممکن است در هر مرورگر یا برنامه‌ای که به وب دسترسی دارد انجام شود.</translation>
 <translation id="1024111578869940408">گاهی‌اوقات مهاجمان با ایجاد تغییراتی بسیار جزئی در نشانی وب، سایت‌ها را جعل می‌کنند.</translation>
+<translation id="1028781062521375153">دیدن جزئیات</translation>
 <translation id="1030706264415084469"><ph name="URL" /> می‌خواهد داده‌های بزرگ را برای همیشه در دستگاهتان ذخیره کند</translation>
 <translation id="1032854598605920125">چرخش در جهت عقربه‌های ساعت</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">از قلم‌های موجود در رایانه استفاده کنید تا بتوانید محتوایی با شباهت زیاد به اصل ایجاد کنید</translation>
 <translation id="1463543813647160932">۵x۷</translation>
 <translation id="1467432559032391204">چپ</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="EMBEDDED_ORIGIN" /> جهت ادامه دادن در <ph name="TOP_ORIGIN" /> است</translation>
 <translation id="1472675084647422956">نمایش بیشتر</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">خط‌مشی‌های کاربر</translation>
 <translation id="1640244768702815859">از<ph name="BEGIN_LINK" />صفحه اصلی سایت دیدن کنید<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">تأخیر خروجی تا</translation>
+<translation id="164212631332220697">هنگام تسویه حساب، با <ph name="CARD_DETAIL" /> پرداخت کنید.</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1645368109819982629">پروتکل پشتیبانی‌نشده</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1008,6 +1011,7 @@
 <translation id="4879725228911483934">پنجره‌ها در صفحه‌های نمایش باز و جای‌گذاری شوند</translation>
 <translation id="4880827082731008257">سابقه جستجو</translation>
 <translation id="4881695831933465202">باز کردن</translation>
+<translation id="4885256590493466218">هنگام تسویه حساب، با <ph name="CARD_DETAIL" /> پرداخت کنید</translation>
 <translation id="4889420713887366944">‏دکمه «باز کردن پنجره ناشناس»، برای باز کردن «پنجره ناشناس» جدید و مرور کردن به‌صورت خصوصی، کلید Enter (ورود) را فشار کنید</translation>
 <translation id="4892518386797173871">عقب</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
@@ -1977,6 +1981,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="ORIGIN" /> است</translation>
 <translation id="874918643257405732">نشانک‌گذاری این برگه</translation>
 <translation id="8751426954251315517">لطفاً بعداً دوباره امتحان کنید</translation>
+<translation id="8757526089434340176">‏پیشنهادی از Google Pay دردسترس است</translation>
 <translation id="8759274551635299824">کارت منقضی شده است</translation>
 <translation id="87601671197631245">پیکربندی امنیتی این سایت قدیمی است و ممکن است اطلاعاتتان (برای مثال، گذرواژه‌ها، پیام‌ها، یا کارت‌های اعتباری) هنگام ارسال شدن به این سایت، درمعرض خطر قرار گیرد.</translation>
 <translation id="8761567432415473239">‏مرور ایمن Google اخیراً <ph name="BEGIN_LINK" />برنامه‌های خطرناک<ph name="END_LINK" /> را در <ph name="SITE" /> پیدا کرده است.</translation>

@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> जोडले</translation>
 <translation id="1047017786576569492">आंशिक</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
+<translation id="1052916631016577720">आयटम स्कॅन</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">साहाय्यक लोड होत आहे...</translation>
 <translation id="4356930093361201197">हाय-काँट्रास्ट मोड</translation>
 <translation id="4371348193907997655">कास्ट करा सेटिंग्ज</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /> टक्के</translation>
 <translation id="4378551569595875038">कनेक्ट होतय...</translation>
 <translation id="4379531060876907730">ही तुमची स्टायलस टूल आहेत</translation>
 <translation id="4389184120735010762">तुम्ही डॉक मॅग्निफायरसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">हा मॉनिटर आपल्या <ph name="DEVICE_TYPE" /> सह प्राप्त होत नाही (मॉनिटर समर्थित नाही).</translation>
 <translation id="6043994281159824495">आता साइन आउट करा</translation>
 <translation id="6047696787498798094">तुम्ही दुसर्‍या वापरकर्त्यावर स्‍विच करता तेव्‍हा स्क्रीन सामायिकरण थांबेल. तुम्ही सुरू ठेवू इच्छिता?</translation>
+<translation id="6050368268239407309">प्रेझेंटेशन टूल</translation>
 <translation id="6054305421211936131">तुमचे स्मार्ट कार्ड वापरून साइन इन करा</translation>
 <translation id="6059276912018042191">अलीकडील Chrome टॅब</translation>
 <translation id="6062360702481658777">तुम्हाला <ph name="LOGOUT_TIME_LEFT" /> मधून स्वयंचलितपणे साइन आउट केले जाईल.</translation>

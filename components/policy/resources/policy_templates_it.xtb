@@ -561,7 +561,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="179694024208061102">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> proverà ad avviare alcuni URL in un browser alternativo, ad esempio <ph name="IE_PRODUCT_NAME" />. Questa funzionalità viene impostata con i criteri del gruppo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Se il criterio viene impostato su Disattivato o se non viene impostato, <ph name="PRODUCT_NAME" /> non proverà ad avviare gli URL impostati in un browser alternativo.</translation>
-<translation id="1797233582739332495">Mostra un messaggio ricorrente all'utente in cui indica che è necessario un riavvio</translation>
+<translation id="1797233582739332495">Mostra all'utente un messaggio ricorrente che indica che è necessario un riavvio</translation>
 <translation id="1798559516913615713">Durata della cache del GPO</translation>
 <translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
@@ -989,6 +989,11 @@ Se questo criterio viene impostato su False, la Schermata sulla privacy sarà se
 Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
+<translation id="241739814668386424"> Se questo criterio viene disattivato, l'utente non potrà collegare completamente il proprio dispositivo periferico Thunderbolt/USB4 tramite tunneling PCIe.
+
+      Se questo criterio viene attivato, l'utente potrà collegare completamente il proprio dispositivo periferico Thunderbolt/USB4 tramite tunneling PCIe.
+
+      Questo criterio è disattivato per impostazione predefinita.</translation>
 <translation id="2421677964966613267">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
       Se non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -4127,13 +4132,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se viene impostato su Disattivato, l'icona delle funzionalità sperimentali del browser viene rimossa dalla barra degli strumenti.
 
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questo criterio.</translation>
-<translation id="6793420507738858152">Se il criterio è attivato, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
-
-      Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri della richiesta.
-
-      Se il criterio è attivato o non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio è disattivato, la funzionalità non sarà disponibile.
-
-      Questo criterio aziendale è finalizzato al periodo di transizione e sarà disponibile almeno fino alla versione 91 di Chrome.</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
@@ -4172,7 +4170,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="6833988859168635883">Avvio, pagina iniziale e pagina Nuova scheda</translation>
-<translation id="6835883744948188639">Mostra un messaggio ricorrente all'utente in cui indica che è consigliato eseguire un riavvio</translation>
+<translation id="6835883744948188639">Mostra all'utente un messaggio ricorrente che indica che è consigliato eseguire un riavvio</translation>
 <translation id="683688607121170501">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle applicazioni Android, dopo avere eseguito l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
 
       Se questo criterio viene impostato su false, non sarà consentito l'accesso a un altro Account Google dall'area dei contenuti del browser in modalità non in incognito e dalle applicazioni Android.
@@ -4652,6 +4650,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7407441173422042771">Questo criterio consente di controllare la previsione di rete in <ph name="PRODUCT_NAME" />, il precaricamento DNS, le preconnessioni TCP e SSL e il prerendering delle pagine web.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, la previsione di rete viene attivata, ma gli utenti possono modificarlo.</translation>
+<translation id="7412456346709338637">Attiva accesso ai dati per le periferiche Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Consenti le connessioni di accesso remoto a questo computer</translation>
 <translation id="7417972229667085380">Percentuale di regolazione del ritardo di inattività in modalità di presentazione (obsoleta)</translation>
 <translation id="7421483919690710988">Imposta le dimensioni della cache su disco multimediale in byte</translation>
@@ -5438,6 +5437,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       "1412.24.34": aggiornamento soltanto a questa versione specifica
 
       Avviso: non è consigliabile configurare restrizioni alle versioni, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni di sicurezza fondamentali. Limitare gli aggiornamenti a uno specifico prefisso per la versione potrebbe mettere a rischio gli utenti.</translation>
+<translation id="8510545352780142790">Viene disattivato il tunneling PCIe. I dispositivi periferici Thunderbolt/USB4 supportati funzioneranno con le capacità complete.</translation>
 <translation id="8519264904050090490">URL delle eccezioni manuali per gli utenti gestiti</translation>
 <translation id="8519516251436131647">Consente di attivare le scorciatoie delle funzioni di accessibilità.
 
@@ -5475,6 +5475,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
+<translation id="8599956038998209006">Viene attivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, limitando così le capacità dei dispositivi.</translation>
 <translation id="8603454805657060638">La configurazione del criterio consente all'amministratore di modificare l'indirizzo MAC (Media Access Control) quando un dispositivo viene inserito nel dock. Quando alcuni modelli di dispositivi vengono inseriti nel dock, per impostazione predefinita l'indirizzo MAC del dock designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet.
 
       Se "DeviceDockMacAddress" viene selezionato o se il criterio non viene configurato, viene utilizzato l'indirizzo MAC del dock designato per il dispositivo.

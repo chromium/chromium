@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">사용할 수 있는 카드</translation>
 <translation id="1021753677514347426">나 또는 다른 사용자가 기기에 설치한 인증서로 인해 이 문제가 발생할 수 있습니다. 이 인증서는 네트워크를 모니터링하고 가로막는 데 사용되는 것으로 알려졌으며, Chromium에서 신뢰하지 않습니다. 학교나 회사 네트워크에서 발생하는 합법적인 모니터링도 존재합니다. 사용자가 멈출 수는 없더라도 모니터링이 이뤄지고 있다는 사실을 Chromium에서는 알립니다. 모니터링은 웹에 액세스하는 모든 브라우저 또는 애플리케이션에서 이뤄집니다.</translation>
 <translation id="1024111578869940408">어떤 공격자는 웹 주소를 알아채기 어렵게 변경하는 방법으로 다른 사이트를 모방합니다.</translation>
+<translation id="1028781062521375153">세부정보 보기</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1032854598605920125">시계 방향으로 회전</translation>
 <translation id="1036348656032585052">사용 중지</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">고품질 콘텐츠를 만들기 위해 컴퓨터에 설치된 글꼴을 사용합니다.</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">왼쪽</translation>
+<translation id="1468653229182955856"><ph name="EMBEDDED_ORIGIN" /> 코드는 <ph name="ONE_TIME_CODE" />입니다. <ph name="TOP_ORIGIN" />에서 작업을 계속하세요.</translation>
 <translation id="1472675084647422956">자세히 보기</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">사용자 정책</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />사이트의 홈페이지를 방문<ph name="END_LINK" />해 보세요.</translation>
 <translation id="1641976391427233992">다음까지 출력 지연</translation>
+<translation id="164212631332220697">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1645368109819982629">지원되지 않는 프로토콜</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -999,6 +1002,7 @@
 <translation id="4879725228911483934">화면에서 창을 열고 배치합니다.</translation>
 <translation id="4880827082731008257">기록 검색</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4889420713887366944">시크릿 창 열기 버튼, 새 시크릿 창을 열어 비공개적으로 탐색하려면 Enter 누르기</translation>
 <translation id="4892518386797173871">후면</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1967,6 +1971,7 @@
 <translation id="8742371904523228557"><ph name="ORIGIN" /> 코드는 <ph name="ONE_TIME_CODE" />입니다.</translation>
 <translation id="874918643257405732">현재 탭을 북마크에 추가</translation>
 <translation id="8751426954251315517">나중에 다시 시도해 주세요.</translation>
+<translation id="8757526089434340176">Google Pay 쿠폰 이용 가능</translation>
 <translation id="8759274551635299824">만료된 카드입니다.</translation>
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
 <translation id="8761567432415473239">Google 세이프 브라우징 결과 <ph name="SITE" />에서 최근 <ph name="BEGIN_LINK" />악성 프로그램이 발견<ph name="END_LINK" />되었습니다.</translation>

@@ -11,6 +11,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1037492556044956303">Dodano urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">część</translation>
 <translation id="1047773237499189053">Dostępna jest nowa funkcja. Aby dowiedzieć się więcej, naciśnij klawisz strzałki w górę.</translation>
+<translation id="1052916631016577720">Skanowanie elementu</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Sieć komórkowa: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4351433414020964307">Trwa ładowanie Asystenta…</translation>
 <translation id="4356930093361201197">Tryb wysokiego kontrastu</translation>
 <translation id="4371348193907997655">Ustawienia przesyłania</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, siła sygnału <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4379531060876907730">To są Twoje narzędzia rysika</translation>
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
@@ -586,6 +588,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6043212731627905357">Ten monitor nie działa z Twoim urządzeniem <ph name="DEVICE_TYPE" /> (nie jest obsługiwany).</translation>
 <translation id="6043994281159824495">Wyloguj się teraz</translation>
 <translation id="6047696787498798094">Gdy zmienisz użytkownika, udostępnianie ekranu zostanie zakończone. Chcesz kontynuować?</translation>
+<translation id="6050368268239407309">Narzędzia do prezentacji</translation>
 <translation id="6054305421211936131">Zaloguj się, używając karty elektronicznej</translation>
 <translation id="6059276912018042191">Ostatnio przeglądane karty Chrome</translation>
 <translation id="6062360702481658777">Zostaniesz automatycznie wylogowany za <ph name="LOGOUT_TIME_LEFT" />.</translation>

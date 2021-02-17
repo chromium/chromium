@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Tidak didukung di Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium dapat memeriksa sandi saat Anda login dengan Akun Google.</translation>
 <translation id="3805899903892079518">Chromium tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3946918322491238254">Anda tetap dapat melihat semua bookmark, histori, sandi, dan setelan lain di perangkat ini. Jika Anda membuat perubahan, perubahan tersebut tidak akan disinkronkan ke akun Anda.</translation>
 <translation id="4099085513035183040">Tidak didukung di Chromium Beta</translation>
 <translation id="4166206055865952171">Jadikan Chromium sebagai Browser Default</translation>
 <translation id="4555020257205549924">Saat fitur ini diaktifkan, Chromium akan menawarkan untuk menerjemahkan halaman yang ditulis dalam bahasa lain menggunakan Google Terjemahan. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat memeriksa update</translation>
 <translation id="5521125884468363740">Untuk melihat tab Chromium Anda dari perangkat lain, login dan aktifkan sinkronisasi</translation>
+<translation id="5544795779875591523">Pilih apakah akan menghapus data Chromium dari perangkat ini atau menyimpannya?</translation>
 <translation id="5573014823074921752">Tips Chromium. Untuk opsi tab lainnya, sentuh lama tombol Tampilkan Tab di toolbar, yang terdapat di bagian bawah atau atas layar.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat memeriksa sandi Anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8663480472502753423">Pastikan Chromium selalu terupdate</translation>
 <translation id="8776843108004031667">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chromium.</translation>
+<translation id="894437814105052438">Jika Anda logout, Chromium tidak akan menyinkronkan data baru apa pun ke Akun Google Anda. Data yang sebelumnya disinkronkan tetap tersimpan di akun.</translation>
 <translation id="9022552996538154597">Login ke Chromium</translation>
 <translation id="9089354809943900324">Chromium terlalu lawas</translation>
 <translation id="921174536258924340">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
+<translation id="994708389219151914">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chromium Anda akan dihapus dari perangkat ini.</translation>
 </translationbundle>

@@ -2457,7 +2457,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3742666961763734085">Ingen organisationsenhet med det namnet hittades. Försök igen.</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
-<translation id="3746127522257263495">Det finns inte stöd för att lägga till G Suite for Education-konton i Android-appar.</translation>
 <translation id="3747077776423672805">Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.</translation>
 <translation id="3748706263662799310">Rapportera ett fel</translation>
 <translation id="3752582316358263300">OK ...</translation>
@@ -5849,7 +5848,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7696063401938172191">Gör så här på din <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Informationen är dold medan du delar skärmen</translation>
 <translation id="7697598343108519171">Skanna QR-koden med kameran</translation>
-<translation id="7699968112832915395">Det gick inte att lägga till kontot</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7701869757853594372">USER-handtag</translation>
 <translation id="7701928712056789451">Dessa objekt kan vara skadliga</translation>
@@ -6931,6 +6929,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8892168913673237979">Klart!</translation>
 <translation id="8893801527741465188">Avinstallationen är slutförd</translation>
 <translation id="8893928184421379330">Det gick tyvärr inte att identifiera enheten <ph name="DEVICE_LABEL" />.</translation>
+<translation id="8894761918470382415">Dataåtkomstskydd för kringutrustning</translation>
 <translation id="8895454554629927345">Lista med bokmärken</translation>
 <translation id="8898786835233784856">Välj nästa flik</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
@@ -7236,6 +7235,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> delar ljud och en flik från Chrome.</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="947329552760389097">&amp;Inspektera element</translation>
+<translation id="949052952791086881">Administratören kräver att den här användaren loggar in när enheten är online</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
 <translation id="956500788634395331">Du är skyddad från tillägg som kan vara skadliga</translation>
 <translation id="957960681186851048">Den här webbplatsen försökte ladda ned flera filer automatiskt</translation>

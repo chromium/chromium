@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Ouvrir le lien dans <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="1139343347646843679">Une erreur s'est produite lors de la configuration de Linux. Veuillez communiquer avec votre administrateur.</translation>
+<translation id="1139923033416533844">Utilisation de la mémoire</translation>
 <translation id="1140351953533677694">Accéder à vos appareils connectés par Bluetooth et en série</translation>
 <translation id="114036956334641753">Audio et sous-titres</translation>
 <translation id="1140746652461896221">Bloquer du contenu sur n'importe quelle page que vous consultez</translation>
@@ -678,6 +679,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1734212868489994726">Bleu clair</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai prévu. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> pourrait ne pas faire de mises à jour automatiques</translation>
+<translation id="173522743738009831">À propos du bac à sable de confidentialité</translation>
 <translation id="173628468822554835">D'accord. Par défaut, les nouveaux sites que vous visitez ne vous enverront pas de notifications.</translation>
 <translation id="1736419249208073774">Explorer</translation>
 <translation id="1737968601308870607">Rapporter un bogue</translation>
@@ -1000,6 +1002,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="211144231511833662">Effacer les types</translation>
 <translation id="2111670510994270194">Nouvel onglet à droite</translation>
+<translation id="2111810003053064883">Les annonceurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2113479184312716848">Ouvrir un &amp;fichier...</translation>
 <translation id="2113921862428609753">Accès à l'information de l'autorité</translation>
@@ -1029,6 +1032,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2138398485845393913">Connexion à l'appareil « <ph name="DEVICE_NAME" /> » toujours en cours…</translation>
 <translation id="2139545522194199494">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
+<translation id="2140788884185208305">Santé de la pile</translation>
 <translation id="214169863967063661">Ouvrir les paramètres d'apparence</translation>
 <translation id="2142328300403846845">Ouvrir le lien en tant que</translation>
 <translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
@@ -1544,6 +1548,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2712173769900027643">Demander l’autorisation</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">Demande de clé de sécurité</translation>
 <translation id="2715751256863167692">Cette mise à niveau réinitialise votre Chromebook et supprime les données de l'utilisateur actuel.</translation>
 <translation id="2716986496990888774">Ce paramètre est géré par un parent.</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
@@ -2003,6 +2008,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3238192140106069382">Connexion et vérification en cours…</translation>
 <translation id="3239373508713281971">Limite de temps supprimée pour <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
+<translation id="3242905690080165035">Le bac à sable de confidentialité est toujours en cours de développement et n'est offert que dans certaines régions. Pour l'instant, les sites peuvent faire l'essai du bac à sable de confidentialité tout en continuant d'utiliser les technologies Web actuelles comme les témoins tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Continuer à désactiver le son</translation>
 <translation id="3246107497225150582">{0,plural, =1{Mettre à jour l'appareil d'ici un jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Erreur réseau</translation>
@@ -2163,6 +2169,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3428419049384081277">Vous êtes connecté!</translation>
 <translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3428800329481094896">Récupération des clés SSH du conteneur Linux en cours…</translation>
+<translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues pour le contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver plus facilement plus tard</translation>
 <translation id="3432227430032737297">Supprimer tous les éléments affichés</translation>
@@ -2459,7 +2466,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3742055079367172538">Saisie d'écran enregistrée</translation>
 <translation id="3742666961763734085">Impossible de trouver une unité organisationnelle qui porte ce nom. Veuillez réessayer.</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
-<translation id="3746127522257263495">L'ajout de comptes G Suite for Education dans les applications Android n'est pas pris en charge.</translation>
 <translation id="3747077776423672805">Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications. Ensuite, touchez l'application que vous souhaitez désinstaller (vous devrez peut-être balayer l'écran à droite ou à gauche pour trouver l'application). Enfin, touchez Désinstaller ou Désactiver.</translation>
 <translation id="3748706263662799310">Signaler un bogue</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -3146,6 +3152,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4541662893742891060">Impossible de se connecter à ce profil. Pour obtenir de l'assistance technique, veuillez communiquer avec votre fournisseur de services.</translation>
 <translation id="4541810033354695636">Réalité augmentée</translation>
 <translation id="4542520061254486227">Lire vos données sur <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Les annonceurs peuvent tirer des apprentissages auprès de milliers d'utilisateurs qui partagent un intérêt similaire, comme une foule qui assiste à un concert, et ainsi sélectionner des annonces pour cette foule, plutôt que pour une personne en particulier.</translation>
 <translation id="4543778593405494224">Gestionnaire de certificats</translation>
 <translation id="4544174279960331769">Avatar bleu par défaut</translation>
 <translation id="4545028762441890696">Pour la réactiver, acceptez les nouvelles autorisations :</translation>
@@ -3194,6 +3201,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
 <translation id="4585793705637313973">Modifier la page</translation>
 <translation id="4586275095964870617">L'adresse <ph name="URL" /> n'a pas pu être ouverte dans un navigateur secondaire. Veuillez communiquer avec votre administrateur système.</translation>
+<translation id="4587645918878093912">Aujourd'hui, les sites Web s'appuient sur de nombreuses technologies, dont des témoins tiers, pour fournir d'importants services comme la publication d'annonces pertinentes et la mesure des performances d'un site.</translation>
 <translation id="4589713469967853491">Les journaux ont été écrits dans le répertoire Téléchargements.</translation>
 <translation id="4590324241397107707">Stockage de base de données</translation>
 <translation id="4592891116925567110">Application de dessin avec stylet</translation>
@@ -4620,6 +4628,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6271348838875430303">Correction annulée</translation>
 <translation id="6272643420381259437">Une erreur (<ph name="ERROR" />) s'est produite pendant le téléchargement du plugiciel</translation>
 <translation id="6273677812470008672">Qualité</translation>
+<translation id="6275846828483490454">Le bac à sable de confidentialité est une initiative en cours visant à préserver le Web ouvert qui vous aidera à vous protéger des mécanismes de suivi.</translation>
 <translation id="6276210637549544171">Le serveur mandataire <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="6277105963844135994">Délai d'attente réseau dépassé</translation>
 <translation id="6277518330158259200">Faire une s&amp;aisie d'écran</translation>
@@ -5274,6 +5283,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7018275672629230621">Accéder à votre historique de navigation et le modifier</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7022562585984256452">Votre page d'accueil a été définie.</translation>
+<translation id="7023206482239788111">Le bac à sable de confidentialité préserve la vitalité du Web ouvert en créant de meilleurs moyens de fournir ces services, sans avoir de répercussions néfastes sur les sites, et en empêchant toute possibilité que vous soyez suivi sur le Web.</translation>
 <translation id="7025082428878635038">Les gestes vous offrent une nouvelle façon de naviguer</translation>
 <translation id="7025190659207909717">Gestion des services de données mobiles</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Tout ouvrir dans une fenêtre de &amp;navigation privée}=1{Ouvrir dans une fenêtre de &amp;navigation privée}one{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}other{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}}</translation>
@@ -5452,6 +5462,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7234010996000898150">Annulation de la restauration Linux en cours…</translation>
 <translation id="7235716375204803342">Récupération des activités en cours…</translation>
 <translation id="7235737137505019098">Votre clé de sécurité n'a pas suffisamment d'espace libre pour qu'on y enregistre des comptes supplémentaires.</translation>
+<translation id="7238640585329759787">Lorsque cette fonctionnalité est activée, les sites peuvent utiliser les techniques de préservation de la confidentialité présentées ici pour fournir leur contenu et leurs services. Celles-ci comprennent des solutions de rechange au suivi intersites. D'autres essais pourront être ajoutés au fil du temps.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7240339475467890413">Connexion au nouveau point d'accès sans fil?</translation>
 <translation id="7241389281993241388">Veuillez vous connecter à <ph name="TOKEN_NAME" /> pour importer le certificat de client.</translation>
@@ -5851,7 +5862,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7696063401938172191">Sur votre « <ph name="PHONE_NAME" /> » :</translation>
 <translation id="7697166915480294040">Les renseignements sont masqués quand vous partagez votre écran</translation>
 <translation id="7697598343108519171">Utiliser l'appareil photo pour numériser le code QR</translation>
-<translation id="7699968112832915395">Impossible d'ajouter le compte</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7701869757853594372">Descripteurs de l'UTILISATEUR</translation>
 <translation id="7701928712056789451">Ces éléments pourraient être dangereux</translation>
@@ -6112,6 +6122,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7968833647796919681">Activer la collecte de données de performances</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
 <translation id="7969046989155602842">Commande</translation>
+<translation id="7970618607181090249">Écran tactile détecté</translation>
 <translation id="7970673414865679092">Renseignements sur la connexion Ethernet</translation>
 <translation id="7970882136539140748">Impossible d'enregistrer la carte pour le moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
@@ -6549,6 +6560,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8480082892550707549">Même si vous avez déjà téléchargé des fichiers de ce site, il se peut que ce dernier soit temporairement dangereux (suite à du piratage). Réessayez de télécharger ce fichier plus tard.</translation>
 <translation id="8480869669560681089">Appareil inconnu de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmer l'autorisation USB</translation>
+<translation id="8481980314595922412">Les fonctionnalités d'essai sont activées</translation>
 <translation id="8487678622945914333">Zoom avant</translation>
 <translation id="8489156414266187072">Les suggestions personnelles s'affichent seulement sur votre compte</translation>
 <translation id="8490896350101740396">Les applications de kiosque suivantes « <ph name="UPDATED_APPS" /> » ont été mises à jour. Veuillez redémarrer l'appareil pour terminer le processus de mise à jour.</translation>
@@ -7059,6 +7071,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9031549947500880805">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Votre sauvegarde inclut les données des applications.</translation>
 <translation id="9033765790910064284">Continuer quand même</translation>
 <translation id="9033857511263905942">C&amp;oller</translation>
+<translation id="903386633044383289">Connectez des appareils</translation>
 <translation id="9037818663270399707">Votre connexion n'est pas privée pour tout le trafic réseau</translation>
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Il vous reste une tentative.}one{Il vous reste # tentative.}other{Il vous reste # tentatives.}}</translation>
@@ -7191,6 +7204,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9180281769944411366">Ce processus peut prendre quelques minutes. Démarrage du conteneur Linux en cours…</translation>
 <translation id="9180380851667544951">Le site peut partager votre écran</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Application}one{# application}other{# applications}}</translation>
+<translation id="9185818139207739329">Activer le mode essai du bac à sable de confidentialité</translation>
 <translation id="9186963452600581158">Se connecter avec un compte Google pour enfant</translation>
 <translation id="9188732951356337132">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Utiliser votre téléphone Android comme clé de sécurité</translation>

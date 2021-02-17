@@ -11,6 +11,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1037492556044956303">Bylo přidáno zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">částečný</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
+<translation id="1052916631016577720">Hledání položek</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilní telefon: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4351433414020964307">Asistent se načítá...</translation>
 <translation id="4356930093361201197">režim vysokého kontrastu</translation>
 <translation id="4371348193907997655">Nastavení odesílání</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4379531060876907730">Toto jsou nástroje pro dotykové pero</translation>
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
@@ -586,6 +588,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6043212731627905357">Tento monitor si se zařízením <ph name="DEVICE_TYPE" /> nerozumí (monitor není podporován).</translation>
 <translation id="6043994281159824495">Odhlásit se</translation>
 <translation id="6047696787498798094">Pokud přepnete na jiného uživatele, sdílení obrazovky bude ukončeno. Chcete pokračovat?</translation>
+<translation id="6050368268239407309">Nástroje pro prezentace</translation>
 <translation id="6054305421211936131">Přihlásit se pomocí chytré karty</translation>
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
 <translation id="6062360702481658777">Za <ph name="LOGOUT_TIME_LEFT" /> budete automaticky odhlášeni.</translation>

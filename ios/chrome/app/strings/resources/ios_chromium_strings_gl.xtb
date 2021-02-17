@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Non compatible en Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="3805899903892079518">Chromium non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
+<translation id="3946918322491238254">Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa conta.</translation>
 <translation id="4099085513035183040">Non compatible na versión beta de Chromium</translation>
 <translation id="4166206055865952171">Fai que Chromium sexa o teu navegador predeterminado</translation>
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5308226104666789935">Chromium non puido buscar actualizacións</translation>
 <translation id="5521125884468363740">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión e activa a sincronización</translation>
+<translation id="5544795779875591523">Queres borrar ou conservar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="5573014823074921752">Consello sobre Chromium: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
 <translation id="5700709190537129682">Chromium non puido comprobar os teus contrasinais</translation>
 <translation id="5777187867430702742">Páxina de Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
+<translation id="894437814105052438">Cando peches sesión, Chromium non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
 <translation id="921174536258924340">Chromium non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
+<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo.</translation>
 </translationbundle>

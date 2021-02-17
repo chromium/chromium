@@ -412,6 +412,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড মোছা হয়েছে</translation>
 <translation id="3856096718352044181">এটি সঠিক প্রদানকারী কিনা যাচাই করুন অথবা পরে আবার চেষ্টা করুন</translation>
 <translation id="3861633093716975811">জনপ্রিয় ভিডিও</translation>
+<translation id="386944881686624613">টেক্সটের লিঙ্ক তৈরি করা যাচ্ছে না। পৃষ্ঠার লিঙ্ক শেয়ার করুন।</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3894427358181296146">ফোল্ডার যোগ করুন</translation>
 <translation id="3895926599014793903">ফোর্স জুম চালু করুন</translation>
@@ -653,7 +654,6 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="55737423895878184">লোকেশন এবং বিজ্ঞপ্তিগুলি অনুমোদিত</translation>
 <translation id="5578795271662203820">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" /> খুঁজুন</translation>
 <translation id="5581519193887989363"><ph name="BEGIN_LINK1" />সেটিংসে<ph name="END_LINK1" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
-<translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5599455543593328020">ছদ্মবেশী মোড</translation>
 <translation id="5599941490345670218">Google Assistant আপনার হয়ে সমস্ত ওয়েবসাইটে বিভিন্ন অ্যাকশন সম্পূর্ণ করতে পারে</translation>
 <translation id="5606787249466187650">গোপনীয়তা স্যান্ডবক্সের ব্যাপারে আরও তথ্য জানুন</translation>
@@ -661,6 +661,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="5620928963363755975">আরও বিকল্প বোতামের ডাউনলোড বিকল্প থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে পান</translation>
 <translation id="562289928968387744">প্রতিক্রিয়া ম্যানেজ করুন</translation>
 <translation id="5626134646977739690">নাম:</translation>
+<translation id="5628604359369369630">পড়া হয়নি - অফলাইনে উপলভ্য</translation>
 <translation id="5639724618331995626">সমস্ত সাইটকে অনুমতি দিন</translation>
 <translation id="5648166631817621825">গত ৭ দিন</translation>
 <translation id="5655963694829536461">আপনার ডাউনলোডগুলি খুঁজুন</translation>
@@ -906,6 +907,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="718926126787620637">সম্পূর্ণ খোলা বুকমার্ক ফোল্ডারের তালিকা</translation>
 <translation id="7189372733857464326">Google Play পরিষেবাগুলির আপডেট শেষ হওয়ার জন্য অপেক্ষা করছে</translation>
 <translation id="7191430249889272776">পটভূমিতে ট্যাব খোলা হয়েছে।</translation>
+<translation id="72180057821664864">টেক্সটের লিঙ্ক তৈরি করা যাচ্ছে না</translation>
 <translation id="7233236755231902816">ওয়েবের কন্টেন্ট নিজের ভাষায় পড়তে, Chrome-এর লেটেস্ট ভার্সন ইনস্টল করুন</translation>
 <translation id="7248069434667874558">Chrome-এ <ph name="TARGET_DEVICE_NAME" /> সিঙ্ক করার ফিচার চালু করে রেখেছেন কিনা দেখে নিন।</translation>
 <translation id="7274013316676448362">অবরুদ্ধ সাইট</translation>
@@ -1004,6 +1006,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="7857691613771368249">ফাইল সেভ করতে হলে অনুমতি নিতে বলুন</translation>
 <translation id="7875915731392087153">ইমেল আইডি তৈরি করুন</translation>
 <translation id="7876243839304621966">সকল সরান</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{আপনার কাছে <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />টি পৃষ্ঠা আছে যা এখনও পড়েননি}one{আপনার কাছে <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />টি পৃষ্ঠা আছে যা এখনও পড়েননি}other{আপনার কাছে <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />টি পৃষ্ঠা আছে যা এখনও পড়েননি}}</translation>
 <translation id="7882131421121961860">কোনো ইতিহাস পাওয়া যায়নি</translation>
 <translation id="7886917304091689118">Chrome এ চালানো হচ্ছে</translation>
 <translation id="789763218334337857">Chrome কীভাবে ব্যবহার করবেন</translation>
@@ -1040,6 +1043,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="806745655614357130">আমার ডেটা আলাদা রাখুন</translation>
 <translation id="8073388330009372546">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
+<translation id="8078096376109663956">শুধুমাত্র টেক্সট শেয়ার করুন</translation>
 <translation id="8084114998886531721">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="808747664143081553">ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="8103578431304235997">ছদ্মবেশী ট্যাব</translation>
@@ -1142,6 +1146,7 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="8812260976093120287">কিছু ওয়েবসাইটে আপনি উপরের সমর্থিত পেমেন্ট অ্যাপ্লিকেশান দিয়ে অর্থপ্রদান করতে পারেন।</translation>
 <translation id="881688628773363275">ট্যাব কন্টেন্ট প্রিভিউ করার বিকল্প উপলভ্য নেই।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8827407626219585697">টেক্সটের লিঙ্ক সহ</translation>
 <translation id="883806473910249246">কন্টেন্ট ডাউনলোড করার সময় একটি ত্রুটি ঘটেছে৷</translation>
 <translation id="8840953339110955557">এই পৃষ্ঠাটি হয়ত অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ট্যাব</translation>

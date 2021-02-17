@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Nije podržano na Chromium Canaryju</translation>
 <translation id="3639997914391704523">Chromium može provjeravati vaše lozinke kada se prijavljujete pomoću Google računa.</translation>
 <translation id="3805899903892079518">Chromium nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
+<translation id="3946918322491238254">I dalje ćete moći pregledati sve oznake, historiju, lozinke i druge postavke na ovom uređaju. Ako nešto promijenite, te promjene se neće sinhronizirati s vašim računom.</translation>
 <translation id="4099085513035183040">Nije podržano u Beta verziji Chromiuma</translation>
 <translation id="4166206055865952171">Postavite Chromium kao zadani preglednik</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će ponuditi prevođenje stranica koje su napisane na drugim jezicima, pomoću Google Prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
 <translation id="5521125884468363740">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se i uključite sinhronizaciju</translation>
+<translation id="5544795779875591523">Odaberite želite li obrisati podatke Chromiuma s ovog uređaja ili ih želite zadržati?</translation>
 <translation id="5573014823074921752">Savjet za Chromium. Za više opcija za kartice dodirnite i zadržite dugme Prikaži kartice na alatnoj traci, na dnu ili na vrhu ekrana.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
 <translation id="5777187867430702742">Stranica Chromiuma</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" /> Autori Chromiuma. Sva prava zadržana.</translation>
 <translation id="8663480472502753423">Redovno ažurirajte Chromium</translation>
 <translation id="8776843108004031667">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromiuma.</translation>
+<translation id="894437814105052438">Kada se odjavite Chromium neće sinhronizirati nove podatke s vašim Google računom. Prethodno sinhronizirani podaci ostaju na računu.</translation>
 <translation id="9022552996538154597">Prijavite se u Chromium</translation>
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="921174536258924340">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
+<translation id="994708389219151914">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromiuma izbrisati s ovog uređaja.</translation>
 </translationbundle>

@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
 <translation id="3639997914391704523">Chromium 可在您使用 Google 帳戶登入時檢查密碼。</translation>
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
+<translation id="3946918322491238254">您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
 <translation id="4166206055865952171">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
+<translation id="5544795779875591523">請選擇要從此裝置上清除 Chromium 資料，還是要保留資料？</translation>
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新更新</translation>
 <translation id="8776843108004031667">此帳戶和所有未儲存的資料將從 Chromium 中移除。</translation>
+<translation id="894437814105052438">登出時，Chromium 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="921174536258924340">Chromium 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chromium 資料將會從此裝置上清除。</translation>
 </translationbundle>

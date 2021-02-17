@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Ez da bateragarria Chromium Canary-rekin</translation>
 <translation id="3639997914391704523">Saioa Google-ko kontu batekin hasten baduzu, Chromium-ek pasahitzak egiazta ditzake.</translation>
 <translation id="3805899903892079518">Chromium-ek ez du argazki eta bideoetarako sarbiderik. Gaitu sarbidea iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
+<translation id="3946918322491238254">Gailuan dituzu oraindik laster-marka, historia, pasahitz eta bestelako ezarpen guztiak. Aldaketarik eginez gero, ez dira sinkronizatuko kontuarekin.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
 <translation id="4166206055865952171">Bihurtu Chromium zure arakatzaile lehenetsi</translation>
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="5521125884468363740">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
+<translation id="5544795779875591523">Erabaki gailu honetatik Chromium-eko datuak garbitu nahi dituzun ala ez</translation>
 <translation id="5573014823074921752">Chromium-i buruzko aholkua: fitxetako aukera gehiago ikusteko, eduki sakatuta tresna-barrako Erakutsi fitxak botoia. Pantailaren goiko edo beheko aldean aurkituko duzu.</translation>
 <translation id="5700709190537129682">Chromium-ek ezin ditu egiaztatu pasahitzak</translation>
 <translation id="5777187867430702742">Chromium-eko orri bat</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8663480472502753423">Mantendu Chromium eguneratuta</translation>
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>
+<translation id="894437814105052438">Saioa amaitzen duzunean, Chromium-ek ez du datu berririk sinkronizatuko Google-ko kontuarekin. Lehendik sinkronizatuta dauden datuak kontuan geratuko dira.</translation>
 <translation id="9022552996538154597">Hasi saioa Chromium-en</translation>
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="921174536258924340">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium egileak</translation>
+<translation id="994708389219151914">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chromium-eko datuak garbitu egingo dira gailu honetatik.</translation>
 </translationbundle>

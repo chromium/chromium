@@ -412,6 +412,7 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ڈاؤن لوڈز کو حذف کر دیا گیا</translation>
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3861633093716975811">مقبول ویڈیوز</translation>
+<translation id="386944881686624613">ٹیکسٹ کا لنک تخلیق نہیں کیا جا سکتا۔ صفحہ کے لنک کا اشتراک کریں۔</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
 <translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
@@ -651,7 +652,6 @@
 <translation id="55737423895878184">مقام اور اطلاعات کی اجازت ہے</translation>
 <translation id="5578795271662203820">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> تلاش کریں</translation>
 <translation id="5581519193887989363">آپ <ph name="BEGIN_LINK1" />ترتیبات<ph name="END_LINK1" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
-<translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
 <translation id="5599455543593328020">پوشیدگی وضع</translation>
 <translation id="5599941490345670218">‏Google اسسٹنٹ آپ کیلئے ویب سائٹس پر کاروائیاں مکمل کر سکتی ہے</translation>
 <translation id="5606787249466187650">رازداری سینڈ باکس دریافت کریں</translation>
@@ -659,6 +659,7 @@
 <translation id="5620928963363755975">مزید اختیارات بٹن سے اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
 <translation id="562289928968387744">ردعمل کا نظم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
+<translation id="5628604359369369630">بغیر پڑھا ہوا - آف لائن دستیاب ہے</translation>
 <translation id="5639724618331995626">سبھی سائٹس کو اجازت دیں</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5655963694829536461">اپنے ڈاؤن لوڈز تلاش کریں</translation>
@@ -904,6 +905,7 @@
 <translation id="718926126787620637">ان بُک مارک فولڈرز کی فہرست جو مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="7189372733857464326">‏Google Play سروسز کی جانب سے اپ ڈیٹ مکمل کرنے کا انتظار ہے</translation>
 <translation id="7191430249889272776">ٹیب پس منظر میں کھلا ہے۔</translation>
+<translation id="72180057821664864">ٹیکسٹ کا لنک تخلیق نہیں کیا جا سکتا</translation>
 <translation id="7233236755231902816">‏اپنی زبان میں ویب کو دیکھنے کے لیے، Chrome کا تازہ ترین ورژن حاصل کریں</translation>
 <translation id="7248069434667874558">‏یہ یقینی بنائیں کہ Chrome پر <ph name="TARGET_DEVICE_NAME" /> کی مطابقت پذیری آن ہے</translation>
 <translation id="7274013316676448362">مسدود سائٹ</translation>
@@ -1002,6 +1004,7 @@
 <translation id="7857691613771368249">پوچھیں کہ فائلز کب محفوظ کرنی ہیں</translation>
 <translation id="7875915731392087153">ای میل تخلیق کریں</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> بغیر پڑھا ہوا صفحہ ہے}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> بغیر پڑھے ہوئے صفحات ہیں}}</translation>
 <translation id="7882131421121961860">کوئی سرگزشت نہیں ملی</translation>
 <translation id="7886917304091689118">‏Chrome میں چل رہا ہے</translation>
 <translation id="789763218334337857">‏Chrome استعمال کرنے کا طریقہ</translation>
@@ -1038,6 +1041,7 @@
 <translation id="806745655614357130">میرا ڈیٹا علیحدہ رکھیں</translation>
 <translation id="8073388330009372546">تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
+<translation id="8078096376109663956">صرف ٹیکسٹ کا اشتراک کریں</translation>
 <translation id="8084114998886531721">محفوظ کیا گیا پاس ورڈ</translation>
 <translation id="808747664143081553">آلے سے منسلک ہو گیا</translation>
 <translation id="8103578431304235997">پوشیدگی ٹیب</translation>
@@ -1140,6 +1144,7 @@
 <translation id="8812260976093120287">کچھ ویب سائٹس پر، آپ اپنے آلہ پر اوپر موجود تعاون یافتہ ادائیگی ایپس کے ساتھ ادائیگی کر سکتے ہیں۔</translation>
 <translation id="881688628773363275">پیش منظر کے ٹیب کا مواد قابل ملاحظہ نہیں ہے۔</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
+<translation id="8827407626219585697">لنک کو ٹیکسٹ میں شامل کریں</translation>
 <translation id="883806473910249246">مواد ڈاؤن لوڈ کرتے وقت ایک خرابی پیش آ گئی۔</translation>
 <translation id="8840953339110955557">یہ صفحہ آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />، ٹیب</translation>

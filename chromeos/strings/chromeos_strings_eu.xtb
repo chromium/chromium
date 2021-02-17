@@ -107,6 +107,7 @@
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
 <translation id="3712633734921637892">PUZaren abiadura mugatuta dago une honetan, bateria aurrezteko edo tenperatura jaisteko</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> iritzi)</translation>
 <translation id="3748026146096797577">Konektatu gabe</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
+<translation id="4155551848414053977">Ziurtatu eskanerra piztuta dagoela eta sarearen edo konexio zuzenaren bidez erabilgarri dagoela</translation>
 <translation id="4170700058716978431">EZ DA GAINDITU</translation>
 <translation id="4176463684765177261">Desgaituta</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
@@ -237,7 +239,9 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6189418609903030344">Bateria erabili ahala, ahalmena galtzen doa</translation>
 <translation id="6191293864534840972">Gaizki eratuta daude izenen zerbitzariak</translation>
+<translation id="6223752125779001553">Ez dago eskanerrik erabilgarri</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> neurtzeko proba bertan behera utzi da</translation>
 <translation id="6325525973963619867">Huts egin du</translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
 <translation id="641081527798843608">Gaiaren bat-etortzea</translation>

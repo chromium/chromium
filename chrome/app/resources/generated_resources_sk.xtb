@@ -2465,7 +2465,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3742055079367172538">Vytvorila sa snímka obrazovky</translation>
 <translation id="3742666961763734085">Nepodarilo sa nájsť organizačnú jednotku s daným názvom. Skúste to znova.</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
-<translation id="3746127522257263495">Pridanie účtu G Suite for Education do aplikácií pre Android nie je podporované.</translation>
 <translation id="3747077776423672805">Ak chcete odstrániť aplikácie, prejdite do časti Nastavenia &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Aplikácie alebo Správca aplikácií. Potom klepnite na aplikáciu, ktorú chcete odinštalovať (možno budete musieť aplikáciu nájsť potiahnutím prstom doľava alebo doprava). Potom klepnite na možnosť Odinštalovať alebo Deaktivovať.</translation>
 <translation id="3748706263662799310">Nahlásiť chybu</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -5862,7 +5861,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7696063401938172191">V telefóne <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Podrobnosti sú počas zdieľania obrazovky skryté</translation>
 <translation id="7697598343108519171">Naskenovať QR kód fotoaparátom</translation>
-<translation id="7699968112832915395">Účet sa nedá pridať</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7701869757853594372">POUŽÍVATEĽ – popisovače</translation>
 <translation id="7701928712056789451">Tieto položky môžu byť nebezpečné</translation>
@@ -6947,6 +6945,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8892168913673237979">Všetko je nastavené!</translation>
 <translation id="8893801527741465188">Odinštalovanie bolo dokončené</translation>
 <translation id="8893928184421379330">Je nám ľúto, ale zariadenie <ph name="DEVICE_LABEL" /> sa nepodarilo rozpoznať.</translation>
+<translation id="8894761918470382415">Ochrana prístupu k údajom pre periférie</translation>
 <translation id="8895454554629927345">Zoznam záložiek</translation>
 <translation id="8898786835233784856">Vybrať ďalšiu kartu</translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>
@@ -7254,6 +7253,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="942532530371314860"><ph name="APP_NAME" /> zdieľa kartu a zvuk Chromu.</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="947329552760389097">&amp;Skontrolovať prvky</translation>
+<translation id="949052952791086881">Váš správca vyžaduje, aby sa tento používateľ prihlásil, keď je zariadenie online</translation>
 <translation id="951991426597076286">Odmietnuť</translation>
 <translation id="956500788634395331">Je aktivovaná ochrana pred potenciálne škodlivými rozšíreniami</translation>
 <translation id="957960681186851048">Tento web sa pokúsil automaticky stiahnuť viacero súborov</translation>

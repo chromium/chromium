@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
+<translation id="3946918322491238254">Továbbra is láthatja könyvjelzőit, előzményeit, jelszavait és más beállításait ezen az eszközön. A módosításokat azonban a böngésző nem szinkronizálja az Ön fiókjába.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4166206055865952171">A Chromium beállítása alapértelmezett böngészőként</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5308226104666789935">A Chromium nem tud frissítéseket keresni</translation>
 <translation id="5521125884468363740">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
+<translation id="5544795779875591523">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket.</translation>
 <translation id="5573014823074921752">Tipp a Chromium használatához. A további lapbeállításokhoz érintse meg és tartsa lenyomva az eszköztárban lévő Lapok megjelenítése gombot, amely a képernyő alsó vagy felső részén található.</translation>
 <translation id="5700709190537129682">A Chromium nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="5777187867430702742">A Chromium oldala</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8663480472502753423">Chromium böngészője legyen mindig naprakész</translation>
 <translation id="8776843108004031667">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chromiumból.</translation>
+<translation id="894437814105052438">Ha kijelentkezik, a Chromium nem fogja szinkronizálni az új adatokat az Ön Google-fiókjába. A korábban szinkronizált adatok megmaradnak a fiókban.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>
+<translation id="994708389219151914">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
 </translationbundle>

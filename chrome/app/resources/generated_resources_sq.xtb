@@ -2461,7 +2461,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3742055079367172538">Pamja e ekranit u mor</translation>
 <translation id="3742666961763734085">Nuk mund të gjendej njësi organizative me atë emër. Provo sërish.</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
-<translation id="3746127522257263495">Shtimi i "G Suite për edukimin" në aplikacionet Android nuk mbështetet.</translation>
 <translation id="3747077776423672805">Për të hequr aplikacionet, shko te "Cilësimet" &gt; "Dyqani i Google Play" &gt; "Menaxho preferencat e Android" &gt; "Aplikacionet" ose "Menaxheri i aplikacioneve". Më pas trokit tek aplikacioni që dëshiron të çinstalosh (mund të jetë e nevojshme që të rrëshqasësh djathtas ose majtas për të gjetur aplikacionin). Më pas trokit "Çinstalo" ose "Çaktivizo".</translation>
 <translation id="3748706263662799310">Raporto një defekt në kod</translation>
 <translation id="3752582316358263300">Në rregull...</translation>
@@ -3148,7 +3147,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4541662893742891060">Nuk mund të lidhet me këtë profil. Për mbështetje teknike, kontakto me operatorin tënd celular.</translation>
 <translation id="4541810033354695636">realiteti i zgjeruar</translation>
 <translation id="4542520061254486227">Lexo të dhënat e tua në <ph name="WEBSITE_1" /> dhe <ph name="WEBSITE_2" /></translation>
-<translation id="454331522350252598">Reklamuesit mund të mësojnë kur mijëra përdorues ndajnë një interes të ngjashëm, si një turmë në koncert, dhe të zgjedhin reklama për një turmë, në vend të një person individuale.</translation>
+<translation id="454331522350252598">Reklamuesit mund të mësojnë kur mijëra përdorues ndajnë një interes të ngjashëm, si një turmë në koncert, dhe të zgjedhin reklama për një turmë, në vend të një personi të vetëm.</translation>
 <translation id="4543778593405494224">Menaxheri i certifikatave</translation>
 <translation id="4544174279960331769">Avatari i parazgjedhur blu</translation>
 <translation id="4545028762441890696">Për ta aktivizuar sërish, prano lejet e reja:</translation>
@@ -5458,7 +5457,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7234010996000898150">Po anulohet restaurimi i Linux</translation>
 <translation id="7235716375204803342">Po merr aktivitetet...</translation>
 <translation id="7235737137505019098">Çelësi yt i sigurisë nuk ka hapësirë të mjaftueshme për llogari të mëtejshme.</translation>
-<translation id="7238640585329759787">Kur është e aktivizuar, sajtet mund të përdorin teknikat e ruajtjes së privatësisë që shfaqen këtu për të ofruar përmbajtjen dhe shërbimet e tyre. Këto përfshijnë alternative për gjurmimin ndërmjet sajteve. Mund të shtohen prova të tjera me kalimin e kohës.</translation>
+<translation id="7238640585329759787">Kur është e aktivizuar, sajtet mund të përdorin teknikat e ruajtjes së privatësisë që shfaqen këtu për të ofruar përmbajtjen dhe shërbimet e tyre. Këto përfshijnë alternativa për gjurmimin ndërmjet sajteve. Mund të shtohen prova të tjera me kalimin e kohës.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detaje</translation>
 <translation id="7240339475467890413">Do të lidhesh me një zonë të re të qasjes në internet?</translation>
 <translation id="7241389281993241388">Identifikohu te <ph name="TOKEN_NAME" /> për të importuar certifikatën e klientit.</translation>
@@ -5858,7 +5857,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7696063401938172191">Në telefonin tënd "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Detajet janë të fshehura ndërkohë që ndan ekranin tënd</translation>
 <translation id="7697598343108519171">Përdor kamerën për të skanuar kodin QR</translation>
-<translation id="7699968112832915395">Llogaria nuk mund të shtohet</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7701869757853594372">Profilet e PËRDORUESIT</translation>
 <translation id="7701928712056789451">Këta artikuj mund të jenë të rrezikshëm</translation>

@@ -4084,13 +4084,6 @@
       如果此政策已停用，系统会从工具栏中移除浏览器实验性功能图标。
 
       无论此政策是已启用还是已停用，chrome://flags 和任何其他可用于开启和关闭浏览器功能的方法都能正常起作用。</translation>
-<translation id="6793420507738858152">启用后，<ph name="PRODUCT_NAME" /> 功能会发送精细的请求标头，在其中提供关于用户浏览器和环境的信息。
-
-      这是一项附加功能，但如果某些网站限制了请求中可包含的字符，新标头可能会导致这些网站无法正常响应。
-
-      如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 功能会处于启用状态。如果此政策已停用，该功能将不可用。
-
-      这项企业政策只是短期内（至少会持续到 Chrome 91）可用的适应性措施。</translation>
 <translation id="6795485990775913659">仅允许在没有 PIN 码的情况下打印</translation>
 <translation id="6800181452282128474">不向 Quirks Server 发送查询</translation>
 <translation id="6810445994095397827">在这些网站上阻止 JavaScript</translation>

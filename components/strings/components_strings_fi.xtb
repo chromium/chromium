@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Hyväksytyt kortit</translation>
 <translation id="1021753677514347426">Tämän virheen syynä on varmenne, jonka sinä tai joku muu asensi laitteellesi. Varmennetta on aiemmin käytetty verkkojen valvontaan ja kaappaamiseen, eikä Chromium luota siihen. Valvomiselle voi olla oikea syy esimerkiksi oppilaitoksen tai yrityksen verkossa, mutta Chromium haluaa sinun tietävän valvonnasta, vaikket voi lopettaa sitä. Valvonta voi tapahtua missä tahansa selaimessa tai sovelluksessa, jolla on pääsy verkkoon.</translation>
 <translation id="1024111578869940408">Hyökkääjät jäljittelevät joskus sivustoja tekemällä verkko-osoitteeseen vaikeasti havaittavia muutoksia.</translation>
+<translation id="1028781062521375153">Katso tiedot</translation>
 <translation id="1030706264415084469"><ph name="URL" /> haluaa tallentaa suuria tietomääriä pysyvästi laitteellesi.</translation>
 <translation id="1032854598605920125">Käännä myötäpäivään</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
@@ -146,6 +147,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1462951478840426066">käyttää tietokoneesi fontteja, jotta voit luoda tasokasta sisältöä</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
+<translation id="1468653229182955856">Voit jatkaa osoitteeseen <ph name="TOP_ORIGIN" /> koodilla <ph name="ONE_TIME_CODE" /> (<ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="1472675084647422956">Näytä enemmän</translation>
 <translation id="1473183651233018052">JIS B10 (32 mm x 45 mm)</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1640180200866533862">Käyttäjäkäytännöt</translation>
 <translation id="1640244768702815859">Kokeile <ph name="BEGIN_LINK" />siirtyä sivuston etusivulle<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Viivytä tulostusta kunnes ajankohta on</translation>
+<translation id="164212631332220697">Käytä <ph name="CARD_DETAIL" /> ‑maksutapaa kassalla.</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1645368109819982629">Protokollaa ei tueta</translation>
 <translation id="1652415888492971589">JIS B8 (64 mm x 91 mm)</translation>
@@ -1011,6 +1014,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4879725228911483934">Avaa ikkunat ja sijoittele ne näytöille</translation>
 <translation id="4880827082731008257">Haku historiasta</translation>
 <translation id="4881695831933465202">Avaa</translation>
+<translation id="4885256590493466218">Käytä <ph name="CARD_DETAIL" /> ‑maksutapaa kassalla.</translation>
 <translation id="4889420713887366944">Avaa incognito-ikkuna ‑painike, paina Enter avataksesi uuden incognito-ikkunan, niin voit selata yksityisesti</translation>
 <translation id="4892518386797173871">Takaosa</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1981,6 +1985,7 @@ Lisätietoja:
 <translation id="8742371904523228557">Koodisi on <ph name="ONE_TIME_CODE" /> (<ph name="ORIGIN" />)</translation>
 <translation id="874918643257405732">Aseta tämä välilehti kirjanmerkiksi</translation>
 <translation id="8751426954251315517">Yritä seuraavalla kerralla uudelleen</translation>
+<translation id="8757526089434340176">Google Pay ‑tarjous saatavilla</translation>
 <translation id="8759274551635299824">Tämä kortti on vanhentunut.</translation>
 <translation id="87601671197631245">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat, viestit tai credit-kortit), kun ne lähetetään sivustolle.</translation>
 <translation id="8761567432415473239">Google-selaussuoja <ph name="BEGIN_LINK" />löysi hiljattain haitallisia ohjelmia<ph name="END_LINK" /> sivustolta <ph name="SITE" />.</translation>

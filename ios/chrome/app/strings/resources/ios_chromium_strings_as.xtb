@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium Canaryত সমৰ্থিত নহয়</translation>
 <translation id="3639997914391704523">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰিলে Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="3805899903892079518">আপোনাৰ ফট’ আৰু ভিডিঅ’সমূহত Chromiumৰ এক্সেছ নাই। iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
+<translation id="3946918322491238254">আপুনি এই ডিভাইচটোত থকা আপোনাৰ আটাইবোৰ বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিং তথাপিও চাব পাৰে। যদি আপুনি কোনো সালসলনি কৰে, সেয়া আপোনাৰ একাউণ্টত ছিংক কৰা নহ’ব।</translation>
 <translation id="4099085513035183040">Chromium বিটাত সমৰ্থিত নহয়</translation>
 <translation id="4166206055865952171">Chromiumক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰক</translation>
 <translation id="4555020257205549924">যেতিয়া এই সুবিধাটো অন কৰি ৰখা হয় তেতিয়া Chromiumএ অন্য ভাষাত থকা পৃষ্ঠা Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ সুবিধা দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="5308226104666789935">Chromiumএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="5521125884468363740">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছাইন ইন কৰক আৰু ছিংক অন কৰক</translation>
+<translation id="5544795779875591523">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromiumৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰিবনে?</translation>
 <translation id="5573014823074921752">Chromium ব্যৱহাৰৰ কিটিপ। টেবৰ অধিক বিকল্প পাবলৈ আপোনাৰ স্ক্রীণৰ একেবাৰে ওপৰত অথবা তলত থকা টুলবাৰৰ টেব দেখুৱাওক বুটামটো স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="5700709190537129682">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="5777187867430702742">Chromium পৃষ্ঠা</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">স্বত্ত্বাধিকাৰ <ph name="YEAR" /> The Chromium Authors. সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="8663480472502753423">Chromium আপ টু ডে’ট কৰি ৰাখক</translation>
 <translation id="8776843108004031667">এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা Chromiumৰ পৰা আঁতৰোৱা হ’ব।</translation>
+<translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
 <translation id="921174536258924340">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">আপোনাৰ একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, গতিকে আপোনাৰ Chromiumৰ ডেটাখিনি এই ডিভাইচটোৰ পৰা মচা হ’ব।</translation>
 </translationbundle>

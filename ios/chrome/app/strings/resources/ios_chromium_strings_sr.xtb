@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Није подржано у верзији Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="3805899903892079518">Chromium не може да приступа сликама или видео снимцима. Омогућите приступ у iOS Settings (Подешавања iOS-а) &gt; Privacy (Приватност) &gt; Photos (Слике).</translation>
+<translation id="3946918322491238254">И даље можете да видите све обележиваче, историју, лозинке и друга подешавања на овом уређају. Ако унесете промене, оне се неће синхронизовати са налогом.</translation>
 <translation id="4099085513035183040">Није подржано у верзији Chromium бета</translation>
 <translation id="4166206055865952171">Поставите Chromium за подразумевани прегледач</translation>
 <translation id="4555020257205549924">Када је ова функција укључена, Chromium ће нудити да преводи странице написане на другим језицима помоћу Google преводиоца. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да тражи ажурирања</translation>
 <translation id="5521125884468363740">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се и укључите синхронизацију</translation>
+<translation id="5544795779875591523">Желите да одаберете да ли ћете обрисати Chromium податке са овог уређаја или их задржати?</translation>
 <translation id="5573014823074921752">Савет за Chromium. Ако желите више опција за картице, додирните и задржите дугме Прикажи картице на траци с алаткама, која се налази у дну или врху екрана.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="5777187867430702742">Chromium страница</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Ауторска права <ph name="YEAR" />. Аутори Chromium-а. Сва права задржана.</translation>
 <translation id="8663480472502753423">Редовно ажурирају Chromium</translation>
 <translation id="8776843108004031667">Овај налог и сви несачувани подаци уклониће се из Chromium-а.</translation>
+<translation id="894437814105052438">Када се одјавите, Chromium не синхронизује никакве нове податке са Google налогом. Претходно синхронизовани подаци остају на налогу.</translation>
 <translation id="9022552996538154597">Пријављивање на Chromium</translation>
 <translation id="9089354809943900324">Chromium је застарео</translation>
 <translation id="921174536258924340">Chromium није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">Налогом управља <ph name="HOSTED_DOMAIN" />, па ће Chromium подаци бити обрисани са овог уређаја.</translation>
 </translationbundle>

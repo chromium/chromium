@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">‏אין תמיכה ב-Chromium Canary</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
+<translation id="3946918322491238254">אפשר עדיין לראות את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות במכשיר זה. אם ייערכו שינויים, הם לא יסונכרנו בחשבון שלך.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
 <translation id="4166206055865952171">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5308226104666789935">‏Chromium לא יכול לחפש עדכונים</translation>
 <translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
+<translation id="5544795779875591523">‏האם לנקות את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>
 <translation id="5573014823074921752">‏טיפ למשתמשי Chromium: כדי לקבל אפשרויות נוספות של כרטיסיות, יש ללחוץ לחיצה ארוכה על הלחצן 'הצגת כרטיסיות' בסרגל הכלים, שנמצא בחלק התחתון או העליון של המסך.</translation>
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="5777187867430702742">‏דף Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
 <translation id="8776843108004031667">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chromium.</translation>
+<translation id="894437814105052438">‏לאחר היציאה מהחשבון, לא יתבצע סנכרון של נתונים חדשים מ-Chromium בחשבון Google שלך. נתונים שסונכרנו בעבר יישארו בחשבון.</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>
 <translation id="921174536258924340">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>
+<translation id="994708389219151914">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים מ-Chromium יימחקו מהמכשיר הזה.</translation>
 </translationbundle>

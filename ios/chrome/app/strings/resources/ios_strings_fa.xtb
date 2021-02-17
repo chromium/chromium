@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">درصورت امکان، وب‌سایت‌ها نوشتار را به زبان ترجیحی شما نمایش می‌دهند.</translation>
 <translation id="1952728750904661634">ورود به سیستم با حساب مدیریت‌شده</translation>
 <translation id="1965935827552890526">‏کاری را که در پنجره باز Chrome دیگر انجام می‌دادید تمام کنید.</translation>
+<translation id="1973912524893600642">نگه داشتن داده‌ها</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">برنامه‌ای در این دستگاه نمی‌تواند فایل را باز کند.</translation>
 <translation id="4042870976416480368">یافتن در صفحه</translation>
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
+<translation id="4079195788735381731">سازمانتان شما را از سیستم خارج کرده است</translation>
 <translation id="4082688844002261427">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو»، آگهی‌ها و موارد دیگر</translation>
 <translation id="408404951701638773">اکنون دسترسی به نوار جستجو آسان‌تر است</translation>
 <translation id="411254640334432676">بارگیری نشد.</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5339316356165661760">روشن کردن همگام‌سازی</translation>
+<translation id="5360976571138293719">‏برای تنظیمات بیشتر مرتبط با حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="5388358297987318779">بازکردن تصویر</translation>
 <translation id="5407969256130905701">صرف‌نظر کردن از تغییرات</translation>
 <translation id="5416022985862681400">۷ روز گذشته</translation>
@@ -496,6 +499,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6254066287920239840">پیوندها به‌جای مرورگر در برنامه باز شوند.</translation>
 <translation id="6255097610484507482">ویرایش کارت اعتباری</translation>
 <translation id="6284652193729350524">پیشنهاد ترجمه <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">‏برای روشن کردن «مرور ایمن»، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را باز کنید و روی «مرور ایمن» ضربه بزنید.</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6308436439357671616">این کار به شما اجازه می‌دهد عکس بگیرید و آن‌ها را بارگذاری کنید.</translation>
 <translation id="6324528485781869530">تغییر وضعیت حساب همگام‌سازی</translation>

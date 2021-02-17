@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ଯୋଗକରାଯାଇଛି</translation>
 <translation id="1047017786576569492">ଆଂଶିକ</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="1052916631016577720">ଆଇଟମ୍ ସ୍କାନ୍</translation>
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ସେଲ୍ୟୁଲାର୍: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Assistant ଲୋଡ୍‌ ହେଉଛି...</translation>
 <translation id="4356930093361201197">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍</translation>
 <translation id="4371348193907997655">କାଷ୍ଟ ସେଟିଂସ୍</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ସିଗନାଲ୍ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /> ଶତକଡ଼ା</translation>
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4379531060876907730">ଏଗୁଡ଼ିକ ଆପଣଙ୍କର ଷ୍ଟାଇଲସ୍ ଟୁଲ୍ ଅଟେ</translation>
 <translation id="4389184120735010762">ଆପଣ ଡକ୍‍ ହୋ‍ଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ କ’ଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">ଏହି ମନିଟର୍‌ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ସହ କାର୍ଯ୍ୟ କରୁନାହିଁ (ମନିଟର୍‌ ସମର୍ଥିତ ନୁହେଁ)।</translation>
 <translation id="6043994281159824495">ବର୍ତ୍ତମାନ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="6047696787498798094">ଯେତେବେଳେ, ଆପଣ ଅନ୍ୟ ଏକ ଉପଯୋଗକର୍ତ୍ତାକୁ ସ୍ୱିଚ୍‌ କରିବେ, ସେତେବେଳେ ସ୍କ୍ରିନ୍‌ ସେୟାରିଂ ବନ୍ଦ ହୋ‍ଇଯିବ। ଆପଣ ଜାରି ରଖିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
+<translation id="6050368268239407309">ପ୍ରେଜେଣ୍ଟେସନ୍ ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="6054305421211936131">ସ୍ମାର୍ଟ କାର୍ଡ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6059276912018042191">ବର୍ତ୍ତମାନର Chrome ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>

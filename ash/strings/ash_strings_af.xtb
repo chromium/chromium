@@ -11,6 +11,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> is bygevoeg</translation>
 <translation id="1047017786576569492">gedeeltelik</translation>
 <translation id="1047773237499189053">Nuwe kenmerk is beskikbaar. Gebruik oppylsleutel om meer te wete te kom.</translation>
+<translation id="1052916631016577720">Itemskandering</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Sellulêr: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4351433414020964307">Assistent laai tans …</translation>
 <translation id="4356930093361201197">hoëkontrasmodus</translation>
 <translation id="4371348193907997655">Uitsaai-instellings</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; seinsterkte <ph name="SIGNAL_STRENGTH" /> persent</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
 <translation id="4379531060876907730">Dit is jou stilusnutsgoed</translation>
 <translation id="4389184120735010762">Jy het die sleutelbordkortpad vir die gedokte vergrootglas gedruk. Wil jy dit aanskakel?</translation>
@@ -587,6 +589,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6043212731627905357">Hierdie monitor werk nie saam met jou <ph name="DEVICE_TYPE" /> nie (die monitor is nie gesteun nie).</translation>
 <translation id="6043994281159824495">Meld nou af</translation>
 <translation id="6047696787498798094">Skermdeling sal stop wanneer jy na 'n ander gebruiker oorskakel. Wil jy voortgaan?</translation>
+<translation id="6050368268239407309">Aanbiedingsnutsgoed</translation>
 <translation id="6054305421211936131">Meld met slimkaart aan</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>

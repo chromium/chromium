@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1282031177488366470">協助改善 Chrome 的功能與效能</translation>
+<translation id="1314663809820920746">你仍然可以在這部裝置上查看自己的所有書籤、歷史記錄、密碼和其他設定，但你所做的變更將不會同步到 Google 帳戶。</translation>
 <translation id="1479202195792305274">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼。</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
@@ -37,6 +38,7 @@
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249068189593983585">Chrome 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
+<translation id="4354293865557736921">選擇是否要在這部裝置上清除你的 Chrome 資料</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼，請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼。<ph name="END_LINK" /></translation>
@@ -54,6 +56,7 @@
 <translation id="6238746320622508509">讓 Chrome 鎖定你的無痕分頁。</translation>
 <translation id="6573431926118603307">您在其他裝置上透過 Chrome 開啟的分頁會顯示在這裡。</translation>
 <translation id="6600954340915313787">已複製到 Chrome</translation>
+<translation id="6634107063912726160">登出帳戶後，Chrome 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
@@ -73,6 +76,7 @@
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
 <translation id="8045508249136869751">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 Chrome。</translation>
+<translation id="8109233255338845204">由於你的帳戶是由 <ph name="HOSTED_DOMAIN" /> 管理，因此登出後，你在這部裝置上的 Chrome 資料將會清除。</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>

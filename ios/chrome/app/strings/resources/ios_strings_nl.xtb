@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Websites worden indien mogelijk weergegeven in je voorkeurstaal.</translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
+<translation id="1973912524893600642">Gegevens behouden</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt weergeven, moet je eerst een toegangscode instellen op je apparaat.</translation>
@@ -299,6 +300,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="4038354071007134711">Geen app op dit apparaat kan het bestand openen.</translation>
 <translation id="4042870976416480368">Zoeken op pagina</translation>
 <translation id="4049507953662678203">Zorg ervoor dat je beschikt over een netwerkverbinding en probeer het opnieuw.</translation>
+<translation id="4079195788735381731">Je organisatie heeft je uitgelogd</translation>
 <translation id="4082688844002261427">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken, advertenties en meer te personaliseren</translation>
 <translation id="408404951701638773">De zoekbalk is nu makkelijker bereikbaar</translation>
 <translation id="411254640334432676">Downloaden mislukt.</translation>
@@ -411,6 +413,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5339316356165661760">Synchroniseren inschakelen</translation>
+<translation id="5360976571138293719">Bekijk <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="5388358297987318779">Afbeelding openen</translation>
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
 <translation id="5416022985862681400">Afgelopen 7 dagen</translation>
@@ -496,6 +499,7 @@ Handoff moet ook zijn ingeschakeld in het gedeelte 'Algemeen' van 'Instellingen'
 <translation id="6254066287920239840">Open links in de app in plaats van in de browser.</translation>
 <translation id="6255097610484507482">Creditcard bewerken</translation>
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>
+<translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitschakelen</translation>
 <translation id="6308436439357671616">Hiermee kun je foto's maken en uploaden.</translation>
 <translation id="6324528485781869530">Synchronisatieaccount wisselen</translation>

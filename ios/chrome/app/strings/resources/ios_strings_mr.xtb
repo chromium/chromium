@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
 <translation id="1952728750904661634">व्यवस्थापित केलेल्या खात्यासह साइन इन करा</translation>
 <translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
+<translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">या डिव्हाइसवरील कोणतीही ॲप्लिकेशन फाइल उघडू शकत नाही.</translation>
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="4079195788735381731">तुमच्या संस्थेने तुम्हाला साइन आउट केले</translation>
 <translation id="4082688844002261427">तुमचा ब्राउझिंग इतिहास शोध, जाहिराती आणि बरेच काही पर्सनलाइझ करण्यासाठी कसा वापरला जातो ते नियंत्रित करा</translation>
 <translation id="408404951701638773">शोध बारवर पोहोचणे आता आणखी सोपे आहे</translation>
 <translation id="411254640334432676">डाउनलोड अयशस्वी.</translation>
@@ -412,6 +414,7 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5327248766486351172">नाव</translation>
 <translation id="5339316356165661760">सिंक सुरू करा</translation>
+<translation id="5360976571138293719">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पाहा.</translation>
 <translation id="5388358297987318779">इमेज उघडा</translation>
 <translation id="5407969256130905701">बदल काढून टाका</translation>
 <translation id="5416022985862681400">मागील सात दिवस</translation>
@@ -497,6 +500,8 @@
 <translation id="6254066287920239840">ब्राउझर ऐवजी ॲपमध्ये लिंक उघडा.</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड संपादित करा</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
+<translation id="6293101329759844770">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> उघडा आणि सुरक्षित ब्राउझिंग वर टॅप
+करा.</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6308436439357671616">हे तुम्हाला फोटो घेऊ आणि अपलोड करू देते.</translation>
 <translation id="6324528485781869530">सिंक खाते स्विच करा</translation>

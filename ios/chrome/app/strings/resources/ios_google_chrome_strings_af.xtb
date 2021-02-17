@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1282031177488366470">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
+<translation id="1314663809820920746">Jy kan steeds al jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel sien. As jy veranderinge aanbring, sal hulle nie na jou Google-rekening sinkroniseer nie.</translation>
 <translation id="1479202195792305274">Chrome kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
 <translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1682483655351012182">Sinkroniseer jou Chrome-data</translation>
@@ -37,6 +38,7 @@
 <translation id="417201473131094001">Nie gesteun op Chrome Kanarie nie</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
 <translation id="4249068189593983585">Chrome-wenk. Vir meer oortjieopsies, raak en hou die Wys Oortjies-knoppie op die nutsbalk aan die onderkant of bokant van jou skerm.</translation>
+<translation id="4354293865557736921">Kies of jy jou Chrome-data van hierdie toestel af wil verwyder, of dit wil hou?</translation>
 <translation id="4523886039239821078">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer:</translation>
 <translation id="4633328489441962921">Chrome kan nie vir opdaterings kyk nie</translation>
 <translation id="4698415050768537821">Chrome kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
@@ -54,6 +56,7 @@
 <translation id="6238746320622508509">Laat Chrome toe om jou Incognito-oortjies te sluit.</translation>
 <translation id="6573431926118603307">Oortjies wat jy op jou ander toestelle in Chrome oopgemaak het, sal hier verskyn.</translation>
 <translation id="6600954340915313787">Na Chrome gekopieer</translation>
+<translation id="6634107063912726160">Chrome sal nie enige nuwe data na jou Google-rekening sinkroniseer nadat jy afgemeld het nie. Data wat voorheen gesinkroniseer is, bly in hierdie rekening.</translation>
 <translation id="6648150602980899529">Jy meld tans aan met 'n rekening wat deur <ph name="DOMAIN" /> bestuur word en gee sy administrateur beheer oor jou Chrome-data. Jou data sal permanent met hierdie rekening verbind word. As jy uit Chrome afmeld, sal jou data van hierdie toestel af uitgevee word, maar dit sal steeds in jou Google-rekening geberg word.</translation>
 <translation id="6676840375528380067">Vee jou Chrome-data op hierdie toestel uit?</translation>
 <translation id="6822673484890854830">Chrome kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
@@ -73,6 +76,7 @@
 <translation id="7698568245838009292">Chrome wil toegang tot die kamera hê</translation>
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
 <translation id="8045508249136869751">Maak Instellings oop, tik op Verstekblaaierprogram en kies Chrome om Chrome jou verstek te maak.</translation>
+<translation id="8109233255338845204">Jou rekening word deur <ph name="HOSTED_DOMAIN" /> bestuur, en daarom sal jou Chrome-data van hierdie toestel af uitgevee word.</translation>
 <translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840168496893712993">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer.</translation>

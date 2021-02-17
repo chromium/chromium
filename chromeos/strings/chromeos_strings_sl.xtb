@@ -107,6 +107,7 @@
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
+<translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">Hitrost CPE-ja je trenutno omejena zaradi ohranjanja energije baterije ali znižanja temperature.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Povezava ni vzpostavljena</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Tiskalnik</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
+<translation id="4155551848414053977">Optični bralnik mora biti vklopljen in na voljo prek omrežja ali neposredne povezave.</translation>
 <translation id="4170700058716978431">NI USPEL</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
@@ -237,7 +239,9 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6189418609903030344">Zmogljivost baterije z uporabo upada</translation>
 <translation id="6191293864534840972">Napačno oblikovani imenski strežniki</translation>
+<translation id="6223752125779001553">Na voljo ni optičnih bralnikov</translation>
 <translation id="6232017090690406397">Baterija</translation>
+<translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="636850387210749493">Prijava v podjetje</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>

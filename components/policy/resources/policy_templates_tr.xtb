@@ -4103,13 +4103,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politika Devre Dışı değerine ayarlanırsa tarayıcı deneysel özellikler simgesi araç çubuğundan kaldırılır.
 
       chrome://flags ve tarayıcı özelliklerini açıp kapatmak için kullanılan herhangi başka bir yöntem, bu politikanın Etkin ya da Devre Dışı olmasından bağımsız olarak, beklendiği şekilde davranacaktır.</translation>
-<translation id="6793420507738858152">Bu politika etkinleştirildiğinde <ph name="PRODUCT_NAME" /> özelliği, kullanıcının tarayıcısı ve ortamı hakkında ayrıntılı bilgiler içeren istek başlıkları gönderir.
-
-      Bu ek bir özelliktir. Fakat yeni başlıklar, isteklerde karakter kısıtlaması bulunduğu takdirde bazı web sitelerinin çalışmasını bozabilir.
-
-      Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> özelliği etkin kılınır. Politika devre dışı bırakılırsa bu özellik kullanılamaz.
-
-      Bu kurumsal politika, kısa süreli uyum süreci için geçerlidir ve en azından Chrome 91'e kadar kullanılabilecektir.</translation>
 <translation id="6795485990775913659">Yalnızca PIN olmadan yazdırmaya izin ver</translation>
 <translation id="6800181452282128474">Quirks Sunucularını sorgulama</translation>
 <translation id="6810445994095397827">Bu sitelerde JavaScript'i engelle</translation>

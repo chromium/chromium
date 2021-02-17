@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">Додаден е <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">делумно</translation>
 <translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
+<translation id="1052916631016577720">Скенирање ставки</translation>
 <translation id="1056775291175587022">Нема мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилен уред: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4351433414020964307">„Помошникот“ се вчитува…</translation>
 <translation id="4356930093361201197">режим на висок контраст</translation>
 <translation id="4371348193907997655">Поставки за Cast</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Се поврзува…</translation>
 <translation id="4379531060876907730">Ова се вашите пенкала</translation>
 <translation id="4389184120735010762">Ја притиснавте кратенката од тастатура за закотвената лупа. Дали сакате да ја вклучите?</translation>
@@ -587,6 +589,7 @@
 <translation id="6043212731627905357">Мониторов не одговара на вашиот <ph name="DEVICE_TYPE" /> (не е поддржан).</translation>
 <translation id="6043994281159824495">Одјави се сега</translation>
 <translation id="6047696787498798094">Споделувањето екран ќе запре кога ќе промените на друг корисник. Дали сакате да продолжите?</translation>
+<translation id="6050368268239407309">Алатки за презентација</translation>
 <translation id="6054305421211936131">Најавете се со паметна картичка</translation>
 <translation id="6059276912018042191">Неодамнешни картички на Chrome</translation>
 <translation id="6062360702481658777">Автоматски ќе бидете одјавени за <ph name="LOGOUT_TIME_LEFT" />.</translation>

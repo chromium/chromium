@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Cartões admitidos</translation>
 <translation id="1021753677514347426">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é utilizado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chromium. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chromium pretende certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
 <translation id="1024111578869940408">Por vezes, os atacantes imitam sites ao efetuarem alterações difíceis de detetar no endereço Web.</translation>
+<translation id="1028781062521375153">Veja detalhes</translation>
 <translation id="1030706264415084469"><ph name="URL" /> pretende armazenar permanentemente dados de grandes dimensões no seu dispositivo.</translation>
 <translation id="1032854598605920125">Rodar para a direita</translation>
 <translation id="1036348656032585052">Desativar</translation>
@@ -146,6 +147,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1462951478840426066">Utilizar os tipos de letra presentes no computador para que possa criar conteúdo de alta-fidelidade.</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Esquerda</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> é o seu código para <ph name="EMBEDDED_ORIGIN" /> de forma a continuar em <ph name="TOP_ORIGIN" />.</translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1640180200866533862">Políticas do utilizador</translation>
 <translation id="1640244768702815859">Experimente <ph name="BEGIN_LINK" />aceder à página inicial do site<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Atrasar saída até</translation>
+<translation id="164212631332220697">Utilize o <ph name="CARD_DETAIL" /> no pagamento.</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645368109819982629">Protocolo não suportado</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4879725228911483934">Abrir e colocar janelas nos seus ecrãs</translation>
 <translation id="4880827082731008257">Pesquisar histórico</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4885256590493466218">Utilize o <ph name="CARD_DETAIL" /> no pagamento.</translation>
 <translation id="4889420713887366944">Botão Abrir janela de navegação anónima; prima Enter para abrir uma nova janela de navegação anónima para navegar em privado.</translation>
 <translation id="4892518386797173871">Traseiro</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@ Detalhes adicionais:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é o seu código para <ph name="ORIGIN" />.</translation>
 <translation id="874918643257405732">Adicione este separador aos marcadores</translation>
 <translation id="8751426954251315517">Tente novamente na próxima oportunidade.</translation>
+<translation id="8757526089434340176">Oferta do Google Pay disponível</translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe, mensagens ou cartões de crédito) quando são enviadas para este site.</translation>
 <translation id="8761567432415473239">A Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas prejudiciais<ph name="END_LINK" /> recentemente em <ph name="SITE" />.</translation>

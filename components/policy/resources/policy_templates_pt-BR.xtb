@@ -990,6 +990,11 @@ Se esta política for definida como falsa, a tela de privacidade estará sempre 
 Se esta política for definida, o usuário não poderá modificar o valor.
 
 Se esta política não for definida, a tela de privacidade ficará desativada inicialmente, mas poderá ser controlada pelo usuário.</translation>
+<translation id="241739814668386424"> Se esta política for desativada, não será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
+
+      Se esta política for ativada, será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
+
+      Esta política fica desativada por padrão.</translation>
 <translation id="2421677964966613267">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem executar o plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
       Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -4131,13 +4136,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for definida como "Desativada", o ícone de recursos experimentais do navegador será removido da barra de ferramentas.
 
       chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
-<translation id="6793420507738858152">Quando a política está ativada, o recurso "<ph name="PRODUCT_NAME" />" enviará cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
-
-      Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
-
-      Se esta política for ativada ou não for definida, o recurso "<ph name="PRODUCT_NAME" />" será ativado. Se ela for desativada, o recurso ficará indisponível.
-
-      Esta política é uma solução alternativa temporária para fins de adaptação a curto prazo e estará disponível pelo menos até a versão 91 do Chrome.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
@@ -4653,6 +4651,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7407441173422042771">Esta política controla a previsão de rede no <ph name="PRODUCT_NAME" />. Ela controla a pré-busca de DNS, a pré-conexão SSL e TCP e a pré-renderização das páginas da Web.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a previsão de rede será ativada, mas os usuários poderão mudar a configuração.</translation>
+<translation id="7412456346709338637">Ativar acesso a dados de periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permitir conexões de acesso remoto a esta máquina</translation>
 <translation id="7417972229667085380">Percentual pelo qual calcular o intervalo de inatividade no modo de apresentação (uso suspenso)</translation>
 <translation id="7421483919690710988">Define o tamanho do cache de disco de mídia em bytes</translation>
@@ -5442,6 +5441,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       "1412.24.34": atualizar apenas para essa versão específica
 
       Aviso: não é recomendável configurar restrições de versão, porque elas podem impedir que os usuários recebam atualizações de software e correções de segurança críticas. Restringir as atualizações para um prefixo de versão específico pode colocar os usuários em risco.</translation>
+<translation id="8510545352780142790">Desativa o encapsulamento de PCIe. Dispositivos periféricos Thunderbolt/USB4 funcionarão perfeitamente</translation>
 <translation id="8519264904050090490">URLs de exceção manual do usuário gerenciado</translation>
 <translation id="8519516251436131647">Ative os atalhos de recursos de acessibilidade.
 
@@ -5479,6 +5479,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos.</translation>
+<translation id="8599956038998209006">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, limitando as capacidades do dispositivo</translation>
 <translation id="8603454805657060638">Se a política for definida, o administrador poderá mudar o endereço MAC (controle de acesso de mídia) ao conectar um dispositivo à base. Quando uma base estiver conectada a alguns modelos de dispositivo, por padrão, o endereço MAC designado da base para o dispositivo ajudará a identificá-lo na Ethernet.
 
       Se "DeviceDockMacAddress" for selecionada ou se a política não for definida, o endereço MAC designado da base para o dispositivo será usado.

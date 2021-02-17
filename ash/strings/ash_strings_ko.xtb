@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> 추가됨</translation>
 <translation id="1047017786576569492">부분</translation>
 <translation id="1047773237499189053">새 기능을 이용할 수 있습니다. 자세히 알아보려면 위쪽 화살표 키를 사용하세요.</translation>
+<translation id="1052916631016577720">항목 스캔</translation>
 <translation id="1056775291175587022">네트워크 없음</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">셀룰러: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">어시스턴트 로드 중...</translation>
 <translation id="4356930093361201197">고대비 모드</translation>
 <translation id="4371348193907997655">전송 설정</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />퍼센트</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4379531060876907730">스타일러스 도구입니다</translation>
 <translation id="4389184120735010762">고정 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357"><ph name="DEVICE_TYPE" />과(와) 호환되지 않는 모니터입니다(지원되지 않는 모니터임).</translation>
 <translation id="6043994281159824495">지금 로그아웃</translation>
 <translation id="6047696787498798094">다른 사용자로 전환하면 화면 공유가 중단됩니다. 계속하시겠습니까?</translation>
+<translation id="6050368268239407309">프레젠테이션 도구</translation>
 <translation id="6054305421211936131">스마트 카드로 로그인</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>

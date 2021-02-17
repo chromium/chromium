@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Prihvaćene kartice</translation>
 <translation id="1021753677514347426">Ovaj problem se javlja zbog sertifikata koji ste vi ili neko drugi instalirali na uređaju. Sertifikat se koristi za nadgledanje i presretanje mreža i Chromium ga ne smatra pouzdanim. Iako postoje pojedini opravdani razlozi za nadgledanje, na primer na školskoj ili poslovnoj mreži, Chromium želi da budete svesni da se to događa, čak i ako to ne možete da sprečite. Nadgledanje je moguće u bilo kom pregledaču ili aplikaciji koja pristupa vebu.</translation>
 <translation id="1024111578869940408">Napadači ponekad imitiraju sajtove tako što skoro neprimetno izmene veb-adresu.</translation>
+<translation id="1028781062521375153">Prikaži detalje</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno da skladišti velike količine podataka na uređaju</translation>
 <translation id="1032854598605920125">Okrenite u smeru kazaljke na satu</translation>
 <translation id="1036348656032585052">Isključi</translation>
@@ -146,6 +147,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1462951478840426066">Koristi fontove na računaru da biste mogli da pravite sadržaj visoke vernosti</translation>
 <translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">Ulevo</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> je vaš kôd za<ph name="EMBEDDED_ORIGIN" /> pomoću kog možete da nastavite na sajtu <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1640180200866533862">Smernice za korisnike</translation>
 <translation id="1640244768702815859">Pokušajte da <ph name="BEGIN_LINK" />posetite početnu stranicu sajta<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Odloži izlaz do</translation>
+<translation id="164212631332220697">Plaćajte pomoću kartice <ph name="CARD_DETAIL" />.</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1645368109819982629">Nepodržani protokol</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4879725228911483934">da otvara i postavlja prozore na ekrane</translation>
 <translation id="4880827082731008257">Pretraži istoriju</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4885256590493466218">Plaćajte pomoću kartice <ph name="CARD_DETAIL" /></translation>
 <translation id="4889420713887366944">Dugme Otvori prozor bez arhiviranja, pritisnite Enter da biste otvorili nov prozor bez arhiviranja i pregledali privatno</translation>
 <translation id="4892518386797173871">Zadnji deo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@ Dodatni detalji:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Obeležite ovu karticu</translation>
 <translation id="8751426954251315517">Probajte ponovo sledeći put</translation>
+<translation id="8757526089434340176">Dostupna je Google Pay ponuda</translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju koja može da otkrije vaše informacije (na primer, lozinke, poruke ili kreditne kartice) kada se šalju tom sajtu.</translation>
 <translation id="8761567432415473239">Google bezbedno pregledanje je nedavno <ph name="BEGIN_LINK" />otkrilo štetne programe<ph name="END_LINK" /> na <ph name="SITE" />.</translation>

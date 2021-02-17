@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
+<translation id="1973912524893600642">Garder les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
@@ -299,6 +300,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
+<translation id="4079195788735381731">Votre organisation vous a déconnecté</translation>
 <translation id="4082688844002261427">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser la recherche, les annonces et plus encore</translation>
 <translation id="408404951701638773">La barre de recherche est désormais plus facile à atteindre</translation>
 <translation id="411254640334432676">Échec du téléchargement.</translation>
@@ -411,6 +413,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
+<translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
@@ -496,6 +499,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6254066287920239840">Ouvrez les liens dans l'application plutôt que dans le navigateur.</translation>
 <translation id="6255097610484507482">Modif. carte crédit</translation>
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6308436439357671616">Ceci vous permet de prendre des photos et de les téléverser.</translation>
 <translation id="6324528485781869530">Passer au compte synchronisé</translation>

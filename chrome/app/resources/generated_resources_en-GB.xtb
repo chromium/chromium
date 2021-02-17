@@ -2464,7 +2464,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3742055079367172538">Screenshot taken</translation>
 <translation id="3742666961763734085">Can’t find an organisational unit with that name. Please try again.</translation>
 <translation id="3744111561329211289">Background sync</translation>
-<translation id="3746127522257263495">Adding G Suite for Education account in Android apps is not supported.</translation>
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -5861,7 +5860,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7696063401938172191">On your '<ph name="PHONE_NAME" />':</translation>
 <translation id="7697166915480294040">Details are hidden while you share your screen</translation>
 <translation id="7697598343108519171">Use camera to scan QR code</translation>
-<translation id="7699968112832915395">Can't add account</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7701869757853594372">USER Handles</translation>
 <translation id="7701928712056789451">These items may be dangerous</translation>
@@ -6945,6 +6943,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8892168913673237979">Ready!</translation>
 <translation id="8893801527741465188">Uninstall complete</translation>
 <translation id="8893928184421379330">Sorry, the device <ph name="DEVICE_LABEL" /> could not be recognised.</translation>
+<translation id="8894761918470382415">Data access protection for peripherals</translation>
 <translation id="8895454554629927345">Bookmark list</translation>
 <translation id="8898786835233784856">Select next tab</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
@@ -7252,6 +7251,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> is sharing a Chrome tab and audio.</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947329552760389097">&amp;Inspect Elements</translation>
+<translation id="949052952791086881">Your administrator requires this user to sign in while the device is online</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>

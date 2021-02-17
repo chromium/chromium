@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Vefsvæði birta texta á því tungumáli sem þú hefur valið þegar hægt er.</translation>
 <translation id="1952728750904661634">Skráðu þig inn með stýrðum reikningi</translation>
 <translation id="1965935827552890526">Ljúktu því sem þú ert að gera í öðrum opnum Chrome glugga.</translation>
+<translation id="1973912524893600642">Geyma gögn</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
@@ -299,6 +300,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4038354071007134711">Ekkert forrit í þessu tæki getur opnað skrána.</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
+<translation id="4079195788735381731">Fyrirtækið þitt skráði þig út</translation>
 <translation id="4082688844002261427">Stjórnaðu því hvernig vafraferillinn þinn er notaður til að sérsníða leit, auglýsingar og fleira</translation>
 <translation id="408404951701638773">Nú er auðveldara að nálgast leitarstikuna</translation>
 <translation id="411254640334432676">Niðurhal mistókst.</translation>
@@ -411,6 +413,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5327248766486351172">Heiti</translation>
 <translation id="5339316356165661760">Kveikja á samstillingu</translation>
+<translation id="5360976571138293719">Fleiri stillingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í: <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" /></translation>
 <translation id="5388358297987318779">Opna mynd</translation>
 <translation id="5407969256130905701">Fleygja breytingum</translation>
 <translation id="5416022985862681400">Undanfarnir 7 dagar</translation>
@@ -496,6 +499,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6254066287920239840">Opna tengla í forritinu í stað vafrans.</translation>
 <translation id="6255097610484507482">Breyta kreditkorti</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
 <translation id="6303969859164067831">Skrá út og slökkva á samstillingu</translation>
 <translation id="6308436439357671616">Með þessu móti geturðu tekið myndir og hlaðið þeim upp.</translation>
 <translation id="6324528485781869530">Skipta um samstillingarreikning</translation>

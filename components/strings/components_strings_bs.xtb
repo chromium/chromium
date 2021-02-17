@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Prihvaćene kartice</translation>
 <translation id="1021753677514347426">Ovaj problem nastaje zbog potvrde koju ste vi ili neko drugi instalirali na uređaj. Poznato je da se ta potvrda koristi za nadzor i presretanje mreža te je Chromium ne smatra pouzdanom. Iako postoje opravdani slučajevi za nadzor, naprimjer na mrežama u školama ili preduzećima, Chromium želi potvrditi da ste toga svjesni čak i ako taj proces ne možete zaustaviti. Nadzor se može vršiti u bilo kojem pregledniku ili bilo kojoj aplikaciji koja pristupa webu.</translation>
 <translation id="1024111578869940408">Napadači ponekad oponašaju web lokacije pomoću teško primjetnih izmjena web adrese.</translation>
+<translation id="1028781062521375153">Prikaži detalje</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš uređaj</translation>
 <translation id="1032854598605920125">Okreni u smjeru kretanja kazaljki na satu</translation>
 <translation id="1036348656032585052">Isključi</translation>
@@ -146,6 +147,8 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1462951478840426066">Koristite fontove na računaru da kreirate sadržaj visoke vrijednosti</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Lijevo</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> je vaš kôd za
+<ph name="EMBEDDED_ORIGIN" /> da nastavite na <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +199,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1640180200866533862">Korisnička pravila</translation>
 <translation id="1640244768702815859">Pokušajte <ph name="BEGIN_LINK" />otvoriti početnu stranicu web-lokacije<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Odloži izlaz do</translation>
+<translation id="164212631332220697">Platite karticom <ph name="CARD_DETAIL" />.</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1645368109819982629">Protokol nije podržan</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1014,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4879725228911483934">Otvarati i postavljati prozore na ekranima</translation>
 <translation id="4880827082731008257">Pretraži povijest</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4885256590493466218">Platite karticom <ph name="CARD_DETAIL" /></translation>
 <translation id="4889420713887366944">Dugme Otvori anonimni prozor, pritisnite Enter da otvorite novi anonimni prozor i da privatno pregledate</translation>
 <translation id="4892518386797173871">Zadnji dio</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1984,7 @@ Dodatni detalji:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Označite ovu karticu</translation>
 <translation id="8751426954251315517">Pokušajte ponovo kasnije</translation>
+<translation id="8757526089434340176">Dostupna je ponuda Google Paya</translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ova web lokacija koristi zastarjelu konfiguraciju sigurnosti, zbog čega može doći do otkrivanja vaših informacija (naprimjer lozinki, poruka ili kreditnih kartica) kada se šalju na ovu web lokaciju.</translation>
 <translation id="8761567432415473239">Usluga Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />pronašla štetne programe <ph name="END_LINK" /> na web lokaciji <ph name="SITE" />.</translation>

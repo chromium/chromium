@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Nie gesteun in Chromium Kanarie nie</translation>
 <translation id="3639997914391704523">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
 <translation id="3805899903892079518">Chromium het nie toegang tot jou foto's of video's nie. Aktiveer toegang in iOS-instellings &gt; Privacy &gt; Photos.</translation>
+<translation id="3946918322491238254">Jy kan steeds al jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel sien. As jy veranderinge aanbring, sal hulle nie na jou rekening sinkroniseer nie.</translation>
 <translation id="4099085513035183040">Nie op Chromium Beta gesteun nie</translation>
 <translation id="4166206055865952171">Maak Chromium jou verstekblaaier</translation>
 <translation id="4555020257205549924">Wanneer hierdie kenmerk aangeskakel is, sal Chromium aanbied om bladsye wat in ander tale geskryf is, te vertaal deur Google Vertaal te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5308226104666789935">Chromium kan nie vir opdaterings kyk nie</translation>
 <translation id="5521125884468363740">Meld aan en skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
+<translation id="5544795779875591523">Kies of jy jou Chromium-data van hierdie toestel af wil verwyder, of dit wil hou?</translation>
 <translation id="5573014823074921752">Chromium-wenk. Vir meer oortjieopsies, raak en hou die Wys Oortjies-knoppie op die nutsbalk aan die onderkant of bokant van jou skerm.</translation>
 <translation id="5700709190537129682">Chromium kan nie jou wagwoorde nagaan nie</translation>
 <translation id="5777187867430702742">Chromium-bladsy</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="8663480472502753423">Hou Chromium op datum</translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
+<translation id="894437814105052438">Chromium sal nie enige nuwe data na jou Google-rekening sinkroniseer nadat jy afgemeld het nie. Data wat voorheen gesinkroniseer is, bly in hierdie rekening.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="921174536258924340">Chromium kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Die Chromium-outeurs</translation>
+<translation id="994708389219151914">Jou rekening word deur <ph name="HOSTED_DOMAIN" /> bestuur, en daarom sal jou Chromium-data van hierdie toestel af uitgevee word.</translation>
 </translationbundle>

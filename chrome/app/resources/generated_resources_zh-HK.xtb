@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">在「<ph name="APP" />」中開啟連結</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="1139343347646843679">設定 Linux 時發生錯誤。請聯絡您的管理員。</translation>
+<translation id="1139923033416533844">記憶體用量</translation>
 <translation id="1140351953533677694">存取您的藍牙和序列裝置</translation>
 <translation id="114036956334641753">音訊和字幕</translation>
 <translation id="1140746652461896221">封鎖您瀏覽的任何網頁內容</translation>
@@ -677,6 +678,7 @@
 <translation id="1734212868489994726">淺藍色</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充程式，請聯絡您的管理員。</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> 可能無法自動更新</translation>
+<translation id="173522743738009831">關於私隱沙箱</translation>
 <translation id="173628468822554835">知道了。根據預設，您首次瀏覽的網站將不會傳送通知。</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1737968601308870607">報告錯誤</translation>
@@ -999,6 +1001,7 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="211144231511833662">清除類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
+<translation id="2111810003053064883">廣告客戶無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。</translation>
 <translation id="21133533946938348">固定分頁</translation>
 <translation id="2113479184312716848">開啟檔案(&amp;F)…</translation>
 <translation id="2113921862428609753">授權單位資料存取</translation>
@@ -1028,6 +1031,7 @@
 <translation id="2138398485845393913">仍在連線至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="2139545522194199494">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，連接</translation>
 <translation id="2139919072249842737">設定按鈕</translation>
+<translation id="2140788884185208305">電池壽命</translation>
 <translation id="214169863967063661">開啟外觀設定</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
 <translation id="2142582065325732898">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
@@ -1541,6 +1545,7 @@
 <translation id="2712173769900027643">要求權限</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
+<translation id="2715640894224696481">安全密鑰要求</translation>
 <translation id="2715751256863167692">此升級操作會重設您的 Chromebook 硬件，並刪除目前的使用者資料。</translation>
 <translation id="2716986496990888774">此設定由家長管理。</translation>
 <translation id="2718395828230677721">夜燈模式</translation>
@@ -2000,6 +2005,7 @@
 <translation id="3238192140106069382">正在連線及驗證</translation>
 <translation id="3239373508713281971">已移除 <ph name="APP_NAME" /> 的時間限制</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的私密金鑰。</translation>
+<translation id="3242905690080165035">「私隱沙箱」仍在開發階段，目前開放地區有限。現在網站可以嘗試使用「私隱沙箱」，亦能繼續使用第三方 Cookie 等現有的網絡技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">繼續保持靜音</translation>
 <translation id="3246107497225150582">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網絡錯誤</translation>
@@ -2160,6 +2166,7 @@
 <translation id="3428419049384081277">您已登入！</translation>
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3428800329481094896">正在擷取 Linux 容器 SSH 密鑰</translation>
+<translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
@@ -2456,7 +2463,6 @@
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
 <translation id="3742666961763734085">找不到該名稱的機構單位。請再試一次。</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
-<translation id="3746127522257263495">不支援在 Android 應用程式中新增「G Suite 教育版」帳戶。</translation>
 <translation id="3747077776423672805">如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
 <translation id="3748706263662799310">回報錯誤</translation>
 <translation id="3752582316358263300">確定…</translation>
@@ -3143,6 +3149,7 @@
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="4541810033354695636">擴張實境</translation>
 <translation id="4542520061254486227">讀取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的資料</translation>
+<translation id="454331522350252598">廣告客戶能夠在數千位使用者擁有類似興趣時學習 (這和演唱會中的群眾類似)，並為群眾 (而非單一使用者) 選取廣告。</translation>
 <translation id="4543778593405494224">憑證管理員</translation>
 <translation id="4544174279960331769">預設藍色圖片</translation>
 <translation id="4545028762441890696">如要重新啟用擴充程式，請接受新權限：</translation>
@@ -3191,6 +3198,7 @@
 <translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
+<translation id="4587645918878093912">現今很多網站都會依賴第三方 Cookie 等眾多技術來提供重要服務，例如顯示相關廣告及衡量網站成效。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590324241397107707">數據庫儲存空間</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
@@ -4617,6 +4625,7 @@
 <translation id="6271348838875430303">復原咗更正內容</translation>
 <translation id="6272643420381259437">下載外掛程式時發生錯誤 (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">品質</translation>
+<translation id="6275846828483490454">「私隱沙箱」是一項進行中的計劃，目的是保護開放網絡，防止有心人透過追蹤機制取得您的資料。</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求您提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網絡逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
@@ -5271,6 +5280,7 @@
 <translation id="7018275672629230621">讀取及變更您的瀏覽記錄</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
+<translation id="7023206482239788111">「私隱沙箱」可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人透過跨網站追蹤機制暗中取得您的資料，因此有利於開放網絡的發展。</translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能</translation>
 <translation id="7025190659207909717">流動數據服務管理</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟書籤(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
@@ -5449,6 +5459,7 @@
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
 <translation id="7235716375204803342">正在擷取活動…</translation>
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
+<translation id="7238640585329759787">啟用後，網站可能會使用此處顯示的私隱保護技術提供內容和服務。這些技術包括替代跨網站追蹤的選項。本服務可能會陸續新增更多試用功能。</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，詳情</translation>
 <translation id="7240339475467890413">要連線至新熱點嗎？</translation>
 <translation id="7241389281993241388">請登入 <ph name="TOKEN_NAME" /> 以匯入用戶端憑證。</translation>
@@ -5848,7 +5859,6 @@
 <translation id="7696063401938172191">在您的 <ph name="PHONE_NAME" /> 上：</translation>
 <translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
 <translation id="7697598343108519171">使用相機掃瞄 QR 碼</translation>
-<translation id="7699968112832915395">無法新增帳戶</translation>
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7701928712056789451">這些項目可能不安全</translation>
@@ -6109,6 +6119,7 @@
 <translation id="7968833647796919681">啟用效能數據收集</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
 <translation id="7969046989155602842">Command 鍵</translation>
+<translation id="7970618607181090249">已偵測到觸控螢幕</translation>
 <translation id="7970673414865679092">以太網詳情</translation>
 <translation id="7970882136539140748">目前無法儲存信用卡</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
@@ -6546,6 +6557,7 @@
 <translation id="8480082892550707549">即使您曾經從這個網站下載檔案，但這個網站目前並不安全 (可能已被入侵)。請稍後嘗試重新下載這個檔案。</translation>
 <translation id="8480869669560681089">來自 <ph name="VENDOR_NAME" /> 的不明裝置</translation>
 <translation id="8481187309597259238">確認 USB 權限</translation>
+<translation id="8481980314595922412">試用功能已開啟</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8489156414266187072">個人建議只會在您的帳戶上顯示</translation>
 <translation id="8490896350101740396">下列 Kiosk 應用程式 (<ph name="UPDATED_APPS" />) 已更新。請重新啟動裝置以完成更新程序。</translation>
@@ -6928,6 +6940,7 @@
 <translation id="8892168913673237979">大功告成！</translation>
 <translation id="8893801527741465188">解除安裝完成</translation>
 <translation id="8893928184421379330">很抱歉，系統無法識別 <ph name="DEVICE_LABEL" /> 裝置。</translation>
+<translation id="8894761918470382415">周邊裝置的資料存取保護</translation>
 <translation id="8895454554629927345">書籤清單</translation>
 <translation id="8898786835233784856">選取下一個分頁</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
@@ -7054,6 +7067,7 @@
 <translation id="9031549947500880805">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。</translation>
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
+<translation id="903386633044383289">連接至裝置</translation>
 <translation id="9037818663270399707">您的連線有部分網絡流量不屬於私人連線</translation>
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{您還可再試 1 次。}other{您還可再試 # 次。}}</translation>
@@ -7186,6 +7200,7 @@
 <translation id="9180281769944411366">此程序可能需時幾分鐘。正在啟動 Linux 容器。</translation>
 <translation id="9180380851667544951">網站可以分享您的螢幕畫面</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
+<translation id="9185818139207739329">啟用私隱沙箱試用功能</translation>
 <translation id="9186963452600581158">使用子女的 Google 帳戶登入</translation>
 <translation id="9188732951356337132">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">使用您的 Android 手機作為安全密鑰</translation>
@@ -7233,6 +7248,7 @@
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共用 Chrome 分頁和音效。</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
+<translation id="949052952791086881">管理員要求此使用者在裝置在線時登入</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>

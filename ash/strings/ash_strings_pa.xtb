@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1047017786576569492">ਅੰਸ਼ਕ</translation>
 <translation id="1047773237499189053">ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਹੈ, ਹੋਰ ਜਾਣਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
+<translation id="1052916631016577720">ਆਈਟਮ ਨੂੰ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="1056775291175587022">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ਸੈਲਿਊਲਰ: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">ਸਹਾਇਕ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4356930093361201197">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ</translation>
 <translation id="4371348193907997655">ਕਾਸਟ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /> ਫ਼ੀਸਦ</translation>
 <translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4379531060876907730">ਇਹ ਤੁਹਾਡੇ ਸਟਾਈਲਸ ਟੂਲ ਹਨ</translation>
 <translation id="4389184120735010762">ਤੁਸੀਂ ਡੌਕ ਕੀਤੇ ਵੱਡਦਰਸ਼ੀ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">ਇਹ ਮਾਨੀਟਰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨਾਲ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ (ਮਾਨੀਟਰ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ)।</translation>
 <translation id="6043994281159824495">ਹੁਣ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="6047696787498798094">ਜਦੋਂ ਤੁਸੀਂ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਦੇ ਖਾਤੇ 'ਤੇ ਜਾਉਗੇ ਅਤੇ ਬਦਲੀ ਕਰੋਗੇ ਤਾਂ ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="6050368268239407309">ਪੇਸ਼ਕਾਰੀ ਟੂਲ</translation>
 <translation id="6054305421211936131">ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6059276912018042191">ਹਾਲੀਆ Chrome ਟੈਬਾਂ</translation>
 <translation id="6062360702481658777">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਆਟੋਮੈਟਿਕਲੀ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>

@@ -993,6 +993,11 @@ Si se establece como falsa, la pantalla de privacidad estará siempre inhabilita
 Si estableces esta política, el usuario no podrá anular el valor.
 
 Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pero el usuario podrá controlarla.</translation>
+<translation id="241739814668386424"> Si se inhabilita esta política, el usuario no podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
+
+      Si se habilita, el usuario podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
+
+      De forma predeterminada, esta política está inhabilitada.</translation>
 <translation id="2421677964966613267">Esta política dejó de estar disponible en M88; Chrome ya no admite Flash. Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
 
       Si no la estableces, se aplicará <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
@@ -4126,13 +4131,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si la inhabilitas, se quitará el ícono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otra forma de activar y desactivar las funciones del navegador seguirán comportándose según lo esperado independientemente de si esta política está habilitada o inhabilitada.</translation>
-<translation id="6793420507738858152">Si se habilita la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
-
-      Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
-
-      Si habilitas esta política o no la estableces, se habilitará la función de <ph name="PRODUCT_NAME" />. Si la inhabilitas, la función no estará disponible.
-
-      Esta política es una solución alternativa orientada a la adaptación de las empresas a corto plazo y estará disponible al menos hasta la versión 91 de Chrome.</translation>
 <translation id="6795485990775913659">Permitir la impresión solo sin PIN</translation>
 <translation id="6800181452282128474">No enviar consultas a Quirks Servers</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
@@ -4648,6 +4646,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7407441173422042771">Esta política controla la predicción de red en <ph name="PRODUCT_NAME" />. Controla la precarga de DNS, la preconexión a TCP y SSL, y la representación previa de páginas web.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la predicción de red, pero el usuario podrá cambiarla.</translation>
+<translation id="7412456346709338637">Habilita el acceso de datos para dispositivos periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permite las conexiones de acceso remoto a esta máquina</translation>
 <translation id="7417972229667085380">Indica el porcentaje en el que debe ajustarse la demora de inactividad en el modo de presentación (en desuso).</translation>
 <translation id="7421483919690710988">Establecer tamaño de caché de disco de medios en bytes</translation>
@@ -5454,6 +5453,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       "1412.24.34": Actualizar solo a esta versión específica
 
       Advertencia: No se recomienda configurar restricciones de la versión, ya que pueden impedir que los usuarios reciban actualizaciones de software y correcciones de seguridad muy importantes. La restricción de las actualizaciones a un prefijo de una versión específica puede poner en riesgo a los usuarios.</translation>
+<translation id="8510545352780142790">Inhabilita la tunelización PCIe. Los dispositivos periféricos Thunderbolt/USB4 compatibles funcionarán con todas sus capacidades</translation>
 <translation id="8519264904050090490">Direcciones URL de excepción manual de usuario administrado</translation>
 <translation id="8519516251436131647">Habilita las combinaciones de teclas para las funciones de accesibilidad.
 
@@ -5491,6 +5491,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si no se establece, se utilizará un período predeterminado.
 
           El valor de la política debe especificarse en milisegundos.</translation>
+<translation id="8599956038998209006">Habilita la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4, lo que limita las capacidades de los dispositivos</translation>
 <translation id="8603454805657060638">Si estableces la política, el administrador podrá cambiar la dirección MAC (control de acceso al medio) cuando enchufes un dispositivo al conector. Cuando un conector está enchufado a algunos modelos de dispositivos, la dirección MAC designada para el conector del dispositivo ayuda a identificar el dispositivo de forma predeterminada en Ethernet.
 
       Si seleccionas "DeviceDockMacAddress" o no estableces la política, se usará la dirección MAC designada para el conector del dispositivo.

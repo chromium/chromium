@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Прифатени картички</translation>
 <translation id="1021753677514347426">Грешкава се случува поради сертификат што вие или некој друг сте го инсталирале на уредот. Сертификатов е познато дека се користи за надзор и пресретнување мрежи и Chromium нема доверба во него. Иако постојат и легитимни случаи за надзор, како на пр., во училишна или компаниска мрежа, Chromium сака да се увери дека знаете дека постои надзор, дури и ако не може да го сопрете. Надзорот може да се случи во кој било прелистувач или апликација што пристапува на интернет.</translation>
 <translation id="1024111578869940408">Напаѓачите понекогаш имитираат сајтови, така што вршат тешко забележливи промени во интернет-адресата.</translation>
+<translation id="1028781062521375153">Прикажи детали</translation>
 <translation id="1030706264415084469"><ph name="URL" /> сака трајно да складира податоци на вашиот уред</translation>
 <translation id="1032854598605920125">Ротирај надесно</translation>
 <translation id="1036348656032585052">Исклучи</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">Користете ги фонтовите на компјутерот за да создавате содржини со висока верност</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Лево</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> е вашиот код за да продолжи <ph name="EMBEDDED_ORIGIN" /> на <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи повеќе</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">Правила за корисникот</translation>
 <translation id="1640244768702815859">Обидете се да ја <ph name="BEGIN_LINK" />посетите почетната страница на сајтов<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Одложи го печатењето до</translation>
+<translation id="164212631332220697">Платете со <ph name="CARD_DETAIL" /> при наплатата.</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1645368109819982629">Неподдржан протокол</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@
 <translation id="4879725228911483934">Отвора и поставува прозорци на вашиот екран</translation>
 <translation id="4880827082731008257">Историја на пребарување</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4885256590493466218">Платете со <ph name="CARD_DETAIL" /> при наплатата</translation>
 <translation id="4889420713887366944">Копче „Отвори прозорец Инкогнито“, притиснете Enter за да отворите нов прозорец „Инкогнито“ и да прелистувате приватно</translation>
 <translation id="4892518386797173871">Заден дел</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> е вашиот код за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Обележете ја картичкава</translation>
 <translation id="8751426954251315517">Обидете се повторно следниот пат</translation>
+<translation id="8757526089434340176">Достапна е понуда на Google Pay</translation>
 <translation id="8759274551635299824">Картичкава е истечена</translation>
 <translation id="87601671197631245">Сајтов користи застарена конфигурација за безбедност, што може да ги изложи вашите податоци (на пример, лозинките, пораките или кредитните картички) кога се испраќаат на овој сајт.</translation>
 <translation id="8761567432415473239">Безбедното прелистување на Google неодамна <ph name="BEGIN_LINK" />најде штетни програми<ph name="END_LINK" /> на <ph name="SITE" />.</translation>

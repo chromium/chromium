@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Gdy będzie to możliwe, tekst na stronach internetowych będzie się wyświetlać w Twoim preferowanym języku.</translation>
 <translation id="1952728750904661634">Zaloguj się na konto zarządzane</translation>
 <translation id="1965935827552890526">Dokończ czynności rozpoczęte w innym otwartym oknie Chrome.</translation>
+<translation id="1973912524893600642">Zachowaj dane</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
@@ -297,6 +298,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
 <translation id="4042870976416480368">Znajdź na stronie</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
+<translation id="4079195788735381731">Organizacja Cię wylogowała</translation>
 <translation id="4082688844002261427">Zarządzaj personalizacją wyszukiwarki, reklam i innych usług na podstawie historii przeglądania</translation>
 <translation id="408404951701638773">Pasek wyszukiwania jest teraz łatwiej dostępny</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
@@ -409,6 +411,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5327248766486351172">Nazwa</translation>
 <translation id="5339316356165661760">Włącz synchronizację</translation>
+<translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Otwórz obraz</translation>
 <translation id="5407969256130905701">Odrzuć zmiany</translation>
 <translation id="5416022985862681400">Ostatnie 7 dni</translation>
@@ -494,6 +497,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6254066287920239840">Otwieraj linki w aplikacji, a nie w przeglądarce.</translation>
 <translation id="6255097610484507482">Edytuj kartę kredytową</translation>
 <translation id="6284652193729350524">Proponuj tłumaczenie z języka: <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Aby włączyć Bezpieczne przeglądanie, otwórz <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" /> i kliknij Bezpieczne przeglądanie.</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6308436439357671616">Umożliwia robienie i przesyłanie zdjęć.</translation>
 <translation id="6324528485781869530">Zmień konto synchronizacji</translation>

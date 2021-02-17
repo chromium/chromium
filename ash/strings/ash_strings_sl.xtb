@@ -11,6 +11,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1037492556044956303">Dodana je bila naprava <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">delni</translation>
 <translation id="1047773237499189053">Na voljo je nova funkcija. Uporabite tipko s puščico gor, če želite izvedeti več o tem.</translation>
+<translation id="1052916631016577720">Optično preberi element</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilna naprava: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4351433414020964307">Pomočnik se nalaga ...</translation>
 <translation id="4356930093361201197">visokokontrastni način</translation>
 <translation id="4371348193907997655">Nastavitve predvajanja</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, moč signala: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Povezovanje …</translation>
 <translation id="4379531060876907730">To so vaša orodja pisala</translation>
 <translation id="4389184120735010762">Pritisnili ste bližnjično tipko za zasidrano lupo. Ali jo želite vklopiti?</translation>
@@ -586,6 +588,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6043212731627905357">Ta monitor se ne ujema z napravo <ph name="DEVICE_TYPE" /> (monitor ni podprt).</translation>
 <translation id="6043994281159824495">Odjava</translation>
 <translation id="6047696787498798094">Ko preklopite na drugega uporabnika, bo skupna raba zaslona ustavljena. Ali želite nadaljevati?</translation>
+<translation id="6050368268239407309">Orodja za predstavitev</translation>
 <translation id="6054305421211936131">Prijava s pametno kartico</translation>
 <translation id="6059276912018042191">Nedavni Chromovi zavihki</translation>
 <translation id="6062360702481658777">Samodejno boste odjavljeni čez <ph name="LOGOUT_TIME_LEFT" />.</translation>

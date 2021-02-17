@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">가능한 경우 웹사이트에서 텍스트를 선호하는 언어로 표시합니다.</translation>
 <translation id="1952728750904661634">관리 계정으로 로그인</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
+<translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">파일을 열 수 있는 애플리케이션이 기기에 없습니다.</translation>
 <translation id="4042870976416480368">페이지에서 찾기</translation>
 <translation id="4049507953662678203">네트워크에 연결되었는지 확인한 후 다시 시도해 주세요.</translation>
+<translation id="4079195788735381731">조직에서 나를 로그아웃시킴</translation>
 <translation id="4082688844002261427">Google 검색, 광고 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="408404951701638773">검색창을 사용하기가 더욱 쉬워졌습니다.</translation>
 <translation id="411254640334432676">다운로드에 실패했습니다.</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5339316356165661760">동기화 사용</translation>
+<translation id="5360976571138293719">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="5388358297987318779">이미지 열기</translation>
 <translation id="5407969256130905701">변경사항 취소</translation>
 <translation id="5416022985862681400">지난 7일</translation>
@@ -496,6 +499,7 @@
 <translation id="6254066287920239840">브라우저 대신 앱에서 링크 열기</translation>
 <translation id="6255097610484507482">신용카드 수정</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
+<translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6308436439357671616">액세스를 허용하면 사진을 찍고 업로드할 수 있습니다.</translation>
 <translation id="6324528485781869530">동기화 계정 전환</translation>

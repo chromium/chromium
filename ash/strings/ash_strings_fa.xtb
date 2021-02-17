@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> اضافه شد</translation>
 <translation id="1047017786576569492">جزئی</translation>
 <translation id="1047773237499189053">ویژگی جدید دردسترس است، برای اطلاعات بیشتر از کلید «پیکان روبه بالا» استفاده کنید.</translation>
+<translation id="1052916631016577720">اسکن مورد</translation>
 <translation id="1056775291175587022">شبکه‌ای وجود ندارد</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />:‏ <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">دستگاه تلفن همراه: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
 <translation id="4356930093361201197">حالت تضاد بالا</translation>
 <translation id="4371348193907997655">تنظیمات ارسال محتوا</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4379531060876907730">این‌ها ابزارهای قلم شما هستند</translation>
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">این نمایشگر با <ph name="DEVICE_TYPE" /> سازگار نیست (نمایشگر پشتیبانی نمی‌شود).</translation>
 <translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
 <translation id="6047696787498798094">زمانی که به یک کاربر دیگر جابه‌جا می‌شوید، هم‌رسانی صفحه‌نمایش متوقف می‌شود. می‌خواهید ادامه دهید؟</translation>
+<translation id="6050368268239407309">ابزارهای ارائه</translation>
 <translation id="6054305421211936131">ورود به سیستم با کارت هوشمند</translation>
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>

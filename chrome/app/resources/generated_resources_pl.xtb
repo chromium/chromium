@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Otwórz link w aplikacji <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nowe powiadomienie}few{# nowe powiadomienia}many{# nowych powiadomień}other{# nowego powiadomienia}}</translation>
 <translation id="1139343347646843679">Podczas konfigurowania Linuksa wystąpił błąd. Skontaktuj się z administratorem.</translation>
+<translation id="1139923033416533844">Wykorzystanie pamięci</translation>
 <translation id="1140351953533677694">Dostęp do urządzeń Bluetooth i szeregowych</translation>
 <translation id="114036956334641753">Dźwięk i napisy</translation>
 <translation id="1140746652461896221">Blokuj treść na każdej odwiedzanej stronie</translation>
@@ -679,6 +680,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1734212868489994726">Jasnoniebieski</translation>
 <translation id="1734230530703461088">Nie udało się załadować rozszerzeń w przewidzianym na to czasie. Skontaktuj się z administratorem.</translation>
 <translation id="1734824808160898225">Program <ph name="PRODUCT_NAME" /> może nie móc sam się aktualizować</translation>
+<translation id="173522743738009831">Piaskownica prywatności – informacje</translation>
 <translation id="173628468822554835">OK. Domyślnie strony, które odwiedzasz po raz pierwszy, nie będą wysyłać Ci powiadomień.</translation>
 <translation id="1736419249208073774">Odkrywaj</translation>
 <translation id="1737968601308870607">Zgłoś błąd</translation>
@@ -997,6 +999,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2108349519800154983">{COUNT,plural, =1{Numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
 <translation id="211144231511833662">Wyczyść typy</translation>
 <translation id="2111670510994270194">Nowa karta po prawej</translation>
+<translation id="2111810003053064883">Reklamodawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
 <translation id="2113479184312716848">&amp;Otwórz plik</translation>
 <translation id="2113921862428609753">Dostęp do informacji o urzędzie</translation>
@@ -1026,6 +1029,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2138398485845393913">Połączenie z urządzeniem „<ph name="DEVICE_NAME" />” jest nadal w toku</translation>
 <translation id="2139545522194199494">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, połącz</translation>
 <translation id="2139919072249842737">Przycisk konfiguracji</translation>
+<translation id="2140788884185208305">Kondycja baterii</translation>
 <translation id="214169863967063661">Otwórz ustawienia wyglądu</translation>
 <translation id="2142328300403846845">Otwórz link jako</translation>
 <translation id="2142582065325732898">Aby zobaczyć ostatnio otwarte karty, włącz <ph name="LINK1_BEGIN" />Synchronizację Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Więcej informacji<ph name="LINK2_END" /></translation>
@@ -1540,6 +1544,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2712173769900027643">Poproś o pozwolenie</translation>
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2714393097308983682">Sklep Google Play</translation>
+<translation id="2715640894224696481">Żądanie klucza bezpieczeństwa</translation>
 <translation id="2715751256863167692">Ta aktualizacja resetuje Chromebooka i usuwa dane bieżącego użytkownika.</translation>
 <translation id="2716986496990888774">Tym ustawieniem zarządza rodzic.</translation>
 <translation id="2718395828230677721">Podświetlenie</translation>
@@ -1999,6 +2004,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3238192140106069382">Łączę i weryfikuję</translation>
 <translation id="3239373508713281971">Usunięto limit czasu dla aplikacji <ph name="APP_NAME" />.</translation>
 <translation id="3241680850019875542">Wybierz główny katalog rozszerzenia, które chcesz umieścić w pakiecie. Aby zaktualizować rozszerzenie, wybierz również plik kluczy prywatnych do ponownego użycia.</translation>
+<translation id="3242905690080165035">Piaskownica prywatności jest ciągle opracowywana i jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Nadal wyciszaj dźwięk</translation>
 <translation id="3246107497225150582">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 dnia}few{Aktualizacja urządzenia nastąpi w ciągu # dni}many{Aktualizacja urządzenia nastąpi w ciągu # dni}other{Aktualizacja urządzenia nastąpi w ciągu # dnia}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – błąd sieci</translation>
@@ -2159,6 +2165,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3428419049384081277">Jesteś zalogowany</translation>
 <translation id="3428747202529429621">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
 <translation id="3428800329481094896">Pobieram klucze SSH kontenera Linuksa</translation>
+<translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
 <translation id="3429271624041785769">Języki treści internetowych</translation>
 <translation id="3429275422858276529">Dodaj tę stronę do zakładek, by później łatwo ją znaleźć</translation>
 <translation id="3432227430032737297">Usuń wszystkie wyświetlone</translation>
@@ -2455,7 +2462,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
 <translation id="3742666961763734085">Nie znaleziono jednostki organizacyjnej o tej nazwie. Spróbuj jeszcze raz.</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
-<translation id="3746127522257263495">Nie jest możliwe dodanie konta G Suite dla Szkół i Uczelni w aplikacjach na Androida.</translation>
 <translation id="3747077776423672805">Aby usunąć aplikacje, otwórz Ustawienia &gt; Sklep Google Play &gt; Zarządzaj ustawieniami Androida &gt; Aplikacje lub Menedżer aplikacji. Następnie kliknij aplikację, którą chcesz odinstalować (jeśli to konieczne, przesuń palcem w prawo lub w lewo, by ją znaleźć), a potem kliknij Odinstaluj lub Wyłącz.</translation>
 <translation id="3748706263662799310">Zgłoś błąd</translation>
 <translation id="3752582316358263300">OK</translation>
@@ -3142,6 +3148,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4541662893742891060">Nie można połączyć z tym profilem. Aby uzyskać pomoc techniczną, skontaktuj się ze swoim operatorem.</translation>
 <translation id="4541810033354695636">rzeczywistość rozszerzona</translation>
 <translation id="4542520061254486227">Odczyt Twoich danych na stronie <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Gdy tysiące użytkowników – tak jak tłum na koncercie – mają podobne zainteresowania, reklamodawcy mogą się o tym dowiedzieć i wybrać reklamy skierowane do tego tłumu, a nie do pojedynczych osób.</translation>
 <translation id="4543778593405494224">Menedżer certyfikatów</translation>
 <translation id="4544174279960331769">Domyślny niebieski awatar</translation>
 <translation id="4545028762441890696">Aby ponownie je włączyć, zaakceptuj nowe uprawnienia:</translation>
@@ -3190,6 +3197,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4582563038311694664">Zresetuj wszystkie ustawienia</translation>
 <translation id="4585793705637313973">Edytuj stronę</translation>
 <translation id="4586275095964870617">Nie udało się otworzyć <ph name="URL" /> w alternatywnej przeglądarce. Skontaktuj się z administratorem systemu.</translation>
+<translation id="4587645918878093912">W przypadku ważnych usług, takich jak wyświetlanie trafnych reklam czy pomiar wydajności strony, witryny polegają dziś na wielu technologiach, takich jak pliki cookie innych firm.</translation>
 <translation id="4589713469967853491">Dzienniki zostały zapisane w katalogu Pobrane.</translation>
 <translation id="4590324241397107707">Pamięć masowa bazy danych</translation>
 <translation id="4592891116925567110">Aplikacja do rysowania rysikiem</translation>
@@ -4616,6 +4624,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6271348838875430303">korekta cofnięta</translation>
 <translation id="6272643420381259437">Podczas pobierania wtyczki wystąpił błąd (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">Jakość</translation>
+<translation id="6275846828483490454">Piaskownica prywatności to trwająca inicjatywa, która pomaga chronić Cię przed mechanizmami śledzącymi.</translation>
 <translation id="6276210637549544171">Serwer proxy <ph name="PROXY_SERVER" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="6277105963844135994">Przekroczono czas oczekiwania na sieć</translation>
 <translation id="6277518330158259200">Wykon&amp;aj zrzut ekranu</translation>
@@ -5270,6 +5279,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7018275672629230621">Odczyt i zmiana historii przeglądania</translation>
 <translation id="7019805045859631636">Szybko</translation>
 <translation id="7022562585984256452">Strona główna została ustawiona.</translation>
+<translation id="7023206482239788111">Piaskownica prywatności zachowuje najważniejsze funkcje otwartej sieci, tworząc lepsze metody świadczenia tych usług – nie uszkadzając stron i jednocześnie chroniąc użytkownika przed ukradkowym śledzeniem w witrynach.</translation>
 <translation id="7025082428878635038">Przedstawiamy nowy sposób nawigowania gestami</translation>
 <translation id="7025190659207909717">Zarządzanie komórkową usługą transmisji danych</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}many{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}other{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}}</translation>
@@ -5448,6 +5458,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7234010996000898150">Anuluję przywracanie Linuksa</translation>
 <translation id="7235716375204803342">Pobieram aktywność…</translation>
 <translation id="7235737137505019098">Na Twoim kluczu bezpieczeństwa nie ma wystarczającej ilości miejsca na kolejne konta.</translation>
+<translation id="7238640585329759787">Gdy włączysz tę funkcję, witryny mogą dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, szczegóły</translation>
 <translation id="7240339475467890413">Połączyć z nowym hotspotem?</translation>
 <translation id="7241389281993241388">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby zaimportować certyfikat klienta.</translation>
@@ -5847,7 +5858,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7696063401938172191">Na telefonie <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Gdy udostępniasz ekran, szczegóły są ukryte</translation>
 <translation id="7697598343108519171">Użyj aparatu, by zeskanować kod QR</translation>
-<translation id="7699968112832915395">Nie można dodać konta</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701869757853594372">Uchwyty USER</translation>
 <translation id="7701928712056789451">Te elementy mogą być niebezpieczne</translation>
@@ -6108,6 +6118,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7968833647796919681">Włącz zbieranie danych o wydajności</translation>
 <translation id="7968982339740310781">Wyświetl szczegóły</translation>
 <translation id="7969046989155602842">Command</translation>
+<translation id="7970618607181090249">Wykryto ekran dotykowy</translation>
 <translation id="7970673414865679092">Szczegóły sieci Ethernet</translation>
 <translation id="7970882136539140748">W tej chwili nie udało się zapisać karty</translation>
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
@@ -6546,6 +6557,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8480082892550707549">Nawet jeśli wcześniej pobierałeś pliki z tej strony, może ona być przez jakiś czas niebezpieczna (np. z powodu ataku hakerów). Spróbuj pobrać ten plik później.</translation>
 <translation id="8480869669560681089">Nieznane urządzenie firmy <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potwierdź uprawnienia USB</translation>
+<translation id="8481980314595922412">Funkcje próbne są włączone</translation>
 <translation id="8487678622945914333">Powiększ</translation>
 <translation id="8489156414266187072">Spersonalizowane sugestie są pokazywane tylko na Twoim koncie</translation>
 <translation id="8490896350101740396">Zaktualizowano aplikacje kiosku: „<ph name="UPDATED_APPS" />”. Uruchom ponownie urządzenie, by zakończyć proces aktualizacji.</translation>
@@ -6931,6 +6943,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8892168913673237979">Wszystko gotowe.</translation>
 <translation id="8893801527741465188">Odinstalowano</translation>
 <translation id="8893928184421379330">Niestety, nie można rozpoznać urządzenia <ph name="DEVICE_LABEL" />.</translation>
+<translation id="8894761918470382415">Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="8895454554629927345">Lista zakładek</translation>
 <translation id="8898786835233784856">Wybierz następną kartę</translation>
 <translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
@@ -7057,6 +7070,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9031549947500880805">Twórz kopie zapasowe na Dysku Google. W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji.</translation>
 <translation id="9033765790910064284">Kontynuuj mimo to</translation>
 <translation id="9033857511263905942">&amp;Wklej</translation>
+<translation id="903386633044383289">Połącz z urządzeniami</translation>
 <translation id="9037818663270399707">Twoje połączenie nie jest prywatne w zakresie całego ruchu w sieci</translation>
 <translation id="9037965129289936994">Pokaż tekst oryginalny</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Pozostała jedna próba.}few{Pozostały # próby.}many{Pozostało # prób.}other{Pozostało # próby.}}</translation>
@@ -7189,6 +7203,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9180281769944411366">Może to potrwać kilka minut. Uruchamiam kontener Linuksa.</translation>
 <translation id="9180380851667544951">Strona może udostępniać ekran</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
+<translation id="9185818139207739329">Włącz funkcje próbne piaskownicy prywatności</translation>
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
 <translation id="9188732951356337132">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Używaj telefonu z Androidem jako klucza bezpieczeństwa</translation>
@@ -7236,6 +7251,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="942532530371314860"><ph name="APP_NAME" /> udostępnia kartę i dźwięk z Chrome.</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="947329552760389097">&amp;Sprawdź elementy</translation>
+<translation id="949052952791086881">Administrator wymaga, aby ten użytkownik logował się, gdy urządzenie jest w trybie online</translation>
 <translation id="951991426597076286">Odrzuć</translation>
 <translation id="956500788634395331">Masz ochronę przed potencjalnie niebezpiecznymi rozszerzeniami</translation>
 <translation id="957960681186851048">Ta strona próbowała pobrać automatycznie wiele plików</translation>

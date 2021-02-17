@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">‏در Chromium Canary پشتیبانی نمی‌شود</translation>
 <translation id="3639997914391704523">‏Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید.</translation>
 <translation id="3805899903892079518">‏Chromium به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم‌خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
+<translation id="3946918322491238254">همچنان می‌توانید همه نشانک‌ها، سابقه، گذرواژه‌ها، و دیگر تنظیماتتان را در این دستگاه ببینید. اگر تغییری ایجاد کنید، با حسابتان همگام‌سازی نخواهد شد.</translation>
 <translation id="4099085513035183040">‏در «Chromium بتا» پشتیبانی نمی‌شود</translation>
 <translation id="4166206055865952171">‏Chromium را مرورگر پیش‌فرض کنید</translation>
 <translation id="4555020257205549924">‏وقتی این قابلیت روشن است، Chromium ترجمه صفحات نوشته‌شده به سایر زبان‌ها را با استفاده از ترجمه Google پیشنهاد می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
 <translation id="5308226104666789935">‏Chromium نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="5521125884468363740">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، به سیستم وارد شوید و همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
+<translation id="5544795779875591523">‏انتخاب کنید آیا داده‌های Chromium شما از این دستگاه پاک شود یا نگه داشته شود؟</translation>
 <translation id="5573014823074921752">‏نکته Chromium. برای دیدن گزینه‌های بیشتر برگه، دکمه «نمایش برگه‌ها» را در نوارابزار (واقع در پایین یا بالای صفحه) لمس کنید و نگه دارید.</translation>
 <translation id="5700709190537129682">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="5777187867430702742">‏صفحه Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">‏حق نسخه‌برداری <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
 <translation id="8663480472502753423">‏به‌روز نگه داشتن Chromium</translation>
 <translation id="8776843108004031667">‏این حساب و همه داده‌های ذخیره‌نشده از Chromium برداشته می‌شود.</translation>
+<translation id="894437814105052438">‏وقتی از سیستم خارج شوید، Chromium هیچ‌کدام از داده‌های جدید را با «حساب Google» شما همگام‌سازی نخواهد کرد. داده‌هایی که قبلاً همگام‌سازی شده‌اند در حساب می‌مانند.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="921174536258924340">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
+<translation id="994708389219151914">‏<ph name="HOSTED_DOMAIN" /> حسابتان را مدیریت می‌کند، درنتیجه داده‌های Chromium شما از این دستگاه پاک خواهد شد.</translation>
 </translationbundle>

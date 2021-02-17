@@ -2465,7 +2465,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3742666961763734085">Der blev ikke fundet nogen organisationsenhed med det pågældende navn. Prøv igen.</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
-<translation id="3746127522257263495">Der kan ikke tilføjes G Suite for Education-konti i Android-apps.</translation>
 <translation id="3747077776423672805">Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer dine Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.</translation>
 <translation id="3748706263662799310">Rapporter en fejl</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -5862,7 +5861,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7696063401938172191">På din "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Oplysningerne er skjulte, når du deler din skærm</translation>
 <translation id="7697598343108519171">Scan QR-koden med kameraet</translation>
-<translation id="7699968112832915395">Kontoen kan ikke tilføjes</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUGER-håndtag</translation>
 <translation id="7701928712056789451">Disse elementer kan være skadelige</translation>
@@ -6947,6 +6945,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8892168913673237979">Fuldført</translation>
 <translation id="8893801527741465188">Afinstallationen er fuldført</translation>
 <translation id="8893928184421379330">Vi beklager, men <ph name="DEVICE_LABEL" />-enheden kunne ikke genkendes.</translation>
+<translation id="8894761918470382415">Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="8895454554629927345">Liste over bogmærker</translation>
 <translation id="8898786835233784856">Vælg næste fane</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
@@ -7254,6 +7253,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="942532530371314860"><ph name="APP_NAME" /> deler en Chrome-fane og lyd.</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947329552760389097">&amp;Inspect Elements (Undersøg elementer)</translation>
+<translation id="949052952791086881">Din administrator kræver, at denne bruger logger ind, mens enheden er online</translation>
 <translation id="951991426597076286">Afvis</translation>
 <translation id="956500788634395331">Du er beskyttet mod potentielt skadelige udvidelser</translation>
 <translation id="957960681186851048">Dette website har forsøgt at downloade flere filer automatisk</translation>

@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">लिंक <ph name="APP" /> मध्ये उघडा</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नवीन सूचना}other{# नवीन सूचना}}</translation>
 <translation id="1139343347646843679">Linux कॉंफिगर करताना एरर आली. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="1139923033416533844">मेमरी वापर</translation>
 <translation id="1140351953533677694">तुमची ब्लूटूथ आणि सिरीअल डिव्हाइस ॲक्सेस करा</translation>
 <translation id="114036956334641753">ऑडिओ आणि कॅप्शन</translation>
 <translation id="1140746652461896221">तुम्ही भेट देत असलेल्या कोणत्याही पेजवरील आशय ब्लॉक करा</translation>
@@ -676,6 +677,7 @@
 <translation id="1734212868489994726">फिकट निळा</translation>
 <translation id="1734230530703461088">वेळेच्या मर्यादेमध्ये एक्स्टेंशन लोड करता आली नाहीत. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> कदाचित अपडेट होत राहणार नाही</translation>
+<translation id="173522743738009831">गोपनीयता सॅंडबॉक्स याविषयी</translation>
 <translation id="173628468822554835">समजले. बाय डीफॉल्ट, तुम्ही भेट देत असलेल्या नवीन साइट तुम्हाला सूचना पाठवणार नाहीत.</translation>
 <translation id="1736419249208073774">एक्सप्लोर करा</translation>
 <translation id="1737968601308870607">बग नोंदवा</translation>
@@ -998,6 +1000,7 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
 <translation id="211144231511833662">प्रकार साफ करा</translation>
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
+<translation id="2111810003053064883">जाहिरातदार जाहिरातींच्या परिणामकारकतेचा अशा प्रकारे अभ्यास करू शकतात ज्यामुळे ते तुम्हाला सर्व साइटवर ट्रॅक करत नाहीत.</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2113479184312716848">&amp;फाइल उघडा...</translation>
 <translation id="2113921862428609753">अधिकृतता माहिती ॲक्सेस</translation>
@@ -1027,6 +1030,7 @@
 <translation id="2138398485845393913">"<ph name="DEVICE_NAME" />" चे कनेक्शन अद्याप प्रगतीपथावर आहे</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, कनेक्ट करा</translation>
 <translation id="2139919072249842737">बटण सेट करा</translation>
+<translation id="2140788884185208305">बॅटरीची स्थिती</translation>
 <translation id="214169863967063661">स्वरूप सेटिंग्ज उघडा</translation>
 <translation id="2142328300403846845">लिंक या फॉरमॅटमध्ये उघडा</translation>
 <translation id="2142582065325732898">अलीकडील Chrome टॅब पाहण्यासाठी <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> सुरू करा. <ph name="LINK2_BEGIN" />अधिक जाणून घ्या<ph name="LINK2_END" /></translation>
@@ -1541,6 +1545,7 @@
 <translation id="2712173769900027643">परवानगी मागा</translation>
 <translation id="2713444072780614174">पांढरा</translation>
 <translation id="2714393097308983682">Google Play स्टोअर</translation>
+<translation id="2715640894224696481">सिक्युरिटी कीची विनंती</translation>
 <translation id="2715751256863167692">हे अपडेट तुमचे Chromebook रीसेट करते आणि तुमचा सद्य वापरकर्ता डेटा काढून टाकते.</translation>
 <translation id="2716986496990888774">हे सेटिंग पालकांकडून व्यवस्थापित केले आहे.</translation>
 <translation id="2718395828230677721">रात्री प्रकाश</translation>
@@ -2000,6 +2005,7 @@
 <translation id="3238192140106069382">कनेक्ट करत आहे आणि पडताळणी करत आहे</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> साठी वेळ मर्यादा काढली</translation>
 <translation id="3241680850019875542">पॅक करण्यासाठी एक्स्टेंशनची मूळ डिरेक्टरी निवडा. एक एक्स्टेंशन अपडेट करण्याकरिता, पुनर्वापरासाठी खाजगी की, फाइल देखील निवडा.</translation>
+<translation id="3242905690080165035">गोपनीयता सॅंडबॉक्स अद्याप विकसित केला जात आहे आणि तो निवडक प्रदेशांमध्ये उपलब्ध आहे. सध्यासाठी, तृतीय पक्ष कुकी यांसारख्या सध्याच्या वेब तंत्रज्ञानांचा वापर करणे सुरू ठेवून साइट गोपनीयता सॅंडबॉक्स वापरून पाहू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">आवाज म्यूट करणे सुरू ठेवा</translation>
 <translation id="3246107497225150582">{0,plural, =1{डिव्हाइस एका दिवसाच्या आत अपडेट करा}other{डिव्हाइस # दिवसांच्या आत अपडेट करा}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क एरर</translation>
@@ -2160,6 +2166,7 @@
 <translation id="3428419049384081277">तुम्ही साइन इन केलेले आहे!</translation>
 <translation id="3428747202529429621">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षिततेत सुधारणा करण्यासाठी वापरले जाऊ शकते</translation>
 <translation id="3428800329481094896">Linux कंटेनर ssh की मिळवत आहे</translation>
+<translation id="3429160811076349561">चाचणी वैशिष्ट्ये बंद आहेत</translation>
 <translation id="3429271624041785769">वेब आशयाच्या भाषा</translation>
 <translation id="3429275422858276529">हे पेज नंतर सहजपणे शोधण्यासाठी ते बुकमार्क करा</translation>
 <translation id="3432227430032737297">सर्व दाखवलेले काढून टाका</translation>
@@ -2456,7 +2463,6 @@
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
 <translation id="3742666961763734085">त्या नावाचे संस्थात्मक एकक शोधू शकत नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
-<translation id="3746127522257263495">Android अ‍ॅप्समध्ये G Suite for Education खाते जोडण्यास सपोर्ट नाही.</translation>
 <translation id="3747077776423672805">ॲप्स काढून टाकण्यासाठी, सेटिंग्ज &gt; Google Play स्टोअर &gt; Android प्राधान्ये व्यवस्थापित करा &gt; ॲप्स किंवा अ‍ॅप्लिकेशन व्यवस्थापक वर जा. नंतर तुम्हाला अनइंस्टॉल करायच्या असलेल्या ॲपवर टॅप करा (ॲप शोधण्‍यासाठी तुम्हाला कदाचित उजवीकडे किंवा डावीकडे स्वाइप करावे लागेल). यानंतर अनइंस्टॉल करा किंंवा बंद करा वर टॅप करा.</translation>
 <translation id="3748706263662799310">एक दोष नोंदवा</translation>
 <translation id="3752582316358263300">ठीक आहे...</translation>
@@ -3141,6 +3147,8 @@
 <translation id="4541662893742891060">या प्रोफाइलशी कनेक्ट करता आले नाही. तांत्रिक सपोर्टसाठी, कृपया तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="4541810033354695636">ऑगमेंटेड रीअ‍ॅलिटी</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> आणि <ph name="WEBSITE_2" /> वर तुमचा डेटा वाचा</translation>
+<translation id="454331522350252598">कॉन्सर्टमधील जनसमुदायाप्रमाणे, हजारो वापरकर्त्यांना एकाच प्रकारच्या गोष्टीमध्ये स्वारस्य आहे हे जाहिरातदार जाणून घेऊ शकतात आणि ते एखाद्या व्यक्तीसाठी जाहिराती निवडण्याऐवजी
+जनसमुदायासाठी निवडतात.</translation>
 <translation id="4543778593405494224">सर्टिफिकेट व्यवस्थापक</translation>
 <translation id="4544174279960331769">डीफॉल्ट निळा अवतार</translation>
 <translation id="4545028762441890696">पुन्हा सुरू करण्यासाठी, नवीन परवानग्या मंजूर करा:</translation>
@@ -3189,6 +3197,7 @@
 <translation id="4582563038311694664">सर्व सेटिंग्ज रीसेट करा</translation>
 <translation id="4585793705637313973">पृष्ठ संपादित करा</translation>
 <translation id="4586275095964870617"><ph name="URL" /> पर्यायी ब्राउझरमध्ये उघडता आले नाही. कृपया तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="4587645918878093912">आज वेबसाइट, उपयुक्त जाहिराती दाखवणे आणि साइटच्या परफॉर्मन्सचे मूल्यमापन करणे यांसारख्या महत्त्वाच्या सेवांसाठी तृतीय पक्ष कुकी यांसारख्या अनेक तंत्रज्ञानांवर अवलंबून आहेत.</translation>
 <translation id="4589713469967853491">डाउनलोड डिरेक्टरीमध्ये लॉग यशस्वीरीत्या राइट केले गेले.</translation>
 <translation id="4590324241397107707">डेटाबेस स्टोरेज</translation>
 <translation id="4592891116925567110">स्टायलस ड्रॉइंग अ‍ॅप</translation>
@@ -4616,6 +4625,7 @@
 <translation id="6271348838875430303">दुरुस्ती पहिल्यासारखी केली</translation>
 <translation id="6272643420381259437">प्लग-इन डाउनलोड करताना (<ph name="ERROR" />) एरर आली</translation>
 <translation id="6273677812470008672">गुणवत्ता</translation>
+<translation id="6275846828483490454">गोपनीयता सॅंडबॉक्स हा खुल्या वेबच्या संरक्षणासाठी सुरू असलेला उपक्रम आहे, जो ट्रॅकिंग यंत्रणांपासून तुमचे संरक्षण करण्यात मदत करेल.</translation>
 <translation id="6276210637549544171">प्रॉक्सी <ph name="PROXY_SERVER" /> ला वापरकर्ता नाव आणि पासवर्ड आवश्यक आहे.</translation>
 <translation id="6277105963844135994">नेटवर्क कालबाह्य</translation>
 <translation id="6277518330158259200">स्क्रीनशॉट घ्या</translation>
@@ -5270,6 +5280,7 @@
 <translation id="7018275672629230621">तुमचा ब्राउझिंग इतिहास वाचा आणि बदला</translation>
 <translation id="7019805045859631636">जलद</translation>
 <translation id="7022562585984256452">तुमचे होम पेज सेट केले गेले आहे.</translation>
+<translation id="7023206482239788111">गोपनीयता सॅंडबॉक्स हा साइटच्या कामात व्यत्यय न आणता या सेवांना काम करण्यासाठी आणखी चांगले मार्ग तयार करून खुल्या वेबचे महत्त्व संरक्षित करतो आणि तुम्हाला संपूर्ण वेबवर गुप्तपणे ट्रॅक केले जाण्यापासून प्रतिबंधित करतो.</translation>
 <translation id="7025082428878635038">जेश्चरसोबत नेव्हिगेट करण्याचा नवीन मार्ग सादर करत आहोत</translation>
 <translation id="7025190659207909717">मोबाइल डेटा सेवा व्यवस्थापन</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Open All in Incognito Window}=1{गुप्त विंडोमध्ये उघडा}other{सर्व ({COUNT}) गुप्त विंडोमध्ये उघडा}}</translation>
@@ -5448,6 +5459,7 @@
 <translation id="7234010996000898150">Linux रिस्टोअर रद्द करत आहे</translation>
 <translation id="7235716375204803342">ॲक्टिव्हिटी प्राप्त करत आहे...</translation>
 <translation id="7235737137505019098">तुमच्या सिक्युरिटी कीमध्ये कोणत्याही आणखी खात्यांसाठी पुरेशी जागा नाही.</translation>
+<translation id="7238640585329759787">सुरू केलेला असतो तेव्हा, साइट त्यांचा आशय आणि सेवा देण्यासाठी येथे दाखवलेल्या गोपनीयता संरक्षण तंत्रांचा वापर करू शकतात. यामध्ये सर्व साइट ट्रॅक करण्याच्या पर्यायांचा समावेश आहे. वेळोवेळी आणखी चाचण्या जोडल्या जाऊ शकतात.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, तपशील</translation>
 <translation id="7240339475467890413">नवीन हॉटस्पॉटशी कनेक्ट करायचे?</translation>
 <translation id="7241389281993241388">कृपया क्लायंट प्रमाणपत्र इंपोर्ट करण्यासाठी <ph name="TOKEN_NAME" /> मध्ये साइन इन करा.</translation>
@@ -5847,7 +5859,6 @@
 <translation id="7696063401938172191">तुमच्या '<ph name="PHONE_NAME" />' वर:</translation>
 <translation id="7697166915480294040">तुम्ही तुमची स्क्रीन शेअर करत असताना तपशील लपवले जातात</translation>
 <translation id="7697598343108519171">QR कोड स्कॅन करण्यासाठी कॅमेरा वापरा</translation>
-<translation id="7699968112832915395">खाते जोडू शकत नाही</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7701869757853594372">वापरकर्ता हँडल</translation>
 <translation id="7701928712056789451">हे आयटम धोकादायक असू शकतात</translation>
@@ -6106,6 +6117,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7968833647796919681">कामप्रदर्शन डेटा संकलन सुरू करा</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
 <translation id="7969046989155602842">कमांड</translation>
+<translation id="7970618607181090249">टच स्क्रीन डिटेक्ट केली</translation>
 <translation id="7970673414865679092">इथरनेटचे तपशील</translation>
 <translation id="7970882136539140748">आता कार्ड सेव्ह केले जाऊ शकत नाही</translation>
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
@@ -6544,6 +6556,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8480082892550707549">तुम्ही यापूर्वी या साइट वरून फाइल डाउनलोड केल्या असल्या तरीदेखील, साइट कदाचित तात्पुरती असुरक्षित (हॅक केलेली) असू शकते. ही फाईल नंतर डाउनलोड करण्‍याचा प्रयत्न करा.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>
 <translation id="8481187309597259238">USB परवानगीची निश्चिती करा</translation>
+<translation id="8481980314595922412">चाचणी वैशिष्ट्ये सुरू आहेत</translation>
 <translation id="8487678622945914333">झूम इन करा</translation>
 <translation id="8489156414266187072">वैयक्तिक सूचना फक्त तुमच्या खात्यावर दाखवल्या जातात</translation>
 <translation id="8490896350101740396">खालील कियोस्क अ‍ॅप्स "<ph name="UPDATED_APPS" />" अपडेट करण्यात आले आहेत. कृपया अपडेट प्रक्रिया पूर्ण करण्यासाठी डिव्हाइस रीबूट करा.</translation>
@@ -7054,6 +7067,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9031549947500880805">Google Drive वर बॅकअप घ्या. कधीही तुमचा डेटा सहजपणे रिस्टोअर करा किंवा डिव्हाइस स्विच करा. तुमच्या बॅकअपमध्ये अ‍ॅप डेटा समाविष्ट असतो.</translation>
 <translation id="9033765790910064284">तरीही सुरू ठेवा</translation>
 <translation id="9033857511263905942">&amp;पेस्ट करा</translation>
+<translation id="903386633044383289">डिव्हाइसशी कनेक्ट करा</translation>
 <translation id="9037818663270399707">तुमचे कनेक्शन सर्व नेटवर्क ट्रॅफिकसाठी खाजगी नाही</translation>
 <translation id="9037965129289936994">मूळ दर्शवा</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{तुमच्याकडे एक प्रयत्न शिल्लक आहे.}other{तुमच्याकडे # प्रयत्न शिल्लक आहेत.}}</translation>
@@ -7186,6 +7200,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9180281769944411366">या प्रक्रियेला काही मिनिटे लागू शकतात. Linux कंटेनर सुरू करत आहे.</translation>
 <translation id="9180380851667544951">साइट तुमची स्क्रीन शेअर करू शकते</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ॲप}other{# अ‍ॅप्स}}</translation>
+<translation id="9185818139207739329">गोपनीयता सॅंडबॉक्स चाचण्या सुरू करा</translation>
 <translation id="9186963452600581158">लहान मुलाचे Google खाते वापरून साइन इन करा</translation>
 <translation id="9188732951356337132">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवत आहे. हे तुमच्या लहान मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित केलेला डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांना देखील मदत करेल. तुमच्या लहान मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली असल्यास, ही माहिती त्याच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. <ph name="BEGIN_LINK2" />अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">सिक्युरिटी की म्हणून तुमचा Android फोन वापरा</translation>

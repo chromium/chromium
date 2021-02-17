@@ -107,6 +107,7 @@
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="3712633734921637892">बॅटरीची क्षमता वाढवण्यासाठी किंवा तापमान कमी करण्यासाठी सीपीयूचा वेग सध्या मर्यादित केला आहे</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
+<translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
@@ -237,6 +239,7 @@
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6189418609903030344">वापरानुसार बॅटरीची क्षमता कमी होत जाते</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
+<translation id="6223752125779001553">कोणतेही स्कॅनर उपलब्ध नाहीत</translation>
 <translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>

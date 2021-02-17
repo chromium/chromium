@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Не е поддржана на Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="3805899903892079518">Chromium нема пристап до фотографиите или видеата. Овозможете пристап во Поставки на iOS &gt; Приватност &gt; Фотографии.</translation>
+<translation id="3946918322491238254">Сѐ уште може да ги гледате сите ваши обележувачи, историја, лозинки и другите поставки на уредов. Промените нема да се синхронизираат со вашата сметка.</translation>
 <translation id="4099085513035183040">Не е поддржана на Chromium Beta</translation>
 <translation id="4166206055865952171">Поставете го Chromium како стандарден прелистувач</translation>
 <translation id="4555020257205549924">Кога е вклучена функцијава, Chromium ќе нуди да преведува страници што се напишани на други јазици користејќи го „Преведи на Google“. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да провери дали има ажурирања</translation>
 <translation id="5521125884468363740">За да ги гледате картичките секаде каде што користите Chromium, најавете се и вклучете синхронизација</translation>
+<translation id="5544795779875591523">Дали сакате да ги избришете податоците од Chromium од уредов или да ги задржите?</translation>
 <translation id="5573014823074921752">Совет за Chromium: за повеќе опции за картичките, допрете го и задржете го копчето „Прикажи ги картичките“ во алатникот, што се наоѓа најдолу или најгоре на екранот.</translation>
 <translation id="5700709190537129682">Chromium не може да ги провери вашите лозинки</translation>
 <translation id="5777187867430702742">Страница на Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="8663480472502753423">Одржувајте го Chromium ажурен</translation>
 <translation id="8776843108004031667">Сметкава и сите незачувани податоци ќе се отстранат од Chromium.</translation>
+<translation id="894437814105052438">Кога ќе се одјавите, Chromium нема да ги синхронизира новите податоци со вашата сметка на Google. Претходно синхронизираните податоци ќе останат во сметката.</translation>
 <translation id="9022552996538154597">Најавете се на Chromium</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
 <translation id="921174536258924340">Chromium не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
+<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> управува со вашата сметка, па податоците од Chromium ќе се избришат од уредов.</translation>
 </translationbundle>

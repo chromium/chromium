@@ -2453,7 +2453,6 @@
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3742666961763734085">找不到使用该名称的组织单元。请重试。</translation>
 <translation id="3744111561329211289">后台同步</translation>
-<translation id="3746127522257263495">不支持在 Android 应用中添加 G Suite 教育版帐号。</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3752582316358263300">确定...</translation>
@@ -5844,7 +5843,6 @@
 <translation id="7696063401938172191">在您的“<ph name="PHONE_NAME" />”上：</translation>
 <translation id="7697166915480294040">当您共享屏幕时，系统会隐藏详细信息</translation>
 <translation id="7697598343108519171">使用摄像头扫描二维码</translation>
-<translation id="7699968112832915395">无法添加帐号</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701869757853594372">用户句柄</translation>
 <translation id="7701928712056789451">这些内容可能含有危险因素</translation>

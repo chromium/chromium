@@ -999,6 +999,11 @@ Si cette règle est définie sur "False", l'écran de confidentialité sera touj
 Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur.
 
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
+<translation id="241739814668386424"> Si cette règle est désactivée, l'utilisateur ne pourra pas connecter complètement son périphérique Thunderbolt/USB4 via la tunnellisation PCIe.
+
+      Si elle est activée, l'utilisateur pourra connecter complètement son périphérique Thunderbolt/USB4 via la tunnellisation PCIe
+
+      Cette règle est désactivée par défaut.</translation>
 <translation id="2421677964966613267">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Elle permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter le plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> s'applique à tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
@@ -1443,6 +1448,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Les URL doivent être au format HTTPS, comme "https://example.com".
 
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2972531017545674240">Permet d'établir la liste des applications Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de spécifier les utilisateurs qui ne peuvent pas les désinstaller ni les désactiver.
+
+      Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire tel que <ph name="URL_LABEL" /> (qui correspond à l'URL de l'application Web à installer) et de trois membres facultatifs tels que <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (qui indique où s'ouvre l'application Web ; par défaut, elle s'ouvre dans un nouvel onglet), <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> ou <ph name="MS_WIN_NAME" />) et <ph name="FALLBACK_APP_NAME_LABEL" /> (disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ; permet de remplacer le nom de l'application, sauf pour les progressive web apps (PWA) – dans le cas d'une PWA avec authentification requise pour l'installation, le nom de l'application temporaire peut être remplacé).
+
+      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applications à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
@@ -4127,13 +4137,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle est désactivée, l'icône des fonctionnalités expérimentales du navigateur ne s'affiche pas dans la barre d'outils.
 
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
-<translation id="6793420507738858152">Lorsqu'elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> envoie des en-têtes de requête précis qui fournissent des informations sur le navigateur et l'environnement de l'utilisateur.
-
-      Il s'agit d'une fonctionnalité complémentaire. Toutefois, les nouveaux en-têtes peuvent entraîner un dysfonctionnement de certains sites Web qui appliquent des restrictions en ce qui concerne les caractères que peuvent contenir les requêtes.
-
-      Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="PRODUCT_NAME" /> est activée. Si cette règle est désactivée, la fonctionnalité n'est pas disponible.
-
-      Cette règle permet d'assurer la transition à court terme. Elle sera disponible au moins jusqu'à la version 91 de Chrome.</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
 <translation id="6810445994095397827">Bloquer JavaScript sur ces sites</translation>
@@ -4653,6 +4656,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, la prédiction réseau est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="7412456346709338637">Activer l'accès aux données des périphériques Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Autoriser les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421483919690710988">Définir la taille du cache du disque de support en octets</translation>
@@ -5445,6 +5449,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       "1412.24.34" : installation de cette version spécifique seulement
 
       Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à un préfixe de version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
+<translation id="8510545352780142790">Désactive la tunnellisation PCIe. Les périphériques Thunderbolt/USB4 compatibles fonctionneront au maximum de leur capacité</translation>
 <translation id="8519264904050090490">URL d'exception manuelle des utilisateurs gérés</translation>
 <translation id="8519516251436131647">Activer les raccourcis des fonctionnalités d'accessibilité.
 
@@ -5482,6 +5487,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
+<translation id="8599956038998209006">Active la tunnellisation PCIe pour les périphériques Thunderbolt/USB4, ce qui limite leur capacité</translation>
 <translation id="8603454805657060638">Cette règle permet à l'administrateur de modifier l'adresse MAC (Media Access Control, contrôle d'accès au support) lors de la connexion d'un appareil à la station d'accueil. Lorsqu'une station d'accueil est connectée à certains modèles d'appareils, l'adresse MAC de la station d'accueil définie pour l'appareil est utilisée, par défaut, pour identifier l'appareil sur Ethernet.
 
       Si l'option "DeviceDockMacAddress" est sélectionnée ou que la règle n'est pas configurée, l'adresse MAC de la station d'accueil définie pour l'appareil est utilisée.

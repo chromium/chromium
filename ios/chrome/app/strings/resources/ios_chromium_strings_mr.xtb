@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium कॅनरी वर सपोर्ट नाही</translation>
 <translation id="3639997914391704523">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chromium तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="3805899903892079518">Chromium ला तुमच्या फोटो किंवा व्हिडिओ ॲक्सेस नाही. iOS सेटिंग्ज&gt; गोपनीयता&gt; फोटो  ॲक्सेस सक्षम करा.</translation>
+<translation id="3946918322491238254">तुम्ही तरीही या डिव्हाइसवर तुमचे सर्व बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज पाहू शकता. तुम्ही बदल केल्यास, ते तुमच्या खात्यामध्ये सिंक केले जाणार नाहीत.</translation>
 <translation id="4099085513035183040">Chromium बीटा वर सपोर्ट नाही</translation>
 <translation id="4166206055865952171">Chromium ला तुमचे डीफॉल्ट बनवा</translation>
 <translation id="4555020257205549924">हे वैशिष्ट्य सुरू केल्यावर, Chromium Google भाषांतर वापरून अन्य भाषामध्ये लिहिलेल्या पृष्ठांचा भाषांतर ऑफर करेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chromium ते तपासू शकते.</translation>
 <translation id="5308226104666789935">Chromium अपडेट तपासू शकत नाही</translation>
 <translation id="5521125884468363740">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
+<translation id="5544795779875591523">या डिव्हाइसवरून तुमचा Chromium डेटा साफ करायचा की ठेवायचा?</translation>
 <translation id="5573014823074921752">Chromium टीप. आणखी टॅब पर्यायांसाठी, तुमच्या स्क्रीनच्या तळाशी किंवा सर्वात वर असलेल्या टूलबारवरील टॅब दाखवा बटणाला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5700709190537129682">Chromium तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="5777187867430702742">Chromium पेज</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium लेखक. सर्व हक्क राखीव.</translation>
 <translation id="8663480472502753423">Chromium अप टू डेट ठेवा</translation>
 <translation id="8776843108004031667">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chromium मधून काढून टाकला जाईल.</translation>
+<translation id="894437814105052438">तुम्ही साइन आउट करता तेव्हा, Chromium तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
 <translation id="9022552996538154597">Chromium वर साइन इन करा</translation>
 <translation id="9089354809943900324">Chromium कालबाह्य आहे</translation>
 <translation id="921174536258924340">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium लेखक</translation>
+<translation id="994708389219151914">तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने, या डिव्हाइसवरून तुमचा Chromium डेटा साफ केला जाईल.</translation>
 </translationbundle>

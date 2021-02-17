@@ -11,6 +11,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1037492556044956303">„<ph name="DEVICE_NAME" />“ pridėtas</translation>
 <translation id="1047017786576569492">dalinė</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
+<translation id="1052916631016577720">Elemento nuskaitymas</translation>
 <translation id="1056775291175587022">Nėra tinklų</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilusis: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4351433414020964307">Padėjėjas įkeliamas...</translation>
 <translation id="4356930093361201197">didelio kontrasto režimas</translation>
 <translation id="4371348193907997655">„Cast“ nustatymai</translation>
+<translation id="4378479437904450384">„<ph name="WIRELESS_PROVIDER" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc.</translation>
 <translation id="4378551569595875038">Jungiamasi...</translation>
 <translation id="4379531060876907730">Tai yra jūsų rašiklio įrankiai</translation>
 <translation id="4389184120735010762">Paspaudėte prie doko prijungto didintuvo spartųjį klavišą. Ar norite jį įjungti?</translation>
@@ -586,6 +588,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6043212731627905357">Šis monitorius nesuderinamas su jūsų „<ph name="DEVICE_TYPE" />“ (monitorius nepalaikomas).</translation>
 <translation id="6043994281159824495">Atsijungti dabar</translation>
 <translation id="6047696787498798094">Perjungus naudotoją ekrano bendrinimas bus nutrauktas. Ar norite tęsti?</translation>
+<translation id="6050368268239407309">Pristatymo įrankiai</translation>
 <translation id="6054305421211936131">Prisijungti naudojant išmaniąją kortelę</translation>
 <translation id="6059276912018042191">Pastarieji „Chrome“ skirtukai</translation>
 <translation id="6062360702481658777">Būsite automatiškai atjungti po <ph name="LOGOUT_TIME_LEFT" />.</translation>

@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">Ouvrir le lien dans <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="1139343347646843679">Une erreur s'est produite lors de la configuration de Linux. Veuillez contacter votre administrateur.</translation>
+<translation id="1139923033416533844">Utilisation de mémoire</translation>
 <translation id="1140351953533677694">Accéder à vos appareils reliés via le Bluetooth et le port série</translation>
 <translation id="114036956334641753">Audio et sous-titres</translation>
 <translation id="1140746652461896221">Bloquer le contenu sur toutes les pages visitées</translation>
@@ -678,6 +679,7 @@
 <translation id="1734212868489994726">Bleu clair</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai imparti. Veuillez contacter votre administrateur.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> risque de ne pas rester à jour</translation>
+<translation id="173522743738009831">À propos de Privacy Sandbox</translation>
 <translation id="173628468822554835">OK. Par défaut, les nouveaux sites que vous consultez ne vous enverront pas de notifications.</translation>
 <translation id="1736419249208073774">Découvrir</translation>
 <translation id="1737968601308870607">Signaler un problème</translation>
@@ -1000,6 +1002,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="211144231511833662">Effacer les types</translation>
 <translation id="2111670510994270194">Nouvel onglet à droite</translation>
+<translation id="2111810003053064883">Les annonceurs peuvent évaluer l'efficacité des annonces sans utiliser de suivi intersites.</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2113479184312716848">&amp;Ouvrir un fichier...</translation>
 <translation id="2113921862428609753">Accès aux informations de l'autorité</translation>
@@ -1029,6 +1032,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2138398485845393913">Connexion à l'appareil "<ph name="DEVICE_NAME" />" toujours en cours</translation>
 <translation id="2139545522194199494">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
+<translation id="2140788884185208305">État de la batterie</translation>
 <translation id="214169863967063661">Ouvrir les paramètres d'apparence</translation>
 <translation id="2142328300403846845">Ouvrir le lien avec le compte</translation>
 <translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
@@ -1543,6 +1547,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2712173769900027643">Demander l'autorisation</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">Requête de clé de sécurité</translation>
 <translation id="2715751256863167692">Cette mise à niveau entraîne la réinitialisation de votre Chromebook et la suppression des informations sur l'utilisateur actuelles.</translation>
 <translation id="2716986496990888774">Ce paramètre est géré par un parent.</translation>
 <translation id="2718395828230677721">Écl. nocturne</translation>
@@ -2002,6 +2007,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3238192140106069382">Connexion et validation…</translation>
 <translation id="3239373508713281971">Limite de temps supprimée pour <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
+<translation id="3242905690080165035">Privacy Sandbox est encore en développement et n'est disponible que dans certaines régions. Pour le moment, les sites peuvent essayer Privacy Sandbox sans désactiver les technologies Web actuelles comme les cookies tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Ne pas réactiver le son</translation>
 <translation id="3246107497225150582">{0,plural, =1{Mettre à jour l'appareil d'ici 1 jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Erreur réseau</translation>
@@ -2162,6 +2168,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3428419049384081277">Vous êtes connecté</translation>
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3428800329481094896">Extraction des clés SSH du conteneur Linux…</translation>
+<translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
 <translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
@@ -2458,7 +2465,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3742666961763734085">Impossible de trouver une unité organisationnelle portant ce nom. Veuillez réessayer.</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
-<translation id="3746127522257263495">Il n'est pas possible d'ajouter de compte G Suite for Education dans les applications Android.</translation>
 <translation id="3747077776423672805">Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications, puis appuyez sur l'application que vous souhaitez désinstaller. Vous devrez peut-être balayer l'écran vers la droite ou la gauche pour localiser l'application. Ensuite, appuyez sur "Désinstaller" ou "Désactiver".</translation>
 <translation id="3748706263662799310">Signaler un bug</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -3145,6 +3151,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4541662893742891060">Impossible de se connecter à ce profil. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="4541810033354695636">réalité augmentée</translation>
 <translation id="4542520061254486227">Lire vos données sur <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">Les annonceurs peuvent déterminer que des milliers d'utilisateurs partagent un centre d'intérêt commun (à l'instar d'une foule rassemblée à un concert) et sélectionner des annonces pour ce groupe plutôt que pour un individu spécifique.</translation>
 <translation id="4543778593405494224">Gestionnaire de certificats</translation>
 <translation id="4544174279960331769">Avatar bleu par défaut</translation>
 <translation id="4545028762441890696">Pour réactiver cette extension, acceptez les nouvelles autorisations :</translation>
@@ -3193,6 +3200,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
 <translation id="4585793705637313973">Modifier la page</translation>
 <translation id="4586275095964870617">Impossible d'ouvrir <ph name="URL" /> dans le navigateur secondaire. Veuillez contacter votre administrateur système.</translation>
+<translation id="4587645918878093912">Actuellement, les sites Web s'appuient sur de nombreuses technologies, dont les cookies tiers, pour des services importants, comme afficher des annonces ou mesurer la performance d'un site.</translation>
 <translation id="4589713469967853491">Les journaux ont bien été écrits dans le répertoire des téléchargements.</translation>
 <translation id="4590324241397107707">Stockage des bases de données</translation>
 <translation id="4592891116925567110">Application de dessin avec le stylet</translation>
@@ -4620,6 +4628,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6271348838875430303">correction annulée</translation>
 <translation id="6272643420381259437">Une erreur (<ph name="ERROR" />) s'est produite lors du téléchargement du plug-in.</translation>
 <translation id="6273677812470008672">Qualité</translation>
+<translation id="6275846828483490454">Privacy Sandbox est une initiative de préservation du Web ouvert qui vise à vous protéger des mécanismes de suivi.</translation>
 <translation id="6276210637549544171">Le proxy <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="6277105963844135994">Délai d'expiration du réseau dépassé.</translation>
 <translation id="6277518330158259200">F&amp;aire une capture d'écran</translation>
@@ -5274,6 +5283,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7018275672629230621">Accéder à votre historique de navigation et le modifier</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7022562585984256452">Votre page d'accueil a été définie.</translation>
+<translation id="7023206482239788111">Privacy Sandbox préserve la vitalité du Web ouvert en proposant de meilleures approches pour fournir ces services, afin de vous protéger du suivi indiscret sur Internet sans perturber le fonctionnement des sites.</translation>
 <translation id="7025082428878635038">Découvrez une nouvelle façon de naviguer avec des gestes</translation>
 <translation id="7025190659207909717">Gestion des services Internet mobiles</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Tout ouvrir dans une fenêtre de navigation &amp;privée}=1{Ouvrir dans une fenêtre de navigation &amp;privée}one{Tout ouvrir ({COUNT}) dans une fenêtre de navigation &amp;privée}other{Tout ouvrir ({COUNT}) dans une fenêtre de navigation &amp;privée}}</translation>
@@ -5452,6 +5462,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7234010996000898150">Annulation de la restauration de Linux…</translation>
 <translation id="7235716375204803342">Récupération des activités…</translation>
 <translation id="7235737137505019098">L'espace de stockage de votre clé de sécurité est insuffisant pour y enregistrer d'autres comptes.</translation>
+<translation id="7238640585329759787">Lorsque l'option est activée, les sites peuvent utiliser des techniques qui préservent la vie privée pour fournir leurs contenus et leurs services. Ces techniques incluent des alternatives au suivi intersites. D'autres méthodes pourront être mises à l'essai par la suite.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7240339475467890413">Se connecter au nouveau point d'accès ?</translation>
 <translation id="7241389281993241388">Connectez-vous à <ph name="TOKEN_NAME" /> pour importer le certificat client.</translation>
@@ -5851,7 +5862,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7696063401938172191">Sur votre <ph name="PHONE_NAME" /> :</translation>
 <translation id="7697166915480294040">Les détails sont masqués lors du partage d'écran.</translation>
 <translation id="7697598343108519171">Scanner le code QR à l'aide de l'appareil photo</translation>
-<translation id="7699968112832915395">Impossible d'ajouter le compte</translation>
 <translation id="7701040980221191251">Rien</translation>
 <translation id="7701869757853594372">Handles utilisateur</translation>
 <translation id="7701928712056789451">Ces éléments peuvent être dangereux</translation>
@@ -6112,6 +6122,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7968833647796919681">Activer la collecte de données relatives aux performances</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
 <translation id="7969046989155602842">Commande</translation>
+<translation id="7970618607181090249">Écran tactile détecté</translation>
 <translation id="7970673414865679092">Informations sur le réseau Ethernet</translation>
 <translation id="7970882136539140748">Impossible d'enregistrer la carte pour le moment</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
@@ -6550,6 +6561,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8480082892550707549">Même si vous avez déjà téléchargé des fichiers provenant de ce site, il est possible que ce dernier soit temporairement dangereux (suite à un piratage). Réessayez de télécharger ce fichier ultérieurement.</translation>
 <translation id="8480869669560681089">Appareil de <ph name="VENDOR_NAME" /> inconnu</translation>
 <translation id="8481187309597259238">Confirmer l'autorisation USB</translation>
+<translation id="8481980314595922412">Les fonctionnalités à l'essai sont activées</translation>
 <translation id="8487678622945914333">Zoom avant</translation>
 <translation id="8489156414266187072">Les suggestions personnelles ne sont affichées que sur votre compte</translation>
 <translation id="8490896350101740396">Les applications kiosque "<ph name="UPDATED_APPS" />" ont bien été mises à jour. Veuillez redémarrer l'appareil afin de terminer la procédure.</translation>
@@ -6934,6 +6946,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8892168913673237979">Vous êtes prêt</translation>
 <translation id="8893801527741465188">Désinstallation terminée</translation>
 <translation id="8893928184421379330">Désolé, impossible de reconnaître le périphérique <ph name="DEVICE_LABEL" />.</translation>
+<translation id="8894761918470382415">Protection de l'accès aux données pour les périphériques</translation>
 <translation id="8895454554629927345">Liste des favoris</translation>
 <translation id="8898786835233784856">Sélectionner l'onglet suivant</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
@@ -7060,6 +7073,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9031549947500880805">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées.</translation>
 <translation id="9033765790910064284">Continuer</translation>
 <translation id="9033857511263905942">&amp;Coller</translation>
+<translation id="903386633044383289">Connecter les périphériques</translation>
 <translation id="9037818663270399707">Votre connexion n'est pas privée pour l'ensemble du trafic réseau</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Il vous reste une tentative.}one{Il vous reste # tentative.}other{Il vous reste # tentatives.}}</translation>
@@ -7192,6 +7206,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9180281769944411366">Cette opération peut prendre quelques minutes. Démarrage du conteneur Linux…</translation>
 <translation id="9180380851667544951">Le site peut partager votre écran</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Application}one{# application}other{# applications}}</translation>
+<translation id="9185818139207739329">Activer l'essai de Privacy Sandbox</translation>
 <translation id="9186963452600581158">Se connecter avec le compte Google d'un enfant</translation>
 <translation id="9188732951356337132">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Utiliser votre téléphone Android comme clé de sécurité</translation>
@@ -7239,6 +7254,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et un contenu audio.</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>
+<translation id="949052952791086881">Votre administrateur exige que cet utilisateur se connecte quand l'appareil a accès à Internet</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement dangereuses</translation>
 <translation id="957960681186851048">Une tentative de téléchargement automatique de plusieurs fichiers a été initiée via ce site</translation>

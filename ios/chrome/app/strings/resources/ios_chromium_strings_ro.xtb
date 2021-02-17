@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Nu se acceptă în Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
+<translation id="3946918322491238254">Poți vedea în continuare toate marcajele, istoricul, parolele și alte setări pe acest dispozitiv. Dacă faci modificări, ele nu se vor sincroniza cu contul.</translation>
 <translation id="4099085513035183040">Nu se acceptă în Chromium Beta</translation>
 <translation id="4166206055865952171">Setează Chromium ca browser prestabilit</translation>
 <translation id="4555020257205549924">Când această funcție este activată, Chromium se va oferi să traducă paginile scrise în alte limbi utilizând Google Traducere. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
 <translation id="5521125884468363740">Pentru a vedea toate filele tale deschise în Chromium, conectează-te și activează sincronizarea</translation>
+<translation id="5544795779875591523">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi.</translation>
 <translation id="5573014823074921752">Sfat pentru Chromium: pentru mai multe opțiuni de file, atinge lung butonul Afișează filele din bara de instrumente, care se află în partea de sus sau de jos a ecranului.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8663480472502753423">Menține browserul Chromium actualizat</translation>
 <translation id="8776843108004031667">Acest cont și toate datele nesalvate vor fi eliminate din Chromium.</translation>
+<translation id="894437814105052438">Când te deconectezi, Chromium nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>
 <translation id="921174536258924340">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv.</translation>
 </translationbundle>

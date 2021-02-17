@@ -11,6 +11,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
 <translation id="1047017786576569492">partiel</translation>
 <translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
+<translation id="1052916631016577720">Scanner</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobile : <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4351433414020964307">Chargement de l'Assistant…</translation>
 <translation id="4356930093361201197">le mode Contraste élevé</translation>
 <translation id="4371348193907997655">Paramètres Cast</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Connexion</translation>
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci clavier de la loupe ancrée. Voulez-vous l'activer ?</translation>
@@ -586,6 +588,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6047696787498798094">Le partage d'écran s'arrête lorsque vous passez à un autre utilisateur. Voulez-vous continuer ?</translation>
+<translation id="6050368268239407309">Outils de présentation</translation>
 <translation id="6054305421211936131">Se connecter avec une carte à puce</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6062360702481658777">Vous allez être déconnecté automatiquement dans <ph name="LOGOUT_TIME_LEFT" />.</translation>

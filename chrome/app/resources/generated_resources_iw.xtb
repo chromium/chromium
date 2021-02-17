@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">פתיחת הקישור ב-<ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{התראה חדשה}two{# התראות חדשות}many{# התראות חדשות}other{# התראות חדשות}}</translation>
 <translation id="1139343347646843679">‏אירעה שגיאה במהלך ההגדרה של Linux. יש לפנות למנהל המערכת.</translation>
+<translation id="1139923033416533844">שימוש בזיכרון</translation>
 <translation id="1140351953533677694">‏גישה ל-Bluetooth ולהתקנים סיריאליים</translation>
 <translation id="114036956334641753">אודיו וכתוביות</translation>
 <translation id="1140746652461896221">חסימת תוכן בכל דף שאליו נכנסת</translation>
@@ -676,6 +677,7 @@
 <translation id="1734212868489994726">תכלת</translation>
 <translation id="1734230530703461088">טעינת התוספים במסגרת הזמן שהוקצב נכשלה. יש לפנות למנהל המערכת.</translation>
 <translation id="1734824808160898225">ייתכן ש-<ph name="PRODUCT_NAME" /> לא יוכל להתעדכן</translation>
+<translation id="173522743738009831">‏מידע על ארגז חול (Sandbox) של הגדרות פרטיות</translation>
 <translation id="173628468822554835">הבנתי. כברירת מחדל, אתרים חדשים שאליהם נכנסת לא ישלחו לך התראות.</translation>
 <translation id="1736419249208073774">מידע נוסף</translation>
 <translation id="1737968601308870607">דיווח על באג</translation>
@@ -998,6 +1000,7 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}two{# מספרי טלפון}many{# מספרי טלפון}other{# מספרי טלפון}}</translation>
 <translation id="211144231511833662">ניקוי הסוגים</translation>
 <translation id="2111670510994270194">כרטיסייה חדשה מצד שמאל</translation>
+<translation id="2111810003053064883">מפרסמים יכולים לבחון את יעילות המודעות בדרך שאינה כוללת מעקב אחריך באתרים שונים.</translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2113479184312716848">פתיחת &amp;קובץ...</translation>
 <translation id="2113921862428609753">גישה לפרטי רשות</translation>
@@ -1027,6 +1030,7 @@
 <translation id="2138398485845393913">החיבור אל "<ph name="DEVICE_NAME" />" עדיין מתבצע</translation>
 <translation id="2139545522194199494">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="2139919072249842737">לחצן ההגדרה</translation>
+<translation id="2140788884185208305">תקינות הסוללה</translation>
 <translation id="214169863967063661">פתיחת הגדרות המראה</translation>
 <translation id="2142328300403846845">פתיחת קישור בתור</translation>
 <translation id="2142582065325732898">‏יש להפעיל את <ph name="LINK1_BEGIN" />סנכרון Chrome<ph name="LINK1_END" /> כדי לצפות בכרטיסיות האחרונות ב-Chrome. <ph name="LINK2_BEGIN" />מידע נוסף<ph name="LINK2_END" /></translation>
@@ -1541,6 +1545,7 @@
 <translation id="2712173769900027643">בקשת רשות</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2715640894224696481">בקשה למפתח אבטחה</translation>
 <translation id="2715751256863167692">‏השדרוג הזה מאפס את ה-Chromebook ומסיר את נתוני המשתמש הנוכחיים.</translation>
 <translation id="2716986496990888774">ההגדרה הזו מנוהלת על-ידי הורה.</translation>
 <translation id="2718395828230677721">תאורת לילה</translation>
@@ -2001,6 +2006,7 @@
 <translation id="3238192140106069382">מתבצעים התחברות ואימות</translation>
 <translation id="3239373508713281971">מגבלת הזמן של <ph name="APP_NAME" /> הוסרה</translation>
 <translation id="3241680850019875542">יש לבחור את ספריית הבסיס של התוסף שיש לארוז. כדי לעדכן תוסף, יש לבחור גם את קובץ המפתח הפרטי שבו ניתן להשתמש שוב.</translation>
+<translation id="3242905690080165035">‏הטכנולוגיות של 'ארגז חול של הגדרות פרטיות' עדיין בשלבי פיתוח פעילים, וזמינות רק באזורים נבחרים. נכון לעכשיו, ניתן לנסות באתרים את 'ארגז חול של הגדרות פרטיות' במקביל לשימוש בטכנולוגיות אינטרנטיות קיימות, כמו קובצי cookies של צד שלישי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">המשך השתקת הצלילים</translation>
 <translation id="3246107497225150582">{0,plural, =1{יש לעדכן את המכשיר בתוך יום אחד}two{יש לעדכן את המכשיר בתוך # ימים}many{יש לעדכן את המכשיר בתוך # ימים}other{יש לעדכן את המכשיר בתוך # ימים}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - שגיאת רשת</translation>
@@ -2161,6 +2167,7 @@
 <translation id="3428419049384081277">התחברת!</translation>
 <translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3428800329481094896">‏מתבצע אחזור של מפתחות ה-SSH לקונטיינר של Linux</translation>
+<translation id="3429160811076349561">תכונות תקופת הניסיון מושבתות</translation>
 <translation id="3429271624041785769">השפות של תוכן האינטרנט</translation>
 <translation id="3429275422858276529">כדאי לסמן את הדף בסימנייה כדי לגשת אליו בקלות בהמשך</translation>
 <translation id="3432227430032737297">‏הסרת כל קובצי ה-cookie המוצגים</translation>
@@ -2457,7 +2464,6 @@
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
 <translation id="3742666961763734085">לא ניתן למצוא יחידה ארגונית בשם הזה. יש לנסות שוב.</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
-<translation id="3746127522257263495">‏אין תמיכה בהוספה של חשבון G Suite for Education באפליקציות ל-Android.</translation>
 <translation id="3747077776423672805">‏כדי להסיר אפליקציות, צריך לעבור אל 'הגדרות' &gt; 'חנות Google Play' &gt; 'ניהול העדפות Android' &gt;'אפליקציות' או 'מנהל אפליקציות'. לאחר מכן צריך להקיש על האפליקציה שרוצים להסיר (ייתכן שיהיה צורך להחליק ימינה או שמאלה כדי למצוא את האפליקציה). לסיום, יש להקיש על 'הסרת התקנה' או 'השבתה'.</translation>
 <translation id="3748706263662799310">דיווח על באג</translation>
 <translation id="3752582316358263300">אישור...</translation>
@@ -3144,6 +3150,7 @@
 <translation id="4541662893742891060">לא ניתן להתחבר לפרופיל הזה. עליך לפנות לספק לקבלת תמיכה טכנית.</translation>
 <translation id="4541810033354695636">מציאות רבודה</translation>
 <translation id="4542520061254486227">קריאת הנתונים שלך באתרים <ph name="WEBSITE_1" /> ו-<ph name="WEBSITE_2" /></translation>
+<translation id="454331522350252598">מפרסמים יוכלו לזהות מתי אלפי משתמשים חולקים את אותו תחום עניין, כמו קהל בהופעה, ולבחור מודעות לקהל במקום למשתמש יחיד.</translation>
 <translation id="4543778593405494224">מנהל האישורים</translation>
 <translation id="4544174279960331769">דמות ברירת מחדל כחולה</translation>
 <translation id="4545028762441890696">כדי להפעיל את התוסף מחדש, יש לאשר את ההרשאות החדשות:</translation>
@@ -3192,6 +3199,7 @@
 <translation id="4582563038311694664">איפוס כל ההגדרות</translation>
 <translation id="4585793705637313973">עריכת הדף</translation>
 <translation id="4586275095964870617">לא ניתן לפתוח את <ph name="URL" /> בדפדפן חלופי. יש לפנות למנהל המערכת.</translation>
+<translation id="4587645918878093912">‏כיום, אתרים משתמשים בטכנולוגיות שונות, כמו קובצי cookie של צד שלישי, כדי לספק שירותים חשובים כמו הצגת מודעות רלוונטיות ומדידת ביצועי האתר.</translation>
 <translation id="4589713469967853491">היומנים נכתבו בהצלחה בספרייה 'הורדות'.</translation>
 <translation id="4590324241397107707">אחסון מסדי נתונים</translation>
 <translation id="4592891116925567110">אפליקציה לציור עם סטיילוס</translation>
@@ -4618,6 +4626,7 @@
 <translation id="6271348838875430303">התיקון בוטל</translation>
 <translation id="6272643420381259437">אירעה שגיאה (<ph name="ERROR" />) במהלך הורדת הפלאגין</translation>
 <translation id="6273677812470008672">איכות</translation>
+<translation id="6275846828483490454">‏היוזמה 'ארגז חול (Sandbox) של הגדרות פרטיות' היא מסגרת מתמשכת לשימור של האינטרנט הפתוח, שתעזור להגן עליך מפני מנגנוני מעקב.</translation>
 <translation id="6276210637549544171">‏לשרת ה-proxy ‏<ph name="PROXY_SERVER" /> נדרשים שם משתמש וסיסמה.</translation>
 <translation id="6277105963844135994">תם הזמן הקצוב לתפוגה של הרשת</translation>
 <translation id="6277518330158259200">צ&amp;ילום מסך</translation>
@@ -5272,6 +5281,7 @@
 <translation id="7018275672629230621">לקרוא ולשנות את היסטוריית הגלישה שלך</translation>
 <translation id="7019805045859631636">מהיר</translation>
 <translation id="7022562585984256452">דף הבית שלך הוגדר.</translation>
+<translation id="7023206482239788111">בעזרת 'ארגז חול של הגדרות פרטיות', החיוניות של הרשת הפתוחה נשמרת על ידי יצירת דרכים טובות יותר לבצע את השירותים האלו – בלי לפרוץ לאתרים, ותוך כדי מניעת מעקב בסתר אחריך ברחבי האינטרנט.</translation>
 <translation id="7025082428878635038">דרכים חדשות לנווט באמצעות תנועות</translation>
 <translation id="7025190659207909717">ניהול שירות של נתונים סלולריים</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{פתיחת כול הכתובות בחלון &amp;אנונימי}=1{פתיחה בחלון &amp;גלישה בסתר}two{פתיחת כול הכתובות ({COUNT}) בחלון &amp;אנונימי}many{פתיחת כול הכתובות ({COUNT}) בחלון &amp;אנונימי}other{פתיחת כול הכתובות ({COUNT}) בחלון &amp;אנונימי}}</translation>
@@ -5450,6 +5460,7 @@
 <translation id="7234010996000898150">‏המערכת מבטלת את שחזור Linux</translation>
 <translation id="7235716375204803342">מתבצע אחזור פעילויות...</translation>
 <translation id="7235737137505019098">במפתח האבטחה שלך אין מספיק מקום לחשבונות נוספים.</translation>
+<translation id="7238640585329759787">כאשר התכונה מופעלת, אתרים יוכלו להשתמש בשיטות שימור הפרטיות המוצגות כאן כדי לספק את התוכן ואת השירותים שלהם. השיטות האלו כוללות חלופות למעקב בין אתרים. ייתכן שיתווספו עוד תקופות ניסיון בהמשך.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, פרטים</translation>
 <translation id="7240339475467890413">להתחבר לנקודה חדשה לשיתוף אינטרנט?</translation>
 <translation id="7241389281993241388">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייבא את אישור הלקוח.</translation>
@@ -5849,7 +5860,6 @@
 <translation id="7696063401938172191">ב-'<ph name="PHONE_NAME" />' שלך:</translation>
 <translation id="7697166915480294040">הפרטים מוסתרים בזמן שיתוף המסך</translation>
 <translation id="7697598343108519171">‏סריקת קוד QR באמצעות המצלמה</translation>
-<translation id="7699968112832915395">לא ניתן להוסיף חשבון</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7701869757853594372">מזהים ייחודיים של משתמשים</translation>
 <translation id="7701928712056789451">הפריטים האלה עשויים להיות מסוכנים</translation>
@@ -6109,6 +6119,7 @@
 <translation id="7968833647796919681">הפעלת איסוף של נתוני ביצועים</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7969046989155602842">פקודה</translation>
+<translation id="7970618607181090249">זוהה מסך מגע</translation>
 <translation id="7970673414865679092">פרטים על אתרנט</translation>
 <translation id="7970882136539140748">אי אפשר לשמור את הכרטיס עכשיו</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
@@ -6549,6 +6560,7 @@
 <translation id="8480082892550707549">גם אם הורדת קבצים מהאתר הזה בעבר, ייתכן שהאתר עדיין לא בטוח (נפרץ) באופן זמני. אפשר לנסות להוריד את הקובץ מאוחר יותר.</translation>
 <translation id="8480869669560681089">מכשיר לא מוכר של <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏אישור הרשאת גישה ל-USB</translation>
+<translation id="8481980314595922412">התכונות של תקופת הניסיון מופעלות</translation>
 <translation id="8487678622945914333">התקרבות לתצוגה</translation>
 <translation id="8489156414266187072">הצעות מותאמות אישית מוצגות בחשבון שלך בלבד</translation>
 <translation id="8490896350101740396">אפליקצית הקיוסק הבאות "<ph name="UPDATED_APPS" />" עודכנו. יש להפעיל מחדש את המכשיר כדי להשלים את תהליך העדכון.</translation>
@@ -7060,6 +7072,7 @@
 <translation id="9031549947500880805">‏גיבוי ב-Google Drive. ההגדרה הזו מאפשרת לאחזר נתונים בקלות או לעבור למכשיר אחר בכל שלב. הגיבוי כולל נתוני אפליקציות.</translation>
 <translation id="9033765790910064284">אני רוצה להמשיך בכל זאת</translation>
 <translation id="9033857511263905942">&amp;הדבקה</translation>
+<translation id="903386633044383289">התחברות למכשירים</translation>
 <translation id="9037818663270399707">החיבור שלך אינו פרטי בכל התנועה ברשת</translation>
 <translation id="9037965129289936994">הצגת מקור</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{נשאר לך ניסיון אחד.}two{נשארו לך # ניסיונות.}many{נשארו לך # ניסיונות.}other{נשארו לך # ניסיונות.}}</translation>
@@ -7192,6 +7205,7 @@
 <translation id="9180281769944411366">‏הפעולה עשויה להימשך מספר דקות. מתבצעת הפעלה של הקונטיינר של Linux.</translation>
 <translation id="9180380851667544951">האתר רשאי לשתף את המסך</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{אפליקציה}two{# אפליקציות}many{# אפליקציות}other{# אפליקציות}}</translation>
+<translation id="9185818139207739329">הפעלת תקופות ניסיון של 'ארגז חול של הגדרות פרטיות'</translation>
 <translation id="9186963452600581158">‏כניסה באמצעות חשבון Google של ילד או ילדה</translation>
 <translation id="9188732951356337132">‏שליחה של נתוני אבחון ונתונים על השימוש. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה לא ישמשו כדי לזהות את הילד/ה שלך, והם יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. אם הופעלה בשביל הילד/ה שלך האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלו/ה. <ph name="BEGIN_LINK2" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">‏שימוש בטלפון Android כמפתח אבטחה</translation>

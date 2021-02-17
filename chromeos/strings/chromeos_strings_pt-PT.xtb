@@ -107,6 +107,7 @@
 <translation id="357889014807611375">Wi-Fi com acesso limitado</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
+<translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="3712633734921637892">Atualmente, a velocidade da CPU está limitada para preservar o estado da bateria ou reduzir a temperatura.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniões)</translation>
 <translation id="3748026146096797577">Desligado</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
+<translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
 <translation id="4170700058716978431">FALHOU</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
@@ -237,7 +239,9 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6189418609903030344">A capacidade da bateria diminui com a utilização.</translation>
 <translation id="6191293864534840972">Os servidores de nomes têm um formato incorreto.</translation>
+<translation id="6223752125779001553">Nenhum scanner disponível</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>

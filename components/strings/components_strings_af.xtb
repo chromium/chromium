@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Aanvaarde kaarte</translation>
 <translation id="1021753677514347426">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chromium vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chromium seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
 <translation id="1024111578869940408">Aanvallers boots soms werwe na deur veranderinge aan die webadres te maak wat moeilik is om te sien.</translation>
+<translation id="1028781062521375153">Sien besonderhede</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil groot data permanent op jou toestel berg</translation>
 <translation id="1032854598605920125">Draai kloksgewys</translation>
 <translation id="1036348656032585052">Skakel af</translation>
@@ -146,6 +147,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1462951478840426066">Gebruik die lettertipes op jou rekenaar sodat jy hoëtrou-inhoud kan skep</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Links</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> is jou kode vir <ph name="EMBEDDED_ORIGIN" /> om op <ph name="TOP_ORIGIN" /> voort te gaan</translation>
 <translation id="1472675084647422956">Wys meer</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1640180200866533862">Gebruikerbeleide</translation>
 <translation id="1640244768702815859">Probeer <ph name="BEGIN_LINK" />om die werf se tuisblad te besoek<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Vertraag uitvoer tot</translation>
+<translation id="164212631332220697">Betaal met <ph name="CARD_DETAIL" /> by betaalpunt.</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1645368109819982629">Ongesteunde protokol</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4879725228911483934">Maak vensters oop en plaas hulle op jou skerms</translation>
 <translation id="4880827082731008257">Soekgeskiedenis</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="4885256590493466218">Betaal met <ph name="CARD_DETAIL" /> by betaalpunt</translation>
 <translation id="4889420713887366944">Maak Incognitovenster Oop-knoppie; druk Enter om 'n nuwe incognitovenster oop te maak om privaat te blaai</translation>
 <translation id="4892518386797173871">Agter</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@ Bykomende besonderhede:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is jou kode vir <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Boekmerk hierdie oortjie</translation>
 <translation id="8751426954251315517">Probeer volgende keer weer</translation>
+<translation id="8757526089434340176">Google Pay-aanbieding beskikbaar</translation>
 <translation id="8759274551635299824">Hierdie kaart het verval</translation>
 <translation id="87601671197631245">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde, boodskappe of kredietkaarte) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
 <translation id="8761567432415473239">Google Veiligblaai het onlangs <ph name="BEGIN_LINK" />skadelike programme gevind<ph name="END_LINK" /> op <ph name="SITE" />.</translation>

@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Прихваћене картице</translation>
 <translation id="1021753677514347426">Овај проблем се јавља због сертификата који сте ви или неко други инсталирали на уређају. Сертификат се користи за надгледање и пресретање мрежа и Chromium га не сматра поузданим. Иако постоје поједини оправдани разлози за надгледање, на пример на школској или пословној мрежи, Chromium жели да будете свесни да се то догађа, чак и ако то не можете да спречите. Надгледање је могуће у било ком прегледачу или апликацији која приступа вебу.</translation>
 <translation id="1024111578869940408">Нападачи понекад имитирају сајтове тако што скоро неприметно измене веб-адресу.</translation>
+<translation id="1028781062521375153">Прикажи детаље</translation>
 <translation id="1030706264415084469"><ph name="URL" /> жели трајно да складишти велике количине података на уређају</translation>
 <translation id="1032854598605920125">Окрените у смеру казаљке на сату</translation>
 <translation id="1036348656032585052">Искључи</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">Користи фонтове на рачунару да бисте могли да правите садржај високе верности</translation>
 <translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">Улево</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> је ваш кôд за<ph name="EMBEDDED_ORIGIN" /> помоћу ког можете да наставите на сајту <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи више</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">Смернице за кориснике</translation>
 <translation id="1640244768702815859">Покушајте да <ph name="BEGIN_LINK" />посетите почетну страницу сајта<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Одложи излаз до</translation>
+<translation id="164212631332220697">Плаћајте помоћу картице <ph name="CARD_DETAIL" />.</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1645368109819982629">Неподржани протокол</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1010,6 +1013,7 @@
 <translation id="4879725228911483934">да отвара и поставља прозоре на екране</translation>
 <translation id="4880827082731008257">Претражи историју</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4885256590493466218">Плаћајте помоћу картице <ph name="CARD_DETAIL" /></translation>
 <translation id="4889420713887366944">Дугме Отвори прозор без архивирања, притисните Enter да бисте отворили нов прозор без архивирања и прегледали приватно</translation>
 <translation id="4892518386797173871">Задњи део</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Обележите ову картицу</translation>
 <translation id="8751426954251315517">Пробајте поново следећи пут</translation>
+<translation id="8757526089434340176">Доступна је Google Pay понуда</translation>
 <translation id="8759274551635299824">Ова картица је истекла</translation>
 <translation id="87601671197631245">Овај сајт користи застарелу безбедносну конфигурацију која може да открије ваше информације (на пример, лозинке, поруке или кредитне картице) када се шаљу том сајту.</translation>
 <translation id="8761567432415473239">Google безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило штетне програме<ph name="END_LINK" /> на <ph name="SITE" />.</translation>

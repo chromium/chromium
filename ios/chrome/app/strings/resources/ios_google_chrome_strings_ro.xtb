@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1282031177488366470">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
+<translation id="1314663809820920746">Poți vedea în continuare toate marcajele, istoricul, parolele și alte setări pe acest dispozitiv. Dacă faci modificări, ele nu se vor sincroniza cu Contul Google.</translation>
 <translation id="1479202195792305274">Chrome poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
 <translation id="1504372625950710826">Chrome nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="1682483655351012182">Sincronizează-ți datele din Chromium</translation>
@@ -37,6 +38,7 @@
 <translation id="417201473131094001">Nu se acceptă pe Chrome Canary</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4249068189593983585">Sfat pentru Chrome: pentru mai multe opțiuni de file, atinge lung butonul Afișează filele din bara de instrumente, care se află în partea de sus sau de jos a ecranului.</translation>
+<translation id="4354293865557736921">Alege dacă ștergi datele Chrome de pe dispozitiv sau le păstrezi.</translation>
 <translation id="4523886039239821078">Unele suplimente determină blocarea browserului Chrome. Dezinstalează:</translation>
 <translation id="4633328489441962921">Chrome nu poate căuta actualizări</translation>
 <translation id="4698415050768537821">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
@@ -54,6 +56,7 @@
 <translation id="6238746320622508509">Permite ca Chrome să blocheze filele incognito.</translation>
 <translation id="6573431926118603307">Filele deschise în Chrome pe alte dispozitive vor apărea aici.</translation>
 <translation id="6600954340915313787">Copiat în Chrome</translation>
+<translation id="6634107063912726160">Când te deconectezi, Chrome nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
 <translation id="6648150602980899529">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="6676840375528380067">Ștergi datele tale Chrome de pe acest dispozitiv?</translation>
 <translation id="6822673484890854830">Chrome nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
@@ -73,6 +76,7 @@
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>
 <translation id="7855730255114109580">Google Chrome este actualizat</translation>
 <translation id="8045508249136869751">Pentru a seta Chrome ca browser prestabilit, deschide Setări, atinge Aplicația browser prestabilită și selectează Chrome.</translation>
+<translation id="8109233255338845204">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chrome vor fi șterse de pe acest dispozitiv.</translation>
 <translation id="8160472928944011082">Chrome nu se poate actualiza</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="840168496893712993">Unele suplimente determină blocarea browserului Chrome. Încearcă să le dezinstalezi.</translation>

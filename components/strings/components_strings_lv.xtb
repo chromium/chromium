@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Pieņemtās kartes</translation>
 <translation id="1021753677514347426">Šīs problēmas iemesls ir sertifikāts, kuru jūs vai kāds cits ir instalējis jūsu ierīcē. Ir zināms, ka šis sertifikāts tiek izmantots tīklu pārraudzībai un pārtveršanai, un pārlūks Chromium tam neuzticas. Lai gan pastāv daži likumīgi pārraudzības gadījumi, piemēram, skolas vai uzņēmuma tīklā, pārlūks Chromium vēlas pārliecināties, ka esat par to informēts, pat ja nevarat to apturēt. Pārraudzība var notikt jebkurā pārlūkā vai lietojumprogrammā ar piekļuvi tīmeklim.</translation>
 <translation id="1024111578869940408">Uzbrucēji dažkārt atdarina vietnes, veicot grūti pamanāmas izmaiņas tīmekļa adresē.</translation>
+<translation id="1028781062521375153">Skatīt informāciju</translation>
 <translation id="1030706264415084469">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt jūsu ierīcē lielu datu apjomu.</translation>
 <translation id="1032854598605920125">Pagriezt pulksteņrādītāju kustības virzienā</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
@@ -146,6 +147,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1462951478840426066">izmantot jūsu datorā pieejamos fontus, lai jūs varētu veidot saturu ar augstu precizitāti</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> ir jūsu kods ietvaram <ph name="EMBEDDED_ORIGIN" /> vietnē <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Rādīt vairāk</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1640180200866533862">Lietotāja politikas</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Apmeklējiet vietnes sākumlapu<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Aizkavēt izvadi līdz šādam laika periodam:</translation>
+<translation id="164212631332220697">Maksājiet ar karti <ph name="CARD_DETAIL" />.</translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1645368109819982629">Neatbalstīts protokols</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1007,6 +1010,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4879725228911483934">Atvērt un izvietot logus jūsu ekrānos</translation>
 <translation id="4880827082731008257">Meklēšanas vēsture</translation>
 <translation id="4881695831933465202">Atvērt</translation>
+<translation id="4885256590493466218">Maksājiet ar karti <ph name="CARD_DETAIL" /></translation>
 <translation id="4889420713887366944">Poga “Atvērt inkognito režīma logu”. Lai privātai pārlūkošanai atvērtu jaunu inkognito režīma logu, nospiediet ievadīšanas taustiņu.</translation>
 <translation id="4892518386797173871">Aizmugurējā</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1977,6 +1981,7 @@ Papildu informācija:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ir jūsu kods vietnei <ph name="ORIGIN" />.</translation>
 <translation id="874918643257405732">Saglabāt šo cilni kā grāmatzīmi</translation>
 <translation id="8751426954251315517">Mēģiniet vēlreiz nākamajā reizē</translation>
+<translation id="8757526089434340176">Pieejams Google Pay piedāvājums</translation>
 <translation id="8759274551635299824">Kartes derīguma termiņš ir beidzies</translation>
 <translation id="87601671197631245">Šajā vietnē tiek izmantota novecojusi drošības konfigurācija, tādēļ var tikt atklāta jūsu informācija (piemēram, paroles, ziņojumi vai kredītkaršu dati), kad tā tiek nosūtīta uz šo vietni.</translation>
 <translation id="8761567432415473239">Google drošās pārlūkošanas tehnoloģija nesen vietnē <ph name="SITE" /> <ph name="BEGIN_LINK" />atklāja kaitīgas programmas<ph name="END_LINK" />.</translation>

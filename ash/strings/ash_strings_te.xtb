@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> జోడించబడింది</translation>
 <translation id="1047017786576569492">పాక్షికం</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
+<translation id="1052916631016577720">ఐటెమ్‌ను స్కాన్ చేయి</translation>
 <translation id="1056775291175587022">నెట్‌వ. లేవు</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">సెల్యులార్: <ph name="ADDRESS" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4351433414020964307">సహాయకం లోడ్ అవుతోంది...</translation>
 <translation id="4356930093361201197">అధిక కాంట్రాస్ట్ మోడ్</translation>
 <translation id="4371348193907997655">ప్రసార సెట్టింగ్‌లు</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" /> శాతం</translation>
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
 <translation id="4379531060876907730">ఇవి మీ స్టైలస్ సాధనాలు</translation>
 <translation id="4389184120735010762">మీరు డాక్ చేసిన మాగ్నిఫైయర్‌ కోసం కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
@@ -587,6 +589,7 @@
 <translation id="6043212731627905357">మీ <ph name="DEVICE_TYPE" />తో ఈ మానిటర్ పని చేయడం లేదు (మానిటర్‌కు మద్దతు లేదు).</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
 <translation id="6047696787498798094">మీరు మరొక వినియోగదారుకు మారినప్పుడు స్క్రీన్ షేర్‌ ఆపివేయబడుతుంది. మీరు కొనసాగించాలని అనుకుంటున్నారా?</translation>
+<translation id="6050368268239407309">ప్రెజెంటేషన్ టూల్స్</translation>
 <translation id="6054305421211936131">స్మార్ట్ కార్డ్‌తో సైన్ ఇన్ చేయండి</translation>
 <translation id="6059276912018042191">ఇటీవలి Chrome ట్యాబ్‌లు</translation>
 <translation id="6062360702481658777">మీరు <ph name="LOGOUT_TIME_LEFT" />లో స్వయంచాలకంగా సైన్ అవుట్ చేయబడతారు.</translation>

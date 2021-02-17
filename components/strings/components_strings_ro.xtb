@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Carduri acceptate</translation>
 <translation id="1021753677514347426">Această problemă apare din cauza unui certificat pe care tu sau altcineva l-ați instalat pe dispozitiv. Certificatul este folosit pentru a monitoriza și a intercepta rețelele, nefiind autorizat de Chromium. Deși există cazuri legitime pentru monitorizare, de exemplu, într-o rețea de la școală sau de la serviciu, Chromium vrea să se asigure că știi ce se întâmplă, chiar dacă nu poți opri acest lucru. Monitorizarea se poate face în orice browser sau aplicație care intră pe web.</translation>
 <translation id="1024111578869940408">Uneori, atacatorii imită site-uri aducând modificări greu de observat adresei web.</translation>
+<translation id="1028781062521375153">Vezi detaliile</translation>
 <translation id="1030706264415084469"><ph name="URL" /> dorește să stocheze permanent cantități mari de date pe dispozitiv</translation>
 <translation id="1032854598605920125">Rotește în sensul acelor de ceasornic</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">să folosească fonturile de pe computer ca să poți crea conținut de înaltă fidelitate.</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Stânga</translation>
+<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> este codul tău pentru ca <ph name="EMBEDDED_ORIGIN" /> să continue pe <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Afișați mai multe</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">Politici privind utilizatorii</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Accesează pagina de pornire a site-ului<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Amână ieșirea până la</translation>
+<translation id="164212631332220697">Plătești cu <ph name="CARD_DETAIL" /> la finalizarea achiziției.</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1645368109819982629">Protocol neacceptat</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1008,6 +1011,7 @@
 <translation id="4879725228911483934">să deschidă și să plaseze ferestre în ecrane.</translation>
 <translation id="4880827082731008257">Caută în istoric</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="4885256590493466218">Plătești cu <ph name="CARD_DETAIL" /> la finalizarea achiziției</translation>
 <translation id="4889420713887366944">Butonul Deschide o fereastră incognito, apasă pe Enter pentru a deschide o nouă fereastră incognito ca să navighezi în privat</translation>
 <translation id="4892518386797173871">Spate</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1978,6 +1982,7 @@ Detalii suplimentare:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> este codul tău pentru <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Marchează această filă</translation>
 <translation id="8751426954251315517">Încearcă mai târziu</translation>
+<translation id="8757526089434340176">Ofertă Google Pay disponibilă</translation>
 <translation id="8759274551635299824">Acest card este expirat</translation>
 <translation id="87601671197631245">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele, mesajele sau cardurile de credit) când sunt trimise la acest site.</translation>
 <translation id="8761567432415473239">Recent, Navigarea sigură Google a <ph name="BEGIN_LINK" />descoperit programe dăunătoare<ph name="END_LINK" /> pe <ph name="SITE" />.</translation>

@@ -107,6 +107,7 @@
 <translation id="357889014807611375">အခမဲ့မဟုတ်သော Wi-Fi</translation>
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="3712633734921637892">ဘက်ထရီချွေတာရန် (သို့) အပူချိန်လျှော့ချရန် CPU မြန်နှုန်းကို လောလောဆယ် ကန့်သတ်ထားသည်</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">ပုံနှိပ်စက်</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
+<translation id="4155551848414053977">စကင်ဖတ်စက်ဖွင့်ထားပြီး သင့်ကွန်ရက် (သို့) တိုက်ရိုက်ချိတ်ဆက်မှုမှတစ်ဆင့် သုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="4170700058716978431">မအောင်မြင်ပါ</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
@@ -236,6 +238,7 @@
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6189418609903030344">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
+<translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>

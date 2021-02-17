@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Kad vien iespējams, vietnēs tiks rādīts teksts atlasītajā valodā.</translation>
 <translation id="1952728750904661634">Pierakstīšanās pārvaldītā kontā</translation>
 <translation id="1965935827552890526">Pabeidziet citā atvērtā Chrome logā iesākto darbu.</translation>
+<translation id="1973912524893600642">Paturēt datus</translation>
 <translation id="1974060860693918893">Papildu</translation>
 <translation id="1989112275319619282">Pārlūkot</translation>
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
@@ -299,6 +300,7 @@ Veiciet tālāk norādītās darbības.</translation>
 <translation id="4038354071007134711">Šajā ierīcē nav lietotņu, ar ko atvērt šo failu.</translation>
 <translation id="4042870976416480368">Atrast lapā</translation>
 <translation id="4049507953662678203">Pārbaudiet, vai ir izveidots tīkla savienojums, un mēģiniet vēlreiz.</translation>
+<translation id="4079195788735381731">Jūs izrakstīja jūsu organizācija</translation>
 <translation id="4082688844002261427">Kontrolējiet, kā jūsu pārlūkošanas vēsture tiek izmantota, lai personalizētu meklēšanu, reklāmas un citu saturu</translation>
 <translation id="408404951701638773">Tagad meklēšanas josla ir ērtāk sasniedzama</translation>
 <translation id="411254640334432676">Lejupielāde neizdevās.</translation>
@@ -411,6 +413,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5327248766486351172">Nosaukums</translation>
 <translation id="5339316356165661760">Ieslēgt sinhronizāciju</translation>
+<translation id="5360976571138293719">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļā <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Atvērt attēlu</translation>
 <translation id="5407969256130905701">Atmest izmaiņas</translation>
 <translation id="5416022985862681400">Pēdējās 7 dienas</translation>
@@ -496,6 +499,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6254066287920239840">Atvērt saites lietotnē, nevis pārlūkā.</translation>
 <translation id="6255097610484507482">Rediģēt kredītkarti</translation>
 <translation id="6284652193729350524">Piedāvāt tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Lai ieslēgtu drošo pārlūkošanu, atveriet sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" /> un pieskarieties vienumam Droša pārlūkošana.</translation>
 <translation id="6303969859164067831">Izrakstīties un izslēgt sinhronizēšanu</translation>
 <translation id="6308436439357671616">Varat uzņemt un augšupielādēt fotoattēlus.</translation>
 <translation id="6324528485781869530">Sinhronizējamā konta pārslēgšana</translation>

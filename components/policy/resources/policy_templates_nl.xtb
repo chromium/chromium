@@ -985,6 +985,11 @@ Als dit beleid is ingesteld op False, wordt het privacyscherm altijd uitgeschake
 Als dit beleid is ingesteld, kan de gebruiker de waarde niet overschrijven.
 
 Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitgeschakeld, maar kan de gebruiker dit inschakelen.</translation>
+<translation id="241739814668386424"> Als je dit beleid niet toepast, kan de gebruiker het Thunderbolt/USB4-randapparaat niet volledig verbinden via PCIe-tunneling.
+
+      Als je dit beleid toepast, kan de gebruiker het Thunderbolt/USB4-randapparaat volledig verbinden via PCIe-tunneling.
+
+      Dit beleid wordt standaard niet toegepast.</translation>
 <translation id="2421677964966613267">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid instelt, kun je een lijst met URL-patronen instellen om op te geven welke sites de <ph name="FLASH_PLUGIN_NAME" />-plug-in niet mogen uitvoeren.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -1429,6 +1434,19 @@ Als je het beleid niet instelt, is stroom voor piekuren aanvankelijk uitgeschake
       URL's moeten een HTTPS-schema hebben, zoals 'https://example.com'.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
+<translation id="2972531017545674240">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
+
+Elk lijstitem van het beleid is een object met een verplicht lid:
+<ph name="URL_LABEL" /> (de URL van de web-app die moet worden geïnstalleerd)
+
+en 3 optionele leden:
+- <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (voor hoe de web-app wordt geopend, een nieuw tabblad is de standaardinstelling)
+
+- <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True als je <ph name="LINUX_OS_NAME" />- en <ph name="MS_WIN_NAME" />-snelkoppelingen wilt maken).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" /> (Vanaf versie 90 van <ph name="PRODUCT_NAME" /> kun je de app-naam overschrijven als het geen progressive web-app (PWA) is, of kun je de tijdelijk geïnstalleerde app-naam overschrijven als het een PWA is, maar verificatie vereist is voordat de installatie kan worden afgerond.)
+
+      Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van apps op de <ph name="PRODUCT_OS_NAME" />-plank.</translation>
 <translation id="2976429807269247880">Instellingen voor gedrag van verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC inschakelen</translation>
@@ -4099,13 +4117,6 @@ Als je ervoor kiest het volgende te gebruiken:
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
-<translation id="6793420507738858152">Als je dit beleid hebt toegepast, stuurt de <ph name="PRODUCT_NAME" />-functie gedetailleerde verzoekheaders met informatie over de browser en omgeving van de gebruiker.
-
-      Dit is een aanvullende functie, maar de nieuwe headers kunnen de juiste weergave verhinderen van sommige websites die de tekens in deze verzoeken beperken.
-
-      Als je dit beleid toepast of niet instelt, wordt de <ph name="PRODUCT_NAME" />-functie uitgezet. Als je het beleid niet hebt toegepast, is de functie ook niet beschikbaar.
-
-      Dit bedrijfsbeleid is voor kortdurende aanpassing en is ten minste beschikbaar tot Chrome 91.</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
@@ -4626,6 +4637,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt netwerkvoorspelling ingeschakeld, maar kan de gebruiker dit wijzigen.</translation>
+<translation id="7412456346709338637">Gegevenstoegang voor Thunderbolt/USB4-randapparaten aanzetten</translation>
 <translation id="7417438464912687020">Verbindingen voor externe toegang tot deze machine toestaan</translation>
 <translation id="7417972229667085380">Het percentage waarmee je de inactieve vertraging in presentatiemodus kunt schalen (verouderd)</translation>
 <translation id="7421483919690710988">Grootte van mediaschijfcache in bytes instellen</translation>
@@ -5415,6 +5427,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       '1412.24.34': alleen een update uitvoeren naar deze specifieke versie
 
       Waarschuwing: Het wordt niet aanbevolen versiebeperkingen te configureren, omdat gebruikers hierdoor mogelijk geen software-updates en essentiële beveiligingsoplossingen ontvangen. Als je updates beperkt tot een specifiek versievoorvoegsel, kunnen gebruikers gevaar lopen.</translation>
+<translation id="8510545352780142790">Hiermee zet je PCIe-tunneling uit. Alle mogelijkheden van ondersteunde Thunderbolt/USB4-randapparaten werken.</translation>
 <translation id="8519264904050090490">URL's van handmatige uitzonderingen voor beheerde gebruikers</translation>
 <translation id="8519516251436131647">Schakel snelkoppelingen voor toegankelijkheidsfuncties in.
 
@@ -5452,6 +5465,7 @@ Dit beleid wordt verwijderd in M75.</translation>
           Als dit beleid niet is ingesteld, wordt er een standaard tijdsduur gebruikt.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden.</translation>
+<translation id="8599956038998209006">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor de apparaatmogelijkheden worden beperkt</translation>
 <translation id="8603454805657060638">Als je het beleid instelt, kan de beheerder het MAC-adres (Media Access Control) wijzigen als een apparaat wordt aangesloten op het dock. Bij sommige apparaatmodellen die op een dock zijn aangesloten, kan het MAC-adres van het toegewezen dock van het apparaat standaard worden gebruikt om het apparaat op ethernet te herkennen.
 
       Als DeviceDockMacAddress is geselecteerd of het beleid niet is ingesteld, wordt het toegewezen dock-MAC-adres van het apparaat gebruikt.

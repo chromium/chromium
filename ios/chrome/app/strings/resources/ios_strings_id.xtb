@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Situs akan menampilkan teks dalam bahasa pilihan Anda, jika memungkinkan.</translation>
 <translation id="1952728750904661634">Login dengan akun terkelola</translation>
 <translation id="1965935827552890526">Selesaikan yang Anda kerjakan di jendela Chrome lain yang terbuka.</translation>
+<translation id="1973912524893600642">Simpan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
@@ -299,6 +300,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="4038354071007134711">Tidak ada aplikasi di perangkat ini yang dapat membuka file.</translation>
 <translation id="4042870976416480368">Cari di Halaman</translation>
 <translation id="4049507953662678203">Pastikan Anda memiliki koneksi jaringan dan coba lagi.</translation>
+<translation id="4079195788735381731">Organisasi membuat Anda logout</translation>
 <translation id="4082688844002261427">Kontrol cara histori penjelajahan digunakan untuk mempersonalisasi Penelusuran, iklan, dan lainnya</translation>
 <translation id="408404951701638773">Kotak penelusuran kini lebih mudah dijangkau</translation>
 <translation id="411254640334432676">Download gagal.</translation>
@@ -411,6 +413,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5339316356165661760">Aktifkan Sinkronisasi</translation>
+<translation id="5360976571138293719">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Buka Gambar</translation>
 <translation id="5407969256130905701">Hapus Perubahan</translation>
 <translation id="5416022985862681400">7 Hari Terakhir</translation>
@@ -496,6 +499,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6254066287920239840">Buka link di aplikasi, bukan di browser.</translation>
 <translation id="6255097610484507482">Edit Kartu Kredit</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
 <translation id="6303969859164067831">Logout dan nonaktifkan sinkronisasi</translation>
 <translation id="6308436439357671616">Hal ini memungkinkan Anda mengambil dan mengupload foto.</translation>
 <translation id="6324528485781869530">Ganti Akun Sinkronisasi</translation>

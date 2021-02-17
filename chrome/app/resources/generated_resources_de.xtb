@@ -2453,7 +2453,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
 <translation id="3742666961763734085">Keine Organisationseinheit mit diesem Namen vorhanden. Versuchen Sie es noch einmal.</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
-<translation id="3746127522257263495">Das G Suite for Education-Konto kann in Android-Apps nicht hinzugefügt werden.</translation>
 <translation id="3747077776423672805">Wenn Sie eine App entfernen möchten, gehen Sie zu "Einstellungen" &gt; "Google Play Store" &gt; "Android-Einstellungen verwalten" &gt; "Apps" oder rufen Sie den Anwendungsmanager auf. Tippen Sie dann auf die App, die Sie deinstallieren möchten, und wählen Sie "Deinstallieren" oder "Deaktivieren" aus. Möglicherweise müssen Sie nach rechts oder links wischen, um die App zu finden.</translation>
 <translation id="3748706263662799310">Programmfehler melden</translation>
 <translation id="3752582316358263300">Ok</translation>
@@ -5845,7 +5844,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7696063401938172191">Auf Ihrem <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Details sind während des Bildschirmteilens verborgen</translation>
 <translation id="7697598343108519171">Kamera zum Scannen des QR-Codes verwenden</translation>
-<translation id="7699968112832915395">Konto kann nicht hinzugefügt werden</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7701869757853594372">NUTZER-Handles</translation>
 <translation id="7701928712056789451">Diese Elemente sind möglicherweise schädlich</translation>

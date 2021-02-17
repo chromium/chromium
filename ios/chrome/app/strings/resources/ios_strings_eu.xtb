@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Ahal den heinean, webguneek testua hizkuntza hobetsian erakutsiko dute.</translation>
 <translation id="1952728750904661634">Hasi saioa kontu kudeatuarekin</translation>
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
+<translation id="1973912524893600642">Gorde datuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1989112275319619282">Arakatu</translation>
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
@@ -299,6 +300,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4038354071007134711">Ez dago fitxategia ireki dezakeen aplikaziorik gailu honetan.</translation>
 <translation id="4042870976416480368">Bilatu orrian</translation>
 <translation id="4049507953662678203">Ziurtatu sarera konektatuta zaudela eta saiatu berriro.</translation>
+<translation id="4079195788735381731">Erakundeak saioa amaitu dizu</translation>
 <translation id="4082688844002261427">Kontrolatu nola erabiltzen den arakatze-historia Bilaketa, iragarkiak eta beste pertsonalizatzeko</translation>
 <translation id="408404951701638773">Orain, errazagoa da bilaketa-barra erabiltzea</translation>
 <translation id="411254640334432676">Ezin izan da deskargatu.</translation>
@@ -411,6 +413,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5327248766486351172">Izena</translation>
 <translation id="5339316356165661760">Aktibatu sinkronizazioa</translation>
+<translation id="5360976571138293719">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="5388358297987318779">Ireki irudia</translation>
 <translation id="5407969256130905701">Baztertu aldaketak</translation>
 <translation id="5416022985862681400">Azken 7 egunetakoak</translation>
@@ -496,6 +499,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6254066287920239840">Ireki estekak aplikazioan eta ez arakatzailean.</translation>
 <translation id="6255097610484507482">Editatu kreditu-txartela</translation>
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
+<translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu "Arakatze segurua".</translation>
 <translation id="6303969859164067831">Amaitu saioa eta desaktibatu sinkronizazioa</translation>
 <translation id="6308436439357671616">Honi esker, argazkiak atera eta kargatu ahal izango dituzu.</translation>
 <translation id="6324528485781869530">Aldatu sinkronizazio-kontua</translation>

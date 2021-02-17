@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">網站將盡可能以您偏好的語言顯示文字。</translation>
 <translation id="1952728750904661634">登入受管理的帳戶</translation>
 <translation id="1965935827552890526">請完成您在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
+<translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
+<translation id="4079195788735381731">您的機構已將您登出</translation>
 <translation id="4082688844002261427">控制系統如何使用您的瀏覽記錄為您提供個人化的搜尋內容、廣告和其他服務</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
 <translation id="411254640334432676">下載失敗。</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5339316356165661760">開啟同步處理功能</translation>
+<translation id="5360976571138293719">如需更多與私隱權、安全性和資料收集相關的設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5416022985862681400">最近 7 天</translation>
@@ -496,6 +499,7 @@
 <translation id="6254066287920239840">在應用程式 (而非瀏覽器) 中開啟連結。</translation>
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6284652193729350524">為<ph name="LANGUAGE" />提供翻譯選項</translation>
+<translation id="6293101329759844770">如要啟用「安全瀏覽」功能，請開啟「<ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />」，並輕按 [安全瀏覽]。</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6308436439357671616">這樣您便可拍攝並上載相片。</translation>
 <translation id="6324528485781869530">切換同步帳戶</translation>

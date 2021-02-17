@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> যোগ কৰা হ’ল</translation>
 <translation id="1047017786576569492">আংশিক</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
+<translation id="1052916631016577720">বস্তুৰ স্কেন</translation>
 <translation id="1056775291175587022">নেটৱৰ্ক নাই</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">চেলুলাৰ: <ph name="ADDRESS" /></translation>
@@ -395,6 +396,7 @@
 <translation id="4351433414020964307">Assistant ল’ড হৈ আছে...</translation>
 <translation id="4356930093361201197">ৰঙৰ উচ্চ প্ৰভেদযুক্ত ম’ড</translation>
 <translation id="4371348193907997655">কাষ্ট ছেটিংসমূহ</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ</translation>
 <translation id="4378551569595875038">সংযোগ হৈছে...</translation>
 <translation id="4379531060876907730">এইয়া আপোনাৰ ষ্টাইলাছৰ সঁজুলি</translation>
 <translation id="4389184120735010762">আপুনি ড'ক কৰা বিৱৰ্ধকৰ বাবে কীব'ৰ্ডৰ শ্বৰ্টকাট টিপিছে। আপুনি এইটো অন কৰিব খোজেনে?</translation>
@@ -585,6 +587,7 @@
 <translation id="6043212731627905357">এই মনিটৰটো আপোনাৰ <ph name="DEVICE_TYPE" />ৰ খাপ খোৱা নাই (মনিটৰটো সমৰ্থিত নহয়)।</translation>
 <translation id="6043994281159824495">এতিয়াই ছাইন আউট কৰক</translation>
 <translation id="6047696787498798094">আপুনি যদি অন্য ব্যৱহাৰকাৰীলৈ সলনি কৰে তেতিয়া স্ক্ৰীণ শ্বেয়াৰ কৰা বন্ধ হ'ব। আপুনি অব্যাহত ৰাখিব খোজেনে?</translation>
+<translation id="6050368268239407309">উপস্থাপনৰ সঁজুলি</translation>
 <translation id="6054305421211936131">স্মার্ট কার্ডৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="6059276912018042191">Chromeৰ শেহতীয়া টেব</translation>
 <translation id="6062360702481658777">আপোনাক স্বয়ংক্ৰিয়ভাৱে <ph name="LOGOUT_TIME_LEFT" />ত ছাইন আউট কৰোৱা হ’ব।</translation>

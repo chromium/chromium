@@ -2463,7 +2463,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3742666961763734085">Impossibile trovare un'unità organizzativa con il nome indicato. Riprova.</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
-<translation id="3746127522257263495">L'aggiunta di un account G Suite for Education nelle app Android non è supportata.</translation>
 <translation id="3747077776423672805">Per rimuovere le app apri Impostazioni &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.</translation>
 <translation id="3748706263662799310">Segnala un bug</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -5860,7 +5859,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7696063401938172191">Sul tuo telefono "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">I dettagli sono nascosti durante la condivisione dello schermo</translation>
 <translation id="7697598343108519171">Utilizza la fotocamera per scansionare il codice QR</translation>
-<translation id="7699968112832915395">Impossibile aggiungere l'account</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7701869757853594372">Handle UTENTE</translation>
 <translation id="7701928712056789451">Questi elementi potrebbero essere pericolosi</translation>
@@ -6943,6 +6941,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8892168913673237979">Finito.</translation>
 <translation id="8893801527741465188">Disinstallazione completata</translation>
 <translation id="8893928184421379330">Spiacenti, impossibile riconoscere il dispositivo <ph name="DEVICE_LABEL" />.</translation>
+<translation id="8894761918470382415">Protezione dell'accesso ai dati per le periferiche</translation>
 <translation id="8895454554629927345">Elenco dei preferiti</translation>
 <translation id="8898786835233784856">Seleziona scheda successiva</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
@@ -7250,6 +7249,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> condivide l'audio e una scheda Chrome.</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="947329552760389097">&amp;Ispeziona elementi</translation>
+<translation id="949052952791086881">L'amministratore richiede l'accesso dell'utente quando il dispositivo è online</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="956500788634395331">È attiva la protezione da estensioni potenzialmente dannose</translation>
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>

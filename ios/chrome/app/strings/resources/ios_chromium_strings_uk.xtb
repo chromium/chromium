@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Не підтримується в Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium зможе перевірити ваші паролі, коли ви ввійдете в обліковий запис Google.</translation>
 <translation id="3805899903892079518">Chromium не має доступу до ваших фото чи відео. Надайте доступ у меню iOS "Параметри &gt; Конфіденційність &gt; Фото".</translation>
+<translation id="3946918322491238254">Ви все ще можете переглядати всі свої закладки, історію, паролі й інші налаштування на цьому пристрої. Якщо ви внесете зміни, вони не синхронізуватимуться з обліковим записом.</translation>
 <translation id="4099085513035183040">Не підтримується в бета-версії Chromium</translation>
 <translation id="4166206055865952171">Установіть Chromium веб-переглядачем за умовчанням</translation>
 <translation id="4555020257205549924">Якщо ввімкнути цю функцію, Chromium пропонуватиме перекласти сторінки, написані іншими мовами, за допомогою Перекладача Google. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="5308226104666789935">Chromium не може перевірити наявність оновлень</translation>
 <translation id="5521125884468363740">Щоб переглядати свої вкладки Chromium на будь-якому пристрої, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
+<translation id="5544795779875591523">Видалити дані Chromium із цього пристрою чи зберігати їх?</translation>
 <translation id="5573014823074921752">Порада щодо Chromium. Щоб відкрити більше параметрів, натисніть і утримуйте кнопку "Показати вкладки" на панелі інструментів, розташованій унизу або вгорі екрана.</translation>
 <translation id="5700709190537129682">Chromium не може перевірити паролі</translation>
 <translation id="5777187867430702742">Сторінка Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
 <translation id="8663480472502753423">Користуйтеся найновішою версією Chromium</translation>
 <translation id="8776843108004031667">Цей обліковий запис і всі незбережені дані буде вилучено з Chromium.</translation>
+<translation id="894437814105052438">Коли ви вийдете з облікового запису, Chromium не синхронізуватиме нові дані з обліковим записом Google. Дані попередніх синхронізацій залишаться.</translation>
 <translation id="9022552996538154597">Вхід у Chromium</translation>
 <translation id="9089354809943900324">Версія Chromium застаріла</translation>
 <translation id="921174536258924340">Chromium не вдалося перевірити всі паролі. Повторіть спробу завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chromium буде видалено з цього пристрою.</translation>
 </translationbundle>

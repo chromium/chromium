@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">Elfogadott kártyák</translation>
 <translation id="1021753677514347426">A probléma oka az Ön vagy valaki más által az eszközre telepített egyik tanúsítvány. Erről a tanúsítványról tudni lehet, hogy hálózati forgalom megfigyelésére és elfogására használják, és a Chromium szerint nem megbízható. Bár a megfigyelésnek létezik néhány jogszerű formája (például iskolai vagy vállalati hálózatokon), a Chromium biztosra szeretne menni abban, hogy Ön ezzel tisztában van – még akkor is, ha Ön nem tud tenni ellene. A megfigyelés az internethez hozzáférő bármely böngészőben vagy alkalmazásban megtörténhet.</translation>
 <translation id="1024111578869940408">A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy alig észrevehető változtatásokat végeznek a webhely címében.</translation>
+<translation id="1028781062521375153">Részletek megtekintése</translation>
 <translation id="1030706264415084469">A(z) <ph name="URL" /> webhely állandó jelleggel nagy méretű adatokat szeretne tárolni az eszközön</translation>
 <translation id="1032854598605920125">Forgatás jobbra</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
@@ -146,6 +147,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1462951478840426066">A számítógépen lévő betűtípusok használata nagy pontosságú tartalmak készítéséhez</translation>
 <translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">Balra</translation>
+<translation id="1468653229182955856">A(z) <ph name="TOP_ORIGIN" /> használatának folytatása érdekében <ph name="ONE_TIME_CODE" /> az Ön kódja a következőhöz: <ph name="EMBEDDED_ORIGIN" /></translation>
 <translation id="1472675084647422956">Továbbiak megjelenítése</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1640180200866533862">Felhasználói házirendek</translation>
 <translation id="1640244768702815859">Próbálja meg <ph name="BEGIN_LINK" />megnyitni a webhely főoldalát<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Kimenet késleltetése</translation>
+<translation id="164212631332220697">Fizetés a(z) <ph name="CARD_DETAIL" /> kártyával.</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1645368109819982629">Nem támogatott protokoll</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1006,6 +1009,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4879725228911483934">Megnyitni az ablakokat és elhelyezni őket a képernyőkön</translation>
 <translation id="4880827082731008257">Keresés az előzmények között</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
+<translation id="4885256590493466218">Fizetés a(z) <ph name="CARD_DETAIL" /> kártyával</translation>
 <translation id="4889420713887366944">Inkognitó ablak megnyitása gomb, nyomja meg az Enter billentyűt új inkognitó ablak megnyitásához, amelyben privát módon böngészhet</translation>
 <translation id="4892518386797173871">Hátsó</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> és <ph name="TYPE_3" /></translation>
@@ -1976,6 +1980,7 @@ További részletek:
 <translation id="8742371904523228557">A(z) <ph name="ORIGIN" /> webhelyhez tartozó kód a következő: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Lap hozzáadása a könyvjelzőkhöz</translation>
 <translation id="8751426954251315517">Próbálja újra később</translation>
+<translation id="8757526089434340176">Van ajánlat a Google Paytől</translation>
 <translation id="8759274551635299824">A kártya lejárt</translation>
 <translation id="87601671197631245">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait, üzeneteit vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>
 <translation id="8761567432415473239">A Google Biztonságos Böngészés nemrég <ph name="BEGIN_LINK" />ártalmas programokat talált<ph name="END_LINK" /> a következő webhelyen: <ph name="SITE" />.</translation>

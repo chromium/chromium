@@ -4099,13 +4099,6 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experimentelle Browserfunktionen von der Symbolleiste entfernt.
 
       „chrome://flags“ und alle weiteren Möglichkeiten zum Aktivieren oder Deaktivieren von Browserfunktionen funktionieren weiter wie gewohnt, unabhängig davon, ob diese Richtlinie aktiviert oder deaktiviert ist.</translation>
-<translation id="6793420507738858152">Wenn sie aktiviert ist, sendet die Funktion „<ph name="PRODUCT_NAME" />“ detaillierte Anfrageheader mit Informationen über den Browser und die Umgebung des Nutzers.
-
-      Dies ist eine Zusatzfunktion, doch die neuen Header funktionieren auf manchen Websites, die die Anzahl der Zeichen auf eine Anfrage einschränken, nicht.
-
-      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Funktion „<ph name="PRODUCT_NAME" />“ aktiviert. Wenn sie deaktiviert ist, ist die Funktion nicht verfügbar.
-
-      Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und ist mindestens bis Chrome 91 verfügbar.</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>

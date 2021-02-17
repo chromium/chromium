@@ -2466,7 +2466,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3742666961763734085">Não foi possível encontrar uma unidade organizacional com esse nome. Tente novamente.</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
-<translation id="3746127522257263495">Não há compatibilidade com a adição de contas do G Suite for Education em apps Android.</translation>
 <translation id="3747077776423672805">Para remover apps, acesse "Configurações" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Apps" ou "Gerenciador de aplicativos". Depois, toque no app que você quer desinstalar (talvez seja necessário deslizar para a direita ou esquerda para encontrar o app). Em seguida, toque em "Desinstalar" ou "Desativar".</translation>
 <translation id="3748706263662799310">Informar um bug</translation>
 <translation id="3752582316358263300">OK...</translation>
@@ -5864,7 +5863,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7696063401938172191">No seu "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Os detalhes são ocultados quando você compartilha a tela</translation>
 <translation id="7697598343108519171">Usar a câmera para ler um código QR</translation>
-<translation id="7699968112832915395">Não é possível adicionar a conta</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7701869757853594372">Processamentos do USUÁRIO</translation>
 <translation id="7701928712056789451">Esses itens podem ser perigosos</translation>
@@ -6949,6 +6947,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8892168913673237979">Tudo pronto!</translation>
 <translation id="8893801527741465188">Desinstalação concluída</translation>
 <translation id="8893928184421379330">O dispositivo <ph name="DEVICE_LABEL" /> não foi reconhecido.</translation>
+<translation id="8894761918470382415">Proteção contra acesso a dados para periféricos</translation>
 <translation id="8895454554629927345">Lista de favoritos</translation>
 <translation id="8898786835233784856">Selecionar próxima guia</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
@@ -7256,6 +7255,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="942532530371314860">O app <ph name="APP_NAME" /> está compartilhando áudio e uma guia do Chrome.</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="947329552760389097">&amp;Inspecionar elementos</translation>
+<translation id="949052952791086881">O administrador exige que o login deste usuário seja feito enquanto o dispositivo está on-line</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="956500788634395331">Você tem proteção contra extensões possivelmente nocivas</translation>
 <translation id="957960681186851048">Este site tentou fazer o download de vários arquivos automaticamente</translation>

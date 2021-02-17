@@ -412,6 +412,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads excluídos</translation>
 <translation id="3856096718352044181">Verifique se o provedor é válido ou tente novamente mais tarde</translation>
 <translation id="3861633093716975811">Vídeos mais acessados</translation>
+<translation id="386944881686624613">Não é possível criar um link para o texto. Compartilhe um link para a página.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
 <translation id="3895926599014793903">Forçar zoom</translation>
@@ -652,7 +653,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="55737423895878184">A localização e as notificações são permitidas</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Nas <ph name="BEGIN_LINK1" />configurações<ph name="END_LINK1" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
-<translation id="5595485650161345191">Editar endereço</translation>
 <translation id="5599455543593328020">Modo de navegação anônima</translation>
 <translation id="5599941490345670218">O Google Assistente pode concluir ações em sites para você</translation>
 <translation id="5606787249466187650">Conheça a Privacy Sandbox</translation>
@@ -660,6 +660,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5620928963363755975">Procure seus arquivos e páginas em Downloads, usando o botão Mais opções</translation>
 <translation id="562289928968387744">Gerenciar reações</translation>
 <translation id="5626134646977739690">Nome:</translation>
+<translation id="5628604359369369630">Não lidas. Disponíveis off-line</translation>
 <translation id="5639724618331995626">Permitir todos os sites</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5655963694829536461">Pesquisar seus downloads</translation>
@@ -905,6 +906,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="718926126787620637">Lista de pastas de favoritos aberta no tamanho máximo</translation>
 <translation id="7189372733857464326">Aguardando o fim da atualização do Google Play Services</translation>
 <translation id="7191430249889272776">Guia aberta no plano de fundo.</translation>
+<translation id="72180057821664864">Não é possível criar um link para o texto</translation>
 <translation id="7233236755231902816">Para ver as páginas da Web no seu idioma, instale a versão mais recente do Chrome</translation>
 <translation id="7248069434667874558">Verifique se a sincronização do <ph name="TARGET_DEVICE_NAME" /> está ativada no Chrome</translation>
 <translation id="7274013316676448362">Site bloqueado</translation>
@@ -1003,6 +1005,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7857691613771368249">Perguntar antes de salvar arquivos</translation>
 <translation id="7875915731392087153">Criar e-mail</translation>
 <translation id="7876243839304621966">Remover tudo</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Você tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página não lida}one{Você tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> página não lida}other{Você tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas não lidas}}</translation>
 <translation id="7882131421121961860">Nenhum histórico encontrado</translation>
 <translation id="7886917304091689118">Executando no Chrome</translation>
 <translation id="789763218334337857">Como usar o Google Chrome</translation>
@@ -1039,6 +1042,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="806745655614357130">Manter meus dados separados</translation>
 <translation id="8073388330009372546">Abrir imagem em nova guia</translation>
 <translation id="8076492880354921740">Guias</translation>
+<translation id="8078096376109663956">Compartilhar somente o texto</translation>
 <translation id="8084114998886531721">Senha salva</translation>
 <translation id="808747664143081553">Conectado ao dispositivo</translation>
 <translation id="8103578431304235997">Guia anônima</translation>
@@ -1141,6 +1145,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="8812260976093120287">Em alguns websites, é possível pagar no seu dispositivo com os apps de pagamento compatíveis acima.</translation>
 <translation id="881688628773363275">O conteúdo da guia de visualização não pode ser exibido.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
+<translation id="8827407626219585697">Incluir link para o texto</translation>
 <translation id="883806473910249246">Ocorreu um erro durante o download do conteúdo.</translation>
 <translation id="8840953339110955557">Esta página pode ser diferente da versão on-line.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, guia</translation>

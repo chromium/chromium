@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
 <translation id="3639997914391704523">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3946918322491238254">Šajā ierīcē joprojām varat skatīt visas savas grāmatzīmes, vēsturi, paroles un citus iestatījumus. Ja veiksiet izmaiņas, tās netiks sinhronizētas ar jūsu kontu.</translation>
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
 <translation id="4166206055865952171">Iestatiet Chromium kā noklusējuma pārlūku</translation>
 <translation id="4555020257205549924">Ja šī funkcija ir ieslēgta, Chromium piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
+<translation id="5544795779875591523">Izvēlieties, vai notīrīt Chromium datus no šīs ierīces vai tos paturēt.</translation>
 <translation id="5573014823074921752">Chromium padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8663480472502753423">Jaunākās Chromium iespējas</translation>
 <translation id="8776843108004031667">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chromium.</translation>
+<translation id="894437814105052438">Ja izrakstīsieties, jaunie dati pārlūkā Chromium netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
 <translation id="9022552996538154597">Pierakstieties pārlūkā Chromium</translation>
 <translation id="9089354809943900324">Chromium versija ir novecojusi.</translation>
 <translation id="921174536258924340">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium autori</translation>
+<translation id="994708389219151914">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chromium dati no šīs ierīces tiks dzēsti.</translation>
 </translationbundle>

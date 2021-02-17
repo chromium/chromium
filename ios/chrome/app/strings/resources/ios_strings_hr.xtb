@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">Web-lokacije prikazivat će tekst na željenom jeziku kad god je to moguće.</translation>
 <translation id="1952728750904661634">Prijavite se upravljanim računom</translation>
 <translation id="1965935827552890526">Dovršite ono što ste radili u drugom otvorenom Chromeovom prozoru.</translation>
+<translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="2015722694326466240">Da biste vidjeli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
@@ -299,6 +300,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4038354071007134711">Na ovom uređaju nema aplikacije za tu datoteku.</translation>
 <translation id="4042870976416480368">Traži na stranici</translation>
 <translation id="4049507953662678203">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
+<translation id="4079195788735381731">Vaša organizacija vas je odjavila</translation>
 <translation id="4082688844002261427">Odredite na koji će se način vaša povijest pregledavanja upotrebljavati za prilagodbu Pretraživanja, oglasa i drugog</translation>
 <translation id="408404951701638773">Traku za pretraživanje sada je lakše dohvatiti</translation>
 <translation id="411254640334432676">Preuzimanje nije uspjelo.</translation>
@@ -411,6 +413,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5339316356165661760">Uključi sinkronizaciju</translation>
+<translation id="5360976571138293719">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5407969256130905701">Odbaci promjene</translation>
 <translation id="5416022985862681400">Posljednjih sedam dana</translation>
@@ -496,6 +499,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6254066287920239840">Otvaranje veza u aplikaciji, a ne u pregledniku.</translation>
 <translation id="6255097610484507482">Uredi kreditnu karticu</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Da biste uključili sigurno pregledavanje, otvorite odjeljak <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledavanje.</translation>
 <translation id="6303969859164067831">Odjava i isključivanje sinkronizacije</translation>
 <translation id="6308436439357671616">To vam omogućuje snimanje i prijenos fotografija.</translation>
 <translation id="6324528485781869530">Promjena računa za sink.</translation>

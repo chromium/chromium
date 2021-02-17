@@ -11,6 +11,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">parcial</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
+<translation id="1052916631016577720">Escaneig d'elements</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4351433414020964307">L'Assistent s'està carregant...</translation>
 <translation id="4356930093361201197">Mode d'alt contrast</translation>
 <translation id="4371348193907997655">Configuració d'emissió</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connectant...</translation>
 <translation id="4379531060876907730">Aquestes són les eines del llapis òptic</translation>
 <translation id="4389184120735010762">Has premut la tecla de drecera de la lupa acoblada. Vols activar-la?</translation>
@@ -586,6 +588,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
 <translation id="6047696787498798094">La compartició de pantalla s'aturarà quan canviïs d'usuari. Vols continuar?</translation>
+<translation id="6050368268239407309">Eines de la presentació</translation>
 <translation id="6054305421211936131">Inicia la sessió amb la targeta intel·ligent</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>

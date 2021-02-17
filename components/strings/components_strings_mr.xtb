@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">स्वीकारलेली कार्ड</translation>
 <translation id="1021753677514347426">तुम्ही किंवा इतर कोणीतरी तुमच्या डिव्हाइसवर इंस्टॉल केलेल्या सर्टिफिकेटमुळे ही समस्या येते. हे सर्टिफिकेट नेटवर्कचे नियंत्रण करण्यासाठी आणि व्यत्यय आणण्यासाठी वापरले जाते आणि Chromium ला यावर विश्वास नाही. दरम्यान नियंत्रण करण्यासाठी काही कायदेशीर प्रकरणे अस्तित्त्वात आहेत, जसे की शाळा किंवा कंपनीच्या नेटवर्कवर, तुम्ही हे थांबवू शकत नसलात तरीही तुम्हाला याची जाणीव आहे याची Chromium ला खात्री करायची आहे. वेबचा ॲक्सेस असणाऱ्या कोणत्याही ब्राउझर किंवा ॲप्लिकेशनचे नियंत्रण केले जाऊ शकते.</translation>
 <translation id="1024111578869940408">हल्लेखोर कधीकधी वेब पत्त्यामध्ये पटकन लक्षात न येणारे बदल करून साइटची नक्कल करतात.</translation>
+<translation id="1028781062521375153">तपशील पाहा</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ला तुमच्या डिव्हाइसवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="1032854598605920125">घड्याळाच्या दिशेने फिरवा</translation>
 <translation id="1036348656032585052">बंद करा</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">तुमच्या कॉंप्युटरवरील फॉंट वापरा जेणेकरून, तुम्ही उच्च फायडेलिटी आशय तयार करू शकाल</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">डावे</translation>
+<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> वर पुढे सुरू ठेवण्यासाठी <ph name="EMBEDDED_ORIGIN" /> करिता तुमचा कोड <ph name="ONE_TIME_CODE" /> आहे</translation>
 <translation id="1472675084647422956">अधिक दर्शवा</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">वापरकर्ता धोरणे</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटच्या होमवर भेट देऊन<ph name="END_LINK" /> पहा.</translation>
 <translation id="1641976391427233992">या कालावधीपर्यंत आउटपुटला विलंब करा</translation>
+<translation id="164212631332220697">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा.</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645368109819982629">असमर्थित प्रोटोकॉल</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1009,6 +1012,7 @@
 <translation id="4879725228911483934">तुमच्या स्क्रीनवर विंडो उघडा आणि ठेवा</translation>
 <translation id="4880827082731008257">इतिहास शोध</translation>
 <translation id="4881695831933465202">उघडा</translation>
+<translation id="4885256590493466218">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा</translation>
 <translation id="4889420713887366944">गुप्त विंडो उघडा बटण, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त विंडो उघडण्याकरिता एंटर दाबा</translation>
 <translation id="4892518386797173871">मागील</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -1979,6 +1983,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> हा तुमचा <ph name="ORIGIN" />साठीचा कोड आहे</translation>
 <translation id="874918643257405732">हा टॅब बुकमार्क करा</translation>
 <translation id="8751426954251315517">कृपया पुढील वेळेस पुन्हा प्रयत्न करा</translation>
+<translation id="8757526089434340176">Google Pay ऑफर उपलब्ध</translation>
 <translation id="8759274551635299824">या कार्डची मुदत संपली आहे</translation>
 <translation id="87601671197631245">ही साइट कालबाह्य झालेली सुरक्षितता कॉंफिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्डे) या साइटला पाठवल्यानंतर ती उघड होऊ शकते.</translation>
 <translation id="8761567432415473239">Google सुरक्षित ब्राउझिंग ला <ph name="SITE" /> वर अलीकडे <ph name="BEGIN_LINK" />हानिकारक प्रोग्राम आढळले आहेत<ph name="END_LINK" />.</translation>

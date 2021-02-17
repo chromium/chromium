@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium Canary에서 지원되지 않습니다.</translation>
 <translation id="3639997914391704523">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
+<translation id="3946918322491238254">북마크, 방문 기록, 비밀번호 및 기타 설정은 모두 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 계정에 동기화되지는 않습니다.</translation>
 <translation id="4099085513035183040">Chromium 베타에서는 지원되지 않습니다.</translation>
 <translation id="4166206055865952171">Chromium을 기본 브라우저로 설정하세요</translation>
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5521125884468363740">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
+<translation id="5544795779875591523">이 기기에서 내 Chromium 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="5573014823074921752">Chromium 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
 <translation id="5700709190537129682">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5777187867430702742">Chromium 페이지</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Chromium을 최신 상태로 유지합니다.</translation>
 <translation id="8776843108004031667">이 계정 및 저장되지 않은 모든 데이터가 Chromium에서 삭제됩니다.</translation>
+<translation id="894437814105052438">로그아웃하면 Chromium에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="921174536258924340">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
 </translationbundle>
