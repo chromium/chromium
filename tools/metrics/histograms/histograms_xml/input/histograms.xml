@@ -347,7 +347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.CharsEdited60s" units="chars"
-    expires_after="2021-03-01">
+    expires_after="2021-09-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -442,8 +442,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Mojo.Extension.Event" enum="IMEExtensionMojoEvent"
-    expires_after="2021-04-01">
-  <owner>shend@chromium.org</owner>
+    expires_after="2021-10-01">
+  <owner>googleo@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>The events of Mojo service in the IME Extension.</summary>
 </histogram>
