@@ -484,6 +484,13 @@ cr.define('cr.ui.login.debug', function() {
             screen.setIsTpmFirmwareUpdateAvailable(true);
           },
         },
+        {
+          id: 'powerwash-confirmation',
+          trigger: (screen) => {
+            screen.reset();
+            screen.setShouldShowConfirmationDialog(true);
+          },
+        },
       ],
     },
     {
