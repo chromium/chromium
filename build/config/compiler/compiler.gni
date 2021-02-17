@@ -67,11 +67,11 @@ declare_args() {
   # Use it by default on official-optimized android and Chrome OS builds, but
   # not ARC or linux-chromeos since it's been seen to not play nicely with
   # Chrome's clang. crbug.com/1033839
-  use_thin_lto =
-      is_cfi ||
-      (is_official_build &&
-       ((is_win && chrome_pgo_phase != 1) || target_os == "android" ||
-        ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)))
+  use_thin_lto = is_cfi || (is_official_build &&
+                            ((is_win && chrome_pgo_phase != 1) ||
+                             (is_android && target_os != "chromeos") ||
+                             ((is_chromeos_ash || is_chromeos_lacros) &&
+                              is_chromeos_device)))
 
   # If true, use Goma for ThinLTO code generation where applicable.
   use_goma_thin_lto = false
