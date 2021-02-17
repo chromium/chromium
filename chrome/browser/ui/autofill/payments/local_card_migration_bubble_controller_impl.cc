@@ -76,16 +76,10 @@ void LocalCardMigrationBubbleControllerImpl::OnConfirmButtonClicked() {
   DCHECK(local_card_migration_bubble_closure_);
   std::move(local_card_migration_bubble_closure_).Run();
   should_add_strikes_on_bubble_close_ = false;
-
-  AutofillMetrics::LogLocalCardMigrationBubbleUserInteractionMetric(
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_ACCEPTED, is_reshow_);
 }
 
 void LocalCardMigrationBubbleControllerImpl::OnCancelButtonClicked() {
   local_card_migration_bubble_closure_.Reset();
-
-  AutofillMetrics::LogLocalCardMigrationBubbleUserInteractionMetric(
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_DENIED, is_reshow_);
 }
 
 void LocalCardMigrationBubbleControllerImpl::OnBubbleClosed(

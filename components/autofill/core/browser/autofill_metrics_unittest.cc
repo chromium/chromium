@@ -10003,92 +10003,6 @@ TEST_F(AutofillMetricsTest,
               Not(AnyOf(HasSubstr("Autofill.UserHappiness.Address"))));
 }
 
-// Tests that the LogSaveCardPromptMetricBySecurityLevel are recorded correctly.
-TEST_F(AutofillMetricsTest, LogSaveCardPromptMetricBySecurityLevel) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-        /*is_uploading=*/true, security_state::SecurityLevel::SECURE);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, /*is_uploading=*/false,
-        security_state::SecurityLevel::DANGEROUS);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.DANGEROUS",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, /*is_uploading=*/true,
-        security_state::SecurityLevel::WARNING);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.WARNING",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-        /*is_uploading=*/false, security_state::SecurityLevel::SECURE);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
-  }
-
-  {
-    // No metric should be recorded if the security level is
-    // SECURITY_LEVEL_COUNT.
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_CVC_FIX_FLOW_SHOWN,
-        /*is_uploading=*/true,
-        security_state::SecurityLevel::SECURITY_LEVEL_COUNT);
-    histogram_tester.ExpectTotalCount(
-        "Autofill.SaveCreditCardPrompt.Upload.OTHER", 0);
-  }
-}
-
-// Verify that we correctly log LogSaveCardPromptMetricBySecurityLevel from the
-// save card prompt metrics.
-TEST_F(AutofillMetricsTest,
-       LogSaveCardPromptMetricBySecurityLevel_FromSaveCardPromptMetric) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-        /*is_uploading=*/true, /*is_reshow=*/false,
-        AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/1,
-        security_state::SecurityLevel::SECURE, SyncSigninState::kSignedOut);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-        /*is_uploading=*/false,
-        /*is_reshow=*/true, AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/0,
-        security_state::SecurityLevel::SECURE, SyncSigninState::kSignedOut);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1);
-  }
-}
-
 // Verify that we don't log Autofill.WebOTP.OneTimeCode.FromAutocomplete if the
 // frame has no form.
 TEST_F(AutofillMetricsTest, FrameHasNoForm) {
@@ -10601,38 +10515,6 @@ TEST_F(AutofillMetricsTest, LogIsAutofillEnabledAtPageLoad_BySyncState) {
                                        false, 1);
     // Make sure the metric without the sync state is still recorded.
     histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad", false, 1);
-  }
-}
-
-// Verify that we correctly log FormEvent metrics with the appropriate sync
-// state.
-TEST_F(AutofillMetricsTest, LogSaveCardPromptMetric_BySyncState) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-        /*is_uploading=*/true, /*is_reshow=*/false,
-        AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/1,
-        security_state::SecurityLevel::SECURE, SyncSigninState::kSignedIn);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.FirstShow.SignedIn",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-        /*is_uploading=*/false,
-        /*is_reshow=*/true, AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/0,
-        security_state::SecurityLevel::SECURE,
-        SyncSigninState::kSignedInAndSyncFeatureEnabled);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.Reshows."
-        "SignedInAndSyncFeatureEnabled",
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1);
   }
 }
 

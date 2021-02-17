@@ -854,8 +854,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Local.FirstShow",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, 1);
+      "Autofill.SaveCreditCardPromptResult.Local.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_CANCELLED, 1);
 }
 
 class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
@@ -961,8 +961,8 @@ IN_PROC_BROWSER_TEST_F(
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   // UMA should have recorded bubble acceptance.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Upload.FirstShow",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
 }
 
 // On Chrome OS, the test profile starts with a primary account already set, so
@@ -1033,8 +1033,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   // UMA should have recorded bubble acceptance.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Upload.FirstShow",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
 }
 
 // Tests the implicit sync state. Ensures that the (i) info icon appears for
@@ -1143,8 +1143,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Upload.FirstShow",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, 1);
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_CANCELLED, 1);
 }
 
 // Tests the upload save bubble. Ensures that clicking the top-right [X] close
@@ -1267,11 +1267,12 @@ IN_PROC_BROWSER_TEST_F(
   // UMA should have recorded bubble acceptance for both regular save UMA and
   // the ".RequestingCardholderName" subhistogram.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Upload.FirstShow",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Upload.FirstShow.RequestingCardholderName",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow."
+      "RequestingCardholderName",
+      AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
 }
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
@@ -1944,8 +1945,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Local.FirstShow",
-      AutofillMetrics::SAVE_CARD_ICON_SHOWN_WITHOUT_PROMPT, 1);
+      "Autofill.SaveCreditCardPromptOffer.Local.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED, 1);
 }
 
 // Tests overall StrikeDatabase interaction with the upload save bubble. Runs an
@@ -2017,8 +2018,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Upload.FirstShow",
-      AutofillMetrics::SAVE_CARD_ICON_SHOWN_WITHOUT_PROMPT, 1);
+      "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED, 1);
 }
 
 // Tests to ensure the card nickname is shown correctly in the Upstream bubble.
@@ -2303,8 +2304,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   // UMA should have recorded bubble acceptance.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt.Local.FirstShow",
-      AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
+      "Autofill.SaveCreditCardPromptResult.Local.FirstShow",
+      AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
 
   // The local save bubble should not be visible, but the card icon should
   // remain visible for the clickable [Manage cards] option.

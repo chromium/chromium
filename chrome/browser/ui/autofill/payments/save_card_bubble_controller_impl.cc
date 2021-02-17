@@ -99,17 +99,10 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   local_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
   current_bubble_type_ = BubbleType::LOCAL_SAVE;
 
-  if (options.show_prompt) {
+  if (options.show_prompt)
     ShowBubble();
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, is_upload_save_,
-        is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
-        GetSecurityLevel(), GetSyncState());
-  } else {
+  else
     ShowIconOnly();
-  }
 }
 
 void SaveCardBubbleControllerImpl::OfferUploadSave(
@@ -128,17 +121,6 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   is_upload_save_ = true;
   is_reshow_ = false;
   options_ = options;
-  if (options.show_prompt) {
-    // Can't move this into the other "if (show_bubble_)" below because an
-    // invalid legal message would skip it.
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, is_upload_save_,
-        is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
-        GetSecurityLevel(), GetSyncState());
-  }
-
   card_ = card;
   upload_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
   current_bubble_type_ = BubbleType::UPLOAD_SAVE;
@@ -179,17 +161,6 @@ void SaveCardBubbleControllerImpl::ReshowBubble() {
     return;
 
   is_reshow_ = true;
-
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-      current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, is_upload_save_,
-        is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
-        GetSecurityLevel(), GetSyncState());
-  }
-
   ShowBubble();
 }
 
@@ -332,46 +303,19 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
-
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-      current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, is_upload_save_,
-        is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
-        GetSecurityLevel(), GetSyncState());
-  }
 }
 
 void SaveCardBubbleControllerImpl::OnCancelButton() {
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-      current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, is_upload_save_,
-        is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
-        GetSecurityLevel(), GetSyncState());
-
-    if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
-      std::move(local_save_card_prompt_callback_).Run(AutofillClient::DECLINED);
-    } else {  // BubbleType::UPLOAD_SAVE
-      std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::DECLINED, {});
-    }
+  if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
+    std::move(local_save_card_prompt_callback_).Run(AutofillClient::DECLINED);
+  } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
+    std::move(upload_save_card_prompt_callback_)
+        .Run(AutofillClient::DECLINED, {});
   }
 }
 
 void SaveCardBubbleControllerImpl::OnLegalMessageLinkClicked(const GURL& url) {
   OpenUrl(url);
-  AutofillMetrics::LogSaveCardPromptMetric(
-      AutofillMetrics::SAVE_CARD_PROMPT_DISMISS_CLICK_LEGAL_MESSAGE,
-      is_upload_save_, is_reshow_, options_,
-      pref_service_->GetInteger(
-          prefs::kAutofillAcceptSaveCreditCardPromptState),
-      GetSecurityLevel(), GetSyncState());
-
   AutofillMetrics::LogCreditCardUploadLegalMessageLinkClicked();
 }
 
@@ -552,12 +496,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::LOCAL_SAVE:
-      AutofillMetrics::LogSaveCardPromptMetric(
-          AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, is_upload_save_,
-          is_reshow_, options_,
-          pref_service_->GetInteger(
-              prefs::kAutofillAcceptSaveCreditCardPromptState),
-          GetSecurityLevel(), GetSyncState());
       AutofillMetrics::LogSaveCardPromptOfferMetric(
           AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, is_upload_save_, is_reshow_,
           options_,
@@ -629,12 +567,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::LOCAL_SAVE:
-      AutofillMetrics::LogSaveCardPromptMetric(
-          AutofillMetrics::SAVE_CARD_ICON_SHOWN_WITHOUT_PROMPT, is_upload_save_,
-          is_reshow_, options_,
-          pref_service_->GetInteger(
-              prefs::kAutofillAcceptSaveCreditCardPromptState),
-          GetSecurityLevel(), GetSyncState());
       AutofillMetrics::LogSaveCardPromptOfferMetric(
           AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED,
           is_upload_save_, is_reshow_, options_,

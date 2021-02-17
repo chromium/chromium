@@ -126,59 +126,6 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Metrics_Reshows_ShowBubble) {
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest,
-       Metrics_FirstShow_SaveButton) {
-  ShowBubble();
-
-  base::HistogramTester histogram_tester;
-  controller()->OnConfirmButtonClicked();
-  CloseBubble();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleUserInteraction.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_ACCEPTED, 1);
-}
-
-TEST_F(LocalCardMigrationBubbleControllerImplTest, Metrics_Reshows_SaveButton) {
-  ShowBubble();
-  CloseAndReshowBubble();
-
-  base::HistogramTester histogram_tester;
-  controller()->OnConfirmButtonClicked();
-  CloseBubble();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleUserInteraction.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_ACCEPTED, 1);
-}
-
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
-       Metrics_FirstShow_CancelButton) {
-  ShowBubble();
-
-  base::HistogramTester histogram_tester;
-  controller()->OnCancelButtonClicked();
-  CloseBubble();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleUserInteraction.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_DENIED, 1);
-}
-
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
-       Metrics_Reshows_CancelButton) {
-  ShowBubble();
-  CloseAndReshowBubble();
-
-  base::HistogramTester histogram_tester;
-  controller()->OnCancelButtonClicked();
-  CloseBubble();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleUserInteraction.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_DENIED, 1);
-}
-
-TEST_F(LocalCardMigrationBubbleControllerImplTest,
        OnlyOneActiveBubble_Repeated) {
   base::HistogramTester histogram_tester;
   ShowBubble();

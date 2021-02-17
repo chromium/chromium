@@ -1296,7 +1296,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Reshows" label="Bubble was reopened after being closed"/>
   <affected-histogram name="Autofill.LocalCardMigrationBubbleOffer"/>
   <affected-histogram name="Autofill.LocalCardMigrationBubbleResult"/>
-  <affected-histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"/>
 </histogram_suffixes>
 
 <histogram_suffixes
@@ -1346,7 +1345,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     separator=".">
   <suffix name="Local" label="to local storage"/>
   <suffix name="Upload" label="to upload"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult"/>
 </histogram_suffixes>
@@ -1357,10 +1355,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Prompt shown from dynamic change forms"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1382,10 +1376,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Prompt shown from non-focusable forms"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1411,10 +1401,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="User had previously denied save credit card prompt"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1436,8 +1422,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Cardholder name was explicitly requested in prompt or infobar"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
@@ -1453,8 +1437,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Expiration date was explicitly requested in prompt or infobar"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
@@ -1468,8 +1450,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FirstShow"
       label="first time prompt is shown for a single credit card submit"/>
   <suffix name="Reshows" label="all shows after the first one, combined"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>
@@ -1584,10 +1564,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.FormEvents.CreditCard.WithOnlyLocalData"/>
   <affected-histogram name="Autofill.FormEvents.CreditCard.WithOnlyServerData"/>
   <affected-histogram name="Autofill.IsEnabled.PageLoad"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -16793,8 +16769,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SECURE_WITH_POLICY_INSTALLED_CERT"
       label="SecurityLevel is SECURE_WITH_POLICY_INSTALLED_CERT."/>
   <suffix name="WARNING" label="SecurityLevel is WARNING."/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>

@@ -968,77 +968,6 @@ void AutofillMetrics::LogSaveCardPromptResultMetric(
 }
 
 // static
-void AutofillMetrics::LogSaveCardPromptMetric(
-    SaveCardPromptMetric metric,
-    bool is_uploading,
-    bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
-    int previous_save_credit_card_prompt_user_decision,
-    security_state::SecurityLevel security_level,
-    AutofillSyncSigninState sync_state) {
-  DCHECK_LT(metric, NUM_SAVE_CARD_PROMPT_METRICS);
-  std::string destination = is_uploading ? ".Upload" : ".Local";
-  std::string show = is_reshow ? ".Reshows" : ".FirstShow";
-  std::string metric_with_destination_and_show =
-      "Autofill.SaveCreditCardPrompt" + destination + show;
-  base::UmaHistogramEnumeration(metric_with_destination_and_show, metric,
-                                NUM_SAVE_CARD_PROMPT_METRICS);
-  base::UmaHistogramEnumeration(
-      metric_with_destination_and_show + GetMetricsSyncStateSuffix(sync_state),
-      metric, NUM_SAVE_CARD_PROMPT_METRICS);
-  if (options.should_request_name_from_user) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".RequestingCardholderName", metric,
-        NUM_SAVE_CARD_PROMPT_METRICS);
-  }
-  if (options.should_request_expiration_date_from_user) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".RequestingExpirationDate", metric,
-        NUM_SAVE_CARD_PROMPT_METRICS);
-  }
-  if (options.has_non_focusable_field) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromNonFocusableForm", metric,
-        NUM_SAVE_CARD_PROMPT_METRICS);
-  }
-  if (options.from_dynamic_change_form) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromDynamicChangeForm", metric,
-        NUM_SAVE_CARD_PROMPT_METRICS);
-  }
-  base::UmaHistogramEnumeration(
-      metric_with_destination_and_show +
-          PreviousSaveCreditCardPromptUserDecisionToString(
-              previous_save_credit_card_prompt_user_decision),
-      metric, NUM_SAVE_CARD_PROMPT_METRICS);
-
-  LogSaveCardPromptMetricBySecurityLevel(metric, is_uploading, security_level);
-}
-
-// static
-void AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-    SaveCardPromptMetric metric,
-    bool is_uploading,
-    security_state::SecurityLevel security_level) {
-  // Getting a SECURITY_LEVEL_COUNT security level means that it was not
-  // possible to get the real security level. Don't log.
-  if (security_level == security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
-    return;
-  }
-
-  std::string histogram_name = "Autofill.SaveCreditCardPrompt.";
-  if (is_uploading) {
-    histogram_name += "Upload";
-  } else {
-    histogram_name += "Local";
-  }
-
-  base::UmaHistogramEnumeration(security_state::GetSecurityLevelHistogramName(
-                                    histogram_name, security_level),
-                                metric, NUM_SAVE_CARD_PROMPT_METRICS);
-}
-
-// static
 void AutofillMetrics::LogCreditCardUploadLegalMessageLinkClicked() {
   base::RecordAction(base::UserMetricsAction(
       "Autofill_CreditCardUpload_LegalMessageLinkClicked"));
@@ -1096,19 +1025,6 @@ void AutofillMetrics::LogLocalCardMigrationBubbleOfferMetric(
   histogram_name += is_reshow ? "Reshows" : "FirstShow";
   base::UmaHistogramEnumeration(histogram_name, metric,
                                 NUM_LOCAL_CARD_MIGRATION_BUBBLE_OFFER_METRICS);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationBubbleUserInteractionMetric(
-    LocalCardMigrationBubbleUserInteractionMetric metric,
-    bool is_reshow) {
-  DCHECK_LT(metric, NUM_LOCAL_CARD_MIGRATION_BUBBLE_USER_INTERACTION_METRICS);
-  std::string histogram_name =
-      "Autofill.LocalCardMigrationBubbleUserInteraction.";
-  histogram_name += is_reshow ? "Reshows" : "FirstShow";
-  base::UmaHistogramEnumeration(
-      histogram_name, metric,
-      NUM_LOCAL_CARD_MIGRATION_BUBBLE_USER_INTERACTION_METRICS);
 }
 
 // static

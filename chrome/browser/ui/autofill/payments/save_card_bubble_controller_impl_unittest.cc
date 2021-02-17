@@ -262,12 +262,6 @@ TEST_P(SaveCardBubbleSingletonTest, OnlyOneActiveBubble) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer" + suffix,
       AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, 1);
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SaveCreditCardPrompt" + suffix),
-      ElementsAre(
-          Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, 1),
-          Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1)));
 }
 
 // Note that even though in prod the four options in the SaveCreditCardOptions
@@ -386,15 +380,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowBubble) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer" + GetHistogramNameSuffix(),
       AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, 1);
-
-  // Verifies legacy metrics are logged correctly. This does not depend on the
-  // experiment flag.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SaveCreditCardPrompt" +
-                                     GetHistogramNameSuffix()),
-      ElementsAre(
-          Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, 1),
-          Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1)));
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowIconOnly) {
@@ -408,12 +393,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowIconOnly) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer" + GetHistogramNameSuffix(),
       AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED, 1);
-
-  // Verifies legacy metrics are logged correctly. This does not depend on the
-  // experiment flag.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_ICON_SHOWN_WITHOUT_PROMPT, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
@@ -425,15 +404,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
       AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
-
-  // Verifies legacy metrics are logged correctly. This does not depend on the
-  // experiment flag.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SaveCreditCardPrompt" +
-                                     GetHistogramNameSuffix()),
-      ElementsAre(Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, 1),
-                  Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1),
-                  Bucket(AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1)));
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
@@ -445,15 +415,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
       AutofillMetrics::SAVE_CARD_PROMPT_CANCELLED, 1);
-
-  // Verifies legacy metrics are logged correctly. This does not depend on the
-  // experiment flag.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SaveCreditCardPrompt" +
-                                     GetHistogramNameSuffix()),
-      ElementsAre(Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED, 1),
-                  Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1),
-                  Bucket(AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, 1)));
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_Closed) {
@@ -506,14 +467,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_SecurityLevel) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer." + destination_ + ".SECURE",
       AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, expected_count);
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SaveCreditCardPrompt." +
-                                     destination_ + ".SECURE"),
-      ElementsAre(Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOW_REQUESTED,
-                         expected_count),
-                  Bucket(AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-                         expected_count)));
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_LegalMessageLinkedClicked) {
@@ -527,10 +480,6 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_LegalMessageLinkedClicked) {
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Autofill_CreditCardUpload_LegalMessageLinkClicked"));
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPrompt." + destination_ + "." + show_,
-      AutofillMetrics::SAVE_CARD_PROMPT_DISMISS_CLICK_LEGAL_MESSAGE, 1);
 }
 
 // TODO(crbug.com/932818): Delete (manage card) or move (sign in promo) below

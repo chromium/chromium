@@ -771,8 +771,8 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                   Bucket(AutofillMetrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1),
                   Bucket(AutofillMetrics::MAIN_DIALOG_SHOWN, 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleUserInteraction.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_ACCEPTED, 1);
+      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
+      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationDialogOffer",
       AutofillMetrics::LOCAL_CARD_MIGRATION_DIALOG_SHOWN, 1);

@@ -5822,6 +5822,10 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofillSaveCreditCardPrompt">
+  <obsolete>
+    Deprecated in 02/2021. The corresponding histogram has been replaced by new
+    ones.
+  </obsolete>
   <int value="0" label="Show requested"/>
   <int value="1" label="Shown"/>
   <int value="2" label="Ended, invalid legal message"/>
