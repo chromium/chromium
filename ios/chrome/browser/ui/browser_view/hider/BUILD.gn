@@ -11,6 +11,8 @@ source_set("hider") {
     "browser_view_hider_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -21,5 +23,6 @@ source_set("hider") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }

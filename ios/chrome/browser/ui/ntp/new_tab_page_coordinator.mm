@@ -318,6 +318,9 @@
 }
 
 - (void)stopScrolling {
+  if (!self.contentSuggestionsCoordinator) {
+    return;
+  }
   if ([self isNTPRefactoredAndFeedVisible]) {
     [self.ntpViewController stopScrolling];
   } else {

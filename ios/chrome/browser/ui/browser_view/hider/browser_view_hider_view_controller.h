@@ -19,6 +19,8 @@
 // Pan gesture handler for the hider view.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
+@property(nonatomic, assign) BOOL incognito;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_HIDER_BROWSER_VIEW_HIDER_VIEW_CONTROLLER_H_

@@ -12,6 +12,8 @@
 #import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -105,7 +107,11 @@
 }
 
 - (void)updateAfterNavigatingToNTP {
-  [self.steadyView setLocationLabelText:@""];
+  NSString* ntpText =
+      self.incognito
+          ? l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB_PAGE)
+          : l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_TAB_PAGE);
+  [self.steadyView setLocationLabelText:ntpText];
 }
 
 #pragma mark - ViewRevealingAnimatee
