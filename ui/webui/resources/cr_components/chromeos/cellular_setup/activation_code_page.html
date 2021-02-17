@@ -144,7 +144,7 @@
           [[getDescription_(showNoProfilesMessage, cameraCount_ )]]
         </span>
         <template is="dom-if"
-            if="[[isScanningAvailable_(cameraCount_)]]" restamp>
+            if="[[isScanningAvailable_(cameraCount_, qrCodeDetector_.*)]]" restamp>
           <div id="esimQrCodeDetection">
             <cr-button id="switchCameraButton"
                 on-click="onSwitchCameraButtonPressed_"

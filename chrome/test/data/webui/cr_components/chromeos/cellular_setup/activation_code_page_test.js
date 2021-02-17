@@ -9,6 +9,7 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeMediaDevices} from './fake_media_devices.m.js';
+// #import {FakeBarcodeDetector} from './fake_barcode_detector.m.js';
 // clang-format on
 
 suite('CrComponentsActivationCodePageTest', function() {
@@ -25,12 +26,15 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   setup(function() {
     activationCodePage = document.createElement('activation-code-page');
+    activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
+    activationCodePage.initBarcodeDetector();
     document.body.appendChild(activationCodePage);
     Polymer.dom.flush();
 
     mediaDevices = new cellular_setup.FakeMediaDevices();
     mediaDevices.addDevice();
     activationCodePage.setMediaDevices(mediaDevices);
+    Polymer.dom.flush();
   });
 
   test('UI states', async function() {
@@ -206,4 +210,23 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     assertTrue(video.hidden);
   });
+
+  test(
+      'Do not show qrContainer when BarcodeDetector is not ready',
+      async function() {
+        await flushAsync();
+        let qrCodeDetectorContainer =
+            activationCodePage.$$('#esimQrCodeDetection');
+
+        assertTrue(!!qrCodeDetectorContainer);
+
+        FakeBarcodeDetector.setShouldFail(true);
+        activationCodePage.initBarcodeDetector();
+
+        await flushAsync();
+
+        qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
+
+        assertFalse(!!qrCodeDetectorContainer);
+      });
 });

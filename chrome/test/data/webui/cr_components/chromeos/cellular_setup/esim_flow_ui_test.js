@@ -13,6 +13,7 @@
 // #import {assertEquals, assertTrue} from '../../../chai_assert.js';
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
+// #import {FakeBarcodeDetector} from './fake_barcode_detector.m.js';
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
@@ -146,6 +147,10 @@ suite('CrComponentsEsimFlowUiTest', function() {
       eSimManagerRemote.addEuiccForTest(0);
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
       euicc = availableEuiccs.euiccs[0];
+
+      activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
+      activationCodePage.initBarcodeDetector();
+      await flushAsync();
       eSimPage.initSubflow();
 
       await assertProfileLoadingPageAndContinue();
@@ -159,8 +164,11 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertActivationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
     });
 
-    // TODO(crbug.com/1178379) Fails consistenly.
-    test.skip('Invalid activation code', async function() {
+    test('Invalid activation code', async function() {
+      activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
+      activationCodePage.initBarcodeDetector();
+      await flushAsync();
+
       euicc.setProfileInstallResultForTest(
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorInvalidActivationCode);

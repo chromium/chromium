@@ -23,6 +23,7 @@ js_modulizer("modulize") {
     "fake_esim_manager_remote.js",
     "fake_media_devices.js",
     "fake_canvas_context.js",
+    "fake_barcode_detector.js",
   ]
   namespace_rewrites = cr_components_chromeos_namespace_rewrites + [
                          "cellular_setup.FakeCellularSetupDelegate|FakeCellularSetupDelegate",
