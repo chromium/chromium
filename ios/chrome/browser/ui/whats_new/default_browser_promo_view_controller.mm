@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/whats_new/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -28,7 +29,7 @@
   self.primaryActionAvailable = YES;
   self.secondaryActionAvailable = YES;
   self.showDismissBarButton = NO;
-  self.titleString = l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_TITLE);
+  self.titleString = GetDefaultBrowserPromoTitle();
   self.subtitleString =
       IsInModifiedStringsGroup()
           ? l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE)

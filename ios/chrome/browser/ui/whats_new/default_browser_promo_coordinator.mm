@@ -8,13 +8,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/whats_new/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
-#include "ios/chrome/grit/ios_google_chrome_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -155,11 +153,7 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 - (void)confirmationAlertLearnMoreAction {
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreen.PromoMoreInfoTapped"));
-  NSString* message =
-      IsInModifiedStringsGroup()
-          ? l10n_util::GetNSString(
-                IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE)
-          : l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE);
+  NSString* message = GetDefaultBrowserLearnMoreText();
   self.learnMoreViewController =
       [[PopoverLabelViewController alloc] initWithMessage:message];
 
