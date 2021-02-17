@@ -52,13 +52,13 @@ Grid::Grid() {}
 Grid::~Grid() {}
 
 void Grid::SetGridColor(SkColor color) {
-  animator().TransitionColorTo(this, last_frame_time(), GRID_COLOR, grid_color_,
-                               color);
+  animation().TransitionColorTo(this, last_frame_time(), GRID_COLOR,
+                                grid_color_, color);
 }
 
 void Grid::OnColorAnimated(const SkColor& color,
                            int target_property_id,
-                           gfx::KeyframeModel* keyframe_model) {
+                           cc::KeyframeModel* keyframe_model) {
   if (target_property_id == GRID_COLOR) {
     grid_color_ = color;
   } else {

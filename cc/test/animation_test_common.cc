@@ -14,14 +14,20 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/keyframe_effect.h"
+#include "cc/animation/keyframed_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
+#include "cc/animation/timing_function.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
-#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
 
-using gfx::KeyframeModel;
+using cc::KeyframeModel;
+using cc::AnimationCurve;
+using cc::FloatKeyframe;
+using cc::KeyframedFloatAnimationCurve;
+using cc::KeyframedTransformAnimationCurve;
+using cc::TimingFunction;
+using cc::TransformKeyframe;
 
 namespace cc {
 
@@ -30,17 +36,17 @@ int AddOpacityTransition(Animation* target,
                          float start_opacity,
                          float end_opacity,
                          bool use_timing_function) {
-  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
-      gfx::KeyframedFloatAnimationCurve::Create());
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      KeyframedFloatAnimationCurve::Create());
 
-  std::unique_ptr<gfx::TimingFunction> func;
+  std::unique_ptr<TimingFunction> func;
   if (!use_timing_function)
-    func = gfx::CubicBezierTimingFunction::CreatePreset(
-        gfx::CubicBezierTimingFunction::EaseType::EASE);
+    func = CubicBezierTimingFunction::CreatePreset(
+        CubicBezierTimingFunction::EaseType::EASE);
   if (duration > 0.0)
-    curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        base::TimeDelta(), start_opacity, std::move(func)));
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(
+    curve->AddKeyframe(FloatKeyframe::Create(base::TimeDelta(), start_opacity,
+                                             std::move(func)));
+  curve->AddKeyframe(FloatKeyframe::Create(
       base::TimeDelta::FromSecondsD(duration), end_opacity, nullptr));
 
   int id = AnimationIdProvider::NextKeyframeModelId();
@@ -58,15 +64,15 @@ int AddAnimatedTransform(Animation* target,
                          double duration,
                          gfx::TransformOperations start_operations,
                          gfx::TransformOperations operations) {
-  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve(
-      gfx::KeyframedTransformAnimationCurve::Create());
+  std::unique_ptr<KeyframedTransformAnimationCurve> curve(
+      KeyframedTransformAnimationCurve::Create());
 
   if (duration > 0.0) {
-    curve->AddKeyframe(gfx::TransformKeyframe::Create(
-        base::TimeDelta(), start_operations, nullptr));
+    curve->AddKeyframe(TransformKeyframe::Create(base::TimeDelta(),
+                                                 start_operations, nullptr));
   }
 
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(duration), operations, nullptr));
 
   int id = AnimationIdProvider::NextKeyframeModelId();
@@ -173,7 +179,7 @@ float FakeFloatAnimationCurve::GetValue(base::TimeDelta now) const {
   return 0.0f;
 }
 
-std::unique_ptr<gfx::AnimationCurve> FakeFloatAnimationCurve::Clone() const {
+std::unique_ptr<AnimationCurve> FakeFloatAnimationCurve::Clone() const {
   return base::WrapUnique(new FakeFloatAnimationCurve);
 }
 
@@ -201,7 +207,7 @@ bool FakeTransformTransition::MaximumScale(float* max_scale) const {
   return true;
 }
 
-std::unique_ptr<gfx::AnimationCurve> FakeTransformTransition::Clone() const {
+std::unique_ptr<AnimationCurve> FakeTransformTransition::Clone() const {
   return base::WrapUnique(new FakeTransformTransition(*this));
 }
 
@@ -220,7 +226,7 @@ float FakeFloatTransition::GetValue(base::TimeDelta time) const {
   return (1.0 - progress) * from_ + progress * to_;
 }
 
-std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {
+std::unique_ptr<AnimationCurve> FakeFloatTransition::Clone() const {
   return base::WrapUnique(new FakeFloatTransition(*this));
 }
 
@@ -289,15 +295,15 @@ int AddOpacityStepsToAnimation(Animation* animation,
                                float start_opacity,
                                float end_opacity,
                                int num_steps) {
-  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
-      gfx::KeyframedFloatAnimationCurve::Create());
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      KeyframedFloatAnimationCurve::Create());
 
-  std::unique_ptr<gfx::TimingFunction> func = gfx::StepsTimingFunction::Create(
-      num_steps, gfx::StepsTimingFunction::StepPosition::START);
+  std::unique_ptr<TimingFunction> func = StepsTimingFunction::Create(
+      num_steps, StepsTimingFunction::StepPosition::START);
   if (duration > 0.0)
-    curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        base::TimeDelta(), start_opacity, std::move(func)));
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(
+    curve->AddKeyframe(FloatKeyframe::Create(base::TimeDelta(), start_opacity,
+                                             std::move(func)));
+  curve->AddKeyframe(FloatKeyframe::Create(
       base::TimeDelta::FromSecondsD(duration), end_opacity, nullptr));
 
   int id = AnimationIdProvider::NextKeyframeModelId();

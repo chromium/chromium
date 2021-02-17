@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/test/geometry_test_utils.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/transform_operations.h"
 
 namespace gfx {
@@ -21,7 +21,7 @@ class ScrollOffset;
 
 namespace cc {
 
-class FakeFloatAnimationCurve : public gfx::FloatAnimationCurve {
+class FakeFloatAnimationCurve : public FloatAnimationCurve {
  public:
   FakeFloatAnimationCurve();
   explicit FakeFloatAnimationCurve(double duration);
@@ -29,13 +29,13 @@ class FakeFloatAnimationCurve : public gfx::FloatAnimationCurve {
 
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta now) const override;
-  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
+  std::unique_ptr<AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
 };
 
-class FakeTransformTransition : public gfx::TransformAnimationCurve {
+class FakeTransformTransition : public TransformAnimationCurve {
  public:
   explicit FakeTransformTransition(double duration);
   ~FakeTransformTransition() override;
@@ -45,13 +45,13 @@ class FakeTransformTransition : public gfx::TransformAnimationCurve {
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 
-  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
+  std::unique_ptr<AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
 };
 
-class FakeFloatTransition : public gfx::FloatAnimationCurve {
+class FakeFloatTransition : public FloatAnimationCurve {
  public:
   FakeFloatTransition(double duration, float from, float to);
   ~FakeFloatTransition() override;
@@ -59,7 +59,7 @@ class FakeFloatTransition : public gfx::FloatAnimationCurve {
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta time) const override;
 
-  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
+  std::unique_ptr<AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;

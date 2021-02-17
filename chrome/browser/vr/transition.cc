@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/animation/keyframe/transition.h"
+#include "chrome/browser/vr/transition.h"
 
-namespace gfx {
+namespace vr {
 
 namespace {
 static constexpr int kDefaultTransitionDurationMs = 225;
@@ -16,4 +16,4 @@ Transition::Transition()
 
 Transition::~Transition() {}
 
-}  // namespace gfx
+}  // namespace vr

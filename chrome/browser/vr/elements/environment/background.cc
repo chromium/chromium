@@ -187,18 +187,19 @@ void Background::SetGradientImages(
 }
 
 void Background::SetNormalFactor(float factor) {
-  animator().TransitionFloatTo(this, last_frame_time(), NORMAL_COLOR_FACTOR,
-                               normal_factor_, factor);
+  animation().TransitionFloatTo(this, last_frame_time(), NORMAL_COLOR_FACTOR,
+                                normal_factor_, factor);
 }
 
 void Background::SetIncognitoFactor(float factor) {
-  animator().TransitionFloatTo(this, last_frame_time(), INCOGNITO_COLOR_FACTOR,
-                               incognito_factor_, factor);
+  animation().TransitionFloatTo(this, last_frame_time(), INCOGNITO_COLOR_FACTOR,
+                                incognito_factor_, factor);
 }
 
 void Background::SetFullscreenFactor(float factor) {
-  animator().TransitionFloatTo(this, last_frame_time(), FULLSCREEN_COLOR_FACTOR,
-                               fullscreen_factor_, factor);
+  animation().TransitionFloatTo(this, last_frame_time(),
+                                FULLSCREEN_COLOR_FACTOR, fullscreen_factor_,
+                                factor);
 }
 
 void Background::CreateBackgroundTexture() {
@@ -223,7 +224,7 @@ void Background::CreateGradientTextures() {
 
 void Background::OnFloatAnimated(const float& value,
                                  int target_property_id,
-                                 gfx::KeyframeModel* keyframe_model) {
+                                 cc::KeyframeModel* keyframe_model) {
   switch (target_property_id) {
     case NORMAL_COLOR_FACTOR:
       normal_factor_ = value;

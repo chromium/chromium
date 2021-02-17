@@ -31,7 +31,7 @@ class VR_UI_EXPORT DiscButton : public VectorIconButton {
   void OnSetCornerRadii(const CornerRadii& radii) override;
   void OnSizeAnimated(const gfx::SizeF& size,
                       int target_property_id,
-                      gfx::KeyframeModel* keyframe_model) override;
+                      cc::KeyframeModel* keyframe_model) override;
 
   DISALLOW_COPY_AND_ASSIGN(DiscButton);
 };

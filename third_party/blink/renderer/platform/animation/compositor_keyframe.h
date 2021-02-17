@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace gfx {
+namespace cc {
 class TimingFunction;
 }
 
@@ -25,7 +25,7 @@ class PLATFORM_EXPORT CompositorKeyframe {
   scoped_refptr<TimingFunction> GetTimingFunctionForTesting() const;
 
  private:
-  virtual const gfx::TimingFunction* CcTimingFunction() const = 0;
+  virtual const cc::TimingFunction* CcTimingFunction() const = 0;
 };
 
 }  // namespace blink

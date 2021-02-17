@@ -36,7 +36,7 @@ class PLATFORM_EXPORT CompositorFilterAnimationCurve
   void SetScaledDuration(double);
 
   // blink::CompositorAnimationCurve implementation.
-  std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;
+  std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
 
  private:
   std::unique_ptr<cc::KeyframedFilterAnimationCurve> curve_;

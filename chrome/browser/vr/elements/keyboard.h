@@ -29,7 +29,7 @@ class VR_UI_EXPORT Keyboard : public UiElement {
                HitTestResult* result) const final;
   void OnFloatAnimated(const float& value,
                        int target_property_id,
-                       gfx::KeyframeModel* keyframe_model) override;
+                       cc::KeyframeModel* keyframe_model) override;
 
   void OnHoverEnter(const gfx::PointF& position,
                     base::TimeTicks timestamp) override;

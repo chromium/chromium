@@ -5,9 +5,9 @@
 #include "cc/animation/scroll_offset_animation_curve.h"
 
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
+#include "cc/animation/timing_function.h"
 #include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
 
 using DurationBehavior = cc::ScrollOffsetAnimationCurve::DurationBehavior;
 
@@ -105,7 +105,7 @@ TEST(ScrollOffsetAnimationCurveTest, Clone) {
   curve->SetInitialValue(initial_value);
   base::TimeDelta duration = curve->Duration();
 
-  std::unique_ptr<gfx::AnimationCurve> clone(curve->Clone());
+  std::unique_ptr<AnimationCurve> clone(curve->Clone());
 
   EXPECT_EQ(duration, clone->Duration());
 

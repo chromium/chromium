@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace gfx {
+namespace cc {
 class KeyframedFloatAnimationCurve;
 }
 
@@ -39,10 +39,10 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
   float GetValue(double time) const;
 
   // CompositorAnimationCurve implementation.
-  std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;
+  std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
 
   static std::unique_ptr<CompositorFloatAnimationCurve> CreateForTesting(
-      std::unique_ptr<gfx::KeyframedFloatAnimationCurve>);
+      std::unique_ptr<cc::KeyframedFloatAnimationCurve>);
 
   using Keyframes = Vector<std::unique_ptr<CompositorFloatKeyframe>>;
   Keyframes KeyframesForTesting() const;
@@ -51,9 +51,9 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
 
  private:
   CompositorFloatAnimationCurve(
-      std::unique_ptr<gfx::KeyframedFloatAnimationCurve>);
+      std::unique_ptr<cc::KeyframedFloatAnimationCurve>);
 
-  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve_;
+  std::unique_ptr<cc::KeyframedFloatAnimationCurve> curve_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorFloatAnimationCurve);
 };

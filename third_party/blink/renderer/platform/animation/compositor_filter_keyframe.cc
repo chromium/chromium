@@ -24,7 +24,7 @@ double CompositorFilterKeyframe::Time() const {
   return filter_keyframe_->Time().InSecondsF();
 }
 
-const gfx::TimingFunction* CompositorFilterKeyframe::CcTimingFunction() const {
+const cc::TimingFunction* CompositorFilterKeyframe::CcTimingFunction() const {
   return filter_keyframe_->timing_function();
 }
 

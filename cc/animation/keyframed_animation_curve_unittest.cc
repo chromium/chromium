@@ -2,23 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "cc/animation/keyframed_animation_curve.h"
 
 #include <memory>
 
+#include "cc/test/geometry_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/box_f.h"
-#include "ui/gfx/geometry/test/transform_test_util.h"
 #include "ui/gfx/test/gfx_util.h"
 #include "ui/gfx/transform_operations.h"
 
-namespace gfx {
+namespace cc {
 namespace {
 
 void ExpectTranslateX(SkScalar translate_x,
                       const gfx::TransformOperations& operations) {
   EXPECT_FLOAT_EQ(translate_x, operations.Apply().matrix().get(0, 3));
+}
+
+void ExpectBrightness(double brightness, const FilterOperations& filter) {
+  EXPECT_EQ(1u, filter.size());
+  EXPECT_EQ(FilterOperation::BRIGHTNESS, filter.at(0).type());
+  EXPECT_FLOAT_EQ(brightness, filter.at(0).amount());
 }
 
 // Tests that a color animation with one keyframe works as expected.
@@ -326,24 +333,24 @@ TEST(KeyframedAnimationCurveTest, DiscreteLinearTransformAnimation) {
 
   // Between 0 and 0.5 seconds, the first keyframe should be returned.
   result = curve->GetValue(base::TimeDelta::FromSecondsD(0.01f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::TimeDelta::FromSecondsD(0.49f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 
   // Between 0.5 and 1.5 seconds, the middle keyframe should be returned.
   result = curve->GetValue(base::TimeDelta::FromSecondsD(0.5f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(identity_matrix, result.Apply());
 
   result = curve->GetValue(base::TimeDelta::FromSecondsD(1.49f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(identity_matrix, result.Apply());
 
   // Between 1.5 and 2.0 seconds, the last keyframe should be returned.
   result = curve->GetValue(base::TimeDelta::FromSecondsD(1.5f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::TimeDelta::FromSecondsD(2.0f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 }
 
 TEST(KeyframedAnimationCurveTest, DiscreteCubicBezierTransformAnimation) {
@@ -376,24 +383,124 @@ TEST(KeyframedAnimationCurveTest, DiscreteCubicBezierTransformAnimation) {
   // Due to the cubic-bezier, the first keyframe is returned almost all the way
   // to 1 second.
   result = curve->GetValue(base::TimeDelta::FromSecondsD(0.01f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::TimeDelta::FromSecondsD(0.8f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 
   // Between ~0.85 and ~1.85 seconds, the middle keyframe should be returned.
   result = curve->GetValue(base::TimeDelta::FromSecondsD(0.85f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(identity_matrix, result.Apply());
 
   result = curve->GetValue(base::TimeDelta::FromSecondsD(1.8f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(identity_matrix, result.Apply());
 
   // Finally the last keyframe only takes effect after ~1.85 seconds.
   result = curve->GetValue(base::TimeDelta::FromSecondsD(1.85f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::TimeDelta::FromSecondsD(2.0f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORMATION_MATRIX_EQ(non_invertible_matrix, result.Apply());
+}
+
+// Tests that a filter animation with one keyframe works as expected.
+TEST(KeyframedAnimationCurveTest, OneFilterKeyframe) {
+  std::unique_ptr<KeyframedFilterAnimationCurve> curve(
+      KeyframedFilterAnimationCurve::Create());
+  FilterOperations operations;
+  operations.Append(FilterOperation::CreateBrightnessFilter(2.f));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::TimeDelta(), operations, nullptr));
+
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+}
+
+// Tests that a filter animation with two keyframes works as expected.
+TEST(KeyframedAnimationCurveTest, TwoFilterKeyframe) {
+  std::unique_ptr<KeyframedFilterAnimationCurve> curve(
+      KeyframedFilterAnimationCurve::Create());
+  FilterOperations operations1;
+  operations1.Append(FilterOperation::CreateBrightnessFilter(2.f));
+  FilterOperations operations2;
+  operations2.Append(FilterOperation::CreateBrightnessFilter(4.f));
+
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::TimeDelta(), operations1, nullptr));
+  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
+                                            operations2, nullptr));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  ExpectBrightness(3.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
+  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+}
+
+// Tests that a filter animation with three keyframes works as expected.
+TEST(KeyframedAnimationCurveTest, ThreeFilterKeyframe) {
+  std::unique_ptr<KeyframedFilterAnimationCurve> curve(
+      KeyframedFilterAnimationCurve::Create());
+  FilterOperations operations1;
+  operations1.Append(FilterOperation::CreateBrightnessFilter(2.f));
+  FilterOperations operations2;
+  operations2.Append(FilterOperation::CreateBrightnessFilter(4.f));
+  FilterOperations operations3;
+  operations3.Append(FilterOperation::CreateBrightnessFilter(8.f));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::TimeDelta(), operations1, nullptr));
+  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
+                                            operations2, nullptr));
+  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(2.f),
+                                            operations3, nullptr));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  ExpectBrightness(3.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
+  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.5f)));
+  ExpectBrightness(8.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+  ExpectBrightness(8.f, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
+}
+
+// Tests that a filter animation with multiple keys at a given time works
+// sanely.
+TEST(KeyframedAnimationCurveTest, RepeatedFilterKeyTimes) {
+  std::unique_ptr<KeyframedFilterAnimationCurve> curve(
+      KeyframedFilterAnimationCurve::Create());
+  // A step function.
+  FilterOperations operations1;
+  operations1.Append(FilterOperation::CreateBrightnessFilter(4.f));
+  FilterOperations operations2;
+  operations2.Append(FilterOperation::CreateBrightnessFilter(4.f));
+  FilterOperations operations3;
+  operations3.Append(FilterOperation::CreateBrightnessFilter(6.f));
+  FilterOperations operations4;
+  operations4.Append(FilterOperation::CreateBrightnessFilter(6.f));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::TimeDelta(), operations1, nullptr));
+  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
+                                            operations2, nullptr));
+  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
+                                            operations3, nullptr));
+  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(2.f),
+                                            operations4, nullptr));
+
+  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+
+  // There is a discontinuity at 1. Any value between 4 and 6 is valid.
+  FilterOperations value = curve->GetValue(base::TimeDelta::FromSecondsD(1.f));
+  EXPECT_EQ(1u, value.size());
+  EXPECT_EQ(FilterOperation::BRIGHTNESS, value.at(0).type());
+  EXPECT_GE(value.at(0).amount(), 4);
+  EXPECT_LE(value.at(0).amount(), 6);
+
+  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.5f)));
+  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
 }
 
 // Tests that the keyframes may be added out of order.
@@ -917,4 +1024,4 @@ TEST(KeyframedAnimationCurveTest, RepeatedSizeKeyFrame) {
 }
 
 }  // namespace
-}  // namespace gfx
+}  // namespace cc

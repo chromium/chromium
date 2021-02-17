@@ -25,7 +25,7 @@ class Grid : public Rect {
 
   void OnColorAnimated(const SkColor& color,
                        int target_property_id,
-                       gfx::KeyframeModel* keyframe_model) override;
+                       cc::KeyframeModel* keyframe_model) override;
 
   int gridline_count() const { return gridline_count_; }
   void set_gridline_count(int gridline_count) {

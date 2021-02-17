@@ -18,6 +18,9 @@
 #include "base/numerics/math_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "cc/animation/animation_curve.h"
+#include "cc/animation/keyframe_effect.h"
+#include "cc/animation/keyframed_animation_curve.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/vr/content_input_delegate.h"
 #include "chrome/browser/vr/databinding/binding.h"
@@ -76,8 +79,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "device/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/transform_util.h"
 
@@ -976,36 +977,37 @@ void BindIndicatorTranscienceForWin(
   e->SetTranslate(0, kWebVrPermissionOffsetStart, 0);
 
   // Build up a keyframe model for the initial transition.
-  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve(
-      gfx::KeyframedTransformAnimationCurve::Create());
+  std::unique_ptr<cc::KeyframedTransformAnimationCurve> curve(
+      cc::KeyframedTransformAnimationCurve::Create());
 
   gfx::TransformOperations value_1;
   value_1.AppendTranslate(0, kWebVrPermissionOffsetStart, 0);
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta(), value_1,
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE)));
+      cc::CubicBezierTimingFunction::CreatePreset(
+          cc::CubicBezierTimingFunction::EaseType::EASE)));
 
   gfx::TransformOperations value_2;
   value_2.AppendTranslate(0, kWebVrPermissionOffsetOvershoot, 0);
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionOffsetMs), value_2,
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE)));
+      cc::CubicBezierTimingFunction::CreatePreset(
+          cc::CubicBezierTimingFunction::EaseType::EASE)));
 
   gfx::TransformOperations value_3;
   value_3.AppendTranslate(0, kWebVrPermissionOffsetFinal, 0);
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionAnimationDurationMs),
       value_3,
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE)));
+      cc::CubicBezierTimingFunction::CreatePreset(
+          cc::CubicBezierTimingFunction::EaseType::EASE)));
 
   curve->set_target(e);
 
-  e->AddKeyframeModel(gfx::KeyframeModel::Create(
-      std::move(curve), gfx::KeyframeAnimator::GetNextKeyframeModelId(),
-      TRANSFORM));
+  e->AddKeyframeModel(cc::KeyframeModel::Create(
+      std::move(curve), Animation::GetNextKeyframeModelId(),
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(TRANSFORM)));
 }
 
 #else
@@ -1063,36 +1065,37 @@ void BindIndicatorTranscience(
   e->SetTranslate(0, kWebVrPermissionOffsetStart, 0);
 
   // Build up a keyframe model for the initial transition.
-  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve(
-      gfx::KeyframedTransformAnimationCurve::Create());
+  std::unique_ptr<cc::KeyframedTransformAnimationCurve> curve(
+      cc::KeyframedTransformAnimationCurve::Create());
 
   gfx::TransformOperations value_1;
   value_1.AppendTranslate(0, kWebVrPermissionOffsetStart, 0);
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta(), value_1,
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE)));
+      cc::CubicBezierTimingFunction::CreatePreset(
+          cc::CubicBezierTimingFunction::EaseType::EASE)));
 
   gfx::TransformOperations value_2;
   value_2.AppendTranslate(0, kWebVrPermissionOffsetOvershoot, 0);
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionOffsetMs), value_2,
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE)));
+      cc::CubicBezierTimingFunction::CreatePreset(
+          cc::CubicBezierTimingFunction::EaseType::EASE)));
 
   gfx::TransformOperations value_3;
   value_3.AppendTranslate(0, kWebVrPermissionOffsetFinal, 0);
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
+  curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionAnimationDurationMs),
       value_3,
-      gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE)));
+      cc::CubicBezierTimingFunction::CreatePreset(
+          cc::CubicBezierTimingFunction::EaseType::EASE)));
 
   curve->set_target(e);
 
-  e->AddKeyframeModel(gfx::KeyframeModel::Create(
-      std::move(curve), gfx::KeyframeAnimator::GetNextKeyframeModelId(),
-      TRANSFORM));
+  e->AddKeyframeModel(cc::KeyframeModel::Create(
+      std::move(curve), Animation::GetNextKeyframeModelId(),
+      Animation::GetNextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(TRANSFORM)));
 }
 
 #endif

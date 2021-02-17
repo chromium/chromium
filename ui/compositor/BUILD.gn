@@ -101,7 +101,6 @@ component("compositor") {
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/animation",
-    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]

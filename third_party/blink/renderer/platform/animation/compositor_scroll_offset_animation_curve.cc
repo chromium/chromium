@@ -7,7 +7,7 @@
 
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "cc/animation/timing_function.h"
 
 using blink::CompositorScrollOffsetAnimationCurve;
 
@@ -58,7 +58,7 @@ void CompositorScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta time,
   curve_->UpdateTarget(time, gfx::ScrollOffset(new_target.X(), new_target.Y()));
 }
 
-std::unique_ptr<gfx::AnimationCurve>
+std::unique_ptr<cc::AnimationCurve>
 CompositorScrollOffsetAnimationCurve::CloneToAnimationCurve() const {
   return curve_->Clone();
 }

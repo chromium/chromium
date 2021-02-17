@@ -215,14 +215,6 @@ gfx::Transform Tween::TransformValueBetween(double value,
   return to_return;
 }
 
-// static
-gfx::TransformOperations Tween::TransformOperationsValueBetween(
-    double value,
-    const gfx::TransformOperations& start,
-    const gfx::TransformOperations& target) {
-  return target.Blend(start, value);
-}
-
 gfx::Size Tween::SizeValueBetween(double value,
                                   const gfx::Size& start,
                                   const gfx::Size& target) {

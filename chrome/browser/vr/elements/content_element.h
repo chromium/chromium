@@ -41,7 +41,7 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
   void UpdateInput(const EditedText& info) override;
   void OnSizeAnimated(const gfx::SizeF& size,
                       int target_property_id,
-                      gfx::KeyframeModel* animation) override;
+                      cc::KeyframeModel* animation) override;
 
   void SetOverlayTextureId(unsigned int texture_id);
   void SetOverlayTextureLocation(GlTextureLocation location);

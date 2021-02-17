@@ -641,12 +641,9 @@ static_library("test_support") {
   sources = [
     "animation/animation_test_api.cc",
     "animation/animation_test_api.h",
-    "animation/keyframe/test/animation_utils.cc",
-    "animation/keyframe/test/animation_utils.h",
     "animation/test_animation_delegate.h",
     "geometry/test/rect_test_util.cc",
     "geometry/test/rect_test_util.h",
-    "geometry/test/size_test_util.h",
     "geometry/test/transform_test_util.cc",
     "geometry/test/transform_test_util.h",
     "image/image_unittest_util.cc",
@@ -673,7 +670,6 @@ static_library("test_support") {
     "//skia",
     "//testing/gtest",
     "//ui/gfx/animation",
-    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
   ]
 
@@ -707,8 +703,6 @@ if (is_mac) {
 
 test("gfx_unittests") {
   sources = [
-    "animation/keyframe/keyframe_animation_unittest.cc",
-    "animation/keyframe/keyframed_animation_curve_unittest.cc",
     "font_names_testing.cc",
     "font_names_testing.h",
     "font_unittest.cc",
@@ -833,7 +827,6 @@ test("gfx_unittests") {
     "//third_party/zlib",
     "//ui/base",
     "//ui/gfx/animation",
-    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gfx/range",
   ]

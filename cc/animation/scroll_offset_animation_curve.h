@@ -8,15 +8,13 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 
-namespace gfx {
-class TimingFunction;
-}  // namespace gfx
-
 namespace cc {
+
+class TimingFunction;
 
 // ScrollOffsetAnimationCurve computes scroll offset as a function of time
 // during a scroll offset animation.
@@ -25,8 +23,8 @@ namespace cc {
 // user input or programmatic scroll operations.  For more information about
 // scheduling and servicing scroll animations, see blink::ScrollAnimator and
 // blink::ProgrammaticScrollAnimator.
-class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
-    : public gfx::AnimationCurve {
+
+class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve : public AnimationCurve {
  public:
   class Target {
    public:
@@ -34,7 +32,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
 
     virtual void OnScrollOffsetAnimated(const gfx::ScrollOffset& value,
                                         int target_property_id,
-                                        gfx::KeyframeModel* keyframe_model) = 0;
+                                        KeyframeModel* keyframe_model) = 0;
   };
 
   // Indicates how the animation duration should be computed for Ease-in-out
@@ -103,12 +101,12 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   base::TimeDelta Duration() const override;
   int Type() const override;
   const char* TypeName() const override;
-  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
+  std::unique_ptr<AnimationCurve> Clone() const override;
   std::unique_ptr<ScrollOffsetAnimationCurve>
   CloneToScrollOffsetAnimationCurve() const;
   void Tick(base::TimeDelta t,
             int property_id,
-            gfx::KeyframeModel* keyframe_model) const override;
+            KeyframeModel* keyframe_model) const override;
   static void SetAnimationDurationForTesting(base::TimeDelta duration);
   void set_target(Target* target) { target_ = target; }
 
@@ -127,7 +125,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
       base::Optional<DurationBehavior> duration_behavior = base::nullopt);
   ScrollOffsetAnimationCurve(
       const gfx::ScrollOffset& target_value,
-      std::unique_ptr<gfx::TimingFunction> timing_function,
+      std::unique_ptr<TimingFunction> timing_function,
       AnimationType animation_type,
       base::Optional<DurationBehavior> duration_behavior);
 
@@ -151,7 +149,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   // Time from animation start to most recent UpdateTarget.
   base::TimeDelta last_retarget_;
 
-  std::unique_ptr<gfx::TimingFunction> timing_function_;
+  std::unique_ptr<TimingFunction> timing_function_;
   AnimationType animation_type_;
 
   // Only valid when |animation_type_| is EASE_IN_OUT.

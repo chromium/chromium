@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/statistics_recorder.h"
 #include "cc/animation/animation.h"
+#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
@@ -18,6 +19,7 @@
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "cc/animation/scroll_offset_animations.h"
+#include "cc/animation/timing_function.h"
 #include "cc/base/completion_event.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -30,8 +32,6 @@
 #include "cc/trees/target_property.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/transform_operations.h"
 
 namespace cc {
@@ -376,9 +376,8 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
     KeyframeModel* keyframe_model =
         animation_child_impl->GetKeyframeModel(TargetProperty::OPACITY);
 
-    const gfx::FloatAnimationCurve* curve =
-        gfx::FloatAnimationCurve::ToFloatAnimationCurve(
-            keyframe_model->curve());
+    const FloatAnimationCurve* curve =
+        FloatAnimationCurve::ToFloatAnimationCurve(keyframe_model->curve());
     float start_opacity = curve->GetValue(base::TimeDelta());
     float end_opacity = curve->GetValue(curve->Duration());
     float linearly_interpolated_opacity =
@@ -555,7 +554,7 @@ class LayerTreeHostAnimationTestLayerAddedWithAnimation
       animation_->set_animation_delegate(this);
 
       // Any valid AnimationCurve will do here.
-      std::unique_ptr<gfx::AnimationCurve> curve(new FakeFloatAnimationCurve());
+      std::unique_ptr<AnimationCurve> curve(new FakeFloatAnimationCurve());
       std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
           std::move(curve), 1, 1,
           KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
@@ -862,11 +861,10 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationTakeover
     }
   }
 
-  void NotifyAnimationTakeover(
-      base::TimeTicks monotonic_time,
-      int target_property,
-      base::TimeTicks animation_start_time,
-      std::unique_ptr<gfx::AnimationCurve> curve) override {
+  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
+                               int target_property,
+                               base::TimeTicks animation_start_time,
+                               std::unique_ptr<AnimationCurve> curve) override {
     EndTest();
   }
 

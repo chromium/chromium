@@ -401,7 +401,7 @@ void TestAnimationDelegate::NotifyAnimationTakeover(
     base::TimeTicks monotonic_time,
     int target_property,
     base::TimeTicks animation_start_time,
-    std::unique_ptr<gfx::AnimationCurve> curve) {
+    std::unique_ptr<AnimationCurve> curve) {
   takeover_ = true;
 }
 

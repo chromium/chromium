@@ -43,7 +43,7 @@ base::TimeDelta TransformAnimationCurveAdapter::Duration() const {
   return duration_;
 }
 
-std::unique_ptr<gfx::AnimationCurve> TransformAnimationCurveAdapter::Clone()
+std::unique_ptr<cc::AnimationCurve> TransformAnimationCurveAdapter::Clone()
     const {
   return base::WrapUnique(new TransformAnimationCurveAdapter(
       tween_type_, initial_value_, target_value_, duration_));

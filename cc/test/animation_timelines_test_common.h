@@ -11,10 +11,8 @@
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"
-#include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/animation/keyframe/target_property.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/transform.h"
 
@@ -94,9 +92,9 @@ class TestLayer {
   FilterOperations backdrop_filters_;
   gfx::ScrollOffset scroll_offset_;
 
-  gfx::TargetProperties has_potential_animation_;
-  gfx::TargetProperties is_currently_animating_;
-  gfx::TargetProperties mutated_properties_;
+  TargetProperties has_potential_animation_;
+  TargetProperties is_currently_animating_;
+  TargetProperties mutated_properties_;
 };
 
 class TestHostClient : public MutatorHostClient {
@@ -238,11 +236,10 @@ class TestAnimationDelegate : public AnimationDelegate {
   void NotifyAnimationAborted(base::TimeTicks monotonic_time,
                               int target_property,
                               int group) override;
-  void NotifyAnimationTakeover(
-      base::TimeTicks monotonic_time,
-      int target_property,
-      base::TimeTicks animation_start_time,
-      std::unique_ptr<gfx::AnimationCurve> curve) override;
+  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
+                               int target_property,
+                               base::TimeTicks animation_start_time,
+                               std::unique_ptr<AnimationCurve> curve) override;
   void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) override;
 

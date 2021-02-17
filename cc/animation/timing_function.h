@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_ANIMATION_KEYFRAME_TIMING_FUNCTION_H_
-#define UI_GFX_ANIMATION_KEYFRAME_TIMING_FUNCTION_H_
+#ifndef CC_ANIMATION_TIMING_FUNCTION_H_
+#define CC_ANIMATION_TIMING_FUNCTION_H_
 
 #include <memory>
 
-#include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
+#include "cc/animation/animation_export.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 
-namespace gfx {
+namespace cc {
 
 // See http://www.w3.org/TR/css3-transitions/.
-class GFX_KEYFRAME_ANIMATION_EXPORT TimingFunction {
+class CC_ANIMATION_EXPORT TimingFunction {
  public:
   virtual ~TimingFunction();
 
@@ -34,8 +34,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT TimingFunction {
   TimingFunction();
 };
 
-class GFX_KEYFRAME_ANIMATION_EXPORT CubicBezierTimingFunction
-    : public TimingFunction {
+class CC_ANIMATION_EXPORT CubicBezierTimingFunction : public TimingFunction {
  public:
   enum class EaseType { EASE, EASE_IN, EASE_OUT, EASE_IN_OUT, CUSTOM };
 
@@ -70,8 +69,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT CubicBezierTimingFunction
   EaseType ease_type_;
 };
 
-class GFX_KEYFRAME_ANIMATION_EXPORT StepsTimingFunction
-    : public TimingFunction {
+class CC_ANIMATION_EXPORT StepsTimingFunction : public TimingFunction {
  public:
   // step-timing-function values
   // https://drafts.csswg.org/css-easing-1/#typedef-step-timing-function
@@ -122,8 +120,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT StepsTimingFunction
   StepPosition step_position_;
 };
 
-class GFX_KEYFRAME_ANIMATION_EXPORT LinearTimingFunction
-    : public TimingFunction {
+class CC_ANIMATION_EXPORT LinearTimingFunction : public TimingFunction {
  public:
   static std::unique_ptr<LinearTimingFunction> Create();
   ~LinearTimingFunction() override;
@@ -138,6 +135,6 @@ class GFX_KEYFRAME_ANIMATION_EXPORT LinearTimingFunction
   LinearTimingFunction();
 };
 
-}  // namespace gfx
+}  // namespace cc
 
-#endif  // UI_GFX_ANIMATION_KEYFRAME_TIMING_FUNCTION_H_
+#endif  // CC_ANIMATION_TIMING_FUNCTION_H_

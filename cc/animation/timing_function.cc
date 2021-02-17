@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "cc/animation/timing_function.h"
 
 #include <cmath>
 #include <memory>
@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 
-namespace gfx {
+namespace cc {
 
 TimingFunction::TimingFunction() = default;
 
@@ -179,4 +179,4 @@ double LinearTimingFunction::GetValue(double t) const {
   return t;
 }
 
-}  // namespace gfx
+}  // namespace cc

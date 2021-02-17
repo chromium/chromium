@@ -133,7 +133,7 @@ void ContentElement::UpdateInput(const EditedText& info) {
 
 void ContentElement::OnSizeAnimated(const gfx::SizeF& size,
                                     int target_property_id,
-                                    gfx::KeyframeModel* animation) {
+                                    cc::KeyframeModel* animation) {
   if (target_property_id == BOUNDS && on_size_changed_callback_) {
     on_size_changed_callback_.Run(size);
   }

@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "cc/animation/animation_curve.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace blink {
 
@@ -26,7 +26,7 @@ class PLATFORM_EXPORT CompositorAnimationDelegate {
   virtual void NotifyAnimationTakeover(
       double monotonic_time,
       double animation_start_time,
-      std::unique_ptr<gfx::AnimationCurve> curve) {}
+      std::unique_ptr<cc::AnimationCurve> curve) {}
   virtual void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) {}
 };

@@ -10,15 +10,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
-#include "cc/animation/filter_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/trees/property_animation_state.h"
 #include "cc/trees/target_property.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/animation/keyframe/target_property.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/transform.h"
 
@@ -31,7 +29,6 @@ namespace cc {
 class AnimationHost;
 class FilterOperations;
 class KeyframeEffect;
-class KeyframeModel;
 enum class ElementListType;
 
 // An ElementAnimations owns a list of all KeyframeEffects attached to a single
@@ -41,11 +38,11 @@ enum class ElementListType;
 // of the word; this naming is a legacy leftover. A target is just an amorphous
 // blob that has properties that can be animated.
 class CC_ANIMATION_EXPORT ElementAnimations
-    : public gfx::FloatAnimationCurve::Target,
-      public gfx::ColorAnimationCurve::Target,
-      public gfx::TransformAnimationCurve::Target,
-      public ScrollOffsetAnimationCurve::Target,
+    : public FloatAnimationCurve::Target,
       public FilterAnimationCurve::Target,
+      public ColorAnimationCurve::Target,
+      public TransformAnimationCurve::Target,
+      public ScrollOffsetAnimationCurve::Target,
       public base::RefCounted<ElementAnimations> {
  public:
   static scoped_refptr<ElementAnimations> Create(AnimationHost* host,
@@ -140,23 +137,23 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // exists as a stopgap: the animation machinery previously expected to
   // announce a target and then pass curves that would implicitly animate the
   // target (i.e., the machinery handled the attachment).
-  void AttachToCurve(gfx::AnimationCurve* c);
+  void AttachToCurve(AnimationCurve* c);
 
   void OnFloatAnimated(const float& value,
                        int target_property_id,
-                       gfx::KeyframeModel* keyframe_model) override;
+                       KeyframeModel* keyframe_model) override;
   void OnFilterAnimated(const FilterOperations& filter,
                         int target_property_id,
-                        gfx::KeyframeModel* keyframe_model) override;
+                        KeyframeModel* keyframe_model) override;
   void OnColorAnimated(const SkColor& color,
                        int target_property_id,
-                       gfx::KeyframeModel* keyframe_model) override;
+                       KeyframeModel* keyframe_model) override;
   void OnTransformAnimated(const gfx::TransformOperations& operations,
                            int target_property_id,
-                           gfx::KeyframeModel* keyframe_model) override;
+                           KeyframeModel* keyframe_model) override;
   void OnScrollOffsetAnimated(const gfx::ScrollOffset& scroll_offset,
                               int target_property_id,
-                              gfx::KeyframeModel* keyframe_model) override;
+                              KeyframeModel* keyframe_model) override;
 
   gfx::ScrollOffset ScrollOffsetForAnimation() const;
 
@@ -183,13 +180,13 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   void OnFilterAnimated(ElementListType list_type,
                         const FilterOperations& filters,
-                        gfx::KeyframeModel* keyframe_model);
+                        KeyframeModel* keyframe_model);
   void OnBackdropFilterAnimated(ElementListType list_type,
                                 const FilterOperations& backdrop_filters,
-                                gfx::KeyframeModel* keyframe_model);
+                                KeyframeModel* keyframe_model);
   void OnOpacityAnimated(ElementListType list_type,
                          float opacity,
-                         gfx::KeyframeModel* keyframe_model);
+                         KeyframeModel* keyframe_model);
   // In addition to custom property animations, these also represent animations
   // of native properties whose values are known to the Blink PaintWorklet
   // responsible for painting them but not known to the compositor. The
@@ -203,20 +200,18 @@ class CC_ANIMATION_EXPORT ElementAnimations
                                 int target_property_id);
   void OnTransformAnimated(ElementListType list_type,
                            const gfx::Transform& transform,
-                           gfx::KeyframeModel* keyframe_model);
+                           KeyframeModel* keyframe_model);
   void OnScrollOffsetAnimated(ElementListType list_type,
                               const gfx::ScrollOffset& scroll_offset,
-                              gfx::KeyframeModel* keyframe_model);
+                              KeyframeModel* keyframe_model);
 
-  static gfx::TargetProperties GetPropertiesMaskForAnimationState();
+  static TargetProperties GetPropertiesMaskForAnimationState();
 
   void UpdateKeyframeEffectsTickingState() const;
   void RemoveKeyframeEffectsFromTicking() const;
 
-  bool KeyframeModelAffectsActiveElements(
-      gfx::KeyframeModel* keyframe_model) const;
-  bool KeyframeModelAffectsPendingElements(
-      gfx::KeyframeModel* keyframe_model) const;
+  bool KeyframeModelAffectsActiveElements(KeyframeModel* keyframe_model) const;
+  bool KeyframeModelAffectsPendingElements(KeyframeModel* keyframe_model) const;
 
   base::ObserverList<KeyframeEffect>::Unchecked keyframe_effects_list_;
   AnimationHost* animation_host_;

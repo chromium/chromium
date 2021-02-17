@@ -8,24 +8,24 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "cc/animation/animation_curve.h"
+#include "cc/animation/keyframed_animation_curve.h"
+#include "cc/animation/timing_function.h"
 
 namespace blink {
 
 CompositorColorAnimationCurve::CompositorColorAnimationCurve()
-    : curve_(gfx::KeyframedColorAnimationCurve::Create()) {}
+    : curve_(cc::KeyframedColorAnimationCurve::Create()) {}
 
 CompositorColorAnimationCurve::CompositorColorAnimationCurve(
-    std::unique_ptr<gfx::KeyframedColorAnimationCurve> curve)
+    std::unique_ptr<cc::KeyframedColorAnimationCurve> curve)
     : curve_(std::move(curve)) {}
 
 CompositorColorAnimationCurve::~CompositorColorAnimationCurve() = default;
 
 std::unique_ptr<CompositorColorAnimationCurve>
 CompositorColorAnimationCurve::CreateForTesting(
-    std::unique_ptr<gfx::KeyframedColorAnimationCurve> curve) {
+    std::unique_ptr<cc::KeyframedColorAnimationCurve> curve) {
   return base::WrapUnique(new CompositorColorAnimationCurve(std::move(curve)));
 }
 
@@ -57,7 +57,7 @@ SkColor CompositorColorAnimationCurve::GetValue(double time) const {
   return curve_->GetValue(base::TimeDelta::FromSecondsD(time));
 }
 
-std::unique_ptr<gfx::AnimationCurve>
+std::unique_ptr<cc::AnimationCurve>
 CompositorColorAnimationCurve::CloneToAnimationCurve() const {
   return curve_->Clone();
 }

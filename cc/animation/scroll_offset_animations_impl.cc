@@ -4,6 +4,7 @@
 
 #include "cc/animation/scroll_offset_animations_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
@@ -14,7 +15,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "cc/animation/timing_function.h"
 
 namespace cc {
 
@@ -71,7 +72,7 @@ void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
 
 void ScrollOffsetAnimationsImpl::ScrollAnimationCreateInternal(
     ElementId element_id,
-    std::unique_ptr<gfx::AnimationCurve> curve,
+    std::unique_ptr<AnimationCurve> curve,
     base::TimeDelta animation_start_offset) {
   TRACE_EVENT_INSTANT1("cc", "ScrollAnimationCreate", TRACE_EVENT_SCOPE_THREAD,
                        "Duration", curve->Duration().InMillisecondsF());

@@ -153,7 +153,7 @@ void Button::OnSetCornerRadii(const CornerRadii& radii) {
 
 void Button::OnSizeAnimated(const gfx::SizeF& size,
                             int target_property_id,
-                            gfx::KeyframeModel* animation) {
+                            cc::KeyframeModel* animation) {
   // We could have OnSetSize called in UiElement's Notify handler instead, but
   // this may have expensive implications (such as regenerating textures on
   // every frame of an animation).  For now, keep this elements-specific.

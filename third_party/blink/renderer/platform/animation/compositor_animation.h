@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace gfx {
+namespace cc {
 class AnimationCurve;
 }
 
@@ -81,7 +81,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
                                int target_property,
                                base::TimeTicks animation_start_time,
-                               std::unique_ptr<gfx::AnimationCurve>) override;
+                               std::unique_ptr<cc::AnimationCurve>) override;
   void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) override;
 
