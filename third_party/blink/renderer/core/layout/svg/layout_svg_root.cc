@@ -453,6 +453,8 @@ void LayoutSVGRoot::WillBeRemovedFromTree() {
 PositionWithAffinity LayoutSVGRoot::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   FloatPoint absolute_point = FloatPoint(point);
   absolute_point =
       local_to_border_box_transform_.Inverse().MapPoint(absolute_point);

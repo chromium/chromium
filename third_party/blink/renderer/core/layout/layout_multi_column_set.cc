@@ -497,6 +497,8 @@ void LayoutMultiColumnSet::ComputeLogicalHeight(
 PositionWithAffinity LayoutMultiColumnSet::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   LayoutPoint flipped_point = FlipForWritingMode(point);
   // Convert the visual point to a flow thread point.
   const MultiColumnFragmentainerGroup& row =

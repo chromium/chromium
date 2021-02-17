@@ -175,6 +175,8 @@ bool LayoutSVGInlineText::CharacterStartsNewTextChunk(int position) const {
 PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   if (!HasInlineFragments() || !TextLength())
     return CreatePositionWithAffinity(0);
 

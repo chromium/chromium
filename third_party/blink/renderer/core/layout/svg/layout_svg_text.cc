@@ -356,6 +356,8 @@ bool LayoutSVGText::NodeAtPoint(HitTestResult& result,
 PositionWithAffinity LayoutSVGText::PositionForPoint(
     const PhysicalOffset& point_in_contents) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   RootInlineBox* root_box = FirstRootBox();
   if (!root_box)
     return CreatePositionWithAffinity(0);

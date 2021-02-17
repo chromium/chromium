@@ -37,6 +37,8 @@ bool LayoutNGOutsideListMarker::NeedsOccupyWholeLine() const {
 
 PositionWithAffinity LayoutNGOutsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   return PositionBeforeThis();
 }
 

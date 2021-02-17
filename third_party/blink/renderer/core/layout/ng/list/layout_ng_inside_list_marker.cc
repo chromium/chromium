@@ -20,6 +20,8 @@ bool LayoutNGInsideListMarker::IsOfType(LayoutObjectType type) const {
 PositionWithAffinity LayoutNGInsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   return PositionBeforeThis();
 }
 

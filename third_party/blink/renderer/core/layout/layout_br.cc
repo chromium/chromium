@@ -62,6 +62,8 @@ int LayoutBR::CaretMaxOffset() const {
 
 PositionWithAffinity LayoutBR::PositionForPoint(const PhysicalOffset&) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   return PositionBeforeThis();
 }
 

@@ -219,6 +219,9 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
 template <typename Base>
 PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
     const PhysicalOffset& point) const {
+  DCHECK_GE(Base::GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
   if (Base::IsAtomicInlineLevel()) {
     const PositionWithAffinity atomic_inline_position =
         Base::PositionForPointIfOutsideAtomicInlineLevel(point);

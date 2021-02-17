@@ -1443,6 +1443,8 @@ static inline bool IsChildHitTestCandidate(LayoutBox* box) {
 PositionWithAffinity LayoutBlock::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
 
   if (IsAtomicInlineLevel()) {
     PositionWithAffinity position =

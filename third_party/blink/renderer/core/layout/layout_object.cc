@@ -3836,6 +3836,8 @@ void LayoutObject::DeleteThis() {
 PositionWithAffinity LayoutObject::PositionForPoint(
     const PhysicalOffset&) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   return CreatePositionWithAffinity(0);
 }
 

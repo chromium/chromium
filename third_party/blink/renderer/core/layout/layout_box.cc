@@ -6618,6 +6618,9 @@ LayoutRect LayoutBox::LocalCaretRect(
 PositionWithAffinity LayoutBox::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
   // no children...return this layout object's element, if there is one, and
   // offset 0
   LayoutObject* first_child = SlowFirstChild();
@@ -6719,6 +6722,8 @@ PositionWithAffinity LayoutBox::PositionForPoint(
 PositionWithAffinity LayoutBox::PositionForPointInFragments(
     const PhysicalOffset& target) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   DCHECK_GT(PhysicalFragmentCount(), 0u);
 
   if (PhysicalFragmentCount() == 1) {
