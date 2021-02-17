@@ -60,9 +60,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void GetVoices(std::vector<VoiceData>* out_voices) override {
     *out_voices = voices_;
   }
-  bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
-    return false;
-  }
+  void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
   void SetError(const std::string& error) override {}

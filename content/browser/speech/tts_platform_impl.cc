@@ -37,9 +37,7 @@ TtsPlatform* TtsPlatform::GetInstance() {
 #endif
 }
 
-bool TtsPlatformImpl::LoadBuiltInTtsEngine(BrowserContext* browser_context) {
-  return false;
-}
+void TtsPlatformImpl::LoadBuiltInTtsEngine(BrowserContext* browser_context) {}
 
 void TtsPlatformImpl::WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                                   const VoiceData& voice_data) {

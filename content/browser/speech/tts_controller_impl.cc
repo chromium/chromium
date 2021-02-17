@@ -521,15 +521,14 @@ void TtsControllerImpl::OnSpeakFinished(int utterance_id, bool success) {
   if (!current_utterance_ || current_utterance_->GetId() != utterance_id)
     return;
 
-  // If the native voice wasn't able to process this speech, see if
-  // the browser has built-in TTS that isn't loaded yet.
-  if (GetTtsPlatform()->LoadBuiltInTtsEngine(
-          current_utterance_->GetBrowserContext())) {
-    // Careful here; we're adding this utterance back to the queue, which can
-    // lead to hangs processing speech. See SpeakNextUtterance.
-    utterance_list_.emplace_back(std::move(current_utterance_));
-    return;
-  }
+  // If the native voice wasn't able to process this speech, see if the browser
+  // has built-in TTS that crashed and needs re-loading or the utterance came
+  // from a profile that no longer exists e.g. login.
+  // The controller only ends up here if we had at some point completely
+  // initialized native tts and tts engine delegate (see SpeakOrEnqueue), so
+  // drop the utterance from re-processing.
+  GetTtsPlatform()->LoadBuiltInTtsEngine(
+      current_utterance_->GetBrowserContext());
 
   current_utterance_->OnTtsEvent(TTS_EVENT_ERROR, kInvalidCharIndex,
                                  kInvalidLength, GetTtsPlatform()->GetError());

@@ -332,10 +332,10 @@ void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
   WarnIfMissingPauseOrResumeListener(profile, event_router, id);
 }
 
-bool TtsExtensionEngine::LoadBuiltInTtsEngine(
+void TtsExtensionEngine::LoadBuiltInTtsEngine(
     content::BrowserContext* browser_context) {
   if (disable_built_in_tts_engine_for_testing_)
-    return false;
+    return;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -345,9 +345,6 @@ bool TtsExtensionEngine::LoadBuiltInTtsEngine(
       extensions::ExtensionSystem::Get(profile)->extension_service();
   DCHECK(extension_service);
   extension_service->component_loader()->AddChromeOsSpeechSynthesisExtensions();
-  return true;
-#else
-  return false;
 #endif
 }
 

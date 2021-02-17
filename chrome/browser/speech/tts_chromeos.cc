@@ -40,13 +40,12 @@ bool TtsPlatformImplChromeOs::PlatformImplInitialized() {
   return true;
 }
 
-bool TtsPlatformImplChromeOs::LoadBuiltInTtsEngine(
+void TtsPlatformImplChromeOs::LoadBuiltInTtsEngine(
     content::BrowserContext* browser_context) {
   content::TtsEngineDelegate* tts_engine_delegate =
       content::TtsController::GetInstance()->GetTtsEngineDelegate();
   if (tts_engine_delegate)
-    return tts_engine_delegate->LoadBuiltInTtsEngine(browser_context);
-  return false;
+    tts_engine_delegate->LoadBuiltInTtsEngine(browser_context);
 }
 
 void TtsPlatformImplChromeOs::Speak(

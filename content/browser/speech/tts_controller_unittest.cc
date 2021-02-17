@@ -63,9 +63,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
     for (const auto& voice : voices_)
       out_voices->push_back(voice);
   }
-  bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
-    return false;
-  }
+  void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
   void SetError(const std::string& error) override { error_ = error; }
@@ -124,9 +122,7 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
     utterance_id_ = utterance->GetId();
   }
 
-  bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
-    return true;
-  }
+  void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
 
   bool IsBuiltInTtsEngineInitialized(BrowserContext* browser_context) override {
     return is_built_in_tts_engine_initialized_;

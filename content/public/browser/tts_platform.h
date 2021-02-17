@@ -35,7 +35,7 @@ class CONTENT_EXPORT TtsPlatform {
   // false if it's already loaded or if there's no engine to load.
   // Will call TtsController::RetrySpeakingQueuedUtterances when
   // the engine finishes loading.
-  virtual bool LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
+  virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
 
   // Speak the given utterance with the given parameters if possible,
   // and return true on success. Utterance will always be nonempty.

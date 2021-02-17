@@ -81,10 +81,8 @@ void SpeechMonitor::WillSpeakUtteranceWithVoice(
   MaybeContinueReplay();
 }
 
-bool SpeechMonitor::LoadBuiltInTtsEngine(
-    content::BrowserContext* browser_context) {
-  return false;
-}
+void SpeechMonitor::LoadBuiltInTtsEngine(
+    content::BrowserContext* browser_context) {}
 
 std::string SpeechMonitor::GetError() {
   return error_;
