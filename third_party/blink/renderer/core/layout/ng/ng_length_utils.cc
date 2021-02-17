@@ -225,40 +225,56 @@ LayoutUnit ResolveBlockLengthInternal(
   }
 }
 
+// logical_aspect_ratio is inline_size / block_size.
 LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
-                                     const LogicalSize& aspect_ratio,
+                                     double logical_aspect_ratio,
                                      EBoxSizing box_sizing,
                                      LayoutUnit block_size) {
   // TODO(dgrogan/ikilpatrick): These calculations might need to be done in
   // integer space, in a potential BoundedMultiplyAndDivide(LayoutUnit,
   // LayoutUnit, LayoutUnit) function.
   if (box_sizing == EBoxSizing::kBorderBox) {
-    return LayoutUnit::FromDoubleRound(block_size *
-                                       aspect_ratio.inline_size.ToDouble() /
-                                       aspect_ratio.block_size.ToDouble());
+    return LayoutUnit::FromDoubleRound(block_size * logical_aspect_ratio);
   }
 
   return LayoutUnit::FromDoubleRound((block_size - border_padding.BlockSum()) *
-                                     aspect_ratio.inline_size.ToDouble() /
-                                     aspect_ratio.block_size.ToDouble()) +
+                                     logical_aspect_ratio) +
          border_padding.InlineSum();
+}
+
+LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
+                                     const LogicalSize& aspect_ratio,
+                                     EBoxSizing box_sizing,
+                                     LayoutUnit block_size) {
+  return InlineSizeFromAspectRatio(
+      border_padding,
+      aspect_ratio.inline_size.ToDouble() / aspect_ratio.block_size.ToDouble(),
+      box_sizing, block_size);
+}
+
+// logical_aspect_ratio is block_size / inline_size.
+LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
+                                    double logical_aspect_ratio,
+                                    EBoxSizing box_sizing,
+                                    LayoutUnit inline_size) {
+  if (box_sizing == EBoxSizing::kBorderBox) {
+    return LayoutUnit::FromDoubleRound(inline_size * logical_aspect_ratio);
+  }
+
+  return LayoutUnit::FromDoubleRound(
+             (inline_size - border_padding.InlineSum()) *
+             logical_aspect_ratio) +
+         border_padding.BlockSum();
 }
 
 LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                     const LogicalSize& aspect_ratio,
                                     EBoxSizing box_sizing,
                                     LayoutUnit inline_size) {
-  if (box_sizing == EBoxSizing::kBorderBox) {
-    return LayoutUnit::FromDoubleRound(inline_size *
-                                       aspect_ratio.block_size.ToDouble() /
-                                       aspect_ratio.inline_size.ToDouble());
-  }
-
-  return LayoutUnit::FromDoubleRound(
-             (inline_size - border_padding.InlineSum()) *
-             aspect_ratio.block_size.ToDouble() /
-             aspect_ratio.inline_size.ToDouble()) +
-         border_padding.BlockSum();
+  return BlockSizeFromAspectRatio(
+      border_padding,
+      aspect_ratio.block_size.ToDouble() / aspect_ratio.inline_size.ToDouble(),
+      box_sizing, inline_size);
 }
 
 namespace {

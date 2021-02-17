@@ -5560,8 +5560,6 @@ crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-ev
 
 # Wpt importer sheriff 2021-01-05
 crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
-crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/replaced-element-031.html [ Failure ]
-crbug.com/1163176 external/wpt/css/css-sizing/aspect-ratio/replaced-element-032.html [ Failure ]
 crbug.com/1163178 external/wpt/svg/embedded/image-embedding-svg-with-auto-height.svg [ Failure ]
 
 # Sheriff 2020-12-14
