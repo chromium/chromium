@@ -148,11 +148,6 @@ bool PaintFlags::IsValid() const {
   return PaintOp::IsValidPaintFlagsSkBlendMode(getBlendMode());
 }
 
-template <typename T>
-bool AreEqual(const T* a, const T* b) {
-  return (a && b) ? *a == *b : a == b;
-}
-
 bool PaintFlags::operator==(const PaintFlags& other) const {
   // Can't just ToSkPaint and operator== here as SkPaint does pointer
   // comparisons on all the ref'd skia objects on the SkPaint, which
@@ -186,17 +181,20 @@ bool PaintFlags::operator==(const PaintFlags& other) const {
                                        other.getColorFilter().get())) {
     return false;
   }
-
-  if (!AreEqual(getLooper().get(), other.getLooper().get())) {
-    return false;
-  }
-  if (!AreEqual(getImageFilter().get(), other.getImageFilter().get())) {
-    return false;
-  }
-  if (!AreEqual(getShader(), other.getShader())) {
+  if (!PaintOp::AreSkFlattenablesEqual(getLooper().get(),
+                                       other.getLooper().get())) {
     return false;
   }
 
+  if (!getImageFilter() != !other.getImageFilter())
+    return false;
+  if (getImageFilter() && *getImageFilter() != *other.getImageFilter())
+    return false;
+
+  if (!getShader() != !other.getShader())
+    return false;
+  if (getShader() && *getShader() != *other.getShader())
+    return false;
   return true;
 }
 
@@ -214,7 +212,7 @@ size_t PaintFlags::GetSerializedSize() const {
          PaintOpWriter::Alignment() +
          PaintOpWriter::GetFlattenableSize(color_filter_.get()) +
          PaintOpWriter::Alignment() +
-         DrawLooper::GetSerializedSize(draw_looper_.get()) +
+         PaintOpWriter::GetFlattenableSize(draw_looper_.get()) +
          PaintFilter::GetFilterSize(image_filter_.get()) +
          PaintShader::GetSerializedSize(shader_.get());
 }

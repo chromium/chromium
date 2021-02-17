@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
-#include "third_party/blink/renderer/platform/graphics/paint/draw_looper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -230,9 +229,9 @@ class CanvasRenderingContext2DState final
   void UpdateFilterQuality() const;
   void UpdateFilterQualityWithSkFilterQuality(const SkFilterQuality&) const;
   void ShadowParameterChanged();
-  DrawLooper* EmptyDrawLooper() const;
-  DrawLooper* ShadowOnlyDrawLooper() const;
-  DrawLooper* ShadowAndForegroundDrawLooper() const;
+  SkDrawLooper* EmptyDrawLooper() const;
+  SkDrawLooper* ShadowOnlyDrawLooper() const;
+  SkDrawLooper* ShadowAndForegroundDrawLooper() const;
   sk_sp<PaintFilter> ShadowOnlyImageFilter() const;
   sk_sp<PaintFilter> ShadowAndForegroundImageFilter() const;
 
@@ -250,9 +249,9 @@ class CanvasRenderingContext2DState final
   FloatSize shadow_offset_;
   double shadow_blur_;
   SkColor shadow_color_;
-  mutable sk_sp<DrawLooper> empty_draw_looper_;
-  mutable sk_sp<DrawLooper> shadow_only_draw_looper_;
-  mutable sk_sp<DrawLooper> shadow_and_foreground_draw_looper_;
+  mutable sk_sp<SkDrawLooper> empty_draw_looper_;
+  mutable sk_sp<SkDrawLooper> shadow_only_draw_looper_;
+  mutable sk_sp<SkDrawLooper> shadow_and_foreground_draw_looper_;
   mutable sk_sp<PaintFilter> shadow_only_image_filter_;
   mutable sk_sp<PaintFilter> shadow_and_foreground_image_filter_;
 
