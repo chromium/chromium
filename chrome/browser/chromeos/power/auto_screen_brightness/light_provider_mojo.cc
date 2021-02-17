@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/power/auto_screen_brightness/light_provider_mojo.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -18,6 +19,9 @@ namespace {
 // Delay of the reconnection to Sensor Hal Dispatcher.
 constexpr base::TimeDelta kDelayReconnect =
     base::TimeDelta::FromMilliseconds(1000);
+
+constexpr base::TimeDelta kNewDevicesTimeout =
+    base::TimeDelta::FromMilliseconds(10000);
 
 constexpr char kCrosECLightName[] = "cros-ec-light";
 constexpr char kAcpiAlsName[] = "acpi-als";
@@ -47,6 +51,8 @@ void LightProviderMojo::SetUpChannel(
     return;
   }
 
+  DCHECK(!new_devices_observer_.is_bound());
+
   sensor_service_remote_.Bind(std::move(pending_remote));
   sensor_service_remote_.set_disconnect_handler(
       base::BindOnce(&LightProviderMojo::OnSensorServiceDisconnect,
@@ -70,19 +76,62 @@ void LightProviderMojo::SetUpChannel(
       return;
   }
 
+  sensor_service_remote_->RegisterNewDevicesObserver(
+      new_devices_observer_.BindNewPipeAndPassRemote());
+  new_devices_observer_.set_disconnect_handler(
+      base::BindOnce(&LightProviderMojo::OnNewDevicesObserverDisconnect,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LightProviderMojo::OnNewDevicesTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kNewDevicesTimeout);
+
   sensor_service_remote_->GetDeviceIds(
       chromeos::sensors::mojom::DeviceType::LIGHT,
       base::BindOnce(&LightProviderMojo::GetLightIdsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void LightProviderMojo::OnNewDeviceAdded(
+    int32_t iio_device_id,
+    const std::vector<chromeos::sensors::mojom::DeviceType>& types) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (std::find(types.begin(), types.end(),
+                chromeos::sensors::mojom::DeviceType::LIGHT) == types.end()) {
+    // Not a light sensor. Ignoring this device.
+    return;
+  }
+
+  RegisterLightWithId(iio_device_id);
+}
+
 LightProviderMojo::LightData::LightData() = default;
 LightProviderMojo::LightData::~LightData() = default;
 
-void LightProviderMojo::FailedToInitialize() {
+void LightProviderMojo::OnNewDevicesObserverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LOG(ERROR) << "Failed to initialize for light read.";
+  LOG(ERROR)
+      << "OnNewDevicesObserverDisconnect. Mojo connection to IIO "
+         "Service is lost. Resetting the SensorService Mojo channel as well";
+
+  // Assumes IIO Service has crashed and waits for its relaunch.
+  ResetSensorService();
+}
+
+void LightProviderMojo::OnNewDevicesTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  new_devices_observer_.reset();
+
+  if (light_device_id_.has_value())
+    return;
+
+  LOG(ERROR) << "Target light sensor isn't available after timeout. "
+                "Initialization failed.";
 
   lights_.clear();
   ResetSensorService();
@@ -134,18 +183,13 @@ void LightProviderMojo::ResetSensorService() {
   for (auto& light : lights_)
     light.second.remote.reset();
 
+  new_devices_observer_.reset();
   sensor_service_remote_.reset();
 }
 
 void LightProviderMojo::GetLightIdsCallback(
     const std::vector<int32_t>& light_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (light_ids.empty()) {
-    // TODO(chenghaoyang): wait for late-present light sensors.
-    FailedToInitialize();
-    return;
-  }
 
   for (int32_t id : light_ids)
     RegisterLightWithId(id);
@@ -185,6 +229,7 @@ void LightProviderMojo::GetNameLocationCallback(
     int32_t id,
     const std::vector<base::Optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(light_device_id_.value_or(-1), id);
 
   if (light_device_id_.has_value()) {
     // Already has the cros-ec-light on the lid. Ignoring other light sensors.
@@ -226,12 +271,14 @@ void LightProviderMojo::GetNameLocationCallback(
   }
 
   DetermineLightSensor(id);
+  new_devices_observer_.reset();  // Don't need new light sensors anymore.
 }
 
 void LightProviderMojo::GetNameCallback(
     int32_t id,
     const std::vector<base::Optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(light_device_id_.value_or(-1), id);
 
   if (light_device_id_.has_value()) {
     auto& orig_light = lights_[light_device_id_.value()];
@@ -262,6 +309,7 @@ void LightProviderMojo::GetNameCallback(
       light.name.value().compare(kCrosECLightName) == 0) {
     // If an acpi-als was chosen, migrate to this cros-ec-light light sensor.
     DetermineLightSensor(id);
+    new_devices_observer_.reset();  // Don't need new light sensors anymore.
     return;
   }
 
@@ -286,19 +334,6 @@ void LightProviderMojo::IgnoreLight(int32_t id) {
   auto& light = lights_[id];
   light.ignored = true;
   light.remote.reset();
-
-  // TODO(chenghaoyang): Remove these after late-present sensors are added.
-  if (light_device_id_.has_value())
-    return;
-
-  for (const auto& light : lights_) {
-    if (!light.second.ignored)
-      return;
-  }
-
-  // TODO(chenghaoyang): wait for late-present sensors.
-  // No available lights can be used to get the lux.
-  FailedToInitialize();
 }
 
 mojo::Remote<chromeos::sensors::mojom::SensorDevice>

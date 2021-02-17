@@ -29,6 +29,7 @@ class FakeObserver : public AlsReader::Observer {
   inline int num_received_ambient_lights() const {
     return num_received_ambient_lights_;
   }
+  inline bool has_status() const { return status_.has_value(); }
   inline AlsReader::AlsInitStatus status() const {
     DCHECK(status_);
     return status_.value();

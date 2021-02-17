@@ -23,12 +23,16 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
+class LightProviderMojoTest;
+
 // Used when IIO Service is present. It registers to Sensor Hal Dispatcher as a
 // sensor client and waits for the connection to CrOS IIO Service. Once
 // connected, it asks for samples of the light sensor (cros-ec-light or
 // acpi-als).
-class LightProviderMojo : public LightProviderInterface,
-                          public chromeos::sensors::mojom::SensorHalClient {
+class LightProviderMojo
+    : public LightProviderInterface,
+      public chromeos::sensors::mojom::SensorHalClient,
+      public chromeos::sensors::mojom::SensorServiceNewDevicesObserver {
  public:
   LightProviderMojo(AlsReader* als_reader, bool has_several_light_sensors);
   LightProviderMojo(const LightProviderMojo&) = delete;
@@ -39,7 +43,14 @@ class LightProviderMojo : public LightProviderInterface,
   void SetUpChannel(mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
                         pending_remote) override;
 
+  // chromeos::sensors::mojom::SensorServiceNewDevicesObserver
+  void OnNewDeviceAdded(
+      int32_t iio_device_id,
+      const std::vector<chromeos::sensors::mojom::DeviceType>& types) override;
+
  private:
+  friend LightProviderMojoTest;
+
   struct LightData {
     LightData();
     ~LightData();
@@ -56,8 +67,11 @@ class LightProviderMojo : public LightProviderInterface,
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
   };
 
-  // Fails the initialization due to an error and notify the observers.
-  void FailedToInitialize();
+  void OnNewDevicesObserverDisconnect();
+  // Timeout of new devices. If the target light sensor is still not present,
+  // assumes it not supported, notifies observers with
+  // AlsReader::AlsInitStatus::kIncorrectConfig, and fails the initialization.
+  void OnNewDevicesTimeout();
 
   // Registers chromeos::sensors::mojom::SensorHalClient to Sensor Hal
   // Dispatcher, waiting for the Mojo connection to IIO Service.
@@ -100,6 +114,10 @@ class LightProviderMojo : public LightProviderInterface,
 
   // The Mojo channel to query and request for devices.
   mojo::Remote<chromeos::sensors::mojom::SensorService> sensor_service_remote_;
+
+  // The Mojo channel to get notified when new devices are added to IIO Service.
+  mojo::Receiver<chromeos::sensors::mojom::SensorServiceNewDevicesObserver>
+      new_devices_observer_{this};
 
   // First is the light sensor's iio device id, second is it's data and mojo
   // remote.
