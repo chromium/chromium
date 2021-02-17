@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -54,6 +55,7 @@ class MojoWatcher final : public ScriptWrappable,
   static void OnHandleReady(const MojoTrapEvent*);
   void RunReadyCallback(MojoResult);
 
+  SelfKeepAlive<MojoWatcher> keep_alive_{PERSISTENT_FROM_HERE};
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<V8MojoWatchCallback> callback_;
   mojo::ScopedTrapHandle trap_handle_;
