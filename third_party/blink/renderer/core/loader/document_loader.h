@@ -404,7 +404,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Process a redirect to update the redirect chain, current URL, referrer,
   // etc.
-  void HandleRedirect(const WebNavigationParams::RedirectInfo& redirect);
+  void HandleRedirect(WebNavigationParams::RedirectInfo& redirect);
   void HandleResponse();
 
   void InitializeEmptyResponse();
