@@ -16,6 +16,8 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/signin/AccountManagerFacade.java",
+    "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",

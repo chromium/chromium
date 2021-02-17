@@ -22,7 +22,7 @@ public class AccountUtils {
     private static final String GMAIL_COM = "gmail.com";
     private static final String GOOGLEMAIL_COM = "googlemail.com";
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String GOOGLE_ACCOUNT_TYPE = "com.google";
 
     private AccountUtils() {}
