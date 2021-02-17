@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -51,10 +51,11 @@ class BranchDayUnitTest(unittest.TestCase):
         for b in self._binaries
     }
 
-    env = {
+    env = os.environ.copy()
+    env.update({
         'INVOCATIONS_FILE': self._invocations_file,
         'MOCK_DETAILS': json.dumps(mock_details),
-    }
+    })
 
     cmd = [
         BRANCH_DAY_PY, '--milestones-py', self._milestones_py, '--branch-py',

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -54,16 +54,19 @@ class BranchUnitTest(unittest.TestCase):
     self.assertEqual(args.branch, 'BBBB')
 
   def test_initial_settings(self):
-      output = branch.initial_settings(milestone='MM', branch='BBBB')
-      self.assertEqual(output, textwrap.dedent("""\
-        {
-            "project": "chromium-mMM",
-            "project_title": "Chromium MMM",
-            "is_master": false,
-            "is_lts_branch": false,
-            "ref": "refs/branch-heads/BBBB"
-        }
-        """))
+    output = branch.initial_settings(milestone='MM', branch='BBBB')
+    self.assertEqual(
+        output,
+        textwrap.dedent("""\
+            {
+                "project": "chromium-mMM",
+                "project_title": "Chromium MMM",
+                "is_master": false,
+                "is_lts_branch": false,
+                "ref": "refs/branch-heads/BBBB"
+            }
+            """))
+
 
 if __name__ == '__main__':
   unittest.main()
