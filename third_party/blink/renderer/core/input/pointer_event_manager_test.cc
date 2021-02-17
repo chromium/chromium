@@ -489,6 +489,66 @@ TEST_F(PointerEventManagerTest, PointerRawUpdateMovements) {
   ASSERT_EQ(callback->last_movement_y_, 3);
 }
 
+TEST_F(PointerEventManagerTest, PointerRawUpdateWithRelativeMotionEvent) {
+  ScopedConsolidatedMovementXYForTest scoped_feature(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      "<body style='padding:0px; width:400px; height:400px;'></body>");
+
+  PointerEventCoordinateListenerCallback* callback =
+      PointerEventCoordinateListenerCallback::Create();
+  GetDocument().body()->addEventListener(event_type_names::kPointerrawupdate,
+                                         callback);
+
+  // Initial movement_x/y are both 0.
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerRawUpdate,
+                             WebPointerProperties::PointerType::kMouse,
+                             gfx::PointF(350, 350), gfx::PointF(350, 350), 10,
+                             10),
+      {}, {}, ui::LatencyInfo()));
+  ASSERT_EQ(callback->last_movement_x_, 0);
+  ASSERT_EQ(callback->last_movement_y_, 0);
+
+  // After moving the mouse by (+40,+20), movement_x/y have same deltas.
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerRawUpdate,
+                             WebPointerProperties::PointerType::kMouse,
+                             gfx::PointF(390, 370), gfx::PointF(390, 370), 10,
+                             10),
+      {}, {}, ui::LatencyInfo()));
+  ASSERT_EQ(callback->last_movement_x_, 40);
+  ASSERT_EQ(callback->last_movement_y_, 20);
+
+  // A relative motion event to pull the mouse pointer back towards the center
+  // is not exposed to JS, so the event handler is not called and the cached
+  // coordinates remain unchanged.
+  std::unique_ptr<WebInputEvent> synthetic_event = CreateTestPointerEvent(
+      WebInputEvent::Type::kPointerRawUpdate,
+      WebPointerProperties::PointerType::kMouse, gfx::PointF(200, 200),
+      gfx::PointF(200, 200), 10, 10);
+  synthetic_event->SetModifiers(WebInputEvent::Modifiers::kRelativeMotionEvent);
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      std::move(synthetic_event), {}, {}, ui::LatencyInfo()));
+  ASSERT_EQ(callback->last_movement_x_, 40);
+  ASSERT_EQ(callback->last_movement_y_, 20);
+
+  // After moving the mouse by (+15,-10) from the last unexposed event,
+  // movement_x/y have deltas from the last event, not the deltas from the last
+  // exposed event.
+  WebView().MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
+      CreateTestPointerEvent(WebInputEvent::Type::kPointerRawUpdate,
+                             WebPointerProperties::PointerType::kMouse,
+                             gfx::PointF(215, 190), gfx::PointF(215, 190), 10,
+                             10),
+      {}, {}, ui::LatencyInfo()));
+  ASSERT_EQ(callback->last_movement_x_, 15);
+  ASSERT_EQ(callback->last_movement_y_, -10);
+}
+
 TEST_F(PointerEventManagerTest, PointerUnadjustedMovement) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
