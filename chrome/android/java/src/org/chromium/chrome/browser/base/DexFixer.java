@@ -26,6 +26,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
@@ -165,6 +167,10 @@ public class DexFixer {
                     }
                 }
             }
+        }
+
+        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.DEX_FIXER)) {
+            return DexFixerReason.NOT_NEEDED;
         }
 
         String oatPath = odexPathFromApkPath(appInfo.sourceDir);
