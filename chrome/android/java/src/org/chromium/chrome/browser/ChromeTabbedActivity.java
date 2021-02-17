@@ -1829,8 +1829,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
             // Close only incognito tabs
             getTabModelSelector().getModel(true).closeAllTabs();
-            // TODO(nileshagrawal) Record unique action for this. See bug http://b/5542946.
-            RecordUserAction.record("MobileMenuCloseAllTabs");
+            RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
             boolean isUrlBarVisible = !mOverviewModeController.overviewVisible()
                     && (!isTablet() || getCurrentTabModel().getCount() != 0);
