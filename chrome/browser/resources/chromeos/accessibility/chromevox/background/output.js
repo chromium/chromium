@@ -1875,6 +1875,9 @@ Output = class {
     if (node.autoComplete === 'inline' || node.autoComplete === 'both') {
       ret.push({msgId: 'hint_autocomplete_inline'});
     }
+    if (node.customActions && node.customActions.length > 0) {
+      ret.push({msgId: 'hint_action'});
+    }
     if (node.accessKey) {
       ret.push({text: Msgs.getMsg('access_key', [node.accessKey])});
     }

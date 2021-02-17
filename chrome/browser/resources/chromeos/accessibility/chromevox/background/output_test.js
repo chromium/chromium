@@ -1365,9 +1365,10 @@ TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', function() {
 TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
   this.runWithLoadedTree('<input type="checkbox">', function(root) {
     const checkbox = root.firstChild.firstChild;
-    Object.defineProperty(checkbox, 'checkedStateDescription', {
-      value: 'checked state description',
-    });
+
+    Object.defineProperty(
+        checkbox, 'checkedStateDescription',
+        {get: () => 'checked state description'});
     const range = cursors.Range.fromNode(checkbox);
     const o = new Output().withoutHints().withSpeechAndBraille(
         range, null, 'navigate');
@@ -1377,6 +1378,24 @@ TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
           {value: new Output.EarconAction('CHECK_OFF'), start: 0, end: 0},
           {value: 'role', start: 1, end: 10},
           {value: 'checkedStateDescription', start: 11, end: 36}
+        ],
+        o);
+  });
+});
+
+TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', function() {
+  this.runWithLoadedTree('<p>test</p>', function(root) {
+    const actionable = root.firstChild.firstChild;
+    Object.defineProperty(actionable, 'customActions', {
+      get: () => [{id: 0, description: 'custom action description'}],
+    });
+    const range = cursors.Range.fromNode(actionable);
+    const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'test|Actions available. Press Search+Period to view',
+        [
+          {value: 'name', start: 0, end: 4},
+          {value: {delay: true}, start: 5, end: 51}
         ],
         o);
   });
