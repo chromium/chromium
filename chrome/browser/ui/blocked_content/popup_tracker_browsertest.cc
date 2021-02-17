@@ -611,8 +611,16 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 0);
 }
 
+// TODO(crbug.com/1179235): Test is flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupRedirectsTwice_RedirectCountTwo \
+  DISABLED_PopupRedirectsTwice_RedirectCountTwo
+#else
+#define MAYBE_PopupRedirectsTwice_RedirectCountTwo \
+  PopupRedirectsTwice_RedirectCountTwo
+#endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
-                       PopupRedirectsTwice_RedirectCountTwo) {
+                       MAYBE_PopupRedirectsTwice_RedirectCountTwo) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 
