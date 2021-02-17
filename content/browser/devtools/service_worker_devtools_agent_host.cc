@@ -20,6 +20,7 @@
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -248,6 +249,8 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
                                  origin, origin,
                                  net::SiteForCookies::FromOrigin(origin)),
       /*coep_reporter=*/mojo::NullRemote(),
+      static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+          ->CreateAuthCertObserverForServiceWorker(),
       /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools");
   return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
           std::move(factory)};

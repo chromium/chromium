@@ -251,14 +251,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       network::mojom::URLResponseHeadPtr head,
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
-  void OnCertificateRequested(
-      const base::Optional<base::UnguessableToken>& window_id,
-      int32_t process_id,
-      int32_t routing_id,
-      uint32_t request_id,
-      const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
-      mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-          cert_responder) override;
   void OnFileUploadRequested(int32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
@@ -296,6 +288,11 @@ class CONTENT_EXPORT StoragePartitionImpl
                              const net::SSLInfo& ssl_info,
                              bool fatal,
                              OnSSLCertificateErrorCallback response) override;
+  void OnCertificateRequested(
+      const base::Optional<base::UnguessableToken>& window_id,
+      const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
+      mojo::PendingRemote<network::mojom::ClientCertificateResponder>
+          cert_responder) override;
   void Clone(mojo::PendingReceiver<
              network::mojom::AuthenticationAndCertificateObserver> listener)
       override;
@@ -371,6 +368,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver>
   CreateCookieAccessObserverForServiceWorker();
+
+  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+  CreateAuthCertObserverForServiceWorker();
 
   std::vector<std::string> GetCorsExemptHeaderList();
 

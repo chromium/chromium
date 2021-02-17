@@ -28,6 +28,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_script_loader_factory.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/common/content_switches_internal.h"
@@ -796,6 +797,8 @@ EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
                                      origin, origin,
                                      net::SiteForCookies::FromOrigin(origin)),
           std::move(coep_reporter),
+          static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+              ->CreateAuthCertObserverForServiceWorker(),
           "EmbeddedWorkerInstance::CreateFactoryBundlesOnUI");
   bool bypass_redirect_checks = false;
 

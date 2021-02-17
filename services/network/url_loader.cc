@@ -1227,24 +1227,17 @@ void URLLoader::OnCertificateRequested(net::URLRequest* unused,
     return;
   }
 
-  if (!network_context_client_) {
-    ContinueWithoutCertificate();
+  if (!auth_cert_observer_) {
+    CancelRequest();
     return;
   }
 
   // Set up mojo endpoints for ClientCertificateResponder and bind to the
   // Receiver. This enables us to receive messages regarding the client
   // certificate selection.
-  if (fetch_window_id_) {
-    network_context_client_->OnCertificateRequested(
-        fetch_window_id_, -1 /* process_id */, -1 /* routing_id */, request_id_,
-        cert_info, client_cert_responder_receiver_.BindNewPipeAndPassRemote());
-  } else {
-    network_context_client_->OnCertificateRequested(
-        base::nullopt /* window_id */, factory_params_->process_id,
-        render_frame_id_, request_id_, cert_info,
-        client_cert_responder_receiver_.BindNewPipeAndPassRemote());
-  }
+  auth_cert_observer_->OnCertificateRequested(
+      fetch_window_id_, cert_info,
+      client_cert_responder_receiver_.BindNewPipeAndPassRemote());
   client_cert_responder_receiver_.set_disconnect_handler(
       base::BindOnce(&URLLoader::CancelRequest, base::Unretained(this)));
 }

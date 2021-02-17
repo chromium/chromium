@@ -32,6 +32,11 @@ class TestAuthCertObserver
                              const net::SSLInfo& ssl_info,
                              bool fatal,
                              OnSSLCertificateErrorCallback response) override;
+  void OnCertificateRequested(
+      const base::Optional<base::UnguessableToken>& window_id,
+      const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
+      mojo::PendingRemote<mojom::ClientCertificateResponder>
+          client_cert_responder) override;
   void Clone(mojo::PendingReceiver<AuthenticationAndCertificateObserver>
                  observer) override;
 

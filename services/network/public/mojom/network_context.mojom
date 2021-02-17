@@ -720,52 +720,6 @@ interface AuthChallengeResponder {
    OnAuthCredentials(AuthCredentials? credentials);
 };
 
-// This interface enables the UI to send client certificate selections back to
-// the network service.
-//
-// Defining an interface for this purpose, rather than using a union in the
-// response of OnCertificateRequested, enables the NetworkServiceClient to learn
-// of the URLLoader destruction via the connection error handler.
-interface ClientCertificateResponder {
-  // Use the selected certificate and continue the URLRequest.
-  //
-  // - |provider_name| corresponds to the return value of
-  //   net::SSLPrivateKey::GetProviderName().
-  // - |algorithm_preferences| corresponds to the return value of
-  //   net::SSLPrivateKey::GetAlgorithmPreferences().
-  ContinueWithCertificate(network.mojom.X509Certificate x509_certificate,
-                          string provider_name,
-                          array<uint16> algorithm_preferences,
-                          pending_remote<SSLPrivateKey> ssl_private_key);
-
-  // Affirmatively select no certificate (this is cached and can affect future
-  // URLRequests). Does not cancel the URLRequest.
-  //
-  // The connection is continued with no client cert.
-  // net::URLRequest::ContinueWithCertificate(nullptr, nullptr) needs to be
-  // called.
-  ContinueWithoutCertificate();
-
-  // Cancel the URLRequest. The request is aborted.
-  // net::URLRequest::CancelWithError() needs to be called.
-  CancelRequest();
-};
-
-// The content/browser implementation of this SSLPrivateKey interface wraps the
-// scoped_refptr<net::SSLPrivateKey> that is received from
-// SSLClientAuthDelegate::ContinueWithCertificate(), and this mojo interface is
-// sent from content/browser to services/network so that services/network can
-// have its own net::SSLPrivateKey implementation that internally uses this mojo
-// interface.
-// The |algorithm| and |input| parameters correspond to the |algorithm| and
-// |input| parameters in net::SSLPrivateKey::Sign().
-// The |net_error| and |signature| parameters correspond to the parameters in
-// net::SSLPrivateKey::SignCallback.
-interface SSLPrivateKey {
-  Sign(uint16 algorithm,
-       array<uint8> input) => (int32 net_error, array<uint8> signature);
-};
-
 // Callback interface for NetworkContext when routing identifiers aren't
 // available. Otherwise generally callbacks from the network service go on
 // NetworkServiceClient.
@@ -790,22 +744,6 @@ interface NetworkContextClient {
       AuthChallengeInfo auth_info,
       URLResponseHead? head,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
-
-  // Called when an SSL certificate requested message is received for client
-  // authentication.
-  //
-  // Rather than using one response for multiple purposes, the caller expects
-  // exactly one response (or disconnect) to be sent back via |cert_responder|.
-  //
-  // |window_id| or else |process_id| and |routing_id| indicates the frame
-  // making the request, see network::ResourceRequest::fetch_window_id.
-  OnCertificateRequested(
-      mojo_base.mojom.UnguessableToken? window_id,
-      int32 process_id,
-      int32 routing_id,
-      uint32 request_id,
-      network.mojom.SSLCertRequestInfo cert_info,
-      pending_remote<ClientCertificateResponder> cert_responder);
 
   // Called when file uploading was requested.
   // If the process that requested the uploads has permission to read all of

@@ -27,6 +27,12 @@ void TestAuthCertObserver::OnSSLCertificateError(
   std::move(response).Run(ignore_certificate_errors_ ? net::OK : net_error);
 }
 
+void TestAuthCertObserver::OnCertificateRequested(
+    const base::Optional<base::UnguessableToken>& window_id,
+    const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
+    mojo::PendingRemote<mojom::ClientCertificateResponder>
+        client_cert_responder) {}
+
 void TestAuthCertObserver::Clone(
     mojo::PendingReceiver<AuthenticationAndCertificateObserver> observer) {
   receivers_.Add(this, std::move(observer));

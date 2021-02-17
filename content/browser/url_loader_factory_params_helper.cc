@@ -188,6 +188,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+        auth_cert_observer,
     base::StringPiece debug_tag) {
   return CreateParams(
       process,
@@ -202,7 +204,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       false,  // is_for_isolated_world
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
           ->CreateCookieAccessObserverForServiceWorker(),
-      mojo::NullRemote(),
+      std::move(auth_cert_observer),
       // Since ExecutionContext::IsFeatureEnabled returns
       // false in non-Document contexts, no worker should ever
       // execute a trust token redemption or signing operation,

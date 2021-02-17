@@ -30,19 +30,6 @@ void PrefetchProxyNetworkContextClient::OnAuthRequired(
   auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
 }
 
-void PrefetchProxyNetworkContextClient::OnCertificateRequested(
-    const base::Optional<base::UnguessableToken>& window_id,
-    int32_t process_id,
-    int32_t routing_id,
-    uint32_t request_id,
-    const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
-    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-        cert_responder_remote) {
-  mojo::Remote<network::mojom::ClientCertificateResponder> cert_responder(
-      std::move(cert_responder_remote));
-  cert_responder->CancelRequest();
-}
-
 void PrefetchProxyNetworkContextClient::OnFileUploadRequested(
     int32_t process_id,
     bool async,

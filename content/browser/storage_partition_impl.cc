@@ -639,9 +639,6 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
 };
 
 void OnCertificateRequestedContinuation(
-    uint32_t process_id,
-    uint32_t routing_id,
-    uint32_t request_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         client_cert_responder_remote,
@@ -1715,15 +1712,16 @@ void StoragePartitionImpl::OnAuthRequired(
 
 void StoragePartitionImpl::OnCertificateRequested(
     const base::Optional<base::UnguessableToken>& window_id,
-    int32_t process_id,
-    int32_t routing_id,
-    uint32_t request_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder) {
+  base::RepeatingCallback<WebContents*(void)> web_contents_getter;
+  int process_id = auth_cert_observers_.current_context().process_id;
+  int routing_id = auth_cert_observers_.current_context().routing_id;
   // Use |window_id| if it's provided.
   if (window_id) {
-    base::RepeatingCallback<WebContents*(void)> web_contents_getter;
+    DCHECK_EQ(process_id, network::mojom::kBrowserProcessId);
+    DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
     if (service_worker_context_->context()) {
       auto* container_host =
           service_worker_context_->context()->GetContainerHostByWindowId(
@@ -1734,15 +1732,12 @@ void StoragePartitionImpl::OnCertificateRequested(
             &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
       }
     }
-    OnCertificateRequestedContinuation(process_id, routing_id, request_id,
-                                       cert_info, std::move(cert_responder),
-                                       web_contents_getter);
-    return;
+  } else {
+    web_contents_getter =
+        base::BindRepeating(GetWebContents, process_id, routing_id);
   }
-
-  OnCertificateRequestedContinuation(
-      process_id, routing_id, request_id, cert_info, std::move(cert_responder),
-      base::BindRepeating(GetWebContents, process_id, routing_id));
+  OnCertificateRequestedContinuation(cert_info, std::move(cert_responder),
+                                     std::move(web_contents_getter));
 }
 
 void StoragePartitionImpl::OnSSLCertificateError(
@@ -1786,6 +1781,16 @@ StoragePartitionImpl::CreateAuthAndCertObserverForNavigationRequest(
       remote;
   auth_cert_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver(),
                            {network::mojom::kBrowserProcessId, frame_tree_id});
+  return remote;
+}
+
+mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+StoragePartitionImpl::CreateAuthCertObserverForServiceWorker() {
+  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+      remote;
+  auth_cert_observers_.Add(
+      this, remote.InitWithNewPipeAndPassReceiver(),
+      {network::mojom::kBrowserProcessId, RenderFrameHost::kNoFrameTreeNodeId});
   return remote;
 }
 
