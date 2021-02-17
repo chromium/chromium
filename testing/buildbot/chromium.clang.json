@@ -13254,11 +13254,44 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTLinux (dbg)": {
     "additional_compile_targets": [
       "all"
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTLinuxASan": {
@@ -15076,11 +15109,47 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--test-launcher-print-test-stdio=always"
+        ],
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTLinuxASanLibfuzzer": {
     "additional_compile_targets": [
       "all"
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTLinuxMSan": {
@@ -16629,6 +16698,25 @@
         },
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ]
   },
@@ -18196,6 +18284,25 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTLinuxTSan": {
@@ -19728,6 +19835,25 @@
         },
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ]
   },
@@ -21295,6 +21421,25 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTLinuxUBSanVptr": {
@@ -22860,6 +23005,25 @@
         },
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ]
   },

@@ -1807,6 +1807,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
         'additional_compile_targets': [
           'all',
@@ -1816,6 +1817,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
       },
       'ToTLinuxASan': {
         'mixins': [
@@ -1826,6 +1830,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
         'args': [
           '--test-launcher-print-test-stdio=always',
@@ -1835,6 +1840,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
       },
       'ToTLinuxMSan': {
         'mixins': [
@@ -1845,6 +1853,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
       },
       # Used on an internal builder.
@@ -1855,6 +1864,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
         'additional_compile_targets': [
           'all',
@@ -1869,6 +1879,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
       },
       'ToTLinuxThinLTO': {
@@ -1880,6 +1891,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
       },
       'ToTLinuxUBSanVptr': {
@@ -1893,6 +1905,7 @@
           # no "_and_gl":gl_unittests doesn't pass yet,
           # https://crbug.com/815183
           'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
       },
       'ToTMac': {
