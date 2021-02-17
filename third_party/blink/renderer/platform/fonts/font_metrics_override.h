@@ -13,7 +13,6 @@ struct FontMetricsOverride {
   base::Optional<float> ascent_override;
   base::Optional<float> descent_override;
   base::Optional<float> line_gap_override;
-  base::Optional<float> advance_override;
   base::Optional<float> advance_proportional_override;
 };
 

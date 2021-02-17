@@ -532,13 +532,7 @@
       status: "experimental",
     },
     {
-      // Experimental @font-face descriptor advance-override.
-      // Not standardized yet, and subject to changes.
-      name: "CSSFontFaceAdvanceOverride",
-      status: "test",
-      depends_on: ["CSSFontMetricsOverride"],
-    },
-    {
+      // TODO(xiaochengh): Rename it to AdvanceOverride
       // Experimental @font-face descriptor advance-proportional-override.
       // Not standardized yet, and subject to changes.
       name: "CSSFontFaceAdvanceProportionalOverride",

@@ -2,7 +2,6 @@ This test (crudely) documents Blink's web-exposed CSS properties.  All changes t
 
 
 additiveSymbols
-advanceOverride
 advanceProportionalOverride
 alignContent
 alignItems

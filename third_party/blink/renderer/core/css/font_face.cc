@@ -207,8 +207,6 @@ FontFace* FontFace::Create(Document* document,
                                       AtRuleDescriptorID::DescentOverride) &&
       font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::LineGapOverride) &&
-      font_face->SetPropertyFromStyle(properties,
-                                      AtRuleDescriptorID::AdvanceOverride) &&
       font_face->SetPropertyFromStyle(
           properties, AtRuleDescriptorID::AdvanceProportionalOverride) &&
       font_face->GetFontSelectionCapabilities().IsValid() &&
@@ -421,9 +419,6 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
       break;
     case AtRuleDescriptorID::LineGapOverride:
       line_gap_override_ = ConvertFontMetricOverrideValue(value);
-      break;
-    case AtRuleDescriptorID::AdvanceOverride:
-      advance_override_ = value;
       break;
     case AtRuleDescriptorID::AdvanceProportionalOverride:
       advance_proportional_override_ = ConvertFontMetricOverrideValue(value);
@@ -870,7 +865,6 @@ void FontFace::Trace(Visitor* visitor) const {
   visitor->Trace(ascent_override_);
   visitor->Trace(descent_override_);
   visitor->Trace(line_gap_override_);
-  visitor->Trace(advance_override_);
   visitor->Trace(advance_proportional_override_);
   visitor->Trace(error_);
   visitor->Trace(loaded_property_);
@@ -912,10 +906,6 @@ FontMetricsOverride FontFace::GetFontMetricsOverride() const {
   if (line_gap_override_) {
     result.line_gap_override =
         To<CSSPrimitiveValue>(*line_gap_override_).GetFloatValue() / 100;
-  }
-  if (advance_override_) {
-    result.advance_override =
-        To<CSSPrimitiveValue>(*advance_override_).GetFloatValue();
   }
   if (advance_proportional_override_) {
     result.advance_proportional_override =

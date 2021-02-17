@@ -143,7 +143,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   bool HasFontMetricsOverride() const {
     return ascent_override_ || descent_override_ || line_gap_override_ ||
-           advance_override_ || advance_proportional_override_;
+           advance_proportional_override_;
   }
   FontMetricsOverride GetFontMetricsOverride() const;
 
@@ -188,7 +188,6 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   Member<const CSSValue> ascent_override_;
   Member<const CSSValue> descent_override_;
   Member<const CSSValue> line_gap_override_;
-  Member<const CSSValue> advance_override_;
   Member<const CSSValue> advance_proportional_override_;
   LoadStatusType status_;
   Member<DOMException> error_;
