@@ -88,6 +88,8 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
                 new AutofillAssistantTestEndpointService(mParameters.getAutofillAssistantUrl());
         testService.scheduleForInjection();
 
+        Log.i(TAG, "[Test started]");
+
         mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(),
                 mTestRule.getTestServer().getURL(mParameters.getDomainUrl().getSpec())));
@@ -129,7 +131,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
     /**
      * Performs and validates a single password change script run.
      */
-    private void testSingleRun(String username) {
+    private void testRun(String username) {
         // Fetch login credential.
         PasswordStoreCredential initialCredential =
                 getCredentialForDomainAndUser(mCredentials, mParameters.getDomainUrl(), username);
@@ -148,6 +150,17 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
     }
 
     /**
+     * Runs the script a single time. Checks the script successfully changes password in Chrome
+     * password manager.
+     */
+    @Test
+    @Manual
+    public void testSingleRun() throws Exception {
+        testRun(mParameters.getUsername());
+        logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
+    }
+
+    /**
      * Runs the script multiple times (defined by --num-runs) consecutively. Checks the script
      * successfully changes password in Chrome password manager. There should be only one entry for
      * that domain with the new password.
@@ -157,7 +170,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
     public void testMultipleRuns() throws Exception {
         for (int i = 0; i < mParameters.getNumRuns(); i++) {
             // Run and test script.
-            testSingleRun(mParameters.getUsername());
+            testRun(mParameters.getUsername());
             Log.i(TAG, "[EVENT: Run #%s succeded]", String.valueOf(i + 1));
         }
 
@@ -177,7 +190,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         Log.i(TAG, "[EVENT: Site settings cleared]");
 
         // Run and test password change.
-        testSingleRun(mParameters.getUsername());
+        testRun(mParameters.getUsername());
 
         logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
     }
@@ -260,7 +273,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
             // Run password change for all credentials.
             for (int i = 0; i < initialCredentials.length; i++) {
                 // Run and test script.
-                testSingleRun(initialCredentials[i].getUsername());
+                testRun(initialCredentials[i].getUsername());
             }
             Log.i(TAG, "[EVENT: Run #%s succeded]", String.valueOf(run + 1));
         }
