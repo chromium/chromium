@@ -228,7 +228,7 @@
 <translation id="3495304270784461826"><ph name="COUNT" /> grešaka.</translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ove datoteke su privremene i mogu da se izbrišu automatski kako bi se oslobodio prostor na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="3527085408025491307">Direktorijum</translation>
+<translation id="3527085408025491307">Folder</translation>
 <translation id="3549797760399244642">Idi na drive.google.com...</translation>
 <translation id="3553048479571901246">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih kopirajte u direktorijum sa Windows datotekama.</translation>
 <translation id="3556731189587832921">engleski (SAD) sa internacionalnom tastaturom za računar</translation>
@@ -284,7 +284,7 @@
 <translation id="4202378258276439759">španski (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzijski</translation>
 <translation id="421017592316736757">Morate da budete na mreži da biste pristupili ovoj datoteci.</translation>
-<translation id="4212740939091998969">Direktorijum „<ph name="FOLDER_NAME" />“ već postoji. Odaberite drugi naziv.</translation>
+<translation id="4212740939091998969">Folder „<ph name="FOLDER_NAME" />“ već postoji. Odaberite drugi naziv.</translation>
 <translation id="4215448920900139318">Prave se rezervne kopije (<ph name="FILE_COUNT" />)</translation>
 <translation id="4261901459838235729">Google prezentacija</translation>
 <translation id="4290535918735525311">1 direktorijum se deli sa Linux-om</translation>
