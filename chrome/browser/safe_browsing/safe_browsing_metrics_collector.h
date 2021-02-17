@@ -45,6 +45,8 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // Enum representing the current user state. They are used as keys of the
   // SafeBrowsingEventTimestamps pref, entries must not be removed or reordered.
+  // They are also used to construct suffixes of histograms. Please update the
+  // UserState token in the histograms.xml file if new values are added.
   enum UserState {
     // Standard protection is enabled.
     STANDARD_PROTECTION = 0,
@@ -73,13 +75,19 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     base::Time timestamp;
   };
   static bool IsBypassEventType(const EventType& type);
+  static std::string GetUserStateMetricSuffix(const UserState& user_state);
 
+  // For daily metrics.
   void LogMetricsAndScheduleNextLogging();
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
+  void LogDailyOptInMetrics();
+  void LogDailyEventMetrics();
 
+  // For pref listeners.
   void OnEnhancedProtectionPrefChanged();
   void LogEnhancedProtectionDisabledMetrics();
 
+  // Helper functions for Safe Browsing events in pref.
   void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
                                               EventType event_type);
   int GetEventCountSince(UserState user_state,

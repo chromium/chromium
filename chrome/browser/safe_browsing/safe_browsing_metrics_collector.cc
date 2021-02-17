@@ -90,12 +90,9 @@ void SafeBrowsingMetricsCollector::StartLogging() {
 }
 
 void SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging() {
-  base::UmaHistogramEnumeration("SafeBrowsing.Pref.Daily.SafeBrowsingState",
-                                GetSafeBrowsingState(*pref_service_));
-  base::UmaHistogramBoolean("SafeBrowsing.Pref.Daily.Extended",
-                            IsExtendedReportingEnabled(*pref_service_));
-  base::UmaHistogramBoolean("SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
-                            IsSafeBrowsingPolicyManaged(*pref_service_));
+  LogDailyOptInMetrics();
+  LogDailyEventMetrics();
+
   pref_service_->SetInt64(
       prefs::kSafeBrowsingMetricsLastLogTime,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
@@ -109,6 +106,39 @@ void SafeBrowsingMetricsCollector::ScheduleNextLoggingAfterInterval(
   metrics_collector_timer_.Start(
       FROM_HERE, interval, this,
       &SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging);
+}
+
+void SafeBrowsingMetricsCollector::LogDailyOptInMetrics() {
+  base::UmaHistogramEnumeration("SafeBrowsing.Pref.Daily.SafeBrowsingState",
+                                GetSafeBrowsingState(*pref_service_));
+  base::UmaHistogramBoolean("SafeBrowsing.Pref.Daily.Extended",
+                            IsExtendedReportingEnabled(*pref_service_));
+  base::UmaHistogramBoolean("SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+                            IsSafeBrowsingPolicyManaged(*pref_service_));
+}
+
+void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
+  SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
+  if (sb_state == SafeBrowsingState::NO_SAFE_BROWSING) {
+    return;
+  }
+  UserState user_state = SafeBrowsingStateToUserState(sb_state);
+
+  int total_bypass_count = 0;
+  for (int event_type_int = 0; event_type_int <= EventType::kMaxValue;
+       event_type_int += 1) {
+    EventType event_type = static_cast<EventType>(event_type_int);
+    if (!IsBypassEventType(event_type)) {
+      continue;
+    }
+    total_bypass_count +=
+        GetEventCountSince(user_state, event_type,
+                           base::Time::Now() - base::TimeDelta::FromDays(28));
+  }
+  base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
+                                  GetUserStateMetricSuffix(user_state) +
+                                  ".AllEvents",
+                              total_bypass_count);
 }
 
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
@@ -177,7 +207,7 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
   }
 
   std::vector<Event> bypass_events;
-  for (int event_type_int = 0; event_type_int < EventType::kMaxValue + 1;
+  for (int event_type_int = 0; event_type_int <= EventType::kMaxValue;
        event_type_int += 1) {
     EventType event_type = static_cast<EventType>(event_type_int);
     if (!IsBypassEventType(event_type)) {
@@ -235,6 +265,16 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::CSD_INTERSITITAL_BYPASS:
     case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
       return true;
+  }
+}
+
+std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
+    const UserState& user_state) {
+  switch (user_state) {
+    case UserState::STANDARD_PROTECTION:
+      return "StandardProtection";
+    case UserState::ENHANCED_PROTECTION:
+      return "EnhancedProtection";
   }
 }
 
