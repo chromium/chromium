@@ -8,9 +8,11 @@
 
 #include "ash/power/hid_battery_util.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string16.h"
@@ -26,6 +28,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
 
@@ -210,12 +213,21 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
                 map_key, battery_info.name, *battery_info.level,
                 !battery_info.bluetooth_address.empty());
 
+  auto delegate = base::MakeRefCounted<
+      message_center::HandleNotificationClickDelegate>(base::BindRepeating(
+      [](const NotificationParams& params) {
+        Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
+        message_center::MessageCenter::Get()->RemoveNotification(
+            params.id, /*by_user=*/false);
+      },
+      params));
+
   auto notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
       params.message, base::string16(), params.url,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  params.notifier_name),
-      message_center::RichNotificationData(), nullptr, *params.icon,
+      message_center::RichNotificationData(), std::move(delegate), *params.icon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center::MessageCenter::Get()->AddNotification(

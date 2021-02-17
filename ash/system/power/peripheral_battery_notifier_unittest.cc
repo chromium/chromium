@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "ash/system/power/peripheral_battery_tests.h"
@@ -55,6 +56,7 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
     ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
 
     message_center_ = message_center::MessageCenter::Get();
+    system_tray_client_ = GetSystemTrayClient();
 
     battery_listener_ = std::make_unique<PeripheralBatteryListener>();
     battery_notifier_ =
@@ -125,6 +127,7 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
 
  protected:
   message_center::MessageCenter* message_center_;
+  TestSystemTrayClient* system_tray_client_;
   std::unique_ptr<PeripheralBatteryNotifier> battery_notifier_;
   std::unique_ptr<PeripheralBatteryListener> battery_listener_;
 
@@ -409,6 +412,24 @@ TEST_F(PeripheralBatteryNotifierTest, UpdateNotificationIfVisible) {
   EXPECT_TRUE(notification);
   EXPECT_EQ(base::ASCIIToUTF16(kBluetoothDeviceName1), notification->title());
   EXPECT_EQ(3, ExtractBatteryPercentage(notification));
+}
+
+TEST_F(PeripheralBatteryNotifierTest, OpenBluetoothSettingsUi) {
+  ClockAdvance(base::TimeDelta::FromSeconds(100));
+
+  UpdateBatteryLevel(true, kBluetoothDeviceId1, kBluetoothDeviceName1, 5, false,
+                     kBluetoothDeviceAddress1);
+  EXPECT_EQ(1u, message_center_->NotificationCount());
+
+  message_center::Notification* notification =
+      message_center_->FindVisibleNotificationById(
+          kBluetoothDeviceNotificationId1);
+  EXPECT_TRUE(notification);
+
+  message_center_->ClickOnNotification(notification->id());
+  EXPECT_EQ(1, system_tray_client_->show_bluetooth_settings_count());
+  EXPECT_FALSE(message_center_->FindVisibleNotificationById(
+      kBluetoothDeviceNotificationId1));
 }
 
 }  // namespace ash
