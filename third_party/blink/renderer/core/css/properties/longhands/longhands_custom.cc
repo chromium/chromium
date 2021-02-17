@@ -412,6 +412,8 @@ const CSSValue* AspectRatio::ParseSingleValue(
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
     height = css_parsing_utils::ConsumeNumber(range, context,
                                               kValueRangeNonNegative);
+    if (!height)
+      return nullptr;
   } else {
     // A missing height is treated as 1.
     height = CSSNumericLiteralValue::Create(
