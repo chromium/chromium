@@ -205,7 +205,10 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
     content::WebContents* contents = restored_tabs_[tab_index].contents();
     content::RenderWidgetHost* host =
         contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-    stats_collector_->RenderWidgetHostDidUpdateVisualProperties(host);
+    stats_collector_->Observe(
+        content::NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
+        content::Source<content::RenderWidgetHost>(host),
+        content::NotificationService::NoDetails());
   }
 
   void GenerateRenderWidgetVisiblityChanged(size_t tab_index, bool visible) {

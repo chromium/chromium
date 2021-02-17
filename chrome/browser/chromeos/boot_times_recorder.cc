@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -338,7 +337,13 @@ void BootTimesRecorder::LoginDone(bool is_user_new) {
     registrar_.Remove(this,
                       content::NOTIFICATION_LOAD_STOP,
                       content::NotificationService::AllSources());
-    render_widget_host_observations_.RemoveAllObservations();
+    registrar_.Remove(this,
+                      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
+                      content::NotificationService::AllSources());
+    registrar_.Remove(
+        this,
+        content::NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
+        content::NotificationService::AllSources());
   }
   // Don't swamp the background thread right away.
   base::ThreadPool::PostDelayedTask(
@@ -434,6 +439,12 @@ void BootTimesRecorder::RecordLoginAttempted() {
                    content::NotificationService::AllSources());
     registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
                    content::NotificationService::AllSources());
+    registrar_.Add(this, content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
+                   content::NotificationService::AllSources());
+    registrar_.Add(
+        this,
+        content::NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
+        content::NotificationService::AllSources());
   }
 }
 
@@ -485,34 +496,39 @@ void BootTimesRecorder::Observe(int type,
       RenderWidgetHost* rwh = GetRenderWidgetHost(tab);
       DCHECK(rwh);
       AddLoginTimeMarker("TabLoad-Start: " + GetTabUrl(rwh), false);
-      if (!render_widget_host_observations_.IsObservingSource(rwh))
-        render_widget_host_observations_.AddObservation(rwh);
+      render_widget_hosts_loading_.insert(rwh);
       break;
     }
     case content::NOTIFICATION_LOAD_STOP: {
       NavigationController* tab =
           content::Source<NavigationController>(source).ptr();
       RenderWidgetHost* rwh = GetRenderWidgetHost(tab);
-      if (render_widget_host_observations_.IsObservingSource(rwh)) {
+      if (render_widget_hosts_loading_.find(rwh) !=
+          render_widget_hosts_loading_.end()) {
         AddLoginTimeMarker("TabLoad-End: " + GetTabUrl(rwh), false);
       }
+      break;
+    }
+    case content::
+        NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES: {
+      RenderWidgetHost* rwh = content::Source<RenderWidgetHost>(source).ptr();
+      if (render_widget_hosts_loading_.find(rwh) !=
+          render_widget_hosts_loading_.end()) {
+        AddLoginTimeMarker("TabPaint: " + GetTabUrl(rwh), false);
+        LoginDone(user_manager::UserManager::Get()->IsCurrentUserNew());
+      }
+      break;
+    }
+    case content::NOTIFICATION_WEB_CONTENTS_DESTROYED: {
+      WebContents* web_contents = content::Source<WebContents>(source).ptr();
+      RenderWidgetHost* render_widget_host =
+          GetRenderWidgetHost(&web_contents->GetController());
+      render_widget_hosts_loading_.erase(render_widget_host);
       break;
     }
     default:
       break;
   }
-}
-
-void BootTimesRecorder::RenderWidgetHostDidUpdateVisualProperties(
-    content::RenderWidgetHost* widget_host) {
-  DCHECK(have_registered_);
-  AddLoginTimeMarker("TabPaint: " + GetTabUrl(widget_host), false);
-  LoginDone(user_manager::UserManager::Get()->IsCurrentUserNew());
-}
-
-void BootTimesRecorder::RenderWidgetHostDestroyed(
-    content::RenderWidgetHost* widget_host) {
-  render_widget_host_observations_.RemoveObservation(widget_host);
 }
 
 }  // namespace chromeos

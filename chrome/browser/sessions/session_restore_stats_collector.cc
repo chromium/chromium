@@ -65,6 +65,11 @@ SessionRestoreStatsCollector::SessionRestoreStatsCollector(
       reporting_delegate_(std::move(reporting_delegate)) {
   DCHECK(!g_instance);
   g_instance = this;
+
+  registrar_.Add(
+      this,
+      content::NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
+      content::NotificationService::AllSources());
 }
 
 SessionRestoreStatsCollector::~SessionRestoreStatsCollector() {
@@ -117,6 +122,44 @@ void SessionRestoreStatsCollector::Observe(
       RemoveTab(tab);
       break;
     }
+    case content::
+        NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES: {
+      // This notification is across all tabs in the browser so notifications
+      // will arrive for tabs that the collector is not explicitly tracking.
+
+      // Only process this event if first paint hasn't been seen and this is a
+      // paint of a tab that has not been hidden or occluded.
+      RenderWidgetHost* render_widget_host =
+          Source<RenderWidgetHost>(source).ptr();
+      if (render_widget_host->GetView() &&
+          render_widget_host->GetView()->IsShowing()) {
+        TabState* tab_state = GetTabState(render_widget_host);
+        if (tab_state) {
+          // Ignore first paint of a restored tab that was hidden or occluded
+          // before first paint. If another restored tab is painted, its paint
+          // time will be recorded.
+          if (tab_state->was_hidden_or_occluded) {
+            hidden_or_occluded_tab_ignored_ = true;
+            break;
+          }
+          // This is a paint for a tab that is explicitly being tracked so
+          // update the statistics. Otherwise the host is for a tab that's not
+          // being tracked. Thus some other tab has visibility and has rendered
+          // and there's no point in tracking the time to first paint. This can
+          // happen because the user opened a different tab or restored tabs
+          // to an already existing browser and an existing tab was in the
+          // foreground.
+          base::TimeDelta time_to_paint =
+              base::TimeTicks::Now() - restore_started_;
+          tab_loader_stats_.foreground_tab_first_paint = time_to_paint;
+        } else {
+          non_restored_tab_painted_first_ = true;
+        }
+
+        ReportStatsAndSelfDestroy();
+      }
+      break;
+    }
     default:
       NOTREACHED() << "Unknown notification received:" << type;
       break;
@@ -131,41 +174,9 @@ void SessionRestoreStatsCollector::RenderWidgetHostVisibilityChanged(
     tab_state->was_hidden_or_occluded = true;
 }
 
-void SessionRestoreStatsCollector::RenderWidgetHostDidUpdateVisualProperties(
-    content::RenderWidgetHost* widget_host) {
-  // Only process this event if first paint hasn't been seen and this is a
-  // paint of a tab that has not been hidden or occluded.
-  if (!widget_host->GetView() || !widget_host->GetView()->IsShowing())
-    return;
-
-  auto* tab_state = GetTabState(widget_host);
-  if (tab_state) {
-    // Ignore first paint of a restored tab that was hidden or occluded
-    // before first paint. If another restored tab is painted, its paint
-    // time will be recorded.
-    if (tab_state->was_hidden_or_occluded) {
-      hidden_or_occluded_tab_ignored_ = true;
-      return;
-    }
-    // This is a paint for a tab that is explicitly being tracked so
-    // update the statistics. Otherwise the host is for a tab that's not
-    // being tracked. Thus some other tab has visibility and has rendered
-    // and there's no point in tracking the time to first paint. This can
-    // happen because the user opened a different tab or restored tabs
-    // to an already existing browser and an existing tab was in the
-    // foreground.
-    base::TimeDelta time_to_paint = base::TimeTicks::Now() - restore_started_;
-    tab_loader_stats_.foreground_tab_first_paint = time_to_paint;
-  } else {
-    non_restored_tab_painted_first_ = true;
-  }
-
-  ReportStatsAndSelfDestroy();
-}
-
 void SessionRestoreStatsCollector::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  render_widget_host_observations_.RemoveObservation(widget_host);
+  observer_.Remove(widget_host);
 
   auto* tab_state = GetTabState(widget_host);
   if (tab_state)
@@ -180,7 +191,7 @@ void SessionRestoreStatsCollector::RemoveTab(NavigationController* tab) {
   DCHECK(tab_it != tabs_tracked_.end());
   TabState& tab_state = tab_it->second;
   if (tab_state.observed_host)
-    render_widget_host_observations_.RemoveObservation(tab_state.observed_host);
+    observer_.Remove(tab_state.observed_host);
 
   // Remove the tab from the |tabs_tracked_| map.
   tabs_tracked_.erase(tab_it);
@@ -202,8 +213,18 @@ SessionRestoreStatsCollector::RegisterForNotifications(
   // Register for RenderWidgetHostVisibilityChanged notifications for this tab.
   tab_state->observed_host = GetRenderWidgetHost(tab);
   if (tab_state->observed_host)
-    render_widget_host_observations_.AddObservation(tab_state->observed_host);
+    observer_.Add(tab_state->observed_host);
   return tab_state;
+}
+
+SessionRestoreStatsCollector::TabState*
+SessionRestoreStatsCollector::GetTabState(NavigationController* tab) {
+  // This lookup can fail because the call can arrive for tabs that have
+  // already loaded (user forced) and are no longer tracked.
+  auto it = tabs_tracked_.find(tab);
+  if (it == tabs_tracked_.end())
+    return nullptr;
+  return &it->second;
 }
 
 SessionRestoreStatsCollector::TabState*
