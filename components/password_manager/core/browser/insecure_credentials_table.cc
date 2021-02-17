@@ -47,7 +47,7 @@ CompromisedCredentials::CompromisedCredentials(std::string signon_realm,
     : signon_realm(std::move(signon_realm)),
       username(std::move(username)),
       create_time(create_time),
-      compromise_type(insecurity_type),
+      insecure_type(insecurity_type),
       is_muted(is_muted) {}
 
 CompromisedCredentials::CompromisedCredentials(
@@ -68,7 +68,7 @@ bool operator==(const CompromisedCredentials& lhs,
                 const CompromisedCredentials& rhs) {
   return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
          lhs.create_time == rhs.create_time &&
-         lhs.compromise_type == rhs.compromise_type &&
+         lhs.insecure_type == rhs.insecure_type &&
          *lhs.is_muted == *rhs.is_muted;
 }
 
@@ -87,7 +87,7 @@ bool InsecureCredentialsTable::AddRow(
   DCHECK(db_->DoesTableExist(kTableName));
 
   base::UmaHistogramEnumeration("PasswordManager.CompromisedCredentials.Add",
-                                compromised_credentials.compromise_type);
+                                compromised_credentials.insecure_type);
 
   // In case there is an error, expect it to be a constraint violation.
   db_->set_error_callback(base::BindRepeating([](int error, sql::Statement*) {
@@ -107,7 +107,7 @@ bool InsecureCredentialsTable::AddRow(
           kTableName)
           .c_str()));
 
-  s.BindInt(0, static_cast<int>(compromised_credentials.compromise_type));
+  s.BindInt(0, static_cast<int>(compromised_credentials.insecure_type));
   s.BindInt64(1, compromised_credentials.create_time.ToDeltaSinceWindowsEpoch()
                      .InMicroseconds());
   s.BindBool(2, compromised_credentials.is_muted.value());
@@ -138,7 +138,7 @@ bool InsecureCredentialsTable::RemoveRow(
     if (username == compromised_credential.username) {
       base::UmaHistogramEnumeration(
           "PasswordManager.CompromisedCredentials.Remove",
-          compromised_credential.compromise_type);
+          compromised_credential.insecure_type);
       base::UmaHistogramEnumeration(
           "PasswordManager.RemoveCompromisedCredentials.RemoveReason", reason);
     }

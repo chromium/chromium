@@ -49,8 +49,8 @@ class TestPasswordStore : public PasswordStore {
     bool operator()(const InsecureCredential& lhs,
                     const InsecureCredential& rhs) const {
       // Only compare members that are part of the unique key in the database.
-      return std::tie(lhs.signon_realm, lhs.username, lhs.compromise_type) <
-             std::tie(rhs.signon_realm, rhs.username, rhs.compromise_type);
+      return std::tie(lhs.signon_realm, lhs.username, lhs.insecure_type) <
+             std::tie(rhs.signon_realm, rhs.username, rhs.insecure_type);
     }
   };
 

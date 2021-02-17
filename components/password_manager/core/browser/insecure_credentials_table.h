@@ -71,7 +71,7 @@ struct CompromisedCredentials {
   // The date when the record was created.
   base::Time create_time;
   // The type of the credentials that was compromised.
-  InsecureType compromise_type = InsecureType::kLeaked;
+  InsecureType insecure_type = InsecureType::kLeaked;
   // Whether the problem was explicitly muted by the user.
   IsMuted is_muted{false};
   // The store in which those credentials are stored.

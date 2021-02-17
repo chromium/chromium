@@ -2609,7 +2609,7 @@ TEST_F(LoginDatabaseTest, RemovingLoginRemovesCompromisedCredentials) {
                                      base::Time(), InsecureType::kLeaked,
                                      IsMuted(false)};
   CompromisedCredentials credential2 = credential1;
-  credential2.compromise_type = InsecureType::kPhished;
+  credential2.insecure_type = InsecureType::kPhished;
 
   db().insecure_credentials_table().AddRow(credential1);
   db().insecure_credentials_table().AddRow(credential2);

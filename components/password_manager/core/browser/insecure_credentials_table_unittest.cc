@@ -173,9 +173,9 @@ TEST_F(InsecureCredentialsTableTest,
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   CompromisedCredentials compromised_credentials1 = test_data();
   CompromisedCredentials compromised_credentials2 = test_data();
-  compromised_credentials2.compromise_type = InsecureType::kPhished;
+  compromised_credentials2.insecure_type = InsecureType::kPhished;
   CompromisedCredentials compromised_credentials3 = test_data();
-  compromised_credentials3.compromise_type = InsecureType::kWeak;
+  compromised_credentials3.insecure_type = InsecureType::kWeak;
 
   EXPECT_TRUE(db()->AddRow(compromised_credentials1));
   EXPECT_TRUE(db()->AddRow(compromised_credentials2));
@@ -216,7 +216,7 @@ TEST_F(InsecureCredentialsTableTest, ReportMetricsBeforeBulkCheck) {
   test_form().url = GURL(test_form().signon_realm);
   test_form().username_value = test_data().username =
       base::ASCIIToUTF16(kUsername3);
-  test_data().compromise_type = InsecureType::kPhished;
+  test_data().insecure_type = InsecureType::kPhished;
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   EXPECT_TRUE(db()->AddRow(test_data()));
 
@@ -252,7 +252,7 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   CompromisedCredentials compromised_credentials1 = test_data();
   CompromisedCredentials compromised_credentials2 = test_data();
-  compromised_credentials2.compromise_type = InsecureType::kReused;
+  compromised_credentials2.insecure_type = InsecureType::kReused;
 
   EXPECT_TRUE(db()->AddRow(compromised_credentials1));
   EXPECT_TRUE(db()->AddRow(compromised_credentials2));

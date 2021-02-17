@@ -388,7 +388,7 @@ InsecureCredential CreateInsecureCredential(
   // CreateTestPasswordForm() and use the same username format.
   issue.username = base::ASCIIToUTF16(base::StringPrintf("username%d", index));
   issue.create_time = base::Time::Now();
-  issue.compromise_type = type;
+  issue.insecure_type = type;
   return issue;
 }
 

@@ -91,7 +91,7 @@ CredentialWithPassword MakeCompromisedCredential(
   CredentialWithPassword credential_with_password((CredentialView(form)));
   credential_with_password.create_time = credential.create_time;
   credential_with_password.insecure_type =
-      credential.compromise_type == InsecureType::kLeaked
+      credential.insecure_type == InsecureType::kLeaked
           ? InsecureCredentialTypeFlags::kCredentialLeaked
           : InsecureCredentialTypeFlags::kCredentialPhished;
   return credential_with_password;
@@ -171,7 +171,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << "{ signon_realm: " << credential.signon_realm
              << ", username: " << credential.username
              << ", create_time: " << credential.create_time
-             << ", compromise_type: "
+             << ", insecure_type: "
              << static_cast<int>(credential.insecure_type)
              << ", password: " << credential.password << " }";
 }

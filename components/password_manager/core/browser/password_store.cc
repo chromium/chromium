@@ -96,7 +96,7 @@ bool ShouldPhishedCredentialsBeUploadedToSync(const PrefService* prefs) {
 // Returns if credentials contains Phished issues.
 bool HasPhishedCredentials(const std::vector<InsecureCredential>& credentials) {
   return base::Contains(credentials, InsecureType::kPhished,
-                        &InsecureCredential::compromise_type);
+                        &InsecureCredential::insecure_type);
 }
 
 }  // namespace

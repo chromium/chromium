@@ -75,7 +75,7 @@ PasswordIssuesFromInsecureCredentials(
         insecure_credential.create_time.ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
     issue.set_is_muted(insecure_credential.is_muted.value());
-    switch (insecure_credential.compromise_type) {
+    switch (insecure_credential.insecure_type) {
       case InsecureType::kLeaked:
         DCHECK(!issues.has_leaked_password_issue());
         *issues.mutable_leaked_password_issue() = std::move(issue);

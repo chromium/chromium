@@ -118,7 +118,7 @@ CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
 
           // Using |= operator to save in a bit mask both Leaked and Phished.
           credential_to_form.type |=
-              ConvertInsecureType(credential.compromise_type);
+              ConvertInsecureType(credential.insecure_type);
 
           // Use the latest time. Relevant when the same credential is both
           // phished and compromised.
@@ -215,7 +215,7 @@ CredentialWithPassword::CredentialWithPassword(
                      credential.username,
                      /*password=*/{}),
       create_time(credential.create_time),
-      insecure_type(ConvertInsecureType(credential.compromise_type)) {}
+      insecure_type(ConvertInsecureType(credential.insecure_type)) {}
 
 CredentialWithPassword& CredentialWithPassword::operator=(
     const CredentialWithPassword& other) = default;
