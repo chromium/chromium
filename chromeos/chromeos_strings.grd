@@ -683,8 +683,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT" desc="The text for a battery's full charge capacity represented in milliamp hours.">
         <ph name="CHARGE_VALUE">$1<ex>6000</ex></ph>mAh Battery
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name and thread count.">
-        <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads)
+      <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name, thread count, and max CPU speed.">
+        <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads, <ph name="CPU_MAX_CLOCK_SPEED">$3<ex>3.90</ex></ph>GHz)
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health.">
         Battery health
@@ -692,8 +692,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT" desc="The text for the battery's health percentage.">
         <ph name="PERCENTAGE_VALUE">$1<ex>92</ex></ph>%
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for CPU speed.">
-        CPU Speed
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for the current CPU speed.">
+        Current Speed
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius.">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
@@ -718,9 +718,6 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage.">
         This is an aggregation of all cores
-      </message>
-      <message name="IDS_DIAGNOSTICS_CPU_THROTTLE_TOOLTIP_TEXT" desc="The tooltip for CPU throttling.">
-        CPU speed is currently limited to preserve battery or reduce temperature
       </message>
       <message name="IDS_DIANOSTICS_ROUTINE_NAME_TEXT" desc="The text that informs the user which test is currently running.">
         Running <ph name="TEST_NAME">$1<ex>Charging rate</ex></ph> test...
@@ -803,8 +800,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT" desc="The text for the button used to stop a test.">
         Stop test
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the CPU speed. GHz is an SI unit for gigahertz.">
-        <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz / <ph name="MAX">$2<ex>1.9</ex></ph>GHz
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the current CPU speed. GHz is an SI unit for gigahertz.">
+        <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz
       </message>
       <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT" desc="The text that displays the amount of memory available on a users' device.">
         <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available.

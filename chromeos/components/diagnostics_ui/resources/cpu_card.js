@@ -71,17 +71,6 @@ Polymer({
       value: false,
       notify: true,
     },
-
-    /** @type {number} */
-    cpuMaxClockSpeedKhz_: {
-      type: Number,
-    },
-
-    /** @type {boolean} */
-    cpuBeingThrottled_: {
-      type: Boolean,
-      computed: 'isCpuBeingThrottled_(cpuUsage_.scalingCurrentFrequencyKhz)',
-    }
   },
 
   /** @override */
@@ -140,8 +129,8 @@ Polymer({
   onSystemInfoReceived_(systemInfo) {
     // TODO(michaelcheco): Update when number of cores is added to the api.
     this.cpuChipInfo_ = loadTimeData.getStringF(
-        'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount);
-    this.cpuMaxClockSpeedKhz_ = systemInfo.cpuMaxClockSpeedKhz;
+        'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount,
+        this.convertKhzToGhz_(systemInfo.cpuMaxClockSpeedKhz));
   },
 
   /** @protected */
@@ -156,19 +145,6 @@ Polymer({
     return loadTimeData.getString('cpuUsageTooltipText');
   },
 
-  /** @protected */
-  getCpuThrottleTooltipText_() {
-    return this.cpuBeingThrottled_ ?
-        loadTimeData.getString('cpuThrottleTooltipText') :
-        '';
-  },
-
-  /** @protected */
-  isCpuBeingThrottled_() {
-    return this.cpuUsage_ &&
-        (this.cpuUsage_.scalingCurrentFrequencyKhz < this.cpuMaxClockSpeedKhz_);
-  },
-
   /**
    * @param {number} num
    * @return {string}
@@ -179,12 +155,9 @@ Polymer({
   },
 
   /** @protected */
-  getCpuSpeed_() {
-    if (this.cpuMaxClockSpeedKhz_) {
-      return loadTimeData.getStringF(
-          'cpuSpeedText',
-          this.convertKhzToGhz_(this.cpuUsage_.scalingCurrentFrequencyKhz),
-          this.convertKhzToGhz_(this.cpuMaxClockSpeedKhz_));
-    }
+  getCurrentCpuSpeed_() {
+    return loadTimeData.getStringF(
+        'currentCpuSpeedText',
+        this.convertKhzToGhz_(this.cpuUsage_.scalingCurrentFrequencyKhz));
   },
 });

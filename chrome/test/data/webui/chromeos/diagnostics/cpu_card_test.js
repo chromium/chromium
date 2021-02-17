@@ -108,17 +108,13 @@ export function cpuCardTestSuite() {
       dx_utils.assertTextContains(
           dataPoints[2].value,
           `${convertkhzToGhz(fakeCpuUsage[0].scalingCurrentFrequencyKhz)}`);
-      dx_utils.assertTextContains(
-          dataPoints[2].value,
-          `${convertkhzToGhz(cpuElement.cpuMaxClockSpeedKhz_)}`);
-      dx_utils.assertTextContains(
-          dataPoints[2].tooltipText,
-          loadTimeData.getString('cpuThrottleTooltipText'));
-
       dx_utils.assertElementContainsText(
           cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
       dx_utils.assertElementContainsText(
           cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuThreadsCount}`);
+      dx_utils.assertElementContainsText(
+          cpuElement.$$('#cpuChipInfo'),
+          `${fakeSystemInfo.cpuMaxClockSpeedKhz}`);
 
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);
       assertEquals(fakeCpuUsage[0].percentUsageUser, cpuChart.user);
