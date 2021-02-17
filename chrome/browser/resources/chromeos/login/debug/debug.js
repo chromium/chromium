@@ -723,17 +723,20 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'supervision-transition',
       kind: ScreenKind.OTHER,
+      handledSteps: 'progress',
       states: [
         {
           id: 'adding',
-          data: {
-            isRemovingSupervision: false,
+          trigger: (screen) => {
+            screen.setIsRemovingSupervision(false);
+            screen.setUIStep('progress');
           },
         },
         {
           id: 'removing',
-          data: {
-            isRemovingSupervision: true,
+          trigger: (screen) => {
+            screen.setIsRemovingSupervision(true);
+            screen.setUIStep('progress');
           },
         },
       ],

@@ -5,7 +5,7 @@
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 
 <dom-module id="supervision-transition-element">
   <template>
@@ -14,22 +14,15 @@
         --paper-progress-active-color: rgb(66, 133, 244); /*#4285F4*/
         --paper-progress-container-color: rgb(206, 224, 252); /*#CEE0FC*/
         --paper-progress-secondary-color: rgb(66, 133, 244); /*#4285F4*/
-        display: block;
         height: 3px;
-        padding: 40px 0 0 0;
         width: 100%;
       }
-
-      .supervision-icon {
-        --iron-icon-height: 32px;
-        --iron-icon-width: 32px;
-      }
     </style>
-    <oobe-dialog id="supervisionTransitionDialog" role="alert"
+    <oobe-adaptive-dialog id="supervisionTransitionDialog" role="dialog"
         aria-label$="[[getDialogA11yTitle_(locale, isRemovingSupervision_)]]"
-        subtitle-key="supervisionTransitionIntroMessage" for-step="progress">
-      <iron-icon src="chrome://oobe/supervision_icon.png" slot="oobe-icon"
-          class="supervision-icon" aria-hidden="true">
+        for-step="progress">
+      <iron-icon slot="icon" src="chrome://oobe/supervision_icon.png"
+          aria-hidden="true">
       </iron-icon>
       <h1 slot="title" id="supervisionTitle">
         <div hidden="[[isRemovingSupervision_]]">
@@ -39,25 +32,37 @@
           [[i18nDynamic(locale,'removingSupervisionTitle')]]
         </div>
       </h1>
-      <div slot="footer" aria-live="off">
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'supervisionTransitionIntroMessage')]]
+      </div>
+      <div slot="content" class="flex layout vertical center-justified"
+          aria-live="off">
         <paper-progress class="slow" aria-hidden="true" indeterminate>
         </paper-progress>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="supervisionTransitionErrorDialog" role="alert"
-        title-key="supervisionTransitionErrorTitle"
-        subtitle-key="supervisionTransitionErrorMessage"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="supervisionTransitionErrorDialog" role="alert"
         aria-label$="[[i18nDynamic(locale,'supervisionTransitionErrorTitle')]]"
-        has-buttons for-step="error">
-      <iron-icon src="chrome://oobe/supervision_icon.png" slot="oobe-icon"
+        for-step="error">
+      <iron-icon slot="icon" src="chrome://oobe/supervision_icon.png"
           aria-hidden="true">
       </iron-icon>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'supervisionTransitionErrorTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'supervisionTransitionErrorMessage')]]
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img class="oobe-illustration" srcset="images/1x/error.svg 1x,
+            images/2x/error.svg 2x">
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="accept-button" on-click="onAcceptAndContinue_"
             text-key="supervisionTransitionButton" class="focus-on-show"
             inverse>
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
