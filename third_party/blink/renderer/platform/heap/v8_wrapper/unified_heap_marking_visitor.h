@@ -22,10 +22,10 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor final {
     v8::JSHeapConsistency::WriteBarrierParams params;
     if (v8::JSHeapConsistency::GetWriteBarrierType(
             ref, params, []() -> cppgc::HeapHandle& {
-              return ThreadState::Current()->cpp_heap().GetHeapHandle();
+              return ThreadState::Current()->heap_handle();
             }) == v8::JSHeapConsistency::WriteBarrierType::kMarking) {
       v8::JSHeapConsistency::DijkstraMarkingBarrier(
-          params, ThreadState::Current()->cpp_heap().GetHeapHandle(), ref);
+          params, ThreadState::Current()->heap_handle(), ref);
     }
   }
 
@@ -37,11 +37,10 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor final {
     if (v8::JSHeapConsistency::GetWriteBarrierType(
             wrapper, kV8DOMWrapperObjectIndex, wrappable, params,
             []() -> cppgc::HeapHandle& {
-              return ThreadState::Current()->cpp_heap().GetHeapHandle();
+              return ThreadState::Current()->heap_handle();
             }) == v8::JSHeapConsistency::WriteBarrierType::kMarking) {
       v8::JSHeapConsistency::DijkstraMarkingBarrier(
-          params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
-          wrappable);
+          params, ThreadState::Current()->heap_handle(), wrappable);
     }
   }
 };

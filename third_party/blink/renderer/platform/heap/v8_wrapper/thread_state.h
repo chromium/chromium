@@ -84,8 +84,9 @@ class PLATFORM_EXPORT ThreadState final {
   void DetachFromIsolate();
 
   ALWAYS_INLINE cppgc::AllocationHandle& allocation_handle() const {
-    return *allocation_handle_;
+    return allocation_handle_;
   }
+  ALWAYS_INLINE cppgc::HeapHandle& heap_handle() const { return heap_handle_; }
   ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return *cpp_heap_; }
   ALWAYS_INLINE v8::Isolate* GetIsolate() const { return isolate_; }
 
@@ -129,10 +130,9 @@ class PLATFORM_EXPORT ThreadState final {
   explicit ThreadState();
   ~ThreadState();
 
-  // Handle is the most frequently accessed field as it is required for
-  // MakeGarbageCollected().
-  cppgc::AllocationHandle* allocation_handle_ = nullptr;
   std::unique_ptr<v8::CppHeap> cpp_heap_;
+  cppgc::AllocationHandle& allocation_handle_;
+  cppgc::HeapHandle& heap_handle_;
   v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
   bool forced_scheduled_gc_for_testing_ = false;

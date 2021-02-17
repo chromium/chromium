@@ -87,12 +87,11 @@ class PLATFORM_EXPORT HeapAllocator {
 
   static bool IsAllocationAllowed() {
     return cppgc::subtle::DisallowGarbageCollectionScope::
-        IsGarbageCollectionAllowed(
-            ThreadState::Current()->cpp_heap().GetHeapHandle());
+        IsGarbageCollectionAllowed(ThreadState::Current()->heap_handle());
   }
 
   static bool IsIncrementalMarking() {
-    auto& heap_handle = ThreadState::Current()->cpp_heap().GetHeapHandle();
+    auto& heap_handle = ThreadState::Current()->heap_handle();
     return cppgc::subtle::HeapState::IsMarking(heap_handle) &&
            !cppgc::subtle::HeapState::IsInAtomicPause(heap_handle);
   }
@@ -147,7 +146,8 @@ class PLATFORM_EXPORT HeapAllocator {
     // garbage collected type but may be kept inline.
     switch (HeapConsistency::GetWriteBarrierType(
         slot_in_backing, params, []() -> cppgc::HeapHandle& {
-          return ThreadState::Current()->cpp_heap().GetHeapHandle();
+          return ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
+              ->heap_handle();
         })) {
       case HeapConsistency::WriteBarrierType::kMarking:
         HeapConsistency::DijkstraWriteBarrierRange(
@@ -171,7 +171,8 @@ class PLATFORM_EXPORT HeapAllocator {
     // garbage collected type but may be kept inline.
     switch (HeapConsistency::GetWriteBarrierType(
         first_element, params, []() -> cppgc::HeapHandle& {
-          return ThreadState::Current()->cpp_heap().GetHeapHandle();
+          return ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
+              ->heap_handle();
         })) {
       case HeapConsistency::WriteBarrierType::kMarking:
         HeapConsistency::DijkstraWriteBarrierRange(
