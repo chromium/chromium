@@ -9820,7 +9820,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Share audio
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_SCREEN" desc="Text for the button on the window picker dialog, clicking which takes one to full screen sharing">
-        Your Entire Screen
+        Entire Screen
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_WINDOW" desc="Text for the button on the window picker dialog, clicking which takes one to window sharing">
         Application Window
