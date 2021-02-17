@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "url/gurl.h"
 
 namespace cart {
 
@@ -25,6 +26,17 @@ class CommerceHintAgent
   // Whether the string, either from path of URL or XHR form contents, matches
   // the add-to-cart heuristics.
   static bool IsAddToCart(base::StringPiece str);
+  // Whether the main frame URL is a shopping cart.
+  static bool IsVisitCart(const GURL& main_frame_url);
+  // Whether the main frame URL is a checkout page.
+  static bool IsVisitCheckout(const GURL& main_frame_url);
+  // Whether the main frame URL is a purchase page.
+  static bool IsPurchase(const GURL& main_frame_url);
+  // Whether the button text corresponds to a purchase.
+  static bool IsPurchase(base::StringPiece button_text);
+
+  void ExtractProducts();
+  static std::string ExtractButtonText(const blink::WebFormElement& form);
 
  private:
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
@@ -35,6 +47,9 @@ class CommerceHintAgent
   void DidStartNavigation(
       const GURL& url,
       base::Optional<blink::WebNavigationType> navigation_type) override;
+  void DidFinishLoad() override;
+  void WillSubmitForm(const blink::WebFormElement& form) override;
+  void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
 };
 
 }  // namespace cart
