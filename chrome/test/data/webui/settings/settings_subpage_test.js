@@ -43,6 +43,22 @@ suite('SettingsSubpage', function() {
     return subpage;
   }
 
+  test('help icon', function() {
+    const subpage = document.createElement('settings-subpage');
+    document.body.appendChild(subpage);
+    flush();
+
+    // Check that the help icon only shows up when a |learnMoreUrl| is
+    // specified.
+    assertFalse(!!subpage.$$('[iron-icon="cr:help-outline"]'));
+    subpage.learnMoreUrl = 'https://www.chromium.org';
+    flush();
+    const icon = subpage.$$('[iron-icon="cr:help-outline"]');
+    assertTrue(!!icon);
+    // Check that the icon is forced to always use 'ltr' mode.
+    assertEquals('ltr', icon.getAttribute('dir'));
+  });
+
   test('clear search (event)', function() {
     const subpage = document.createElement('settings-subpage');
     // Having a searchLabel will create the cr-search-field.
