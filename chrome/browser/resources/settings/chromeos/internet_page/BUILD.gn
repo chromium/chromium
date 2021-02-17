@@ -175,6 +175,7 @@ js_library("network_summary") {
 
 js_library("network_summary_item") {
   deps = [
+    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:assert",
@@ -499,6 +500,7 @@ js_library("network_summary_item.m") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_icon.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo.m",

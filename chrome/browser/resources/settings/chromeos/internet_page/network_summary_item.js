@@ -74,6 +74,14 @@ Polymer({
             loadTimeData.getBoolean('showTechnologyBadge');
       }
     },
+
+    /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
+    },
   },
 
   /*
@@ -199,6 +207,12 @@ Polymer({
     if (!deviceState || deviceState.type !== mojom.NetworkType.kCellular) {
       return false;
     }
+
+    if (this.isUpdatedCellularUiEnabled_) {
+      // Do not show simInfo if |updatedCellularActivationUi| flag is enabled.
+      return false;
+    }
+
     return this.simLockedOrAbsent_(deviceState);
   },
 
@@ -395,6 +409,18 @@ Polymer({
       return false;
     }
     const type = deviceState.type;
+
+    if (type === mojom.NetworkType.kCellular &&
+        this.isUpdatedCellularUiEnabled_) {
+      // When network type is Cellular and |updatedCellularActivationUi| is
+      // enabled, always show "Mobile data" subpage, when eSim is available
+      // or multiple pSimSlots are available
+      const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
+      if (eSimSlots > 0 || pSimSlots > 1) {
+        return true;
+      }
+    }
+
     if (type === mojom.NetworkType.kTether ||
         (type === mojom.NetworkType.kCellular && this.tetherDeviceState)) {
       // The "Mobile data" subpage should always be shown if Tether is
