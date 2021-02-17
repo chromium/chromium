@@ -629,7 +629,7 @@ interface LocalFrame {
   // request. This message is sent when finding the next focusable element would
   // require moving onto a frame from a different process.
   AdvanceFocusInFrame(blink.mojom.FocusType focus_type,
-                      blink.mojom.RemoteFrameToken? source_frame_token);
+                      mojo_base.mojom.UnguessableToken? source_frame_token);
 
   // Notifies this Frame to advance the focus to next input node in the form by
   // moving in specified direction if the currently focused node is a Text node
@@ -657,7 +657,7 @@ interface LocalFrame {
   // the target frame must be for the message to be dispatched. An empty string
   // allows the message to be dispatched to any origin. |message| is the encoded
   // data, and any extra properties such as transferred ports or blobs.
-  PostMessageEvent(blink.mojom.RemoteFrameToken? source_frame_token,
+  PostMessageEvent(mojo_base.mojom.UnguessableToken? source_frame_token,
                    mojo_base.mojom.String16 source_origin,
                    mojo_base.mojom.String16 target_origin,
                    blink.mojom.TransferableMessage message);
@@ -684,8 +684,6 @@ interface LocalFrame {
 
   // Requests that the blink::LocalFrame updates its opener to the specified
   // frame. The frame token may be "empty" if the opener was disowned.
-  // TODO(1096617): Migrate this to use FrameToken, after frame tree code has
-  // been updated to use it.
   UpdateOpener(mojo_base.mojom.UnguessableToken? opener_frame_token);
 
   // Request to enumerate and return links to all savable resources in the frame
@@ -965,8 +963,6 @@ interface RemoteFrame {
 
   // Requests that the blink::RemoteFrame updates its opener to the specified
   // frame. The frame token may be "empty" if the opener was disowned.
-  // TODO(1096617): Migrate this to use FrameToken, after frame tree code has
-  // been updated to use it.
   UpdateOpener(mojo_base.mojom.UnguessableToken? opener_frame_token);
 
   // Requests the corresponding RemoteFrame to be deleted and removed from
@@ -1037,7 +1033,7 @@ interface LocalMainFrame {
   // |report_type|.
   InstallCoopAccessMonitor(
       network.mojom.CoopAccessReportType report_type,
-      blink.mojom.FrameToken accessed_window,
+      mojo_base.mojom.UnguessableToken accessed_window,
       pending_remote<network.mojom.CrossOriginOpenerPolicyReporter> reporter,
       bool endpoint_defined,
       string reported_window_url);

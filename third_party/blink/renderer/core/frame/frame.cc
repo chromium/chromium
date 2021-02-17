@@ -404,7 +404,7 @@ Frame::Frame(FrameClient* client,
              Frame* parent,
              Frame* previous_sibling,
              FrameInsertType insert_type,
-             const FrameToken& frame_token,
+             const base::UnguessableToken& frame_token,
              WindowProxyManager* window_proxy_manager,
              WindowAgentFactory* inheriting_agent_factory)
     : tree_node_(this),
