@@ -13895,11 +13895,12 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ScreenLocker.AuthenticationFailure" enum="UnlockType"
-    expires_after="2021-08-01">
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
+
   <owner>antrim@chromium.org</owner>
-  <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
-  <owner>ultrotter@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     What type of authentication was attempted when the user failed to unlock the
     lock screen.
@@ -13907,20 +13908,22 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ScreenLocker.AuthenticationFailureTime" units="ms"
-    expires_after="2021-01-06">
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
+
   <owner>antrim@chromium.org</owner>
-  <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
-  <owner>ultrotter@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>The time spent for authentication in case of a failure.</summary>
 </histogram>
 
 <histogram name="ScreenLocker.AuthenticationSuccess" enum="UnlockType"
-    expires_after="2021-08-01">
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
+
   <owner>antrim@chromium.org</owner>
-  <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
-  <owner>ultrotter@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     What type of authentication was attempted when the user successfully
     unlocked the lock screen.
@@ -13928,20 +13931,21 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ScreenLocker.AuthenticationSuccessTime" units="ms"
-    expires_after="2021-01-06">
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
+
   <owner>antrim@chromium.org</owner>
-  <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
-  <owner>ultrotter@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>The time spent for authentication in case of a success.</summary>
 </histogram>
 
-<histogram name="ScreenLocker.ScreenLockTime" units="ms"
-    expires_after="2021-01-06">
+<histogram name="ScreenLocker.ScreenLockTime" units="ms" expires_after="never">
+<!-- expires-never: Core metric for monitoring Chrome OS lock screen regressions.  -->
+
   <owner>antrim@chromium.org</owner>
-  <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
-  <owner>ultrotter@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>The time spent before the screen locker is ready.</summary>
 </histogram>
 
