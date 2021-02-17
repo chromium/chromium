@@ -60,6 +60,7 @@ tags
 Thumbs.db
 v8.log
 vs-chromium-project.txt
+/.clangd
 /.clangd/
 /.clangd-index/
 # Settings directories for eclipse
