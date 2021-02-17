@@ -177,6 +177,11 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
 
   const KURL& url = frame_request.GetResourceRequest().Url();
   auto* window = frame_request.GetOriginWindow();
+
+  // Note that even if |window| is not null, it could have just been detached
+  // (so window->GetFrame() is null). This can happen for a form submission, if
+  // the frame containing the form has been deleted in between.
+
   if (!frame_request.CanDisplay(url)) {
     if (window) {
       window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -198,7 +203,9 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   MixedContentChecker::UpgradeInsecureRequest(
       frame_request.GetResourceRequest(), fetch_client_settings_object, window,
       frame_request.GetFrameType(),
-      window ? window->GetFrame()->GetContentSettingsClient() : nullptr);
+      (window && window->GetFrame())
+          ? window->GetFrame()->GetContentSettingsClient()
+          : nullptr);
 
   // Navigations in portal contexts do not create back/forward entries.
   if (GetPage()->InsidePortal() &&
@@ -206,31 +213,53 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
 
-  WebLocalFrame* initiator_frame =
-      window ? window->GetFrame()->Client()->GetWebFrame() : nullptr;
-
   bool is_opener_navigation = false;
   bool initiator_frame_has_download_sandbox_flag = false;
   bool initiator_frame_is_ad = false;
 
+  const base::UnguessableToken* initiator_frame_token =
+      frame_request.GetInitiatorFrameToken();
+  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+      initiator_policy_container_keep_alive_handle =
+          frame_request.TakeInitiatorPolicyContainerKeepAliveHandle();
+
+  // |initiator_frame_token| and |initiator_policy_container_keep_alive_handle|
+  // should either be both specified or both null.
+  DCHECK(!initiator_frame_token ==
+         !initiator_policy_container_keep_alive_handle);
+
   if (window) {
-    is_opener_navigation = window->GetFrame()->Opener() == this;
     initiator_frame_has_download_sandbox_flag =
         window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kDownloads);
-    initiator_frame_is_ad = window->GetFrame()->IsAdSubframe();
-    if (frame_request.ClientRedirectReason() != ClientNavigationReason::kNone) {
-      probe::FrameRequestedNavigation(window->GetFrame(), this, url,
-                                      frame_request.ClientRedirectReason(),
-                                      kNavigationPolicyCurrentTab);
+    if (window->GetFrame()) {
+      is_opener_navigation = window->GetFrame()->Opener() == this;
+      initiator_frame_is_ad = window->GetFrame()->IsAdSubframe();
+      if (frame_request.ClientRedirectReason() !=
+          ClientNavigationReason::kNone) {
+        probe::FrameRequestedNavigation(window->GetFrame(), this, url,
+                                        frame_request.ClientRedirectReason(),
+                                        kNavigationPolicyCurrentTab);
+      }
+
+      if (!initiator_frame_token) {
+        initiator_frame_token = &window->GetFrame()->GetFrameToken();
+        initiator_policy_container_keep_alive_handle =
+            window->GetFrame()->GetPolicyContainer()->IssueKeepAliveHandle();
+      }
     }
   }
 
-  Client()->Navigate(frame_request.GetResourceRequest(), initiator_frame,
+  // TODO(https://crbug.com/1173409 and https://crbug.com/1059959): Check that
+  // we always have valid |initiator_frame_token| and
+  // |initiator_policy_container_keep_alive_handle|.
+
+  Client()->Navigate(frame_request.GetResourceRequest(),
                      frame_load_type == WebFrameLoadType::kReplaceCurrentItem,
                      is_opener_navigation,
                      initiator_frame_has_download_sandbox_flag,
                      initiator_frame_is_ad, frame_request.GetBlobURLToken(),
-                     frame_request.Impression());
+                     frame_request.Impression(), initiator_frame_token,
+                     std::move(initiator_policy_container_keep_alive_handle));
 }
 
 bool RemoteFrame::DetachImpl(FrameDetachType type) {

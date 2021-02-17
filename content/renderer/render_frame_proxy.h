@@ -147,7 +147,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   void Navigate(
       const blink::WebURLRequest& request,
-      blink::WebLocalFrame* initiator_frame,
       bool should_replace_current_entry,
       bool is_opener_navigation,
       bool initiator_frame_has_download_sandbox_flag,
@@ -155,7 +154,11 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       bool initiator_frame_is_ad,
       blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
           blob_url_token,
-      const base::Optional<blink::WebImpression>& impression) override;
+      const base::Optional<blink::WebImpression>& impression,
+      const base::UnguessableToken* initiator_frame_token,
+      blink::CrossVariantMojoRemote<
+          blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
+          initiator_policy_container_keep_alive_handle) override;
   bool RemoteProcessGone() const override;
   void DidSetFrameSinkId() override;
   base::UnguessableToken GetDevToolsFrameToken() override;

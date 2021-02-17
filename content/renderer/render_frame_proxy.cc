@@ -378,7 +378,6 @@ void RenderFrameProxy::FrameDetached(DetachType type) {
 
 void RenderFrameProxy::Navigate(
     const blink::WebURLRequest& request,
-    blink::WebLocalFrame* initiator_frame,
     bool should_replace_current_entry,
     bool is_opener_navigation,
     bool initiator_frame_has_download_sandbox_flag,
@@ -386,7 +385,11 @@ void RenderFrameProxy::Navigate(
     bool initiator_frame_is_ad,
     blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
         blob_url_token,
-    const base::Optional<blink::WebImpression>& impression) {
+    const base::Optional<blink::WebImpression>& impression,
+    const base::UnguessableToken* initiator_frame_token,
+    blink::CrossVariantMojoRemote<
+        blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
+        initiator_policy_container_keep_alive_handle) {
   // The request must always have a valid initiator origin.
   DCHECK(!request.RequestorOrigin().IsNull());
 
@@ -405,10 +408,11 @@ void RenderFrameProxy::Navigate(
   params->user_gesture = request.HasUserGesture();
   params->triggering_event_info = blink::mojom::TriggeringEventInfo::kUnknown;
   params->blob_url_token = std::move(blob_url_token);
-
+  params->initiator_policy_container_keep_alive_handle =
+      std::move(initiator_policy_container_keep_alive_handle);
   params->initiator_frame_token =
-      initiator_frame ? base::make_optional(initiator_frame->GetFrameToken())
-                      : base::nullopt;
+      initiator_frame_token ? base::make_optional(*initiator_frame_token)
+                            : base::nullopt;
 
   if (impression)
     params->impression = blink::ConvertWebImpressionToImpression(*impression);

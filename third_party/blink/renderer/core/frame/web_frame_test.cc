@@ -9612,15 +9612,19 @@ class RemoteNavigationClient
   ~RemoteNavigationClient() override = default;
 
   // frame_test_helpers::TestWebRemoteFrameClient:
-  void Navigate(const WebURLRequest& request,
-                blink::WebLocalFrame* initiator_frame,
-                bool should_replace_current_entry,
-                bool is_opener_navigation,
-                bool initiator_frame_has_download_sandbox_flag,
-                bool blocking_downloads_in_sandbox_enabled,
-                bool initiator_frame_is_ad,
-                CrossVariantMojoRemote<mojom::blink::BlobURLTokenInterfaceBase>,
-                const base::Optional<WebImpression>& impression) override {
+  void Navigate(
+      const WebURLRequest& request,
+      bool should_replace_current_entry,
+      bool is_opener_navigation,
+      bool initiator_frame_has_download_sandbox_flag,
+      bool blocking_downloads_in_sandbox_enabled,
+      bool initiator_frame_is_ad,
+      CrossVariantMojoRemote<mojom::blink::BlobURLTokenInterfaceBase>,
+      const base::Optional<WebImpression>& impression,
+      const base::UnguessableToken* initiator_frame_token,
+      blink::CrossVariantMojoRemote<
+          blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
+          initiator_policy_container_keep_alive_handle) override {
     last_request_.CopyFrom(request);
   }
 

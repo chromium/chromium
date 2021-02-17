@@ -3832,6 +3832,107 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
   loop.Run();
 }
 
+// Same as the previous test, but for a remote frame navigation:
+// A document initiates a form submission in a cross-origin frame, then deletes
+// itself. Check the initiator frame token.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       FormSubmissionInRemoteFrameThenDeleteFrame) {
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+  GURL cross_origin_always_referrer_url(embedded_test_server()->GetURL(
+      "foo.com", "/set-header?Referrer-Policy: unsafe-url"));
+
+  // Setup the main page.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Create a cross origin child iframe. This iframe will embed another iframe,
+  // which will initiate the navigation. The only purpose of this iframe is to
+  // allow its child to delete itself by issuing
+  //      parent.document.querySelector("iframe").remove();
+  // (The main frame cannot do it because it is cross-origin.)
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
+      let iframe = document.createElement('iframe');
+      iframe.src = $1;
+      document.body.appendChild(iframe);
+  )",
+                                        cross_origin_always_referrer_url)));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  RenderFrameHostImpl* middle_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  // Now create a grandchild iframe, which is same-origin with the parent (but
+  // cross-origin with the grandparent). The grandchild will initiate a form
+  // submission in the top frame and remove itself before the scheduled form
+  // navigation occurs. This iframe will have referrer policy "unsafe-url".
+  EXPECT_TRUE(ExecJs(middle_rfh, JsReplace(R"(
+      let iframe = document.createElement('iframe');
+      iframe.src = $1;
+      document.body.appendChild(iframe);
+  )",
+                                           cross_origin_always_referrer_url)));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  RenderFrameHost* initiator_rfh =
+      middle_rfh->child_at(0)->current_frame_host();
+  base::UnguessableToken initiator_frame_token = initiator_rfh->GetFrameToken();
+  int initiator_process_id = initiator_rfh->GetProcess()->GetID();
+
+  base::RunLoop loop;
+  DidStartNavigationCallback callback(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        auto* request = NavigationRequest::From(handle);
+        ASSERT_TRUE(request->IsPost());
+
+        const base::Optional<base::UnguessableToken>& frame_token =
+            request->GetInitiatorFrameToken();
+        EXPECT_TRUE(frame_token.has_value());
+        EXPECT_EQ(initiator_frame_token, frame_token.value());
+        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessID());
+
+        auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+            request->GetInitiatorProcessID(), frame_token.value());
+        ASSERT_FALSE(initiator_rfh);
+
+        // Even if the initiator RenderFrameHost is gone, its policy container
+        // should still be around since the LocalFrame has not been destroyed
+        // yet.
+        auto* initiator_policy_container =
+            PolicyContainerHost::FromFrameToken(frame_token.value());
+        ASSERT_TRUE(initiator_policy_container);
+        EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  initiator_policy_container->referrer_policy());
+        ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  request->policy_container_host()->referrer_policy());
+
+        loop.Quit();
+      }));
+
+  // Initiate a form submission into the main frame and delete the initiator.
+  ExecuteScriptAsync(initiator_rfh, R"(
+    let input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "my_token");
+    input.setAttribute("value", "my_value");
+
+    // Schedule a form submission navigation (which will occur in a separate
+    // task).
+    let form = document.createElement('form');
+    form.appendChild(input);
+    form.setAttribute("method", "POST");
+    form.setAttribute("action", "about:blank");
+    form.setAttribute("target", "_top");
+    document.body.appendChild(form);
+    form.submit();
+
+    // Delete this frame before the scheduled navigation occurs in the main
+    // frame.
+    parent.document.querySelector("iframe").remove();
+  )");
+  loop.Run();
+}
+
 using MediaNavigationBrowserTest = NavigationBaseBrowserTest;
 
 // Media navigations synchronously complete the time of the `CommitNavigation`

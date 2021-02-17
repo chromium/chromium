@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_impression.h"
@@ -35,14 +36,17 @@ class WebRemoteFrameClient {
   // A remote frame was asked to start a navigation.
   virtual void Navigate(
       const WebURLRequest& request,
-      blink::WebLocalFrame* initiator_frame,
       bool should_replace_current_entry,
       bool is_opener_navigation,
       bool initiator_frame_has_download_sandbox_flag,
       bool blocking_downloads_in_sandbox_enabled,
       bool initiator_frame_is_ad,
       CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase> blob_url_token,
-      const base::Optional<WebImpression>& impression) {}
+      const base::Optional<WebImpression>& impression,
+      const base::UnguessableToken* initiator_frame_token,
+      CrossVariantMojoRemote<
+          blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
+          initiator_policy_container_keep_alive_handle) {}
 
   virtual void WillSynchronizeVisualProperties(
       bool capture_sequence_number_changed,
