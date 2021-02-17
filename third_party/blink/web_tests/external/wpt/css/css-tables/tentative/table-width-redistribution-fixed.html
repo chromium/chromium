@@ -283,6 +283,18 @@ Min width is ignored.
   </tr>
 </table>
 
+<p class="testdesc">Assignable: 100px;columns add to 1000%
+Columns are scaled so they add up to 100%
+<table style="width:calc(100px + 32px)" data-expected-width=132>
+  <tr>
+    <td style="width:200%" data-expected-width=20><div style="width:50px">50</div></td>
+    <td style="width:300%" data-expected-width=30><div style="width:50px">50</div></td>
+    <td style="width:500%" data-expected-width=50><div style="width:50px">50</div></td>
+  </tr>
+</table>
+
+
+
 <h2>Percentage/auto/fixed mix</h2>
 
 <p class="testdesc">Assignable: 100px;C0:50% C1:100px C2: Auto

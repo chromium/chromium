@@ -131,20 +131,29 @@ void ApplyCellConstraintsToColumnConstraints(
       *colspan_cell_constraints, inline_border_spacing, is_fixed_layout,
       column_constraints);
 
-  // Clamp column percentages. Standard: "100% minus the sum of the intrinsic
-  // percentage width of all prior columns in the table."
+  // Column total percentage inline-size is clamped to 100%.
+  // Auto tables: max(0, 100% minus the sum of percentages of all
+  //   prior columns in the table)
+  // Fixed tables: scale all percentage columns so that total percentage
+  //   is 100%.
   float total_percentage = 0;
   for (NGTableTypes::Column& column : column_constraints->data) {
     if (column.percent) {
-      if (*column.percent + total_percentage > 100.0) {
+      if (!is_fixed_layout && (*column.percent + total_percentage > 100.0))
         column.percent = 100 - total_percentage;
-      }
       total_percentage += *column.percent;
     }
     // A column may have no min/max inline-sizes if there are no cells in this
     // column. E.g. a cell has a large colspan which no other cell belongs to.
     column.min_inline_size = column.min_inline_size.value_or(LayoutUnit());
     column.max_inline_size = column.max_inline_size.value_or(LayoutUnit());
+  }
+
+  if (is_fixed_layout && total_percentage > 100.0) {
+    for (NGTableTypes::Column& column : column_constraints->data) {
+      if (column.percent)
+        column.percent = *column.percent * 100 / total_percentage;
+    }
   }
 }
 
