@@ -418,6 +418,7 @@ suite('HappinessTrackingSurveys', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   test('ClearBrowsingDataTrigger', function() {
