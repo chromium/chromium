@@ -104,12 +104,17 @@ struct TypeConverter<std::vector<T>, Container> {
   }
 };
 
-// The following helper function is useful for shorthand. The compiler can infer
+// The following helper functions are useful shorthand. The compiler can infer
 // the input type, so you can write:
 //   OutputType out = ConvertTo<OutputType>(input);
 template <typename T, typename U>
 inline T ConvertTo(const U& obj) {
   return TypeConverter<T, U>::Convert(obj);
+}
+
+template <typename T, typename U>
+inline T ConvertTo(const U* obj) {
+  return TypeConverter<T, U*>::Convert(obj);
 }
 
 }  // namespace mojo
