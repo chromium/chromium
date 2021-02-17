@@ -12087,18 +12087,17 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The post-commit error page committed an error page and sets the last
   // committed URL to about:blank.
+  child = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0));
   EXPECT_EQ(child->GetLastCommittedURL(), GURL("about:blank"));
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
   EXPECT_EQ(error_html, EvalJs(child, "document.body.innerHTML"));
 
-  // Verify that the subframe error page did not commit in the error page
-  // process.
-  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
-  // page isolation.
-  scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
-  EXPECT_EQ(success_site_instance, error_site_instance);
-  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  // Verify that the subframe error page committed in the correct
+  // SiteInstance.
+  EXPECT_TRUE(IsExpectedSubframeErrorTransition(success_site_instance.get(),
+                                                child->GetSiteInstance()));
 
   // Since the iframe is now showing an error page, the main frame can no longer
   // access its contentDocument.
@@ -12164,13 +12163,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
   EXPECT_EQ(error_html, EvalJs(child, "document.body.innerHTML"));
 
-  // Verify that the subframe error page did not commit in the error page
-  // process.
-  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
-  // page isolation.
-  scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
-  EXPECT_EQ(success_site_instance, error_site_instance);
-  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  // Verify that the subframe error page committed in the correct
+  // SiteInstance.
+  EXPECT_TRUE(IsExpectedSubframeErrorTransition(success_site_instance.get(),
+                                                child->GetSiteInstance()));
 
   // Since the iframe is now showing an error page, the main frame can no longer
   // access its contentDocument.

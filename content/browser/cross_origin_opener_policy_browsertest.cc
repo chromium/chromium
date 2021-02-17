@@ -2282,7 +2282,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // An error page is expected in lieu of that document.
     EXPECT_EQ(GURL(kUnreachableWebDataURL),
               EvalJs(iframe, "document.location.href;"));
-    EXPECT_EQ(iframe_si, main_si);
+    EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
   }
 
@@ -2302,7 +2302,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     RenderFrameHostImpl* iframe =
         current_frame_host()->child_at(0)->current_frame_host();
     SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
-    EXPECT_EQ(iframe_si, main_si);
+    EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
+
     // The load of the document with 404 status code and custom body is blocked
     // by COEP. An error page is expected in lieu of that document.
     EXPECT_EQ(GURL(kUnreachableWebDataURL),
@@ -2326,7 +2327,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     RenderFrameHostImpl* iframe =
         current_frame_host()->child_at(0)->current_frame_host();
     SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
-    EXPECT_EQ(iframe_si, main_si);
+    EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
     EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
   }
 
