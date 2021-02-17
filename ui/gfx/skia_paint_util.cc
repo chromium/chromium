@@ -5,7 +5,10 @@
 #include "ui/gfx/skia_paint_util.h"
 
 #include "cc/paint/paint_image_builder.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/switches.h"
@@ -72,25 +75,36 @@ static SkScalar RadiusToSigma(double radius) {
   return radius > 0 ? SkDoubleToScalar(0.288675f * radius + 0.5f) : 0;
 }
 
-sk_sp<cc::DrawLooper> CreateShadowDrawLooper(
+sk_sp<SkDrawLooper> CreateShadowDrawLooper(
     const std::vector<ShadowValue>& shadows) {
   if (shadows.empty())
     return nullptr;
 
-  cc::DrawLooperBuilder looper_builder;
+  SkLayerDrawLooper::Builder looper_builder;
 
-  looper_builder.AddUnmodifiedContent();  // top layer of the original.
+  looper_builder.addLayer();  // top layer of the original.
+
+  SkLayerDrawLooper::LayerInfo layer_info;
+  layer_info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;
+  layer_info.fPaintBits |= SkLayerDrawLooper::kColorFilter_Bit;
+  layer_info.fColorMode = SkBlendMode::kSrc;
 
   for (size_t i = 0; i < shadows.size(); ++i) {
     const ShadowValue& shadow = shadows[i];
 
-    looper_builder.AddShadow(
-        {SkIntToScalar(shadow.x()), SkIntToScalar(shadow.y())},
-        RadiusToSigma(shadow.blur() / 2), shadow.color(),
-        cc::DrawLooper::kOverrideAlphaFlag);
+    layer_info.fOffset.set(SkIntToScalar(shadow.x()),
+                           SkIntToScalar(shadow.y()));
+
+    SkPaint* paint = looper_builder.addLayer(layer_info);
+    // Skia's blur radius defines the range to extend the blur from
+    // original mask, which is half of blur amount as defined in ShadowValue.
+    paint->setMaskFilter(SkMaskFilter::MakeBlur(
+        kNormal_SkBlurStyle, RadiusToSigma(shadow.blur() / 2)));
+    paint->setColorFilter(
+        SkColorFilters::Blend(shadow.color(), SkBlendMode::kSrcIn));
   }
 
-  return looper_builder.Detach();
+  return looper_builder.detach();
 }
 
 }  // namespace gfx
