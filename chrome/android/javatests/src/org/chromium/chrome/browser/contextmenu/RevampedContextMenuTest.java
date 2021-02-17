@@ -998,6 +998,61 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @CommandLineFlags.Add({"enable-features="
+                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled"})
+    public void
+    testSearchWithGoogleLensMenuItemName() throws Throwable {
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+
+        LensUtils.setFakePassableLensEnvironmentForTesting(true);
+        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menu =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        Integer[] expectedItems = {R.id.contextmenu_save_image,
+                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
+                R.id.contextmenu_copy_image, R.id.contextmenu_search_with_google_lens};
+        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
+                new Integer[] {R.id.contextmenu_open_in_ephemeral_tab});
+        String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
+        Assert.assertTrue("Context menu item name should be \'Search with Google Lens\'.",
+                title.startsWith("Search with Google Lens"));
+        assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "ContextMenu"})
+    @CommandLineFlags.Add({"enable-features="
+                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:useSearchImageWithGoogleLensItemName/true"})
+    public void
+    testSearchImageWithGoogleLensMenuItemName() throws Throwable {
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+
+        LensUtils.setFakePassableLensEnvironmentForTesting(true);
+        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menu =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        Integer[] expectedItems = {R.id.contextmenu_save_image,
+                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
+                R.id.contextmenu_copy_image, R.id.contextmenu_search_with_google_lens};
+        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
+                new Integer[] {R.id.contextmenu_open_in_ephemeral_tab});
+        String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
+        Assert.assertTrue("Context menu item name should be \'Search image with Google Lens\'.",
+                title.startsWith("Search image with Google Lens"));
+        assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "ContextMenu"})
     public void testCopyImage() throws Throwable {
         // Clear the clipboard.
         Clipboard.getInstance().setText("");
@@ -1059,6 +1114,21 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
             }
         }
         return items.toString();
+    }
+
+    private String getMenuTitleFromItem(RevampedContextMenuCoordinator menu, int itemId) {
+        StringBuilder itemName = new StringBuilder();
+        for (int i = 0; i < menu.getCount(); i++) {
+            if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
+                if (menu.getItem(i).model.get(RevampedContextMenuItemProperties.MENU_ID)
+                        == itemId) {
+                    itemName.append(
+                            menu.getItem(i).model.get(RevampedContextMenuItemProperties.TEXT));
+                    return itemName.toString();
+                }
+            }
+        }
+        return null;
     }
 
     /**

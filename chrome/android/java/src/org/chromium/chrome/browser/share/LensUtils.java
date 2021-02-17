@@ -62,6 +62,8 @@ public class LensUtils {
     private static final String SEND_SRC_PARAM_NAME = "sendSrc";
     private static final String SEND_ALT_PARAM_NAME = "sendAlt";
     private static final String SEND_PAGE_PARAM_NAME = "sendPage";
+    private static final String USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME =
+            "useSearchImageWithGoogleLensItemName";
     private static final String USE_DIRECT_INTENT_FEATURE_PARAM_NAME = "useDirectIntent";
     private static final String USE_DIRECT_INTENT_SDK_INTEGRATION_PARAM_NAME =
             "useDirectIntentSdkIntegration";
@@ -675,5 +677,14 @@ public class LensUtils {
         }
 
         return false;
+    }
+
+    /**
+     * Check if experiment to change Lens context menu item name is enabled.
+     */
+    public static boolean useSearchImageWithGoogleLensItemName() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME, false);
     }
 }
