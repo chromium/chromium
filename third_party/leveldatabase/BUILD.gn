@@ -4,6 +4,7 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/google_benchmark/buildconfig.gni")
 
 defines = [ "LEVELDB_PLATFORM_CHROMIUM=1" ]
 
@@ -263,11 +264,18 @@ if (!is_ios && !is_android) {
     deps = [ ":leveldb_testutil" ]
   }
 
-  test("leveldb_db_test") {
-    sources = [ "src/db/db_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
+  # The google/banchmark third_party dependency is optional, and only
+  # available if specified. See third_party/google_benchmark/README.chromium.
+  if (enable_google_benchmarks) {
+    test("leveldb_db_test") {
+      sources = [ "src/db/db_test.cc" ]
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      deps = [
+        ":leveldb_testutil",
+        "//third_party/google_benchmark",
+      ]
+    }
   }
 
   test("leveldb_dbformat_test") {
@@ -361,7 +369,6 @@ if (!is_ios && !is_android) {
       ":leveldb_corruption_test",
       ":leveldb_crc32c_test",
       ":leveldb_db_bench",
-      ":leveldb_db_test",
       ":leveldb_dbformat_test",
       ":leveldb_env_test",
       ":leveldb_filename_test",
@@ -372,6 +379,9 @@ if (!is_ios && !is_android) {
       ":leveldb_version_edit_test",
       ":leveldb_write_batch_test",
     ]
+    if (enable_google_benchmarks) {
+      deps += [ ":leveldb_db_test" ]
+    }
   }
 }
 
