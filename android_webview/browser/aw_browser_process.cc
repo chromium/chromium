@@ -16,6 +16,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/process_visibility_util.h"
 
 using content::BrowserThread;
 
@@ -99,8 +100,12 @@ VisibilityMetricsLogger* AwBrowserProcess::visibility_metrics_logger() {
     battery_metrics_ = std::make_unique<power_metrics::AndroidBatteryMetrics>();
     visibility_metrics_logger_->SetOnVisibilityChangedCallback(
         base::BindRepeating([](bool visible) {
+          // TODO(crbug.com/1177542): make AndroidBatteryMetrics an observer of
+          // ProcessVisibilityTracker and remove this.
           AwBrowserProcess::GetInstance()
               ->battery_metrics_->OnAppVisibilityChanged(visible);
+
+          content::OnBrowserVisibilityChanged(visible);
         }));
   }
   return visibility_metrics_logger_.get();

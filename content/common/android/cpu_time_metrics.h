@@ -18,10 +18,9 @@ namespace content {
 // where the sandbox allows isolated processes to read from /proc/self/stats.
 CONTENT_EXPORT void SetupCpuTimeMetrics();
 
-// Sample and report the CPU time UMA metrics immediately on the current thread.
-// Beware: Should only be used for testing and never in combination with
-// SetupCpuTimeMetrics().
-CONTENT_EXPORT void SampleCpuTimeMetricsForTesting();
+// Wait for any current in-progress collection of CPU time UMA metrics on the
+// current thread. Beware: Should only be used for testing.
+CONTENT_EXPORT void WaitForCpuTimeMetricsForTesting();
 
 }  // namespace content
 

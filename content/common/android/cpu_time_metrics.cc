@@ -15,9 +15,9 @@
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -29,6 +29,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/common/process_visibility_tracker.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 
@@ -282,7 +283,9 @@ class TimeInStateReporter {
 // for CPU activity within this process. We sample more frequently when the
 // process is more active, thus ensuring we lose little CPU time attribution
 // when the process is terminated, even after it was very active.
-class ProcessCpuTimeTaskObserver : public base::TaskObserver {
+class ProcessCpuTimeTaskObserver
+    : public base::TaskObserver,
+      public ProcessVisibilityTracker::ProcessVisibilityObserver {
  public:
   static ProcessCpuTimeTaskObserver* GetInstance() {
     static base::NoDestructor<ProcessCpuTimeTaskObserver> instance;
@@ -299,6 +302,8 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
         process_type_(CurrentProcessType()),
         // The observer is created on the main thread of the process.
         main_thread_id_(base::PlatformThread::CurrentId()) {
+    ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+
     // Browser and GPU processes have a longer lifetime (don't disappear between
     // navigations), and typically execute a large number of small main-thread
     // tasks. For these processes, choose a higher reporting interval.
@@ -311,7 +316,12 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
     DETACH_FROM_SEQUENCE(thread_pool_);
     // Post a first collection to capture initial values for calculation of
     // delta values in subsequent passes.
-    PostCollectionTask();
+    PostCollectionTask(is_visible_);
+  }
+
+  ~ProcessCpuTimeTaskObserver() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
+    ProcessVisibilityTracker::GetInstance()->RemoveObserver(this);
   }
 
   // base::TaskObserver implementation:
@@ -328,12 +338,26 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
       return;
     task_counter_++;
     if (task_counter_ == reporting_interval_) {
-      PostCollectionTask();
+      PostCollectionTask(is_visible_);
       task_counter_ = 0;
     }
   }
 
-  void PostCollectionTask() {
+  // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
+  void OnVisibilityChanged(bool visible) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
+    base::Optional<bool> was_visible = is_visible_;
+    is_visible_ = visible;
+
+    if (collection_in_progress_.load(std::memory_order_relaxed))
+      return;
+
+    PostCollectionTask(std::move(was_visible));
+    task_counter_ = 0;
+  }
+
+  void PostCollectionTask(base::Optional<bool> was_visible) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
     // PostTask() applies a barrier, so this will be applied before the thread
     // pool task executes and sets |collection_in_progress_| back to false.
     collection_in_progress_.store(true, std::memory_order_relaxed);
@@ -341,10 +365,10 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
         FROM_HERE,
         base::BindOnce(
             &ProcessCpuTimeTaskObserver::CollectAndReportCpuTimeOnThreadPool,
-            base::Unretained(this)));
+            base::Unretained(this), std::move(was_visible)));
   }
 
-  void CollectAndReportCpuTimeOnThreadPool() {
+  void CollectAndReportCpuTimeOnThreadPool(base::Optional<bool> was_visible) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
 
     // This might overflow. We only care that it is different for each cycle.
@@ -360,6 +384,24 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
                                        process_type_,
                                        process_cpu_time_delta.InMicroseconds(),
                                        base::Time::kMicrosecondsPerSecond);
+      if (was_visible.has_value()) {
+        if (*was_visible) {
+          UMA_HISTOGRAM_SCALED_ENUMERATION(
+              "Power.CpuTimeSecondsPerProcessType.Foreground", process_type_,
+              process_cpu_time_delta.InMicroseconds(),
+              base::Time::kMicrosecondsPerSecond);
+        } else {
+          UMA_HISTOGRAM_SCALED_ENUMERATION(
+              "Power.CpuTimeSecondsPerProcessType.Background", process_type_,
+              process_cpu_time_delta.InMicroseconds(),
+              base::Time::kMicrosecondsPerSecond);
+        }
+      } else {
+        UMA_HISTOGRAM_SCALED_ENUMERATION(
+            "Power.CpuTimeSecondsPerProcessType.Unattributed", process_type_,
+            process_cpu_time_delta.InMicroseconds(),
+            base::Time::kMicrosecondsPerSecond);
+      }
       reported_cpu_time_ = cumulative_cpu_time;
     }
 
@@ -680,6 +722,7 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   int task_counter_ = 0;
   int reporting_interval_ = 0;  // set in constructor.
+  base::Optional<bool> is_visible_;
 
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
@@ -721,12 +764,8 @@ void SetupCpuTimeMetrics() {
   did_setup = true;
 }
 
-void SampleCpuTimeMetricsForTesting() {
+void WaitForCpuTimeMetricsForTesting() {
   auto* instance = ProcessCpuTimeTaskObserver::GetInstance();
-  // Make sure no collection is currently in progress (this may happen if
-  // GetInstance() above initializes the task observer).
-  instance->WaitForCollectionForTesting();  // IN-TEST
-  instance->PostCollectionTask();
   instance->WaitForCollectionForTesting();  // IN-TEST
 }
 

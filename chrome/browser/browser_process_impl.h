@@ -39,6 +39,10 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif
 
+#if defined(OS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif  // defined(OS_ANDROID)
+
 class BatteryMetrics;
 class ChromeMetricsServicesManagerClient;
 class DevToolsAutoOpener;
@@ -400,6 +404,10 @@ class BrowserProcessImpl : public BrowserProcess,
   base::OnceClosure quit_closure_;
 
   BuildState build_state_;
+#endif
+
+#if defined(OS_ANDROID)
+  std::unique_ptr<base::android::ApplicationStatusListener> app_state_listener_;
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);

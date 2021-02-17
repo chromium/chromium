@@ -242,6 +242,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Power.CpuTimeSecondsPerProcessType.{Visibility}"
+    enum="ProcessType2" expires_after="2021-07-18">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Total seconds of CPU time consumed by Chrome/WebView in the {Visibility}
+    state, split by process type. Currently only implemented in the browser
+    process on Android. For every second of CPU time consumed by one process, a
+    sample is recorded into the bucket for the process's type. The histogram
+    thus shows the total sum of CPU time seconds spent per process type across
+    all users.
+
+    For a histogram of daily per-user values, select &quot;Per-Client
+    Aggregation Mode&quot;.
+  </summary>
+  <token key="Visibility">
+    <variant name="Background" summary="backgrounded"/>
+    <variant name="Foreground" summary="foregrounded"/>
+    <variant name="Unattributed" summary="undetermined visibility"/>
+  </token>
+</histogram>
+
 <histogram name="Power.CpuTimeSecondsPerThreadType"
     enum="CpuTimeMetricsThreadType" expires_after="2021-08-09">
   <owner>eseckler@chromium.org</owner>

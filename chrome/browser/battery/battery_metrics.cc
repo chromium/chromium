@@ -36,6 +36,8 @@ BatteryMetrics::BatteryMetrics() {
 #if defined(OS_ANDROID)
   // On Android, also track the battery capacity drain while Chrome is the
   // foreground activity.
+  // TODO(crbug.com/1177542): make AndroidBatteryMetrics an observer of
+  // content::ProcessVisibilityTracker and remove this.
   app_state_listener_ =
       base::android::ApplicationStatusListener::New(base::BindRepeating(
           [](BatteryMetrics* metrics, base::android::ApplicationState state) {

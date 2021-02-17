@@ -119,6 +119,7 @@
 #include "content/public/browser/network_quality_observer_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_details.h"
+#include "content/public/browser/process_visibility_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -1082,6 +1083,17 @@ void BrowserProcessImpl::PreCreateThreads(
 #endif
 
   battery_metrics_ = std::make_unique<BatteryMetrics>();
+
+#if defined(OS_ANDROID)
+  app_state_listener_ = base::android::ApplicationStatusListener::New(
+      base::BindRepeating([](base::android::ApplicationState state) {
+        content::OnBrowserVisibilityChanged(
+            state == base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES ||
+            state == base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
+      }));
+  content::OnBrowserVisibilityChanged(
+      base::android::ApplicationStatusListener::HasVisibleActivities());
+#endif  // defined(OS_ANDROID)
 
   secure_origin_prefs_observer_ =
       std::make_unique<SecureOriginPrefsObserver>(local_state());
