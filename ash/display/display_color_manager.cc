@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -13,7 +14,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
+#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -330,6 +333,23 @@ bool DisplayColorManager::LoadCalibrationForDisplay(
                         valid_product_code);
   if (!valid_product_code || !quirks::QuirksManager::HasInstance())
     return false;
+
+  // If we have device-specific calibration data available, apply that and exit.
+  if (display->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
+    base::FilePath directory;
+    base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD,
+                           &directory);
+    const std::string icc_name = quirks::IdToFileName(display->product_code());
+    const base::FilePath icc_path = directory.Append(icc_name);
+
+    if (base::PathExists(icc_path)) {
+      DisplayColorManager::FinishLoadCalibrationForDisplay(
+          display->display_id(), display->product_code(),
+          display->has_color_correction_matrix(), display->type(), icc_path,
+          false);
+      return true;
+    }
+  }
 
   quirks::QuirksManager::Get()->RequestIccProfilePath(
       display->product_code(), display->display_name(),

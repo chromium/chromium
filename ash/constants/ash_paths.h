@@ -45,6 +45,8 @@ enum {
                                               // policy for extensions.
   DIR_DEVICE_DISPLAY_PROFILES,       // Destination directory for system display
                                      // profiles downloaded from Quirks Server.
+  DIR_DEVICE_DISPLAY_PROFILES_VPD,   // Destination directory for system display
+                                     // profiles imported from the VPD.
   DIR_DEVICE_EXTENSION_LOCAL_CACHE,  // Directory where extension local cache
                                      // is stored.
   DIR_SIGNIN_PROFILE_COMPONENT_POLICY,  // Directory where policy for components

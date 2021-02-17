@@ -48,6 +48,9 @@ const base::FilePath::CharType kDeviceLocalAccountComponentPolicy[] =
 const base::FilePath::CharType kDeviceDisplayProfileDirectory[] =
     FILE_PATH_LITERAL("/var/cache/display_profiles");
 
+const base::FilePath::CharType kDeviceDisplayProfileDirectoryVpd[] =
+    FILE_PATH_LITERAL("/var/cache/display_profiles/vpd");
+
 const base::FilePath::CharType kDeviceExtensionLocalCache[] =
     FILE_PATH_LITERAL("/var/cache/external_cache");
 
@@ -94,6 +97,9 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case DIR_DEVICE_DISPLAY_PROFILES:
       *result = base::FilePath(kDeviceDisplayProfileDirectory);
+      break;
+    case DIR_DEVICE_DISPLAY_PROFILES_VPD:
+      *result = base::FilePath(kDeviceDisplayProfileDirectoryVpd);
       break;
     case DIR_DEVICE_EXTENSION_LOCAL_CACHE:
       *result = base::FilePath(kDeviceExtensionLocalCache);
