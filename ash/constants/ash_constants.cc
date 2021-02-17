@@ -10,7 +10,6 @@ namespace chromeos {
 
 const base::FilePath::CharType kDriveCacheDirname[] = FPL("GCache");
 const base::FilePath::CharType kNssCertDbPath[] = FPL(".pki/nssdb/cert9.db");
-const base::FilePath::CharType kNssDirPath[] = FPL(".pki");
 const base::FilePath::CharType kNssKeyDbPath[] = FPL(".pki/nssdb/key4.db");
 
 }  // namespace chromeos
