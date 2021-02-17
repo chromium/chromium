@@ -98,4 +98,7 @@ bool UrlOriginTestTraits::IsValidUrl(base::StringPiece str) {
   return GURL(str).is_valid();
 }
 
+// This is an abstract test suite which is instantiated by each implementation.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AbstractOriginTest);
+
 }  // namespace url
