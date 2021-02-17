@@ -53,7 +53,6 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <output filename="chromium_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="chromium_strings_et.pak" type="data_package" lang="et" />
     <output filename="chromium_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="chromium_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="chromium_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="chromium_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="chromium_strings_fr.pak" type="data_package" lang="fr" />
@@ -93,6 +92,10 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <output filename="chromium_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="chromium_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="chromium_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="chromium_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="chromium_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/chromium_strings_af.xtb" lang="af" />

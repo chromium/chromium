@@ -74,7 +74,6 @@ third_party/libaddressinput/BUILD.gn.
     </if>
     <output filename="address_input_strings_et.pak" type="data_package" lang="et" />
     <output filename="address_input_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="address_input_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="address_input_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="address_input_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="address_input_strings_fr.pak" type="data_package" lang="fr" />
@@ -121,6 +120,10 @@ third_party/libaddressinput/BUILD.gn.
     <output filename="address_input_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="address_input_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="address_input_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="address_input_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="address_input_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
 
   <!-- Chromium translations. -->

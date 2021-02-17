@@ -26,7 +26,6 @@ grit("strings") {
     "extensions_strings_es-419.pak",
     "extensions_strings_et.pak",
     "extensions_strings_fa.pak",
-    "extensions_strings_fake-bidi.pak",
     "extensions_strings_fi.pak",
     "extensions_strings_fil.pak",
     "extensions_strings_fr.pak",
@@ -65,5 +64,9 @@ grit("strings") {
     "extensions_strings_vi.pak",
     "extensions_strings_zh-CN.pak",
     "extensions_strings_zh-TW.pak",
+
+    # Pseudolocales
+    "extensions_strings_ar-XB.pak",
+    "extensions_strings_en-XA.pak",
   ]
 }

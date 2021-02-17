@@ -22,7 +22,6 @@ grit("strings") {
     "shortcut_viewer_strings_es-419.pak",
     "shortcut_viewer_strings_es.pak",
     "shortcut_viewer_strings_et.pak",
-    "shortcut_viewer_strings_fake-bidi.pak",
     "shortcut_viewer_strings_fa.pak",
     "shortcut_viewer_strings_fil.pak",
     "shortcut_viewer_strings_fi.pak",
@@ -62,5 +61,9 @@ grit("strings") {
     "shortcut_viewer_strings_vi.pak",
     "shortcut_viewer_strings_zh-CN.pak",
     "shortcut_viewer_strings_zh-TW.pak",
+
+    # Pseudolocales
+    "shortcut_viewer_strings_ar-XB.pak",
+    "shortcut_viewer_strings_en-XA.pak",
   ]
 }

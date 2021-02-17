@@ -23,7 +23,6 @@ grit("strings") {
     "chromeos_strings_es-419.pak",
     "chromeos_strings_es.pak",
     "chromeos_strings_et.pak",
-    "chromeos_strings_fake-bidi.pak",
     "chromeos_strings_fa.pak",
     "chromeos_strings_fil.pak",
     "chromeos_strings_fi.pak",
@@ -63,6 +62,10 @@ grit("strings") {
     "chromeos_strings_vi.pak",
     "chromeos_strings_zh-CN.pak",
     "chromeos_strings_zh-TW.pak",
+
+    # Pseudolocales
+    "chromeos_strings_ar-XB.pak",
+    "chromeos_strings_en-XA.pak",
   ]
 }
 

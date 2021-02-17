@@ -21,7 +21,6 @@
     <output filename="ui_chromeos_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="ui_chromeos_strings_et.pak" type="data_package" lang="et" />
     <output filename="ui_chromeos_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="ui_chromeos_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="ui_chromeos_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ui_chromeos_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="ui_chromeos_strings_fr.pak" type="data_package" lang="fr" />
@@ -62,6 +61,10 @@
     <output filename="ui_chromeos_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ui_chromeos_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="ui_chromeos_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="ui_chromeos_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ui_chromeos_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="translations/ui_chromeos_strings_af.xtb" lang="af" />

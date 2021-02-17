@@ -55,7 +55,6 @@ This file contains strings for code in //services.
     <output filename="services_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="services_strings_et.pak" type="data_package" lang="et" />
     <output filename="services_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="services_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="services_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="services_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="services_strings_fr.pak" type="data_package" lang="fr" />
@@ -96,6 +95,10 @@ This file contains strings for code in //services.
     <output filename="services_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="services_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="services_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="services_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="services_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/services_strings_af.xtb" lang="af" />

@@ -94,7 +94,10 @@ chromium_strings.grd. -->
     <output filename="google_chrome_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="google_chrome_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="google_chrome_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
-    <output filename="google_chrome_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
+
+    <!-- Pseudolocales -->
+    <output filename="google_chrome_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="google_chrome_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/google_chrome_strings_af.xtb" lang="af" />

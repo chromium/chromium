@@ -21,7 +21,6 @@
     <output filename="chromeos_camera_app_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="chromeos_camera_app_strings_et.pak" type="data_package" lang="et" />
     <output filename="chromeos_camera_app_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="chromeos_camera_app_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="chromeos_camera_app_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="chromeos_camera_app_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="chromeos_camera_app_strings_fr.pak" type="data_package" lang="fr" />
@@ -62,6 +61,10 @@
     <output filename="chromeos_camera_app_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="chromeos_camera_app_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="chromeos_camera_app_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="chromeos_camera_app_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="chromeos_camera_app_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="camera_strings_af.xtb" lang="af" />

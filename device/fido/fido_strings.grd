@@ -55,7 +55,6 @@ This file contains the strings for //device/fido.
     <output filename="fido_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="fido_strings_et.pak" type="data_package" lang="et" />
     <output filename="fido_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="fido_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="fido_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="fido_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="fido_strings_fr.pak" type="data_package" lang="fr" />
@@ -96,6 +95,10 @@ This file contains the strings for //device/fido.
     <output filename="fido_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="fido_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="fido_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="fido_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="fido_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/fido_strings_af.xtb" lang="af" />

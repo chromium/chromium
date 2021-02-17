@@ -76,6 +76,10 @@ locale_files = [
   "_locales/vi/messages.json",
   "_locales/zh_CN/messages.json",
   "_locales/zh_TW/messages.json",
+
+  # Pseudolocales
+  "_locales/ar_XB/messages.json",
+  "_locales/en_XA/messages.json",
 ]
 
 #

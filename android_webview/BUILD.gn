@@ -896,7 +896,7 @@ grit("generate_aw_resources") {
 grit("generate_aw_strings") {
   source = "ui/aw_strings.grd"
   outputs = [ "grit/aw_strings.h" ]
-  foreach(_locale, locales) {
+  foreach(_locale, locales_with_fake_bidi) {
     outputs += [ "aw_strings_${_locale}.pak" ]
   }
 }

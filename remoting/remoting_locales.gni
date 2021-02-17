@@ -85,12 +85,6 @@ remoting_locales_with_underscores += [
   "zh_TW",
 ]
 
-# The fake-bidi locale isn't accepted by the app store.
-if (!is_ios || !is_official_build) {
-  remoting_locales += [ "fake-bidi" ]
-  remoting_locales_with_underscores += [ "fake_bidi" ]
-}
-
 # An additional locale "en-US" is generated for ChromeOS and Chrome on iOS.
 # TODO(yuweih): Our build script doesn't seem to work with en-US and Chrome
 # on iOS doesn't seem to have en-US.lproj. Add is_ios back if we do need to

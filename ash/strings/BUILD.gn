@@ -29,7 +29,6 @@ grit("strings") {
     "ash_strings_es-419.pak",
     "ash_strings_et.pak",
     "ash_strings_fa.pak",
-    "ash_strings_fake-bidi.pak",
     "ash_strings_fi.pak",
     "ash_strings_fil.pak",
     "ash_strings_fr.pak",
@@ -68,6 +67,10 @@ grit("strings") {
     "ash_strings_vi.pak",
     "ash_strings_zh-CN.pak",
     "ash_strings_zh-TW.pak",
+
+    # Pseudolocales
+    "ash_strings_ar-XB.pak",
+    "ash_strings_en-XA.pak",
   ]
 }
 

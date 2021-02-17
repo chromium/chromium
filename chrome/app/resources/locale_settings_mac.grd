@@ -59,7 +59,10 @@
     <output filename="platform_locale_settings_vi.pak" type="data_package" lang="vi" />
     <output filename="platform_locale_settings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="platform_locale_settings_zh-TW.pak" type="data_package" lang="zh-TW" />
-    <output filename="platform_locale_settings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
+
+    <!-- Pseudolocales -->
+    <output filename="platform_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="platform_locale_settings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="platform_locale_settings/locale_settings_mac_am.xtb" lang="am" />

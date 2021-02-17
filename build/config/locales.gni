@@ -225,7 +225,10 @@ if (is_ios) {
   ]
 }
 
-locales_with_fake_bidi = locales + [ "fake-bidi" ]
+# This doesn't actually enable the locale - it just allows it to compile.
+# In order to enable it, it needs to be in the locales variable.
+# A future CL will move it there for dev builds only.
+locales_with_fake_bidi = locales + [ "ar-XB", "en-XA" ]
 
 # Same as the locales list but in the format Mac expects for output files:
 # it uses underscores instead of hyphens, and "en" instead of "en-US".

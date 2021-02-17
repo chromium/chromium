@@ -68,12 +68,14 @@ class TclibUnittest(unittest.TestCase):
 
   def testSplitTextVariables(self):
     self.assertBuildTree(
-        'Downloaded by <a href="{PLACEHOLDER}">{PLACEHOLDER}</a>',
+        'Downloaded by <a href="{PLACEHOLDER}">{PLACEHOLDER}</a>${foo}{bar}',
         pl.NodeSequence([
             pl.RawText('Downloaded by '),
             pl.HtmlTag('<a href="{PLACEHOLDER}">'),
             pl.BasicVariable('{PLACEHOLDER}'),
             pl.HtmlTag('</a>'),
+            pl.BasicVariable('${foo}'),
+            pl.BasicVariable('{bar}'),
         ]))
 
   def testSplitTextWithCurlies(self):
@@ -259,13 +261,13 @@ class TclibUnittest(unittest.TestCase):
             ]),
         ]))
 
-    self.assertTreesEqual(
-        pl.BuildTree('{0, plural, offset:2\n'
-                     '        =1 {{VAR}}\n'
-                     '        =2 {{VAR}, {VAR}}\n'
-                     '        other {{VAR}, {VAR}, and # more}\n'
-                     '      }'),
-        pl.Plural('{0, plural, offset:2\n        ', [
+    self.assertBuildTree(
+        '{count, plural, offset:2\n'
+        '        =1 {{VAR}}\n'
+        '        =2 {{VAR}, {VAR}}\n'
+        '        other {{VAR}, {VAR}, and # more}\n'
+        '      }',
+        pl.Plural('{count, plural, offset:2\n        ', [
             pl.PluralOption('=1 {', [VAR_NODE]),
             pl.PluralOption('=2 {',
                             [VAR_NODE, pl.RawText(', '), VAR_NODE]),
@@ -275,6 +277,18 @@ class TclibUnittest(unittest.TestCase):
                 pl.RawText(', and # more')
             ]),
         ]))
+
+    self.assertBuildTree(
+        '{NUM_POPUPS,plural,=1{Pop-up blocked} other{# pop-ups blocked}}',
+        pl.Plural('{NUM_POPUPS,plural,', [
+            pl.PluralOption('=1{', [pl.RawText('Pop-up blocked')]),
+            pl.PluralOption('other{', [pl.RawText('# pop-ups blocked')])
+        ]))
+
+    self.assertBuildTree(
+        'Open ${url}',
+        pl.NodeSequence([pl.RawText('Open '),
+                         pl.BasicVariable('${url}')]))
 
 
 if __name__ == '__main__':

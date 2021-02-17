@@ -31,7 +31,6 @@ all other OS specific variables will be false.
     <output filename="ios_search_widget_extension_google_chrome_strings_es-MX.pak" type="data_package" lang="es-419" />
     <output filename="ios_search_widget_extension_google_chrome_strings_et.pak" type="data_package" lang="et" />
     <output filename="ios_search_widget_extension_google_chrome_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="ios_search_widget_extension_google_chrome_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="ios_search_widget_extension_google_chrome_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ios_search_widget_extension_google_chrome_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="ios_search_widget_extension_google_chrome_strings_fr.pak" type="data_package" lang="fr" />
@@ -72,6 +71,10 @@ all other OS specific variables will be false.
     <output filename="ios_search_widget_extension_google_chrome_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ios_search_widget_extension_google_chrome_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="ios_search_widget_extension_google_chrome_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="ios_search_widget_extension_google_chrome_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ios_search_widget_extension_google_chrome_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/ios_search_widget_extension_google_chrome_strings_af.xtb" lang="af" />

@@ -157,9 +157,10 @@ class HtmlTag(Node):
 
 class RawText(Node):
   """RawText represents regular text able to be translated."""
-  # Raw text can have a < in it, but only at the very start.
-  # This guarantees that it's already tried and failed to match an HTML tag.
-  pattern = lazy_re.compile(r'^[^{}][^{}<]*', re.S)
+  # Raw text can have a < or $ in it, but only at the very start.
+  # This guarantees that it's already tried and failed to match an HTML tag
+  # and variable.
+  pattern = lazy_re.compile(r'^[^{}][^{}<$]*', re.S)
 
   def GetNumWords(self):
     return len(WORD.findall(self.text))
@@ -172,7 +173,7 @@ class BasicVariable(Node):
   """Represents a variable. Usually used inside a plural option, but has been
   overloaded to store placeholders as well.
   """
-  pattern = lazy_re.compile(r'^{[A-Z0-9_]+}')
+  pattern = lazy_re.compile(r'^\$?{[a-zA-Z0-9_]+}')
 
   def GetNumWords(self):
     return 1
@@ -202,7 +203,7 @@ class Plural(Node):
   """Represents a set of options for plurals.
   eg. {VARIABLE, plural, =1 {singular} other {plural}}
   """
-  pattern = lazy_re.compile(r'^{[A-Z0-9_]+,\s+plural,\s+(offset:\d+\s+)?', re.S)
+  pattern = lazy_re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?', re.S)
   after = '}'
 
   @classmethod

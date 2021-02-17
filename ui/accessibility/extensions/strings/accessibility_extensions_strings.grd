@@ -59,6 +59,10 @@
     <output filename="_locales/vi/messages.json" type="chrome_messages_json" lang="vi"/>
     <output filename="_locales/zh_CN/messages.json" type="chrome_messages_json" lang="zh-CN"/>
     <output filename="_locales/zh_TW/messages.json" type="chrome_messages_json" lang="zh-TW"/>
+
+    <!-- Pseudolocales -->
+    <output filename="_locales/ar_XB/messages.json" type="chrome_messages_json" lang="ar-XB"/>
+    <output filename="_locales/en_XA/messages.json" type="chrome_messages_json" lang="en-XA"/>
   </outputs>
   <translations>
     <file path="accessibility_extensions_strings_af.xtb" lang="af" />
