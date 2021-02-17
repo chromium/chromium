@@ -45,6 +45,7 @@ gclient_gn_args = [
   'checkout_openxr',
   'cros_boards',
   'cros_boards_with_qemu_images',
+  'use_rts',
 ]
 
 
@@ -182,6 +183,10 @@ vars = {
   # This can be overridden, e.g. with custom_vars, to build clang from HEAD
   # instead of downloading the prebuilt pinned revision.
   'llvm_force_head_revision': False,
+
+  # See //docs/testing/regression-test-selection.md
+  # for info on RTS
+  'use_rts': False,
 
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.20.1.c4bbd2f',
@@ -619,6 +624,17 @@ deps = {
 
   'src/net/third_party/quiche/src':
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
+
+  'src/testing/rts': {
+      'packages': [
+        {
+          'package': 'chromium/rts/model/${{platform}}',
+          'version': 'latest',
+        },
+      ],
+      'dep_type': 'cipd',
+      'condition': 'use_rts',
+  },
 
   'src/tools/luci-go': {
       'packages': [
