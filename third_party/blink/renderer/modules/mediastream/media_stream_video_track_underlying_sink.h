@@ -16,7 +16,6 @@ class PushableMediaStreamVideoSource;
 class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
     : public UnderlyingSinkBase {
  public:
-  // |source| must outlive this MediaStreamVideoTrackUnderlyingSink.
   explicit MediaStreamVideoTrackUnderlyingSink(
       PushableMediaStreamVideoSource* source);
 

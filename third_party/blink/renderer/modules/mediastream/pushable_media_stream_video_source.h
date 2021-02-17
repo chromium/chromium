@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class MediaStreamVideoTrackSignalObserver;
+
 // Simplifies the creation of video tracks.  Just do this:
 // auto source = std::make_unique<PushableMediaStreamVideoSource>();
 // auto* track = CreateVideoTrackFromSource(script_state, source);
@@ -41,12 +43,14 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
   VideoCaptureFeedbackCB GetInternalFeedbackCallback() const;
+  void SetSignalObserver(MediaStreamVideoTrackSignalObserver*);
 
  private:
   bool running_ = false;
   VideoCaptureDeliverFrameCB deliver_frame_cb_;
 
   base::WeakPtr<MediaStreamVideoSource> upstream_source_;
+  WeakPersistent<MediaStreamVideoTrackSignalObserver> signal_observer_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};

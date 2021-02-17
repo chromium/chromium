@@ -11,18 +11,24 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_processor.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_signal.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 using testing::_;
@@ -149,6 +155,30 @@ TEST_F(MediaStreamTrackGeneratorTest, AudioFramesAreWritten) {
       &media_stream_audio_sink, WebMediaStreamTrack(generator->Component()));
 }
 
+TEST_F(MediaStreamTrackGeneratorTest, SignalsAreRead) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
+      script_state, "video", ASSERT_NO_EXCEPTION);
+
+  auto* video_source = generator->PushableVideoSource();
+  auto* video_track = MediaStreamVideoTrack::From(generator->Component());
+
+  auto* reader =
+      generator->readableControl(script_state)
+          ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  video_source->RequestRefreshFrame();
+  auto* signal = ReadObjectFromStream<MediaStreamTrackSignal>(v8_scope, reader);
+  EXPECT_EQ(signal->signalType(), "request-frame");
+
+  const double min_frame_rate = 3.5;
+  video_track->SetMinimumFrameRate(min_frame_rate);
+  signal = ReadObjectFromStream<MediaStreamTrackSignal>(v8_scope, reader);
+  EXPECT_EQ(signal->signalType(), "set-min-frame-rate");
+  EXPECT_TRUE(signal->hasFrameRate());
+  EXPECT_EQ(signal->frameRate(), min_frame_rate);
+}
+
 TEST_F(MediaStreamTrackGeneratorTest, FramesDoNotFlowOnStoppedGenerator) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
@@ -271,6 +301,35 @@ TEST_F(MediaStreamTrackGeneratorTest, CloneStopSource) {
   EXPECT_FALSE(v8_scope.GetExceptionState().HadException());
   EXPECT_TRUE(original->Ended());
   EXPECT_TRUE(clone->Ended());
+}
+
+TEST_F(MediaStreamTrackGeneratorTest, SignalsFlowFromGeneratorToProcessor) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* generator = MediaStreamTrackGenerator::Create(script_state, "video",
+                                                      ASSERT_NO_EXCEPTION);
+
+  // Create a processor connected to a mock source.
+  auto* mock_video_source = CreateMockVideoSource();
+  auto* processor = MediaStreamTrackProcessor::Create(
+      script_state,
+      CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(),
+                                  mock_video_source),
+      ASSERT_NO_EXCEPTION);
+  mock_video_source->StartMockedSource();
+
+  // Connect the generator to the processor.
+  generator->readableControl(script_state)
+      ->pipeTo(script_state, processor->writableControl(script_state),
+               ASSERT_NO_EXCEPTION);
+
+  // Push a signal to the generator and verify that it makes it to the mock
+  // source backing the processor at the end of the chain.
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_video_source, OnRequestRefreshFrame())
+      .WillOnce(base::test::RunOnceClosure(loop.QuitClosure()));
+  generator->PushableVideoSource()->RequestRefreshFrame();
+  loop.Run();
 }
 
 }  // namespace blink

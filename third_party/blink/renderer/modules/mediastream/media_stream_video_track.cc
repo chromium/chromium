@@ -18,6 +18,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_signal_observer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -734,6 +735,19 @@ void MediaStreamVideoTrack::OnFrameDropped(
 void MediaStreamVideoTrack::SetMinimumFrameRate(double min_frame_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   min_frame_rate_ = min_frame_rate;
+  if (signal_observer_)
+    signal_observer_->SetMinimumFrameRate(min_frame_rate);
+}
+
+MediaStreamVideoTrackSignalObserver* MediaStreamVideoTrack::SignalObserver() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+  return signal_observer_.Get();
+}
+
+void MediaStreamVideoTrack::SetSignalObserver(
+    MediaStreamVideoTrackSignalObserver* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+  signal_observer_ = observer;
 }
 
 void MediaStreamVideoTrack::StartTimerForRequestingFrames() {

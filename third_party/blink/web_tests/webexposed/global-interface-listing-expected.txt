@@ -5270,6 +5270,7 @@ interface MediaStreamTrackEvent : Event
     method constructor
 interface MediaStreamTrackGenerator : MediaStreamTrack
     attribute @@toStringTag
+    getter readableControl
     getter writable
     method constructor
 interface MediaStreamTrackProcessor

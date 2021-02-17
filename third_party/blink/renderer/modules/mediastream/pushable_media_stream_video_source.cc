@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
 
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_signal_observer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -42,6 +43,8 @@ void PushableMediaStreamVideoSource::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (upstream_source_)
     upstream_source_->RequestRefreshFrame();
+  if (signal_observer_)
+    signal_observer_->RequestFrame();
 }
 
 void PushableMediaStreamVideoSource::OnFrameDropped(
@@ -97,6 +100,12 @@ PushableMediaStreamVideoSource::GetInternalFeedbackCallback() const {
     return VideoCaptureFeedbackCB();
 
   return upstream_source_->GetFeedbackCallback();
+}
+
+void PushableMediaStreamVideoSource::SetSignalObserver(
+    MediaStreamVideoTrackSignalObserver* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  signal_observer_ = observer;
 }
 
 }  // namespace blink

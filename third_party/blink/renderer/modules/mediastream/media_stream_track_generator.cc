@@ -15,14 +15,26 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_underlying_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/video_track_signal_underlying_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
+
+namespace {
+
+class NullUnderlyingSource : public UnderlyingSourceBase {
+ public:
+  explicit NullUnderlyingSource(ScriptState* script_state)
+      : UnderlyingSourceBase(script_state) {}
+};
+
+}  // namespace
 
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
@@ -55,6 +67,26 @@ WritableStream* MediaStreamTrackGenerator::writable(ScriptState* script_state) {
     CreateAudioStream(script_state);
 
   return writable_;
+}
+
+ReadableStream* MediaStreamTrackGenerator::readableControl(
+    ScriptState* script_state) {
+  if (readable_control_)
+    return readable_control_;
+
+  if (kind() == "video")
+    CreateVideoControlStream(script_state);
+  else if (kind() == "audio")
+    CreateAudioControlStream(script_state);
+
+  return readable_control_;
+}
+
+PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
+    const {
+  DCHECK_EQ(Component()->Source()->GetType(), MediaStreamSource::kTypeVideo);
+  return static_cast<PushableMediaStreamVideoSource*>(
+      MediaStreamVideoSource::GetVideoSource(Component()->Source()));
 }
 
 void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack() {
@@ -106,6 +138,30 @@ void MediaStreamTrackGenerator::CreateAudioStream(ScriptState* script_state) {
       script_state, audio_underlying_sink_, /*high_water_mark=*/1);
 }
 
+void MediaStreamTrackGenerator::CreateVideoControlStream(
+    ScriptState* script_state) {
+  DCHECK(!readable_control_);
+  // TODO(crbug.com/1142955): Make the queue size configurable from the
+  // constructor.
+  control_underlying_source_ =
+      MakeGarbageCollected<VideoTrackSignalUnderlyingSource>(script_state, this,
+                                                             /*queue_size=*/20);
+  readable_control_ = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, control_underlying_source_, /*high_water_mark=*/0);
+}
+
+void MediaStreamTrackGenerator::CreateAudioControlStream(
+    ScriptState* script_state) {
+  DCHECK(!readable_control_);
+  // Since no signals have been defined for audio, use a null source that
+  // does nothing, so that a valid stream can be returned for audio
+  // MediaStreamTrackGenerators.
+  control_underlying_source_ =
+      MakeGarbageCollected<NullUnderlyingSource>(script_state);
+  readable_control_ = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, control_underlying_source_, /*high_water_mark=*/0);
+}
+
 MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     ScriptState* script_state,
     const String& kind,
@@ -136,6 +192,8 @@ void MediaStreamTrackGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(video_underlying_sink_);
   visitor->Trace(audio_underlying_sink_);
   visitor->Trace(writable_);
+  visitor->Trace(control_underlying_source_);
+  visitor->Trace(readable_control_);
   MediaStreamTrack::Trace(visitor);
 }
 

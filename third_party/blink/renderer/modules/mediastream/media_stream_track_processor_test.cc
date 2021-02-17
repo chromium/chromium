@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -57,25 +58,6 @@ PushableMediaStreamVideoSource* CreatePushableVideoSource() {
   media_stream_source->SetPlatformSource(
       base::WrapUnique(pushable_video_source));
   return pushable_video_source;
-}
-
-MockMediaStreamVideoSource* CreateMockVideoSource() {
-  MockMediaStreamVideoSource* mock_video_source =
-      new MockMediaStreamVideoSource();
-  MediaStreamSource* media_stream_source =
-      MakeGarbageCollected<MediaStreamSource>(
-          "source_id", MediaStreamSource::kTypeVideo, "source_name",
-          /*remote=*/false);
-  media_stream_source->SetPlatformSource(base::WrapUnique(mock_video_source));
-  return mock_video_source;
-}
-
-MediaStreamTrack* CreateVideoMediaStreamTrack(ExecutionContext* context,
-                                              MediaStreamVideoSource* source) {
-  return MakeGarbageCollected<MediaStreamTrack>(
-      context, MediaStreamVideoTrack::CreateVideoTrack(
-                   source, MediaStreamVideoSource::ConstraintsOnceCallback(),
-                   /*enabled=*/true));
 }
 
 MediaStreamTrack* CreateAudioMediaStreamTrack(

@@ -98,7 +98,7 @@ class MODULES_EXPORT MediaStreamTrack
   // Returns the enum value of the ready state.
   MediaStreamSource::ReadyState GetReadyState() { return ready_state_; }
 
-  MediaStreamComponent* Component() { return component_; }
+  MediaStreamComponent* Component() const { return component_; }
   bool Ended() const;
 
   void RegisterMediaStream(MediaStream*);

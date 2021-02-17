@@ -13,7 +13,10 @@ namespace blink {
 
 class MediaStreamAudioTrackUnderlyingSink;
 class MediaStreamVideoTrackUnderlyingSink;
+class PushableMediaStreamVideoSource;
+class ReadableStream;
 class ScriptState;
+class UnderlyingSourceBase;
 class WritableStream;
 
 class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
@@ -31,6 +34,9 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
       delete;
 
   WritableStream* writable(ScriptState* script_state);
+  ReadableStream* readableControl(ScriptState* script_state);
+
+  PushableMediaStreamVideoSource* PushableVideoSource() const;
 
   void Trace(Visitor* visitor) const override;
 
@@ -41,9 +47,14 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
   void CreateVideoOutputPlatformTrack();
   void CreateVideoStream(ScriptState* script_state);
 
+  void CreateAudioControlStream(ScriptState* script_state);
+  void CreateVideoControlStream(ScriptState* script_state);
+
   Member<MediaStreamAudioTrackUnderlyingSink> audio_underlying_sink_;
   Member<MediaStreamVideoTrackUnderlyingSink> video_underlying_sink_;
   Member<WritableStream> writable_;
+  Member<UnderlyingSourceBase> control_underlying_source_;
+  Member<ReadableStream> readable_control_;
 };
 
 }  // namespace blink
