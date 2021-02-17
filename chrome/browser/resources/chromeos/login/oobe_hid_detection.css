@@ -19,6 +19,7 @@
   border-bottom: var(--oobe-hid-detection-item-border);
 }
 
+#touchscreen-icon,
 #keyboard-icon,
 #mouse-icon {
   --iron-icon-height: 20px;
@@ -26,11 +27,13 @@
   padding-inline-end: 16px;
 }
 
+#hid-touchscreen-row,
 #hid-mouse-row,
 #hid-keyboard-row {
   min-height: 48px;
 }
 
+#touchscreen-tick,
 #keyboard-tick,
 #mouse-tick {
   margin-inline-start: -28px;

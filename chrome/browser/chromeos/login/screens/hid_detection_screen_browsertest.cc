@@ -35,6 +35,8 @@ namespace {
 
 const test::UIPath kHidContinueButton = {"hid-detection",
                                          "hid-continue-button"};
+const test::UIPath kHidTouchscreenRow = {"hid-detection",
+                                         "hid-touchscreen-row"};
 const test::UIPath kHidMouseTick = {"hid-detection", "mouse-tick"};
 const test::UIPath kHidKeyboardTick = {"hid-detection", "keyboard-tick"};
 
@@ -201,12 +203,15 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, ResumableScreen) {
 // Tests that the connected 'ticks' are shown when the devices are connected.
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, TestTicks) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+  // When touch screen is not detected, the whole touchscreen row is hidden
+  test::OobeJS().ExpectHiddenPath(kHidTouchscreenRow);
   test::OobeJS().CreateVisibilityWaiter(false, kHidMouseTick)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kHidKeyboardTick)->Wait();
 
   hid_controller_.ConnectUSBDevices();
   test::OobeJS().CreateVisibilityWaiter(true, kHidMouseTick)->Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kHidKeyboardTick)->Wait();
+
   ContinueToWelcomeScreen();
 }
 
@@ -319,6 +324,7 @@ class HIDDetectionScreenChromebaseTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebaseTest, TouchscreenDetected) {
   // Continue button should be enabled at all times if touchscreen is detected
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kHidTouchscreenRow)->Wait();
   test::OobeJS().ExpectEnabledPath(kHidContinueButton);
 
   hid_controller_.ConnectUSBDevices();

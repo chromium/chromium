@@ -32,6 +32,7 @@ Polymer({
     'setNumKeysEnteredPinCode',
     'setPointingDeviceName',
     'setKeyboardDeviceName',
+    'setTouchscreenDetectedState',
     'setContinueButtonEnabled',
   ],
 
@@ -56,6 +57,15 @@ Polymer({
     pointingDeviceName: {
       type: String,
       value: '',
+    },
+
+    /**
+     * State of touchscreen detection
+     * @private
+     */
+    touchscreenDetected_: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -242,6 +252,13 @@ Polymer({
   onHIDContinueTap_(event) {
     this.userActed('HIDDetectionOnContinue');
     event.stopPropagation();
+  },
+
+  /**
+   * Sets TouchscreenDetected to true
+   */
+  setTouchscreenDetectedState(state) {
+    this.touchscreenDetected_ = state;
   },
 
   /**

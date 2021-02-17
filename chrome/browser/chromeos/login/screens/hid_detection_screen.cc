@@ -152,7 +152,7 @@ void HIDDetectionScreen::OnViewDestroyed(HIDDetectionView* view) {
 
 bool HIDDetectionScreen::ShouldEnableContinueButton() {
   return !pointing_device_id_.empty() || !keyboard_device_id_.empty() ||
-         touchscreen_detected_;
+         !touchscreen_id_.empty();
 }
 
 void HIDDetectionScreen::CheckIsScreenRequired(
@@ -192,6 +192,8 @@ void HIDDetectionScreen::ShowImpl() {
 
   if (view_)
     view_->SetPinDialogVisible(false);
+
+  SendTouchScreenDeviceNotification();
   SendPointingDeviceNotification();
   SendKeyboardDeviceNotification();
 
@@ -422,6 +424,14 @@ void HIDDetectionScreen::SendKeyboardDeviceNotification() {
   }
 }
 
+void HIDDetectionScreen::SendTouchScreenDeviceNotification() {
+  if (!view_)
+    return;
+
+  view_->SetTouchscreenDetectedState(!touchscreen_id_.empty());
+  view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
+}
+
 void HIDDetectionScreen::SetKeyboardDeviceName(const std::string& name) {
   keyboard_device_name_ =
       keyboard_device_id_.empty() || !name.empty()
@@ -466,11 +476,10 @@ void HIDDetectionScreen::InputDeviceAdded(InputDeviceInfoPtr info) {
   if (is_hidden())
     return;
 
-  if (!touchscreen_detected_ && DeviceIsTouchScreen(info_ref)) {
-    touchscreen_detected_ = true;
-    view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
+  if (touchscreen_id_.empty() && DeviceIsTouchScreen(info_ref)) {
+    touchscreen_id_ = info_ref->id;
+    SendTouchScreenDeviceNotification();
   }
-
   if (pointing_device_id_.empty() && DeviceIsPointing(info_ref)) {
     pointing_device_id_ = info_ref->id;
     pointing_device_type_ = info_ref->type;
@@ -490,6 +499,11 @@ void HIDDetectionScreen::InputDeviceRemoved(const std::string& id) {
   if (is_hidden())
     return;
 
+  if (id == touchscreen_id_) {
+    touchscreen_id_.clear();
+    SendTouchScreenDeviceNotification();
+    UpdateDevices();
+  }
   if (id == keyboard_device_id_) {
     keyboard_device_id_.clear();
     keyboard_type_ = device::mojom::InputDeviceType::TYPE_UNKNOWN;
@@ -520,9 +534,9 @@ void HIDDetectionScreen::StartBTDiscoverySession() {
 
 void HIDDetectionScreen::ProcessConnectedDevicesList() {
   for (const auto& map_entry : devices_) {
-    if (!touchscreen_detected_ && DeviceIsTouchScreen(map_entry.second)) {
-      touchscreen_detected_ = true;
-      view_->SetContinueButtonEnabled(ShouldEnableContinueButton());
+    if (touchscreen_id_.empty() && DeviceIsTouchScreen(map_entry.second)) {
+      touchscreen_id_ = map_entry.second->id;
+      SendTouchScreenDeviceNotification();
     }
     if (pointing_device_id_.empty() && DeviceIsPointing(map_entry.second)) {
       pointing_device_id_ = map_entry.second->id;

@@ -73,6 +73,10 @@ void HIDDetectionScreenHandler::SetMouseState(const std::string& value) {
   CallJS("login.HIDDetectionScreen.setMouseState", value);
 }
 
+void HIDDetectionScreenHandler::SetTouchscreenDetectedState(bool value) {
+  CallJS("login.HIDDetectionScreen.setTouchscreenDetectedState", value);
+}
+
 void HIDDetectionScreenHandler::SetKeyboardPinCode(const std::string& value) {
   keyboard_pin_code_ = value;
   CallJS("login.HIDDetectionScreen.setKeyboardPinCode", value);
@@ -134,6 +138,8 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
   builder->Add("hidDetectionBluetoothKeyboardPaired",
                IDS_HID_DETECTION_PAIRED_BLUETOOTH_KEYBOARD);
   builder->Add("oobeModalDialogClose", IDS_CHROMEOS_OOBE_CLOSE_DIALOG);
+  builder->Add("hidDetectionTouchscreenDetected",
+               IDS_HID_DETECTION_DETECTED_TOUCHSCREEN);
 }
 
 void HIDDetectionScreenHandler::Initialize() {

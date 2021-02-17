@@ -217,6 +217,9 @@ class HIDDetectionScreen : public BaseScreen,
   // keyboard device.
   void SendKeyboardDeviceNotification();
 
+  // Sends a notification to the Web UI of the status of available Touch Screen
+  void SendTouchScreenDeviceNotification();
+
   // Helper methods. Sets device name or placeholder if the name is empty.
   void SetKeyboardDeviceName(const std::string& name);
   void SetPointingDeviceName(const std::string& name);
@@ -250,7 +253,7 @@ class HIDDetectionScreen : public BaseScreen,
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
 
   // Does the screen has a touch screen available?
-  bool touchscreen_detected_ = false;
+  std::string touchscreen_id_;
 
   // Current pointing device, if any. Device name is kept in screen context.
   std::string pointing_device_id_;
