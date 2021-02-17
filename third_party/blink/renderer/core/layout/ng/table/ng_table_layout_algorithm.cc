@@ -735,10 +735,10 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
 
   // Section setup.
   const LayoutUnit section_available_inline_size =
-      table_inline_size - border_padding.InlineSum() -
-      border_spacing.inline_size * 2;
+      (table_inline_size - border_padding.InlineSum() -
+       border_spacing.inline_size * 2)
+          .ClampNegativeToZero();
 
-  DCHECK_GE(section_available_inline_size, LayoutUnit());
   auto CreateSectionConstraintSpace = [&table_writing_direction,
                                        &section_available_inline_size,
                                        &constraint_space_data,
