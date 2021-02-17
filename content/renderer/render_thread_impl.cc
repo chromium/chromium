@@ -777,31 +777,6 @@ bool RenderThreadImpl::ShouldBeDestroyed() {
   return false;
 }
 
-bool RenderThreadImpl::Send(IPC::Message* msg) {
-  // There are cases where we want to pump asynchronous messages while waiting
-  // synchronously for the replies to the message to be sent here. However, this
-  // may create an opportunity for re-entrancy into WebKit and other subsystems,
-  // so we need to take care to disable callbacks, timers, and pending network
-  // loads that could trigger such callbacks.
-  bool pumping_events = false;
-  if (msg->is_sync()) {
-    if (msg->is_caller_pumping_messages()) {
-      pumping_events = true;
-    }
-  }
-
-  std::unique_ptr<blink::scheduler::WebThreadScheduler::RendererPauseHandle>
-      renderer_paused_handle;
-  std::unique_ptr<blink::WebScopedPagePauser> page_pauser_handle;
-
-  if (pumping_events) {
-    renderer_paused_handle = main_thread_scheduler_->PauseRenderer();
-    page_pauser_handle = blink::WebScopedPagePauser::Create();
-  }
-
-  return ChildThreadImpl::Send(msg);
-}
-
 IPC::SyncChannel* RenderThreadImpl::GetChannel() {
   return channel();
 }
