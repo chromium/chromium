@@ -29,10 +29,23 @@ struct TEB {
   // Rest of struct is ignored.
 };
 
+win::ScopedHandle GetCurrentThreadHandle() {
+  HANDLE thread;
+  CHECK(::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentThread(),
+                          ::GetCurrentProcess(), &thread, 0, FALSE,
+                          DUPLICATE_SAME_ACCESS));
+  return win::ScopedHandle(thread);
+}
+
 win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
+  // TODO(https://crbug.com/947459): Move this logic to
+  // GetSamplingProfilerCurrentThreadToken() and pass the handle in
+  // SamplingProfilerThreadToken.
+  if (thread_id == ::GetCurrentThreadId())
+    return GetCurrentThreadHandle();
+
   // TODO(http://crbug.com/947459): Remove the test_handle* CHECKs once we
   // understand which flag is triggering the failure.
-
   DWORD flags = 0;
   base::debug::Alias(&flags);
 
@@ -51,7 +64,14 @@ win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
 }
 
 // Returns the thread environment block pointer for |thread_handle|.
-const TEB* GetThreadEnvironmentBlock(HANDLE thread_handle) {
+const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
+                                     HANDLE thread_handle) {
+  // TODO(https://crbug.com/947459): Move this logic to
+  // GetSamplingProfilerCurrentThreadToken() and pass the TEB* in
+  // SamplingProfilerThreadToken.
+  if (thread_id == ::GetCurrentThreadId())
+    return reinterpret_cast<TEB*>(NtCurrentTeb());
+
   // Define the internal types we need to invoke NtQueryInformationThread.
   enum THREAD_INFORMATION_CLASS { ThreadBasicInformation };
 
@@ -176,7 +196,8 @@ SuspendableThreadDelegateWin::SuspendableThreadDelegateWin(
     : thread_id_(thread_token.id),
       thread_handle_(GetThreadHandle(thread_token.id)),
       thread_stack_base_address_(reinterpret_cast<uintptr_t>(
-          GetThreadEnvironmentBlock(thread_handle_.Get())->Tib.StackBase)) {}
+          GetThreadEnvironmentBlock(thread_token.id, thread_handle_.Get())
+              ->Tib.StackBase)) {}
 
 SuspendableThreadDelegateWin::~SuspendableThreadDelegateWin() = default;
 
