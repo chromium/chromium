@@ -56,6 +56,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.AllOf;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -122,6 +123,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.ViewUtils;
@@ -177,6 +179,13 @@ public class InstantStartTest {
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+
+    @After
+    public void tearDown() {
+        if (mActivityTestRule.getActivity() != null) {
+            ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        }
+    }
 
     /**
      * Parameter set controlling whether Feed v2 is enabled.
@@ -1089,7 +1098,6 @@ public class InstantStartTest {
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    @DisabledTest(message = "crbug.com/1177555")
     public void renderSingleAsHomepage_Landscape(boolean isFeedV2) throws IOException {
         // clang-format on
         setFeedVersion(isFeedV2);
@@ -1157,7 +1165,7 @@ public class InstantStartTest {
                     "/start_surface_variation/single" +
                     "/exclude_mv_tiles/true" +
                     "/thumbnail_aspect_ratio/1"})
-    @DisabledTest(message = "crbug.com/1177555")
+    @DisableIf.Build(supported_abis_includes = "x86", message = "crbug.com/1177555")
     public void testSingleAsHomepage_Landscape_TabSize() throws IOException{
         // clang-format on
         startMainActivityFromLauncher();
@@ -1171,8 +1179,8 @@ public class InstantStartTest {
                         isDisplayed()));
 
         // Rotate to landscape mode.
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        ActivityUtils.rotateActivityToOrientation(
+                mActivityTestRule.getActivity(), ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     mActivityTestRule.getActivity().getResources().getConfiguration().orientation,
