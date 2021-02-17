@@ -47,6 +47,11 @@ class Graphics;
 class PDFiumEngine;
 class Thumbnail;
 class UrlLoader;
+struct AccessibilityCharInfo;
+struct AccessibilityDocInfo;
+struct AccessibilityPageInfo;
+struct AccessibilityPageObjects;
+struct AccessibilityTextRunInfo;
 
 class OutOfProcessInstance : public PdfViewPluginBase,
                              public pp::Instance,
@@ -223,9 +228,14 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Start loading accessibility information.
   void LoadAccessibility();
+  void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info);
 
   // Send accessibility information about the given page index.
   void SendNextAccessibilityPage(int32_t page_index);
+  void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
+                                std::vector<AccessibilityTextRunInfo> text_runs,
+                                std::vector<AccessibilityCharInfo> chars,
+                                AccessibilityPageObjects page_objects);
 
   enum DocumentLoadState {
     LOAD_STATE_LOADING,

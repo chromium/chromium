@@ -877,10 +877,7 @@ void OutOfProcessInstance::LoadAccessibility() {
   // tree, so |next_accessibility_page_index_| should be reset to ignore
   // outdated asynchronous calls of SendNextAccessibilityPage().
   set_next_accessibility_page_index(0);
-  PP_PrivateAccessibilityDocInfo pp_doc_info = {
-      doc_info.page_count, PP_FromBool(doc_info.text_accessible),
-      PP_FromBool(doc_info.text_copyable)};
-  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &pp_doc_info);
+  SetAccessibilityDocInfo(doc_info);
 
   // If the document contents isn't accessible, don't send anything more.
   if (!(engine()->HasPermission(PDFEngine::PERMISSION_COPY) ||
@@ -896,6 +893,14 @@ void OutOfProcessInstance::LoadAccessibility() {
       base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
                      weak_factory_.GetWeakPtr()),
       0);
+}
+
+void OutOfProcessInstance::SetAccessibilityDocInfo(
+    const AccessibilityDocInfo& doc_info) {
+  PP_PrivateAccessibilityDocInfo pp_doc_info = {
+      doc_info.page_count, PP_FromBool(doc_info.text_accessible),
+      PP_FromBool(doc_info.text_copyable)};
+  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &pp_doc_info);
 }
 
 void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
@@ -914,6 +919,21 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
     return;
   }
 
+  SetAccessibilityPageInfo(page_info, text_runs, chars, page_objects);
+
+  // Schedule loading the next page.
+  ScheduleTaskOnMainThread(
+      kAccessibilityPageDelay,
+      base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
+                     weak_factory_.GetWeakPtr()),
+      page_index + 1);
+}
+
+void OutOfProcessInstance::SetAccessibilityPageInfo(
+    AccessibilityPageInfo page_info,
+    std::vector<AccessibilityTextRunInfo> text_runs,
+    std::vector<AccessibilityCharInfo> chars,
+    AccessibilityPageObjects page_objects) {
   PP_PrivateAccessibilityPageInfo pp_page_info =
       ToPrivateAccessibilityPageInfo(page_info);
   std::vector<PP_PrivateAccessibilityCharInfo> pp_chars =
@@ -924,13 +944,6 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
       ToPrivateAccessibilityPageObjects(page_objects);
   pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
                                     pp_text_runs, pp_chars, pp_page_objects);
-
-  // Schedule loading the next page.
-  ScheduleTaskOnMainThread(
-      kAccessibilityPageDelay,
-      base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
-                     weak_factory_.GetWeakPtr()),
-      page_index + 1);
 }
 
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
