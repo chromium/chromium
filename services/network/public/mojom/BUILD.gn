@@ -257,7 +257,10 @@ mojom("mojom_network_param") {
   generate_java = true
   sources = [ "network_param.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_origin",
+  ]
 
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
@@ -265,13 +268,25 @@ mojom("mojom_network_param") {
     export_header_blink = "third_party/blink/public/platform/web_common.h"
   }
 
-  cpp_typemaps = [
+  # Typemaps which apply to both Blink and non-Blink bindings.
+  shared_cpp_typemaps = [
     {
       types = [
         {
           mojom = "network.mojom.AuthChallengeInfo"
           cpp = "::net::AuthChallengeInfo"
         },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/network_param_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
         {
           mojom = "network.mojom.AuthCredentials"
           cpp = "::net::AuthCredentials"
@@ -320,6 +335,9 @@ mojom("mojom_network_param") {
           [ "//services/network/public/cpp:network_param_mojom_support" ]
     },
   ]
+  cpp_typemaps += shared_cpp_typemaps
+  blink_cpp_typemaps = []
+  blink_cpp_typemaps += shared_cpp_typemaps
 }
 
 # This target is split from "mojom" target as the lazy serialization may

@@ -258,6 +258,7 @@ mojom("mojom_platform") {
     # Direct deps (instead of transitive deps) are necessary for java targets.
     public_deps += [
       "//services/network/public/mojom:cookies_mojom",
+      "//services/network/public/mojom:mojom_network_param",
       "//ui/latency/mojom",
     ]
   } else {

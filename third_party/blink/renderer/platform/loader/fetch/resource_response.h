@@ -509,6 +509,14 @@ class PLATFORM_EXPORT ResourceResponse final {
   network::mojom::CrossOriginEmbedderPolicyValue GetCrossOriginEmbedderPolicy()
       const;
 
+  const base::Optional<net::AuthChallengeInfo>& AuthChallengeInfo() const {
+    return auth_challenge_info_;
+  }
+  void SetAuthChallengeInfo(
+      const base::Optional<net::AuthChallengeInfo>& value) {
+    auth_challenge_info_ = value;
+  }
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -692,6 +700,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   // The URL of WebBundle this response was loaded from. This value is only
   // populated for resources loaded from a WebBundle.
   KURL web_bundle_url_;
+
+  base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
 };
 
 }  // namespace blink

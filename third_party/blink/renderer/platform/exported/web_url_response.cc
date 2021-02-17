@@ -533,6 +533,16 @@ void WebURLResponse::SetWebBundleURL(const WebURL& url) {
   resource_response_->SetWebBundleURL(url);
 }
 
+void WebURLResponse::SetAuthChallengeInfo(
+    const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+  resource_response_->SetAuthChallengeInfo(auth_challenge_info);
+}
+
+const base::Optional<net::AuthChallengeInfo>&
+WebURLResponse::AuthChallengeInfo() const {
+  return resource_response_->AuthChallengeInfo();
+}
+
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
 
 }  // namespace blink

@@ -924,6 +924,8 @@ void WebURLLoaderImpl::PopulateURLResponse(
     response->SetHTTPLoadInfo(load_info);
   }
 
+  response->SetAuthChallengeInfo(head.auth_challenge_info);
+
   const net::HttpResponseHeaders* headers = head.headers.get();
   if (!headers)
     return;

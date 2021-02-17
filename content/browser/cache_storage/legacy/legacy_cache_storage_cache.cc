@@ -467,7 +467,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       static_cast<net::HttpResponseInfo::ConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
-      /*has_range_requested=*/false);
+      /*has_range_requested=*/false, /*auth_challenge_info=*/base::nullopt);
 }
 
 int64_t CalculateSideDataPadding(

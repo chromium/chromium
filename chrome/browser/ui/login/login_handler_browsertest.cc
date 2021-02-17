@@ -2336,4 +2336,71 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest, OnAuthRequiredCancels) {
   EXPECT_EQ(expected_title, contents->GetTitle());
 }
 
+// Tests that login prompts are shown for main resource requests that are
+// intercepted by service workers. Regression test for
+// https://crbug.com/1055253.
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Install a Service Worker that responds to fetch events by fetch()ing the
+  // requested resource.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server.GetURL("/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            content::EvalJs(web_contents,
+                            "register('/service_worker/"
+                            "fetch_event_respond_with_fetch.js', '/')"));
+
+  // Now navigate to a page that requests basic auth.
+  NavigationController* controller = &web_contents->GetController();
+  {
+    LoginPromptBrowserTestObserver observer;
+    observer.Register(content::Source<NavigationController>(controller));
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server.GetURL(kAuthBasicPage)));
+    auth_needed_waiter.Wait();
+    EXPECT_FALSE(observer.handlers().empty());
+
+    // Cancel the auth prompt and check that the 401 response is displayed after
+    // a reload.
+    LoginHandler* handler = *observer.handlers().begin();
+    content::TestNavigationObserver reload_observer(web_contents);
+    handler->CancelAuth();
+    reload_observer.Wait();
+    const base::string16 kExpectedTitle =
+        base::ASCIIToUTF16("Denied: Missing Authorization Header");
+    EXPECT_EQ(kExpectedTitle, web_contents->GetTitle());
+  }
+
+  // Reload and provide correct credentials this time.
+  {
+    LoginPromptBrowserTestObserver observer;
+    observer.Register(content::Source<NavigationController>(controller));
+    WindowedAuthNeededObserver auth_needed_waiter(controller);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server.GetURL(kAuthBasicPage)));
+    auth_needed_waiter.Wait();
+    EXPECT_FALSE(observer.handlers().empty());
+    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
+    LoginHandler* handler = *observer.handlers().begin();
+    SetAuthFor(handler);
+    auth_supplied_waiter.Wait();
+
+    base::string16 expected_title = ExpectedTitleFromAuth(
+        base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
+    content::TitleWatcher auth_supplied_title_watcher(web_contents,
+                                                      expected_title);
+    EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+  }
+}
+
 }  // namespace

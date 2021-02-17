@@ -708,5 +708,20 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
   EXPECT_TRUE(downloaded_blob.Uuid().IsNull());
 }
 
+// Verifies that PopulateURLResponse() copies AuthChallengeInfo to the response.
+TEST_F(WebURLLoaderImplTest, AuthChallengeInfo) {
+  network::mojom::URLResponseHead head;
+  net::AuthChallengeInfo auth_challenge_info;
+  auth_challenge_info.is_proxy = true;
+  auth_challenge_info.challenge = "foobar";
+  head.auth_challenge_info = auth_challenge_info;
+
+  blink::WebURLResponse response;
+  WebURLLoaderImpl::PopulateURLResponse(GURL(), head, &response, true, -1);
+  ASSERT_TRUE(response.AuthChallengeInfo().has_value());
+  EXPECT_TRUE(response.AuthChallengeInfo()->is_proxy);
+  EXPECT_EQ("foobar", response.AuthChallengeInfo()->challenge);
+}
+
 }  // namespace
 }  // namespace content

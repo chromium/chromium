@@ -199,6 +199,7 @@ component("network_param_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_network_param_shared",
     "//url/ipc:url_ipc",
+    "//url/mojom:url_mojom_origin",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
 }

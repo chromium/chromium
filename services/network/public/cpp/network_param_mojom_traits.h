@@ -7,10 +7,45 @@
 
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "net/base/auth.h"
 #include "net/http/http_version.h"
 #include "services/network/public/mojom/network_param.mojom-shared.h"
+#include "url/mojom/origin_mojom_traits.h"
 
 namespace mojo {
+
+template <>
+class COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::AuthChallengeInfoDataView,
+                 net::AuthChallengeInfo> {
+ public:
+  static bool is_proxy(const net::AuthChallengeInfo& auth_challenge_info) {
+    return auth_challenge_info.is_proxy;
+  }
+  static const url::Origin& challenger(
+      const net::AuthChallengeInfo& auth_challenge_info) {
+    return auth_challenge_info.challenger;
+  }
+  static const std::string& scheme(
+      const net::AuthChallengeInfo& auth_challenge_info) {
+    return auth_challenge_info.scheme;
+  }
+  static const std::string& realm(
+      const net::AuthChallengeInfo& auth_challenge_info) {
+    return auth_challenge_info.realm;
+  }
+  static const std::string& challenge(
+      const net::AuthChallengeInfo& auth_challenge_info) {
+    return auth_challenge_info.challenge;
+  }
+  static const std::string& path(
+      const net::AuthChallengeInfo& auth_challenge_info) {
+    return auth_challenge_info.path;
+  }
+
+  static bool Read(network::mojom::AuthChallengeInfoDataView data,
+                   net::AuthChallengeInfo* out);
+};
 
 template <>
 class COMPONENT_EXPORT(NETWORK_CPP_BASE)

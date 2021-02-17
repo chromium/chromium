@@ -341,6 +341,11 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT WebURL WebBundleURL() const;
   BLINK_PLATFORM_EXPORT void SetWebBundleURL(const WebURL&);
 
+  BLINK_PLATFORM_EXPORT void SetAuthChallengeInfo(
+      const base::Optional<net::AuthChallengeInfo>&);
+  BLINK_PLATFORM_EXPORT const base::Optional<net::AuthChallengeInfo>&
+  AuthChallengeInfo() const;
+
 #if INSIDE_BLINK
  protected:
   // Permit subclasses to set arbitrary ResourceResponse pointer as

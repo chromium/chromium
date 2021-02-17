@@ -124,6 +124,10 @@ class CORE_EXPORT FetchResponseData final
   void SetHasRangeRequested(bool has_range_requested) {
     has_range_requested_ = has_range_requested;
   }
+  void SetAuthChallengeInfo(
+      const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+    auth_challenge_info_ = auth_challenge_info;
+  }
 
   // If the type is Default, replaces |buffer_|.
   // If the type is Basic or CORS, replaces |buffer_| and
@@ -166,6 +170,7 @@ class CORE_EXPORT FetchResponseData final
   AtomicString alpn_negotiated_protocol_;
   bool was_fetched_via_spdy_;
   bool has_range_requested_;
+  base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
 
   DISALLOW_COPY_AND_ASSIGN(FetchResponseData);
 };

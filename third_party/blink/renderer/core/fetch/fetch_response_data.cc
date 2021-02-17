@@ -208,6 +208,7 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
   new_response->was_fetched_via_spdy_ = was_fetched_via_spdy_;
   new_response->has_range_requested_ = has_range_requested_;
+  new_response->auth_challenge_info_ = auth_challenge_info_;
 
   switch (type_) {
     case Type::kBasic:
@@ -286,6 +287,7 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
     response->headers.insert(header.first, header.second);
   response->parsed_headers = ParseHeaders(
       HeaderList()->GetAsRawString(status_, status_message_), request_url);
+  response->auth_challenge_info = auth_challenge_info_;
   return response;
 }
 
@@ -358,6 +360,8 @@ void FetchResponseData::InitFromResourceResponse(
       SetPadding(padding);
     }
   }
+
+  SetAuthChallengeInfo(response.AuthChallengeInfo());
 }
 
 FetchResponseData::FetchResponseData(Type type,
