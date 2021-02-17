@@ -1044,6 +1044,14 @@
       default_value: "false",
     },
     {
+      name: "BaselineShiftType",
+      field_group: "*",
+      field_template: "primitive",
+      field_size: 2,
+      type_name: "EBaselineShiftType",
+      default_value: "EBaselineShiftType::kLength",
+    },
+    {
       name: "DependsOnContainerQueries",
       field_template: "primitive",
       type_name: "bool",

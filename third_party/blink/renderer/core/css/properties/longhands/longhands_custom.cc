@@ -702,51 +702,47 @@ const CSSValue* BaselineShift::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  switch (style.BaselineShift()) {
-    case BS_SUPER:
+  switch (style.BaselineShiftType()) {
+    case EBaselineShiftType::kSuper:
       return CSSIdentifierValue::Create(CSSValueID::kSuper);
-    case BS_SUB:
+    case EBaselineShiftType::kSub:
       return CSSIdentifierValue::Create(CSSValueID::kSub);
-    case BS_LENGTH:
+    case EBaselineShiftType::kLength:
       return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-          style.BaselineShiftValue(), style);
+          style.BaselineShift(), style);
   }
   NOTREACHED();
   return nullptr;
 }
 
 void BaselineShift::ApplyInherit(StyleResolverState& state) const {
-  const SVGComputedStyle& parent_svg_style = state.ParentStyle()->SvgStyle();
-  EBaselineShift baseline_shift = parent_svg_style.BaselineShift();
-  SVGComputedStyle& svg_style = state.Style()->AccessSVGStyle();
-  svg_style.SetBaselineShift(baseline_shift);
-  if (baseline_shift == BS_LENGTH)
-    svg_style.SetBaselineShiftValue(parent_svg_style.BaselineShiftValue());
+  state.Style()->SetBaselineShiftType(state.ParentStyle()->BaselineShiftType());
+  state.Style()->SetBaselineShift(state.ParentStyle()->BaselineShift());
 }
 
 void BaselineShift::ApplyValue(StyleResolverState& state,
                                const CSSValue& value) const {
-  SVGComputedStyle& svg_style = state.Style()->AccessSVGStyle();
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value) {
-    svg_style.SetBaselineShift(BS_LENGTH);
-    svg_style.SetBaselineShiftValue(StyleBuilderConverter::ConvertLength(
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    EBaselineShiftType baseline_shift_type = EBaselineShiftType::kLength;
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kBaseline:
+        baseline_shift_type = EBaselineShiftType::kLength;
+        break;
+      case CSSValueID::kSub:
+        baseline_shift_type = EBaselineShiftType::kSub;
+        break;
+      case CSSValueID::kSuper:
+        baseline_shift_type = EBaselineShiftType::kSuper;
+        break;
+      default:
+        NOTREACHED();
+    }
+    state.Style()->SetBaselineShiftType(baseline_shift_type);
+    state.Style()->SetBaselineShift(Length::Fixed());
+  } else {
+    state.Style()->SetBaselineShiftType(EBaselineShiftType::kLength);
+    state.Style()->SetBaselineShift(StyleBuilderConverter::ConvertLength(
         state, To<CSSPrimitiveValue>(value)));
-    return;
-  }
-  switch (identifier_value->GetValueID()) {
-    case CSSValueID::kBaseline:
-      svg_style.SetBaselineShift(BS_LENGTH);
-      svg_style.SetBaselineShiftValue(Length::Fixed());
-      return;
-    case CSSValueID::kSub:
-      svg_style.SetBaselineShift(BS_SUB);
-      return;
-    case CSSValueID::kSuper:
-      svg_style.SetBaselineShift(BS_SUPER);
-      return;
-    default:
-      NOTREACHED();
   }
 }
 

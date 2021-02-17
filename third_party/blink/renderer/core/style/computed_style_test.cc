@@ -1120,4 +1120,24 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   EXPECT_FALSE(style->Transitions());
 }
 
+#define TEST_STYLE_VALUE_NO_DIFF(field_name)                        \
+  {                                                                 \
+    scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();  \
+    scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();  \
+    style1->Set##field_name(                                        \
+        ComputedStyleInitialValues::Initial##field_name());         \
+    style2->Set##field_name(                                        \
+        ComputedStyleInitialValues::Initial##field_name());         \
+    auto diff = style1->VisualInvalidationDiff(*document, *style2); \
+    EXPECT_FALSE(diff.HasDifference());                             \
+  }
+
+TEST(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
+  Persistent<Document> document = Document::CreateForTest();
+  TEST_STYLE_VALUE_NO_DIFF(FloodColor);
+  TEST_STYLE_VALUE_NO_DIFF(FloodOpacity);
+  TEST_STYLE_VALUE_NO_DIFF(LightingColor);
+  TEST_STYLE_VALUE_NO_DIFF(BaselineShift);
+}
+
 }  // namespace blink

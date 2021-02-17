@@ -355,6 +355,8 @@ enum class EListStyleType : unsigned {
   kString,
 };
 
+enum class EBaselineShiftType : unsigned { kLength, kSub, kSuper };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_

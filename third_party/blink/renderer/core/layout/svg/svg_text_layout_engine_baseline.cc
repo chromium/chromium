@@ -33,21 +33,20 @@ SVGTextLayoutEngineBaseline::SVGTextLayoutEngineBaseline(const Font& font,
 
 float SVGTextLayoutEngineBaseline::CalculateBaselineShift(
     const ComputedStyle& style) const {
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   const SimpleFontData* font_data = font_.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return 0;
 
   DCHECK(effective_zoom_);
-  switch (svg_style.BaselineShift()) {
-    case BS_LENGTH:
+  switch (style.BaselineShiftType()) {
+    case EBaselineShiftType::kLength:
       return SVGLengthContext::ValueForLength(
-          svg_style.BaselineShiftValue(), style,
+          style.BaselineShift(), style,
           font_.GetFontDescription().ComputedPixelSize() / effective_zoom_);
-    case BS_SUB:
+    case EBaselineShiftType::kSub:
       return -font_data->GetFontMetrics().FloatHeight() / 2 / effective_zoom_;
-    case BS_SUPER:
+    case EBaselineShiftType::kSuper:
       return font_data->GetFontMetrics().FloatHeight() / 2 / effective_zoom_;
     default:
       NOTREACHED();

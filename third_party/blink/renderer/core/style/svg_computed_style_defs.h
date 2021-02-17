@@ -43,8 +43,6 @@ namespace blink {
 
 class StyleSVGResource;
 
-enum EBaselineShift { BS_LENGTH, BS_SUB, BS_SUPER };
-
 enum ETextAnchor { TA_START, TA_MIDDLE, TA_END };
 
 enum EColorInterpolation { CI_AUTO, CI_SRGB, CI_LINEARRGB };
@@ -145,35 +143,6 @@ class CORE_EXPORT StyleStrokeData : public RefCounted<StyleStrokeData> {
  private:
   StyleStrokeData();
   StyleStrokeData(const StyleStrokeData&);
-};
-
-// Note: the rule for this class is, *no inheritance* of these props
-class CORE_EXPORT StyleMiscData : public RefCounted<StyleMiscData> {
-  USING_FAST_MALLOC(StyleMiscData);
-
- public:
-  static scoped_refptr<StyleMiscData> Create() {
-    return base::AdoptRef(new StyleMiscData);
-  }
-  scoped_refptr<StyleMiscData> Copy() const {
-    return base::AdoptRef(new StyleMiscData(*this));
-  }
-
-  bool operator==(const StyleMiscData&) const;
-  bool operator!=(const StyleMiscData& other) const {
-    return !(*this == other);
-  }
-
-  Length baseline_shift_value;
-
-  StyleColor flood_color;
-  StyleColor lighting_color;
-
-  float flood_opacity;
-
- private:
-  StyleMiscData();
-  StyleMiscData(const StyleMiscData&);
 };
 
 // Non-inherited resources

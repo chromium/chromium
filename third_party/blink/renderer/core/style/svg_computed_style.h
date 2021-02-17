@@ -65,8 +65,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
 
   // Initial values for all the properties
   static EDominantBaseline InitialDominantBaseline() { return DB_AUTO; }
-  static EBaselineShift InitialBaselineShift() { return BS_LENGTH; }
-  static Length InitialBaselineShiftValue() { return Length::Fixed(); }
   static LineCap InitialCapStyle() { return kButtCap; }
   static WindRule InitialClipRule() { return RULE_NONZERO; }
   static EColorInterpolation InitialColorInterpolation() { return CI_SRGB; }
@@ -88,9 +86,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   static UnzoomedLength InitialStrokeWidth() {
     return UnzoomedLength(Length::Fixed(1));
   }
-  static float InitialFloodOpacity() { return 1; }
-  static StyleColor InitialFloodColor() { return StyleColor(Color::kBlack); }
-  static StyleColor InitialLightingColor() { return StyleColor(Color::kWhite); }
   static StyleSVGResource* InitialMaskerResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerStartResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerMidResource() { return nullptr; }
@@ -100,9 +95,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   // SVG CSS Property setters
   void SetDominantBaseline(EDominantBaseline val) {
     svg_inherited_flags.dominant_baseline = val;
-  }
-  void SetBaselineShift(EBaselineShift val) {
-    svg_noninherited_flags.f.baseline_shift = val;
   }
   void SetCapStyle(LineCap val) { svg_inherited_flags.cap_style = val; }
   void SetClipRule(WindRule val) { svg_inherited_flags.clip_rule = val; }
@@ -174,26 +166,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
       stroke.Access()->dash_offset = dash_offset;
   }
 
-  void SetFloodOpacity(float obj) {
-    if (!(misc->flood_opacity == obj))
-      misc.Access()->flood_opacity = obj;
-  }
-
-  void SetFloodColor(const StyleColor& color) {
-    if (!(misc->flood_color == color))
-      misc.Access()->flood_color = color;
-  }
-
-  void SetLightingColor(const StyleColor& color) {
-    if (!(misc->lighting_color == color))
-      misc.Access()->lighting_color = color;
-  }
-
-  void SetBaselineShiftValue(const Length& baseline_shift_value) {
-    if (!(misc->baseline_shift_value == baseline_shift_value))
-      misc.Access()->baseline_shift_value = baseline_shift_value;
-  }
-
   // Setters for non-inherited resources
   void SetMaskerResource(scoped_refptr<StyleSVGResource> resource);
 
@@ -207,9 +179,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   // Read accessors for all the properties
   EDominantBaseline DominantBaseline() const {
     return (EDominantBaseline)svg_inherited_flags.dominant_baseline;
-  }
-  EBaselineShift BaselineShift() const {
-    return (EBaselineShift)svg_noninherited_flags.f.baseline_shift;
   }
   LineCap CapStyle() const { return (LineCap)svg_inherited_flags.cap_style; }
   WindRule ClipRule() const { return (WindRule)svg_inherited_flags.clip_rule; }
@@ -240,12 +209,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   float StrokeMiterLimit() const { return stroke->miter_limit; }
   const UnzoomedLength& StrokeWidth() const { return stroke->width; }
   const Length& StrokeDashOffset() const { return stroke->dash_offset; }
-  float FloodOpacity() const { return misc->flood_opacity; }
-  const StyleColor& FloodColor() const { return misc->flood_color; }
-  const StyleColor& LightingColor() const { return misc->lighting_color; }
-  const Length& BaselineShiftValue() const {
-    return misc->baseline_shift_value;
-  }
   StyleSVGResource* MaskerResource() const { return resources->masker.get(); }
   StyleSVGResource* MarkerStartResource() const {
     return inherited_resources->marker_start.get();
@@ -301,32 +264,12 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
     unsigned dominant_baseline : 4;            // EDominantBaseline
   } svg_inherited_flags;
 
-  // don't inherit
-  struct NonInheritedFlags {
-    // 32 bit non-inherited, don't add to the struct, or the operator will
-    // break.
-    bool operator==(const NonInheritedFlags& other) const {
-      return niflags == other.niflags;
-    }
-    bool operator!=(const NonInheritedFlags& other) const {
-      return niflags != other.niflags;
-    }
-
-    union {
-      struct {
-        unsigned baseline_shift : 2;      // EBaselineShift
-      } f;
-      uint32_t niflags;
-    };
-  } svg_noninherited_flags;
-
   // inherited attributes
   DataRef<StyleFillData> fill;
   DataRef<StyleStrokeData> stroke;
   DataRef<StyleInheritedResourceData> inherited_resources;
 
   // non-inherited attributes
-  DataRef<StyleMiscData> misc;
   DataRef<StyleResourceData> resources;
 
  private:
@@ -353,9 +296,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
         InitialColorInterpolationFilters();
     svg_inherited_flags.paint_order = InitialPaintOrder();
     svg_inherited_flags.dominant_baseline = InitialDominantBaseline();
-
-    svg_noninherited_flags.niflags = 0;
-    svg_noninherited_flags.f.baseline_shift = InitialBaselineShift();
   }
 };
 

@@ -51,11 +51,4 @@ TEST(SVGComputedStyleTest, StrokeStyleShouldCompareValue) {
   }
 }
 
-TEST(SVGComputedStyleTest, MiscStyleShouldCompareValue) {
-  TEST_STYLE_VALUE_NO_DIFF(Color, FloodColor);
-  TEST_STYLE_VALUE_NO_DIFF(float, FloodOpacity);
-  TEST_STYLE_VALUE_NO_DIFF(Color, LightingColor);
-  TEST_STYLE_VALUE_NO_DIFF(Length, BaselineShiftValue);
-}
-
 }  // namespace blink

@@ -85,7 +85,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return FillLayersEqual<CSSPropertyID::kBackgroundSize>(
           a.BackgroundLayers(), b.BackgroundLayers());
     case CSSPropertyID::kBaselineShift:
-      return a.BaselineShiftValue() == b.BaselineShiftValue();
+      return a.BaselineShift() == b.BaselineShift();
     case CSSPropertyID::kBorderBottomColor:
       return a.BorderBottomColor() == b.BorderBottomColor() &&
              a.InternalVisitedBorderBottomColor() ==

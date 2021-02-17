@@ -277,9 +277,9 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       return true;
 
     case CSSPropertyID::kBaselineShift:
-      if (style.BaselineShift() != BS_LENGTH)
+      if (style.BaselineShiftType() != EBaselineShiftType::kLength)
         return false;
-      result = style.BaselineShiftValue();
+      result = style.BaselineShift();
       return true;
     case CSSPropertyID::kLineHeight:
       // Percent Lengths are used to represent numbers on line-height.
@@ -322,7 +322,8 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
   switch (property.PropertyID()) {
     // Setters that take a Length value.
     case CSSPropertyID::kBaselineShift:
-      style.SetBaselineShiftValue(value);
+      style.SetBaselineShiftType(EBaselineShiftType::kLength);
+      style.SetBaselineShift(value);
       return true;
     case CSSPropertyID::kBottom:
       style.SetBottom(value);
