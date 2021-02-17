@@ -5,9 +5,9 @@
 #include "content/browser/web_package/web_bundle_interceptor_for_network.h"
 
 #include "base/strings/stringprintf.h"
+#include "components/web_package/web_bundle_utils.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
-#include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_redirect_url_loader.h"
 #include "content/browser/web_package/web_bundle_source.h"
@@ -68,7 +68,7 @@ bool WebBundleInterceptorForNetwork::MaybeCreateLoaderForResponse(
   }
   *client_receiver = forwarding_client_.BindNewPipeAndPassReceiver();
 
-  if (!signed_exchange_utils::HasNoSniffHeader(**response_head)) {
+  if (!web_package::HasNoSniffHeader(**response_head)) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
         web_bundle_utils::kNoSniffErrorMessage);

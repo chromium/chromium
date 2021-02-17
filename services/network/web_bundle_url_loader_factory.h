@@ -25,7 +25,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
     kSuccess = 0,
     kMetadataParseError = 1,
     kMemoryQuotaExceeded = 2,
-    kMaxValue = kMemoryQuotaExceeded,
+    kServingConstraintsNotMet = 3,
+    kMaxValue = kServingConstraintsNotMet,
   };
 
   WebBundleURLLoaderFactory(

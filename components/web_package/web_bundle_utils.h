@@ -21,6 +21,9 @@ std::string CreateHeaderString(
 network::mojom::URLResponseHeadPtr CreateResourceResponseFromHeaderString(
     const std::string& header_string);
 
+// Returns true if |response| has "X-Content-Type-Options: nosniff" header.
+bool HasNoSniffHeader(const network::mojom::URLResponseHead& response);
+
 }  // namespace web_package
 
 #endif  // COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_UTILS_H_

@@ -3224,6 +3224,7 @@ class SubresourceWebBundlesWebRequestApiTest
                 std::make_unique<net::test_server::BasicHttpResponse>();
             response->set_code(net::HTTP_OK);
             response->set_content_type("application/webbundle");
+            response->AddCustomHeader("X-Content-Type-Options", "nosniff");
             response->set_content(*web_bundle);
             return std::move(response);
           }

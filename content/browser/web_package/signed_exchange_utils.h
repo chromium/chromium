@@ -59,9 +59,6 @@ bool ShouldHandleAsSignedHTTPExchange(
     const GURL& request_url,
     const network::mojom::URLResponseHead& head);
 
-// Returns true if |response| has "X-Content-Type-Options: nosniff" header.
-bool HasNoSniffHeader(const network::mojom::URLResponseHead& response);
-
 // Extracts the signed exchange version [1] from |content_type|, and converts it
 // to SignedExchanveVersion. Returns nullopt if the mime type is not a variant
 // of application/signed-exchange. Returns SignedExchangeVersion::kUnknown if an

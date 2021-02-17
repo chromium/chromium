@@ -31,6 +31,25 @@ void DeleteProducerAndRunCallback(
   std::move(callback).Run(result);
 }
 
+// Verify the serving constraints of Web Bundle HTTP responses.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-serving-constraints
+bool CheckWebBundleServingConstraints(
+    const network::mojom::URLResponseHead& response_head,
+    std::string& out_error_message) {
+  if (response_head.mime_type != "application/webbundle") {
+    out_error_message =
+        "Web Bundle response must have \"application/webbundle\" content-type.";
+    return false;
+  }
+  if (!web_package::HasNoSniffHeader(response_head)) {
+    out_error_message =
+        "Web Bundle response must have \"X-Content-Type-Options: nosniff\" "
+        "header.";
+    return false;
+  }
+  return true;
+}
+
 // URLLoaderClient which wraps the real URLLoaderClient.
 class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
  public:
@@ -43,6 +62,17 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
+    std::string error_message;
+    if (!CheckWebBundleServingConstraints(*response_head, error_message)) {
+      if (factory_) {
+        factory_->ReportErrorAndCancelPendingLoaders(
+            WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+                kServingConstraintsNotMet,
+            mojom::WebBundleErrorType::kServingConstraintsNotMet,
+            error_message);
+      }
+    }
+
     base::UmaHistogramCustomCounts(
         "SubresourceWebBundles.ContentLength",
         response_head->content_length < 0 ? 0 : response_head->content_length,
@@ -436,6 +466,8 @@ bool WebBundleURLLoaderFactory::HasError() const {
 
 void WebBundleURLLoaderFactory::SetBundleStream(
     mojo::ScopedDataPipeConsumerHandle body) {
+  if (HasError())
+    return;
   mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source;
   source_ = std::make_unique<BundleDataSource>(
       data_source.InitWithNewPipeAndPassReceiver(), std::move(body),

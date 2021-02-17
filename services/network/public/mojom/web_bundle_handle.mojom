@@ -9,6 +9,7 @@ enum WebBundleErrorType {
   kResponseParseError,
   kResourceNotFound,
   kMemoryQuotaExceeded,
+  kServingConstraintsNotMet,
 };
 
 // A handle to a WebBundle instance in the Network Service. Created by a

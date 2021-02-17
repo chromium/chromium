@@ -73,3 +73,8 @@ gen-bundle \
   -har urn-uuid.har \
   -primaryURL urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae \
   -o urn-uuid.wbn
+
+# Update Content-Length header in urn-uuid.wbn.mock-http-headers.
+(cat web_bundle_browsertest.wbn.mock-http-headers; \
+ echo Content-Length: `wc -c <urn-uuid.wbn`) \
+    > urn-uuid.wbn.mock-http-headers

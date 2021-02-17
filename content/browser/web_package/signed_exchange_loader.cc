@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "components/web_package/web_bundle_utils.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/browser/web_package/signed_exchange_cert_fetcher_factory.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
@@ -173,8 +174,7 @@ void SignedExchangeLoader::OnStartLoadingResponseBody(
 
   signed_exchange_handler_ = std::make_unique<SignedExchangeHandler>(
       network::IsUrlPotentiallyTrustworthy(outer_request_.url),
-      signed_exchange_utils::HasNoSniffHeader(*outer_response_head_),
-      content_type_,
+      web_package::HasNoSniffHeader(*outer_response_head_), content_type_,
       std::make_unique<network::DataPipeToSourceStream>(
           std::move(response_body)),
       base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
