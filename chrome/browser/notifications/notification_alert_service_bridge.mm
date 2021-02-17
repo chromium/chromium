@@ -22,29 +22,29 @@
 namespace {
 
 class MacNotificationActionHandlerImpl
-    : public notifications::mojom::MacNotificationActionHandler {
+    : public mac_notifications::mojom::MacNotificationActionHandler {
  public:
-  // notifications::mojom::MacNotificationActionHandler:
+  // mac_notifications::mojom::MacNotificationActionHandler:
   void OnNotificationAction(
-      notifications::mojom::NotificationActionInfoPtr info) override {
+      mac_notifications::mojom::NotificationActionInfoPtr info) override {
     NSDictionary* dict = nil;
     // TODO(knollr): Get all properties from |info| into |dict|.
     ProcessMacNotificationResponse(dict);
   }
 
-  mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>
+  mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
   BindRemote() {
     return binding_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Receiver<notifications::mojom::MacNotificationActionHandler> binding_{
-      this};
+  mojo::Receiver<mac_notifications::mojom::MacNotificationActionHandler>
+      binding_{this};
 };
 
 void DispatchGetNotificationsReply(
     base::mac::ScopedBlock<void (^)(NSArray*)> reply,
-    std::vector<notifications::mojom::NotificationIdentifierPtr>
+    std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
         notifications) {
   NSMutableArray* alert_ids =
       [NSMutableArray arrayWithCapacity:notifications.size()];
@@ -57,7 +57,7 @@ void DispatchGetNotificationsReply(
 
 void DispatchGetAllNotificationsReply(
     base::mac::ScopedBlock<void (^)(NSArray*)> reply,
-    std::vector<notifications::mojom::NotificationIdentifierPtr>
+    std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
         notifications) {
   NSMutableArray* alert_ids =
       [NSMutableArray arrayWithCapacity:notifications.size()];
@@ -81,8 +81,8 @@ void DispatchGetAllNotificationsReply(
 }  // namespace
 
 @implementation NotificationAlertServiceBridge {
-  mojo::Remote<notifications::mojom::MacNotificationProvider> _provider;
-  mojo::Remote<notifications::mojom::MacNotificationService> _service;
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> _provider;
+  mojo::Remote<mac_notifications::mojom::MacNotificationService> _service;
   MacNotificationActionHandlerImpl _handler;
 }
 
@@ -92,7 +92,7 @@ void DispatchGetAllNotificationsReply(
     // mojo connection disconnects we call |onDisconnect| which will destroy
     // |this| and terminate the process if it hasn't been already.
     _provider = content::ServiceProcessHost::Launch<
-        notifications::mojom::MacNotificationProvider>(
+        mac_notifications::mojom::MacNotificationProvider>(
         content::ServiceProcessHost::Options()
             .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
             // TODO(knollr): Set the correct flags so the helper launches via
@@ -110,7 +110,7 @@ void DispatchGetAllNotificationsReply(
     initWithDisconnectHandler:(base::OnceClosure)onDisconect
                      provider:
                          (mojo::PendingRemote<
-                             notifications::mojom::MacNotificationProvider>)
+                             mac_notifications::mojom::MacNotificationProvider>)
                              provider {
   if ((self = [super init])) {
     _provider.Bind(std::move(provider));
@@ -136,10 +136,10 @@ void DispatchGetAllNotificationsReply(
 
   // TODO(knollr): Pass properties from |notificationData| into
   // |notification|.
-  auto notification = notifications::mojom::Notification::New();
-  auto profileIdentifier = notifications::mojom::ProfileIdentifier::New(
+  auto notification = mac_notifications::mojom::Notification::New();
+  auto profileIdentifier = mac_notifications::mojom::ProfileIdentifier::New(
       base::SysNSStringToUTF8(profileId), incognito);
-  notification->id = notifications::mojom::NotificationIdentifier::New(
+  notification->id = mac_notifications::mojom::NotificationIdentifier::New(
       base::SysNSStringToUTF8(notificationId), std::move(profileIdentifier));
 
   _service->DisplayNotification(std::move(notification));
@@ -148,10 +148,10 @@ void DispatchGetAllNotificationsReply(
 - (void)closeNotificationWithId:(NSString*)notificationId
                       profileId:(NSString*)profileId
                       incognito:(BOOL)incognito {
-  auto profileIdentifier = notifications::mojom::ProfileIdentifier::New(
+  auto profileIdentifier = mac_notifications::mojom::ProfileIdentifier::New(
       base::SysNSStringToUTF8(profileId), incognito);
   auto notificationIdentifier =
-      notifications::mojom::NotificationIdentifier::New(
+      mac_notifications::mojom::NotificationIdentifier::New(
           base::SysNSStringToUTF8(notificationId),
           std::move(profileIdentifier));
   _service->CloseNotification(std::move(notificationIdentifier));
@@ -164,7 +164,7 @@ void DispatchGetAllNotificationsReply(
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
                              incognito:(BOOL)incognito
                                  reply:(void (^)(NSArray*))reply {
-  auto profileIdentifier = notifications::mojom::ProfileIdentifier::New(
+  auto profileIdentifier = mac_notifications::mojom::ProfileIdentifier::New(
       base::SysNSStringToUTF8(profileId), incognito);
   _service->GetDisplayedNotifications(
       std::move(profileIdentifier),

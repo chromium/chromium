@@ -9,7 +9,11 @@
 
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
+namespace mac_notifications {
+
 NSDictionary* GetMacNotificationUserInfo(
-    const notifications::mojom::NotificationPtr& notification);
+    const mojom::NotificationPtr& notification);
+
+}  // namespace mac_notifications
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UTILS_H_

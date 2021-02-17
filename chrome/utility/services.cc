@@ -171,9 +171,10 @@ auto RunWindowsIconReader(
 
 #if defined(OS_MAC)
 auto RunMacNotificationService(
-    mojo::PendingReceiver<notifications::mojom::MacNotificationProvider>
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
         receiver) {
-  return std::make_unique<MacNotificationProviderImpl>(std::move(receiver));
+  return std::make_unique<mac_notifications::MacNotificationProviderImpl>(
+      std::move(receiver));
 }
 #endif  // defined(OS_MAC)
 

@@ -14,29 +14,27 @@
 @class AlertUNNotificationCenterDelegate;
 @class UNUserNotificationCenter;
 
+namespace mac_notifications {
+
 // Implementation of the MacNotificationService mojo interface using the
 // UNNotification system API.
 class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
-    : public notifications::mojom::MacNotificationService {
+    : public mojom::MacNotificationService {
  public:
   MacNotificationServiceUN(
-      mojo::PendingReceiver<notifications::mojom::MacNotificationService>
-          service,
-      mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>
-          handler,
+      mojo::PendingReceiver<mojom::MacNotificationService> service,
+      mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
       UNUserNotificationCenter* notification_center);
   MacNotificationServiceUN(const MacNotificationServiceUN&) = delete;
   MacNotificationServiceUN& operator=(const MacNotificationServiceUN&) = delete;
   ~MacNotificationServiceUN() override;
 
-  // notifications::mojom::MacNotificationService:
-  void DisplayNotification(
-      notifications::mojom::NotificationPtr notification) override;
+  // mojom::MacNotificationService:
+  void DisplayNotification(mojom::NotificationPtr notification) override;
   void GetDisplayedNotifications(
-      notifications::mojom::ProfileIdentifierPtr profile,
+      mojom::ProfileIdentifierPtr profile,
       GetDisplayedNotificationsCallback callback) override;
-  void CloseNotification(
-      notifications::mojom::NotificationIdentifierPtr identifier) override;
+  void CloseNotification(mojom::NotificationIdentifierPtr identifier) override;
   void CloseAllNotifications() override;
 
  private:
@@ -44,9 +42,11 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   // to accept permissions if not granted or denied already.
   void RequestPermission();
 
-  mojo::Receiver<notifications::mojom::MacNotificationService> binding_;
+  mojo::Receiver<mojom::MacNotificationService> binding_;
   base::scoped_nsobject<AlertUNNotificationCenterDelegate> delegate_;
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
 };
+
+}  // namespace mac_notifications
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_

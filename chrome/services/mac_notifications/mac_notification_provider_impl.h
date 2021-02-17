@@ -13,27 +13,28 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class MacNotificationProviderImpl
-    : public notifications::mojom::MacNotificationProvider {
+namespace mac_notifications {
+
+class MacNotificationProviderImpl : public mojom::MacNotificationProvider {
  public:
   explicit MacNotificationProviderImpl(
-      mojo::PendingReceiver<notifications::mojom::MacNotificationProvider>
-          binding);
+      mojo::PendingReceiver<mojom::MacNotificationProvider> binding);
   MacNotificationProviderImpl(const MacNotificationProviderImpl&) = delete;
   MacNotificationProviderImpl& operator=(const MacNotificationProviderImpl&) =
       delete;
   ~MacNotificationProviderImpl() override;
 
-  // notifications::mojom::MacNotificationProvider:
+  // mojom::MacNotificationProvider:
   void BindNotificationService(
-      mojo::PendingReceiver<notifications::mojom::MacNotificationService>
-          service,
-      mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>
-          handler) override;
+      mojo::PendingReceiver<mojom::MacNotificationService> service,
+      mojo::PendingRemote<mojom::MacNotificationActionHandler> handler)
+      override;
 
  private:
-  mojo::Receiver<notifications::mojom::MacNotificationProvider> binding_;
-  std::unique_ptr<notifications::mojom::MacNotificationService> service_;
+  mojo::Receiver<mojom::MacNotificationProvider> binding_;
+  std::unique_ptr<mojom::MacNotificationService> service_;
 };
+
+}  // namespace mac_notifications
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_IMPL_H_

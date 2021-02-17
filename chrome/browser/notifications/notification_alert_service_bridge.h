@@ -24,7 +24,7 @@
     initWithDisconnectHandler:(base::OnceClosure)onDisconect
                      provider:
                          (mojo::PendingRemote<
-                             notifications::mojom::MacNotificationProvider>)
+                             mac_notifications::mojom::MacNotificationProvider>)
                              provider;
 
 @end

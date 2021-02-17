@@ -15,17 +15,17 @@
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
+namespace mac_notifications {
+
 MacNotificationProviderImpl::MacNotificationProviderImpl(
-    mojo::PendingReceiver<notifications::mojom::MacNotificationProvider>
-        binding)
+    mojo::PendingReceiver<mojom::MacNotificationProvider> binding)
     : binding_(this, std::move(binding)) {}
 
 MacNotificationProviderImpl::~MacNotificationProviderImpl() = default;
 
 void MacNotificationProviderImpl::BindNotificationService(
-    mojo::PendingReceiver<notifications::mojom::MacNotificationService> service,
-    mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>
-        handler) {
+    mojo::PendingReceiver<mojom::MacNotificationService> service,
+    mojo::PendingRemote<mojom::MacNotificationActionHandler> handler) {
   DCHECK(!service_);
 
   // Use the UNNotification API if available and enabled.
@@ -42,3 +42,5 @@ void MacNotificationProviderImpl::BindNotificationService(
       std::move(service), std::move(handler),
       [NSUserNotificationCenter defaultUserNotificationCenter]);
 }
+
+}  // namespace mac_notifications

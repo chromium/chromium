@@ -7,8 +7,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
+namespace mac_notifications {
+
 NSDictionary* GetMacNotificationUserInfo(
-    const notifications::mojom::NotificationPtr& notification) {
+    const mojom::NotificationPtr& notification) {
   // TODO(knollr): Fill with actual values from |notification|.
   return @{
     notification_constants::kNotificationOrigin : @"origin",
@@ -22,3 +24,5 @@ NSDictionary* GetMacNotificationUserInfo(
     notification_constants::kNotificationCreatorPid : @0,
   };
 }
+
+}  // namespace mac_notifications

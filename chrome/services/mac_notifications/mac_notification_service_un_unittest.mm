@@ -23,15 +23,17 @@
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+namespace mac_notifications {
+
 namespace {
 
 class MockNotificationActionHandler
-    : public notifications::mojom::MacNotificationActionHandler {
+    : public mojom::MacNotificationActionHandler {
  public:
-  // notifications::mojom::MacNotificationActionHandler:
+  // mojom::MacNotificationActionHandler:
   MOCK_METHOD(void,
               OnNotificationAction,
-              (notifications::mojom::NotificationActionInfoPtr),
+              (mojom::NotificationActionInfoPtr),
               (override));
 };
 
@@ -133,16 +135,14 @@ class MacNotificationServiceUNTest : public testing::Test {
     return notifications;
   }
 
-  std::vector<notifications::mojom::NotificationIdentifierPtr>
-  GetDisplayedNotificationsSync(
-      notifications::mojom::ProfileIdentifierPtr profile) {
+  std::vector<mojom::NotificationIdentifierPtr> GetDisplayedNotificationsSync(
+      mojom::ProfileIdentifierPtr profile) {
     base::RunLoop run_loop;
-    std::vector<notifications::mojom::NotificationIdentifierPtr> displayed;
+    std::vector<mojom::NotificationIdentifierPtr> displayed;
     service_remote_->GetDisplayedNotifications(
         std::move(profile),
         base::BindLambdaForTesting(
-            [&](std::vector<notifications::mojom::NotificationIdentifierPtr>
-                    notifications) {
+            [&](std::vector<mojom::NotificationIdentifierPtr> notifications) {
               displayed = std::move(notifications);
               run_loop.Quit();
             }));
@@ -152,9 +152,9 @@ class MacNotificationServiceUNTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   MockNotificationActionHandler mock_handler_;
-  mojo::Receiver<notifications::mojom::MacNotificationActionHandler>
-      handler_receiver_{&mock_handler_};
-  mojo::Remote<notifications::mojom::MacNotificationService> service_remote_;
+  mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver_{
+      &mock_handler_};
+  mojo::Remote<mojom::MacNotificationService> service_remote_;
   id mock_notification_center_ = nil;
   API_AVAILABLE(macos(10.14))
   id<UNUserNotificationCenterDelegate> notification_center_delegate_ = nullptr;
@@ -190,13 +190,12 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
          withCompletionHandler:[OCMArg any]];
 
     // Create and display a new notification.
-    auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
-        "profileId", /*incognito=*/true);
-    auto notification_identifier =
-        notifications::mojom::NotificationIdentifier::New(
-            "notificationId", std::move(profile_identifier));
-    auto notification = notifications::mojom::Notification::New(
-        std::move(notification_identifier));
+    auto profile_identifier =
+        mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
+    auto notification_identifier = mojom::NotificationIdentifier::New(
+        "notificationId", std::move(profile_identifier));
+    auto notification =
+        mojom::Notification::New(std::move(notification_identifier));
     service_remote_->DisplayNotification(std::move(notification));
 
     run_loop.Run();
@@ -208,8 +207,8 @@ TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
   if (@available(macOS 10.14, *)) {
     auto notifications = SetupNotifications();
     base::RunLoop run_loop;
-    auto profile = notifications::mojom::ProfileIdentifier::New(
-        "profileId", /*incognito=*/true);
+    auto profile =
+        mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
     auto displayed = GetDisplayedNotificationsSync(std::move(profile));
     ASSERT_EQ(2u, displayed.size());
 
@@ -245,11 +244,10 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
       quit_closure.Run();
     }] removeDeliveredNotificationsWithIdentifiers:@[ identifier ]];
 
-    auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
-        "profileId", /*incognito=*/true);
-    auto notification_identifier =
-        notifications::mojom::NotificationIdentifier::New(
-            "notificationId", std::move(profile_identifier));
+    auto profile_identifier =
+        mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
+    auto notification_identifier = mojom::NotificationIdentifier::New(
+        "notificationId", std::move(profile_identifier));
     service_remote_->CloseNotification(std::move(notification_identifier));
 
     run_loop.Run();
@@ -274,12 +272,11 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
   if (@available(macOS 10.14, *)) {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_handler_, OnNotificationAction)
-        .WillOnce(
-            [&](notifications::mojom::NotificationActionInfoPtr action_info) {
-              // TODO(knollr): verify properties of |action_info| once we set
-              // them.
-              run_loop.Quit();
-            });
+        .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
+          // TODO(knollr): verify properties of |action_info| once we set
+          // them.
+          run_loop.Quit();
+        });
 
     // Simulate a notification action and wait until we acknowledge it.
     base::RunLoop inner_run_loop;
@@ -296,3 +293,5 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
     run_loop.Run();
   }
 }
+
+}  // namespace mac_notifications

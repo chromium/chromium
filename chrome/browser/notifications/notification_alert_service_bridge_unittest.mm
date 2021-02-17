@@ -22,32 +22,33 @@
 namespace {
 
 class MockNotificationService
-    : public notifications::mojom::MacNotificationService {
+    : public mac_notifications::mojom::MacNotificationService {
  public:
   MOCK_METHOD(void,
               DisplayNotification,
-              (notifications::mojom::NotificationPtr),
+              (mac_notifications::mojom::NotificationPtr),
               (override));
   MOCK_METHOD(void,
               GetDisplayedNotifications,
-              (notifications::mojom::ProfileIdentifierPtr,
+              (mac_notifications::mojom::ProfileIdentifierPtr,
                GetDisplayedNotificationsCallback),
               (override));
   MOCK_METHOD(void,
               CloseNotification,
-              (notifications::mojom::NotificationIdentifierPtr),
+              (mac_notifications::mojom::NotificationIdentifierPtr),
               (override));
   MOCK_METHOD(void, CloseAllNotifications, (), (override));
 };
 
 class MockNotificationProvider
-    : public notifications::mojom::MacNotificationProvider {
+    : public mac_notifications::mojom::MacNotificationProvider {
  public:
   MOCK_METHOD(
       void,
       BindNotificationService,
-      (mojo::PendingReceiver<notifications::mojom::MacNotificationService>,
-       mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>),
+      (mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>,
+       mojo::PendingRemote<
+           mac_notifications::mojom::MacNotificationActionHandler>),
       (override));
 };
 
@@ -58,16 +59,17 @@ class NotificationAlertServiceBridgeTest : public testing::Test {
   NotificationAlertServiceBridgeTest() {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_provider_, BindNotificationService)
-        .WillOnce([&](mojo::PendingReceiver<
-                          notifications::mojom::MacNotificationService>
-                          service_receiver,
-                      mojo::PendingRemote<
-                          notifications::mojom::MacNotificationActionHandler>
-                          handler_remote) {
-          service_receiver_.Bind(std::move(service_receiver));
-          handler_remote_.Bind(std::move(handler_remote));
-          run_loop.Quit();
-        });
+        .WillOnce(
+            [&](mojo::PendingReceiver<
+                    mac_notifications::mojom::MacNotificationService>
+                    service_receiver,
+                mojo::PendingRemote<
+                    mac_notifications::mojom::MacNotificationActionHandler>
+                    handler_remote) {
+              service_receiver_.Bind(std::move(service_receiver));
+              handler_remote_.Bind(std::move(handler_remote));
+              run_loop.Quit();
+            });
     bridge_.reset([[NotificationAlertServiceBridge alloc]
         initWithDisconnectHandler:on_disconnect_.Get()
                          provider:provider_receiver_
@@ -81,12 +83,12 @@ class NotificationAlertServiceBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::MockOnceClosure on_disconnect_;
   MockNotificationService mock_service_;
-  mojo::Receiver<notifications::mojom::MacNotificationService>
+  mojo::Receiver<mac_notifications::mojom::MacNotificationService>
       service_receiver_{&mock_service_};
-  mojo::Remote<notifications::mojom::MacNotificationActionHandler>
+  mojo::Remote<mac_notifications::mojom::MacNotificationActionHandler>
       handler_remote_;
   MockNotificationProvider mock_provider_;
-  mojo::Receiver<notifications::mojom::MacNotificationProvider>
+  mojo::Receiver<mac_notifications::mojom::MacNotificationProvider>
       provider_receiver_{&mock_provider_};
   base::scoped_nsobject<NotificationAlertServiceBridge> bridge_;
 };
@@ -101,7 +103,7 @@ TEST_F(NotificationAlertServiceBridgeTest, DisconnectHandler) {
 TEST_F(NotificationAlertServiceBridgeTest, DeliverNotification) {
   base::RunLoop run_loop;
   EXPECT_CALL(mock_service_, DisplayNotification)
-      .WillOnce([&](notifications::mojom::NotificationPtr notification) {
+      .WillOnce([&](mac_notifications::mojom::NotificationPtr notification) {
         EXPECT_EQ("notificationId", notification->id->id);
         EXPECT_EQ("profileId", notification->id->profile->id);
         EXPECT_TRUE(notification->id->profile->incognito);
@@ -119,14 +121,14 @@ TEST_F(NotificationAlertServiceBridgeTest, DeliverNotification) {
 
 TEST_F(NotificationAlertServiceBridgeTest, GetDisplayedAlertsForProfile) {
   EXPECT_CALL(mock_service_, GetDisplayedNotifications)
-      .WillOnce([&](notifications::mojom::ProfileIdentifierPtr profile,
+      .WillOnce([&](mac_notifications::mojom::ProfileIdentifierPtr profile,
                     MockNotificationService::GetDisplayedNotificationsCallback
                         callback) {
         ASSERT_TRUE(profile);
         EXPECT_EQ("profileId", profile->id);
         EXPECT_TRUE(profile->incognito);
-        std::vector<notifications::mojom::NotificationIdentifierPtr> alerts;
-        alerts.push_back(notifications::mojom::NotificationIdentifier::New(
+        std::vector<mac_notifications::mojom::NotificationIdentifierPtr> alerts;
+        alerts.push_back(mac_notifications::mojom::NotificationIdentifier::New(
             "notificationId", std::move(profile)));
         std::move(callback).Run(std::move(alerts));
       });
@@ -145,13 +147,13 @@ TEST_F(NotificationAlertServiceBridgeTest, GetDisplayedAlertsForProfile) {
 
 TEST_F(NotificationAlertServiceBridgeTest, GetAllDisplayedAlerts) {
   EXPECT_CALL(mock_service_, GetDisplayedNotifications)
-      .WillOnce([&](notifications::mojom::ProfileIdentifierPtr profile,
+      .WillOnce([&](mac_notifications::mojom::ProfileIdentifierPtr profile,
                     MockNotificationService::GetDisplayedNotificationsCallback
                         callback) {
         ASSERT_FALSE(profile);
-        std::vector<notifications::mojom::NotificationIdentifierPtr> alerts;
-        alerts.push_back(notifications::mojom::NotificationIdentifier::New(
-            "notificationId", notifications::mojom::ProfileIdentifier::New(
+        std::vector<mac_notifications::mojom::NotificationIdentifierPtr> alerts;
+        alerts.push_back(mac_notifications::mojom::NotificationIdentifier::New(
+            "notificationId", mac_notifications::mojom::ProfileIdentifier::New(
                                   "profileId", /*incognito=*/true)));
         std::move(callback).Run(std::move(alerts));
       });
@@ -176,7 +178,7 @@ TEST_F(NotificationAlertServiceBridgeTest, CloseNotification) {
   base::RunLoop run_loop;
   EXPECT_CALL(mock_service_, CloseNotification)
       .WillOnce(
-          [&](notifications::mojom::NotificationIdentifierPtr identifier) {
+          [&](mac_notifications::mojom::NotificationIdentifierPtr identifier) {
             ASSERT_TRUE(identifier);
             EXPECT_EQ("notificationId", identifier->id);
             ASSERT_TRUE(identifier->profile);
@@ -202,7 +204,7 @@ TEST_F(NotificationAlertServiceBridgeTest, CloseAllNotifications) {
 TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
   // TODO(knollr): pass and verify expected notification action data.
   handler_remote_->OnNotificationAction(
-      notifications::mojom::NotificationActionInfo::New());
+      mac_notifications::mojom::NotificationActionInfo::New());
   // Wait until the action has been handled.
   task_environment_.RunUntilIdle();
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module notifications.mojom;
+module mac_notifications.mojom;
 
 // Represents a profile being used to display notifications. A profile with a
 // given |id| might have another child profile with the same |id| but with
