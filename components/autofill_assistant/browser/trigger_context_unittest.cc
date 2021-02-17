@@ -4,39 +4,39 @@
 
 #include "components/autofill_assistant/browser/trigger_context.h"
 
+#include <map>
+#include <string>
+
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
-namespace {
 
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
-using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 TEST(TriggerContextTest, Empty) {
   TriggerContext empty;
-  EXPECT_THAT(empty.GetParameters(), IsEmpty());
+  EXPECT_THAT(empty.GetScriptParameters().ToProto(), IsEmpty());
   EXPECT_EQ(empty.GetExperimentIds(), std::string());
 }
 
 TEST(TriggerContextTest, Create) {
-  std::map<std::string, std::string> parameters = {{"key_a", "value_a"},
-                                                   {"key_b", "value_b"}};
-  TriggerContext context = {{{"key_a", "value_a"}, {"key_b", "value_b"}},
-                            "exps",
-                            /* is_cct = */ true,
-                            /* onboarding_shown = */ true,
-                            /* is_direct_action = */ true,
-                            /* caller_account_hash = */ "hash"};
-  EXPECT_THAT(
-      context.GetParameters(),
-      UnorderedElementsAre(Pair("key_a", "value_a"), Pair("key_b", "value_b")));
-  EXPECT_THAT(context.GetParameter("key_a"), Eq("value_a"));
-  EXPECT_THAT(context.GetParameter("key_b"), Eq("value_b"));
-  EXPECT_THAT(context.GetParameter("not_found"), Eq(base::nullopt));
+  TriggerContext context = {
+      std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+          {"key_a", "value_a"}, {"key_b", "value_b"}}),
+      "exps",
+      /* is_cct = */ true,
+      /* onboarding_shown = */ true,
+      /* is_direct_action = */ true,
+      /* caller_account_hash = */ "hash"};
+  EXPECT_THAT(context.GetScriptParameters().ToProto(),
+              UnorderedElementsAreArray(std::map<std::string, std::string>(
+                  {{"key_a", "value_a"}, {"key_b", "value_b"}})));
   EXPECT_EQ(context.GetExperimentIds(), "exps");
   EXPECT_TRUE(context.GetCCT());
   EXPECT_TRUE(context.GetOnboardingShown());
@@ -47,7 +47,7 @@ TEST(TriggerContextTest, Create) {
 TEST(TriggerContextTest, MergeEmpty) {
   TriggerContext empty;
   TriggerContext merged = {{&empty, &empty}};
-  EXPECT_THAT(merged.GetParameters(), IsEmpty());
+  EXPECT_THAT(merged.GetScriptParameters().ToProto(), IsEmpty());
   EXPECT_TRUE(merged.GetExperimentIds().empty());
   EXPECT_FALSE(merged.GetCCT());
   EXPECT_FALSE(merged.GetOnboardingShown());
@@ -56,16 +56,19 @@ TEST(TriggerContextTest, MergeEmpty) {
 }
 
 TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
-  TriggerContext context = {{{"key_a", "value_a"}},
-                            "exp1",
-                            /* is_cct = */ false,
-                            /* onboarding_shown = */ false,
-                            /* is_direct_action = */ false,
-                            /* caller_account_hash = */ std::string()};
+  TriggerContext context = {
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"key_a", "value_a"}}),
+      "exp1",
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* caller_account_hash = */ std::string()};
   TriggerContext empty;
   TriggerContext merged = {{&empty, &context}};
-  EXPECT_THAT(merged.GetParameters(),
-              UnorderedElementsAre(Pair("key_a", "value_a")));
+  EXPECT_THAT(merged.GetScriptParameters().ToProto(),
+              UnorderedElementsAreArray(
+                  std::map<std::string, std::string>({{"key_a", "value_a"}})));
   EXPECT_EQ(merged.GetExperimentIds(), "exp1");
   EXPECT_FALSE(merged.GetCCT());
   EXPECT_FALSE(merged.GetOnboardingShown());
@@ -74,14 +77,17 @@ TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
 }
 
 TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
-  TriggerContext context1 = {{{"key_a", "value_a"}},
-                             "exp1",
-                             /* is_cct = */ false,
-                             /* onboarding_shown = */ false,
-                             /* is_direct_action = */ false,
-                             /* caller_account_hash = */ std::string()};
+  TriggerContext context1 = {
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"key_a", "value_a"}}),
+      "exp1",
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* caller_account_hash = */ std::string()};
   TriggerContext context2 = {
-      {{"key_a", "value_a_changed"}, {"key_b", "value_b"}},
+      std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+          {"key_a", "value_a_changed"}, {"key_b", "value_b"}}),
       "exp2",
       /* is_cct = */ true,
       /* onboarding_shown = */ true,
@@ -91,9 +97,9 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
   // Adding empty to make sure empty contexts are properly skipped.
   TriggerContext empty;
   TriggerContext merged = {{&empty, &context1, &empty, &context2, &empty}};
-  EXPECT_THAT(
-      merged.GetParameters(),
-      UnorderedElementsAre(Pair("key_a", "value_a"), Pair("key_b", "value_b")));
+  EXPECT_THAT(merged.GetScriptParameters().ToProto(),
+              UnorderedElementsAreArray(std::map<std::string, std::string>(
+                  {{"key_a", "value_a"}, {"key_b", "value_b"}})));
   EXPECT_EQ(merged.GetExperimentIds(), "exp1,exp2");
   EXPECT_TRUE(merged.GetCCT());
   EXPECT_TRUE(merged.GetOnboardingShown());
@@ -102,13 +108,22 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
 }
 
 TEST(TriggerContextTest, HasExperimentId) {
-  TriggerContext context = {{}, "1,2,3", false, false, false, std::string()};
+  TriggerContext context = {std::make_unique<ScriptParameters>(),
+                            "1,2,3",
+                            false,
+                            false,
+                            false,
+                            std::string()};
 
   EXPECT_TRUE(context.HasExperimentId("2"));
   EXPECT_FALSE(context.HasExperimentId("4"));
 
-  TriggerContext other_context = {{},    "4,5,6", false,
-                                  false, false,   std::string()};
+  TriggerContext other_context = {std::make_unique<ScriptParameters>(),
+                                  "4,5,6",
+                                  false,
+                                  false,
+                                  false,
+                                  std::string()};
   EXPECT_TRUE(other_context.HasExperimentId("4"));
   EXPECT_FALSE(other_context.HasExperimentId("2"));
 
@@ -136,5 +151,4 @@ TEST(TriggerContextTest, HasExperimentId) {
   EXPECT_TRUE(single_element.HasExperimentId("1"));
 }
 
-}  // namespace
 }  // namespace autofill_assistant

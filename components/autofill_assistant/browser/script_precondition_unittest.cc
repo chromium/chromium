@@ -254,7 +254,9 @@ TEST_F(ScriptPreconditionTest, ParameterMustExist) {
   EXPECT_FALSE(Check(proto));
 
   trigger_context_ = std::make_unique<TriggerContext>(
-      std::map<std::string, std::string>{{"param", "exists"}}, "",
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "exists"}}),
+      "",
       /* is_cct = */ false,
       /* onboarding_shown = */ false,
       /* is_direct_action = */ false,
@@ -272,7 +274,9 @@ TEST_F(ScriptPreconditionTest, ParameterMustNotExist) {
   EXPECT_TRUE(Check(proto));
 
   trigger_context_ = std::make_unique<TriggerContext>(
-      std::map<std::string, std::string>{{"param", "exists"}}, "",
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "exists"}}),
+      "",
       /* is_cct = */ false,
       /* onboarding_shown = */ false,
       /* is_direct_action = */ false,
@@ -290,7 +294,9 @@ TEST_F(ScriptPreconditionTest, ParameterMustHaveValue) {
   EXPECT_FALSE(Check(proto));
 
   trigger_context_ = std::make_unique<TriggerContext>(
-      std::map<std::string, std::string>{{"param", "another"}}, "",
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "another"}}),
+      "",
       /* is_cct = */ false,
       /* onboarding_shown = */ false,
       /* is_direct_action = */ false,
@@ -298,7 +304,9 @@ TEST_F(ScriptPreconditionTest, ParameterMustHaveValue) {
   EXPECT_FALSE(Check(proto));
 
   trigger_context_ = std::make_unique<TriggerContext>(
-      std::map<std::string, std::string>{{"param", "value"}}, "",
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "value"}}),
+      "",
       /* is_cct = */ false,
       /* onboarding_shown = */ false,
       /* is_direct_action = */ false,

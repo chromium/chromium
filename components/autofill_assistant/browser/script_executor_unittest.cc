@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,11 +56,13 @@ class ScriptExecutorTest : public testing::Test,
     delegate_.SetWebController(&mock_web_controller_);
     delegate_.SetCurrentURL(GURL("http://example.com/"));
 
-    std::map<std::string, std::string> script_parameters;
-    script_parameters["additional_param"] = "additional_param_value";
     executor_ = std::make_unique<ScriptExecutor>(
         kScriptPath,
-        std::make_unique<TriggerContext>(script_parameters, "additional_exp"),
+        std::make_unique<TriggerContext>(
+            std::make_unique<ScriptParameters>(
+                std::map<std::string, std::string>{
+                    {"additional_param", "additional_param_value"}}),
+            "additional_exp"),
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
         /* listener= */ this, &scripts_state_, &ordered_interrupts_,
@@ -188,7 +191,9 @@ TEST_F(ScriptExecutorTest, GetActionsFails) {
 
 TEST_F(ScriptExecutorTest, ForwardParameters) {
   delegate_.SetTriggerContext(std::make_unique<TriggerContext>(
-      std::map<std::string, std::string>{{"param", "value"}}, "exp"));
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "value"}}),
+      "exp"));
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
       .WillOnce(Invoke([](const std::string& script_path, const GURL& url,
                           const TriggerContext& trigger_context,
@@ -200,9 +205,11 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
         // delegate's TriggerContext.
         EXPECT_THAT(trigger_context.GetExperimentIds(),
                     Eq("exp,additional_exp"));
-        EXPECT_THAT(trigger_context.GetParameter("additional_param"),
+        EXPECT_THAT(trigger_context.GetScriptParameters().GetParameter(
+                        "additional_param"),
                     Eq("additional_param_value"));
-        EXPECT_THAT(trigger_context.GetParameter("param"), Eq("value"));
+        EXPECT_THAT(trigger_context.GetScriptParameters().GetParameter("param"),
+                    Eq("value"));
 
         std::move(callback).Run(net::HTTP_OK, "");
       }));
@@ -1997,7 +2004,7 @@ TEST_F(ScriptExecutorTest, ReportDirectActionsChoices) {
   ASSERT_NE(nullptr, delegate_.GetUserActions());
   ASSERT_THAT(*delegate_.GetUserActions(), SizeIs(1));
   (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>(
-      /* parameters = */ std::map<std::string, std::string>(),
+      /* parameters = */ std::make_unique<ScriptParameters>(),
       /* experiment_ids = */ std::string(),
       /* is_cct = */ false,
       /* onboarding_shown = */ false,

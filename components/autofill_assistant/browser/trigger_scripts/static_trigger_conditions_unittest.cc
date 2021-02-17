@@ -76,11 +76,13 @@ TEST_F(StaticTriggerConditionsTest, HasResults) {
 }
 
 TEST_F(StaticTriggerConditionsTest, ScriptParameterMatches) {
-  TriggerContext trigger_context = {{{"must_exist_and_exists", "exists"},
-                                     {"must_not_exist_and_exists", "exists"},
-                                     {"must_match", "matching_value"},
-                                     {"must_match_empty", ""}},
-                                    /* exp = */ ""};
+  TriggerContext trigger_context = {
+      std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+          {"must_exist_and_exists", "exists"},
+          {"must_not_exist_and_exists", "exists"},
+          {"must_match", "matching_value"},
+          {"must_match_empty", ""}}),
+      /* exp = */ ""};
   static_trigger_conditions_.Init(
       &mock_website_login_manager_, mock_is_first_time_user_callback_.Get(),
       GURL(kFakeUrl), &trigger_context, mock_callback_.Get());

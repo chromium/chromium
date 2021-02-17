@@ -409,8 +409,11 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
                           const std::string& global_payload,
                           const std::string& script_payload,
                           Service::ResponseCallback& callback) {
-        EXPECT_THAT(trigger_context.GetParameter("required"), Eq("value"));
-        EXPECT_THAT(trigger_context.GetParameter("arg0"), Eq("value0"));
+        EXPECT_THAT(
+            trigger_context.GetScriptParameters().GetParameter("required"),
+            Eq("value"));
+        EXPECT_THAT(trigger_context.GetScriptParameters().GetParameter("arg0"),
+                    Eq("value0"));
         EXPECT_TRUE(trigger_context.GetDirectAction());
 
         std::move(callback).Run(true, "");
@@ -418,10 +421,9 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
 
   EXPECT_TRUE(controller_->PerformUserActionWithContext(
       0, std::make_unique<TriggerContext>(
-             /* parameters = */ std::map<std::string, std::string>{{"required",
-                                                                    "value"},
-                                                                   {"arg0",
-                                                                    "value0"}},
+             /* parameters = */ std::make_unique<ScriptParameters>(
+                 std::map<std::string, std::string>{{"required", "value"},
+                                                    {"arg0", "value0"}}),
              /* experiment_ids = */ std::string(),
              /* is_cct = */ false,
              /* onboarding_shown = */ false,
@@ -2278,13 +2280,12 @@ TEST_F(ControllerTest, SetOverlayColors) {
                 StrEq("#FFFFFFFF")))));
 
   GURL url("http://a.example.com/path");
-  controller_->Start(
-      url,
-      std::make_unique<TriggerContext>(
-          /* parameters = */ std::map<std::string,
-                                      std::string>{{"OVERLAY_COLORS",
-                                                    "#FF000000:#FFFFFFFF"}},
-          /* experiment_ids = */ std::string()));
+  controller_->Start(url,
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             std::map<std::string, std::string>{
+                                 {"OVERLAY_COLORS", "#FF000000:#FFFFFFFF"}}),
+                         /* experiment_ids = */ std::string()));
 }
 
 TEST_F(ControllerTest, SetDateTimeRange) {
@@ -2653,12 +2654,11 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
 
   EXPECT_TRUE(controller_->Start(
-      initialUrl,
-      std::make_unique<TriggerContext>(
-          /* parameters = */ std::map<std::string,
-                                      std::string>{{"PASSWORD_CHANGE_USERNAME",
-                                                    "test_username"}},
-          /* experiment_ids = */ std::string())));
+      initialUrl, std::make_unique<TriggerContext>(
+                      /* parameters = */ std::make_unique<ScriptParameters>(
+                          std::map<std::string, std::string>{
+                              {"PASSWORD_CHANGE_USERNAME", "test_username"}}),
+                      /* experiment_ids = */ std::string())));
   // Initial navigation.
   SimulateNavigateToUrl(GURL("http://b.example.com"));
   EXPECT_EQ(GetUserData()->selected_login_->username, "test_username");

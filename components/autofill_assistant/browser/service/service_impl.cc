@@ -79,11 +79,11 @@ void ServiceImpl::GetScriptsForUrl(const GURL& url,
                                    ResponseCallback callback) {
   DCHECK(url.is_valid());
   client_context_->Update(trigger_context);
-  request_sender_->SendRequest(
-      script_server_url_,
-      ProtocolUtils::CreateGetScriptsRequest(url, client_context_->AsProto(),
-                                             trigger_context.GetParameters()),
-      std::move(callback));
+  request_sender_->SendRequest(script_server_url_,
+                               ProtocolUtils::CreateGetScriptsRequest(
+                                   url, client_context_->AsProto(),
+                                   trigger_context.GetScriptParameters()),
+                               std::move(callback));
 }
 
 void ServiceImpl::GetActions(const std::string& script_path,
@@ -98,7 +98,7 @@ void ServiceImpl::GetActions(const std::string& script_path,
       script_action_server_url_,
       ProtocolUtils::CreateInitialScriptActionsRequest(
           script_path, url, global_payload, script_payload,
-          client_context_->AsProto(), trigger_context.GetParameters(),
+          client_context_->AsProto(), trigger_context.GetScriptParameters(),
           script_store_config_),
       std::move(callback));
 }

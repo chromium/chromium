@@ -1165,11 +1165,11 @@ bool Controller::MaybeAutostartScript(
 
 void Controller::InitFromParameters() {
   auto details = std::make_unique<Details>();
-  if (details->UpdateFromParameters(*trigger_context_))
+  if (details->UpdateFromParameters(trigger_context_->GetScriptParameters()))
     SetDetails(std::move(details), base::TimeDelta());
 
   const base::Optional<std::string> overlay_color =
-      trigger_context_->GetOverlayColors();
+      trigger_context_->GetScriptParameters().GetOverlayColors();
   if (overlay_color) {
     std::unique_ptr<OverlayColors> colors = std::make_unique<OverlayColors>();
     std::vector<std::string> color_strings =
@@ -1187,7 +1187,7 @@ void Controller::InitFromParameters() {
     SetOverlayColors(std::move(colors));
   }
   const base::Optional<std::string> password_change_username =
-      trigger_context_->GetPasswordChangeUsername();
+      trigger_context_->GetScriptParameters().GetPasswordChangeUsername();
   if (password_change_username) {
     DCHECK(GetDeeplinkURL().is_valid());  // |deeplink_url_| must be set.
     user_data_->selected_login_.emplace(GetDeeplinkURL().GetOrigin(),
@@ -1299,9 +1299,10 @@ std::string Controller::GetDebugContext() {
   dict.SetKey("status", base::Value(status_message_));
   if (trigger_context_) {
     std::vector<base::Value> parameters_js;
-    for (const auto& parameter : trigger_context_->GetParameters()) {
+    for (const auto& parameter :
+         trigger_context_->GetScriptParameters().ToProto()) {
       base::Value parameter_js = base::Value(base::Value::Type::DICTIONARY);
-      parameter_js.SetKey(parameter.first, base::Value(parameter.second));
+      parameter_js.SetKey(parameter.name(), base::Value(parameter.value()));
       parameters_js.push_back(std::move(parameter_js));
     }
     dict.SetKey("parameters", base::Value(parameters_js));

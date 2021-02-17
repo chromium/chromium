@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 
 namespace autofill_assistant {
 
@@ -56,7 +57,8 @@ bool StaticTriggerConditions::has_results() const {
 
 bool StaticTriggerConditions::script_parameter_matches(
     const ScriptParameterMatchProto& param) const {
-  auto opt_value = trigger_context_->GetParameter(param.name());
+  auto opt_value =
+      trigger_context_->GetScriptParameters().GetParameter(param.name());
   if (!param.exists()) {
     return !opt_value;
   }

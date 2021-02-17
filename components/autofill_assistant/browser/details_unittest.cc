@@ -70,13 +70,13 @@ TEST_F(DetailsTest, UpdateFromParametersEmpty) {
 
 TEST_F(DetailsTest, UpdateFromParametersShowInitialNoUpdate) {
   Details details;
-  EXPECT_FALSE(details.UpdateFromParameters(
-      {{{"DETAILS_SHOW_INITIAL", "false"}}, "exps"}));
+  EXPECT_FALSE(
+      details.UpdateFromParameters({{{"DETAILS_SHOW_INITIAL", "false"}}}));
 }
 
 TEST_F(DetailsTest, UpdateFromParametersSetsPlaceholderFlags) {
   Details details;
-  details.UpdateFromParameters({{{"DETAILS_SHOW_INITIAL", "true"}}, "exps"});
+  details.UpdateFromParameters({{{"DETAILS_SHOW_INITIAL", "true"}}});
 
   EXPECT_TRUE(details.placeholders().show_image_placeholder());
 }
@@ -93,8 +93,7 @@ TEST_F(DetailsTest, UpdateFromParametersUpdateFromDetails) {
         {"DETAILS_IMAGE_ACCESSIBILITY_HINT", "hint"},
         {"DETAILS_IMAGE_CLICKTHROUGH_URL", "clickthrough"},
         {"DETAILS_TOTAL_PRICE_LABEL", "total"},
-        {"DETAILS_TOTAL_PRICE", "12"}},
-       "exps"}));
+        {"DETAILS_TOTAL_PRICE", "12"}}}));
 
   EXPECT_TRUE(details.placeholders().show_image_placeholder());
   EXPECT_THAT(details.title(), Eq("title"));
@@ -118,8 +117,7 @@ TEST_F(DetailsTest, UpdateFromParametersBackwardsCompatibility) {
   EXPECT_TRUE(details.UpdateFromParameters(
       {{{"MOVIES_MOVIE_NAME", "movie_name"},
         {"MOVIES_THEATER_NAME", "movie_theater"},
-        {"MOVIES_SCREENING_DATETIME", "2019-09-26T16:40:02"}},
-       "exps"}));
+        {"MOVIES_SCREENING_DATETIME", "2019-09-26T16:40:02"}}}));
 
   EXPECT_TRUE(details.placeholders().show_image_placeholder());
   EXPECT_THAT(details.title(), Eq("movie_name"));

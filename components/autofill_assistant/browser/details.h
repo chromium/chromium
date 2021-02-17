@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
 
 namespace autofill_assistant {
-class TriggerContext;
 
 class Details {
  public:
@@ -35,7 +35,7 @@ class Details {
   // made.
   // If one of the generic detail parameter is present then vertical specific
   // parameters are not used for Details creation.
-  bool UpdateFromParameters(const TriggerContext& context);
+  bool UpdateFromParameters(const ScriptParameters& script_parameters);
 
   // Updates the details to show data directly from proto. Returns true if
   // |details| were successfully updated.
@@ -94,7 +94,8 @@ class Details {
 
   // Tries updating the details using generic detail parameters. Returns true
   // if at least one generic detail parameter was found and used.
-  bool MaybeUpdateFromDetailsParameters(const TriggerContext& context);
+  bool MaybeUpdateFromDetailsParameters(
+      const ScriptParameters& script_parameters);
 
   // Updates fields by taking the current |proto_| values into account.
   void Update();

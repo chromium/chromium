@@ -225,7 +225,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
 
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContext>(
-                          /* params = */ input_script_params,
+                          /* params = */ std::make_unique<ScriptParameters>(
+                              input_script_params),
                           /* exp = */ "1,2,4",
                           /* is_cct = */ true,
                           /* onboarding_shown = */ true,

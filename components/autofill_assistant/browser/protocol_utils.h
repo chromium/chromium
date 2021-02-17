@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/script.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
 
@@ -28,7 +29,7 @@ class ProtocolUtils {
   static std::string CreateGetScriptsRequest(
       const GURL& url,
       const ClientContextProto& client_context,
-      const std::map<std::string, std::string>& script_parameters);
+      const ScriptParameters& script_parameters);
 
   // Convert |script_proto| to a script struct and if the script is valid, add
   // it to |scripts|.
@@ -45,7 +46,7 @@ class ProtocolUtils {
       const std::string& global_payload,
       const std::string& script_payload,
       const ClientContextProto& client_context,
-      const std::map<std::string, std::string>& script_parameters,
+      const ScriptParameters& script_parameters,
       const base::Optional<ScriptStoreConfig>& script_store_config);
 
   // Create request to get next sequence of actions for a script.
@@ -60,7 +61,7 @@ class ProtocolUtils {
   static std::string CreateGetTriggerScriptsRequest(
       const GURL& url,
       const ClientContextProto& client_context,
-      const std::map<std::string, std::string>& script_parameters);
+      const ScriptParameters& script_parameters);
 
   // Create an action from the |action|.
   static std::unique_ptr<Action> CreateAction(ActionDelegate* delegate,

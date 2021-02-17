@@ -49,32 +49,18 @@
 
 namespace autofill_assistant {
 
-namespace {
-
-void AppendScriptParametersToRepeatedField(
-    const std::map<std::string, std::string>& script_parameters,
-    google::protobuf::RepeatedPtrField<ScriptParameterProto>* dest) {
-  for (const auto& param_entry : script_parameters) {
-    ScriptParameterProto* parameter = dest->Add();
-    parameter->set_name(param_entry.first);
-    parameter->set_value(param_entry.second);
-  }
-}
-
-}  // namespace
-
 // static
 std::string ProtocolUtils::CreateGetScriptsRequest(
     const GURL& url,
     const ClientContextProto& client_context,
-    const std::map<std::string, std::string>& script_parameters) {
+    const ScriptParameters& script_parameters) {
   DCHECK(!url.is_empty());
 
   SupportsScriptRequestProto script_proto;
   script_proto.set_url(url.spec());
   *script_proto.mutable_client_context() = client_context;
-  AppendScriptParametersToRepeatedField(
-      script_parameters, script_proto.mutable_script_parameters());
+  *script_proto.mutable_script_parameters() =
+      script_parameters.ToProto(/* only_trigger_script_allowlisted = */ false);
   std::string serialized_script_proto;
   bool success = script_proto.SerializeToString(&serialized_script_proto);
   DCHECK(success);
@@ -124,7 +110,7 @@ std::string ProtocolUtils::CreateInitialScriptActionsRequest(
     const std::string& global_payload,
     const std::string& script_payload,
     const ClientContextProto& client_context,
-    const std::map<std::string, std::string>& script_parameters,
+    const ScriptParameters& script_parameters,
     const base::Optional<ScriptStoreConfig>& script_store_config) {
   ScriptActionRequestProto request_proto;
   InitialScriptActionsRequestProto* initial_request_proto =
@@ -139,8 +125,8 @@ std::string ProtocolUtils::CreateInitialScriptActionsRequest(
   query->set_url(url.spec());
   query->set_policy(PolicyType::SCRIPT);
   *request_proto.mutable_client_context() = client_context;
-  AppendScriptParametersToRepeatedField(
-      script_parameters, initial_request_proto->mutable_script_parameters());
+  *initial_request_proto->mutable_script_parameters() =
+      script_parameters.ToProto(/* only_trigger_script_allowlisted = */ false);
   if (!global_payload.empty()) {
     request_proto.set_global_payload(global_payload);
   }
@@ -394,14 +380,12 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
 std::string ProtocolUtils::CreateGetTriggerScriptsRequest(
     const GURL& url,
     const ClientContextProto& client_context,
-    const std::map<std::string, std::string>& script_parameters) {
+    const ScriptParameters& script_parameters) {
   GetTriggerScriptsRequestProto request_proto;
   request_proto.set_url(url.spec());
   *request_proto.mutable_client_context() = client_context;
-  if (!script_parameters.empty()) {
-    AppendScriptParametersToRepeatedField(
-        script_parameters, request_proto.mutable_debug_script_parameters());
-  }
+  *request_proto.mutable_debug_script_parameters() =
+      script_parameters.ToProto(/* only_trigger_script_allowlisted = */ true);
 
   std::string serialized_request_proto;
   bool success = request_proto.SerializeToString(&serialized_request_proto);

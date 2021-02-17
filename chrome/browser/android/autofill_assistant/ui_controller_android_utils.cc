@@ -498,7 +498,8 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
     jboolean is_direct_action,
     const base::android::JavaParamRef<jstring>& jcaller_account_hash) {
   return std::make_unique<TriggerContext>(
-      CreateStringMapFromJava(env, jparameter_names, jparameter_values),
+      std::make_unique<ScriptParameters>(
+          CreateStringMapFromJava(env, jparameter_names, jparameter_values)),
       SafeConvertJavaStringToNative(env, jexperiment_ids), is_cct,
       onboarding_shown, is_direct_action,
       SafeConvertJavaStringToNative(env, jcaller_account_hash));

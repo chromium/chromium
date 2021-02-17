@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -251,16 +252,16 @@ base::Value Details::GetDebugContext() const {
   return dict;
 }
 
-bool Details::UpdateFromParameters(const TriggerContext& context) {
+bool Details::UpdateFromParameters(const ScriptParameters& script_parameters) {
   base::Optional<std::string> show_initial =
-      context.GetParameter("DETAILS_SHOW_INITIAL");
+      script_parameters.GetParameter("DETAILS_SHOW_INITIAL");
   if (show_initial.value_or("true") == "false") {
     return false;
   }
   // Whenever details are updated from parameters we want to show a placeholder
   // for the image.
   proto_.mutable_placeholders()->set_show_image_placeholder(true);
-  if (MaybeUpdateFromDetailsParameters(context)) {
+  if (MaybeUpdateFromDetailsParameters(script_parameters)) {
     Update();
     return true;
   }
@@ -269,21 +270,21 @@ bool Details::UpdateFromParameters(const TriggerContext& context) {
   // Remove once we always pass detail parameters.
   bool is_updated = false;
   base::Optional<std::string> movie_name =
-      context.GetParameter("MOVIES_MOVIE_NAME");
+      script_parameters.GetParameter("MOVIES_MOVIE_NAME");
   if (movie_name) {
     proto_.set_title(movie_name.value());
     is_updated = true;
   }
 
   base::Optional<std::string> theater_name =
-      context.GetParameter("MOVIES_THEATER_NAME");
+      script_parameters.GetParameter("MOVIES_THEATER_NAME");
   if (theater_name) {
     proto_.set_description_line_2(theater_name.value());
     is_updated = true;
   }
 
   base::Optional<std::string> screening_datetime =
-      context.GetParameter("MOVIES_SCREENING_DATETIME");
+      script_parameters.GetParameter("MOVIES_SCREENING_DATETIME");
   if (screening_datetime &&
       ParseDateTimeStringToProto(screening_datetime.value(),
                                  proto_.mutable_datetime())) {
@@ -294,52 +295,54 @@ bool Details::UpdateFromParameters(const TriggerContext& context) {
   return is_updated;
 }
 
-bool Details::MaybeUpdateFromDetailsParameters(const TriggerContext& context) {
+bool Details::MaybeUpdateFromDetailsParameters(
+    const ScriptParameters& script_parameters) {
   bool details_updated = false;
 
-  base::Optional<std::string> title = context.GetParameter("DETAILS_TITLE");
+  base::Optional<std::string> title =
+      script_parameters.GetParameter("DETAILS_TITLE");
   if (title) {
     proto_.set_title(title.value());
     details_updated = true;
   }
 
   base::Optional<std::string> description_line_1 =
-      context.GetParameter("DETAILS_DESCRIPTION_LINE_1");
+      script_parameters.GetParameter("DETAILS_DESCRIPTION_LINE_1");
   if (description_line_1) {
     proto_.set_description_line_1(description_line_1.value());
     details_updated = true;
   }
 
   base::Optional<std::string> description_line_2 =
-      context.GetParameter("DETAILS_DESCRIPTION_LINE_2");
+      script_parameters.GetParameter("DETAILS_DESCRIPTION_LINE_2");
   if (description_line_2) {
     proto_.set_description_line_2(description_line_2.value());
     details_updated = true;
   }
 
   base::Optional<std::string> description_line_3 =
-      context.GetParameter("DETAILS_DESCRIPTION_LINE_3");
+      script_parameters.GetParameter("DETAILS_DESCRIPTION_LINE_3");
   if (description_line_3) {
     proto_.set_description_line_3(description_line_3.value());
     details_updated = true;
   }
 
   base::Optional<std::string> image_url =
-      context.GetParameter("DETAILS_IMAGE_URL");
+      script_parameters.GetParameter("DETAILS_IMAGE_URL");
   if (image_url) {
     proto_.set_image_url(image_url.value());
     details_updated = true;
   }
 
   base::Optional<std::string> image_accessibility_hint =
-      context.GetParameter("DETAILS_IMAGE_ACCESSIBILITY_HINT");
+      script_parameters.GetParameter("DETAILS_IMAGE_ACCESSIBILITY_HINT");
   if (image_accessibility_hint) {
     proto_.set_image_accessibility_hint(image_accessibility_hint.value());
     details_updated = true;
   }
 
   base::Optional<std::string> image_clickthrough_url =
-      context.GetParameter("DETAILS_IMAGE_CLICKTHROUGH_URL");
+      script_parameters.GetParameter("DETAILS_IMAGE_CLICKTHROUGH_URL");
   if (image_clickthrough_url) {
     proto_.mutable_image_clickthrough_data()->set_allow_clickthrough(true);
     proto_.mutable_image_clickthrough_data()->set_clickthrough_url(
@@ -348,14 +351,14 @@ bool Details::MaybeUpdateFromDetailsParameters(const TriggerContext& context) {
   }
 
   base::Optional<std::string> total_price_label =
-      context.GetParameter("DETAILS_TOTAL_PRICE_LABEL");
+      script_parameters.GetParameter("DETAILS_TOTAL_PRICE_LABEL");
   if (total_price_label) {
     proto_.set_total_price_label(total_price_label.value());
     details_updated = true;
   }
 
   base::Optional<std::string> total_price =
-      context.GetParameter("DETAILS_TOTAL_PRICE");
+      script_parameters.GetParameter("DETAILS_TOTAL_PRICE");
   if (total_price) {
     proto_.set_total_price(total_price.value());
     details_updated = true;

@@ -57,16 +57,6 @@ void AssertClientContext(const ClientContextProto& context) {
               Eq(ClientContextProto::UNKNOWN));
 }
 
-void AssertScriptParameters(
-    const google::protobuf::RepeatedPtrField<ScriptParameterProto>& actual,
-    const std::map<std::string, std::string>& expected) {
-  std::map<std::string, std::string> actual_as_map;
-  for (const auto& actual_parameter : actual) {
-    actual_as_map[actual_parameter.name()] = actual_parameter.value();
-  }
-  EXPECT_THAT(actual_as_map, UnorderedElementsAreArray(expected));
-}
-
 TEST_F(ProtocolUtilsTest, ScriptMissingPath) {
   SupportedScriptProto script;
   script.mutable_presentation()->mutable_chip()->set_text("missing path");
@@ -122,8 +112,7 @@ TEST_F(ProtocolUtilsTest, InterruptsCannotBeAutostart) {
 }
 
 TEST_F(ProtocolUtilsTest, CreateInitialScriptActionsRequest) {
-  std::map<std::string, std::string> parameters = {{"key_a", "value_a"},
-                                                   {"key_b", "value_b"}};
+  ScriptParameters parameters = {{{"key_a", "value_a"}, {"key_b", "value_b"}}};
   ScriptActionRequestProto request;
   ScriptStoreConfig config;
   config.set_bundle_path("bundle/path");
@@ -137,7 +126,8 @@ TEST_F(ProtocolUtilsTest, CreateInitialScriptActionsRequest) {
   const InitialScriptActionsRequestProto& initial = request.initial_request();
   EXPECT_THAT(initial.query().script_path(), ElementsAre("script_path"));
   EXPECT_EQ(initial.query().url(), "http://example.com/");
-  AssertScriptParameters(initial.script_parameters(), parameters);
+  EXPECT_THAT(initial.script_parameters(),
+              UnorderedElementsAreArray(parameters.ToProto()));
 
   AssertClientContext(request.client_context());
   EXPECT_EQ("global_payload", request.global_payload());
@@ -160,15 +150,14 @@ TEST_F(ProtocolUtilsTest, CreateNextScriptActionsRequest) {
 }
 
 TEST_F(ProtocolUtilsTest, CreateGetScriptsRequest) {
-  std::map<std::string, std::string> parameters = {{"key_a", "value_a"},
-                                                   {"key_b", "value_b"}};
-
+  ScriptParameters parameters = {{{"key_a", "value_a"}, {"key_b", "value_b"}}};
   SupportsScriptRequestProto request;
   EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetScriptsRequest(
       GURL("http://example.com/"), client_context_proto_, parameters)));
 
   AssertClientContext(request.client_context());
-  AssertScriptParameters(request.script_parameters(), parameters);
+  EXPECT_THAT(request.script_parameters(),
+              UnorderedElementsAreArray(parameters.ToProto()));
   EXPECT_EQ("http://example.com/", request.url());
 }
 
@@ -343,16 +332,19 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsParseError) {
 }
 
 TEST_F(ProtocolUtilsTest, CreateGetTriggerScriptsRequest) {
-  std::map<std::string, std::string> parameters = {{"key_a", "value_a"},
-                                                   {"key_b", "value_b"}};
-
+  ScriptParameters parameters = {
+      {{"key_a", "value_a"}, {"DEBUG_BUNDLE_ID", "123"}}};
   GetTriggerScriptsRequestProto request;
   EXPECT_TRUE(
       request.ParseFromString(ProtocolUtils::CreateGetTriggerScriptsRequest(
           GURL("http://example.com/"), client_context_proto_, parameters)));
 
   AssertClientContext(request.client_context());
-  AssertScriptParameters(request.debug_script_parameters(), parameters);
+  EXPECT_THAT(request.debug_script_parameters(),
+              UnorderedElementsAreArray(
+                  ScriptParameters(std::map<std::string, std::string>{
+                                       {"DEBUG_BUNDLE_ID", "123"}})
+                      .ToProto()));
   EXPECT_EQ("http://example.com/", request.url());
 }
 

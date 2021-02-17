@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
@@ -27,11 +28,11 @@ class TriggerContext {
   // NOTE: only use this if you don't intend to send the context to the backend
   // and don't care about the default values. In all other cases, use the full
   // overload below!
-  TriggerContext(const std::map<std::string, std::string>& parameters,
+  TriggerContext(std::unique_ptr<ScriptParameters> script_parameters,
                  const std::string& experiment_ids);
 
   // Creates a trigger context with the given values.
-  TriggerContext(const std::map<std::string, std::string>& parameters,
+  TriggerContext(std::unique_ptr<ScriptParameters> script_parameters,
                  const std::string& experiment_ids,
                  bool is_cct,
                  bool onboarding_shown,
@@ -46,17 +47,8 @@ class TriggerContext {
   TriggerContext(const TriggerContext&) = delete;
   TriggerContext& operator=(const TriggerContext&) = delete;
 
-  // Returns a const reference to all parameters.
-  virtual const std::map<std::string, std::string>& GetParameters() const;
-
-  // Returns the value of a specific parameter, if present.
-  virtual base::Optional<std::string> GetParameter(
-      const std::string& name) const;
-
-  // Getters for specific parameters.
-  base::Optional<std::string> GetOverlayColors() const;
-  base::Optional<std::string> GetPasswordChangeUsername() const;
-  base::Optional<std::string> GetBase64TriggerScriptsResponseProto() const;
+  // Returns a const reference to the script parameters.
+  virtual const ScriptParameters& GetScriptParameters() const;
 
   // Returns a comma-separated set of experiment ids.
   virtual std::string GetExperimentIds() const;
@@ -79,8 +71,7 @@ class TriggerContext {
   virtual std::string GetCallerAccountHash() const;
 
  private:
-  // Script parameters provided by the caller.
-  std::map<std::string, std::string> parameters_;
+  std::unique_ptr<ScriptParameters> script_parameters_;
 
   // Experiment ids to be passed to the backend in requests. They may also be
   // used to change client behavior.
