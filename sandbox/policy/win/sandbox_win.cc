@@ -776,6 +776,18 @@ ResultCode LaunchWithoutSandbox(
       options.job_handle = job_object_handle;
     }
   }
+
+  // Chromium binaries are marked as CET Compatible but some processes
+  // are not. When --no-sandbox is specified we disable CET for all children.
+  // Otherwise we are here because the sandbox type is kNoSandbox, and allow
+  // the process delegate to indicate if it is compatible with CET.
+  if (cmd_line->HasSwitch(switches::kNoSandbox) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoSandbox)) {
+    options.disable_cetcompat = true;
+  } else if (!delegate->CetCompatible()) {
+    options.disable_cetcompat = true;
+  }
+
   *process = base::LaunchProcess(*cmd_line, options);
   return SBOX_ALL_OK;
 }
