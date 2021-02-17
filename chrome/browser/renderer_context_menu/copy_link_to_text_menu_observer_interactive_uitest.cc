@@ -11,6 +11,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/context_menu_params.h"
@@ -21,11 +23,25 @@
 
 namespace {
 
-class CopyLinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
+class CopyLinkToTextMenuObserverTest
+    : public extensions::ExtensionBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   CopyLinkToTextMenuObserverTest();
 
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
+  void SetUp() override {
+    InProcessBrowserTest::SetUp();
+    base::test::ScopedFeatureList scoped_feature_list;
+
+    if (GetParam()) {
+      scoped_feature_list.InitAndEnableFeature(
+          features::kPreemtiveLinkToTextGeneration);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          features::kPreemtiveLinkToTextGeneration);
+    }
+  }
+
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     Reset(false);
@@ -36,6 +52,11 @@ class CopyLinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
 
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    menu()->set_web_contents(web_contents);
+    content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+    EXPECT_TRUE(ExecuteScript(main_frame, "window.focus();"));
   }
   void TearDownOnMainThread() override {
     observer_.reset();
@@ -50,6 +71,11 @@ class CopyLinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 
   void InitMenu(content::ContextMenuParams params) {
     observer_->InitMenu(params);
+  }
+
+  bool ShouldPreemptivelyGenerateLink() {
+    return base::FeatureList::IsEnabled(
+        features::kPreemtiveLinkToTextGeneration);
   }
 
   ~CopyLinkToTextMenuObserverTest() override;
@@ -67,19 +93,25 @@ CopyLinkToTextMenuObserverTest::~CopyLinkToTextMenuObserverTest() = default;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, AddsMenuItem) {
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, AddsMenuItem) {
   content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = base::UTF8ToUTF16("hello world");
   InitMenu(params);
   EXPECT_EQ(1u, menu()->GetMenuSize());
   MockRenderViewContextMenu::MockMenuItem item;
   menu()->GetMenuItem(0, &item);
   EXPECT_EQ(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, item.command_id);
-  EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.checked);
   EXPECT_FALSE(item.hidden);
+  if (ShouldPreemptivelyGenerateLink()) {
+    EXPECT_FALSE(item.enabled);
+  } else {
+    EXPECT_TRUE(item.enabled);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
@@ -94,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
   EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello%20world"), text);
 }
 
-IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
                        CopiesLinkForEmptySelector) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
@@ -110,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
   EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/"), text);
 }
 
-IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
@@ -126,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
 }
 
 // crbug.com/1139864
-IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
                        InvalidSelectorForIframe) {
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
@@ -155,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
   EXPECT_EQ(base::UTF8ToUTF16(main_url.spec()), text);
 }
 
-IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   ui_test_utils::NavigateToURL(browser(),
@@ -168,3 +200,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
       CopyLinkToTextMenuObserver::Create(menu());
   EXPECT_EQ(nullptr, observer);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CopyLinkToTextMenuObserverTest,
+                         ::testing::Values(true, false));

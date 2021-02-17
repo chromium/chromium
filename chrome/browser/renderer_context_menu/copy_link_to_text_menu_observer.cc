@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
@@ -53,11 +54,13 @@ void CopyLinkToTextMenuObserver::InitMenu(
   } else {
     url_ = params.page_url;
   }
-  selected_text_ = params.selection_text;
 
   proxy_->AddMenuItem(
       IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+
+  if (ShouldPreemptivelyGenerateLink())
+    RequestLinkGeneration();
 }
 
 bool CopyLinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
@@ -67,6 +70,12 @@ bool CopyLinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
 bool CopyLinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
   // This should only be called for the command for copying link to text.
   DCHECK(IsCommandIdSupported(command_id));
+
+  // If preemptively generating the link, only enable the command if the link
+  // has already been successfully generated.
+  if (ShouldPreemptivelyGenerateLink())
+    return generated_link_.has_value();
+
   return true;
 }
 
@@ -74,8 +83,70 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
   // This should only be called for the command for copying link to text.
   DCHECK(IsCommandIdSupported(command_id));
 
+  if (ShouldPreemptivelyGenerateLink()) {
+    CopyLinkToClipboard();
+  } else {
+    RequestLinkGeneration();
+  }
+}
+
+void CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
+    const std::string& selector) {
+  if (selector.empty())
+    generated_link_ = url_.spec();
+  else
+    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
+
+  if (ShouldPreemptivelyGenerateLink()) {
+    if (selector.empty()) {
+      // If there is no valid selector, leave the item disabled.
+      return;
+    }
+    proxy_->UpdateMenuItem(
+        IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+    return;
+  }
+
+  CopyLinkToClipboard();
+}
+
+void CopyLinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
+    const std::string& selector) {
+  generated_selector_for_testing_ = url_.spec() + selector;
+}
+
+bool CopyLinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
+  return base::FeatureList::IsEnabled(features::kPreemtiveLinkToTextGeneration);
+}
+
+void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
+  content::RenderFrameHost* main_frame =
+      proxy_->GetWebContents()->GetMainFrame();
+  if (!main_frame)
+    return;
+
+  data_transfer_endpoint_ = std::make_unique<ui::DataTransferEndpoint>(
+      main_frame->GetLastCommittedOrigin());
+
+  // Check whether current url is blocklisted for link to text generation. This
+  // check should happen before iframe check so that if both conditions are
+  // present then blocklist error is logged.
+  if (!shared_highlighting::ShouldOfferLinkToText(url_)) {
+    shared_highlighting::LogGenerateErrorBlockList();
+    OnRequestLinkGenerationCompleted(std::string());
+    return;
+  }
+
+  // Check whether the selected text is in an iframe.
+  if (main_frame != proxy_->GetWebContents()->GetFocusedFrame()) {
+    shared_highlighting::LogGenerateErrorIFrame();
+    OnRequestLinkGenerationCompleted(std::string());
+    return;
+  }
+
   if (generated_selector_for_testing_.has_value()) {
-    OnGeneratedSelector(nullptr, generated_selector_for_testing_.value());
+    OnRequestLinkGenerationCompleted(generated_selector_for_testing_.value());
     return;
   }
 
@@ -83,51 +154,15 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
   // the selected text and any context around the text to distinguish it from
   // the rest of the contents. GenerateSelector will call a callback with
   // the generated string if it succeeds or an empty string if it fails.
-  content::RenderFrameHost* main_frame =
-      proxy_->GetWebContents()->GetMainFrame();
-  if (!main_frame)
-    return;
-
-  // Check whether current url is blocklisted for link to text generation. This
-  // check should happen before iframe check so that if both conditions are
-  // present then blocklist error is logged.
-  if (!shared_highlighting::ShouldOfferLinkToText(url_)) {
-    shared_highlighting::LogGenerateErrorBlockList();
-    OnGeneratedSelector(std::make_unique<ui::DataTransferEndpoint>(
-                            main_frame->GetLastCommittedOrigin()),
-                        std::string());
-    return;
-  }
-
-  if (main_frame != proxy_->GetWebContents()->GetFocusedFrame()) {
-    shared_highlighting::LogGenerateErrorIFrame();
-    OnGeneratedSelector(std::make_unique<ui::DataTransferEndpoint>(
-                            main_frame->GetLastCommittedOrigin()),
-                        std::string());
-    return;
-  }
-
   main_frame->GetRemoteInterfaces()->GetInterface(
       remote_.BindNewPipeAndPassReceiver());
-  remote_->GenerateSelector(
-      base::BindOnce(&CopyLinkToTextMenuObserver::OnGeneratedSelector,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::make_unique<ui::DataTransferEndpoint>(
-                         main_frame->GetLastCommittedOrigin())));
+  remote_->GenerateSelector(base::BindOnce(
+      &CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CopyLinkToTextMenuObserver::OnGeneratedSelector(
-    std::unique_ptr<ui::DataTransferEndpoint> endpoint,
-    const std::string& selector) {
+void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                std::move(endpoint));
-  std::string url = url_.spec();
-  if (!selector.empty())
-    url += kTextFragmentUrlClassifier + selector;
-  scw.WriteText(base::UTF8ToUTF16(url));
-}
-
-void CopyLinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
-    const std::string& selector) {
-  generated_selector_for_testing_ = selector;
+                                std::move(data_transfer_endpoint_));
+  scw.WriteText(base::UTF8ToUTF16(generated_link_.value()));
 }
