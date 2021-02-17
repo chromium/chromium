@@ -117,7 +117,7 @@ void OnArcAppIconCompletelyLoaded(
                 ? apps::CompositeImagesAndApplyMask(
                       icon->foreground_image_skia(),
                       icon->background_image_skia())
-                : apps::ApplyBackgroundAndMask(icon->foreground_image_skia());
+                : apps::ApplyBackgroundAndMask(icon->image_skia());
       } else {
         iv->uncompressed = icon->image_skia();
       }

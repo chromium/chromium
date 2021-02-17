@@ -244,18 +244,6 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
   const std::vector<ui::ScaleFactor>& scale_factors =
       ui::GetSupportedScaleFactors();
   switch (icon_type) {
-    case IconType::kUncompressed:
-      image_skia_ = gfx::ImageSkia(
-          std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
-                                   resource_size_in_dip),
-          resource_size);
-      // Deliberately fall through to IconType::kCompressed to update
-      // |incomplete_scale_factors_|.
-      FALLTHROUGH;
-    case IconType::kCompressed:
-      for (const auto& scale_factor : scale_factors)
-        incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
-      break;
     case IconType::kAdaptive:
       foreground_image_skia_ = gfx::ImageSkia(
           std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
@@ -276,6 +264,20 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
         background_incomplete_scale_factors_.insert(
             {scale_factor, base::Time::Now()});
       }
+      // Deliberately fall through to IconType::kUncompressed to update
+      // |image_skia_| and |incomplete_scale_factors_|.
+      FALLTHROUGH;
+    case IconType::kUncompressed:
+      image_skia_ = gfx::ImageSkia(
+          std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
+                                   resource_size_in_dip),
+          resource_size);
+      // Deliberately fall through to IconType::kCompressed to update
+      // |incomplete_scale_factors_|.
+      FALLTHROUGH;
+    case IconType::kCompressed:
+      for (const auto& scale_factor : scale_factors)
+        incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
       break;
   }
 }
@@ -284,15 +286,6 @@ ArcAppIcon::~ArcAppIcon() = default;
 
 void ArcAppIcon::LoadSupportedScaleFactors() {
   switch (icon_type_) {
-    case IconType::kUncompressed:
-      // Calling GetRepresentation indirectly calls LoadForScaleFactor but also
-      // first initializes image_skia_ with the placeholder icons (e.g.
-      // IDR_APP_DEFAULT_ICON), via ArcAppIcon::Source::GetImageForScale.
-      for (auto scale_factor : incomplete_scale_factors_) {
-        image_skia_.GetRepresentation(
-            ui::GetScaleForScaleFactor(scale_factor.first));
-      }
-      break;
     case IconType::kCompressed:
       for (auto scale_factor : incomplete_scale_factors_)
         LoadForScaleFactor(scale_factor.first);
@@ -304,6 +297,17 @@ void ArcAppIcon::LoadSupportedScaleFactors() {
       }
       for (auto scale_factor : background_incomplete_scale_factors_) {
         background_image_skia_.GetRepresentation(
+            ui::GetScaleForScaleFactor(scale_factor.first));
+      }
+      // Deliberately fall through to IconType::kCompressed to update
+      // |image_skia_|.
+      FALLTHROUGH;
+    case IconType::kUncompressed:
+      // Calling GetRepresentation indirectly calls LoadForScaleFactor but also
+      // first initializes image_skia_ with the placeholder icons (e.g.
+      // IDR_APP_DEFAULT_ICON), via ArcAppIcon::Source::GetImageForScale.
+      for (auto scale_factor : incomplete_scale_factors_) {
+        image_skia_.GetRepresentation(
             ui::GetScaleForScaleFactor(scale_factor.first));
       }
       break;
@@ -319,8 +323,10 @@ bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() const {
     case IconType::kCompressed:
       return incomplete_scale_factors_.empty();
     case IconType::kAdaptive:
-      return foreground_incomplete_scale_factors_.empty() &&
-             background_incomplete_scale_factors_.empty();
+      return !is_adaptive_icon_
+                 ? incomplete_scale_factors_.empty()
+                 : foreground_incomplete_scale_factors_.empty() &&
+                       background_incomplete_scale_factors_.empty();
   }
 }
 
@@ -640,9 +646,7 @@ void ArcAppIcon::OnIconRead(
                     ArcAppIconDescriptor(resource_size_in_dip_,
                                          read_result->scale_factor),
                     read_result->resize_allowed, false /* retain_padding */,
-                    foreground_image_skia_,
-                    foreground_incomplete_scale_factors_);
-        background_incomplete_scale_factors_.clear();
+                    image_skia_, incomplete_scale_factors_);
         return;
       }
 

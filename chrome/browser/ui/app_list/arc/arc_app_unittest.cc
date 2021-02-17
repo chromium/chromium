@@ -2692,7 +2692,8 @@ TEST_P(ArcDefaultAppTest, LoadAdaptiveIcon) {
   VerifyIcon(src_image_skia, model_updater()->FindItem(app_id)->icon());
 }
 
-TEST_P(ArcAppModelIconTest, LoadManyIcons) {
+// TODO(crbug.com/1132117) Disabled due to flake.
+TEST_P(ArcAppModelIconTest, DISABLED_LoadManyIcons) {
   if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
     return;
 
@@ -2718,7 +2719,8 @@ TEST_P(ArcAppModelIconTest, LoadManyIcons) {
   EXPECT_GE(kMaxSimultaneousIconRequests, max_arc_app_icon_request_count());
 }
 
-TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
+// TODO(crbug.com/1132117) Disabled due to flake.
+TEST_P(ArcAppModelIconTest, DISABLED_LoadManyIconsWithSomeBadIcons) {
   if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
     return;
 
