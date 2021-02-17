@@ -24,8 +24,8 @@
 #include "cc/animation/scroll_offset_animations.h"
 #include "cc/animation/scroll_offset_animations_impl.h"
 #include "cc/animation/scroll_timeline.h"
-#include "cc/animation/timing_function.h"
 #include "cc/animation/worklet_animation.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 

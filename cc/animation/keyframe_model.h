@@ -13,49 +13,22 @@
 #include "cc/animation/animation_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_worklet_input.h"
+#include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace cc {
-
-class AnimationCurve;
 
 // A KeyframeModel contains all the state required to play an AnimationCurve.
 // Specifically, the affected property, the run state (paused, finished, etc.),
 // loop count, last pause time, and the total time spent paused.
 // It represents a model of the keyframes (internally represented as a curve).
-class CC_ANIMATION_EXPORT KeyframeModel {
+class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
  public:
-  // KeyframeModels begin in the 'WAITING_FOR_TARGET_AVAILABILITY' state. A
-  // KeyframeModel waiting for target availibility will run as soon as its
-  // target property is free (and all the KeyframeModels animating with it are
-  // also able to run). When this time arrives, the controller will move the
-  // keyframe model into the STARTING state, and then into the RUNNING state.
-  // RUNNING KeyframeModels may toggle between RUNNING and PAUSED, and may be
-  // stopped by moving into either the ABORTED or FINISHED states. A FINISHED
-  // keyframe model was allowed to run to completion, but an ABORTED keyframe
-  // model was not. An animation in the state ABORTED_BUT_NEEDS_COMPLETION is a
-  // keyframe model that was aborted for some reason, but needs to be finished.
-  // Currently this is for impl-only scroll offset KeyframeModels that need to
-  // be completed on the main thread.
-  enum RunState {
-    WAITING_FOR_TARGET_AVAILABILITY = 0,
-    WAITING_FOR_DELETION,
-    STARTING,
-    RUNNING,
-    PAUSED,
-    FINISHED,
-    ABORTED,
-    ABORTED_BUT_NEEDS_COMPLETION,
-    // This sentinel must be last.
-    LAST_RUN_STATE = ABORTED_BUT_NEEDS_COMPLETION
-  };
-  static std::string ToString(RunState);
+  static const KeyframeModel* ToCcKeyframeModel(
+      const gfx::KeyframeModel* keyframe_model);
 
-  enum class Direction { NORMAL, REVERSE, ALTERNATE_NORMAL, ALTERNATE_REVERSE };
+  static KeyframeModel* ToCcKeyframeModel(gfx::KeyframeModel* keyframe_model);
 
-  enum class FillMode { NONE, FORWARDS, BACKWARDS, BOTH, AUTO };
-
-  enum class Phase { BEFORE, ACTIVE, AFTER };
-
+  // Bundles a property id with its name and native type.
   class CC_ANIMATION_EXPORT TargetPropertyId {
    public:
     // For a property that is neither TargetProperty::CSS_CUSTOM_PROPERTY nor
@@ -90,7 +63,7 @@ class CC_ANIMATION_EXPORT KeyframeModel {
   };
 
   static std::unique_ptr<KeyframeModel> Create(
-      std::unique_ptr<AnimationCurve> curve,
+      std::unique_ptr<gfx::AnimationCurve> curve,
       int keyframe_model_id,
       int group_id,
       TargetPropertyId target_property_id);
@@ -99,69 +72,20 @@ class CC_ANIMATION_EXPORT KeyframeModel {
       RunState initial_run_state) const;
 
   KeyframeModel(const KeyframeModel&) = delete;
-  virtual ~KeyframeModel();
+  ~KeyframeModel() override;
 
   KeyframeModel& operator=(const KeyframeModel&) = delete;
 
-  int id() const { return id_; }
   int group() const { return group_; }
-  int target_property_type() const {
-    return target_property_id_.target_property_type();
-  }
+
+  int TargetProperty() const override;
+
+  void SetRunState(RunState run_state, base::TimeTicks monotonic_time) override;
 
   ElementId element_id() const { return element_id_; }
   void set_element_id(ElementId element_id) { element_id_ = element_id; }
 
-  RunState run_state() const { return run_state_; }
-  void SetRunState(RunState run_state, base::TimeTicks monotonic_time);
-
-  // This is the number of times that the keyframe model will play. If this
-  // value is zero the keyframe model will not play. If it is negative, then
-  // the keyframe model will loop indefinitely.
-  double iterations() const { return iterations_; }
-  void set_iterations(double n) { iterations_ = n; }
-
-  double iteration_start() const { return iteration_start_; }
-  void set_iteration_start(double iteration_start) {
-    iteration_start_ = iteration_start;
-  }
-
-  base::TimeTicks start_time() const { return start_time_; }
-
-  void set_start_time(base::TimeTicks monotonic_time) {
-    start_time_ = monotonic_time;
-  }
-  bool has_set_start_time() const { return !start_time_.is_null(); }
-
-  base::TimeDelta time_offset() const { return time_offset_; }
-  void set_time_offset(base::TimeDelta monotonic_time) {
-    time_offset_ = monotonic_time;
-  }
-
-  // Pause the keyframe effect at local time |pause_offset|.
-  void Pause(base::TimeDelta pause_offset);
-
-  Direction direction() { return direction_; }
-  void set_direction(Direction direction) { direction_ = direction; }
-
-  FillMode fill_mode() { return fill_mode_; }
-  void set_fill_mode(FillMode fill_mode) { fill_mode_ = fill_mode; }
-
-  double playback_rate() { return playback_rate_; }
-  void set_playback_rate(double playback_rate) {
-    playback_rate_ = playback_rate;
-  }
-
-  bool IsFinishedAt(base::TimeTicks monotonic_time) const;
-  bool is_finished() const {
-    return run_state_ == FINISHED || run_state_ == ABORTED ||
-           run_state_ == WAITING_FOR_DELETION;
-  }
-
   bool InEffect(base::TimeTicks monotonic_time) const;
-
-  AnimationCurve* curve() { return curve_.get(); }
-  const AnimationCurve* curve() const { return curve_.get(); }
 
   // If this is true, even if the keyframe model is running, it will not be
   // tickable until it is given a start time. This is true for KeyframeModels
@@ -180,11 +104,6 @@ class CC_ANIMATION_EXPORT KeyframeModel {
   void set_received_finished_event(bool received_finished_event) {
     received_finished_event_ = received_finished_event;
   }
-
-  // Takes the given absolute time, and using the start time and the number
-  // of iterations, returns the relative time in the current iteration.
-  base::TimeDelta TrimTimeToCurrentIteration(
-      base::TimeTicks monotonic_time) const;
 
   void set_is_controlling_instance_for_test(bool is_controlling_instance) {
     is_controlling_instance_ = is_controlling_instance;
@@ -216,51 +135,13 @@ class CC_ANIMATION_EXPORT KeyframeModel {
     return target_property_id_.native_property_type();
   }
 
-  KeyframeModel::Phase CalculatePhaseForTesting(
-      base::TimeDelta local_time) const;
+  bool StartShouldBeDeferred() const override;
 
  private:
-  KeyframeModel(std::unique_ptr<AnimationCurve> curve,
+  KeyframeModel(std::unique_ptr<gfx::AnimationCurve> curve,
                 int keyframe_model_id,
                 int group_id,
                 TargetPropertyId target_property_id);
-
-  // Return local time for this keyframe model given the absolute monotonic
-  // time.
-  //
-  // Local time represents the time value that is used to tick this keyframe
-  // model and is relative to its start time. It is closely related to the local
-  // time concept in web animations [1]. It is:
-  //  - for playing animation : wall time - start time - paused duration
-  //  - for paused animation  : paused time
-  //  - otherwise             : zero
-  //
-  // Here is small diagram that shows how active, local, and monotonic times
-  // relate to each other and to the run state.
-  //
-  //      run state   Starting  (R)unning  Paused (R) Paused (R)  Finished
-  //                    ^                                          ^
-  //                    |                                          |
-  // monotonic time  ------------------------------------------------->
-  //                    |                                          |
-  //     local time     +-----------------+      +---+      +--------->
-  //                    |                                          |
-  //    active time     +          +------+      +---+      +------+
-  //                      (-offset)
-  //
-  // [1] https://drafts.csswg.org/web-animations/#local-time-section
-  base::TimeDelta ConvertMonotonicTimeToLocalTime(
-      base::TimeTicks monotonic_time) const;
-
-  KeyframeModel::Phase CalculatePhase(base::TimeDelta local_time) const;
-  base::Optional<base::TimeDelta> CalculateActiveTime(
-      base::TimeTicks monotonic_time) const;
-
-  std::unique_ptr<AnimationCurve> curve_;
-
-  // IDs must be unique.
-  int id_;
-
   // KeyframeModels that must be run together are called 'grouped' and have the
   // same group id. Grouped KeyframeModels are guaranteed to start at the same
   // time and no other KeyframeModels may animate any of the group's target
@@ -272,29 +153,9 @@ class CC_ANIMATION_EXPORT KeyframeModel {
   // If specified, overrides the ElementId to apply this KeyframeModel's effect
   // value on.
   ElementId element_id_;
-  RunState run_state_;
-  double iterations_;
-  double iteration_start_;
-  base::TimeTicks start_time_;
-  Direction direction_;
-  double playback_rate_;
-  FillMode fill_mode_;
-
-  // The time offset effectively pushes the start of the keyframe model back in
-  // time. This is used for resuming paused KeyframeModels -- an animation is
-  // added with a non-zero time offset, causing the keyframe model to skip ahead
-  // to the desired point in time.
-  base::TimeDelta time_offset_;
 
   bool needs_synchronized_start_time_;
   bool received_finished_event_;
-
-  // These are used when converting monotonic to local time to account for time
-  // spent while paused. This is not included in AnimationState since it
-  // there is absolutely no need for clients of this controller to know
-  // about these values.
-  base::TimeTicks pause_time_;
-  base::TimeDelta total_paused_duration_;
 
   // KeyframeModels lead dual lives. An active keyframe model will be
   // conceptually owned by two controllers, one on the impl thread and one on

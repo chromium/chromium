@@ -73,7 +73,7 @@ class Background : public UiElement {
 
   void OnFloatAnimated(const float& value,
                        int target_property_id,
-                       cc::KeyframeModel* keyframe_model) override;
+                       gfx::KeyframeModel* keyframe_model) override;
 
   std::unique_ptr<SkBitmap> initialization_bitmap_;
   std::unique_ptr<SkBitmap> initialization_normal_gradient_bitmap_;

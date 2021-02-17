@@ -4,15 +4,15 @@
 
 #include "third_party/blink/renderer/platform/animation/compositor_transform_animation_curve.h"
 
-#include "cc/animation/keyframed_animation_curve.h"
-#include "cc/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/transform_operations.h"
 
 namespace blink {
 
 CompositorTransformAnimationCurve::CompositorTransformAnimationCurve()
-    : curve_(cc::KeyframedTransformAnimationCurve::Create()) {}
+    : curve_(gfx::KeyframedTransformAnimationCurve::Create()) {}
 
 CompositorTransformAnimationCurve::~CompositorTransformAnimationCurve() =
     default;
@@ -32,7 +32,7 @@ void CompositorTransformAnimationCurve::SetScaledDuration(
   curve_->set_scaled_duration(scaled_duration);
 }
 
-std::unique_ptr<cc::AnimationCurve>
+std::unique_ptr<gfx::AnimationCurve>
 CompositorTransformAnimationCurve::CloneToAnimationCurve() const {
   return curve_->Clone();
 }

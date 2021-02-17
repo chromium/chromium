@@ -23,7 +23,7 @@ base::TimeDelta FloatAnimationCurveAdapter::Duration() const {
   return duration_;
 }
 
-std::unique_ptr<cc::AnimationCurve> FloatAnimationCurveAdapter::Clone() const {
+std::unique_ptr<gfx::AnimationCurve> FloatAnimationCurveAdapter::Clone() const {
   return base::WrapUnique(new FloatAnimationCurveAdapter(
       tween_type_, initial_value_, target_value_, duration_));
 }

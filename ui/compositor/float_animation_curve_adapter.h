@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/time/time.h"
-#include "cc/animation/animation_curve.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace ui {
 
-class FloatAnimationCurveAdapter : public cc::FloatAnimationCurve {
+class FloatAnimationCurveAdapter : public gfx::FloatAnimationCurve {
  public:
   FloatAnimationCurveAdapter(gfx::Tween::Type tween_type,
                              float initial_value,
@@ -24,7 +24,7 @@ class FloatAnimationCurveAdapter : public cc::FloatAnimationCurve {
 
   // FloatAnimationCurve implementation.
   base::TimeDelta Duration() const override;
-  std::unique_ptr<cc::AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
   float GetValue(base::TimeDelta t) const override;
 
  private:

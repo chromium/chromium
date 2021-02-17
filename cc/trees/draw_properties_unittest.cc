@@ -15,7 +15,6 @@
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
-#include "cc/animation/keyframed_animation_curve.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/layers/layer.h"
@@ -36,6 +35,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -1742,8 +1742,8 @@ TEST_F(DrawPropertiesTest,
 
   // Add a transform animation with a start delay to |grand_child|.
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
-      std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)), 0, 1,
-      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
+      std::unique_ptr<gfx::AnimationCurve>(new FakeTransformTransition(1.0)), 0,
+      1, KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(
@@ -6463,7 +6463,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
   // a singular transform, the subtree should still get processed.
   int keyframe_model_id = 0;
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
-      std::unique_ptr<AnimationCurve>(new FakeTransformTransition(1.0)),
+      std::unique_ptr<gfx::AnimationCurve>(new FakeTransformTransition(1.0)),
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -6491,7 +6491,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
   // Add an opacity animation with a start delay.
   keyframe_model_id = 1;
   keyframe_model = KeyframeModel::Create(
-      std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
+      std::unique_ptr<gfx::AnimationCurve>(
+          new FakeFloatTransition(1.0, 0.f, 1.f)),
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -6599,8 +6600,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
   EXPECT_EQ(gfx::Rect(10, 10), ImplOf(grandchild)->visible_layer_rect());
   child->SetTransform(gfx::Transform());
 
-  std::unique_ptr<KeyframedTransformAnimationCurve> curve(
-      KeyframedTransformAnimationCurve::Create());
+  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve(
+      gfx::KeyframedTransformAnimationCurve::Create());
   gfx::TransformOperations start;
   start.AppendTranslate(1.f, 2.f, 3.f);
   gfx::Transform transform;
@@ -6608,8 +6609,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
   gfx::TransformOperations operation;
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
-      TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(TransformKeyframe::Create(
+      gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
+  curve->AddKeyframe(gfx::TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
       std::move(curve), 3, 3,
@@ -6632,8 +6633,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
 // compositor without recomputing the trees.
 TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
   // Set up a transform animation
-  std::unique_ptr<KeyframedTransformAnimationCurve> curve(
-      KeyframedTransformAnimationCurve::Create());
+  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve(
+      gfx::KeyframedTransformAnimationCurve::Create());
   gfx::TransformOperations start;
   start.AppendTranslate(1.f, 2.f, 3.f);
   gfx::Transform transform;
@@ -6641,8 +6642,8 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
   gfx::TransformOperations operation;
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
-      TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(TransformKeyframe::Create(
+      gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
+  curve->AddKeyframe(gfx::TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
       std::move(curve), 3, 3,
@@ -6748,15 +6749,15 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingPendingLayerImpl) {
   EXPECT_EQ(gfx::Rect(), PendingImplOf(grandchild)->visible_layer_rect());
 
   // Check the animated case is not skipped.
-  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
-      KeyframedFloatAnimationCurve::Create());
-  std::unique_ptr<TimingFunction> func =
-      CubicBezierTimingFunction::CreatePreset(
-          CubicBezierTimingFunction::EaseType::EASE);
+  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
+      gfx::KeyframedFloatAnimationCurve::Create());
+  std::unique_ptr<gfx::TimingFunction> func =
+      gfx::CubicBezierTimingFunction::CreatePreset(
+          gfx::CubicBezierTimingFunction::EaseType::EASE);
   curve->AddKeyframe(
-      FloatKeyframe::Create(base::TimeDelta(), 0.9f, std::move(func)));
-  curve->AddKeyframe(
-      FloatKeyframe::Create(base::TimeDelta::FromSecondsD(1.0), 0.3f, nullptr));
+      gfx::FloatKeyframe::Create(base::TimeDelta(), 0.9f, std::move(func)));
+  curve->AddKeyframe(gfx::FloatKeyframe::Create(
+      base::TimeDelta::FromSecondsD(1.0), 0.3f, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
@@ -7563,7 +7564,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, OpacityAnimationsTrackingTest) {
 
   int keyframe_model_id = 0;
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
-      std::unique_ptr<AnimationCurve>(new FakeFloatTransition(1.0, 0.f, 1.f)),
+      std::unique_ptr<gfx::AnimationCurve>(
+          new FakeFloatTransition(1.0, 0.f, 1.f)),
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -7609,8 +7611,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
   timeline()->AttachAnimation(animation);
   animation->AttachElement(animated->element_id());
 
-  std::unique_ptr<KeyframedTransformAnimationCurve> curve(
-      KeyframedTransformAnimationCurve::Create());
+  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve(
+      gfx::KeyframedTransformAnimationCurve::Create());
   gfx::TransformOperations start;
   start.AppendTranslate(1.f, 2.f, 3.f);
   gfx::Transform transform;
@@ -7618,8 +7620,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
   gfx::TransformOperations operation;
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
-      TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(TransformKeyframe::Create(
+      gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
+  curve->AddKeyframe(gfx::TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 3, 3,

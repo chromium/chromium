@@ -2,42 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VR_ANIMATION_H_
-#define CHROME_BROWSER_VR_ANIMATION_H_
+#ifndef UI_GFX_ANIMATION_KEYFRAME_KEYFRAME_ANIMATOR_H_
+#define UI_GFX_ANIMATION_KEYFRAME_KEYFRAME_ANIMATOR_H_
 
 #include <set>
 #include <vector>
 
 #include "base/macros.h"
-#include "cc/animation/animation_curve.h"
-#include "cc/animation/keyframe_model.h"
-#include "chrome/browser/vr/transition.h"
-#include "chrome/browser/vr/vr_ui_export.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
+#include "ui/gfx/animation/keyframe/keyframe_model.h"
+#include "ui/gfx/animation/keyframe/transition.h"
 
 namespace gfx {
 class SizeF;
 class TransformOperations;
-}  // namespace gfx
 
-namespace vr {
+static constexpr size_t kMaxTargetPropertyId = 32u;
+using TargetProperties = std::bitset<kMaxTargetPropertyId>;
 
-// This is a simplified version of the cc::Animation. Its sole purpose is the
+// This is a simplified version of cc::Animation. Its sole purpose is the
 // management of its collection of KeyframeModels. Ticking them, updating their
 // state, and deleting them as required.
 //
-// TODO(vollick): if cc::KeyframeModel and friends move into gfx/, then this
-// class should follow suit. As such, it should not absorb any vr-specific
-// functionality.
-class VR_UI_EXPORT Animation final {
+// TODO(crbug.com/747185): Make cc::Animation a subclass of KeyframeAnimator
+// and share common code.
+class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeAnimator {
  public:
   static int GetNextKeyframeModelId();
   static int GetNextGroupId();
 
-  Animation();
-  ~Animation();
+  KeyframeAnimator();
+  ~KeyframeAnimator();
 
-  void AddKeyframeModel(std::unique_ptr<cc::KeyframeModel> keyframe_model);
+  KeyframeAnimator(const KeyframeAnimator&) = delete;
+  KeyframeAnimator& operator=(const KeyframeAnimator&) = delete;
+
+  void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);
   void RemoveKeyframeModel(int keyframe_model_id);
   void RemoveKeyframeModels(int target_property);
 
@@ -46,7 +48,7 @@ class VR_UI_EXPORT Animation final {
   // This ticks all keyframe models until they are complete.
   void FinishAll();
 
-  using KeyframeModels = std::vector<std::unique_ptr<cc::KeyframeModel>>;
+  using KeyframeModels = std::vector<std::unique_ptr<KeyframeModel>>;
   const KeyframeModels& keyframe_models() { return keyframe_models_; }
 
   // The transition is analogous to CSS transitions. When configured, the
@@ -60,25 +62,22 @@ class VR_UI_EXPORT Animation final {
   void SetTransitionedProperties(const std::set<int>& properties);
   void SetTransitionDuration(base::TimeDelta delta);
 
-  // TODO(754820): Remove duplicate code from the transition functions
-  // by using templates.
-  void TransitionFloatTo(cc::FloatAnimationCurve::Target* target,
+  void TransitionFloatTo(FloatAnimationCurve::Target* target,
                          base::TimeTicks monotonic_time,
                          int target_property,
                          float from,
                          float to);
-  void TransitionTransformOperationsTo(
-      cc::TransformAnimationCurve::Target* target,
-      base::TimeTicks monotonic_time,
-      int target_property,
-      const gfx::TransformOperations& from,
-      const gfx::TransformOperations& to);
-  void TransitionSizeTo(cc::SizeAnimationCurve::Target* target,
+  void TransitionTransformOperationsTo(TransformAnimationCurve::Target* target,
+                                       base::TimeTicks monotonic_time,
+                                       int target_property,
+                                       const gfx::TransformOperations& from,
+                                       const gfx::TransformOperations& to);
+  void TransitionSizeTo(SizeAnimationCurve::Target* target,
                         base::TimeTicks monotonic_time,
                         int target_property,
                         const gfx::SizeF& from,
                         const gfx::SizeF& to);
-  void TransitionColorTo(cc::ColorAnimationCurve::Target* target,
+  void TransitionColorTo(ColorAnimationCurve::Target* target,
                          base::TimeTicks monotonic_time,
                          int target_property,
                          SkColor from,
@@ -93,25 +92,24 @@ class VR_UI_EXPORT Animation final {
   gfx::SizeF GetTargetSizeValue(int target_property,
                                 const gfx::SizeF& default_value) const;
   SkColor GetTargetColorValue(int target_property, SkColor default_value) const;
-  cc::KeyframeModel* GetRunningKeyframeModelForProperty(
-      int target_property) const;
+  KeyframeModel* GetRunningKeyframeModelForProperty(int target_property) const;
 
  private:
+  void TickKeyframeModel(base::TimeTicks monotonic_time,
+                         KeyframeModel* keyframe_model);
   void TickInternal(base::TimeTicks monotonic_time,
                     bool include_infinite_animations);
   void StartKeyframeModels(base::TimeTicks monotonic_time,
                            bool include_infinite_animations);
-  cc::KeyframeModel* GetKeyframeModelForProperty(int target_property) const;
+  KeyframeModel* GetKeyframeModelForProperty(int target_property) const;
   template <typename ValueType>
   ValueType GetTargetValue(int target_property,
                            const ValueType& default_value) const;
 
   KeyframeModels keyframe_models_;
   Transition transition_;
-
-  DISALLOW_COPY_AND_ASSIGN(Animation);
 };
 
-}  // namespace vr
+}  // namespace gfx
 
-#endif  //  CHROME_BROWSER_VR_ANIMATION_H_
+#endif  // UI_GFX_ANIMATION_KEYFRAME_KEYFRAME_ANIMATOR_H_

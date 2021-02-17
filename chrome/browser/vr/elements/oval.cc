@@ -15,7 +15,7 @@ Oval::~Oval() = default;
 
 void Oval::OnSizeAnimated(const gfx::SizeF& size,
                           int target_property_id,
-                          cc::KeyframeModel* keyframe_model) {
+                          gfx::KeyframeModel* keyframe_model) {
   Rect::OnSizeAnimated(size, target_property_id, keyframe_model);
   if (target_property_id == BOUNDS)
     SetCornerRadius(0.5f * std::min(size.height(), size.width()));

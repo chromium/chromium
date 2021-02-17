@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace base {
 class TimeTicks;
@@ -89,6 +90,11 @@ class ANIMATION_EXPORT Tween {
   static gfx::Transform TransformValueBetween(double value,
                                               const gfx::Transform& start,
                                               const gfx::Transform& target);
+
+  static gfx::TransformOperations TransformOperationsValueBetween(
+      double value,
+      const gfx::TransformOperations& start,
+      const gfx::TransformOperations& target);
 
   static gfx::Size SizeValueBetween(double value,
                                     const gfx::Size& start,

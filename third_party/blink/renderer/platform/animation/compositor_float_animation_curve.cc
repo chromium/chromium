@@ -8,24 +8,24 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "cc/animation/animation_curve.h"
-#include "cc/animation/keyframed_animation_curve.h"
-#include "cc/animation/timing_function.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace blink {
 
 CompositorFloatAnimationCurve::CompositorFloatAnimationCurve()
-    : curve_(cc::KeyframedFloatAnimationCurve::Create()) {}
+    : curve_(gfx::KeyframedFloatAnimationCurve::Create()) {}
 
 CompositorFloatAnimationCurve::CompositorFloatAnimationCurve(
-    std::unique_ptr<cc::KeyframedFloatAnimationCurve> curve)
+    std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve)
     : curve_(std::move(curve)) {}
 
 CompositorFloatAnimationCurve::~CompositorFloatAnimationCurve() = default;
 
 std::unique_ptr<CompositorFloatAnimationCurve>
 CompositorFloatAnimationCurve::CreateForTesting(
-    std::unique_ptr<cc::KeyframedFloatAnimationCurve> curve) {
+    std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve) {
   return base::WrapUnique(new CompositorFloatAnimationCurve(std::move(curve)));
 }
 
@@ -63,7 +63,7 @@ float CompositorFloatAnimationCurve::GetValue(double time) const {
   return curve_->GetValue(base::TimeDelta::FromSecondsD(time));
 }
 
-std::unique_ptr<cc::AnimationCurve>
+std::unique_ptr<gfx::AnimationCurve>
 CompositorFloatAnimationCurve::CloneToAnimationCurve() const {
   return curve_->Clone();
 }

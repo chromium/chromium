@@ -6,12 +6,12 @@
 
 #include <memory>
 #include "base/memory/ptr_util.h"
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_id_provider.h"
-#include "cc/animation/keyframed_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_color_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_float_animation_curve.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 using cc::KeyframeModel;
 using cc::AnimationIdProvider;
@@ -89,7 +89,7 @@ CompositorKeyframeModel::CompositorKeyframeModel(
 compositor_target_property::Type CompositorKeyframeModel::TargetProperty()
     const {
   return static_cast<compositor_target_property::Type>(
-      keyframe_model_->target_property_type());
+      keyframe_model_->TargetProperty());
 }
 
 void CompositorKeyframeModel::SetElementId(CompositorElementId element_id) {
@@ -167,22 +167,24 @@ CompositorKeyframeModel::ReleaseCcKeyframeModel() {
 
 std::unique_ptr<CompositorFloatAnimationCurve>
 CompositorKeyframeModel::FloatCurveForTesting() const {
-  const cc::AnimationCurve* curve = keyframe_model_->curve();
-  DCHECK_EQ(cc::AnimationCurve::FLOAT, curve->Type());
+  const gfx::AnimationCurve* curve = keyframe_model_->curve();
+  DCHECK_EQ(gfx::AnimationCurve::FLOAT, curve->Type());
 
-  auto keyframed_curve = base::WrapUnique(
-      static_cast<cc::KeyframedFloatAnimationCurve*>(curve->Clone().release()));
+  auto keyframed_curve =
+      base::WrapUnique(static_cast<gfx::KeyframedFloatAnimationCurve*>(
+          curve->Clone().release()));
   return CompositorFloatAnimationCurve::CreateForTesting(
       std::move(keyframed_curve));
 }
 
 std::unique_ptr<CompositorColorAnimationCurve>
 CompositorKeyframeModel::ColorCurveForTesting() const {
-  const cc::AnimationCurve* curve = keyframe_model_->curve();
-  DCHECK_EQ(cc::AnimationCurve::COLOR, curve->Type());
+  const gfx::AnimationCurve* curve = keyframe_model_->curve();
+  DCHECK_EQ(gfx::AnimationCurve::COLOR, curve->Type());
 
-  auto keyframed_curve = base::WrapUnique(
-      static_cast<cc::KeyframedColorAnimationCurve*>(curve->Clone().release()));
+  auto keyframed_curve =
+      base::WrapUnique(static_cast<gfx::KeyframedColorAnimationCurve*>(
+          curve->Clone().release()));
   return CompositorColorAnimationCurve::CreateForTesting(
       std::move(keyframed_curve));
 }

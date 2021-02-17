@@ -5,16 +5,17 @@
 #ifndef CC_ANIMATION_ANIMATION_H_
 #define CC_ANIMATION_ANIMATION_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
-#include <memory>
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace cc {
 
