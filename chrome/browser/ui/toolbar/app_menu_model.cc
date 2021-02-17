@@ -77,6 +77,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/models/button_menu_item_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -1030,5 +1031,20 @@ void AppMenuModel::UpdateSettingsItemState() {
   int index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index != -1)
     SetEnabledAt(index, is_enabled);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  index = GetIndexOfCommandId(IDC_HELP_MENU);
+  if (index != -1) {
+    ui::SimpleMenuModel* help_menu =
+        static_cast<ui::SimpleMenuModel*>(GetSubmenuModelAt(index));
+    index = help_menu->GetIndexOfCommandId(IDC_ABOUT);
+    if (index != -1)
+      help_menu->SetEnabledAt(index, is_enabled);
+  }
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  index = GetIndexOfCommandId(IDC_ABOUT);
+  if (index != -1)
+    SetEnabledAt(index, is_enabled);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

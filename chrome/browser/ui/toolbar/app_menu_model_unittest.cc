@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
@@ -230,8 +231,19 @@ TEST_F(AppMenuModelTest, GlobalError) {
 TEST_F(AppMenuModelTest, DisableSettingsItem) {
   AppMenuModel model(this, browser());
   model.Init();
-  int index = model.GetIndexOfCommandId(IDC_OPTIONS);
-  EXPECT_TRUE(model.IsEnabledAt(index));
+  const int options_index = model.GetIndexOfCommandId(IDC_OPTIONS);
+  EXPECT_TRUE(model.IsEnabledAt(options_index));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const int help_menu_index = model.GetIndexOfCommandId(IDC_HELP_MENU);
+  ui::SimpleMenuModel* help_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(help_menu_index));
+  const int about_index = help_menu->GetIndexOfCommandId(IDC_ABOUT);
+  EXPECT_TRUE(help_menu->IsEnabledAt(about_index));
+#else
+  const int about_index = model.GetIndexOfCommandId(IDC_ABOUT);
+  EXPECT_TRUE(model.IsEnabledAt(about_index));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
@@ -239,7 +251,13 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
     base::ListValue* list = update.Get();
     list->Append(policy::SystemFeature::kBrowserSettings);
   }
-  EXPECT_FALSE(model.IsEnabledAt(index));
+  EXPECT_FALSE(model.IsEnabledAt(options_index));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_FALSE(help_menu->IsEnabledAt(about_index));
+#else
+  EXPECT_FALSE(model.IsEnabledAt(about_index));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
@@ -247,6 +265,13 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
     base::ListValue* list = update.Get();
     list->Clear();
   }
-  EXPECT_TRUE(model.IsEnabledAt(index));
+  EXPECT_TRUE(model.IsEnabledAt(options_index));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(help_menu->IsEnabledAt(about_index));
+#else
+  EXPECT_TRUE(model.IsEnabledAt(about_index));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
