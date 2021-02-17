@@ -9,7 +9,10 @@ import("//ui/webui/resources/js/cr.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
-visibility = [ "//ui/file_manager/*" ]
+visibility = [
+  "//chromeos/components/file_manager/resources/*",
+  "//ui/file_manager/*",
+]
 
 group("closure_compile") {
   testonly = true
