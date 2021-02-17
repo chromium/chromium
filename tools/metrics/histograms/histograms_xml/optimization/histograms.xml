@@ -193,6 +193,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.HintsFetcher.TopHostProvider.BlacklistSize.OnInitialize"
     units="total host count" expires_after="2021-03-31">
+  <obsolete>
+    Deprecated as of 2021/02.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -204,10 +207,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.HintsFetcher.TopHostProvider.BlacklistSize.OnRequest"
     units="total host count" expires_after="2021-03-31">
+  <obsolete>
+    Deprecated as of 2021/02.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the number of hosts on the HintsFetcherTopHostBlacklist when top
+    hosts are requested.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsFetcher.TopHostProvider.BlocklistSize.OnInitialize"
+    units="total host count" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of hosts placed on the HintsFetcherTopHostBlocklist when
+    it is initialized.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsFetcher.TopHostProvider.BlocklistSize.OnRequest"
+    units="total host count" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of hosts on the HintsFetcherTopHostBlocklist when top
     hosts are requested.
   </summary>
 </histogram>

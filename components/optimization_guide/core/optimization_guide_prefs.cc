@@ -26,26 +26,26 @@ const char kModelAndFeaturesLastFetchAttempt[] =
 // A dictionary pref that stores the set of hosts that cannot have hints fetched
 // for until visited again after fetching from the remote Optimization Guide
 // Service was first allowed. If The hash of the host is in the dictionary, then
-// it is on the blacklist and should not be used, the |value| in the key-value
+// it is on the blocklist and should not be used, the |value| in the key-value
 // pair is not used.
-const char kHintsFetcherTopHostBlacklist[] =
+const char kHintsFetcherTopHostBlocklist[] =
     "optimization_guide.hintsfetcher.top_host_blacklist";
 
-// An integer pref that stores the state of the blacklist for the top host
-// provider for blacklisting hosts after fetching from the remote Optimization
+// An integer pref that stores the state of the blocklist for the top host
+// provider for blocklisting hosts after fetching from the remote Optimization
 // Guide Service was first allowed. The state maps to the
-// HintsFetcherTopHostBlacklistState enum.
-const char kHintsFetcherTopHostBlacklistState[] =
+// HintsFetcherTopHostBlocklistState enum.
+const char kHintsFetcherTopHostBlocklistState[] =
     "optimization_guide.hintsfetcher.top_host_blacklist_state";
 
-// Time when the top host blacklist was last initialized. Recorded as seconds
+// Time when the top host blocklist was last initialized. Recorded as seconds
 // since epoch.
-const char kTimeHintsFetcherTopHostBlacklistLastInitialized[] =
+const char kTimeHintsFetcherTopHostBlocklistLastInitialized[] =
     "optimization_guide.hintsfetcher.time_blacklist_last_initialized";
 
 // If a host has site engagement score less than the value stored in this pref,
 // then hints fetcher may not fetch hints for that host.
-const char kHintsFetcherTopHostBlacklistMinimumEngagementScore[] =
+const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
     "optimization_guide.hintsfetcher.top_host_blacklist_min_engagement_score";
 
 // A dictionary pref that stores hosts that have had hints successfully fetched
@@ -86,15 +86,15 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kModelAndFeaturesLastFetchAttempt,
       base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
       PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kHintsFetcherTopHostBlacklist,
+  registry->RegisterDictionaryPref(kHintsFetcherTopHostBlocklist,
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kHintsFetcherHostsSuccessfullyFetched,
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
-      kHintsFetcherTopHostBlacklistState,
-      static_cast<int>(HintsFetcherTopHostBlacklistState::kNotInitialized),
+      kHintsFetcherTopHostBlocklistState,
+      static_cast<int>(HintsFetcherTopHostBlocklistState::kNotInitialized),
       PrefRegistry::LOSSY_PREF);
-  registry->RegisterDoublePref(kTimeHintsFetcherTopHostBlacklistLastInitialized,
+  registry->RegisterDoublePref(kTimeHintsFetcherTopHostBlocklistLastInitialized,
                                0, PrefRegistry::LOSSY_PREF);
 
   registry->RegisterDoublePref(kSessionStatisticFCPMean, 0,
@@ -103,11 +103,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                PrefRegistry::LOSSY_PREF);
   // Use a default value of MinTopHostEngagementScoreThreshold() for the
   // threshold. This ensures that the users for which this pref can't be
-  // computed (possibly because they had the blacklist initialized before this
+  // computed (possibly because they had the blocklist initialized before this
   // pref was added to the code) use the default value for the site engagement
   // threshold.
   registry->RegisterDoublePref(
-      kHintsFetcherTopHostBlacklistMinimumEngagementScore,
+      kHintsFetcherTopHostBlocklistMinimumEngagementScore,
       optimization_guide::features::MinTopHostEngagementScoreThreshold(),
       PrefRegistry::LOSSY_PREF);
 

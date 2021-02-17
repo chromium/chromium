@@ -64,10 +64,10 @@ const base::Feature kOptimizationTargetPrediction{
 const base::Feature kOptimizationGuideModelDownloading{
     "OptimizationGuideModelDownloading", base::FEATURE_DISABLED_BY_DEFAULT};
 
-size_t MaxHintsFetcherTopHostBlacklistSize() {
-  // The blacklist will be limited to the most engaged hosts and will hold twice
+size_t MaxHintsFetcherTopHostBlocklistSize() {
+  // The blocklist will be limited to the most engaged hosts and will hold twice
   // (2*N) as many hosts that the HintsFetcher request hints for. The extra N
-  // hosts on the blacklist are meant to cover the case that the engagement
+  // hosts on the blocklist are meant to cover the case that the engagement
   // scores on some of the top N host engagement scores decay and they fall out
   // of the top N.
   return GetFieldTrialParamByFeatureAsInt(kRemoteOptimizationGuideFetching,

@@ -14,21 +14,21 @@ namespace prefs {
 
 extern const char kHintsFetcherLastFetchAttempt[];
 extern const char kModelAndFeaturesLastFetchAttempt[];
-extern const char kHintsFetcherTopHostBlacklist[];
-extern const char kHintsFetcherTopHostBlacklistState[];
-extern const char kTimeHintsFetcherTopHostBlacklistLastInitialized[];
-extern const char kHintsFetcherTopHostBlacklistMinimumEngagementScore[];
+extern const char kHintsFetcherTopHostBlocklist[];
+extern const char kHintsFetcherTopHostBlocklistState[];
+extern const char kTimeHintsFetcherTopHostBlocklistLastInitialized[];
+extern const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[];
 extern const char kHintsFetcherHostsSuccessfullyFetched[];
 extern const char kPendingHintsProcessingVersion[];
 extern const char kSessionStatisticFCPMean[];
 extern const char kSessionStatisticFCPStdDev[];
 extern const char kPreviouslyRegisteredOptimizationTypes[];
 
-// State of |HintsFetcherTopHostsBlacklist|. The blacklist begins in
+// State of |HintsFetcherTopHostsBlocklist|. The blocklist begins in
 // kNotInitialized and transitions to kInitialized after
-// InitializeHintsFetcherTopHostBlack() is called. When the blacklist no longer
+// InitializeHintsFetcherTopHostBlock() is called. When the blocklist no longer
 // contains any hosts, the state transitions to kEmpty.
-enum class HintsFetcherTopHostBlacklistState {
+enum class HintsFetcherTopHostBlocklistState {
   kNotInitialized = 0,
   kInitialized = 1,
   kEmpty = 2,

@@ -35,11 +35,11 @@ class OptimizationGuideTopHostProvider
   static std::unique_ptr<OptimizationGuideTopHostProvider> CreateIfAllowed(
       content::BrowserContext* browser_context);
 
-  // Update the HintsFetcherTopHostBlacklist by attempting to remove the host
-  // for the current navigation from the blacklist. A host is removed if it is
-  // currently on the blacklist and the blacklist state is updated if the
-  // blacklist is empty after removing a host.
-  static void MaybeUpdateTopHostBlacklist(
+  // Update the HintsFetcherTopHostBlocklist by attempting to remove the host
+  // for the current navigation from the blocklist. A host is removed if it is
+  // currently on the blocklist and the blocklist state is updated if the
+  // blocklist is empty after removing a host.
+  static void MaybeUpdateTopHostBlocklist(
       content::NavigationHandle* navigation_handle);
 
   // optimization_guide::TopHostProvider implementation:
@@ -50,10 +50,10 @@ class OptimizationGuideTopHostProvider
                                    base::Clock* time_clock);
   friend class OptimizationGuideTopHostProviderTest;
 
-  // Initializes the HintsFetcherTopHostBlacklist with all the hosts in the site
-  // engagement service and transitions the blacklist state from kNotInitialized
+  // Initializes the HintsFetcherTopHostBlaoklist with all the hosts in the site
+  // engagement service and transitions the blocklist state from kNotInitialized
   // to kInitialized.
-  void InitializeHintsFetcherTopHostBlacklist();
+  void InitializeHintsFetcherTopHostBlocklist();
 
   // |browser_context_| is used for interaction with the SiteEngagementService
   // and the embedder should guarantee that it is non-null during the lifetime

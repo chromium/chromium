@@ -604,10 +604,10 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
     OptimizationGuideKeyedServiceBrowserTest::SetUpOnMainThread();
 
     SeedSiteEngagementService();
-    // Set the blacklist state to initialized so the sites in the engagement
-    // service will be used and not blacklisted on the first GetTopHosts
+    // Set the blocklist state to initialized so the sites in the engagement
+    // service will be used and not blocklisted on the first GetTopHosts
     // request.
-    InitializeTopHostBlacklist();
+    InitializeTopHostBlocklist();
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -637,16 +637,16 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
     service->AddPointsForTesting(https_url2, 3);
   }
 
-  void InitializeTopHostBlacklist() {
+  void InitializeTopHostBlocklist() {
     Profile::FromBrowserContext(browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
                                     ->GetBrowserContext())
         ->GetPrefs()
         ->SetInteger(
-            optimization_guide::prefs::kHintsFetcherTopHostBlacklistState,
+            optimization_guide::prefs::kHintsFetcherTopHostBlocklistState,
             static_cast<int>(
-                optimization_guide::prefs::HintsFetcherTopHostBlacklistState::
+                optimization_guide::prefs::HintsFetcherTopHostBlocklistState::
                     kInitialized));
   }
 

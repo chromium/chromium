@@ -28,11 +28,11 @@ extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationGuideModelDownloading;
 
 // The maximum number of hosts that can be stored in the
-// |kHintsFetcherTopHostBlacklist| dictionary pref when initialized. The top
+// |kHintsFetcherTopHostBlocklist| dictionary pref when initialized. The top
 // hosts will also be returned in order of most engaged. This prevents the most
 // engaged hosts in a user's history before DataSaver being enabled from being
 // requested until the user navigates to the host again.
-size_t MaxHintsFetcherTopHostBlacklistSize();
+size_t MaxHintsFetcherTopHostBlocklistSize();
 
 // Whether hints for top hosts should be batch updated.
 bool ShouldBatchUpdateHintsForTopHosts();
@@ -57,8 +57,8 @@ double MinTopHostEngagementScoreThreshold();
 // to be used and remain in the OptimizationGuideStore.
 base::TimeDelta StoredFetchedHintsFreshnessDuration();
 
-// The duration of time after the blacklist initialization for which the low
-// engagement score threshold needs to be applied. If the blacklist was
+// The duration of time after the blocklist initialization for which the low
+// engagement score threshold needs to be applied. If the blocklist was
 // initialized more than DurationApplyLowEngagementScoreThreshold() ago, then
 // the low engagement score threshold need not be applied.
 base::TimeDelta DurationApplyLowEngagementScoreThreshold();

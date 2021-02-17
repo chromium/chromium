@@ -71,7 +71,7 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
       web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS() &&
       url::IsSameOriginWith(navigation_handle->GetURL(),
                             web_contents->GetLastCommittedURL());
-  OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlacklist(
+  OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlocklist(
       navigation_handle);
 
   if (!optimization_guide_keyed_service_)

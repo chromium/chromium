@@ -248,17 +248,17 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     service->AddPointsForTesting(http_url2, 2);
   }
 
-  void SetTopHostBlacklistState(
-      optimization_guide::prefs::HintsFetcherTopHostBlacklistState
-          blacklist_state) {
+  void SetTopHostBlocklistState(
+      optimization_guide::prefs::HintsFetcherTopHostBlocklistState
+          blocklist_state) {
     Profile::FromBrowserContext(browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
                                     ->GetBrowserContext())
         ->GetPrefs()
         ->SetInteger(
-            optimization_guide::prefs::kHintsFetcherTopHostBlacklistState,
-            static_cast<int>(blacklist_state));
+            optimization_guide::prefs::kHintsFetcherTopHostBlocklistState,
+            static_cast<int>(blocklist_state));
   }
 
   void LoadHintsForUrl(const GURL& url) {
@@ -274,14 +274,14 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
         1);
   }
 
-  // Returns the count of top hosts that are blacklisted by reading the relevant
+  // Returns the count of top hosts that are blocklisted by reading the relevant
   // pref.
-  size_t GetTopHostBlacklistSize() const {
+  size_t GetTopHostBlocklistSize() const {
     PrefService* pref_service = browser()->profile()->GetPrefs();
-    const base::DictionaryValue* top_host_blacklist =
+    const base::DictionaryValue* top_host_blocklist =
         pref_service->GetDictionary(
-            optimization_guide::prefs::kHintsFetcherTopHostBlacklist);
-    return top_host_blacklist->size();
+            optimization_guide::prefs::kHintsFetcherTopHostBlocklist);
+    return top_host_blocklist->size();
   }
 
   // Adds |host_count| HTTPS origins to site engagement service.
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, TopHostProviderHTTPSOnly) {
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 2, 1);
 
-  EXPECT_EQ(0u, GetTopHostBlacklistSize());
+  EXPECT_EQ(0u, GetTopHostBlocklistSize());
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
@@ -853,10 +853,10 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
 
   SeedSiteEngagementService();
 
-  // Set the blacklist state to initialized so the sites in the engagement
-  // service will be used and not blacklisted on the first GetTopHosts request.
-  SetTopHostBlacklistState(optimization_guide::prefs::
-                               HintsFetcherTopHostBlacklistState::kInitialized);
+  // Set the blocklist state to initialized so the sites in the engagement
+  // service will be used and not blocklisted on the first GetTopHosts request.
+  SetTopHostBlocklistState(optimization_guide::prefs::
+                               HintsFetcherTopHostBlocklistState::kInitialized);
 
   // Whitelist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
@@ -902,15 +902,15 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // Set the network to be offline.
   SetNetworkConnectionOffline();
 
-  // Set the blacklist state to initialized so the sites in the engagement
-  // service will be used and not blacklisted on the first GetTopHosts
+  // Set the blocklist state to initialized so the sites in the engagement
+  // service will be used and not blocklisted on the first GetTopHosts
   // request.
   SeedSiteEngagementService();
 
-  // Set the blacklist state to initialized so the sites in the engagement
-  // service will be used and not blacklisted on the first GetTopHosts request.
-  SetTopHostBlacklistState(optimization_guide::prefs::
-                               HintsFetcherTopHostBlacklistState::kInitialized);
+  // Set the blocklist state to initialized so the sites in the engagement
+  // service will be used and not blocklisted on the first GetTopHosts request.
+  SetTopHostBlocklistState(optimization_guide::prefs::
+                               HintsFetcherTopHostBlocklistState::kInitialized);
 
   // Whitelist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
@@ -1466,12 +1466,12 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-class HintsFetcherChangeDefaultBlacklistSizeBrowserTest
+class HintsFetcherChangeDefaultBlocklistSizeBrowserTest
     : public HintsFetcherBrowserTest {
  public:
-  HintsFetcherChangeDefaultBlacklistSizeBrowserTest() = default;
+  HintsFetcherChangeDefaultBlocklistSizeBrowserTest() = default;
 
-  ~HintsFetcherChangeDefaultBlacklistSizeBrowserTest() override = default;
+  ~HintsFetcherChangeDefaultBlocklistSizeBrowserTest() override = default;
 
   void SetUp() override {
     base::FieldTrialParams optimization_hints_fetching_params;
@@ -1507,26 +1507,26 @@ class HintsFetcherChangeDefaultBlacklistSizeBrowserTest
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcherChangeDefaultBlacklistSizeBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(HintsFetcherChangeDefaultBlocklistSizeBrowserTest);
 };
 
-// Changes the default size of the top host blacklist using finch. Also, sets
+// Changes the default size of the top host blocklist using finch. Also, sets
 // the count of hosts previously engaged to a large number and verifies that the
-// top host blacklist is correctly populated.
-IN_PROC_BROWSER_TEST_F(HintsFetcherChangeDefaultBlacklistSizeBrowserTest,
-                       ChangeDefaultBlacklistSize) {
+// top host blocklist is correctly populated.
+IN_PROC_BROWSER_TEST_F(HintsFetcherChangeDefaultBlocklistSizeBrowserTest,
+                       ChangeDefaultBlocklistSize) {
   AddHostsToSiteEngagementService(120u);
   const size_t engaged_hosts = GetCountHostsKnownToSiteEngagementService();
   EXPECT_EQ(120u, engaged_hosts);
 
   // Ensure everything within the site engagement service fits within the top
-  // host blacklist size.
+  // host blocklist size.
   ASSERT_LE(
       engaged_hosts,
-      optimization_guide::features::MaxHintsFetcherTopHostBlacklistSize());
+      optimization_guide::features::MaxHintsFetcherTopHostBlocklistSize());
 
-  SetTopHostBlacklistState(
-      optimization_guide::prefs::HintsFetcherTopHostBlacklistState::
+  SetTopHostBlocklistState(
+      optimization_guide::prefs::HintsFetcherTopHostBlocklistState::
           kNotInitialized);
 
   ASSERT_TRUE(top_host_provider());
@@ -1538,8 +1538,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherChangeDefaultBlacklistSizeBrowserTest,
   EXPECT_EQ(0u, top_hosts.size());
 
   // Everything HTTPS origin within the site engagement service should now be
-  // in the blacklist.
-  EXPECT_EQ(engaged_hosts, GetTopHostBlacklistSize());
+  // in the blocklist.
+  EXPECT_EQ(engaged_hosts, GetTopHostBlocklistSize());
 }
 
 class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
