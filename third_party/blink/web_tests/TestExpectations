@@ -5689,6 +5689,9 @@ crbug.com/1178899 http/tests/devtools/console/console-log-syntax-error.js [ Pass
 # Sheriff 2021-02-17
 crbug.com/1179117 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
 crbug.com/1179249 [ Mac10.13 ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
+crbug.com/1179263 [ Linux ] http/tests/devtools/console/console-format-es6-symbols-error.js [ Pass Failure ]
+crbug.com/1179263 [ Linux ] http/tests/devtools/console/console-linkify-relative-links.js [ Pass Failure ]
+crbug.com/1179263 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Pass Failure ]
 
 # Ecosystem-Infra Sheriff 2021-02-17
 crbug.com/1179219 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-currentSrc.html [ Failure ]
