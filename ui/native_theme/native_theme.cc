@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -28,11 +28,11 @@ namespace ui {
 
 namespace {
 // clang-format off
-const base::flat_map<NativeTheme::ColorId, ColorId>&
-NativeThemeColorIdToColorIdMap() {
+bool NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id,
+                                 ColorId* color_id) {
   using NTCID = NativeTheme::ColorId;
-  static const base::NoDestructor<base::flat_map<NativeTheme::ColorId, ColorId>>
-      map({
+  static constexpr const auto map =
+      base::MakeFixedFlatMap<NativeTheme::ColorId, ColorId>({
         {NTCID::kColorId_AlertSeverityHigh, kColorAlertHighSeverity},
         {NTCID::kColorId_AlertSeverityLow, kColorAlertLowSeverity},
         {NTCID::kColorId_AlertSeverityMedium, kColorAlertMediumSeverity},
@@ -150,7 +150,13 @@ NativeThemeColorIdToColorIdMap() {
           kColorTreeNodeForegroundSelectedUnfocused},
         {NTCID::kColorId_WindowBackground, kColorWindowBackground},
       });
-  return *map;
+  DCHECK(color_id);
+  auto* color_it = map.find(native_theme_color_id);
+  if (color_it != map.cend()) {
+    *color_id = color_it->second;
+    return true;
+  }
+  return false;
 }
 // clang-format on
 
@@ -191,11 +197,10 @@ SkColor NativeTheme::GetSystemColor(ColorId color_id,
     // TODO(http://crbug.com/1057754): Handle high contrast modes.
     auto* color_provider = ColorProviderManager::Get().GetColorProviderFor(
         color_mode, ColorProviderManager::ContrastMode::kNormal);
-    auto color_id_map = NativeThemeColorIdToColorIdMap();
-    auto result = color_id_map.find(color_id);
-    if (result != color_id_map.cend()) {
+    ui::ColorId provider_color_id;
+    if (NativeThemeColorIdToColorId(color_id, &provider_color_id)) {
       ReportHistogramBooleanUsesColorProvider(true);
-      return color_provider->GetColor(result->second);
+      return color_provider->GetColor(provider_color_id);
     }
   }
   ReportHistogramBooleanUsesColorProvider(false);
