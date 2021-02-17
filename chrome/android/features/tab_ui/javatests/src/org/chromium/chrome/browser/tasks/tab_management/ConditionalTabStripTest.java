@@ -487,7 +487,7 @@ public class ConditionalTabStripTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1094998")
+    @FlakyTest(message = "https://crbug.com/1171567")
     public void testStrip_InfoBarOptOut() throws Exception {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         for (int i = 0; i < 3; i++) {
