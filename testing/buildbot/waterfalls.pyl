@@ -2674,6 +2674,16 @@
           'walleye',
         ],
       },
+      'fuchsia-code-coverage': {
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+        },
+        'mixins': [
+          'femu-additional-ram',
+          'isolate_profile_data',
+        ],
+      },
       'fuchsia-fyi-arm64-dbg': {
         'additional_compile_targets': [
           'all',
