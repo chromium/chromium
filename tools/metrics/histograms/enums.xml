@@ -20425,6 +20425,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="DriveFileError">
+  <obsolete>
+    Deprecated February 2021.
+  </obsolete>
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="FILE_ERROR_OK"/>
   <int value="2" label="FILE_ERROR_FAILED"/>

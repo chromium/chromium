@@ -185,6 +185,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.ApiResults"
     units="count" expires_after="2021-03-15">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -195,6 +198,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.CacheEmpty"
     enum="BooleanEmpty" expires_after="2021-04-11">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -206,6 +212,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.CacheWarmed"
     units="Boolean" expires_after="2021-03-28">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -217,6 +226,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.DriveFSMounted"
     enum="Boolean" expires_after="2021-04-11">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -227,6 +239,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.FileError"
     enum="DriveFileError" expires_after="2021-04-11">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -237,6 +252,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Apps.AppList.DriveQuickAccessProvider.GetQuickAccessItemsLatency"
     units="ms" expires_after="2021-03-15">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -247,6 +265,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.Latency" units="ms"
     expires_after="2021-03-15">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -258,6 +279,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Apps.AppList.DriveQuickAccessProvider.TimeFromFetchToZeroStateStart"
     units="ms" expires_after="2021-03-15">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -268,6 +292,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.ValidResults"
     units="count" expires_after="2021-04-04">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
