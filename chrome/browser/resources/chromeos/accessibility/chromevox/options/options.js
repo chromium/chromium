@@ -37,11 +37,10 @@ OptionsPage = class {
   /**
    * Initialize the options page by setting the current value of all prefs, and
    * adding event listeners.
-   * @suppress {missingProperties} Property prefs never defined on Window
    * @this {OptionsPage}
    */
   static init() {
-    OptionsPage.prefs = chrome.extension.getBackgroundPage().prefs;
+    OptionsPage.prefs = chrome.extension.getBackgroundPage()['prefs'];
     OptionsPage.consoleTts =
         chrome.extension.getBackgroundPage().ConsoleTts.getInstance();
     OptionsPage.backgroundTts =
@@ -145,7 +144,7 @@ OptionsPage = class {
     });
 
     $('chromeVoxDeveloperOptions').addEventListener('expanded-changed', () => {
-      const hidden = !$('chromeVoxDeveloperOptions').expanded;
+      const hidden = !$('chromeVoxDeveloperOptions')['expanded'];
       $('developerSpeechLogging').hidden = hidden;
       $('developerEarconLogging').hidden = hidden;
       $('developerBrailleLogging').hidden = hidden;
@@ -169,7 +168,7 @@ OptionsPage = class {
 
     window.addEventListener('storage', (event) => {
       if (event.key === 'speakTextUnderMouse') {
-        chrome.accessibilityPrivate.enableChromeVoxMouseEvents(
+        chrome.accessibilityPrivate.enableMouseEvents(
             event.newValue === String(true));
       }
     });
