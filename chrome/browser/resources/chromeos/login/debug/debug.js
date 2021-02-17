@@ -29,6 +29,7 @@ cr.define('cr.ui.login.debug', function() {
       z-index: 10000;
       padding: 20px;
       display: flex;
+      overflow: scroll;
       flex-direction: column;`;
 
   const TOOL_PANEL_STYLE = `

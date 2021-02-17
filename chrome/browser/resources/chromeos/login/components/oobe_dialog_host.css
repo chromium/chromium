@@ -34,8 +34,3 @@
   /* 40px distance from subtitle (oobe forms spec) - 20px of footer-container */
   padding-top: 20px;
 }
-
-cr-input.oobe-input {
-  max-width: 560px;
-  padding-bottom: 8px;
-}

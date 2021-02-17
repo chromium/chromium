@@ -22,7 +22,6 @@ Polymer({
 
   behaviors: [
     OobeI18nBehavior,
-    OobeDialogHostBehavior,
     LoginScreenBehavior,
     MultiStepBehavior,
   ],
