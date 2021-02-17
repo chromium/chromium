@@ -4340,6 +4340,13 @@ const char kMagnifierPanningImprovementsDescription[] =
     "Enable feature which adds additional mouse and keyboard panning "
     "functionality in Magnifier.";
 
+const char kMagnifierContinuousMouseFollowingModeSettingName[] =
+    "Enable ability to choose continuous mouse following mode in Magnifier "
+    "settings";
+const char kMagnifierContinuousMouseFollowingModeSettingDescription[] =
+    "Enable feature which adds ability to choose new continuous mouse "
+    "following mode in Magnifier settings.";
+
 const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
 const char kFilesAppCopyImageDescription[] =
     "Enables the Files App to copy images selected to the system clipboard";

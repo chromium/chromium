@@ -45270,6 +45270,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentUnboldSuggestionText:disabled"/>
   <int value="-13918890" label="disable-download-notification"/>
   <int value="-12225998" label="ShareButtonInTopToolbar:disabled"/>
+  <int value="-11983392"
+      label="MagnifierContinuousMouseFollowingModeSetting:enabled"/>
   <int value="-11260186" label="enable-offline-pages-as-saved-pages"/>
   <int value="-10709540"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:enabled"/>
@@ -47355,6 +47357,8 @@ from previous Chrome versions.
   <int value="1943083555" label="NotificationScheduleService:enabled"/>
   <int value="1944156526" label="sync-url"/>
   <int value="1945031120" label="LanguageSettingsUpdate2:disabled"/>
+  <int value="1946014982"
+      label="MagnifierContinuousMouseFollowingModeSetting:disabled"/>
   <int value="1947350992" label="drop-sync-credential:disabled"/>
   <int value="1948978490" label="PaintPreviewDemo:disabled"/>
   <int value="1949019439"

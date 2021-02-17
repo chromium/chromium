@@ -101,6 +101,15 @@ bool IsMagnifierPanningImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kMagnifierPanningImprovements);
 }
+
+const base::Feature kMagnifierContinuousMouseFollowingModeSetting{
+    "MagnifierContinuousMouseFollowingModeSetting",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMagnifierContinuousMouseFollowingModeSetting);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

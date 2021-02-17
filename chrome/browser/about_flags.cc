@@ -3898,6 +3898,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMagnifierPanningImprovementsName,
      flag_descriptions::kMagnifierPanningImprovementsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kMagnifierPanningImprovements)},
+    {"enable-magnifier-continuous-mouse-following-mode-setting",
+     flag_descriptions::kMagnifierContinuousMouseFollowingModeSettingName,
+     flag_descriptions::
+         kMagnifierContinuousMouseFollowingModeSettingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kMagnifierContinuousMouseFollowingModeSetting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_MAC)
     {"enable-immersive-fullscreen-toolbar",
