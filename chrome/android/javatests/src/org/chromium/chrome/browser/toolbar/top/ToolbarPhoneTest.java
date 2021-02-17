@@ -22,6 +22,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,17 +31,26 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.UiRestriction;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Instrumentation tests for {@link ToolbarPhone}.
@@ -54,6 +64,15 @@ public class ToolbarPhoneTest {
 
     @Mock
     private MenuButtonCoordinator mMenuButtonCoordinator;
+
+    @Mock
+    private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
+    @Mock
+    private Runnable mRequestRenderRunnable;
+    @Mock
+    ThemeColorProvider mThemeColorProvider;
+    @Mock
+    private WindowAndroid mWindowAndroid;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -129,5 +148,77 @@ public class ToolbarPhoneTest {
         assertEquals(
                 "Optional button should have a 12dp start padding set when menu button is visible",
                 expectedPadding, padding);
+    }
+
+    @Test
+    @MediumTest
+    public void testLocationBarLengthWithOptionalButton() {
+        // The purpose of this test is to document the expected behavior for setting
+        // paddings and sizes of toolbar elements based on the visibility of the menu button.
+        // This test fails if View#isShown() is used to determine visibility.
+        // See https://crbug.com/1176992 for an example when it caused an issue.
+        doReturn(new WeakReference<>(mActivityTestRule.getActivity()))
+                .when(mWindowAndroid)
+                .getActivity();
+        Drawable drawable = AppCompatResources.getDrawable(
+                mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Has to be created on the main thread.
+            MenuButtonCoordinator realMenuButtonCoordinator = new MenuButtonCoordinator(
+                    new OneshotSupplierImpl<AppMenuCoordinator>(),
+                    new TestControlsVisibilityDelegate(), mWindowAndroid, mFocusFunction,
+                    mRequestRenderRunnable, true,
+                    () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
+            mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
+            mToolbar.updateOptionalButton(
+                    new ButtonData(false, drawable, null, R.string.share, false, null, false));
+            // Make sure the button is visible in the beginning of the test.
+            assertEquals(realMenuButtonCoordinator.isVisible(), true);
+
+            // Make the ancestors of the menu button invisible.
+            mToolbarButtonsContainer.setVisibility(View.INVISIBLE);
+
+            // Ancestor's invisibility doesn't affect menu button's visibility.
+            assertEquals("Menu button should be visible even if its parents are not",
+                    realMenuButtonCoordinator.isVisible(), true);
+            float offsetWhenParentInvisible = mToolbar.getLocationBarWidthOffsetForOptionalButton();
+
+            // Make menu's ancestors visible.
+            mToolbarButtonsContainer.setVisibility(View.VISIBLE);
+            assertEquals(realMenuButtonCoordinator.isVisible(), true);
+            float offsetWhenParentVisible = mToolbar.getLocationBarWidthOffsetForOptionalButton();
+
+            assertEquals("Offset should be the same even if menu button's parents are invisible "
+                            + "if it is visible",
+                    offsetWhenParentInvisible, offsetWhenParentVisible, 0);
+
+            // Sanity check that the offset is different when menu button is invisible
+            realMenuButtonCoordinator.getMenuButton().setVisibility(View.INVISIBLE);
+            assertEquals(realMenuButtonCoordinator.isVisible(), false);
+            float offsetWhenButtonInvisible = mToolbar.getLocationBarWidthOffsetForOptionalButton();
+            Assert.assertNotEquals("Offset should be different when menu button is invisible",
+                    offsetWhenButtonInvisible, offsetWhenParentVisible);
+        });
+    }
+
+    private static class TestControlsVisibilityDelegate
+            extends BrowserStateBrowserControlsVisibilityDelegate {
+        public TestControlsVisibilityDelegate() {
+            super(new ObservableSupplier<Boolean>() {
+                @Override
+                public Boolean addObserver(Callback<Boolean> obs) {
+                    return false;
+                }
+
+                @Override
+                public void removeObserver(Callback<Boolean> obs) {}
+
+                @Override
+                public Boolean get() {
+                    return false;
+                }
+            });
+        }
     }
 }
