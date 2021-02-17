@@ -22164,7 +22164,7 @@
 
       When the policy is set to disabled or not set, pages are not allowed to send synchronous XHR requests during page dismissal.
 
-      This policy will be removed in Chrome 88.
+      This policy will be removed in Chrome 93.
 
       See https://www.chromestatus.com/feature/4664843055398912 .''',
     },
