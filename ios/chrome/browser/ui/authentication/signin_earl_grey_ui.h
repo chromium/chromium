@@ -11,6 +11,12 @@
 
 @class FakeChromeIdentity;
 
+typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
+  SignOutConfirmationChoiceClearData,
+  SignOutConfirmationChoiceKeepData,
+  SignOutConfirmationChoiceNotSyncing
+};
+
 // Test methods that perform sign in actions on Chrome UI.
 @interface SigninEarlGreyUI : NSObject
 
@@ -28,13 +34,23 @@
 // Taps the "Sign Out" button to begin flow. Note that managed accounts cannot
 // go through this flow. There will be a GREYAssert if the tools menus is open
 // when calling this method or if the account is not successfully signed out.
+// This method should be used until SimplifySignOutIOS is turned on. Otherwise,
+// |signOutWithConfirmationChoice:| should be used.
 + (void)signOut;
 
 // Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign out and clear data from this device" button to begin flow.
 // There will be a GREYAssert if the tools menus is open when calling this
 // method or if the account is not successfully signed out.
+// This method should be used until SimplifySignOutIOS is turned on. Otherwise,
+// |signOutWithConfirmationChoice:| should be used.
 + (void)signOutAndClearDataFromDevice;
+
+// Signs the primary account out of Chrome through the accounts list screen.
+// Taps the "Sign Out" button, and then validated the confirmation dialog
+// according to |confirmation|.
+// This method should be used only if SimplifySignOutIOS is turned on.
++ (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;
 
 // Selects an identity when the identity chooser dialog is presented. The dialog
 // is confirmed, but it doesn't validated the user consent page.

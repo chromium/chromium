@@ -99,6 +99,23 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
       confirmationLabelID:IDS_IOS_DISCONNECT_DIALOG_CONTINUE_AND_CLEAR_MOBILE];
 }
 
++ (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
+  int confirmationLabelID = 0;
+  switch (confirmation) {
+    case SignOutConfirmationChoiceClearData:
+      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON;
+      break;
+    case SignOutConfirmationChoiceKeepData:
+      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON;
+      break;
+    case SignOutConfirmationChoiceNotSyncing:
+      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON;
+      break;
+  }
+  [self signOutWithButton:SignOutAccountsButton()
+      confirmationLabelID:confirmationLabelID];
+}
+
 + (void)selectIdentityWithEmail:(NSString*)userEmail {
   // Assumes that the identity chooser is visible.
   [[EarlGrey

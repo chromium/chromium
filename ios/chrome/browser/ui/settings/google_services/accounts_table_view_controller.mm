@@ -691,20 +691,29 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Don't pop this view based on intermediary values.
     return;
   }
-  [self dismissSelfAnimated:NO];
-}
-
-- (void)dismissSelfAnimated:(BOOL)animated {
   if (_isBeingDismissed) {
     return;
   }
   _isBeingDismissed = YES;
-  [_alertCoordinator stop];
-  [_removeAccountCoordinator stop];
-  [self.navigationController popToViewController:self animated:NO];
-  [base::mac::ObjCCastStrict<SettingsNavigationController>(
-      self.navigationController)
-      popViewControllerOrCloseSettingsAnimated:animated];
+  void (^popAccountsTableViewController)() = ^() {
+    [base::mac::ObjCCastStrict<SettingsNavigationController>(
+        self.navigationController) popViewControllerOrCloseSettingsAnimated:NO];
+  };
+  if (self.presentedViewController) {
+    // If |self| is presenting a view controller (like |_alertCoordinator|,
+    // |_removeAccountCoordinator| or the account detail view controller, it
+    // has to be dismissed before |self| can be poped from the navigation
+    // controller.
+    // This issue can be easily reproduced with EG tests, but not with Chrome
+    // app itself.
+    [self dismissViewControllerAnimated:NO
+                             completion:^{
+                               popAccountsTableViewController();
+                             }];
+  } else {
+    // Pops |self|.
+    popAccountsTableViewController();
+  }
 }
 
 #pragma mark - Access to authentication service
