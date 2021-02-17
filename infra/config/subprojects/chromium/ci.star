@@ -5786,4 +5786,11 @@ ci.cipd_builder(
         category = "rts",
         short_name = "create-model",
     ),
+    notifies = [
+        luci.notifier(
+            name = "rts-model-packager-notifier",
+            on_new_status = ["FAILURE", "INFRA_FAILURE"],
+            notify_emails = ["nodir@google.com"],
+        ),
+    ],
 )
