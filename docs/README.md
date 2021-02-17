@@ -48,8 +48,8 @@ used when committed.
     (on a Linux host)
 *   [Cast for Android Build Instructions](android_cast_build_instructions.md) -
     Cast for Android (on a Linux host)
-*   [Fuchsia Build Instructions](fuchsia_build_instructions.md) - Fuchsia target
-    (on a Linux host)
+*   [Fuchsia Build Instructions](fuchsia/build_instructions.md) -
+    Fuchsia target (on a Linux host)
 *   [iOS Build Instructions](ios/build_instructions.md) - iOS target (on a MacOS
     host)
 *   [Chrome OS Build Instructions](chromeos_build_instructions.md) - Chrome OS

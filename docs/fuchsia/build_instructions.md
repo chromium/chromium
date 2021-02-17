@@ -201,54 +201,10 @@ $ exit
 
 ### Running test suites
 
-Building test suites generate a launcher script to run them on an emulator
-or a physical device. These scripts are generated at `out/fuchsia/bin`. For
-instance,to run the `base_unittests` target, launch:
+There are three types of tests available to run on Fuchsia:
 
-```shell
-$ out/fuchsia/bin/run_base_unittests
-```
+1. [Gtests](gtests.md)
+2. [GPU integration tests](gpu_testing.md)
+3. [Blink tests](web_tests.md)
 
-Common gtest arguments such as `--gtest_filter=...` are supported by the run
-script. The launcher script also symbolizes backtraces.
-
-The test suite, by default, will run on QEMU. AEMU can be used for running
-tests that interact with Fuchsia's window manager, Scenic. To change the device
-that Fuchsia will run on, use `--device={aemu|qemu|device}`.
-
-To run a test suite on an *unprovisioned device* in a zedboot state, simply add
-`-d` to the test runner script arguments. Subsequent runs of the test runner
-script will be able to pick up the same device.
-
-To run a test suite on a device that is *already provisioned*, add the following
-arguments to the test runner script:
-
-* `-d` to run the test suite on a device.
-* `--fuchsia-out-dir=[/path/to/fuchsia/out/directory]` or
-  `--ssh-config=[/path/to/ssh_config]` to specify the SSH configuration used for
-  connecting to the target device.
-* (Optional) `--host=[IP]` to specify the test device IP. Typically, this is the
-value obtained from the command `fx netaddr --fuchsia`.
-* (Optional) `--port=[port]` to specify the SSH port, if different from 22.
-
-### Troubleshooting a test
-
-To troubleshoot a specific test, consider a combination of the following
-arguments to the test runner script:
-
-* `--gtest_filter="[TestSuite.TestName]"` to only run a specific test, or a
-  comma-separated list to run a set of tests. Wildcards can also be used to run
-  a set of tests or an entire test suite, e.g. `--gtest_filter="[TestSuite.*]"`.
-* `--test-launcher-jobs=1` to only have one batch of tests running at a time.
-  This bypasses the test launcher buffering of test log output, making it
-  possible to access the log output from successful test runs.
-* `--single-process-tests` to run all the tests in the same process. Unlike the
-  above option, this will run the tests directly in the test launcher process,
-  making it easier to attach a debugger.
-* `system-log-file=[/path/to/syslog]` to specify the file to write system logs
-  to. Or `system-log-file=-` to write the system logs to stdout. By default,
-  Chromium logs are written to the system log on Fuchsia. This argument is known
-  to cause `IOError` python exceptions with a QEMU target.
-* `--gtest_repeat=[number] --gtest_break_on_failure` to run a test or test suite
-  a certain number of times until it fails. This is useful to investigate flaky
-  tests.
+Check the documentations to learn more about how to run these tests.
