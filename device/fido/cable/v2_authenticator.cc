@@ -492,11 +492,6 @@ class CTAP2Processor : public Transaction {
     switch (command) {
       case static_cast<uint8_t>(
           device::CtapRequestCommand::kAuthenticatorGetInfo): {
-        // getInfo requests should be handled by the preemptive getInfo data
-        // sent after the handshake. This might not be true when other
-        // implementations arise, however.
-        NOTREACHED();
-
         if (payload) {
           FIDO_LOG(ERROR) << "getInfo command incorrectly contained payload";
           return base::nullopt;
