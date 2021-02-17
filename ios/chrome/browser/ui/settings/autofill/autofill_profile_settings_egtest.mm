@@ -215,15 +215,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 // Test that the page for editing Autofill profile details is accessible.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAccessibilityOnAutofillProfileEditPage \
-  DISABLED_testAccessibilityOnAutofillProfileEditPage
-#else
-#define MAYBE_testAccessibilityOnAutofillProfileEditPage \
-  testAccessibilityOnAutofillProfileEditPage
-#endif
-- (void)MAYBE_testAccessibilityOnAutofillProfileEditPage {
+- (void)testAccessibilityOnAutofillProfileEditPage {
   [AutofillAppInterface saveExampleProfile];
   [self openEditProfile:kProfileLabel];
 

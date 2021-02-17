@@ -117,13 +117,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests the different fixed elements (labels, buttons) are present on the
 // screen.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testElementsPresent DISABLED_testElementsPresent
-#else
-#define MAYBE_testElementsPresent testElementsPresent
-#endif
-- (void)MAYBE_testElementsPresent {
+- (void)testElementsPresent {
   [[EarlGrey selectElementWithMatcher:NameOnCardField()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:CardNumberField()]
@@ -143,14 +137,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 #pragma mark - Test top toolbar buttons
 
 // Tests that the 'Add' button in the top toolbar is disabled by default.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonDisabledOnDefault \
-  DISABLED_testAddButtonDisabledOnDefault
-#else
-#define MAYBE_testAddButtonDisabledOnDefault testAddButtonDisabledOnDefault
-#endif
-- (void)MAYBE_testAddButtonDisabledOnDefault {
+- (void)testAddButtonDisabledOnDefault {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
                                    grey_not(grey_enabled()), nil)];
@@ -158,14 +145,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests that the 'Cancel' button dismisses the screen.
 // TODO(crbug.com/1149306): test flaky on iPads.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testCancelButtonDismissesScreen \
-  DISABLED_testCancelButtonDismissesScreen
-#else
-#define MAYBE_testCancelButtonDismissesScreen testCancelButtonDismissesScreen
-#endif
-- (void)MAYBE_testCancelButtonDismissesScreen {
+- (void)testCancelButtonDismissesScreen {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }
@@ -183,15 +163,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests when a user tries to add an invalid card number, the "Add" button is
 // not enabled.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonDisabledOnInvalidNumber \
-  DISABLED_testAddButtonDisabledOnInvalidNumber
-#else
-#define MAYBE_testAddButtonDisabledOnInvalidNumber \
-  testAddButtonDisabledOnInvalidNumber
-#endif
-- (void)MAYBE_testAddButtonDisabledOnInvalidNumber {
+- (void)testAddButtonDisabledOnInvalidNumber {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"1234")];
 
@@ -202,15 +174,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests when a user tries to add an invalid card number, the "Add" button is
 // not enabled.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonDisabledOnInvalidExpiryDate \
-  DISABLED_testAddButtonDisabledOnInvalidExpiryDate
-#else
-#define MAYBE_testAddButtonDisabledOnInvalidExpiryDate \
-  testAddButtonDisabledOnInvalidExpiryDate
-#endif
-- (void)MAYBE_testAddButtonDisabledOnInvalidExpiryDate {
+- (void)testAddButtonDisabledOnInvalidExpiryDate {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
@@ -225,15 +189,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests when a user tries to add an invalid card nickname, the "Add" button is
 // not enabled.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonDisabledOnInvalidNickname \
-  DISABLED_testAddButtonDisabledOnInvalidNickname
-#else
-#define MAYBE_testAddButtonDisabledOnInvalidNickname \
-  testAddButtonDisabledOnInvalidNickname
-#endif
-- (void)MAYBE_testAddButtonDisabledOnInvalidNickname {
+- (void)testAddButtonDisabledOnInvalidNickname {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
@@ -250,15 +206,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests when a user tries to add an empty card nickname, the "Add" button is
 // enabled.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonEnabledOnEmptyNickname \
-  DISABLED_testAddButtonEnabledOnEmptyNickname
-#else
-#define MAYBE_testAddButtonEnabledOnEmptyNickname \
-  testAddButtonEnabledOnEmptyNickname
-#endif
-- (void)MAYBE_testAddButtonEnabledOnEmptyNickname {
+- (void)testAddButtonEnabledOnEmptyNickname {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
@@ -275,13 +223,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // and the new card number appears on the Autofill Credit Card 'Payment Methods'
 // screen.
 // TODO(crbug.com/1149306): test flaky on iPads.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonOnValidNumber DISABLED_testAddButtonOnValidNumber
-#else
-#define MAYBE_testAddButtonOnValidNumber testAddButtonOnValidNumber
-#endif
-- (void)MAYBE_testAddButtonOnValidNumber {
+- (void)testAddButtonOnValidNumber {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }
@@ -311,13 +253,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // Tests when a user add a card with a nickname, the screen is dismissed
 // and the new card number appears on the Autofill Credit Card 'Payment Methods'
 // screen with the nickname.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonOnValidNickname DISABLED_testAddButtonOnValidNickname
-#else
-#define MAYBE_testAddButtonOnValidNickname testAddButtonOnValidNickname
-#endif
-- (void)MAYBE_testAddButtonOnValidNickname {
+- (void)testAddButtonOnValidNickname {
   [AutofillAppInterface clearCreditCardStore];
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"4111111111111111")];
@@ -342,15 +278,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests that an error icon is displayed when a field has invalid text. The icon
 // is displayed if the field is not currently being editted.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testInvalidInputDisplaysInlineError \
-  DISABLED_testInvalidInputDisplaysInlineError
-#else
-#define MAYBE_testInvalidInputDisplaysInlineError \
-  testInvalidInputDisplaysInlineError
-#endif
-- (void)MAYBE_testInvalidInputDisplaysInlineError {
+- (void)testInvalidInputDisplaysInlineError {
   [[EarlGrey selectElementWithMatcher:CardNumberIconView(kEditIconIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -381,15 +309,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 // Tests that add button is disabled until typing a single character makes all
 // the fields valid.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAddButtonDisabledTillValidForm \
-  DISABLED_testAddButtonDisabledTillValidForm
-#else
-#define MAYBE_testAddButtonDisabledTillValidForm \
-  testAddButtonDisabledTillValidForm
-#endif
-- (void)MAYBE_testAddButtonDisabledTillValidForm {
+- (void)testAddButtonDisabledTillValidForm {
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_typeText(@"4111111111111111")];
   [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]

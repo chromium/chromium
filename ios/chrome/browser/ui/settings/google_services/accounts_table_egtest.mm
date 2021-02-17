@@ -88,15 +88,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
 // Tests that the Account Settings screen is correctly popped if the signed in
 // account is removed while the "Disconnect Account" dialog is up.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testSignInPopUpAccountOnDisconnectAccount \
-  DISABLED_testSignInPopUpAccountOnDisconnectAccount
-#else
-#define MAYBE_testSignInPopUpAccountOnDisconnectAccount \
-  testSignInPopUpAccountOnDisconnectAccount
-#endif
-- (void)MAYBE_testSignInPopUpAccountOnDisconnectAccount {
+- (void)testSignInPopUpAccountOnDisconnectAccount {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -120,14 +112,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
 // Tests that the Account Settings screen is correctly reloaded when one of
 // the non-primary account is removed.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testSignInReloadOnRemoveAccount \
-  DISABLED_testSignInReloadOnRemoveAccount
-#else
-#define MAYBE_testSignInReloadOnRemoveAccount testSignInReloadOnRemoveAccount
-#endif
-- (void)MAYBE_testSignInReloadOnRemoveAccount {
+- (void)testSignInReloadOnRemoveAccount {
   FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
@@ -153,13 +138,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
 // Tests that the Account Settings screen is popped and the user signed out
 // when the account is removed.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testSignOutOnRemoveAccount DISABLED_testSignOutOnRemoveAccount
-#else
-#define MAYBE_testSignOutOnRemoveAccount testSignOutOnRemoveAccount
-#endif
-- (void)MAYBE_testSignOutOnRemoveAccount {
+- (void)testSignOutOnRemoveAccount {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
 
   // Sign In |fakeIdentity|, then open the Account Settings.
@@ -180,15 +159,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
 // Tests that selecting sign-out from a non-managed account keeps the user's
 // synced data.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testSignOutFromNonManagedAccountKeepsData \
-  DISABLED_testSignOutFromNonManagedAccountKeepsData
-#else
-#define MAYBE_testSignOutFromNonManagedAccountKeepsData \
-  testSignOutFromNonManagedAccountKeepsData
-#endif
-- (void)MAYBE_testSignOutFromNonManagedAccountKeepsData {
+- (void)testSignOutFromNonManagedAccountKeepsData {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
 
   // Sign In |fakeIdentity|.
@@ -213,15 +184,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
 // Tests that selecting sign-out and clear data from a non-managed user account
 // clears the user's synced data.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testSignOutAndClearDataFromNonManagedAccountClearsData \
-  DISABLED_testSignOutAndClearDataFromNonManagedAccountClearsData
-#else
-#define MAYBE_testSignOutAndClearDataFromNonManagedAccountClearsData \
-  testSignOutAndClearDataFromNonManagedAccountClearsData
-#endif
-- (void)MAYBE_testSignOutAndClearDataFromNonManagedAccountClearsData {
+- (void)testSignOutAndClearDataFromNonManagedAccountClearsData {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
 
   // Sign In |fakeIdentity|.
@@ -251,14 +214,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 }
 
 // Tests that signing out from a managed user account clears the user's data.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testsSignOutFromManagedAccount \
-  DISABLED_testsSignOutFromManagedAccount
-#else
-#define MAYBE_testsSignOutFromManagedAccount testsSignOutFromManagedAccount
-#endif
-- (void)MAYBE_testsSignOutFromManagedAccount {
+- (void)testsSignOutFromManagedAccount {
   // Sign In |fakeManagedIdentity|.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[SigninEarlGrey fakeManagedIdentity]];
@@ -289,15 +245,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 // Tests that given two accounts A and B that are available on the device -
 // signing in and out from account A, then signing in to account B, properly
 // identifies the user with account B.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testSwitchingAccountsWithClearedData \
-  DISABLED_testSwitchingAccountsWithClearedData
-#else
-#define MAYBE_testSwitchingAccountsWithClearedData \
-  testSwitchingAccountsWithClearedData
-#endif
-- (void)MAYBE_testSwitchingAccountsWithClearedData {
+- (void)testSwitchingAccountsWithClearedData {
   FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];

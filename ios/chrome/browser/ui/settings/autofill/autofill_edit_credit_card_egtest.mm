@@ -82,13 +82,7 @@ id<GREYAction> ScrollDown() {
 #pragma mark - Test that all fields on the 'Add Credit Card' screen appear
 
 // Tests that editing the credit card nickname is possible.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testValidNickname DISABLED_testValidNickname
-#else
-#define MAYBE_testValidNickname testValidNickname
-#endif
-- (void)MAYBE_testValidNickname {
+- (void)testValidNickname {
   [self typeNickname:@"Nickname"];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
@@ -100,13 +94,7 @@ id<GREYAction> ScrollDown() {
 }
 
 // Tests that invalid nicknames are not allowed when editing a card.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testInvalidNickname DISABLED_testInvalidNickname
-#else
-#define MAYBE_testInvalidNickname testInvalidNickname
-#endif
-- (void)MAYBE_testInvalidNickname {
+- (void)testInvalidNickname {
   [self typeNickname:@"1233"];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
@@ -115,13 +103,7 @@ id<GREYAction> ScrollDown() {
 }
 
 // Tests that clearing a nickname is allowed.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testEmptyNickname DISABLED_testEmptyNickname
-#else
-#define MAYBE_testEmptyNickname testEmptyNickname
-#endif
-- (void)MAYBE_testEmptyNickname {
+- (void)testEmptyNickname {
   [self typeNickname:@"To be removed"];
 
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]

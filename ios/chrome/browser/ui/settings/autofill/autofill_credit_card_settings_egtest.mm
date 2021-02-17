@@ -124,13 +124,7 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for viewing Autofill credit card details is as expected.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testCreditCardViewPage DISABLED_testCreditCardViewPage
-#else
-#define MAYBE_testCreditCardViewPage testCreditCardViewPage
-#endif
-- (void)MAYBE_testCreditCardViewPage {
+- (void)testCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
@@ -153,15 +147,7 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for viewing Autofill credit card details is accessible.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAccessibilityOnCreditCardViewPage \
-  DISABLED_testAccessibilityOnCreditCardViewPage
-#else
-#define MAYBE_testAccessibilityOnCreditCardViewPage \
-  testAccessibilityOnCreditCardViewPage
-#endif
-- (void)MAYBE_testAccessibilityOnCreditCardViewPage {
+- (void)testAccessibilityOnCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
@@ -175,15 +161,7 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for editing Autofill credit card details is accessible.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testAccessibilityOnCreditCardEditPage \
-  DISABLED_testAccessibilityOnCreditCardEditPage
-#else
-#define MAYBE_testAccessibilityOnCreditCardEditPage \
-  testAccessibilityOnCreditCardEditPage
-#endif
-- (void)MAYBE_testAccessibilityOnCreditCardEditPage {
+- (void)testAccessibilityOnCreditCardEditPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
 
@@ -201,13 +179,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Checks that the Autofill credit cards list view is in edit mode and the
 // Autofill credit cards switch is disabled.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testListViewEditMode DISABLED_testListViewEditMode
-#else
-#define MAYBE_testListViewEditMode testListViewEditMode
-#endif
-- (void)MAYBE_testListViewEditMode {
+- (void)testListViewEditMode {
   [AutofillAppInterface saveLocalCreditCard];
   [self openCreditCardsSettings];
 
@@ -225,13 +197,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Checks that the Autofill credit card switch can be toggled on/off and the
 // list of Autofill credit cards is not affected by it.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testToggleCreditCardSwitch DISABLED_testToggleCreditCardSwitch
-#else
-#define MAYBE_testToggleCreditCardSwitch testToggleCreditCardSwitch
-#endif
-- (void)MAYBE_testToggleCreditCardSwitch {
+- (void)testToggleCreditCardSwitch {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openCreditCardsSettings];
 
@@ -261,15 +227,7 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Checks that the toolbar always appears in edit mode.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testToolbarInEditModeAddPaymentMethodFeatureEnabled \
-  DISABLED_testToolbarInEditModeAddPaymentMethodFeatureEnabled
-#else
-#define MAYBE_testToolbarInEditModeAddPaymentMethodFeatureEnabled \
-  testToolbarInEditModeAddPaymentMethodFeatureEnabled
-#endif
-- (void)MAYBE_testToolbarInEditModeAddPaymentMethodFeatureEnabled {
+- (void)testToolbarInEditModeAddPaymentMethodFeatureEnabled {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openCreditCardListInEditMode];
 
@@ -289,15 +247,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Checks the 'Add Payment Method' button is always visible and directs a user
 // to the Add Payent method view.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testToolbarAddPaymentMethodButtonFeatureEnabled \
-  DISABLED_testToolbarAddPaymentMethodButtonFeatureEnabled
-#else
-#define MAYBE_testToolbarAddPaymentMethodButtonFeatureEnabled \
-  testToolbarAddPaymentMethodButtonFeatureEnabled
-#endif
-- (void)MAYBE_testToolbarAddPaymentMethodButtonFeatureEnabled {
+- (void)testToolbarAddPaymentMethodButtonFeatureEnabled {
   [AutofillAppInterface saveLocalCreditCard];
   [self openCreditCardListInEditMode];
 
@@ -314,15 +264,7 @@ id<GREYMatcher> BottomToolbar() {
 // Checks the 'Delete' button is always visible.
 // The button is enabled when a card is selected and disabled when a card is not
 // selected.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled \
-  DISABLED_testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled
-#else
-#define MAYBE_testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled \
-  testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled
-#endif
-- (void)MAYBE_testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled {
+- (void)testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           SettingsBottomToolbarDeleteButton()]
@@ -347,13 +289,7 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Checks that deleting a card exits from edit mode.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1177079): Disable for Devices
-#define MAYBE_testDeletingCreditCard DISABLED_testDeletingCreditCard
-#else
-#define MAYBE_testDeletingCreditCard testDeletingCreditCard
-#endif
-- (void)MAYBE_testDeletingCreditCard {
+- (void)testDeletingCreditCard {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openCreditCardListInEditMode];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
