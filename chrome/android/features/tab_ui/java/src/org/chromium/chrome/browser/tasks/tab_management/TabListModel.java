@@ -19,7 +19,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -128,28 +127,6 @@ class TabListModel extends ModelList {
             if (get(i).model.get(CARD_TYPE) == TAB) return i;
         }
         return TabModel.INVALID_TAB_INDEX;
-    }
-
-    /**
-     * Get the index of currently selected tab in TabListModel.
-     * @return The index within the model.
-     */
-    public int getIndexForSelectedTab() {
-        int selectedTabCount = 0;
-        int tabCount = 0;
-        int firstSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
-        for (int i = size() - 1; i >= 0; i--) {
-            PropertyModel model = get(i).model;
-            if (model.get(CARD_TYPE) != TAB) continue;
-            if (model.get(TabProperties.IS_SELECTED)) {
-                selectedTabCount++;
-                firstSelectedTabIndex = i;
-            }
-            tabCount++;
-        }
-        assert (selectedTabCount == 1 || tabCount == 0)
-            : "There should be exactly one selected tab or no tabs at all when calling this method";
-        return firstSelectedTabIndex;
     }
 
     /**
@@ -285,19 +262,5 @@ class TabListModel extends ModelList {
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);
-    }
-
-    /**
-     * Get the first tab showing price card.
-     */
-    public PriceTabData getFirstTabShowingPriceCard() {
-        for (int i = 0; i < size(); i++) {
-            PropertyModel model = get(i).model;
-            if ((model.get(CARD_TYPE) == TAB) && (model.get(TabProperties.PRICE_DROP) != null)) {
-                return new PriceTabData(
-                        model.get(TabProperties.TAB_ID), model.get(TabProperties.PRICE_DROP));
-            }
-        }
-        return null;
     }
 }

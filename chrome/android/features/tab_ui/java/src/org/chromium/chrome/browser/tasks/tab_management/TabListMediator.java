@@ -61,8 +61,10 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
+import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -171,12 +173,20 @@ class TabListMediator {
      */
     static class ShoppingPersistedTabDataFetcher {
         protected Tab mTab;
+        protected TabListModel mModel;
+        protected PriceWelcomeMessageController mPriceWelcomeMessageController;
 
         /**
-         * @param tab {@link Tab} {@link ShoppingPersistedTabData} will be acquired for
+         * @param tab {@link Tab} {@link ShoppingPersistedTabData} will be acquired for.
+         * @param model {@link TabListModel} to check if we already have the price welcome message
+         *         in the model.
+         * @param priceWelcomeMessageController to show the price welcome message.
          */
-        ShoppingPersistedTabDataFetcher(Tab tab) {
+        ShoppingPersistedTabDataFetcher(Tab tab, @Nullable TabListModel model,
+                @Nullable PriceWelcomeMessageController priceWelcomeMessageController) {
             mTab = tab;
+            mModel = model;
+            mPriceWelcomeMessageController = priceWelcomeMessageController;
         }
 
         /**
@@ -184,7 +194,29 @@ class TabListMediator {
          * @param callback {@link Callback} to pass {@link ShoppingPersistedTabData} back in
          */
         public void fetch(Callback<ShoppingPersistedTabData> callback) {
-            ShoppingPersistedTabData.from(mTab, (res) -> { callback.onResult(res); });
+            ShoppingPersistedTabData.from(mTab, (res) -> {
+                callback.onResult(res);
+                maybeShowPriceWelcomeMessage(res);
+            });
+        }
+
+        @VisibleForTesting
+        void maybeShowPriceWelcomeMessage(
+                @Nullable ShoppingPersistedTabData shoppingPersistedTabData) {
+            // Avoid inserting message while RecyclerView is computing a layout.
+            new Handler().post(() -> {
+                if (PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled() || (mModel == null)
+                        || (mPriceWelcomeMessageController == null)
+                        || (shoppingPersistedTabData == null)
+                        || (shoppingPersistedTabData.getPriceDrop() == null)
+                        || (mModel.lastIndexForMessageItemFromType(
+                                    MessageService.MessageType.PRICE_WELCOME)
+                                != TabModel.INVALID_TAB_INDEX)) {
+                    return;
+                }
+                mPriceWelcomeMessageController.showPriceWelcomeMessage(
+                        new PriceTabData(mTab.getId(), shoppingPersistedTabData.getPriceDrop()));
+            });
         }
     }
 
@@ -291,6 +323,7 @@ class TabListMediator {
     private final TabGridDialogHandler mTabGridDialogHandler;
     private final String mComponentName;
     private final TabListFaviconProvider mTabListFaviconProvider;
+    private final PriceWelcomeMessageController mPriceWelcomeMessageController;
 
     private ThumbnailProvider mThumbnailProvider;
     private boolean mActionsOnAllRelatedTabs;
@@ -467,6 +500,7 @@ class TabListMediator {
      * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
      *                                        click on a grid card.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
+     * @param priceWelcomeMessageController A controller to show PriceWelcomeMessage.
      * @param componentName This is a unique string to identify different components.
      * @param uiType The type of UI this mediator should be building.
      */
@@ -476,8 +510,9 @@ class TabListMediator {
             TabListFaviconProvider tabListFaviconProvider, boolean actionOnRelatedTabs,
             @Nullable SelectionDelegateProvider selectionDelegateProvider,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @Nullable TabGridDialogHandler dialogHandler, String componentName,
-            @UiType int uiType) {
+            @Nullable TabGridDialogHandler dialogHandler,
+            @Nullable PriceWelcomeMessageController priceWelcomeMessageController,
+            String componentName, @UiType int uiType) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mThumbnailProvider = thumbnailProvider;
@@ -491,6 +526,7 @@ class TabListMediator {
         mTabGridDialogHandler = dialogHandler;
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mUiType = uiType;
+        mPriceWelcomeMessageController = priceWelcomeMessageController;
 
         mTabModelObserver = new TabModelObserver() {
             @Override
@@ -1116,7 +1152,8 @@ class TabListMediator {
         if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()
                 && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
-                    new ShoppingPersistedTabDataFetcher(pseudoTab.getTab()));
+                    new ShoppingPersistedTabDataFetcher(
+                            pseudoTab.getTab(), mModel, mPriceWelcomeMessageController));
         } else {
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         }
@@ -1331,7 +1368,6 @@ class TabListMediator {
                         .with(TabProperties.TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
                                 tabstripFaviconBackgroundDrawableId)
                         .with(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate)
-                        .with(TabProperties.PRICE_DROP, null)
                         .with(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false)
                         .with(CARD_TYPE, TAB)
                         .build();
@@ -1649,7 +1685,8 @@ class TabListMediator {
     int getPriceWelcomeMessageInsertionIndex() {
         assert mGridLayoutManager != null;
         int spanCount = mGridLayoutManager.getSpanCount();
-        int selectedTabIndex = mModel.getIndexForSelectedTab();
+        int selectedTabIndex = mModel.indexOfNthTabCard(
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
         int indexBelowSelectedTab = (selectedTabIndex / spanCount + 1) * spanCount;
         int indexAfterLastTab = mModel.getTabIndexBefore(mModel.size()) + 1;
         return Math.min(indexBelowSelectedTab, indexAfterLastTab);

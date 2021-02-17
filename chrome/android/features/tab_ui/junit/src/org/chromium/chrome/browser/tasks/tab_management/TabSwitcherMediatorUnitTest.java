@@ -587,15 +587,10 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(1).when(mTabModel).getCount();
         doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
-        verify(mPriceWelcomeMessageController, times(0)).restorePriceWelcomeMessage();
+        verify(mPriceWelcomeMessageController, times(1)).restorePriceWelcomeMessage();
 
         doReturn(2).when(mTabModel).getCount();
         doReturn(TAB2_ID).when(mPriceWelcomeMessageService).getBindingTabId();
-        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
-        verify(mPriceWelcomeMessageController, times(0)).restorePriceWelcomeMessage();
-
-        doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
         verify(mPriceWelcomeMessageController, times(1)).restorePriceWelcomeMessage();
     }
@@ -611,6 +606,15 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
         verify(mPriceWelcomeMessageService, times(1)).invalidateMessage();
+    }
+
+    @Test
+    public void testScrollToTab() {
+        initAndAssertAllProperties();
+        mMediator.scrollToTab(0);
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
+        mMediator.scrollToTab(1);
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(1));
     }
 
     @Test
