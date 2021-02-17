@@ -111,11 +111,6 @@ bool ShouldShowInLauncher(const std::string& app_id);
 // id of the display from which the app is launched.
 arc::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
 
-// Launch Android Settings app.
-bool LaunchAndroidSettingsApp(content::BrowserContext* context,
-                              int event_flags,
-                              int64_t display_id);
-
 // Launches an ARC app.
 bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,

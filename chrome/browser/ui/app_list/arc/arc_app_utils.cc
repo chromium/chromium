@@ -253,14 +253,6 @@ arc::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
   return window_info;
 }
 
-bool LaunchAndroidSettingsApp(content::BrowserContext* context,
-                              int event_flags,
-                              int64_t display_id) {
-  return LaunchAppWithIntent(
-      context, kSettingsAppId, base::nullopt /* launch_intent */, event_flags,
-      UserInteractionType::APP_STARTED_FROM_SETTINGS, display_id);
-}
-
 bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,

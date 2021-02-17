@@ -6,6 +6,9 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"  // kSettingsAppId
@@ -108,8 +111,12 @@ void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue* args) {
   args->GetBoolean(0, &activated_from_keyboard);
   int flags = activated_from_keyboard ? ui::EF_NONE : ui::EF_LEFT_MOUSE_BUTTON;
 
-  arc::LaunchAndroidSettingsApp(profile_, flags,
-                                GetDisplayIdForCurrentProfile());
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
+      arc::kSettingsAppId, flags,
+      apps::mojom::LaunchSource::kFromParentalControls,
+      apps::MakeWindowInfo(GetDisplayIdForCurrentProfile()));
 }
 
 void AndroidAppsHandler::ShowAndroidManageAppLinks(
