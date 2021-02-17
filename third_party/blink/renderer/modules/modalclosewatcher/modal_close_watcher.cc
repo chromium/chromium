@@ -50,8 +50,8 @@ void ModalCloseWatcher::WatcherStack::Trace(Visitor* visitor) const {
 
 void ModalCloseWatcher::WatcherStack::Invoke(ExecutionContext*, Event* e) {
   DCHECK(!watchers_.IsEmpty());
-  KeyboardEvent* event = To<KeyboardEvent>(e);
-  if (event->isTrusted() && event->keyCode() == VKEY_ESCAPE)
+  KeyboardEvent* event = DynamicTo<KeyboardEvent>(e);
+  if (event && event->isTrusted() && event->keyCode() == VKEY_ESCAPE)
     Signal();
 }
 

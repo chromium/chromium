@@ -116,6 +116,13 @@ test(t => {
 
   assert_false(onbeforeclose_called);
   assert_false(onclose_called);
+
+  let keyup2 = document.createEvent("Event");
+  keyup2.initEvent("keyup", true);
+  window.dispatchEvent(keyup2);
+
+  assert_false(onbeforeclose_called);
+  assert_false(onclose_called);
 }, "close via synthesized escape key should not work");
 
 test(t => {
