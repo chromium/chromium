@@ -664,15 +664,11 @@ void ServiceWorkerGlobalScope::OnNavigationPreloadError(
   DCHECK(IsContextThread());
   FetchEvent* fetch_event = pending_preload_fetch_events_.Take(fetch_event_id);
   DCHECK(fetch_event);
-  // Display an error message to the console, preferring the unsanitized one if
-  // available.
-  const WebString& error_message = error->unsanitized_message.IsEmpty()
-                                       ? error->message
-                                       : error->unsanitized_message;
-  if (!error_message.IsEmpty()) {
+  // Display an error message to the console directly.
+  if (error->mode == WebServiceWorkerError::Mode::kShownInConsole) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kWorker,
-        mojom::ConsoleMessageLevel::kError, error_message));
+        mojom::ConsoleMessageLevel::kError, error->message));
   }
   // Reject the preloadResponse promise.
   fetch_event->OnNavigationPreloadError(ScriptController()->GetScriptState(),

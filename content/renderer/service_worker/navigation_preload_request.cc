@@ -10,7 +10,6 @@
 #include "content/renderer/service_worker/service_worker_context_client.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 
 namespace content {
 
@@ -83,25 +82,25 @@ void NavigationPreloadRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK) {
     std::string message;
-    std::string unsanitized_message;
+    blink::WebServiceWorkerError::Mode error_mode =
+        blink::WebServiceWorkerError::Mode::kNone;
     if (status.error_code == net::ERR_ABORTED) {
       message =
           "The service worker navigation preload request was cancelled "
           "before 'preloadResponse' settled. If you intend to use "
           "'preloadResponse', use waitUntil() or respondWith() to wait for "
           "the promise to settle.";
+      error_mode = blink::WebServiceWorkerError::Mode::kShownInConsole;
     } else {
       message =
-          "The service worker navigation preload request failed with a "
-          "network error.";
-      unsanitized_message =
-          "The service worker navigation preload request failed with network "
-          "error: " +
-          net::ErrorToString(status.error_code) + ".";
+          "The service worker navigation preload request failed due to a "
+          "network error. This may have been an actual network error, or "
+          "caused by the browser simulating offline to see if the page works "
+          "offline: see https://w3c.github.io/manifest/#installability-signals";
     }
 
     // This will delete |this|.
-    ReportErrorToOwner(message, unsanitized_message);
+    ReportErrorToOwner(message, error_mode);
     return;
   }
 
@@ -127,13 +126,12 @@ void NavigationPreloadRequest::MaybeReportResponseToOwner() {
 
 void NavigationPreloadRequest::ReportErrorToOwner(
     const std::string& message,
-    const std::string& unsanitized_message) {
+    blink::WebServiceWorkerError::Mode error_mode) {
   // This will delete |this|.
   owner_->OnNavigationPreloadError(
       fetch_event_id_, std::make_unique<blink::WebServiceWorkerError>(
                            blink::mojom::ServiceWorkerErrorType::kNetwork,
-                           blink::WebString::FromUTF8(message),
-                           blink::WebString::FromUTF8(unsanitized_message)));
+                           blink::WebString::FromUTF8(message), error_mode));
 }
 
 }  // namespace content
