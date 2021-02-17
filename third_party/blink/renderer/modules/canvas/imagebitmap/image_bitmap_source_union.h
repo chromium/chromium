@@ -10,7 +10,7 @@
 namespace blink {
 
 using ImageBitmapSourceUnion =
-    HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvas;
+    HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvasOrVideoFrame;
 
 }  // namespace blink
 

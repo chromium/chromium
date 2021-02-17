@@ -10,7 +10,8 @@ typedef (HTMLImageElement or
          Blob or
          ImageData or
          ImageBitmap or
-         OffscreenCanvas) ImageBitmapSource;
+         OffscreenCanvas or
+         VideoFrame) ImageBitmapSource;
 
 [
     ImplementedAs=ImageBitmapFactories

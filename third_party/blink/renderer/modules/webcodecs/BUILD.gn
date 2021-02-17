@@ -64,7 +64,6 @@ blink_modules_sources("webcodecs") {
     "//media/mojo:buildflags",
     "//media/mojo/clients",
     "//media/mojo/mojom",
-    "//third_party/blink/renderer/modules/canvas",
     "//third_party/libyuv:libyuv",
     "//third_party/opus",
   ]
