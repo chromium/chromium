@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
@@ -34,6 +35,8 @@ class MachineLevelUserCloudPolicyManager;
 class MachineLevelUserCloudPolicyFetcher;
 
 // A class that setups and manages all CBCM related features.
+// Notes on threading and lifetime: This object lives on the UI thread and is
+// owned by |g_browser_process|.
 class ChromeBrowserCloudManagementController
     : public CloudPolicyClient::Observer {
  public:
@@ -123,6 +126,12 @@ class ChromeBrowserCloudManagementController
     virtual std::unique_ptr<enterprise_reporting::ReportScheduler>
     CreateReportScheduler(CloudPolicyClient* client) = 0;
 
+    // Returns a BestEffort Task Runner, bound to the UI thread like the rest of
+    // this class, that is meant to be used to schedule asynchronous tasks
+    // during startup.
+    virtual scoped_refptr<base::SingleThreadTaskRunner>
+    GetBestEffortTaskRunner() = 0;
+
     // Sets the SharedURLLoaderFactory that this object will use to make
     // requests to GAIA.
     virtual void SetGaiaURLLoaderFactory(
@@ -203,8 +212,6 @@ class ChromeBrowserCloudManagementController
   void InvalidatePolicies();
   void InvalidateDMTokenCallback(bool success);
 
-  void CreateReportSchedulerAsync(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
   void CreateReportScheduler();
 
   base::ObserverList<Observer, true>::Unchecked observers_;
@@ -221,6 +228,9 @@ class ChromeBrowserCloudManagementController
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;
 
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+
+  base::WeakPtrFactory<ChromeBrowserCloudManagementController> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserCloudManagementController);
 };

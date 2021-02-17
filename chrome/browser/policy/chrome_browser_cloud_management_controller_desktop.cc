@@ -27,6 +27,8 @@
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -332,6 +334,14 @@ ChromeBrowserCloudManagementControllerDesktop::CreateReportScheduler(
       &reporting_delegate_factory_);
   return std::make_unique<enterprise_reporting::ReportScheduler>(
       client, std::move(generator), &reporting_delegate_factory_);
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+ChromeBrowserCloudManagementControllerDesktop::GetBestEffortTaskRunner() {
+  // ChromeBrowserCloudManagementControllerDesktop is bound to BrowserThread::UI
+  // and so must its best-effort task runner.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::SetGaiaURLLoaderFactory(
