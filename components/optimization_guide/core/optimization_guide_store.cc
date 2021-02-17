@@ -17,6 +17,7 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/optimization_guide/core/memory_hint.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 
@@ -885,12 +886,24 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
       !update_vector->empty() || !remove_vector->empty();
   for (const auto& entry : *entries) {
     bool should_delete_download_file = had_entries_to_update_or_remove;
-    if (entry.second.has_expiry_time_secs() &&
-        entry.second.expiry_time_secs() <= now_since_epoch) {
-      remove_vector->push_back(entry.first);
-      should_delete_download_file = true;
-      base::UmaHistogramBoolean("OptimizationGuide.PredictionModelExpired",
-                                true);
+    // Only look to purge if we weren't explicitly passed in entries to update
+    // or remove.
+    if (!had_entries_to_update_or_remove) {
+      if (entry.second.has_expiry_time_secs()) {
+        if (entry.second.expiry_time_secs() <= now_since_epoch) {
+          remove_vector->push_back(entry.first);
+          should_delete_download_file = true;
+          base::UmaHistogramBoolean("OptimizationGuide.PredictionModelExpired",
+                                    true);
+        }
+      } else {
+        // If we were purging and the entry did not have an expiration time
+        // associated with it, add one.
+        update_vector->push_back(entry);
+        update_vector->back().second.set_expiry_time_secs(
+            now_since_epoch +
+            features::StoredModelsInactiveDuration().InSeconds());
+      }
     }
 
     // Delete models that are provided via file.
