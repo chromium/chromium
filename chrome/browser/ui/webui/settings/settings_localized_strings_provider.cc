@@ -1445,6 +1445,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_ENABLED},
       {"privacySandboxTrialsDisabled",
        IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED},
+      {"privacySandboxCookiesDialog",
+       IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG},
+      {"privacySandboxCookiesDialogMore",
+       IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
