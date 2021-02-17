@@ -62,8 +62,6 @@ class MODULES_EXPORT VideoFrameLogger
   // Returns |close_auditor_| and starts |timer_| if needed.
   scoped_refptr<VideoFrameCloseAuditor> GetCloseAuditor();
 
-  void LogCreateImageBitmapDeprecationNotice();
-
   void Trace(Visitor*) const override;
 
  private:
@@ -74,8 +72,6 @@ class MODULES_EXPORT VideoFrameLogger
   scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
 
   HeapTaskRunnerTimer<VideoFrameLogger> timer_;
-
-  bool already_logged_create_image_bitmap_deprecation_ = false;
 };
 
 }  // namespace blink

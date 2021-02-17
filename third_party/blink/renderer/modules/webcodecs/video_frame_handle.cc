@@ -39,12 +39,6 @@ VideoFrameHandle::VideoFrameHandle(
   DCHECK(close_auditor_);
 }
 
-VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
-                                   sk_sp<SkImage> sk_image)
-    : sk_image_(std::move(sk_image)), frame_(std::move(frame)) {
-  DCHECK(frame_);
-}
-
 VideoFrameHandle::~VideoFrameHandle() {
   // If we still have a valid |close_auditor_|, Invalidate() was never
   // called and corresponding frames never received a call to close() before
@@ -74,12 +68,6 @@ scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
   WTF::MutexLocker locker(mutex_);
   return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_,
                                                          close_auditor_)
-                : nullptr;
-}
-
-scoped_refptr<VideoFrameHandle> VideoFrameHandle::CloneForInternalUse() {
-  WTF::MutexLocker locker(mutex_);
-  return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_)
                 : nullptr;
 }
 

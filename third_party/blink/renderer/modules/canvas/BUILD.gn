@@ -46,8 +46,6 @@ blink_modules_sources("canvas") {
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.cc",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.h",
   ]
-
-  deps = [ "//third_party/blink/renderer/modules/webcodecs" ]
 }
 
 fuzzer_test("canvas_fuzzer") {

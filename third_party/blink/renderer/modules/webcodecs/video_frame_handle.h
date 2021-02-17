@@ -43,7 +43,6 @@ class MODULES_EXPORT VideoFrameHandle
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
                    scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor>);
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>, sk_sp<SkImage> sk_image);
 
   // Returns a copy of |frame_|, which should be re-used throughout the scope
   // of a function call, instead of calling frame() multiple times. Otherwise
@@ -60,10 +59,6 @@ class MODULES_EXPORT VideoFrameHandle
 
   // Clones this VideoFrameHandle into a new VideoFrameHandle object.
   scoped_refptr<VideoFrameHandle> Clone();
-
-  // Same as above, but for internal (non-garbage-collected) usage. Drops the
-  // close auditor so warning messages aren't created for unclosed frames.
-  scoped_refptr<VideoFrameHandle> CloneForInternalUse();
 
  private:
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;

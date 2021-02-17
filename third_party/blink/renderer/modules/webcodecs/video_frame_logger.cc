@@ -56,18 +56,6 @@ VideoFrameLogger::GetCloseAuditor() {
   return close_auditor_;
 }
 
-void VideoFrameLogger::LogCreateImageBitmapDeprecationNotice() {
-  if (already_logged_create_image_bitmap_deprecation_)
-    return;
-
-  already_logged_create_image_bitmap_deprecation_ = true;
-  GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kDeprecation,
-      mojom::blink::ConsoleMessageLevel::kWarning,
-      "VideoFrame.createImageBitmap() is deprecated; please use "
-      "createImageBitmap(VideoFrame)."));
-}
-
 void VideoFrameLogger::LogCloseErrors(TimerBase*) {
   // If it's been a while since this class was used and there are not other
   // references to |leak_status_|, stop the timer.
