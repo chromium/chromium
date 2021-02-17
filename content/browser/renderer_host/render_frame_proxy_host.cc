@@ -711,7 +711,7 @@ void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
 
   // Augment |download_policy| for situations that were not covered on the
   // renderer side, e.g. status not available on remote frame, etc.
-  NavigationDownloadPolicy download_policy = params->download_policy;
+  blink::NavigationDownloadPolicy download_policy = params->download_policy;
   GetContentClient()->browser()->AugmentNavigationDownloadPolicy(
       frame_tree_node_->navigator().controller().GetWebContents(), current_rfh,
       params->user_gesture, &download_policy);
@@ -720,9 +720,9 @@ void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
        network::mojom::WebSandboxFlags::kDownloads) !=
       network::mojom::WebSandboxFlags::kNone) {
     if (download_policy.blocking_downloads_in_sandbox_enabled) {
-      download_policy.SetDisallowed(content::NavigationDownloadType::kSandbox);
+      download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
     } else {
-      download_policy.SetAllowed(content::NavigationDownloadType::kSandbox);
+      download_policy.SetAllowed(blink::NavigationDownloadType::kSandbox);
     }
   }
 

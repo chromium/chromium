@@ -1803,7 +1803,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OpenerNavigation_DownloadPolicy) {
 
   // Implies NavigationDownloadType::kOpenerCrossOrigin has 0 count.
   histograms.ExpectUniqueSample("Navigation.DownloadPolicy.LogPerPolicyApplied",
-                                NavigationDownloadType::kNoGesture, 1);
+                                blink::NavigationDownloadType::kNoGesture, 1);
 }
 
 // A variation of the OpenerNavigation_DownloadPolicy test above, but uses a
@@ -1846,8 +1846,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   EXPECT_FALSE(manager.was_successful());
 
-  histograms.ExpectBucketCount("Navigation.DownloadPolicy.LogPerPolicyApplied",
-                               NavigationDownloadType::kOpenerCrossOrigin, 1);
+  histograms.ExpectBucketCount(
+      "Navigation.DownloadPolicy.LogPerPolicyApplied",
+      blink::NavigationDownloadType::kOpenerCrossOrigin, 1);
 }
 
 // Regression test for https://crbug.com/872284.

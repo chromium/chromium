@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_RESOURCE_INTERCEPT_POLICY_H_
-#define CONTENT_PUBLIC_COMMON_RESOURCE_INTERCEPT_POLICY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_RESOURCE_INTERCEPT_POLICY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_RESOURCE_INTERCEPT_POLICY_H_
 
-namespace content {
+namespace blink {
 
 // The ResourceInterceptPolicy enum controls whether a resource request is
 // allowed to be handled by plugin (intercept as a stream) or to turn into a
@@ -31,6 +31,6 @@ enum class ResourceInterceptPolicy {
   kAllowPluginOnly = 2,
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_COMMON_RESOURCE_INTERCEPT_POLICY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_RESOURCE_INTERCEPT_POLICY_H_

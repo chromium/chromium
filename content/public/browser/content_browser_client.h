@@ -97,6 +97,7 @@ namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
 class AssociatedInterfaceRegistry;
+struct NavigationDownloadPolicy;
 struct RendererPreferences;
 class URLLoaderThrottle;
 }  // namespace blink
@@ -223,7 +224,6 @@ class XrIntegrationClient;
 struct GlobalFrameRoutingId;
 struct GlobalRequestID;
 struct MainFunctionParams;
-struct NavigationDownloadPolicy;
 struct OpenURLParams;
 struct PepperPluginInfo;
 struct Referrer;
@@ -1837,7 +1837,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       WebContents* web_contents,
       RenderFrameHost* frame_host,
       bool user_gesture,
-      NavigationDownloadPolicy* download_policy);
+      blink::NavigationDownloadPolicy* download_policy);
 
   // Returns the interest cohort associated with the browser context of
   // |web_contents|.

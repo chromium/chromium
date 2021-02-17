@@ -168,4 +168,9 @@ bool ShouldCreateNewHostForSameSiteSubframe() {
   return GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe;
 }
 
+bool ShouldSkipEarlyCommitPendingForCrashedFrame() {
+  return base::FeatureList::IsEnabled(
+      features::kSkipEarlyCommitPendingForCrashedFrame);
+}
+
 }  // namespace content

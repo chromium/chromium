@@ -1054,7 +1054,7 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
     WebContents* web_contents,
     RenderFrameHost* frame_host,
     bool user_gesture,
-    NavigationDownloadPolicy* download_policy) {}
+    blink::NavigationDownloadPolicy* download_policy) {}
 
 std::string ContentBrowserClient::GetInterestCohortForJsApi(
     WebContents* web_contents,

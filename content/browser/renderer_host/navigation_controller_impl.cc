@@ -2323,7 +2323,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     const Referrer& referrer,
     ui::PageTransition page_transition,
     bool should_replace_current_entry,
-    NavigationDownloadPolicy download_policy,
+    blink::NavigationDownloadPolicy download_policy,
     const std::string& method,
     scoped_refptr<network::ResourceRequestBody> post_body,
     const std::string& extra_headers,
@@ -3135,8 +3135,9 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          params.has_user_gesture, NavigationDownloadPolicy(), reload_type,
-          pending_entry_, pending_entry_->GetFrameEntry(node), transition_type);
+          params.has_user_gesture, blink::NavigationDownloadPolicy(),
+          reload_type, pending_entry_, pending_entry_->GetFrameEntry(node),
+          transition_type);
 
   // If the navigation couldn't start, return immediately and discard the
   // pending NavigationEntry.
@@ -3290,7 +3291,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     bool override_user_agent,
     bool should_replace_current_entry,
     bool has_user_gesture,
-    NavigationDownloadPolicy download_policy,
+    blink::NavigationDownloadPolicy download_policy,
     ReloadType reload_type,
     NavigationEntryImpl* entry,
     FrameNavigationEntry* frame_entry,
@@ -3394,7 +3395,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   // now? Possibly the URL could be rewritten to a view-source via some URL
   // handler.
   if (is_view_source_mode)
-    download_policy.SetDisallowed(NavigationDownloadType::kViewSource);
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
 
   const GURL& history_url_for_data_url =
       params.base_url_for_data_url.is_empty() ? GURL() : virtual_url;

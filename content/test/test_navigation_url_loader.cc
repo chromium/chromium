@@ -13,11 +13,11 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/navigation_policy.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 
 namespace content {
 
@@ -91,7 +91,7 @@ void TestNavigationURLLoader::CallOnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
       mojo::ScopedDataPipeConsumerHandle(),
       GlobalRequestID::MakeBrowserInitiated(), false,
-      NavigationDownloadPolicy(),
+      blink::NavigationDownloadPolicy(),
       request_info_->isolation_info.network_isolation_key(), base::nullopt);
 }
 

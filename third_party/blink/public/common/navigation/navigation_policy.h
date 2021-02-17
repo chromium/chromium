@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_NAVIGATION_POLICY_H_
-#define CONTENT_PUBLIC_COMMON_NAVIGATION_POLICY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_NAVIGATION_POLICY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_NAVIGATION_POLICY_H_
 
 #include <bitset>
 
-#include "content/common/content_export.h"
-#include "content/public/common/resource_intercept_policy.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/navigation/resource_intercept_policy.h"
 
 // A centralized file for base helper methods and policy decisions about
 // navigations.
 
-namespace content {
+namespace blink {
 // Navigation type that affects the download decision and relevant metrics to be
 // reported at download-discovery time.
 //
@@ -52,7 +52,7 @@ enum class NavigationDownloadType {
 // metrics to be reported at download-discovery time. Also controls how
 // navigations behave when they turn into downloads. By default, navigation is
 // allowed to become a download.
-struct CONTENT_EXPORT NavigationDownloadPolicy {
+struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   NavigationDownloadPolicy();
   ~NavigationDownloadPolicy();
   NavigationDownloadPolicy(const NavigationDownloadPolicy&);
@@ -88,12 +88,6 @@ struct CONTENT_EXPORT NavigationDownloadPolicy {
   bool blocking_downloads_in_sandbox_enabled = false;
 };
 
-// If this is false we continue the old behaviour of doing an early call to
-// RenderFrameHostManager::CommitPending when we are replacing a crashed
-// frame.
-// TODO(https://crbug.com/1072817): Stop allowing this.
-CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
+}  // namespace blink
 
-}  // namespace content
-
-#endif  // CONTENT_PUBLIC_COMMON_NAVIGATION_POLICY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_NAVIGATION_POLICY_H_

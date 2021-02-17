@@ -532,6 +532,9 @@ specific_include_rules = {
   "chrome_content_browser_client\.cc" : [
     "+content/public/browser/tts_controller.h",
   ],
+  "chrome_navigation_browsertest.cc" : [
+    "+content/common/content_navigation_policy.h",
+  ],
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
   ]

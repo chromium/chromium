@@ -27,4 +27,7 @@ specific_include_rules = {
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "sad_tab_helper.cc": [
+    "+content/common/content_navigation_policy.h",
+  ]
 }

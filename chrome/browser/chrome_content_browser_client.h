@@ -635,7 +635,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents,
       content::RenderFrameHost* frame_host,
       bool user_gesture,
-      content::NavigationDownloadPolicy* download_policy) override;
+      blink::NavigationDownloadPolicy* download_policy) override;
 
   std::string GetInterestCohortForJsApi(
       content::WebContents* web_contents,

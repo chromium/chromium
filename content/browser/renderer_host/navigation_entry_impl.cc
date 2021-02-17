@@ -724,9 +724,9 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
     blink::PreviewsState previews_state,
     base::TimeTicks navigation_start,
     base::TimeTicks input_start) {
-  NavigationDownloadPolicy download_policy;
+  blink::NavigationDownloadPolicy download_policy;
   if (IsViewSourceMode())
-    download_policy.SetDisallowed(NavigationDownloadType::kViewSource);
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
 
   return mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),

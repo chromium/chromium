@@ -289,7 +289,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   network::mojom::URLResponseHeadPtr head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
 
-  NavigationDownloadPolicy download_policy_;
+  blink::NavigationDownloadPolicy download_policy_;
 
   // Factories to handle navigation requests for non-network resources.
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap

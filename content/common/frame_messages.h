@@ -28,7 +28,6 @@
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
 #include "content/public/common/common_param_traits.h"
-#include "content/public/common/navigation_policy.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
 #include "content/public/common/three_d_api_types.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -95,7 +95,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameVisibility,
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::WebFeature,
                           blink::mojom::WebFeature::kMaxValue)
 
-IPC_STRUCT_TRAITS_BEGIN(content::NavigationDownloadPolicy)
+IPC_STRUCT_TRAITS_BEGIN(blink::NavigationDownloadPolicy)
   IPC_STRUCT_TRAITS_MEMBER(observed_types)
   IPC_STRUCT_TRAITS_MEMBER(disallowed_types)
   IPC_STRUCT_TRAITS_MEMBER(blocking_downloads_in_sandbox_enabled)

@@ -2692,7 +2692,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest, Disallowed) {
                             ->frame_tree_node();
   EXPECT_TRUE(
       root->navigation_request()->common_params().download_policy.IsType(
-          NavigationDownloadType::kViewSource));
+          blink::NavigationDownloadType::kViewSource));
   EXPECT_FALSE(root->navigation_request()
                    ->common_params()
                    .download_policy.IsDownloadAllowed());

@@ -162,6 +162,8 @@ source_set("headers") {
     "mobile_metrics/mobile_friendliness.h",
     "native_io/native_io_utils.h",
     "navigation/impression.h",
+    "navigation/navigation_policy.h",
+    "navigation/resource_intercept_policy.h",
     "net/ip_address_space_util.h",
     "notifications/notification_constants.h",
     "notifications/notification_mojom_traits.h",

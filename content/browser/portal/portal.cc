@@ -231,7 +231,7 @@ void Portal::Navigate(const GURL& url,
 
   // TODO(lfg): Figure out download policies for portals.
   // https://github.com/WICG/portals/issues/150
-  NavigationDownloadPolicy download_policy;
+  blink::NavigationDownloadPolicy download_policy;
 
   // Navigations in portals do not affect the host's session history. Upon
   // activation, only the portal's last committed entry is merged with the

@@ -331,7 +331,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/navigation_policy.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
@@ -375,6 +374,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
@@ -5724,20 +5724,20 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
     content::WebContents* web_contents,
     content::RenderFrameHost* frame_host,
     bool user_gesture,
-    content::NavigationDownloadPolicy* download_policy) {
+    blink::NavigationDownloadPolicy* download_policy) {
   const auto* throttle_manager = subresource_filter::
       ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   if (throttle_manager && throttle_manager->IsFrameTaggedAsAd(frame_host)) {
-    download_policy->SetAllowed(content::NavigationDownloadType::kAdFrame);
+    download_policy->SetAllowed(blink::NavigationDownloadType::kAdFrame);
     if (!user_gesture) {
       if (base::FeatureList::IsEnabled(
               blink::features::
                   kBlockingDownloadsInAdFrameWithoutUserActivation)) {
         download_policy->SetDisallowed(
-            content::NavigationDownloadType::kAdFrameNoGesture);
+            blink::NavigationDownloadType::kAdFrameNoGesture);
       } else {
         download_policy->SetAllowed(
-            content::NavigationDownloadType::kAdFrameNoGesture);
+            blink::NavigationDownloadType::kAdFrameNoGesture);
       }
     }
   }

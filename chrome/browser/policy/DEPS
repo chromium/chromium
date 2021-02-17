@@ -4,5 +4,6 @@ specific_include_rules = {
   ],
   "policy_browsertest\.cc": [
     "+ash/shell.h",
+    "+content/common/content_navigation_policy.h",
   ]
 }

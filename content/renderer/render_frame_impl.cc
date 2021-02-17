@@ -70,7 +70,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "content/public/common/navigation_policy.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -146,6 +145,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -545,7 +545,7 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->initiator_origin_trial_features.begin(),
       info->initiator_origin_trial_features.end());
 
-  NavigationDownloadPolicy download_policy;
+  blink::NavigationDownloadPolicy download_policy;
   RenderFrameImpl::MaybeSetDownloadFramePolicy(
       info->is_opener_navigation, info->url_request, current_origin,
       has_download_sandbox_flag, info->blocking_downloads_in_sandbox_enabled,
@@ -1891,37 +1891,39 @@ void RenderFrameImpl::MaybeSetDownloadFramePolicy(
     bool has_download_sandbox_flag,
     bool blocking_downloads_in_sandbox_enabled,
     bool from_ad,
-    NavigationDownloadPolicy* download_policy) {
+    blink::NavigationDownloadPolicy* download_policy) {
   bool has_gesture = request.HasUserGesture();
   if (!has_gesture) {
-    download_policy->SetAllowed(NavigationDownloadType::kNoGesture);
+    download_policy->SetAllowed(blink::NavigationDownloadType::kNoGesture);
   }
 
   // Disallow downloads on an opener if the requestor is cross origin.
   // See crbug.com/632514.
   if (is_opener_navigation &&
       !request.RequestorOrigin().CanAccess(current_origin)) {
-    download_policy->SetDisallowed(NavigationDownloadType::kOpenerCrossOrigin);
+    download_policy->SetDisallowed(
+        blink::NavigationDownloadType::kOpenerCrossOrigin);
   }
 
   if (has_download_sandbox_flag) {
     if (blocking_downloads_in_sandbox_enabled) {
-      download_policy->SetDisallowed(NavigationDownloadType::kSandbox);
+      download_policy->SetDisallowed(blink::NavigationDownloadType::kSandbox);
     } else {
-      download_policy->SetAllowed(NavigationDownloadType::kSandbox);
+      download_policy->SetAllowed(blink::NavigationDownloadType::kSandbox);
     }
   }
 
   if (from_ad) {
-    download_policy->SetAllowed(NavigationDownloadType::kAdFrame);
+    download_policy->SetAllowed(blink::NavigationDownloadType::kAdFrame);
     if (!has_gesture) {
       if (base::FeatureList::IsEnabled(
               blink::features::
                   kBlockingDownloadsInAdFrameWithoutUserActivation)) {
         download_policy->SetDisallowed(
-            NavigationDownloadType::kAdFrameNoGesture);
+            blink::NavigationDownloadType::kAdFrameNoGesture);
       } else {
-        download_policy->SetAllowed(NavigationDownloadType::kAdFrameNoGesture);
+        download_policy->SetAllowed(
+            blink::NavigationDownloadType::kAdFrameNoGesture);
       }
     }
   }

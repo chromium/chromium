@@ -4411,8 +4411,9 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       url::Origin::Create(kUrl2), true /* is_renderer_initiated */,
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
-      false /* should_replace_current_entry */, NavigationDownloadPolicy(),
-      "GET", nullptr, "", nullptr, base::nullopt);
+      false /* should_replace_current_entry */,
+      blink::NavigationDownloadPolicy(), "GET", nullptr, "", nullptr,
+      base::nullopt);
 
   // Clean up the handler.
   BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(
@@ -4449,8 +4450,8 @@ TEST_F(NavigationControllerTest,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       url::Origin::Create(main_url), true /* is_renderer_initiated */,
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
-      should_replace_current_entry, NavigationDownloadPolicy(), "GET", nullptr,
-      "", nullptr, base::nullopt);
+      should_replace_current_entry, blink::NavigationDownloadPolicy(), "GET",
+      nullptr, "", nullptr, base::nullopt);
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 

@@ -863,7 +863,7 @@ class CONTENT_EXPORT NavigationRequest
       mojo::ScopedDataPipeConsumerHandle response_body,
       GlobalRequestID request_id,
       bool is_download,
-      NavigationDownloadPolicy download_policy,
+      blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params)
       override;
@@ -1035,7 +1035,7 @@ class CONTENT_EXPORT NavigationRequest
   // Record download related UseCounters when navigation is a download before
   // filtered by download_policy.
   void RecordDownloadUseCountersPrePolicyCheck(
-      NavigationDownloadPolicy download_policy);
+      blink::NavigationDownloadPolicy download_policy);
 
   // Record download related UseCounters when navigation is a download after
   // filtered by download_policy.

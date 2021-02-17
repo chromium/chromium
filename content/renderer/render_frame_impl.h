@@ -265,7 +265,7 @@ class CONTENT_EXPORT RenderFrameImpl
       bool has_download_sandbox_flag,
       bool blocking_downloads_in_sandbox_enabled,
       bool from_ad,
-      NavigationDownloadPolicy* download_policy);
+      blink::NavigationDownloadPolicy* download_policy);
 
   // Overwrites the given URL to use an HTML5 embed if possible.
   blink::WebURL OverrideFlashEmbedWithHTML(const blink::WebURL& url) override;
