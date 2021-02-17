@@ -191,6 +191,10 @@ class SiteInstanceTest : public testing::Test {
 
   BrowserContext* context() { return &context_; }
 
+  GURL GetSiteForURL(const GURL& url) {
+    return GetSiteInfoForURL(url).site_url();
+  }
+
   SiteInfo GetSiteInfoForURL(const std::string& url) {
     return SiteInfo::CreateForTesting(IsolationContext(&context_), GURL(url));
   }
@@ -535,51 +539,51 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
 
   // Pages are irrelevant.
   GURL test_url = GURL("http://www.google.com/index.html");
-  GURL site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  GURL site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://google.com"), site_url);
   EXPECT_EQ("http", site_url.scheme());
   EXPECT_EQ("google.com", site_url.host());
 
   // Ports are irrelevant.
   test_url = GURL("https://www.google.com:8080");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("https://google.com"), site_url);
 
   // Punycode is canonicalized.
   test_url = GURL("http://☃snowperson☃.net:333/");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://xn--snowperson-di0gka.net"), site_url);
 
   // Username and password are stripped out.
   test_url = GURL("ftp://username:password@ftp.chromium.org/files/README");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("ftp://chromium.org"), site_url);
 
   // Literal IP addresses of any flavor are okay.
   test_url = GURL("http://127.0.0.1/a.html");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://127.0.0.1"), site_url);
   EXPECT_EQ("127.0.0.1", site_url.host());
 
   test_url = GURL("http://2130706433/a.html");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://127.0.0.1"), site_url);
   EXPECT_EQ("127.0.0.1", site_url.host());
 
   test_url = GURL("http://[::1]:2/page.html");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://[::1]"), site_url);
   EXPECT_EQ("[::1]", site_url.host());
 
   // Hostnames without TLDs are okay.
   test_url = GURL("http://foo/a.html");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://foo"), site_url);
   EXPECT_EQ("foo", site_url.host());
 
   // File URLs should include the scheme.
   test_url = GURL("file:///C:/Downloads/");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("file:"), site_url);
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -588,26 +592,26 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   // maps *all* file://... URLs into "file://" origin) such file URLs still need
   // to map into "file:" site URL.  See also https://crbug.com/776160.
   test_url = GURL("file://server/path");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("file:"), site_url);
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
 
   // Data URLs should include the whole URL, except for the hash.
   test_url = GURL("data:text/html,foo");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(test_url, site_url);
   EXPECT_EQ("data", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
   test_url = GURL("data:text/html,foo#bar");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_FALSE(site_url.has_ref());
   EXPECT_NE(test_url, site_url);
   EXPECT_TRUE(site_url.EqualsIgnoringRef(test_url));
 
   // Javascript URLs should include the scheme.
   test_url = GURL("javascript:foo();");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("javascript:"), site_url);
   EXPECT_EQ("javascript", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -616,12 +620,12 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   test_url = GURL(
       "blob:https://www.ftp.chromium.org/"
       "4d4ff040-6d61-4446-86d3-13ca07ec9ab9");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("https://chromium.org"), site_url);
 
   // Blob URLs with file origin also extract the site from the origin.
   test_url = GURL("blob:file:///1029e5a4-2983-4b90-a585-ed217563acfeb");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("file:"), site_url);
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -629,10 +633,10 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   // Blob URLs created from a unique origin use the full URL as the site URL,
   // except for the hash.
   test_url = GURL("blob:null/1029e5a4-2983-4b90-a585-ed217563acfeb");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(test_url, site_url);
   test_url = GURL("blob:null/1029e5a4-2983-4b90-a585-ed217563acfeb#foo");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_FALSE(site_url.has_ref());
   EXPECT_NE(test_url, site_url);
   EXPECT_TRUE(site_url.EqualsIgnoringRef(test_url));
@@ -641,26 +645,26 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   test_url = GURL(
       "blob:http://www.example.appspot.com:44/"
       "4d4ff040-6d61-4446-86d3-13ca07ec9ab9");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://example.appspot.com"), site_url);
 
   // The site of filesystem URLs is determined by the inner URL.
   test_url = GURL("filesystem:http://www.google.com/foo/bar.html?foo#bar");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(GURL("http://google.com"), site_url);
 
   // Error page URLs.
   auto error_site_info = SiteInfo::CreateForErrorPage(
       CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   test_url = GURL(kUnreachableWebDataURL);
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
 
   // Verify that other URLs that use the chrome-error scheme also map
   // to the error page SiteInfo. These type of URLs should not appear in the
   // codebase, but the mapping is intended to cover the whole scheme.
   test_url = GURL("chrome-error://someerror");
-  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
 
   DrainMessageLoop();

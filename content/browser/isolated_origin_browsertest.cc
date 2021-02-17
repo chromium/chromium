@@ -3122,9 +3122,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
       if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
               /*in_main_frame=*/false)) {
         EXPECT_EQ(
-            SiteInstance::GetSiteForURL(web_contents()->GetBrowserContext(),
-                                        regular_url),
-            child2->current_frame_host()->GetSiteInstance()->GetSiteURL());
+            SiteInfo::CreateForTesting(
+                IsolationContext(web_contents()->GetBrowserContext()),
+                regular_url),
+            child2->current_frame_host()->GetSiteInstance()->GetSiteInfo());
       }
     } else {
       EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),

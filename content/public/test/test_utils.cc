@@ -548,8 +548,9 @@ bool EffectiveURLContentBrowserClient::DoesSiteRequireDedicatedProcess(
     return false;
 
   for (const auto& pair : urls_to_modify_) {
-    if (SiteInstance::GetSiteForURL(browser_context, pair.first) ==
-        effective_site_url)
+    auto site_info = SiteInfo::CreateForTesting(
+        IsolationContext(browser_context), pair.first);
+    if (site_info.site_url() == effective_site_url)
       return true;
   }
   return false;

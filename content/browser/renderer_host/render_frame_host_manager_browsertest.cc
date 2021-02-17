@@ -2014,10 +2014,12 @@ IN_PROC_BROWSER_TEST_P(
   const GURL kCrossSiteURL =
       embedded_test_server()->GetURL("c.com", "/title1.html");
 
-  const GURL kOriginalSiteURL = SiteInstance::GetSiteForURL(
-      shell()->web_contents()->GetBrowserContext(), kOriginalURL);
-  const GURL kRedirectSiteURL = SiteInstance::GetSiteForURL(
-      shell()->web_contents()->GetBrowserContext(), kRedirectURL);
+  IsolationContext isolation_context(
+      shell()->web_contents()->GetBrowserContext());
+  const auto kOriginalSiteInfo =
+      SiteInfo::CreateForTesting(isolation_context, kOriginalURL);
+  const auto kRedirectSiteInfo =
+      SiteInfo::CreateForTesting(isolation_context, kRedirectURL);
 
   // First navigate to the initial URL.
   shell()->LoadURL(kOriginalURL);
@@ -2072,13 +2074,13 @@ IN_PROC_BROWSER_TEST_P(
   CHECK(speculative_rfh);
   EXPECT_TRUE(speculative_rfh->is_loading());
   if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(kRedirectSiteURL,
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(kRedirectSiteInfo,
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
   } else if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(kOriginalSiteURL,
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(kOriginalSiteInfo,
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
   }
   int site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
 
@@ -2098,8 +2100,8 @@ IN_PROC_BROWSER_TEST_P(
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(kRedirectSiteURL,
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(kRedirectSiteInfo,
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
     if (AreAllSitesIsolatedForTesting())
       EXPECT_EQ(site_instance_id, speculative_rfh->GetSiteInstance()->GetId());
   }
@@ -2120,8 +2122,8 @@ IN_PROC_BROWSER_TEST_P(
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(kOriginalSiteURL,
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(kOriginalSiteInfo,
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
   }
   if (AreAllSitesIsolatedForTesting())
     EXPECT_NE(site_instance_id, speculative_rfh->GetSiteInstance()->GetId());

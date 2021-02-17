@@ -11531,9 +11531,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(initial_site_instance,
               root->current_frame_host()->GetSiteInstance());
-    EXPECT_EQ(SiteInstance::GetSiteForURL(
-                  shell()->web_contents()->GetBrowserContext(), url3),
-              root->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(
+        SiteInfo::CreateForTesting(
+            IsolationContext(shell()->web_contents()->GetBrowserContext()),
+            url3),
+        root->current_frame_host()->GetSiteInstance()->GetSiteInfo());
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
   } else {
     EXPECT_EQ(initial_site_instance,

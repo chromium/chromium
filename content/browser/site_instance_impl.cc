@@ -1444,27 +1444,6 @@ void SiteInstanceImpl::PreventOptInOriginIsolation(
 }
 
 // static
-GURL SiteInstance::GetSiteForURL(BrowserContext* browser_context,
-                                 const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
-
-  // By default, GetSiteForURL will resolve |url| to an effective URL
-  // before computing its site.
-  //
-  // TODO(alexmos): Callers inside content/ should already be using the
-  // internal SiteInstanceImpl version and providing a proper IsolationContext.
-  // For callers outside content/, plumb the applicable IsolationContext here,
-  // where needed.  Eventually, GetSiteForURL should always require an
-  // IsolationContext to be passed in, and this implementation should just
-  // become SiteInstanceImpl::GetSiteForURL.
-  return SiteInfo::Create(IsolationContext(browser_context),
-                          UrlInfo(url, false /* origin_requests_isolation */),
-                          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated())
-      .site_url();
-}
-
-// static
 bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
     const IsolationContext& isolation_context,
     const GURL& url,

@@ -75,13 +75,19 @@ class NavigatorTest : public RenderViewHostImplTestHarness {
         node->render_manager()->speculative_render_frame_host_.get());
   }
 
-  scoped_refptr<SiteInstance> ConvertToSiteInstance(
+  scoped_refptr<SiteInstanceImpl> ConvertToSiteInstance(
       RenderFrameHostManager* rfhm,
       const SiteInstanceDescriptor& descriptor,
       SiteInstance* candidate_instance) {
-    return rfhm->ConvertToSiteInstance(
-        descriptor, static_cast<SiteInstanceImpl*>(candidate_instance),
-        false /* is_speculative */);
+    return static_cast<SiteInstanceImpl*>(
+        rfhm->ConvertToSiteInstance(
+                descriptor, static_cast<SiteInstanceImpl*>(candidate_instance),
+                false /* is_speculative */)
+            .get());
+  }
+
+  SiteInfo CreateExpectedSiteInfo(const GURL& url) {
+    return SiteInfo::CreateForTesting(IsolationContext(browser_context()), url);
   }
 };
 
@@ -122,8 +128,8 @@ TEST_F(NavigatorTest, SimpleBrowserInitiatedNavigationFromNonLiveRenderer) {
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrl),
-              main_test_rfh()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
+              main_test_rfh()->GetSiteInstance()->GetSiteInfo());
   }
   EXPECT_EQ(kUrl, contents()->GetLastCommittedURL());
 
@@ -190,8 +196,8 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedSameSiteNavigation) {
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrl2),
-              main_test_rfh()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrl2),
+              main_test_rfh()->GetSiteInstance()->GetSiteInfo());
   }
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -658,9 +664,9 @@ TEST_F(NavigatorTest, RedirectCrossSite) {
 TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   const GURL kUrl0("http://www.wikipedia.org/");
   const GURL kUrl1("http://www.chromium.org/");
-  const GURL kUrl1_site = SiteInstance::GetSiteForURL(browser_context(), kUrl1);
+  const auto kUrl1SiteInfo = CreateExpectedSiteInfo(kUrl1);
   const GURL kUrl2("http://www.google.com/");
-  const GURL kUrl2_site = SiteInstance::GetSiteForURL(browser_context(), kUrl2);
+  const auto kUrl2SiteInfo = CreateExpectedSiteInfo(kUrl2);
 
   // Initialization.
   contents()->NavigateAndCommit(kUrl0);
@@ -686,7 +692,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(kUrl1_site, speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(kUrl1SiteInfo, speculative_rfh->GetSiteInstance()->GetSiteInfo());
   }
 
   // Request navigation to the 2nd URL; the NavigationRequest must have been
@@ -726,7 +732,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(kUrl2_site, main_test_rfh()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(kUrl2SiteInfo, main_test_rfh()->GetSiteInstance()->GetSiteInfo());
   }
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
 
@@ -1019,8 +1025,8 @@ TEST_F(NavigatorTest, SpeculativeRendererWorksBaseCase) {
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrl),
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
   }
 
   navigation->ReadyToCommit();
@@ -1059,8 +1065,8 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrl),
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
   }
 
   // It then redirects to yet another site.
@@ -1103,8 +1109,8 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
     // the SiteInstance stayed the same.
     EXPECT_FALSE(rfh_deleted_observer.deleted());
   } else {
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrlRedirect),
-              speculative_rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrlRedirect),
+              speculative_rfh->GetSiteInstance()->GetSiteInfo());
     EXPECT_NE(site_instance_id, redirect_site_instance_id);
 
     // Verify the old speculative RenderFrameHost was deleted because
@@ -1230,7 +1236,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   // 4) Convert a descriptor of a related instance with a site different from
   // the current one.
   GURL kUrlSameSiteAs2("http://www.b.com/foo");
-  scoped_refptr<SiteInstance> related_instance;
+  scoped_refptr<SiteInstanceImpl> related_instance;
   {
     SiteInstanceDescriptor descriptor(
         UrlInfo::CreateForTesting(kUrlSameSiteAs2),
@@ -1246,15 +1252,12 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(current_instance, related_instance.get());
     EXPECT_NE(unrelated_instance.get(), related_instance.get());
 
-    auto* related_instance_impl =
-        static_cast<SiteInstanceImpl*>(related_instance.get());
-
     if (AreDefaultSiteInstancesEnabled()) {
-      ASSERT_TRUE(related_instance_impl->IsDefaultSiteInstance());
+      ASSERT_TRUE(related_instance->IsDefaultSiteInstance());
     } else {
       EXPECT_EQ(SiteInfo::CreateForTesting(
                     current_instance->GetIsolationContext(), kUrlSameSiteAs2),
-                related_instance_impl->GetSiteInfo());
+                related_instance->GetSiteInfo());
     }
   }
 
@@ -1265,7 +1268,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
         UrlInfo::CreateForTesting(kUrlSameSiteAs1),
         SiteInstanceRelation::UNRELATED,
         CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-    scoped_refptr<SiteInstance> converted_instance_1 =
+    scoped_refptr<SiteInstanceImpl> converted_instance_1 =
         ConvertToSiteInstance(rfhm, descriptor, nullptr);
     // Should return a new instance, unrelated to the current one, set to the
     // provided site URL.
@@ -1273,12 +1276,12 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
         current_instance->IsRelatedSiteInstance(converted_instance_1.get()));
     EXPECT_NE(current_instance, converted_instance_1.get());
     EXPECT_NE(unrelated_instance.get(), converted_instance_1.get());
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrlSameSiteAs1),
-              converted_instance_1->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrlSameSiteAs1),
+              converted_instance_1->GetSiteInfo());
 
     // Does the same but this time using unrelated_instance as a candidate,
     // which has a different site.
-    scoped_refptr<SiteInstance> converted_instance_2 =
+    scoped_refptr<SiteInstanceImpl> converted_instance_2 =
         ConvertToSiteInstance(rfhm, descriptor, unrelated_instance.get());
     // Should return yet another new instance, unrelated to the current one, set
     // to the same site URL.
@@ -1287,8 +1290,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(current_instance, converted_instance_2.get());
     EXPECT_NE(unrelated_instance.get(), converted_instance_2.get());
     EXPECT_NE(converted_instance_1.get(), converted_instance_2.get());
-    EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrlSameSiteAs1),
-              converted_instance_2->GetSiteURL());
+    EXPECT_EQ(CreateExpectedSiteInfo(kUrlSameSiteAs1),
+              converted_instance_1->GetSiteInfo());
 
     // Converts once more but with |converted_instance_1| as a candidate.
     scoped_refptr<SiteInstance> converted_instance_3 =
@@ -1305,7 +1308,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
         UrlInfo::CreateForTesting(kUrlSameSiteAs2),
         SiteInstanceRelation::UNRELATED,
         CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-    scoped_refptr<SiteInstance> converted_instance_1 =
+    scoped_refptr<SiteInstanceImpl> converted_instance_1 =
         ConvertToSiteInstance(rfhm, descriptor, related_instance.get());
     // Should return a new instance, unrelated to the current, set to the
     // provided site URL.
@@ -1315,11 +1318,10 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(unrelated_instance.get(), converted_instance_1.get());
 
     if (AreDefaultSiteInstancesEnabled()) {
-      EXPECT_TRUE(static_cast<SiteInstanceImpl*>(converted_instance_1.get())
-                      ->IsDefaultSiteInstance());
+      EXPECT_TRUE(converted_instance_1->IsDefaultSiteInstance());
     } else {
-      EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrlSameSiteAs2),
-                converted_instance_1->GetSiteURL());
+      EXPECT_EQ(CreateExpectedSiteInfo(kUrlSameSiteAs2),
+                converted_instance_1->GetSiteInfo());
     }
 
     scoped_refptr<SiteInstance> converted_instance_2 =

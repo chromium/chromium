@@ -149,11 +149,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   scoped_refptr<content::SiteInstance> site_instance =
       content::SiteInstance::CreateForURL(context, isolated_url);
   EXPECT_TRUE(site_instance->RequiresDedicatedProcess());
+  // Verify the isolated origin does not receive an NTP site URL scheme.
+  EXPECT_FALSE(
+      site_instance->GetSiteURL().SchemeIs(chrome::kChromeSearchScheme));
 
   // The site URL for the NTP URL should resolve to a chrome-search:// URL via
   // GetEffectiveURL(), even if the NTP URL matches an isolated origin.
-  GURL site_url(content::SiteInstance::GetSiteForURL(context, ntp_url));
-  EXPECT_TRUE(site_url.SchemeIs(chrome::kChromeSearchScheme));
+  scoped_refptr<content::SiteInstance> ntp_site_instance =
+      content::SiteInstance::CreateForURL(context, ntp_url);
+  EXPECT_TRUE(
+      ntp_site_instance->GetSiteURL().SchemeIs(chrome::kChromeSearchScheme));
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
@@ -164,12 +169,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
       contents->GetMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+            ntp_site_instance->GetSiteURL());
 
   // Navigating to a non-NTP URL on ntp.com should not result in an Instant
   // process.
   ui_test_utils::NavigateToURL(browser(), isolated_url);
   EXPECT_FALSE(instant_service->IsInstantProcess(
       contents->GetMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+            site_instance->GetSiteURL());
 }
 
 // Helper class to test window creation from NTP.
