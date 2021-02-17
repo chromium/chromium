@@ -14,17 +14,17 @@ namespace updater {
 TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
   CRUUpdatePolicyDictionary* policyDict = @{
     @"global" : @{
-      @"UpdateDefault" : @3,
+      @"UpdateDefault" : @3,  // Update disabled
       @"DownloadPreference" : @"cacheable",
       @"UpdatesSuppressedStartHour" : @12.345,
       @"UpdatesSuppressedStartMin" : @"15",
       @"UpdatesSuppressedDurationMin" : @30,
     },
     @"com.google.Keystone" : @{
-      @"UpdateDefault" : @3,
+      @"UpdateDefault" : @3,  // Update disabled
     },
     @"com.google.Chrome" : @{
-      @"UpdateDefault" : @2,
+      @"UpdateDefault" : @2,  // Manual update only
       @"RollbackToTargetVersion" : @1,
       @"TargetVersionPrefix" : @"82.",
     },
@@ -37,7 +37,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
 
   // Verify global level policies.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
-  EXPECT_EQ([policyManager defaultUpdatePolicy], 3);
+  EXPECT_EQ([policyManager defaultUpdatePolicy], kPolicyDisabled);
   EXPECT_NSEQ([policyManager downloadPreference], @"cacheable");
   EXPECT_EQ([policyManager updatesSuppressed].start_hour, 12);
   EXPECT_EQ([policyManager updatesSuppressed].start_minute, 15);
@@ -48,12 +48,12 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
 
   // App-level policies.
   NSString* keystoneID = @"com.google.Keystone";
-  EXPECT_EQ([policyManager appUpdatePolicy:keystoneID], 3);
+  EXPECT_EQ([policyManager appUpdatePolicy:keystoneID], kPolicyDisabled);
   EXPECT_EQ([policyManager rollbackToTargetVersion:keystoneID], kPolicyNotSet);
   EXPECT_EQ([policyManager targetVersionPrefix:keystoneID], nil);
 
   NSString* chromeID = @"com.google.Chrome";
-  EXPECT_EQ([policyManager appUpdatePolicy:chromeID], 2);
+  EXPECT_EQ([policyManager appUpdatePolicy:chromeID], kPolicyManualUpdatesOnly);
   EXPECT_EQ([policyManager rollbackToTargetVersion:chromeID], 1);
   EXPECT_NSEQ([policyManager targetVersionPrefix:chromeID], @"82.");
 

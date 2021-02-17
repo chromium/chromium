@@ -52,6 +52,39 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
     return base::scoped_nsobject<NSString>(nil);
 }
 
+// For historical reasons, "update" policy has different enum values in Manage
+// Preferences from the Device Management. This function converts the former
+// to latter.
+// +----------------+---------------------+--------------------+
+// | Update policy  | Managed Preferences |  Device Management |
+// +----------------+---------------------+--------------------+
+// | Enabled        |          0          |         1          |
+// +----------------+---------------------+--------------------+
+// | Automatic only |          1          |         3          |
+// +----------------+---------------------+--------------------+
+// | Manual only    |          2          |         2          |
+// +----------------+---------------------+--------------------+
+// | Disabled       |          3          |         0          |
+// +----------------+---------------------+--------------------+
+// | Machine only   |          4          |         4          |
+// +----------------+---------------------+--------------------+
+int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
+  switch (update_policy_from_managed_preferences) {
+    case 0:
+      return kPolicyEnabled;
+    case 1:
+      return kPolicyAutomaticUpdatesOnly;
+    case 2:
+      return kPolicyManualUpdatesOnly;
+    case 3:
+      return kPolicyDisabled;
+    case 4:
+      return kPolicyEnabledMachineOnly;
+    default:
+      return kPolicyNotSet;
+  }
+}
+
 }  // namespace
 
 }  // namespace updater
@@ -81,8 +114,8 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
   if (([super init])) {
     _downloadPreference = updater::ReadPolicyString(
         [policyDict objectForKey:kDownloadPreferenceKey]);
-    _defaultUpdatePolicy =
-        updater::ReadPolicyInteger(policyDict[kUpdateDefaultKey]);
+    _defaultUpdatePolicy = updater::TranslateUpdatePolicyValue(
+        updater::ReadPolicyInteger(policyDict[kUpdateDefaultKey]));
     _updatesSuppressed.start_hour =
         updater::ReadPolicyInteger(policyDict[kUpdatesSuppressedStartHourKey]);
     _updatesSuppressed.start_minute = updater::ReadPolicyInteger(
@@ -141,7 +174,8 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
 - (instancetype)initWithDictionary:(CRUAppPolicyDictionary*)policyDict {
   if (([super init])) {
     _updatePolicy =
-        updater::ReadPolicyInteger([policyDict objectForKey:kUpdateDefaultKey]);
+        updater::TranslateUpdatePolicyValue(updater::ReadPolicyInteger(
+            [policyDict objectForKey:kUpdateDefaultKey]));
     _targetChannel =
         updater::ReadPolicyString([policyDict objectForKey:kTargetChannelKey]);
     _targetVersionPrefix = updater::ReadPolicyString(
