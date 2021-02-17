@@ -1079,6 +1079,12 @@
         <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
       </intent-filter>  # DIFF-ANCHOR: 99686c45
     </service>  # DIFF-ANCHOR: 4c2196d9
+    <service  # DIFF-ANCHOR: b9ec52c4
+        android:exported="false"
+        android:name="org.chromium.android_webview.nonembedded.AwComponentUpdateService"
+        android:permission="android.permission.BIND_JOB_SERVICE"
+        android:process=":webview_apk">
+    </service>  # DIFF-ANCHOR: b9ec52c4
     <service  # DIFF-ANCHOR: 3cd6d713
         android:exported="true"
         android:name="org.chromium.android_webview.services.AwMinidumpUploadJobService"

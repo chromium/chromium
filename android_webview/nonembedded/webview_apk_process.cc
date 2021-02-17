@@ -4,6 +4,7 @@
 
 #include "android_webview/nonembedded/webview_apk_process.h"
 
+#include "android_webview/common/aw_paths.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/base_paths_android.h"
 #include "base/path_service.h"
@@ -26,6 +27,8 @@ WebViewApkProcess* WebViewApkProcess::GetInstance() {
 WebViewApkProcess::WebViewApkProcess() {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "WebViewApkProcess");
+
+  RegisterPathProvider();
   CreatePrefService();
 }
 

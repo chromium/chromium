@@ -7,13 +7,17 @@ import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
 
 generate_jni("nonembedded_jni_headers") {
-  sources = [ "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java" ]
+  sources = [
+    "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
+    "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
+  ]
 }
 
 # Contains classes needed by the webview apk, but not used when loading the apk
 # as a library.
 android_library("nonembedded_java") {
   sources = [
+    "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/AwNonembeddedUmaRecorder.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseActivity.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseContentProvider.java",
@@ -109,12 +113,22 @@ android_library("services_java") {
   ]
 }
 
-source_set("component_updater") {
+source_set("nonembedded") {
   sources = [
+    "component_updater/aw_component_update_service.cc",
+    "component_updater/aw_component_update_service.h",
     "component_updater/aw_component_updater_configurator.cc",
     "component_updater/aw_component_updater_configurator.h",
+    "component_updater/registration.cc",
+    "component_updater/registration.h",
+    "webview_apk_application.cc",
+    "webview_apk_process.cc",
+    "webview_apk_process.h",
   ]
   deps = [
+    ":nonembedded_jni_headers",
+    "//android_webview/common",
+    "//base",
     "//base",
     "//components/component_updater",
     "//components/prefs",
@@ -125,22 +139,6 @@ source_set("component_updater") {
     "//components/update_client:unzip_impl",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
-  ]
-}
-
-source_set("nonembedded") {
-  sources = [
-    "webview_apk_application.cc",
-    "webview_apk_process.cc",
-    "webview_apk_process.h",
-  ]
-  deps = [
-    ":component_updater",
-    ":nonembedded_jni_headers",
-    "//android_webview/common",
-    "//base",
-    "//components/prefs",
-    "//components/update_client",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
     "//components/about_ui:about_ui_android",

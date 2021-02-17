@@ -15,6 +15,9 @@ enum {
 
   DIR_CRASH_DUMPS = PATH_START,  // Directory where crash dumps are written.
 
+  DIR_COMPONENTS_ROOT,  // Directory where components installed via component
+                        // updater.
+
   DIR_SAFE_BROWSING,  // Directory where safe browsing related cookies are
                       // stored.
 
