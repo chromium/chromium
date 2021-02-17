@@ -58,6 +58,7 @@ base::scoped_nsobject<NSMenuItem> BuildAppMenu(
                     .remove_if(is_pwa),
                 Item().is_separator(),
                 Item(IDS_SERVICES_MAC).tag(-1).submenu({}),
+                Item().is_separator(),
                 Item(IDS_HIDE_APP_MAC)
                     .string_format_1(product_name)
                     .tag(IDC_HIDE_APP)
