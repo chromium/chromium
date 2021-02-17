@@ -926,7 +926,7 @@ cr.define('cr.login', function() {
       const msg = e.data;
       if (msg.method in messageHandlers) {
         if (this.authCompletedFired_) {
-          console.error(msg.method + ' message sent after auth completed');
+          console.warn(msg.method + ' message sent after auth completed');
         }
         messageHandlers[msg.method].call(this, msg);
       } else if (!IGNORED_MESSAGES_FROM_GAIA.includes(msg.method)) {
