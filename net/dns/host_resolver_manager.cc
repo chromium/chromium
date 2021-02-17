@@ -1191,12 +1191,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   }
 
  private:
-  static const HostCache::Entry& GetMalformedResponseResult() {
-    static const base::NoDestructor<HostCache::Entry> kMalformedResponseResult(
-        ERR_DNS_MALFORMED_RESPONSE, HostCache::Entry::SOURCE_DNS);
-    return *kMalformedResponseResult;
-  }
-
   std::unique_ptr<DnsTransaction> CreateTransaction(
       DnsQueryType dns_query_type) {
     DCHECK_NE(DnsQueryType::UNSPECIFIED, dns_query_type);
