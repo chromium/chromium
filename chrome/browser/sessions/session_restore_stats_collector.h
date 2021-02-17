@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base//scoped_observer.h"
 #include "base/macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "content/public/browser/notification_observer.h"
@@ -128,10 +128,11 @@ class SessionRestoreStatsCollector : public content::NotificationObserver,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  // RenderWidgetHostObserver:
+  // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
                                          bool became_visible) override;
-
+  void RenderWidgetHostDidUpdateVisualProperties(
+      content::RenderWidgetHost* widget_host) override;
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
 
@@ -173,8 +174,9 @@ class SessionRestoreStatsCollector : public content::NotificationObserver,
   // The reporting delegate used to report gathered statistics.
   std::unique_ptr<StatsReportingDelegate> reporting_delegate_;
 
-  ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
-      observer_{this};
+  base::ScopedMultiSourceObservation<content::RenderWidgetHost,
+                                     content::RenderWidgetHostObserver>
+      render_widget_host_observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionRestoreStatsCollector);
 };

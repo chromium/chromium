@@ -122,12 +122,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174769): Remove.
   NOTIFICATION_RENDER_WIDGET_HOST_HANG,
 
-  // Sent after the renderer has updated visual properties on the main thread
-  // and committed the change on the compositor thread. The source is the
-  // RenderWidgetHost, the details are not used.
-  // TODO(https://crbug.com/1174770): Remove.
-  NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
-
   // Indicates a RenderWidgetHost has been hidden or restored. The source is
   // the RWH whose visibility changed, the details is a bool set to true if
   // the new state is "visible."

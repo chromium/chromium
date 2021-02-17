@@ -71,6 +71,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -565,6 +566,36 @@ class CommitOriginInterceptor : public DidCommitNavigationInterceptor {
   DISALLOW_COPY_AND_ASSIGN(CommitOriginInterceptor);
 };
 
+// Observer which waits for a visual update in a RenderWidgetHost to meet some
+// desired conditions.
+class ResizeObserver : public RenderWidgetHostObserver {
+ public:
+  ResizeObserver(RenderWidgetHost* widget_host,
+                 base::RepeatingCallback<bool()> is_complete_callback)
+      : widget_host_(widget_host),
+        is_complete_callback_(std::move(is_complete_callback)) {
+    widget_host_->AddObserver(this);
+  }
+
+  ~ResizeObserver() override { widget_host_->RemoveObserver(this); }
+
+  // RenderWidgetHostObserver:
+  void RenderWidgetHostDidUpdateVisualProperties(
+      RenderWidgetHost* widget_host) override {
+    if (is_complete_callback_.Run())
+      run_loop_.Quit();
+  }
+
+  void Wait() {
+    run_loop_.Run();
+  }
+
+ private:
+  RenderWidgetHost* widget_host_;
+  base::RunLoop run_loop_;
+  base::RepeatingCallback<bool()> is_complete_callback_;
+};
+
 }  // namespace
 
 bool NavigateToURL(WebContents* web_contents, const GURL& url) {
@@ -848,8 +879,8 @@ void WaitForResizeComplete(WebContents* web_contents) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
       web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(&dispatcher_test, widget_host)) {
-    WindowedNotificationObserver resize_observer(
-        NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
+    ResizeObserver resize_observer(
+        widget_host,
         base::BindRepeating(IsResizeComplete, &dispatcher_test, widget_host));
     resize_observer.Wait();
   }
@@ -863,9 +894,8 @@ void WaitForResizeComplete(WebContents* web_contents) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
       web_contents->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(widget_host)) {
-    WindowedNotificationObserver resize_observer(
-        NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
-        base::BindRepeating(IsResizeComplete, widget_host));
+    ResizeObserver resize_observer(
+        widget_host, base::BindRepeating(IsResizeComplete, widget_host));
     resize_observer.Wait();
   }
 }
