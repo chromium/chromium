@@ -39,8 +39,10 @@
     this.launchHandler_ = null;
 
     // Initialize handlers.
-    chrome.app.runtime.onLaunched.addListener(this.onLaunched_.bind(this));
-    chrome.app.runtime.onRestarted.addListener(this.onRestarted_.bind(this));
+    if (!window.isSWA) {
+      chrome.app.runtime.onLaunched.addListener(this.onLaunched_.bind(this));
+      chrome.app.runtime.onRestarted.addListener(this.onRestarted_.bind(this));
+    }
   }
 
   /**
