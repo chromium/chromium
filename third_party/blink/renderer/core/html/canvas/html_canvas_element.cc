@@ -287,19 +287,15 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   auto* old_contents_cc_layer = ContentsCcLayer();
   auto* result = GetCanvasRenderingContextInternal(type, attributes);
 
-  Document& doc = GetDocument();
   if (IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kCanvasRenderingContext)) {
+    Document& doc = GetDocument();
     IdentifiabilityMetricBuilder(doc.UkmSourceID())
         .Set(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kCanvasRenderingContext,
                  CanvasRenderingContext::ContextTypeFromId(type)),
              !!result)
         .Record(doc.UkmRecorder());
-  }
-  if (attributes.color_space != kSRGBCanvasColorSpaceName ||
-      attributes.pixel_format != kUint8CanvasPixelFormatName) {
-    UseCounter::Count(doc, WebFeature::kCanvasUseColorSpace);
   }
 
   if (ContentsCcLayer() != old_contents_cc_layer)
