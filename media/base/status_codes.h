@@ -25,8 +25,9 @@ using StatusCodeType = int32_t;
 //     └─ reserved for now
 // 256 groups is more than anyone will ever need on a computer.
 enum class StatusCode : StatusCodeType {
-  // General errors: 0x00
   kOk = 0,
+
+  // General errors: 0x00
   kAborted = 0x00000001,
   kInvalidArgument = 0x00000002,
 
@@ -93,13 +94,6 @@ enum class StatusCode : StatusCodeType {
   kGetQuantBufferFailed = 0x00000328,
   kReleaseQuantBufferFailed = 0x00000329,
   kBitstreamBufferSliceTooBig = 0x00000330,
-  kD3D11DoesNotSupportConfig = 0x00000331,
-  kD3D11DoesNotSupportEncryption = 0x00000332,
-  kD3D11CouldNotGetAngleDevice = 0x00000333,
-  kD3D11InsufficientFeatureLevel = 0x00000334,
-  kD3D11VideoDeviceCreationFailed = 0x00000335,
-  kD3D11AcceleratedDecoderInitializationFailed = 0x00000336,
-  kD3D11GpuInitializationFailed = 0x00000337,
 
   // MojoDecoder Errors: 0x04
   kMojoDecoderNoWrappedDecoder = 0x00000401,

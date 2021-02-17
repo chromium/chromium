@@ -213,7 +213,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   };
 
   // Enter the kError state.  This will fail any pending |init_cb_| and / or
-  // pending decode as well.
+  // pending decode as well.  Do not add new uses of the char* overload; send a
+  // Status instead.
+  void NotifyError(const char* reason);
   void NotifyError(const Status& reason);
 
   // The implementation, which lives on the GPU main thread.
