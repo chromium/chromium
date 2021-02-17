@@ -6943,6 +6943,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8892168913673237979">Kõik on valmis!</translation>
 <translation id="8893801527741465188">Desinstallimine jõudis lõpule</translation>
 <translation id="8893928184421379330">Kahjuks ei õnnestu seadet <ph name="DEVICE_LABEL" /> ära tunda.</translation>
+<translation id="8894761918470382415">Andmetele juurdepääsu kaitse välisseadmete jaoks</translation>
 <translation id="8895454554629927345">Järjehoidjate loend</translation>
 <translation id="8898786835233784856">Vali järgmine vaheleht</translation>
 <translation id="8898822736010347272">Saadab mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja mõne lehe sisu Google'ile, et aidata avastada uusi ohte ja veebis kõiki kaitsta.</translation>
@@ -7250,6 +7251,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="942532530371314860">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte ja heli.</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="947329552760389097">&amp;Elementide uurimine</translation>
+<translation id="949052952791086881">Administraator nõuab selle kasutaja sisselogimist, kui seade on võrguga ühendatud</translation>
 <translation id="951991426597076286">Keeldu</translation>
 <translation id="956500788634395331">Olete potentsiaalselt ohtlike laienduste eest kaitstud</translation>
 <translation id="957960681186851048">Sait püüdis automaatselt mitut faili alla laadida</translation>

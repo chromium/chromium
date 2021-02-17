@@ -412,6 +412,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3861633093716975811">Популярни видеоклипове</translation>
+<translation id="386944881686624613">Не може да се създаде връзка към текста. Споделете тази към страницата.</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3894427358181296146">Добавяне на папка</translation>
 <translation id="3895926599014793903">Принудително активиране на промяната на мащаба</translation>
@@ -658,6 +659,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5620928963363755975">Използвайте бутона „Още опции“, за да намерите файловете и страниците си в „Изтегляния“</translation>
 <translation id="562289928968387744">Управление на реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
+<translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
 <translation id="5639724618331995626">Разрешаване на всички сайтове</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>
@@ -903,6 +905,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="718926126787620637">Списъкът с папките с отметки е отворен на пълната височина</translation>
 <translation id="7189372733857464326">Изчаква се актуализирането на услугите за Google Play да приключи</translation>
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
+<translation id="72180057821664864">Не може да се създаде връзка към текста</translation>
 <translation id="7233236755231902816">За да виждате съдържанието в мрежата на своя език, изтеглете най-новата версия на Chrome</translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
@@ -1001,6 +1004,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7857691613771368249">Извеждане на запитване кога да се запазват файловете</translation>
 <translation id="7875915731392087153">Създайте имейл</translation>
 <translation id="7876243839304621966">Премахване на всички</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочетена страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочетени страници}}</translation>
 <translation id="7882131421121961860">Няма намерена история</translation>
 <translation id="7886917304091689118">Изпълнява се в Chrome</translation>
 <translation id="789763218334337857">Начин на използване на Chrome</translation>
@@ -1037,6 +1041,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="806745655614357130">Оставяне на данните отделно</translation>
 <translation id="8073388330009372546">Отваряне в нов раздел</translation>
 <translation id="8076492880354921740">Раздели</translation>
+<translation id="8078096376109663956">Споделяне само на текста</translation>
 <translation id="8084114998886531721">Запазена парола</translation>
 <translation id="808747664143081553">Установена е връзка с устройството</translation>
 <translation id="8103578431304235997">Раздел в режим „инкогнито“</translation>
@@ -1139,6 +1144,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8812260976093120287">На някои уебсайтове можете да извършвате плащания чрез посочените по-горе поддържани приложения за плащане на устройството ви.</translation>
 <translation id="881688628773363275">Не е възможна визуализация на съдържанието на раздела.</translation>
 <translation id="8820817407110198400">Отметки</translation>
+<translation id="8827407626219585697">Включване на връзка към текста</translation>
 <translation id="883806473910249246">При изтеглянето на съдържанието възникна грешка.</translation>
 <translation id="8840953339110955557">Тази страница може да се различава от онлайн версията.</translation>
 <translation id="8853345339104747198">„<ph name="TAB_TITLE" />“ – раздел</translation>

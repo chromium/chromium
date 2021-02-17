@@ -85,5 +85,5 @@
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="921174536258924340">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
-<translation id="994708389219151914">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromiuma izbrisati s ovog uređaja.</translation>
+<translation id="994708389219151914">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromiuma obrisati s ovog uređaja.</translation>
 </translationbundle>

@@ -2316,13 +2316,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, el proveedor de búsqueda no se activará con ninguna palabra clave.</translation>
 <translation id="4090088362777472639">El hash SHA-256 del playbook de Ansible.</translation>
-<translation id="409035987613226003">Si se habilita esta política, se enviarán a Google informes anónimos de uso y de datos sobre fallos de Chrome y los usuarios no podrán cambiar este ajuste. Si se inhabilita esta política, no se enviará esta información a Google.
-
-      Si se asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, los usuarios elegirán este comportamiento durante la instalación o la primera ejecución.
-
-      Esta política solo está disponible en instancias de Windows que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, en instancias de Windows 10 Pro o Enterprise que se hayan registrado para gestionar dispositivos y en instancias de macOS que se gestionen mediante MDM o estén vinculadas a un dominio a través de MCX.
-
-      Para Chrome OS, consulta la política DeviceMetricsReportingEnabled.</translation>
 <translation id="4097556069183835428">Si se le asigna el valor "none", la lupa se desactiva.
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, la lupa estará desactivada inicialmente, pero los usuarios podrán activarla en cualquier momento.</translation>

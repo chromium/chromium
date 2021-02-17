@@ -6943,6 +6943,7 @@
 <translation id="8892168913673237979">設定完了。</translation>
 <translation id="8893801527741465188">アンインストールが完了しました</translation>
 <translation id="8893928184421379330">デバイス <ph name="DEVICE_LABEL" /> を認識できませんでした。</translation>
+<translation id="8894761918470382415">周辺機器のデータアクセス保護</translation>
 <translation id="8895454554629927345">ブックマーク リスト</translation>
 <translation id="8898786835233784856">次のタブを選択</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
@@ -7250,6 +7251,7 @@
 <translation id="942532530371314860"><ph name="APP_NAME" /> が Chrome タブと音声を共有しています。</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947329552760389097">要素の検証(&amp;I)</translation>
+<translation id="949052952791086881">デバイスがオンラインのときはログインするよう管理者がこのユーザーに求めています</translation>
 <translation id="951991426597076286">同意しない</translation>
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>

@@ -11,6 +11,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> har lagts till</translation>
 <translation id="1047017786576569492">partiell</translation>
 <translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
+<translation id="1052916631016577720">Objektgenomsökning</translation>
 <translation id="1056775291175587022">Inga nätverk</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4351433414020964307">Assistenten läses in …</translation>
 <translation id="4356930093361201197">högkontrastläge</translation>
 <translation id="4371348193907997655">Inställningar för att casta</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4379531060876907730">Här är dina verktyg för e-penna</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
@@ -586,6 +588,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
 <translation id="6047696787498798094">Skärmdelningen avbryts när du byter till en annan användare. Vill du fortsätta?</translation>
+<translation id="6050368268239407309">Verktyg för presentationer</translation>
 <translation id="6054305421211936131">Logga in med smartkort</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>

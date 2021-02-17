@@ -6941,6 +6941,7 @@
 <translation id="8892168913673237979">설정 완료</translation>
 <translation id="8893801527741465188">제거 완료</translation>
 <translation id="8893928184421379330">죄송합니다. 기기(<ph name="DEVICE_LABEL" />)를 인식하지 못했습니다.</translation>
+<translation id="8894761918470382415">주변기기 데이터 액세스 보호</translation>
 <translation id="8895454554629927345">북마크 목록</translation>
 <translation id="8898786835233784856">다음 탭 선택</translation>
 <translation id="8898822736010347272">모든 웹 사용자에게 영향을 주는 새로운 위협을 발견하고 사용자를 보호하는 데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
@@ -7248,6 +7249,7 @@
 <translation id="942532530371314860"><ph name="APP_NAME" />에서 Chrome 탭과 오디오를 공유 중입니다.</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947329552760389097">요소 검사(&amp;I)</translation>
+<translation id="949052952791086881">관리자 정책에 따르면 이 사용자는 기기가 온라인 상태일 때 로그인해야 합니다.</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="956500788634395331">잠재적으로 위험한 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="957960681186851048">이 사이트에서 여러 파일을 자동으로 다운로드하려고 함</translation>

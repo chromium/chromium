@@ -412,6 +412,7 @@
 <translation id="3819178904835489326">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ခုကို ဖျက်လိုက်သည်</translation>
 <translation id="3856096718352044181">မှန်ကန်သည့် ဝန်ဆောင်မှုပေးသူ ဟုတ်မဟုတ် အတည်ပြုပါ သို့မဟုတ် နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="3861633093716975811">လူကြိုက်များသော ဗီဒီယိုများ</translation>
+<translation id="386944881686624613">စာသားသို့ လင့်ခ်ကို ပြုလုပ်၍မရပါ။ လင့်ခ်ကို စာမျက်နှာသို့ မျှဝေပါ။</translation>
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
 <translation id="3894427358181296146">ဖိုလ်ဒါ ထည့်ရန်</translation>
 <translation id="3895926599014793903">ဇူးမ် အတင်း ဖွင့်ရန်</translation>
@@ -658,6 +659,7 @@
 <translation id="5620928963363755975">သင့်ဖိုင်များနှင့် စာမျက်နှာများကို 'နောက်ထပ်ရွေးချယ်စရာများ' ခလုတ်မှ ဒေါင်းလုဒ်များထဲတွင် ရှာဖွေပါ</translation>
 <translation id="562289928968387744">တုံ့ပြန်မှုများကို စီမံရန်</translation>
 <translation id="5626134646977739690">အမည်:</translation>
+<translation id="5628604359369369630">မဖတ်ရသေး - အော့ဖ်လိုင်းရနိုင်သည်</translation>
 <translation id="5639724618331995626">ဆိုက်အားလုံးကို ခွင့်ပြုရန်</translation>
 <translation id="5648166631817621825">ပြီးခဲ့သည့် ၇ ရက်</translation>
 <translation id="5655963694829536461">ဒေါင်းလုဒ်များကို ရှာဖွေပါ</translation>
@@ -902,6 +904,7 @@
 <translation id="718926126787620637">လိပ်စာဖိုင်တွဲများစာရင်းကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="7189372733857464326">Google Play ဝန်ဆောင်မှုများ အပ်ဒိတ်လုပ်နေဆဲ ဖြစ်ပါသည်</translation>
 <translation id="7191430249889272776">တဲဘ်ကို နောက်ခံမှာ ဖွင့်ထား။</translation>
+<translation id="72180057821664864">စာသားသို့ လင့်ခ်ကို ပြုလုပ်၍မရပါ</translation>
 <translation id="7233236755231902816">ဝဘ်ကို သင့်ဘာသာစကားနှင့် ကြည့်ရန် Chrome နောက်ဆုံးဗားရှင်းကို ရယူပါ</translation>
 <translation id="7248069434667874558">Chrome တွင် <ph name="TARGET_DEVICE_NAME" /> က စင့်ခ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="7274013316676448362">ပိတ်ထားသည့်ဆိုက်</translation>
@@ -1000,6 +1003,7 @@
 <translation id="7857691613771368249">ဖိုင်များသိမ်းမည့်အခါ ခွင့်တောင်းရန်</translation>
 <translation id="7875915731392087153">အီးမေးလ်ရေးပါ</translation>
 <translation id="7876243839304621966">အားလုံး ဖယ်ရှား</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{မဖတ်ရသေးသော စာမျက်နှာ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> မျက်နှာ ရှိသည်}other{မဖတ်ရသေးသော စာမျက်နှာ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> မျက်နှာ ရှိသည်}}</translation>
 <translation id="7882131421121961860">မည်သည့် မှတ်တမ်းမျှ မတွေ့ပါ</translation>
 <translation id="7886917304091689118">Chrome တွင် ဖွင့်ထားသည်</translation>
 <translation id="789763218334337857">Chrome အသုံးပြုနည်း</translation>
@@ -1036,6 +1040,7 @@
 <translation id="806745655614357130">ကျွန်ုပ်၏ ဒေတာများကို ခွဲခြားထားရန်</translation>
 <translation id="8073388330009372546">ပုံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
+<translation id="8078096376109663956">စာသားသီးသန့် မျှဝေပါ</translation>
 <translation id="8084114998886531721">သိမ်းဆည်းထားသော စကားဝှက်</translation>
 <translation id="808747664143081553">စက်ပစ္စည်းနှင့် ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="8103578431304235997">ကိုယ်ဖျောက်တဘ်</translation>
@@ -1138,6 +1143,7 @@
 <translation id="8812260976093120287">အချို့သော ဝဘ်ဆိုက်များတွင် သင်၏စက်ပစ္စည်းပေါ်ရှိ အထက်ပါပံ့ပိုးထားသည့် ငွေပေးချေမှုအက်ပ်များဖြင့် ပေးချေနိုင်ပါသည်။</translation>
 <translation id="881688628773363275">အစမ်းကြည့်ရှုသည့်တဘ် အကြောင်းအရာကို ကြည့်၍မရပါ။</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
+<translation id="8827407626219585697">စာသားတွင် လင့်ခ်ကို ထည့်သွင်းပါ</translation>
 <translation id="883806473910249246">အကြောင်းအရာကို ဒေါင်းလုဒ်လုပ်ရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="8840953339110955557">ဤဝဘ်ဆိုက်သည် အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />၊ တဘ်</translation>

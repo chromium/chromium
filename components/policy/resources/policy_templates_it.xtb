@@ -2294,13 +2294,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> non viene configurato, il provider di ricerca non viene attivato da alcuna parola chiave.</translation>
 <translation id="4090088362777472639">L'hash SHA-256 del playbook Ansible.</translation>
-<translation id="409035987613226003">Se il criterio viene impostato su Attivato, viene abilitata la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di Chrome e gli utenti non possono modificare questa impostazione. Se viene impostato su Disattivato, queste informazioni non vengono inviate a Google.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti sono liberi di scegliere il comportamento all'installazione o alla prima esecuzione.
-
-      Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" />, così come per quelle di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.
-
-      Per Chrome OS, consulta il criterio DeviceMetricsReportingEnabled.</translation>
 <translation id="4097556069183835428">Se il criterio è impostato su None, la Lente d'ingrandimento è disattivata.
 
       Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la Lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>

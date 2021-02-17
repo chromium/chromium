@@ -2300,13 +2300,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> não for definida, nenhuma palavra-chave ativará o provedor de pesquisa.</translation>
 <translation id="4090088362777472639">Hash SHA-256 do playbook Ansible.</translation>
-<translation id="409035987613226003">Se a política for definida como "Ativada", os relatórios de uso anônimo e dados de falha do Chrome serão enviados ao Google. Os usuários não poderão mudar isso. Se a política for definida como "Desativada", as informações não serão enviadas ao Google.
-
-      Se você definir a política, os usuários não poderão mudá-la. Se não for definida, os usuários poderão escolher o comportamento durante a instalação ou a primeira execução.
-
-      Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" /> ou instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.
-
-      Para o Chrome OS, consulte DeviceMetricsReportingEnabled.</translation>
 <translation id="4097556069183835428">Se a política for definida como "Nenhuma", a lupa será desativada.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>

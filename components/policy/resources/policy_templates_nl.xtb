@@ -2284,13 +2284,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> niet instelt, wordt de zoekprovider niet geactiveerd door een zoekwoord.</translation>
 <translation id="4090088362777472639">De SHA-256-hash van het Ansible-playbook.</translation>
-<translation id="409035987613226003">Als je het beleid inschakelt, wordt anonieme rapportage over gebruiks- en crashgegevens van Chrome aan Google ingeschakeld. Gebruikers kunnen deze instelling niet wijzigen. Als je het beleid uitschakelt, wordt deze informatie niet naar Google gestuurd.
-
-      Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het niet instelt, kunnen gebruikers het gedrag kiezen tijdens de installatie of eerste uitvoering.
-
-      Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.
-
-      (Zie DeviceMetricsReportingEnabled voor Chrome OS.)</translation>
 <translation id="4097556069183835428">Als het beleid is ingesteld op None, wordt het vergrootglas uitgeschakeld.
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, is het vergrootglas in eerste instantie uitgeschakeld, maar kunnen gebruikers dit op elk moment inschakelen.</translation>

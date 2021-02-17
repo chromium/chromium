@@ -11,6 +11,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> əlavə edildi</translation>
 <translation id="1047017786576569492">qismən</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
+<translation id="1052916631016577720">Element ilə skanlama</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4351433414020964307">Assistent yüklənir...</translation>
 <translation id="4356930093361201197">yüksək kontrast rejimi</translation>
 <translation id="4371348193907997655">Yayım ayarları</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, siqnal gücü: <ph name="SIGNAL_STRENGTH" /> faiz</translation>
 <translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4379531060876907730">Fırça alətləriniz</translation>
 <translation id="4389184120735010762">Daxili böyüdücü üçün klaviatura qısayoluna basdınız. Onu aktiv etmək istəyirsiniz?</translation>
@@ -586,6 +588,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6043212731627905357">Bu monitor <ph name="DEVICE_TYPE" /> cihazına uyğun gəlmir (monitor dəstəklənmir).</translation>
 <translation id="6043994281159824495">Hesabdan çıxın</translation>
 <translation id="6047696787498798094">Digər istifadəçiyə keçirdiyiniz zaman ekran paylaşması dayandırılacaq. Davam etmək istəyirsiniz?</translation>
+<translation id="6050368268239407309">Təqdimat alətləri</translation>
 <translation id="6054305421211936131">Smart kart ilə daxil olun</translation>
 <translation id="6059276912018042191">Son Chrome tabları</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ərzində avtomatik çıxış edəcəksiniz.</translation>

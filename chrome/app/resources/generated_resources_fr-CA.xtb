@@ -6945,6 +6945,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8892168913673237979">Tout est prêt!</translation>
 <translation id="8893801527741465188">Désinstallation terminée</translation>
 <translation id="8893928184421379330">Désolés, le dispositif <ph name="DEVICE_LABEL" /> n'est pas reconnu.</translation>
+<translation id="8894761918470382415">Protection contre l'accès aux données pour les périphériques</translation>
 <translation id="8895454554629927345">Liste des favoris</translation>
 <translation id="8898786835233784856">Sélectionner l'onglet suivant</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
@@ -7252,6 +7253,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et le son.</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="947329552760389097">&amp;Inspecter des éléments</translation>
+<translation id="949052952791086881">Votre administrateur exige que cet utilisateur se connecte quand l'appareil est en ligne</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement nuisibles</translation>
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>

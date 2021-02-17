@@ -254,7 +254,7 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 с}one{# с}few{# с}other{# с}}</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
-<translation id="8806053966018712535">Директоријум <ph name="FOLDER_NAME" /></translation>
+<translation id="8806053966018712535">Фолдер <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Додај напомену у слику</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8867568208303837180">Слање...</translation>

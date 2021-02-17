@@ -2289,13 +2289,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, thì sẽ không có từ khóa kích hoạt nhà cung cấp dịch vụ tìm kiếm này.</translation>
 <translation id="4090088362777472639">Hàm băm SHA-256 của cẩm nang Ansible.</translation>
-<translation id="409035987613226003">Việc đặt chính sách này thành Bật sẽ bật tính năng báo cáo ẩn danh về hoạt động sử dụng và dữ liệu liên quan đến sự cố về Chrome cho Google, và người dùng không thể thay đổi tùy chọn cài đặt này. Nếu bạn đặt chính sách này thành Tắt, thông tin này sẽ không được gửi tới Google.
-
-      Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, hãy chọn hành vi vào lúc cài đặt hoặc lần chạy đầu tiên.
-
-      Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với miền qua MCX.
-
-      (Đối với Chrome OS, hãy xem DeviceMetricsReportingEnabled.)</translation>
 <translation id="4097556069183835428">Nếu bạn đặt chính sách này thành None, thì kính lúp sẽ tắt.
 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì ban đầu, kính lúp sẽ tắt, nhưng người dùng có thể bật tính năng này bất cứ lúc nào.</translation>

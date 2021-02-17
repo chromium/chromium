@@ -2291,13 +2291,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> n'est pas configurée, aucun mot clé n'active le moteur de recherche.</translation>
 <translation id="4090088362777472639">Hachage SHA-256 du playbook Ansible.</translation>
-<translation id="409035987613226003">Si vous activez cette règle, des rapports anonymes sur les données liées à l'utilisation et aux plantages de Chrome sont envoyés à Google. Les utilisateurs ne peuvent pas modifier ce paramètre. Si vous la désactivez, ces informations ne sont pas envoyées à Google.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, les utilisateurs peuvent choisir le comportement lors de l'installation ou de la première exécution.
-
-      Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise qui sont enregistrées pour bénéficier de la gestion des appareils, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.
-
-      (Pour Chrome OS, reportez-vous à la règle DeviceMetricsReportingEnabled.)</translation>
 <translation id="4097556069183835428">Définissez cette règle sur "None" pour désactiver la loupe.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si vous ne la définissez pas, la loupe est désactivée par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>

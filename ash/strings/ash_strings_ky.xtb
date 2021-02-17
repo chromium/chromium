@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> кошулду</translation>
 <translation id="1047017786576569492">жарым-жартылай</translation>
 <translation id="1047773237499189053">Жаңы функциялар бар. Кеңири маалымат алуу үчүн Өйдө жебе баскычын басыңыз.</translation>
+<translation id="1052916631016577720">Нерсени скандоо</translation>
 <translation id="1056775291175587022">Тармактар жок</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилдик: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Жардамчы жүктөлүүдө...</translation>
 <translation id="4356930093361201197">жогорку контраст режими</translation>
 <translation id="4371348193907997655">Тышкы экранга чыгаруу жөндөөлөрү</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" /> пайыз</translation>
 <translation id="4378551569595875038">Туташууда…</translation>
 <translation id="4379531060876907730">Булар сиздин стилус куралдарыңыз</translation>
 <translation id="4389184120735010762">Жалгаштырылган лупаны колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">Бул монитор <ph name="DEVICE_TYPE" /> түзмөгүңүз менен иштебей жатат (монитор колдоого алынбайт).</translation>
 <translation id="6043994281159824495">Азыр чыгуу</translation>
 <translation id="6047696787498798094">Башка колдонуучуга которулганда экран бөлүшүлбөй калат. Уланта бересизби?</translation>
+<translation id="6050368268239407309">Презентация куралдары</translation>
 <translation id="6054305421211936131">Акылдуу карта менен кириңиз</translation>
 <translation id="6059276912018042191">Chrome'догу акыркы өтмөктөр</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ичинен автоматтык түрдө чыгарыласыз.</translation>

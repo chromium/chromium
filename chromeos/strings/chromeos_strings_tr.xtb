@@ -107,6 +107,7 @@
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="3712633734921637892">CPU hızı şu anda pil tasarrufu yapmak veya sıcaklığı düşürmek için sınırlandırılıyor</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> yorum)</translation>
 <translation id="3748026146096797577">Bağlı Değil</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Yazıcı</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
+<translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
@@ -237,7 +239,9 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6189418609903030344">Pil kapasitesi kullanıldıkça azalır</translation>
 <translation id="6191293864534840972">Alan adı sunucuları geçersiz</translation>
+<translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
 <translation id="6232017090690406397">Pil</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>

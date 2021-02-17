@@ -979,6 +979,11 @@
 設好這項政策後，使用者即無法覆寫設定值。
 
 如果未設定這項政策，系統預設會停用隱私保護畫面，但使用者可以自行變更。</translation>
+<translation id="241739814668386424"> 如果停用這項政策，使用者將無法透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
+
+      如果啟用這項政策，使用者便可透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
+
+      這項政策預設為停用。</translation>
 <translation id="2421677964966613267">這項政策已在 M88 版遭到淘汰，Chrome 已不再支援 Flash。你可以透過這項政策設定網址模式清單，用於指定無法執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -2267,13 +2272,6 @@
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 政策，沒有任何關鍵字會啟動搜尋引擎。</translation>
 <translation id="4090088362777472639">Ansible Playbook 的 SHA-256 雜湊值。</translation>
-<translation id="409035987613226003">如果將這項政策設為啟用，系統會以匿名方式將 Chrome 的使用情況和當機相關資料回報給 Google，並禁止使用者變更這項設定。如果將這項政策設為停用，則系統不會將這些資訊傳送給 Google。
-
-      如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可在安裝或初次執行 Chrome 時指定相關行為。
-
-      這項政策僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的 Windows 執行個體、或是已註冊裝置管理服務的 Windows 10 專業版或企業版執行個體，以及透過行動裝置管理 (MDM) 管理或透過 MCX 加入某個網域的 macOS 執行個體。
-
-      針對 Chrome 作業系統，請參閱 DeviceMetricsReportingEnabled。</translation>
 <translation id="4097556069183835428">將這項政策設為 None 時，系統會停用放大鏡。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用放大鏡，但使用者隨時可以啟用。</translation>
@@ -4601,6 +4599,7 @@
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
+<translation id="7412456346709338637">啟用 Thunderbolt/USB4 周邊裝置資料存取權</translation>
 <translation id="7417438464912687020">允許與這部裝置建立遠端存取連線</translation>
 <translation id="7417972229667085380">簡報模式中的閒置延遲時間延長百分比 (已不適用)</translation>
 <translation id="7421483919690710988">設定媒體磁碟快取大小 (以位元組為單位)</translation>
@@ -5380,6 +5379,7 @@
       "1412.24.34"：僅更新至這個指定版本
 
       警告：我們不建議設定版本限制，因為這可能導致使用者無法接收軟體更新，且無法修正重大的安全性問題。限制僅能更新至指定前置碼版本，可能讓使用者面臨風險。</translation>
+<translation id="8510545352780142790">停用 PCIe 通道，讓支援的 Thunderbolt/USB4 周邊裝置執行完整功能</translation>
 <translation id="8519264904050090490">管理化環境下使用者手動建立的例外網址</translation>
 <translation id="8519516251436131647">啟用無障礙功能快速鍵。
 
@@ -5417,6 +5417,7 @@
           如果不設定這項政策，系統會使用預設時間長度。
 
           指定政策值時需以毫秒為單位。</translation>
+<translation id="8599956038998209006">為 Thunderbolt/USB4 周邊裝置啟用 PCIe 通道，限制裝置功能</translation>
 <translation id="8603454805657060638">你可以透過這項政策，讓系統管理員變更將裝置連結至座架時的 MAC (媒體存取權控管) 位址。將座架連結至部分裝置型號時，根據預設，裝置的指定座架 MAC 位址可協助在乙太網路上識別裝置。
 
       如果選取了「DeviceDockMacAddress」或不設定這項政策，系統會使用裝置的指定座架 MAC 位址。

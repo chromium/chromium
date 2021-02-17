@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Չի աջակցվում Chromium Canary-ում</translation>
 <translation id="3639997914391704523">Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
 <translation id="3805899903892079518">Chromium-ին հասանելի չեն ձեր լուսանկարները կամ տեսանյութերը: Անցեք iOS Կարգավորումներ &gt; Գաղտնիություն &gt; Լուսանկարներ (Settings &gt; Privacy &gt; Photos) և միացրեք մուտքի թույլտվությունը:</translation>
+<translation id="3946918322491238254">Դուք նախկինի պես կարող եք տեսնել ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս կարգավորումները այս սարքում։ Սակայն ձեր կատարած փոփոխությունները չեն համաժամացվի հաշվի հետ։</translation>
 <translation id="4099085513035183040">Չի աջակցվում Chromium-ի բետա տարբերակում</translation>
 <translation id="4166206055865952171">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը</translation>
 <translation id="4555020257205549924">Եթե միացնեք այս գործառույթը, Chromium-ը կառաջարկի թարգմանել այլ լեզուներով ներկայացված էջերը Google Translate-ի միջոցով: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Պահված գաղտնաբառեր չկան։ Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="5308226104666789935">Chromium-ին չհաջողվեց ստուգել թարմացումների առկայությունը</translation>
 <translation id="5521125884468363740">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար մտեք հաշիվ և միացրեք համաժամացումը։</translation>
+<translation id="5544795779875591523">Հեռացնե՞լ Chromium-ի տվյալները այս սարքից</translation>
 <translation id="5573014823074921752">Խորհուրդ Chromium-ից: Հպեք և պահեք գործիքագոտու «Ցուցադրել ներդիրները» կոճակը՝ այլ ընտրանքներ տեսնելու համար: Գործիքագոտին սովորաբար գտնվում է էկրանի վերևի կամ ներքևի հատվածում:</translation>
 <translation id="5700709190537129682">Chromium-ը չի կարող ստուգել ձեր գաղտնաբառերը</translation>
 <translation id="5777187867430702742">Chromium-ի էջ</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">© <ph name="YEAR" /> The Chromium Authors: Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="8663480472502753423">Chromium-ը թարմացված պահեք</translation>
 <translation id="8776843108004031667">Այս հաշիվը և բոլոր չպահված տվյալները կհեռացվեն Chromium-ից։</translation>
+<translation id="894437814105052438">Երբ դուք դուրս գաք հաշվից, Chromium-ը չի համաժամացնի նոր տվյալները ձեր Google հաշվի հետ։ Նախկինում համաժամացված տվյալները չեն հեռացվի։</translation>
 <translation id="9022552996538154597">Մուտք գործել Chromium</translation>
 <translation id="9089354809943900324">Chromium-ը հնացել է</translation>
 <translation id="921174536258924340">Chromium-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
+<translation id="994708389219151914">Chromium-ում պահվող ձեր բոլոր տվյալները կջնջվեն այս սարքից, քանի որ ձեր հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից։</translation>
 </translationbundle>

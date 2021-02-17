@@ -1519,7 +1519,7 @@
 <translation id="2678063897982469759">Поново омогући</translation>
 <translation id="268053382412112343">Hi&amp;story (Историја)</translation>
 <translation id="2682498795777673382">Новости од родитеља</translation>
-<translation id="2683638487103917598">Директоријум је сортиран</translation>
+<translation id="2683638487103917598">Фолдер је сортиран</translation>
 <translation id="2684004000387153598">Да бисте наставили, кликните на Потврди, па на Додај особу да бисте отворили нови профил за имејл адресу.</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="2687407218262674387">Google услови коришћења услуге</translation>
@@ -1653,7 +1653,7 @@
 <translation id="281390819046738856">Потписивање захтева није успело.</translation>
 <translation id="2814489978934728345">Прекините учитавање ове странице</translation>
 <translation id="281504910091592009">Прегледајте сачуване лозинке и управљајте њима на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /></translation>
-<translation id="2815693974042551705">Директоријум за обележиваче</translation>
+<translation id="2815693974042551705">Фолдер за обележиваче</translation>
 <translation id="2816319641769218778">Да бисте сачували лозинке на Google налогу, укључите синхронизацију.</translation>
 <translation id="2816628817680324566">Желите да дозволите овом сајту да идентификује безбедносни кључ?</translation>
 <translation id="2818476747334107629">Детаљи о штампачу</translation>
@@ -2261,7 +2261,7 @@
 <translation id="3521606918211282604">Промените величину диска</translation>
 <translation id="3524965460886318643">Извези активности</translation>
 <translation id="3526034519184079374">Читање или мењање података сајта није успело</translation>
-<translation id="3527085408025491307">Директоријум</translation>
+<translation id="3527085408025491307">Фолдер</translation>
 <translation id="3528498924003805721">Циљеви пречица</translation>
 <translation id="3532273508346491126">Управљање синхронизацијом</translation>
 <translation id="3532521178906420528">Мрежна веза се успоставља...</translation>
@@ -3835,7 +3835,7 @@
 <translation id="5360150013186312835">Прикажи на траци с алаткама</translation>
 <translation id="5362741141255528695">Изаберите датотеку приватног кључа.</translation>
 <translation id="5363109466694494651">Обави Powerwash и врати</translation>
-<translation id="5365881113273618889">Директоријум који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за уписивање за овај директоријум?</translation>
+<translation id="5365881113273618889">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за уписивање за овај директоријум?</translation>
 <translation id="536638840841140142">Нема</translation>
 <translation id="5368720394188453070">Телефон је закључан. Откључајте га да бисте приступили.</translation>
 <translation id="5368779022775404937">Пријавите се на <ph name="REALM" /></translation>
@@ -4198,7 +4198,7 @@
 <translation id="5774295353725270860">Отварање апликације Датотеке</translation>
 <translation id="577624874850706961">Претражите колачиће</translation>
 <translation id="5777468213129569553">Отвори Chrome</translation>
-<translation id="5780011244986845107">Директоријум који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за читање за овај директоријум?</translation>
+<translation id="5780011244986845107">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за читање за овај директоријум?</translation>
 <translation id="5780973441651030252">Приоритет процеса</translation>
 <translation id="5781092003150880845">Синхронизуј као <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Шаљите команде у <ph name="EXTENSION_NAME" /></translation>
@@ -6364,7 +6364,7 @@
 <translation id="8244514732452879619">Светла се ускоро гасе</translation>
 <translation id="8246776524656196770">Заштитите безбедносни кључ помоћу PIN-а (личног идентификационог броја)</translation>
 <translation id="8248050856337841185">&amp;Налепи</translation>
-<translation id="8249048954461686687">Директоријум Произвођач оригиналне опреме</translation>
+<translation id="8249048954461686687">Фолдер Произвођач оригиналне опреме</translation>
 <translation id="8249615410597138718">Пошаљите на своје уређаје</translation>
 <translation id="8249672078237421304">Нуди превод страница које нису на језику који читам</translation>
 <translation id="8251441930213048644">Освежи</translation>

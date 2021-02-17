@@ -412,6 +412,7 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
 <translation id="3856096718352044181">Потврдете дека ова е вистински давател на услуги или обидете се повторно подоцна</translation>
 <translation id="3861633093716975811">Популарни видеа</translation>
+<translation id="386944881686624613">Не може да се создаде линк до текстот. Споделете линк до страницата.</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3894427358181296146">Додај папка</translation>
 <translation id="3895926599014793903">Присилно овозможи зумирање</translation>
@@ -658,6 +659,7 @@
 <translation id="5620928963363755975">Вашите датотеки и страници ќе ги најдете во „Преземања“ преку копчето „Повеќе опции“</translation>
 <translation id="562289928968387744">Управувајте со реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
+<translation id="5628604359369369630">Непрочитани - Достапни офлајн</translation>
 <translation id="5639724618331995626">Дозволи ги сите сајтови</translation>
 <translation id="5648166631817621825">Изминатите 7 дена</translation>
 <translation id="5655963694829536461">Пребарајте ги преземањата</translation>
@@ -903,6 +905,7 @@
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
 <translation id="7189372733857464326">Се чека да заврши ажурирањето на „Услугите на Google Play“</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
+<translation id="72180057821664864">Не може да се создаде линк до текстот</translation>
 <translation id="7233236755231902816">За да го гледате интернетот на вашиот јазик, преземете ја најновата верзија на Chrome</translation>
 <translation id="7248069434667874558">Проверете дали синхронизацијата во Chrome е вклучена за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">Блокиран сајт</translation>
@@ -1001,6 +1004,7 @@
 <translation id="7857691613771368249">Прашувај кога да се зачувуваат датотеки</translation>
 <translation id="7875915731392087153">Создајте е-пошта</translation>
 <translation id="7876243839304621966">Отстрани ги сите</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочитана страница}one{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитана страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитани страници}}</translation>
 <translation id="7882131421121961860">Не е најдена историја</translation>
 <translation id="7886917304091689118">Се извршува во Chrome</translation>
 <translation id="789763218334337857">Како да го користите Chrome</translation>
@@ -1037,6 +1041,7 @@
 <translation id="806745655614357130">Не поврзувај ги податоците</translation>
 <translation id="8073388330009372546">Отвори слика во нова картичка</translation>
 <translation id="8076492880354921740">Картички</translation>
+<translation id="8078096376109663956">Споделете само текст</translation>
 <translation id="8084114998886531721">Зачувана лозинка</translation>
 <translation id="808747664143081553">Поврзано со уредот</translation>
 <translation id="8103578431304235997">Инкогнито-картичка</translation>
@@ -1139,6 +1144,7 @@
 <translation id="8812260976093120287">На некои веб-сајтови, може да плаќате со горенаведените поддржани апликации за плаќање на вашиот уред.</translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
+<translation id="8827407626219585697">Вклучете линк до текстот</translation>
 <translation id="883806473910249246">Грешка при преземањето на содржината.</translation>
 <translation id="8840953339110955557">Страницава може да се разликува од онлајн верзијата.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, картичка</translation>

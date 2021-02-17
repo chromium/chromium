@@ -2262,13 +2262,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />" nicht konfiguriert ist, lässt sich der Suchanbieter nicht durch einen Suchbegriff aktivieren.</translation>
 <translation id="4090088362777472639">SHA-256-Hash des Ansible-Playbooks.</translation>
-<translation id="409035987613226003">Wenn diese Richtlinie aktiviert ist, werden anonyme Nutzungs- und Absturzdaten für Chrome an Google gesendet und Nutzer können die Einstellung nicht ändern. Wenn die Richtlinie deaktiviert ist, werden diese Informationen nicht an Google gesendet.
-
-      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird die Richtlinie nicht konfiguriert, kann sie vom Nutzer bei der Installation oder beim ersten Ausführen festgelegt werden.
-
-      Die Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, sowie macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.
-
-      Informationen zu Chrome OS finden Sie unter „DeviceMetricsReportingEnabled“.</translation>
 <translation id="4097556069183835428">Wenn Sie die Richtlinie auf "None" setzen, ist die Lupe deaktiviert.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Lupe erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>

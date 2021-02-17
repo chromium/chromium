@@ -107,6 +107,7 @@
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
 <translation id="3712633734921637892">Батареяны үнөмдөө же температураны төмөндөтүү үчүн процессордун ылдамдыгы чектелди</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> сын-пикир)</translation>
 <translation id="3748026146096797577">Интернет жок</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
+<translation id="4155551848414053977">Сканер күйгүзүлгөнүн жана тармак аркылуу жеткиликтүү же түздөн-түз туташууга даяр экенин текшериңиз</translation>
 <translation id="4170700058716978431">АТКАРЫЛГАН ЖОК</translation>
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
@@ -237,7 +239,9 @@
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6189418609903030344">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
+<translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="6325525973963619867">Аткарылган жок</translation>
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
 <translation id="641081527798843608">Темасы дал келди</translation>

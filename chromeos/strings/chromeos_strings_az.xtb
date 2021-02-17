@@ -107,6 +107,7 @@
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="3712633734921637892">CPU sürəti hazırda enerjiyə qənaət etmək və ya temperaturu azaltmaq üçün məhdudlaşdırılıb</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
@@ -124,6 +125,7 @@
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
+<translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
 <translation id="4170700058716978431">UĞURSUZ OLDU</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
@@ -236,7 +238,9 @@
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6189418609903030344">Batareya istifadə edildikcə tutumu azalır</translation>
 <translation id="6191293864534840972">Yanlış ad serverləri</translation>
+<translation id="6223752125779001553">Əlçatan skaner yoxdur</translation>
 <translation id="6232017090690406397">Batareya</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="6325525973963619867">Alınmadı</translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="641081527798843608">Subyekt uyğunluğu</translation>
