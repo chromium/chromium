@@ -142,6 +142,7 @@ net::SockaddrStorage::addr  # .get() not added in reinterpret_cast, reason unkno
 views::internal::ClassPropertyValueSetter::property_  # passed to templated param T*
 (anonymous namespace)::ScopedFunctionHelper::function_  # function pointer template
 KeyedServiceBaseFactory::service_name_ # used in decltype
+OutOfMemoryTest::value_ # used to pass non const pointer to pointer
 
 # ELEMENT() treats the CheckedPtr as a void*, and so when a pointer is written
 # AddRef() won't be called, causing AddRef/Deref mismatch.
