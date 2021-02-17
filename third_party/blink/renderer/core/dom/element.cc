@@ -366,13 +366,6 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     }
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNGWebkitBoxEnabled() &&
-      style.IsDeprecatedFlexboxUsingFlexLayout()) {
-    UseCounter::Count(
-        document, WebFeature::kLegacyLayoutByWebkitBoxWithoutVerticalLineClamp);
-    return true;
-  }
-
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     // Disable NG for the entire subtree if we're establishing a multicol
     // container.

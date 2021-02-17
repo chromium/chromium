@@ -1183,10 +1183,6 @@
       status: "test",
     },
     {
-      name: "LayoutNGWebkitBox",
-      status: "stable",
-    },
-    {
       name: "LazyFrameLoading",
       status: "stable",
     },
