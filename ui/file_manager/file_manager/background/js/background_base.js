@@ -24,16 +24,18 @@
     this.dialogs = {};
 
     // Initializes the strings. This needs for the volume manager.
-    this.initializationPromise_ = new Promise((fulfill, reject) => {
-      chrome.fileManagerPrivate.getStrings(stringData => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError.message);
-          return;
-        }
-        loadTimeData.data = assert(stringData);
-        fulfill(stringData);
+    if (!window.isSWA) {
+      this.initializationPromise_ = new Promise((fulfill, reject) => {
+        chrome.fileManagerPrivate.getStrings(stringData => {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+            return;
+          }
+          loadTimeData.data = assert(stringData);
+          fulfill(stringData);
+        });
       });
-    });
+    }
 
     /** @private {?LaunchHandler} */
     this.launchHandler_ = null;
