@@ -23,11 +23,11 @@ std::wstring StrCat(span<const std::wstring> pieces) {
 }
 
 void StrAppend(std::wstring* dest, span<const WStringPiece> pieces) {
-  internal::StrAppendT(dest, pieces);
+  internal::StrAppendT(*dest, pieces);
 }
 
 void StrAppend(std::wstring* dest, span<const std::wstring> pieces) {
-  internal::StrAppendT(dest, pieces);
+  internal::StrAppendT(*dest, pieces);
 }
 
 #endif
