@@ -139,6 +139,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SendMessage(base::Value message) override;
   void InitImageData(const gfx::Size& size) override;
   void OnGeometryChanged(double old_zoom, float old_device_scale) override;
+  void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
+  void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
+                                std::vector<AccessibilityTextRunInfo> text_runs,
+                                std::vector<AccessibilityCharInfo> chars,
+                                AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
 

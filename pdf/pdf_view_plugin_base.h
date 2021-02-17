@@ -30,6 +30,11 @@ namespace chrome_pdf {
 class Image;
 class PDFiumEngine;
 class UrlLoader;
+struct AccessibilityCharInfo;
+struct AccessibilityDocInfo;
+struct AccessibilityPageInfo;
+struct AccessibilityPageObjects;
+struct AccessibilityTextRunInfo;
 struct AccessibilityViewportInfo;
 
 // Common base to share code between the two plugin implementations,
@@ -137,7 +142,25 @@ class PdfViewPluginBase : public PDFEngine::Client,
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
 
-  // Prepare the accessibility information about the current viewport. Call
+  // Starts loading accessibility information.
+  void LoadAccessibility();
+
+  // Sets the accessibility information about the PDF document in the renderer.
+  virtual void SetAccessibilityDocInfo(
+      const AccessibilityDocInfo& doc_info) = 0;
+
+  // Sets the accessibility information about the given |page_index| in the
+  // renderer.
+  void PrepareAndSetAccessibilityPageInfo(int32_t page_index);
+
+  // Sets the accessibility information about the page in the renderer.
+  virtual void SetAccessibilityPageInfo(
+      AccessibilityPageInfo page_info,
+      std::vector<AccessibilityTextRunInfo> text_runs,
+      std::vector<AccessibilityCharInfo> chars,
+      AccessibilityPageObjects page_objects) = 0;
+
+  // Prepares the accessibility information about the current viewport. Calls
   // SetAccessibilityViewportInfo() internally to set this information in the
   // renderer. This is done once when accessibility is first loaded and again
   // when the geometry changes.
@@ -178,13 +201,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   AccessibilityState accessibility_state() { return accessibility_state_; }
   void set_accessibility_state(AccessibilityState state) {
     accessibility_state_ = state;
-  }
-
-  int32_t next_accessibility_page_index() {
-    return next_accessibility_page_index_;
-  }
-  void set_next_accessibility_page_index(int32_t page_index) {
-    next_accessibility_page_index_ = page_index;
   }
 
  private:

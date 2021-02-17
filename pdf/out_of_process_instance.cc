@@ -227,11 +227,6 @@ constexpr int kCompletePDFIndex = -1;
 // A different negative value to differentiate itself from |kCompletePDFIndex|.
 constexpr int kInvalidPDFIndex = -2;
 
-// A delay to wait between each accessibility page to keep the system
-// responsive.
-constexpr base::TimeDelta kAccessibilityPageDelay =
-    base::TimeDelta::FromMilliseconds(100);
-
 constexpr char kPPPPdfInterface[] = PPP_PDF_INTERFACE_1;
 
 PP_Var GetLinkAtPosition(PP_Instance instance, PP_Point point) {
@@ -863,87 +858,6 @@ void OutOfProcessInstance::EnableAccessibility() {
 
   if (document_load_state_ == LOAD_STATE_COMPLETE)
     LoadAccessibility();
-}
-
-void OutOfProcessInstance::LoadAccessibility() {
-  set_accessibility_state(AccessibilityState::kLoaded);
-  AccessibilityDocInfo doc_info;
-  doc_info.page_count = engine()->GetNumberOfPages();
-  doc_info.text_accessible =
-      engine()->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE);
-  doc_info.text_copyable = engine()->HasPermission(PDFEngine::PERMISSION_COPY);
-
-  // A new document layout will trigger the creation of a new accessibility
-  // tree, so |next_accessibility_page_index_| should be reset to ignore
-  // outdated asynchronous calls of SendNextAccessibilityPage().
-  set_next_accessibility_page_index(0);
-  SetAccessibilityDocInfo(doc_info);
-
-  // If the document contents isn't accessible, don't send anything more.
-  if (!(engine()->HasPermission(PDFEngine::PERMISSION_COPY) ||
-        engine()->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE))) {
-    return;
-  }
-
-  PrepareAndSetAccessibilityViewportInfo();
-
-  // Schedule loading the first page.
-  ScheduleTaskOnMainThread(
-      kAccessibilityPageDelay,
-      base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
-                     weak_factory_.GetWeakPtr()),
-      0);
-}
-
-void OutOfProcessInstance::SetAccessibilityDocInfo(
-    const AccessibilityDocInfo& doc_info) {
-  PP_PrivateAccessibilityDocInfo pp_doc_info = {
-      doc_info.page_count, PP_FromBool(doc_info.text_accessible),
-      PP_FromBool(doc_info.text_copyable)};
-  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &pp_doc_info);
-}
-
-void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
-  // Outdated calls are ignored.
-  if (page_index != next_accessibility_page_index())
-    return;
-  set_next_accessibility_page_index(next_accessibility_page_index() + 1);
-
-  AccessibilityPageInfo page_info;
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  std::vector<AccessibilityCharInfo> chars;
-  AccessibilityPageObjects page_objects;
-
-  if (!GetAccessibilityInfo(engine(), page_index, page_info, text_runs, chars,
-                            page_objects)) {
-    return;
-  }
-
-  SetAccessibilityPageInfo(page_info, text_runs, chars, page_objects);
-
-  // Schedule loading the next page.
-  ScheduleTaskOnMainThread(
-      kAccessibilityPageDelay,
-      base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
-                     weak_factory_.GetWeakPtr()),
-      page_index + 1);
-}
-
-void OutOfProcessInstance::SetAccessibilityPageInfo(
-    AccessibilityPageInfo page_info,
-    std::vector<AccessibilityTextRunInfo> text_runs,
-    std::vector<AccessibilityCharInfo> chars,
-    AccessibilityPageObjects page_objects) {
-  PP_PrivateAccessibilityPageInfo pp_page_info =
-      ToPrivateAccessibilityPageInfo(page_info);
-  std::vector<PP_PrivateAccessibilityCharInfo> pp_chars =
-      ToPrivateAccessibilityCharInfo(chars);
-  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs =
-      ToPrivateAccessibilityCharInfo(text_runs);
-  pp::PDF::PrivateAccessibilityPageObjects pp_page_objects =
-      ToPrivateAccessibilityPageObjects(page_objects);
-  pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
-                                    pp_text_runs, pp_chars, pp_page_objects);
 }
 
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
@@ -1856,6 +1770,31 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
 
 Image OutOfProcessInstance::GetPluginImageData() const {
   return Image(pepper_image_data_);
+}
+
+void OutOfProcessInstance::SetAccessibilityDocInfo(
+    const AccessibilityDocInfo& doc_info) {
+  PP_PrivateAccessibilityDocInfo pp_doc_info = {
+      doc_info.page_count, PP_FromBool(doc_info.text_accessible),
+      PP_FromBool(doc_info.text_copyable)};
+  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &pp_doc_info);
+}
+
+void OutOfProcessInstance::SetAccessibilityPageInfo(
+    AccessibilityPageInfo page_info,
+    std::vector<AccessibilityTextRunInfo> text_runs,
+    std::vector<AccessibilityCharInfo> chars,
+    AccessibilityPageObjects page_objects) {
+  PP_PrivateAccessibilityPageInfo pp_page_info =
+      ToPrivateAccessibilityPageInfo(page_info);
+  std::vector<PP_PrivateAccessibilityCharInfo> pp_chars =
+      ToPrivateAccessibilityCharInfo(chars);
+  std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs =
+      ToPrivateAccessibilityCharInfo(text_runs);
+  pp::PDF::PrivateAccessibilityPageObjects pp_page_objects =
+      ToPrivateAccessibilityPageObjects(page_objects);
+  pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
+                                    pp_text_runs, pp_chars, pp_page_objects);
 }
 
 void OutOfProcessInstance::SetAccessibilityViewportInfo(
