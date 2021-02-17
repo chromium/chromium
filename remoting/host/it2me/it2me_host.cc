@@ -201,7 +201,9 @@ void It2MeHost::ConnectOnNetworkThread(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           host_context_->url_loader_factory(), network_settings,
           protocol::TransportRole::SERVER);
-  transport_context->set_turn_ice_config(ice_config);
+  if (!ice_config.is_null()) {
+    transport_context->set_turn_ice_config(ice_config);
+  }
 
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
