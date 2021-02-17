@@ -215,12 +215,51 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
+  // |process_mitigations| must outlive |startup_info_wrapper|.
+  DWORD64 process_mitigations[2]{0, 0};
   win::StartupInformation startup_info_wrapper;
   STARTUPINFO* startup_info = startup_info_wrapper.startup_info();
-
-  bool inherit_handles = options.inherit_mode == LaunchOptions::Inherit::kAll;
   DWORD flags = 0;
+
+  // Count extended attributes before reserving space.
+  int attribute_count = 0;
+  // Count PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY.
+  if (options.disable_cetcompat &&
+      base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+    ++attribute_count;
+  }
+
+  // Count PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
+  if (!options.handles_to_inherit.empty())
+    ++attribute_count;
+
+  // Reserve space for attributes.
+  if (attribute_count > 0) {
+    if (!startup_info_wrapper.InitializeProcThreadAttributeList(
+            attribute_count)) {
+      DPLOG(ERROR);
+      return Process();
+    }
+    flags |= EXTENDED_STARTUPINFO_PRESENT;
+  }
+
+  // Set PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY.
+  if (options.disable_cetcompat &&
+      base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+    DCHECK_GT(attribute_count, 0);
+    process_mitigations[1] |=
+        PROCESS_CREATION_MITIGATION_POLICY2_CET_USER_SHADOW_STACKS_ALWAYS_OFF;
+    if (!startup_info_wrapper.UpdateProcThreadAttribute(
+            PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &process_mitigations[0],
+            sizeof(process_mitigations))) {
+      return Process();
+    }
+  }
+
+  // Set PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
+  bool inherit_handles = options.inherit_mode == LaunchOptions::Inherit::kAll;
   if (!options.handles_to_inherit.empty()) {
+    DCHECK_GT(attribute_count, 0);
     DCHECK_EQ(options.inherit_mode, LaunchOptions::Inherit::kSpecific);
 
     if (options.handles_to_inherit.size() >
@@ -236,11 +275,6 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
       PCHECK(result);
     }
 
-    if (!startup_info_wrapper.InitializeProcThreadAttributeList(1)) {
-      DPLOG(ERROR);
-      return Process();
-    }
-
     if (!startup_info_wrapper.UpdateProcThreadAttribute(
             PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
             const_cast<HANDLE*>(&options.handles_to_inherit[0]),
@@ -251,7 +285,6 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
     }
 
     inherit_handles = true;
-    flags |= EXTENDED_STARTUPINFO_PRESENT;
   }
 
   if (options.feedback_cursor_off)

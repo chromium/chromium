@@ -165,6 +165,14 @@ struct BASE_EXPORT LaunchOptions {
   // If set to true, permission to bring windows to the foreground is passed to
   // the launched process if the current process has such permission.
   bool grant_foreground_privilege = false;
+
+  // If set to true, sets a process mitigation flag to disable Hardware-enforced
+  // Stack Protection for the process.
+  // This overrides /cetcompat if set on the executable. See:
+  // https://docs.microsoft.com/en-us/cpp/build/reference/cetcompat?view=msvc-160
+  // If not supported by Windows, has no effect. This flag weakens security by
+  // turning off ROP protection.
+  bool disable_cetcompat = false;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   // Remap file descriptors according to the mapping of src_fd->dest_fd to
   // propagate FDs into the child process.
