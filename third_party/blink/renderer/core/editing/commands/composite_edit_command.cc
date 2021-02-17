@@ -1160,7 +1160,7 @@ void CompositeEditCommand::PushAnchorElementDown(Element* anchor_node,
   if (!anchor_node)
     return;
 
-  DCHECK(anchor_node->IsLink()) << anchor_node;
+  DCHECK(IsA<HTMLAnchorElement>(anchor_node)) << anchor_node;
 
   const VisibleSelection& visible_selection = CreateVisibleSelection(
       SelectionInDOMTree::Builder().SelectAllChildren(*anchor_node).Build());
@@ -1914,8 +1914,9 @@ Position CompositeEditCommand::PositionAvoidingSpecialElementBoundary(
     if (visible_pos.DeepEquivalent() == last_in_anchor.DeepEquivalent()) {
       // Make sure anchors are pushed down before avoiding them so that we don't
       // also avoid structural elements like lists and blocks (5142012).
-      if (original.AnchorNode() != enclosing_anchor &&
-          original.AnchorNode()->parentNode() != enclosing_anchor) {
+      if (EnclosingBlock(original.AnchorNode())
+              ->IsDescendantOf(enclosing_anchor)) {
+        // Only push down anchor element if there are block elements inside it.
         PushAnchorElementDown(enclosing_anchor, editing_state);
         if (editing_state->IsAborted())
           return original;
@@ -1943,8 +1944,9 @@ Position CompositeEditCommand::PositionAvoidingSpecialElementBoundary(
     if (visible_pos.DeepEquivalent() == first_in_anchor.DeepEquivalent()) {
       // Make sure anchors are pushed down before avoiding them so that we don't
       // also avoid structural elements like lists and blocks (5142012).
-      if (original.AnchorNode() != enclosing_anchor &&
-          original.AnchorNode()->parentNode() != enclosing_anchor) {
+      if (EnclosingBlock(original.AnchorNode())
+              ->IsDescendantOf(enclosing_anchor)) {
+        // Only push down anchor element if there are block elements inside it.
         PushAnchorElementDown(enclosing_anchor, editing_state);
         if (editing_state->IsAborted())
           return original;

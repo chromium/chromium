@@ -1263,7 +1263,7 @@ Element* EnclosingAnchorElement(const Position& p) {
   for (Element* ancestor =
            ElementTraversal::FirstAncestorOrSelf(*p.AnchorNode());
        ancestor; ancestor = ElementTraversal::FirstAncestor(*ancestor)) {
-    if (ancestor->IsLink())
+    if (IsA<HTMLAnchorElement>(ancestor))
       return ancestor;
   }
   return nullptr;

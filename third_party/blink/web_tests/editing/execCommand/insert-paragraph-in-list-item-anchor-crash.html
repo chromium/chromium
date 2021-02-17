@@ -11,6 +11,6 @@ test(function() {
     getSelection().collapse(document.getElementById('target'), 1);
     document.execCommand('InsertParagraph');
     // TODO(yosin): "InsertParagraph" should not insert DL around BR.
-    assert_equals(sample.innerHTML.replace(/\n/g, ''), '<dl><b id="target"><a href="#">foo</a><a href="#"><dl><br></dl></a></b></dl>');
+    assert_equals(sample.innerHTML.replace(/\n/g, ''), '<dl><a href="#"><b id="target">foo</b></a><a href="#"><dl><br></dl></a></dl>');
 });
 </script>
