@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages.indicator;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,7 +31,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TimeUtilsJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,7 +43,7 @@ import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
  * Unit tests for {@link OfflineIndicatorControllerV2}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class OfflineIndicatorControllerV2UnitTest {
     @Mock
     private Context mContext;
@@ -63,37 +61,13 @@ public class OfflineIndicatorControllerV2UnitTest {
     private Supplier<Boolean> mCanAnimateNativeBrowserControls;
     @Mock
     private TimeUtils.Natives mTimeUtils;
+    @Mock
+    private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     private ObservableSupplierImpl<Boolean> mIsUrlBarFocusedSupplier =
             new ObservableSupplierImpl<>();
     private OfflineIndicatorControllerV2 mController;
     private long mElapsedTimeMs;
-
-    /**
-     * Fake of OfflineIndicatorControllerV2.Clock used to test metrics that rely on the wall time.
-     */
-    public static class FakeClock implements OfflineIndicatorControllerV2.Clock {
-        private long mCurrentTimeMillis;
-
-        public FakeClock() {
-            mCurrentTimeMillis = 0;
-        }
-
-        @Override
-        public long currentTimeMillis() {
-            return mCurrentTimeMillis;
-        }
-
-        public void setCurrentTimeMillis(long currentTimeMillis) {
-            mCurrentTimeMillis = currentTimeMillis;
-        }
-
-        public void advanceCurrentTimeMillis(long millis) {
-            mCurrentTimeMillis += millis;
-        }
-    }
-
-    private FakeClock mFakeClock;
 
     @Before
     public void setUp() {
@@ -109,17 +83,15 @@ public class OfflineIndicatorControllerV2UnitTest {
         when(mCanAnimateNativeBrowserControls.get()).thenReturn(true);
         TimeUtilsJni.TEST_HOOKS.setInstanceForTesting(mTimeUtils);
         when(mTimeUtils.getTimeTicksNowUs()).thenReturn(0L);
-
-        mFakeClock = new FakeClock();
-        OfflineIndicatorControllerV2.setClockForTesting(mFakeClock);
-
-        ShadowRecordHistogram.reset();
+        when(mOfflineDetector.isApplicationForeground()).thenReturn(true);
+        when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(false);
 
         mIsUrlBarFocusedSupplier.set(false);
         OfflineDetector.setMockConnectivityDetector(mConnectivityDetector);
         OfflineIndicatorControllerV2.setMockOfflineDetector(mOfflineDetector);
         mElapsedTimeMs = 0;
         OfflineIndicatorControllerV2.setMockElapsedTimeSupplier(() -> mElapsedTimeMs);
+        OfflineIndicatorControllerV2.setMockOfflineIndicatorMetricsDelegate(mMetricsDelegate);
         mController = new OfflineIndicatorControllerV2(mContext, mStatusIndicator,
                 mIsUrlBarFocusedSupplier, mCanAnimateNativeBrowserControls);
         mController.setHandlerForTesting(mHandler);
@@ -328,91 +300,166 @@ public class OfflineIndicatorControllerV2UnitTest {
     }
 
     /**
-     * Tests that samples are recorded as expected to the OfflineIndicator.ShownDurationV2
-     * histogram when switching between offline and online states.
+     * Tests that we send the correct notifications to the metrics delegate when the connectivity
+     * state changes between online and offline.
      */
     @Test
-    public void testPersistedMetrics_ChangeConnectionState() {
-        // Simulate the connection state going from online to offline then back to online.
-        changeConnectionState(true);
-        advanceTimeByMs(10000);
-        changeConnectionState(false);
+    public void testMetricsNotifications_ConnectionChange() {
+        // Ensure that we don't update the metrics delegate on start up.
+        verify(mMetricsDelegate, times(0)).onIndicatorShown();
+        verify(mMetricsDelegate, times(0)).onIndicatorHidden();
 
-        // Check that the correct sample is recorded to OfflineIndicator.ShownDurationV2.
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        OfflineIndicatorControllerV2.OFFLINE_INDICATOR_SHOWN_DURATION_V2));
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        OfflineIndicatorControllerV2.OFFLINE_INDICATOR_SHOWN_DURATION_V2, 10000));
+        // When we go offline, make sure that we update the metrics delegate.
+        changeConnectionState(true);
+        verify(mMetricsDelegate, times(1)).onIndicatorShown();
+
+        // Check that we don't update the metrics delegate if we remain offline.
+        changeConnectionState(true);
+        verify(mMetricsDelegate, times(1)).onIndicatorShown();
+
+        // We advance the time to avoid the cool-down.
+        advanceTimeByMs(5000);
+
+        // Check that we update the metrics delegate when go back online.
+        changeConnectionState(false);
+        verify(mMetricsDelegate, times(1)).onIndicatorHidden();
+
+        // Check that we don't update the metrics delegate if we remain online.
+        changeConnectionState(false);
+        verify(mMetricsDelegate, times(1)).onIndicatorHidden();
+
+        advanceTimeByMs(5000);
+
+        // When we go offline, make sure that we update the metrics delegate.
+        changeConnectionState(true);
+        verify(mMetricsDelegate, times(2)).onIndicatorShown();
     }
 
     /**
-     * Tests that samples are recorded as expected to the OfflineIndicator.ShownDurationV2 histogram
-     * in the case where Chrome is killed while offline, and is still offline the next time Chrome
-     * starts up.
+     * Tests that we send the correct notifications to the metrics delegate when the application
+     * state changes between foreground and background.
      */
     @Test
-    public void testPersistedMetrics_PersistMetricsAcrossSessionsAndStartUpOffline() {
-        // Simulate the system going offline.
-        changeConnectionState(true);
-        advanceTimeByMs(20000);
+    public void testMetricsNotifications_ApplicationStateChange() {
+        // The Controller will inform the metrics delegate of the application state (which we have
+        // defined as foreground in this case) when it is constructed.
+        verify(mMetricsDelegate, times(1)).onAppForegrounded();
+        verify(mMetricsDelegate, times(0)).onAppBackgrounded();
 
-        // Simulate Chrome being killed.
-        mController = null;
-        advanceTimeByMs(30000);
+        // Check that we send a notification if the application state changes to background.
+        changeApplicationState(false);
+        verify(mMetricsDelegate, times(1)).onAppBackgrounded();
 
-        // Simulate Chrome starting up again by creating a new instance of the controller.
-        mController = new OfflineIndicatorControllerV2(mContext, mStatusIndicator,
-                mIsUrlBarFocusedSupplier, mCanAnimateNativeBrowserControls);
-        mController.setHandlerForTesting(mHandler);
+        // Check that we don't send a notification if the application state remains the same.
+        changeApplicationState(false);
+        verify(mMetricsDelegate, times(1)).onAppBackgrounded();
 
-        // Simulate that the system is still offline upon start up.
-        changeConnectionState(true);
+        // Check that we send a notification if the application state changes to foreground.
+        changeApplicationState(true);
+        verify(mMetricsDelegate, times(2)).onAppForegrounded();
 
-        // Simulate Chrome going back online.
-        advanceTimeByMs(40000);
-        changeConnectionState(false);
+        // Check that we don't send a notification if the application state remains the same.
+        changeApplicationState(true);
+        verify(mMetricsDelegate, times(2)).onAppForegrounded();
 
-        // Check that the correct sample is recorded to OfflineIndicator.ShownDurationV2.
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        OfflineIndicatorControllerV2.OFFLINE_INDICATOR_SHOWN_DURATION_V2));
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        OfflineIndicatorControllerV2.OFFLINE_INDICATOR_SHOWN_DURATION_V2, 90000));
+        // Check that we send a notification if the application state changes to background.
+        changeApplicationState(false);
+        verify(mMetricsDelegate, times(2)).onAppBackgrounded();
     }
 
     /**
-     * Tests that samples are recorded as expected to the OfflineIndicator.ShownDurationV2 histogram
-     * in the case where Chrome is killed while offline, and is online the next time Chrome starts
-     * up.
+     * Tests that we send the correct notifications to the metrics delegate when the application is
+     * started while offline.
      */
     @Test
-    public void testPersistedMetrics_PersistMetricsAcrossSessionsAndStartUpOnline() {
+    public void testMetricsNotifications_StartUpOffline() {
+        verify(mMetricsDelegate, times(0)).onIndicatorShown();
+        verify(mMetricsDelegate, times(0)).onIndicatorHidden();
+        verify(mMetricsDelegate, times(1)).onAppForegrounded();
+        verify(mMetricsDelegate, times(0)).onAppBackgrounded();
+        verify(mMetricsDelegate, times(0)).onOfflineStateInitialized(true);
+        verify(mMetricsDelegate, times(0)).onOfflineStateInitialized(false);
+
         // Simulate the system going offline.
         changeConnectionState(true);
-        advanceTimeByMs(20000);
+        verify(mMetricsDelegate, times(1)).onOfflineStateInitialized(true);
+        verify(mMetricsDelegate, times(1)).onIndicatorShown();
 
-        // Simulate Chrome being killed.
+        // Have the metrics delegate start tracking a shown duration.
+        when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(true);
+
+        // Simulate the app being backgrounded.
+        changeApplicationState(false);
+        verify(mMetricsDelegate, times(1)).onAppBackgrounded();
+
+        // Simulate the app being killed.
         mController = null;
-        advanceTimeByMs(30000);
 
-        // Simulate Chrome starting up  by creating a new instance of the controller.
+        // Simulate the app being restarted, and still being offline.
+        changeApplicationState(true);
         mController = new OfflineIndicatorControllerV2(mContext, mStatusIndicator,
                 mIsUrlBarFocusedSupplier, mCanAnimateNativeBrowserControls);
         mController.setHandlerForTesting(mHandler);
+        verify(mMetricsDelegate, times(2)).onAppForegrounded();
 
-        // Simulate that the system is online when it starts up.
+        // Simualte that we are still offline when the application is restarted,
+        changeConnectionState(true);
+        verify(mMetricsDelegate, times(2)).onOfflineStateInitialized(true);
+        verify(mMetricsDelegate, times(2)).onIndicatorShown();
+
+        advanceTimeByMs(5000);
+
+        // Simulate the system coming back online.
         changeConnectionState(false);
+        verify(mMetricsDelegate, times(1)).onIndicatorHidden();
 
-        // Check that the correct sample is recorded to OfflineIndicator.ShownDurationV2.
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        OfflineIndicatorControllerV2.OFFLINE_INDICATOR_SHOWN_DURATION_V2));
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        OfflineIndicatorControllerV2.OFFLINE_INDICATOR_SHOWN_DURATION_V2, 50000));
+        // Have the metrics delegate stop tracking a shown duration.
+        when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(false);
+    }
+
+    /**
+     * Tests that we send the correct notifications to the metrics delegate when the application is
+     * started while offline.
+     */
+    @Test
+    public void testMetricsNotifications_StartUpOnline() {
+        verify(mMetricsDelegate, times(0)).onIndicatorShown();
+        verify(mMetricsDelegate, times(0)).onIndicatorHidden();
+        verify(mMetricsDelegate, times(1)).onAppForegrounded();
+        verify(mMetricsDelegate, times(0)).onAppBackgrounded();
+        verify(mMetricsDelegate, times(0)).onOfflineStateInitialized(true);
+        verify(mMetricsDelegate, times(0)).onOfflineStateInitialized(false);
+
+        // Simulate the system going offline.
+        changeConnectionState(true);
+        // advanceTimeByMs(5000);
+        verify(mMetricsDelegate, times(1)).onOfflineStateInitialized(true);
+        verify(mMetricsDelegate, times(1)).onIndicatorShown();
+
+        // Have the metrics delegate start tracking a shown duration.
+        when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(true);
+
+        // Simulate the app being backgrounded.
+        changeApplicationState(false);
+        verify(mMetricsDelegate, times(1)).onAppBackgrounded();
+
+        // Simulate the app being killed.
+        mController = null;
+
+        // Simulate the app being restarted, but now being online.
+        changeApplicationState(true);
+        mController = new OfflineIndicatorControllerV2(mContext, mStatusIndicator,
+                mIsUrlBarFocusedSupplier, mCanAnimateNativeBrowserControls);
+        mController.setHandlerForTesting(mHandler);
+        verify(mMetricsDelegate, times(2)).onAppForegrounded();
+
+        // If the system starts up online, we will get the signal immediately after the controller
+        // is constructed.
+        changeConnectionState(false);
+        verify(mMetricsDelegate, times(1)).onOfflineStateInitialized(false);
+
+        // Have the metrics delegate stop tracking a shown duration.
+        when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(false);
     }
 
     private void changeConnectionState(boolean offline) {
@@ -421,10 +468,15 @@ public class OfflineIndicatorControllerV2UnitTest {
         mController.onConnectionStateChanged(offline);
     }
 
+    private void changeApplicationState(boolean isForeground) {
+        when(mOfflineDetector.isApplicationForeground()).thenReturn(isForeground);
+        if (mController != null) {
+            mController.onApplicationStateChanged(isForeground);
+        }
+    }
+
     private void advanceTimeByMs(long delta) {
         mElapsedTimeMs += delta;
         setMockElapsedTimeSupplier(() -> mElapsedTimeMs);
-
-        mFakeClock.advanceCurrentTimeMillis(delta);
     }
 }

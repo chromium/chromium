@@ -20,8 +20,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -47,12 +45,6 @@ public class OfflineIndicatorControllerV2 {
         int NUM_ENTRIES = 4;
     }
 
-    /** Clock to use so we can mock the time in tests */
-    public interface Clock {
-        long currentTimeMillis();
-    }
-    private static Clock sClock = System::currentTimeMillis;
-
     static final long STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS = 2000;
 
     // TODO(tbansal): Consider moving the cooldown logic to OfflineDetector.java.
@@ -66,6 +58,7 @@ public class OfflineIndicatorControllerV2 {
 
     private static OfflineDetector sMockOfflineDetector;
     private static Supplier<Long> sMockElapsedTimeSupplier;
+    private static OfflineIndicatorMetricsDelegate sMockOfflineIndicatorMetricsDelegate;
 
     private Context mContext;
     private StatusIndicatorCoordinator mStatusIndicator;
@@ -82,7 +75,8 @@ public class OfflineIndicatorControllerV2 {
     private long mLastActionTime;
     private boolean mIsOffline;
     private boolean mIsOfflineStateInitialized;
-    private long mWallTimeShownMs;
+    private boolean mIsForeground;
+    private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     /**
      * Constructs the offline indicator.
@@ -111,27 +105,30 @@ public class OfflineIndicatorControllerV2 {
         mStatusIndicator = statusIndicator;
         mHandler = new Handler();
 
+        if (sMockOfflineIndicatorMetricsDelegate != null) {
+            mMetricsDelegate = sMockOfflineIndicatorMetricsDelegate;
+        } else {
+            mMetricsDelegate = new OfflineIndicatorMetricsDelegate();
+        }
+
         // If we're offline at start-up, we should have a small enough last action time so that we
         // don't wait for the cool-down.
         mLastActionTime = getElapsedTime() - STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS;
         if (sMockOfflineDetector != null) {
             mOfflineDetector = sMockOfflineDetector;
         } else {
-            mOfflineDetector =
-                    new OfflineDetector((Boolean offline) -> onConnectionStateChanged(offline));
+            mOfflineDetector = new OfflineDetector((Boolean offline)
+                                                           -> onConnectionStateChanged(offline),
+                    (Boolean isForeground) -> onApplicationStateChanged(isForeground));
         }
+
+        // Initializes the application state.
+        onApplicationStateChanged(mOfflineDetector.isApplicationForeground());
 
         mShowRunnable = () -> {
             RecordUserAction.record("OfflineIndicator.Shown");
 
-            // If the value of mWallTimeShownMs is already stored in Prefs, then we keep using that
-            // value.
-            if (isWallTimeShownMsInPrefs()) {
-                mWallTimeShownMs = getWallTimeShownMsFromPrefs();
-            } else {
-                mWallTimeShownMs = sClock.currentTimeMillis();
-                setWallTimeShownMsInPrefs(mWallTimeShownMs);
-            }
+            mMetricsDelegate.onIndicatorShown();
 
             setLastActionTime();
 
@@ -154,14 +151,7 @@ public class OfflineIndicatorControllerV2 {
         mUpdateAndHideRunnable = () -> {
             RecordUserAction.record("OfflineIndicator.Hidden");
 
-            final long shownDurationWallTimeMs = sClock.currentTimeMillis() - mWallTimeShownMs;
-            clearWallTimeShownMsFromPrefs();
-
-            // shownDurationWallTimeMs can be negative in cases where the system time is changed, so
-            // we want to avoid recording metrics in cases where we know this happened.
-            if (shownDurationWallTimeMs >= 0) {
-                recordShownDurationV2Histogram(shownDurationWallTimeMs);
-            }
+            mMetricsDelegate.onIndicatorHidden();
 
             setLastActionTime();
 
@@ -214,6 +204,17 @@ public class OfflineIndicatorControllerV2 {
         updateStatusIndicator(offline);
     }
 
+    public void onApplicationStateChanged(boolean isForeground) {
+        if (mIsForeground == isForeground) return;
+
+        if (isForeground) {
+            mMetricsDelegate.onAppForegrounded();
+        } else {
+            mMetricsDelegate.onAppBackgrounded();
+        }
+        mIsForeground = isForeground;
+    }
+
     public void destroy() {
         if (mOfflineDetector != null) {
             mOfflineDetector.destroy();
@@ -235,17 +236,10 @@ public class OfflineIndicatorControllerV2 {
 
     private void updateStatusIndicator(boolean offline) {
         mIsOffline = offline;
+        if (!mIsOfflineStateInitialized) {
+            mMetricsDelegate.onOfflineStateInitialized(/*isOffline=*/offline);
+        }
         if (!mIsOfflineStateInitialized && !offline) {
-            if (isWallTimeShownMsInPrefs()) {
-                // Record any metrics persisted in Prefs when Chrome starts up and is online.
-                mWallTimeShownMs = getWallTimeShownMsFromPrefs();
-                final long shownDurationWallTimeMs = sClock.currentTimeMillis() - mWallTimeShownMs;
-                clearWallTimeShownMsFromPrefs();
-
-                if (shownDurationWallTimeMs >= 0) {
-                    recordShownDurationV2Histogram(shownDurationWallTimeMs);
-                }
-            }
             mIsOfflineStateInitialized = true;
             return;
         }
@@ -287,31 +281,6 @@ public class OfflineIndicatorControllerV2 {
         mLastActionTime = getElapsedTime();
     }
 
-    private void recordShownDurationV2Histogram(long shownDurationMs) {
-        RecordHistogram.recordLongTimesHistogram100(
-                OFFLINE_INDICATOR_SHOWN_DURATION_V2, shownDurationMs);
-    }
-
-    private void setWallTimeShownMsInPrefs(long wallTimeShownMs) {
-        SharedPreferencesManager.getInstance().writeLong(
-                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS, wallTimeShownMs);
-    }
-
-    private long getWallTimeShownMsFromPrefs() {
-        return SharedPreferencesManager.getInstance().readLong(
-                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
-    }
-
-    private void clearWallTimeShownMsFromPrefs() {
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
-    }
-
-    private boolean isWallTimeShownMsInPrefs() {
-        return SharedPreferencesManager.getInstance().contains(
-                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
-    }
-
     @VisibleForTesting
     static void setMockOfflineDetector(OfflineDetector offlineDetector) {
         sMockOfflineDetector = offlineDetector;
@@ -328,7 +297,8 @@ public class OfflineIndicatorControllerV2 {
     }
 
     @VisibleForTesting
-    static void setClockForTesting(Clock clock) {
-        sClock = clock;
+    static void setMockOfflineIndicatorMetricsDelegate(
+            OfflineIndicatorMetricsDelegate offlineIndicatorMetricsDelegate) {
+        sMockOfflineIndicatorMetricsDelegate = offlineIndicatorMetricsDelegate;
     }
 }

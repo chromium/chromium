@@ -42,8 +42,11 @@ public class OfflineDetectorUnitTest {
     private long mElapsedTimeMs;
     private OfflineDetector mOfflineDetector;
 
-    private int mNotificationReceivedByObserver;
+    private int mIsOfflineNotificationsReceivedByObserver;
     private boolean mLastNotificationReceivedIsOffline;
+
+    private int mIsForegroundNotificationsReceivedByObserver;
+    private boolean mLastNotificationReceivedIsForeground;
 
     @Before
     public void setUp() {
@@ -54,8 +57,9 @@ public class OfflineDetectorUnitTest {
 
         OfflineDetector.setMockConnectivityDetector(mConnectivityDetector);
 
-        mOfflineDetector =
-                new OfflineDetector((Boolean offline) -> onConnectionStateChanged(offline));
+        mOfflineDetector = new OfflineDetector((Boolean offline)
+                                                       -> onConnectionStateChanged(offline),
+                (Boolean isForeground) -> onApplicationStateChanged(isForeground));
         mOfflineDetector.setHandlerForTesting(mHandler);
     }
 
@@ -77,13 +81,13 @@ public class OfflineDetectorUnitTest {
 
         // Change to online.
         changeConnectionState(false);
-        assertEquals(1, mNotificationReceivedByObserver);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         // Change to offline.
         changeConnectionState(true);
         assertEquals("Notification received immediately after connection changed to offline", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received immediately after connection changed to offline",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -93,14 +97,14 @@ public class OfflineDetectorUnitTest {
         captor.getValue().run();
 
         assertEquals("Notification count not updated after connection changed to offline", 2,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertTrue("Notification not received after connection changed to offline",
                 mLastNotificationReceivedIsOffline);
 
         // Change to online.
         changeConnectionState(false);
         assertEquals("Notification count not updated after connection changed to online", 3,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification not received after connection changed to online",
                 mLastNotificationReceivedIsOffline);
 
@@ -108,7 +112,7 @@ public class OfflineDetectorUnitTest {
         changeConnectionState(false);
         assertEquals(
                 "Extra notification received even though there is no change in connection state", 3,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse(
                 "Extra notification received even though there is no change in connection state",
                 mLastNotificationReceivedIsOffline);
@@ -123,11 +127,11 @@ public class OfflineDetectorUnitTest {
     public void testCallbackNotInvokedOfflineBackgroundToForeground() {
         // Change to online.
         changeConnectionState(false);
-        assertEquals(0, mNotificationReceivedByObserver);
+        assertEquals(0, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         assertEquals("Notification received immediately after connection changed to offline", 0,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received immediately after connection changed to offline.",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -148,7 +152,7 @@ public class OfflineDetectorUnitTest {
                 captor.capture(), eq(STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS));
 
         assertEquals("Extra notification received even though app just returned to foreground", 0,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Extra notification received even though app just returned to foreground",
                 mLastNotificationReceivedIsOffline);
 
@@ -156,7 +160,7 @@ public class OfflineDetectorUnitTest {
         advanceTimeByMs(STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS);
         captor.getValue().run();
         assertEquals("Expected notification when app has been in foreground for long", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertTrue("Expected notification when app has been in foreground for long",
                 mLastNotificationReceivedIsOffline);
     }
@@ -171,11 +175,11 @@ public class OfflineDetectorUnitTest {
     public void testCallbackNotInvokedOfflineBackgroundToForegroundBatterySaver() {
         // Change to online.
         changeConnectionState(false);
-        assertEquals(0, mNotificationReceivedByObserver);
+        assertEquals(0, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         assertEquals("Notification received immediately after connection changed to offline", 0,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received immediately after connection changed to offline.",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -196,7 +200,7 @@ public class OfflineDetectorUnitTest {
 
         assertEquals(
                 "Extra notification received even though connection is still effectively online", 0,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Connection is reported as offline when it's online",
                 mLastNotificationReceivedIsOffline);
 
@@ -206,7 +210,7 @@ public class OfflineDetectorUnitTest {
         advanceTimeByMs(STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS);
         captor.getValue().run();
         assertEquals("Extra notification received even though connection is still online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Connection is reported as online when it's offline",
                 mLastNotificationReceivedIsOffline);
     }
@@ -224,11 +228,11 @@ public class OfflineDetectorUnitTest {
 
         // Change to online.
         changeConnectionState(false);
-        assertEquals(1, mNotificationReceivedByObserver);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         assertEquals("Duplicate notification received after connection changed to online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Duplicate notification received after connection changed to online.",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -240,7 +244,7 @@ public class OfflineDetectorUnitTest {
         advanceTimeByMs(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS);
         captor.getValue().run();
         assertEquals("Notification not received even though connection is now offline", 2,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertTrue("Notification not received even though connection is now offline",
                 mLastNotificationReceivedIsOffline);
 
@@ -257,7 +261,7 @@ public class OfflineDetectorUnitTest {
         changeApplicationStateToBackground(false);
         captor.getValue().run();
         assertEquals("Notification not received even though connection is now online", 3,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification not received even though connection is now online",
                 mLastNotificationReceivedIsOffline);
     }
@@ -274,13 +278,13 @@ public class OfflineDetectorUnitTest {
 
         // Change to online.
         changeConnectionState(false);
-        assertEquals(1, mNotificationReceivedByObserver);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         // Change to offline.
         changeConnectionState(true);
         assertEquals("Notification received immediately after connection changed to offline", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received immediately after connection changed to offline.",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -290,14 +294,14 @@ public class OfflineDetectorUnitTest {
                 STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS - 1000L);
 
         assertEquals("Notification received soon after connection changed to offline", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received soon after connection changed to offline",
                 mLastNotificationReceivedIsOffline);
 
         // Change to online.
         changeConnectionState(false);
         assertEquals("Extra notification received after connection changed to online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Connection is reported as offline when it's online",
                 mLastNotificationReceivedIsOffline);
 
@@ -307,7 +311,7 @@ public class OfflineDetectorUnitTest {
         advanceTimeByMs(1000L);
         captor.getValue().run();
         assertEquals("Extra notification received even though connection is still online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Connection is reported as offline when it's online",
                 mLastNotificationReceivedIsOffline);
     }
@@ -321,11 +325,11 @@ public class OfflineDetectorUnitTest {
         changeApplicationStateToBackground(false);
         // Change to online.
         changeConnectionState(false);
-        assertEquals(1, mNotificationReceivedByObserver);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         assertEquals("Notification received immediately after connection changed to online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received immediately after connection changed to online.",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -342,7 +346,7 @@ public class OfflineDetectorUnitTest {
                 eq(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS));
 
         assertEquals("Extra notification received even though device just changed to offline", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Extra notification received even though device just changed to offline",
                 mLastNotificationReceivedIsOffline);
 
@@ -351,7 +355,7 @@ public class OfflineDetectorUnitTest {
                 - STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS);
         captor.getValue().run();
         assertEquals("Expected notification when app has been offline for long", 2,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertTrue("Expected notification when app has been offline for long",
                 mLastNotificationReceivedIsOffline);
     }
@@ -367,11 +371,11 @@ public class OfflineDetectorUnitTest {
         changeApplicationStateToBackground(false);
         // Change to online.
         changeConnectionState(false);
-        assertEquals(1, mNotificationReceivedByObserver);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
         assertFalse(mLastNotificationReceivedIsOffline);
 
         assertEquals("Notification received immediately after connection changed to online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Notification received immediately after connection changed to online.",
                 mLastNotificationReceivedIsOffline);
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -388,7 +392,7 @@ public class OfflineDetectorUnitTest {
                 eq(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS));
 
         assertEquals("Extra notification received even though device just changed to offline", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Extra notification received even though device just changed to offline",
                 mLastNotificationReceivedIsOffline);
 
@@ -402,9 +406,61 @@ public class OfflineDetectorUnitTest {
                 - STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS);
         captor.getValue().run();
         assertEquals("Extra notification received even though device is now online", 1,
-                mNotificationReceivedByObserver);
+                mIsOfflineNotificationsReceivedByObserver);
         assertFalse("Extra notification received even though device is now online",
                 mLastNotificationReceivedIsOffline);
+    }
+
+    /**
+     * Tests that the application state callback is called when the application switches between
+     * background and foreground.
+     */
+    @Test
+    public void testApplicationStateCallback() {
+        changeApplicationStateToBackground(false);
+
+        assertEquals("Notification received when application state changes", 1,
+                mIsForegroundNotificationsReceivedByObserver);
+        assertTrue("Last notification received from application going to foreground",
+                mLastNotificationReceivedIsForeground);
+        assertTrue("Stored state matches last notification",
+                mOfflineDetector.isApplicationForeground());
+
+        changeApplicationStateToBackground(false);
+
+        assertEquals("No notification received if application state doesn't change", 1,
+                mIsForegroundNotificationsReceivedByObserver);
+        assertTrue("Last notification received from application going to foreground",
+                mLastNotificationReceivedIsForeground);
+        assertTrue("Stored state matches last notification",
+                mOfflineDetector.isApplicationForeground());
+
+        changeApplicationStateToBackground(true);
+
+        assertEquals("Notification received when application state changes", 2,
+                mIsForegroundNotificationsReceivedByObserver);
+        assertFalse("Last notification received from application going to background",
+                mLastNotificationReceivedIsForeground);
+        assertFalse("Stored state matches last notification",
+                mOfflineDetector.isApplicationForeground());
+
+        changeApplicationStateToBackground(true);
+
+        assertEquals("No notification received if application state doesn't change", 2,
+                mIsForegroundNotificationsReceivedByObserver);
+        assertFalse("Last notification received from application going to background",
+                mLastNotificationReceivedIsForeground);
+        assertFalse("Stored state matches last notification",
+                mOfflineDetector.isApplicationForeground());
+
+        changeApplicationStateToBackground(false);
+
+        assertEquals("Notification received when application state changes", 3,
+                mIsForegroundNotificationsReceivedByObserver);
+        assertTrue("Last notification received from application going to foreground",
+                mLastNotificationReceivedIsForeground);
+        assertTrue("Stored state matches last notification",
+                mOfflineDetector.isApplicationForeground());
     }
 
     private void changeConnectionState(boolean offline) {
@@ -424,7 +480,12 @@ public class OfflineDetectorUnitTest {
     }
 
     private void onConnectionStateChanged(boolean offline) {
-        mNotificationReceivedByObserver++;
+        mIsOfflineNotificationsReceivedByObserver++;
         mLastNotificationReceivedIsOffline = offline;
+    }
+
+    private void onApplicationStateChanged(boolean isForeground) {
+        mIsForegroundNotificationsReceivedByObserver++;
+        mLastNotificationReceivedIsForeground = isForeground;
     }
 }
