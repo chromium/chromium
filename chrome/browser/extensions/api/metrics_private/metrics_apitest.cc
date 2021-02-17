@@ -137,13 +137,10 @@ class ExtensionMetricsApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  bool RunComponentTestWithParamFlag(const std::string& extension_name) {
-    int flags = kFlagNone;
-    if (GetParam() == ContextType::kServiceWorker)
-      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlags(extension_name, flags,
-                                     kFlagLoadAsComponent);
+  bool RunComponentTest(const char* extension_name) {
+    return RunExtensionTest(
+        {.name = extension_name, .load_as_component = true},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 
@@ -163,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
   ASSERT_TRUE(variations::AssociateVariationParams(
       "apitestfieldtrial2", "group1", {{"a", "aa"}, {"b", "bb"}}));
 
-  ASSERT_TRUE(RunComponentTestWithParamFlag("metrics")) << message_;
+  ASSERT_TRUE(RunComponentTest("metrics")) << message_;
 
   ValidateUserActions(user_action_tester, g_user_actions,
                       base::size(g_user_actions));

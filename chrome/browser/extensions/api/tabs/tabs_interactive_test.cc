@@ -146,12 +146,9 @@ class NonPersistentExtensionTabsTest
 // TODO(crbug.com/984350): Expand the test to verify that setSelfAsOpener
 // param is ignored from Service Worker extension scripts.
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
-  ASSERT_TRUE(
-      RunExtensionTestWithFlags("tabs/current_window",
-                                GetParam() == ContextType::kServiceWorker
-                                    ? kFlagRunAsServiceWorkerBasedExtension
-                                    : kFlagNone,
-                                kFlagNone))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "tabs/current_window"},
+      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
       << message_;
 }
 

@@ -434,9 +434,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
   // Run test with file access disabled.
-  ASSERT_TRUE(RunExtensionTestWithFlags("parent_target_permissions", kFlagNone,
-                                        kFlagNone))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("parent_target_permissions")) << message_;
 }
 
 // Tests that an extension is not allowed to inspect a worker through the

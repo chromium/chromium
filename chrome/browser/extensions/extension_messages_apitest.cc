@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(
       shared_test_data_dir().AppendASCII("messaging").AppendASCII("receiver")));
 
-  ASSERT_TRUE(RunExtensionTestWithFlags("messaging/connect_external", kFlagNone,
-                                        kFlagUseRootExtensionsDir))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "messaging/connect_external", .use_extensions_root_dir = true}))
       << message_;
 }
 

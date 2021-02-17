@@ -170,14 +170,6 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
   return true;
 }
 
-bool ExtensionApiTest::RunExtensionTestWithFlags(
-    const std::string& extension_name,
-    int browser_test_flags,
-    int api_test_flags) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              browser_test_flags, api_test_flags);
-}
-
 bool ExtensionApiTest::RunExtensionTestWithArg(
     const std::string& extension_name,
     const char* custom_arg) {
