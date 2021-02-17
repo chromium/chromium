@@ -5689,3 +5689,6 @@ crbug.com/1178899 http/tests/devtools/console/console-log-syntax-error.js [ Pass
 
 # Sheriff 2021-02-17
 crbug.com/1179117 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
+
+# Ecosystem-Infra Sheriff 2021-02-17
+crbug.com/1179219 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-currentSrc.html [ Failure ]
