@@ -54,7 +54,10 @@ placing any runtime-enabled feature or origin trial dependencies in its "depends
 described in the file's comments.
 
 2. Append the new feature enum with a brief description as well in
-`third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom`
+`third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom`.
+
+3. Append the new feature name to `PermissionsPolicyFeature` enum in
+`third_party/blink/public/devtools_protocol/browser_protocol.pdl`.
 
 ##### Integrate the feature behaviour with permissions policy
 1. The most common way to check if features are enabled is `ExecutionContext::IsFeatureEnabled`.
