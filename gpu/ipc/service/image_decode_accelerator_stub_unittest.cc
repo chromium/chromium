@@ -133,8 +133,8 @@ base::CheckedNumeric<uint64_t> GetExpectedTotalMippedSizeForPlanarImage(
     const cc::ServiceImageTransferCacheEntry* decode_entry) {
   base::CheckedNumeric<uint64_t> safe_total_image_size = 0u;
   for (const auto& plane_image : decode_entry->plane_images()) {
-    safe_total_image_size += base::strict_cast<uint64_t>(
-        GrDirectContext::ComputeImageSize(plane_image, GrMipMapped::kYes));
+    safe_total_image_size +=
+        base::strict_cast<uint64_t>(plane_image->textureSize());
   }
   return safe_total_image_size;
 }

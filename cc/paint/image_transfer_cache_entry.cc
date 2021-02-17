@@ -348,8 +348,7 @@ bool ServiceImageTransferCacheEntry::BuildFromHardwareDecodedImage(
         DLOG(ERROR) << "Could not generate mipmap chain for plane " << plane;
         return false;
       }
-      plane_sizes_.push_back(GrDirectContext::ComputeImageSize(
-          plane_images[plane], GrMipMapped::kYes));
+      plane_sizes_.push_back(plane_images[plane]->textureSize());
       safe_total_size += plane_sizes_.back();
     }
     if (!safe_total_size.AssignIfValid(&size_)) {
@@ -409,8 +408,6 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     SkColorType yuv_plane_color_type = kUnknown_SkColorType;
     reader.Read(&yuv_plane_color_type);
 
-    // Match GrTexture::onGpuMemorySize so that memory traces agree.
-    auto gr_mips = has_mips_ ? GrMipMapped::kYes : GrMipMapped::kNo;
     int num_planes = SkYUVAInfo::NumPlanes(plane_config_);
     // Read in each plane and reconstruct pixmaps.
     for (int i = 0; i < num_planes; i++) {
@@ -466,10 +463,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         return false;
       DCHECK(plane->isTextureBacked());
 
-      const size_t plane_size =
-          GrDirectContext::ComputeImageSize(plane, gr_mips);
-      size_ += plane_size;
-      plane_sizes_.push_back(plane_size);
+      plane_sizes_.push_back(plane->textureSize());
+      size_ += plane_sizes_.back();
 
       // |plane_images_| must be set for use in EnsureMips(), memory dumps, and
       // unit tests.
@@ -533,11 +528,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   SkPixmap pixmap(image_info, const_cast<const void*>(pixel_data), row_bytes);
   image_ = MakeSkImage(pixmap, width, height, target_color_space);
 
-  if (image_) {
-    // Match GrTexture::onGpuMemorySize so that memory traces agree.
-    auto gr_mips = has_mips_ ? GrMipMapped::kYes : GrMipMapped::kNo;
-    size_ = GrDirectContext::ComputeImageSize(image_, gr_mips);
-  }
+  if (image_)
+    size_ = image_->textureSize();
 
   return !!image_;
 }
@@ -617,8 +609,7 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
       if (!mipped_plane)
         return;
       mipped_planes.push_back(std::move(mipped_plane));
-      mipped_plane_sizes.push_back(GrDirectContext::ComputeImageSize(
-          mipped_planes.back(), GrMipMapped::kYes));
+      mipped_plane_sizes.push_back(mipped_planes.back()->textureSize());
     }
     sk_sp<SkImage> mipped_image = MakeYUVImageFromUploadedPlanes(
         context_, mipped_planes, plane_config_, subsampling_.value(),
