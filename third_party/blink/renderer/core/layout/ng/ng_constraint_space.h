@@ -336,6 +336,15 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->TableSectionIndex() : kNotFound;
   }
 
+  // If we're block-fragmented AND the fragmentainer block-size is known, return
+  // the total block-size of the fragmentainer that is to be created. This value
+  // is inherited by descendant constraint spaces, as long as we don't enter
+  // anything monolithic, or establish a nested fragmentation context. Note that
+  // the value returned here is the actual size that will be set on the physical
+  // fragment representing the fragmentainer, and 0 is an allowed value, even if
+  // the fragmentation spec requires us to fit at least 1px of content in each
+  // fragmentainer. See the utility function FragmentainerCapacity() for more
+  // details.
   LayoutUnit FragmentainerBlockSize() const {
     return HasRareData() ? rare_data_->fragmentainer_block_size
                          : kIndefiniteSize;

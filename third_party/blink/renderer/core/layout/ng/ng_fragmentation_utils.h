@@ -66,6 +66,25 @@ NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
                                          NGBlockNode child,
                                          const NGLayoutResult&);
 
+// To ensure content progression, we need fragmentainers to hold something
+// larger than 0. The spec says that fragmentainers have to accept at least 1px
+// of content. See https://www.w3.org/TR/css-break-3/#breaking-rules
+inline LayoutUnit ClampedToValidFragmentainerCapacity(LayoutUnit length) {
+  return std::max(length, LayoutUnit(1));
+}
+
+// Return the fragmentainer block-size to use during layout. This is normally
+// the same as the block-size we'll give to the fragment itself, but in order to
+// ensure content progression, we need fragmentainers to hold something larger
+// than 0 (even if the final fragentainer size may very well be 0). The spec
+// says that fragmentainers have to accept at least 1px of content. See
+// https://www.w3.org/TR/css-break-3/#breaking-rules
+inline LayoutUnit FragmentainerCapacity(const NGConstraintSpace& space) {
+  if (!space.HasKnownFragmentainerBlockSize())
+    return kIndefiniteSize;
+  return ClampedToValidFragmentainerCapacity(space.FragmentainerBlockSize());
+}
+
 // Return the block space that was available in the current fragmentainer at the
 // start of the current block formatting context. Note that if the start of the
 // current block formatting context is in a previous fragmentainer, the size of
@@ -75,7 +94,7 @@ NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
 inline LayoutUnit FragmentainerSpaceAtBfcStart(const NGConstraintSpace& space) {
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  return space.FragmentainerBlockSize() - space.FragmentainerOffsetAtBfc();
+  return FragmentainerCapacity(space) - space.FragmentainerOffsetAtBfc();
 }
 
 // Adjust margins to take fragmentation into account. Leading/trailing block

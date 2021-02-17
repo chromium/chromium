@@ -1430,6 +1430,8 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
       fragmentainer_block_size = child.fragment->Size()
                                      .ConvertToLogical(default_writing_mode)
                                      .block_size;
+      fragmentainer_block_size =
+          ClampedToValidFragmentainerCapacity(fragmentainer_block_size);
       current_max_block_size += fragmentainer_block_size;
 
       // Edge case: an abspos with an height of 0 positioned exactly at the
@@ -1462,7 +1464,8 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     fragmentainer_block_size =
         original_column_block_size_ -
         container_builder_->BlockOffsetForAdditionalColumns();
-    fragmentainer_block_size = fragmentainer_block_size.ClampNegativeToZero();
+    fragmentainer_block_size =
+        ClampedToValidFragmentainerCapacity(fragmentainer_block_size);
   }
 
   wtf_size_t additional_fragment_count =

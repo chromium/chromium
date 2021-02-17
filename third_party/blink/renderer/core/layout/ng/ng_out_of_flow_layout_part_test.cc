@@ -726,7 +726,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
       offset:0,0 size:1000x0
       offset:0,0 size:492x30
@@ -775,7 +775,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanner) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
       offset:0,0 size:1000x0
       offset:0,0 size:492x40
@@ -822,7 +822,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
       offset:0,0 size:1000x0
       offset:0,0 size:492x10
         offset:0,0 size:30x10
@@ -1128,17 +1128,17 @@ TEST_F(NGOutOfFlowLayoutPartTest,
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x0
     offset:0,0 size:1000x0
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
         offset:0,0 size:5x1
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:5x1
-      offset:508,0 size:492x1
+      offset:508,0 size:492x0
         offset:0,0 size:5x1
-      offset:1016,0 size:492x1
+      offset:1016,0 size:492x0
         offset:0,0 size:5x1
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1177,7 +1177,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0

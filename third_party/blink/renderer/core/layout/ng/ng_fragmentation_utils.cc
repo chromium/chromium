@@ -594,12 +594,12 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
       DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
 
   LayoutUnit space_left =
-      space.FragmentainerBlockSize() - fragmentainer_block_offset;
+      FragmentainerCapacity(space) - fragmentainer_block_offset;
 
   // If we haven't used any space at all in the fragmentainer yet, we cannot
   // break before this child, or there'd be no progress. We'd risk creating an
   // infinite number of fragmentainers without putting any content into them.
-  bool refuse_break_before = space_left >= space.FragmentainerBlockSize();
+  bool refuse_break_before = space_left >= FragmentainerCapacity(space);
 
   // If the child starts past the end of the fragmentainer (probably due to a
   // block-start margin), we must break before it.
@@ -726,15 +726,8 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
   space_builder.SetAvailableSize(column_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
   space_builder.SetStretchInlineSizeIfAuto(true);
-
-  // To ensure progression, we need something larger than 0 here. The spec
-  // actually says that fragmentainers have to accept at least 1px of content.
-  // See https://www.w3.org/TR/css-break-3/#breaking-rules
-  LayoutUnit column_block_size =
-      std::max(column_size.block_size, LayoutUnit(1));
-
   space_builder.SetFragmentationType(kFragmentColumn);
-  space_builder.SetFragmentainerBlockSize(column_block_size);
+  space_builder.SetFragmentainerBlockSize(column_size.block_size);
   space_builder.SetIsAnonymous(true);
   space_builder.SetIsInColumnBfc();
   if (balance_columns)

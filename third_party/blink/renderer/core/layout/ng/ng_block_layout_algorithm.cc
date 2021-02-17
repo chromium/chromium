@@ -2304,10 +2304,14 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
       // Just copy the block-size from the constraint space. Calculating the
       // size the regular way would cause some problems with overflow. For one,
       // we don't want to produce a break token if there's no child content that
-      // requires it.
-      LayoutUnit block_size = ConstraintSpace().FragmentainerBlockSize();
-      container_builder_.SetFragmentBlockSize(block_size);
-      container_builder_.SetConsumedBlockSize(consumed_block_size + block_size);
+      // requires it. When we lay out, we use FragmentainerCapacity(), so this
+      // is what we need to add to consumed block-size for the next break
+      // token. The fragment block-size itself will be based directly on the
+      // fragmentainer size from the constraint space, though.
+      container_builder_.SetFragmentBlockSize(
+          ConstraintSpace().FragmentainerBlockSize());
+      container_builder_.SetConsumedBlockSize(
+          consumed_block_size + FragmentainerCapacity(ConstraintSpace()));
     } else {
       // When we are in the initial column balancing pass, use the block-size
       // calculated by the algorithm. Since any previously consumed block-size

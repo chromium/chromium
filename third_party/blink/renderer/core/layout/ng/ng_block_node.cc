@@ -1297,6 +1297,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     DCHECK(!child_box);
 
     LogicalSize logical_size = converter.ToLogical(child_fragment.Size());
+    logical_size.block_size =
+        ClampedToValidFragmentainerCapacity(logical_size.block_size);
 
     if (has_processed_first_column_in_flow_thread) {
       // Non-uniform fragmentainer widths not supported by legacy layout.
