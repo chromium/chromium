@@ -48,12 +48,12 @@ defaults.service_account.set(
 )
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
-def ci_builder(*, name, resultdb_bigquery_exports=None, **kwargs):
+def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     resultdb_bigquery_exports = resultdb_bigquery_exports or []
     resultdb_bigquery_exports.append(
         resultdb.export_test_results(
             bq_table = "luci-resultdb-dev.chromium.ci_test_results",
-        )
+        ),
     )
     return builder(
         name = name,
@@ -78,7 +78,8 @@ ci_builder(
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
             bq_table = "luci-resultdb-dev.chromium.ci_text_artifacts",
-        )]
+        ),
+    ],
 )
 
 ci_builder(

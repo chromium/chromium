@@ -251,6 +251,7 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env):
     instance = defaults.get_value("reclient_instance", instance)
     if instance:
         reclient["instance"] = instance
+        reclient["metrics_project"] = "chromium-reclient-metrics"
     service = defaults.get_value("reclient_service", service)
     if service:
         reclient["service"] = service
