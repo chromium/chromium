@@ -215,12 +215,6 @@ void SearchResultView::Layout() {
   int left_right_padding =
       (kPreferredIconViewWidth - icon->GetImage().width()) / 2;
   int top_bottom_padding = (rect.height() - icon->GetImage().height()) / 2;
-  if (IsAnswer()) {
-    // Answer icon circles are slightly cropped if we use exact padding, so give
-    // them an extra unit of leeway.
-    left_right_padding -= 1;
-    top_bottom_padding -= 1;
-  }
   icon_bounds.set_width(kPreferredIconViewWidth);
   icon_bounds.Inset(left_right_padding, top_bottom_padding);
   icon_bounds.Intersect(rect);
