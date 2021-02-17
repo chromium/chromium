@@ -235,8 +235,8 @@ class ChromePasswordProtectionService
   // Returns whether |browser_state_| has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
-  // Lookup by WebState for a callback for showing a warning for that WebState.
-  std::map<web::WebState*,
+  // Lookup for a callback for showing a warning for a given request.
+  std::map<safe_browsing::PasswordProtectionRequest*,
            safe_browsing::PasswordProtectionService::ShowWarningCallback>
       show_warning_callbacks_;
 

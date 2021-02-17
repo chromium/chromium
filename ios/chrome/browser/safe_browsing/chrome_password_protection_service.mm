@@ -129,10 +129,7 @@ void ChromePasswordProtectionService::RequestFinished(
   // Ensure parent class method runs before removing callback.
   PasswordProtectionService::RequestFinished(request, outcome,
                                              std::move(response));
-  safe_browsing::PasswordProtectionRequestIOS* request_ios =
-      static_cast<safe_browsing::PasswordProtectionRequestIOS*>(request);
-  web::WebState* web_state = request_ios->web_state();
-  show_warning_callbacks_.erase(web_state);
+  show_warning_callbacks_.erase(request);
 }
 
 void ChromePasswordProtectionService::ShowModalWarning(
@@ -140,10 +137,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     ReusedPasswordAccountType password_type) {
-  safe_browsing::PasswordProtectionRequestIOS* request_ios =
-      static_cast<safe_browsing::PasswordProtectionRequestIOS*>(request);
-  web::WebState* web_state = request_ios->web_state();
-  auto callback = std::move(show_warning_callbacks_[web_state]);
+  auto callback = std::move(show_warning_callbacks_[request]);
   if (callback) {
     ReusedPasswordAccountType reused_password_account_type =
         GetPasswordProtectionReusedPasswordAccountType(request->password_type(),
@@ -675,7 +669,7 @@ void ChromePasswordProtectionService::StartRequest(
           password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
   pending_requests_.insert(std::move(request));
-  show_warning_callbacks_[web_state] = std::move(show_warning_callback);
+  show_warning_callbacks_[request.get()] = std::move(show_warning_callback);
 }
 
 password_manager::PasswordStore*
