@@ -834,7 +834,8 @@ IN_PROC_BROWSER_TEST_F(SamlTest, IdpRequiresHttpAuth) {
 }
 
 // Tests the sign-in flow when the credentials passing API is used.
-IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPI) {
+// TODO(https://crbug.com/1179340) flaky test
+IN_PROC_BROWSER_TEST_F(SamlTest, DISABLED_CredentialPassingAPI) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_api_login.html");
   fake_saml_idp()->SetLoginAuthHTMLTemplate("saml_api_login_auth.html");
