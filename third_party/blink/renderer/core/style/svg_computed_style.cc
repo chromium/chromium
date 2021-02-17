@@ -38,7 +38,6 @@ SVGComputedStyle::SVGComputedStyle() {
 
   fill = initial_style->fill;
   stroke = initial_style->stroke;
-  stops = initial_style->stops;
   misc = initial_style->misc;
   inherited_resources = initial_style->inherited_resources;
   resources = initial_style->resources;
@@ -51,7 +50,6 @@ SVGComputedStyle::SVGComputedStyle(CreateInitialType) {
 
   fill.Init();
   stroke.Init();
-  stops.Init();
   misc.Init();
   inherited_resources.Init();
   resources.Init();
@@ -61,7 +59,6 @@ SVGComputedStyle::SVGComputedStyle(const SVGComputedStyle& other)
     : RefCounted<SVGComputedStyle>() {
   fill = other.fill;
   stroke = other.stroke;
-  stops = other.stops;
   misc = other.misc;
   inherited_resources = other.inherited_resources;
   resources = other.resources;
@@ -83,8 +80,7 @@ bool SVGComputedStyle::InheritedEqual(const SVGComputedStyle& other) const {
 }
 
 bool SVGComputedStyle::NonInheritedEqual(const SVGComputedStyle& other) const {
-  return stops == other.stops && misc == other.misc &&
-         resources == other.resources &&
+  return misc == other.misc && resources == other.resources &&
          svg_noninherited_flags == other.svg_noninherited_flags;
 }
 
@@ -99,7 +95,6 @@ void SVGComputedStyle::InheritFrom(const SVGComputedStyle& svg_inherit_parent) {
 void SVGComputedStyle::CopyNonInheritedFromCached(
     const SVGComputedStyle& other) {
   svg_noninherited_flags = other.svg_noninherited_flags;
-  stops = other.stops;
   misc = other.misc;
   resources = other.resources;
 }
@@ -207,11 +202,6 @@ bool SVGComputedStyle::DiffNeedsPaintInvalidation(
         fill->opacity != other.fill->opacity)
       return true;
   }
-
-  // If gradient stops change, we just need to issue paint invalidations. Style
-  // updates are already handled through SVGStopElement.
-  if (stops != other.stops)
-    return true;
 
   // Changes of these flags only cause paint invalidations.
   if (svg_inherited_flags.shape_rendering !=

@@ -237,7 +237,8 @@
         name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
                 "-webkit-user-drag", "object-fit", "object-position",
-                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask-type"],
+                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask-type",
+                "stop-color", "stop-opacity"],
         methods_to_diff: [
           {
             method: "Visibility()",

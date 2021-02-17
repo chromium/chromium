@@ -88,8 +88,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   static UnzoomedLength InitialStrokeWidth() {
     return UnzoomedLength(Length::Fixed(1));
   }
-  static float InitialStopOpacity() { return 1; }
-  static StyleColor InitialStopColor() { return StyleColor(Color::kBlack); }
   static float InitialFloodOpacity() { return 1; }
   static StyleColor InitialFloodColor() { return StyleColor(Color::kBlack); }
   static StyleColor InitialLightingColor() { return StyleColor(Color::kWhite); }
@@ -176,16 +174,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
       stroke.Access()->dash_offset = dash_offset;
   }
 
-  void SetStopOpacity(float obj) {
-    if (!(stops->opacity == obj))
-      stops.Access()->opacity = obj;
-  }
-
-  void SetStopColor(const StyleColor& obj) {
-    if (!(stops->color == obj))
-      stops.Access()->color = obj;
-  }
-
   void SetFloodOpacity(float obj) {
     if (!(misc->flood_opacity == obj))
       misc.Access()->flood_opacity = obj;
@@ -252,8 +240,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   float StrokeMiterLimit() const { return stroke->miter_limit; }
   const UnzoomedLength& StrokeWidth() const { return stroke->width; }
   const Length& StrokeDashOffset() const { return stroke->dash_offset; }
-  float StopOpacity() const { return stops->opacity; }
-  const StyleColor& StopColor() const { return stops->color; }
   float FloodOpacity() const { return misc->flood_opacity; }
   const StyleColor& FloodColor() const { return misc->flood_color; }
   const StyleColor& LightingColor() const { return misc->lighting_color; }
@@ -340,7 +326,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   DataRef<StyleInheritedResourceData> inherited_resources;
 
   // non-inherited attributes
-  DataRef<StyleStopData> stops;
   DataRef<StyleMiscData> misc;
   DataRef<StyleResourceData> resources;
 

@@ -1140,9 +1140,6 @@ class ComputedStyle : public ComputedStyleBase,
   float FillOpacity() const { return SvgStyle().FillOpacity(); }
   void SetFillOpacity(float f) { AccessSVGStyle().SetFillOpacity(f); }
 
-  // stop-color
-  void SetStopColor(const StyleColor& c) { AccessSVGStyle().SetStopColor(c); }
-
   // flood-color
   const StyleColor& FloodColor() const { return SvgStyle().FloodColor(); }
   void SetFloodColor(const StyleColor& c) { AccessSVGStyle().SetFloodColor(c); }
@@ -1160,10 +1157,6 @@ class ComputedStyle : public ComputedStyleBase,
   StyleSVGResource* MaskerResource() const {
     return SvgStyle().MaskerResource();
   }
-
-  // stop-opacity
-  float StopOpacity() const { return SvgStyle().StopOpacity(); }
-  void SetStopOpacity(float f) { AccessSVGStyle().SetStopOpacity(f); }
 
   // marker-* helpers
   StyleSVGResource* MarkerStartResource() const {
@@ -2855,6 +2848,7 @@ class ComputedStyle : public ComputedStyleBase,
     return ColumnRuleColorInternal();
   }
   const StyleColor& OutlineColor() const { return OutlineColorInternal(); }
+  const StyleColor& StopColor() const { return StopColorInternal(); }
   const StyleColor& TextDecorationColor() const {
     return TextDecorationColorInternal();
   }
@@ -2952,8 +2946,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
-
-  const StyleColor& StopColor() const { return SvgStyle().StopColor(); }
 
   // Appearance accessors are private to make sure callers use
   // EffectiveAppearance in almost all cases.

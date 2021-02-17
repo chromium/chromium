@@ -75,17 +75,6 @@ bool StyleStrokeData::operator==(const StyleStrokeData& other) const {
          visited_link_paint == other.visited_link_paint;
 }
 
-StyleStopData::StyleStopData()
-    : color(SVGComputedStyle::InitialStopColor()),
-      opacity(SVGComputedStyle::InitialStopOpacity()) {}
-
-StyleStopData::StyleStopData(const StyleStopData& other)
-    : RefCounted<StyleStopData>(), color(other.color), opacity(other.opacity) {}
-
-bool StyleStopData::operator==(const StyleStopData& other) const {
-  return color == other.color && opacity == other.opacity;
-}
-
 StyleMiscData::StyleMiscData()
     : baseline_shift_value(SVGComputedStyle::InitialBaselineShiftValue()),
       flood_color(SVGComputedStyle::InitialFloodColor()),
