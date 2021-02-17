@@ -1,7 +1,6 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-const _save_restore_swap_chain = false;
 
 async function webGpuInit(canvasWidth, canvasHeight) {
   const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
@@ -208,8 +207,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const swapChain = context.configureSwapChain({
     device,
     format: swapChainFormat,
-    usage: GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.COPY_DST |
-           GPUTextureUsage.COPY_SRC,
+    usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
   });
 
   const pipeline = device.createRenderPipeline({
@@ -275,7 +273,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       size: {
         width: videos[i].videoWidth,
         height: videos[i].videoHeight,
-        depth: 1,
+        depthOrArrayLayers: 1,
       },
       format: 'rgba8unorm',
       usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
@@ -364,29 +362,12 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     }
   }
 
-  const savedSwapChain = device.createTexture({
-    size: {
-      width: canvas.width,
-      height: canvas.height,
-      depth: 1,
-    },
-    format: 'bgra8unorm',
-    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
-  });
-
   const oneFrame = () => {
     const swapChainTexture = swapChain.getCurrentTexture();
     renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
       .createView();
 
     const commandEncoder = device.createCommandEncoder();
-    if (_save_restore_swap_chain)
-    {
-      commandEncoder.copyTextureToTexture(
-        { texture: savedSwapChain },
-        { texture: swapChainTexture },
-        { width: canvas.width, height: canvas.height, depth: 1 });
-    }
 
     const passEncoder =
       commandEncoder.beginRenderPass(renderPassDescriptor);
@@ -406,13 +387,14 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
           device.queue.copyImageBitmapToTexture(
             { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
             { texture: videoTextures[i] },
-            { width: videos[i].videoWidth, height: videos[i].videoHeight, depth: 1 }
+            {
+              width: videos[i].videoWidth, height: videos[i].videoHeight,
+              depthOrArrayLayers: 1
+            }
           );
         }
 
-        const length = _save_restore_swap_chain ? numVideosToCopy :
-                                                  videos.length;
-        for (let i = 0; i < length; ++i) {
+        for (let i = 0; i < videos.length; ++i) {
           const firstVertex = i * 6;
           passEncoder.setBindGroup(0, bindGroups[i]);
           passEncoder.draw(6, 1, firstVertex, 0);
@@ -425,15 +407,6 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
           passEncoder.draw(length * 6);
         }
         passEncoder.endPass();
-
-        // Backup the canvas for the next frame if the next frame does partial
-        // update.
-        if (_save_restore_swap_chain) {
-          commandEncoder.copyTextureToTexture(
-            { texture: swapChainTexture },
-            { texture: savedSwapChain },
-            { width: canvas.width, height: canvas.height, depth: 1 });
-        }
         device.queue.submit([commandEncoder.finish()]);
 
         frameId++;
@@ -461,19 +434,12 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     }
 
     const commandEncoder = device.createCommandEncoder();
-    if (_save_restore_swap_chain) {
-      commandEncoder.copyTextureToTexture(
-        { texture: savedSwapChain },
-        { texture: swapChainTexture },
-        { width: canvas.width, height: canvas.height, depth: 1 });
-    }
     const passEncoder =
       commandEncoder.beginRenderPass(renderPassDescriptor);
     passEncoder.setPipeline(pipeline);
     passEncoder.setVertexBuffer(0, verticesBuffer);
 
-    const length = _save_restore_swap_chain ? numVideosToCopy : videos.length;
-    for (let i = 0; i < length; ++i) {
+    for (let i = 0; i < videos.length; ++i) {
       bindGroups[i] = device.createBindGroup({
         layout: pipeline.getBindGroupLayout(0),
         entries: [
@@ -499,15 +465,6 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       passEncoder.draw(length * 6);
     }
     passEncoder.endPass();
-
-    // Backup the canvas for the next frame if the next frame does partial
-    // update.
-    if (_save_restore_swap_chain) {
-      commandEncoder.copyTextureToTexture(
-        { texture: savedSwapChain },
-        { texture: swapChainTexture },
-        { width: canvas.width, height: canvas.height, depth: 1 });
-    }
     device.queue.submit([commandEncoder.finish()]);
 
     frameId++;
