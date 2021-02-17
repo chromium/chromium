@@ -15,24 +15,11 @@
 
   function enterPictureInPicture() {
     video.requestPictureInPicture()
-    .then(win => {
-      win.addEventListener('resize', () => {
-        document.title = 'resized';
-      }, { once: true });
-
-      window.domAutomationController.send(true);
-    })
-    .catch(e => {
-      window.domAutomationController.send(false);
-    });
+    .then(_ => window.domAutomationController.send(true))
+    .catch(_ => window.domAutomationController.send(false));
   }
 
-  function changeVideoSrc() {
-    if (video.srcObject) {
-      video.srcObject.getTracks().forEach(track => track.stop());
-      video.srcObject = null;
-    }
-    video.src = 'pixel_test_video.webm';
+  function ensureVideoIsPlaying() {
     video.play()
     .then(_ => { window.domAutomationController.send(true); })
     .catch(e => { window.domAutomationController.send(false); });

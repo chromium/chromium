@@ -562,7 +562,8 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
 }
 
 void OverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
-  controls_container_view_->SetVisible(is_visible);
+  controls_container_view_->SetVisible(
+      force_controls_visible_.value_or(is_visible));
 }
 
 void OverlayWindowViews::UpdateControlsBounds() {
@@ -1043,6 +1044,11 @@ int OverlayWindowViews::GetResizeHTComponent() const {
 
 bool OverlayWindowViews::AreControlsVisible() const {
   return controls_container_view_->GetVisible();
+}
+
+void OverlayWindowViews::ForceControlsVisibleForTesting(bool visible) {
+  force_controls_visible_ = visible;
+  UpdateControlsVisibility(visible);
 }
 
 bool OverlayWindowViews::IsLayoutPendingForTesting() const {

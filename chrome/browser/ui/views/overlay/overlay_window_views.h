@@ -7,6 +7,7 @@
 
 #include "content/public/browser/overlay_window.h"
 
+#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/size.h"
@@ -83,6 +84,8 @@ class OverlayWindowViews : public content::OverlayWindow,
   // Returns true if the controls (e.g. close button, play/pause button) are
   // visible.
   bool AreControlsVisible() const;
+
+  void ForceControlsVisibleForTesting(bool visible);
 
   // Determines whether a layout of the window controls has been scheduled but
   // is not done yet.
@@ -239,6 +242,10 @@ class OverlayWindowViews : public content::OverlayWindow,
   // Whether or not the previous track button will be shown. This is the
   // case when Media Session "previoustrack" action is handled by the website.
   bool show_previous_track_button_ = false;
+
+  // If set, controls will always either be shown or hidden, instead of showing
+  // and hiding automatically. Only used for testing.
+  base::Optional<bool> force_controls_visible_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayWindowViews);
 };

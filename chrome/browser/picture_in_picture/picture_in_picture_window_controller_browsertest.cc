@@ -43,6 +43,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -51,19 +52,17 @@
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "ui/events/base_event_utils.h"
+#include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accelerators.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/hit_test.h"
-#endif
-
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #endif
 
 using ::testing::_;
@@ -138,6 +137,41 @@ class ControlVisibilityObserver : views::ViewObserver {
   base::OnceClosure visibility_change_callback_;
 };
 
+// A helper class to wait for widget size to change to the desired value.
+class WidgetSizeChangeWaiter final : public views::WidgetObserver {
+ public:
+  WidgetSizeChangeWaiter(views::Widget* widget, const gfx::Size& expected_size)
+      : widget_(widget), expected_size_(expected_size) {
+    widget_->AddObserver(this);
+  }
+  ~WidgetSizeChangeWaiter() override { widget_->RemoveObserver(this); }
+
+  WidgetSizeChangeWaiter(const WidgetSizeChangeWaiter&) = delete;
+  WidgetSizeChangeWaiter& operator=(const WidgetSizeChangeWaiter&) = delete;
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override {
+    bounds_change_count_++;
+    if (new_bounds.size() == expected_size_)
+      run_loop_.Quit();
+  }
+
+  // Wait for changes to occur, or return immediately if they already have.
+  void WaitForSize() {
+    if (widget_->GetWindowBoundsInScreen().size() != expected_size_)
+      run_loop_.Run();
+  }
+
+  int bounds_change_count() const { return bounds_change_count_; }
+
+ private:
+  views::Widget* const widget_;
+  const gfx::Size expected_size_;
+  int bounds_change_count_ = 0;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 class PictureInPictureWindowControllerBrowserTest
@@ -207,6 +241,19 @@ class PictureInPictureWindowControllerBrowserTest
     EXPECT_FALSE(in_picture_in_picture);
   }
 
+  void WaitForPlaybackState(content::WebContents* web_contents,
+                            OverlayWindowViews::PlaybackState playback_state) {
+    // Make sure to wait if not yet in the |playback_state| state.
+    if (GetOverlayWindow()->playback_state_for_testing() != playback_state) {
+      content::MediaStartStopObserver observer(
+          web_contents,
+          playback_state == OverlayWindowViews::PlaybackState::kPlaying
+              ? content::MediaStartStopObserver::Type::kStart
+              : content::MediaStartStopObserver::Type::kStop);
+      observer.Wait();
+    }
+  }
+
   // Makes sure all |controls| have the expected visibility state, waiting if
   // necessary.
   void AssertControlsVisible(std::vector<views::View*> controls,
@@ -223,14 +270,6 @@ class PictureInPictureWindowControllerBrowserTest
 
     for (views::View* control : controls)
       ASSERT_EQ(IsOverlayWindowControlVisible(control), expected_visible);
-  }
-
-  void MoveMouseOverOverlayWindow() {
-    auto* const window = GetOverlayWindow();
-    gfx::Point p(window->GetBounds().x(), window->GetBounds().y());
-    ui::MouseEvent moved_over(ui::ET_MOUSE_MOVED, p, p, ui::EventTimeForNow(),
-                              ui::EF_NONE, ui::EF_NONE);
-    window->OnMouseEvent(&moved_over);
   }
 
  private:
@@ -284,6 +323,7 @@ class PictureInPicturePixelComparisonBrowserTest
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kDisableGpu);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
   }
 
   base::FilePath GetFilePath(base::FilePath::StringPieceType relative_path) {
@@ -307,6 +347,7 @@ class PictureInPicturePixelComparisonBrowserTest
   }
 
   bool ReadImageFile(const base::FilePath& file_path, SkBitmap* read_image) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
     std::string png_string;
     base::ReadFileToString(file_path, &png_string);
     return gfx::PNGCodec::Decode(
@@ -314,17 +355,53 @@ class PictureInPicturePixelComparisonBrowserTest
         png_string.length(), read_image);
   }
 
-  void TakeOverlayWindowScreenshot(OverlayWindowViews* overlay_window_views) {
-    base::RunLoop run_loop;
-    std::unique_ptr<viz::CopyOutputRequest> request =
-        std::make_unique<viz::CopyOutputRequest>(
-            viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
-            base::BindOnce(
-                &PictureInPicturePixelComparisonBrowserTest::ReadbackResult,
-                base::Unretained(this), run_loop.QuitClosure()));
-    overlay_window_views->GetLayerForTesting()->RequestCopyOfOutput(
-        std::move(request));
-    run_loop.Run();
+  void TakeOverlayWindowScreenshot(const gfx::Size& window_size,
+                                   bool controls_visible) {
+    for (int i = 0; i < 2; ++i) {
+      WidgetSizeChangeWaiter bounds_change_waiter(GetOverlayWindow(),
+                                                  window_size);
+      // Also move to the center to avoid spurious moves later on, which happen
+      // on some platforms when the window is enlarged beyond the screen bounds.
+      GetOverlayWindow()->CenterWindow(window_size);
+      bounds_change_waiter.WaitForSize();
+      const auto initial_count = bounds_change_waiter.bounds_change_count();
+
+      // Make sure native widget events won't unexpectedly hide or show the
+      // controls.
+      GetOverlayWindow()->ForceControlsVisibleForTesting(controls_visible);
+
+      ui::Layer* const layer = GetOverlayWindow()->GetRootView()->layer();
+      layer->CompleteAllAnimations();
+
+      base::RunLoop run_loop;
+      std::unique_ptr<viz::CopyOutputRequest> request =
+          std::make_unique<viz::CopyOutputRequest>(
+              viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+              base::BindOnce(
+                  &PictureInPicturePixelComparisonBrowserTest::ReadbackResult,
+                  base::Unretained(this), run_loop.QuitClosure()));
+      layer->RequestCopyOfOutput(std::move(request));
+
+      // Wait for copy response. This needs to wait as the compositor could be
+      // in the middle of a draw right now, and the commit with the copy output
+      // request may not be done on the first draw.
+      for (int i = 0; i < 2; i++) {
+        layer->GetCompositor()->ScheduleFullRedraw();
+        ui::DrawWaiterForTest::WaitForCompositingStarted(
+            layer->GetCompositor());
+      }
+
+      run_loop.Run();
+
+      if (bounds_change_waiter.bounds_change_count() == initial_count)
+        break;
+
+      // We get here on Linux/Wayland (maybe elsewhere too?) sometimes. The
+      // native widget goes back to the previous bounds for an instant and then
+      // reverts.
+      LOG(INFO) << "The native widget bounds have changed while taking the "
+                   "screenshot, retrying";
+    }
   }
 
   bool CompareImages(const SkBitmap& actual_bmp, const SkBitmap& expected_bmp) {
@@ -337,14 +414,20 @@ class PictureInPicturePixelComparisonBrowserTest
 
     for (int x = 0; x < actual_bmp.width(); ++x) {
       for (int y = 0; y < actual_bmp.height(); ++y) {
-        SkColor actual_color = actual_bmp.getColor(x, y);
-        SkColor expected_color = expected_bmp.getColor(x, y);
-        if ((fabs(SkColorGetR(actual_color) - SkColorGetR(expected_color)) >
-             kAllowableError) ||
-            (fabs(SkColorGetG(actual_color) - SkColorGetG(expected_color)) >
-             kAllowableError) ||
-            (fabs(SkColorGetB(actual_color) - SkColorGetB(expected_color))) >
-                kAllowableError) {
+        bool pixel_matches = false;
+        if (x < expected_bmp.width() && y < expected_bmp.height()) {
+          SkColor actual_color = actual_bmp.getColor(x, y);
+          SkColor expected_color = expected_bmp.getColor(x, y);
+          if ((fabs(SkColorGetR(actual_color) - SkColorGetR(expected_color)) <=
+               kAllowableError) &&
+              (fabs(SkColorGetG(actual_color) - SkColorGetG(expected_color)) <=
+               kAllowableError) &&
+              (fabs(SkColorGetB(actual_color) - SkColorGetB(expected_color))) <=
+                  kAllowableError) {
+            pixel_matches = true;
+          }
+        }
+        if (!pixel_matches) {
           ++error_pixels_count;
           error_bounding_rect.Union(gfx::Rect(x, y, 1, 1));
         }
@@ -358,54 +441,29 @@ class PictureInPicturePixelComparisonBrowserTest
     return true;
   }
 
-  void Wait(base::TimeDelta timeout) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), timeout);
-    run_loop.Run();
-  }
-
   SkBitmap& GetResultBitmap() { return *result_bitmap_; }
 
  private:
   std::unique_ptr<SkBitmap> result_bitmap_;
 };
 
-// This is disabled due to flakiness: https://crbug.com/1171245.
-#if defined(OS_MAC)
-#define MAYBE_VideoPlay DISABLED_VideoPlay
-#else
-#define MAYBE_VideoPlay VideoPlay
-#endif
-// Plays a video and then trigger Picture-in-Picture. Grabs a screenshot of
-// Picture-in-Picture window and verifies it's as expected.
-IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
-                       MAYBE_VideoPlay) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
+// Plays a video in PiP. Grabs a screenshot of Picture-in-Picture window and
+// verifies it's as expected.
+IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(FILE_PATH_LITERAL(
                      "media/picture-in-picture/pixel_test.html")));
+  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      active_web_contents, "ensureVideoIsPlaying();", &result));
+  ASSERT_TRUE(result);
 
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  SetUpWindowController(active_web_contents);
-  ASSERT_NE(nullptr, window_controller());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  GetOverlayWindow()->SetSize(gfx::Size(402, 268));
-  base::string16 expected_title = base::ASCIIToUTF16("resized");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-  Wait(base::TimeDelta::FromSeconds(3));
-  TakeOverlayWindowScreenshot(GetOverlayWindow());
+  TakeOverlayWindowScreenshot({402, 268}, /*controls_visible=*/false);
 
   SkBitmap expected_image;
   base::FilePath expected_image_path =
@@ -414,58 +472,42 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 }
 
-// This is disabled due to flakiness: https://crbug.com/1171245.
-#if defined(OS_MAC)
-#define MAYBE_PlayAndPauseControls DISABLED_PlayAndPauseControls
-#else
-#define MAYBE_PlayAndPauseControls PlayAndPauseControls
-#endif
 // Plays a video in PiP. Trigger the play and pause control in PiP by using a
-// mouse move. Capture the images and verift they are expected.
+// mouse move. Capture the images and verify they are expected.
 IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
-                       MAYBE_PlayAndPauseControls) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
+                       PlayAndPauseControls) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(FILE_PATH_LITERAL(
                      "media/picture-in-picture/pixel_test.html")));
+  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
+
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool in_picture_in_picture = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
-  EXPECT_TRUE(in_picture_in_picture);
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "changeVideoSrc();", &result));
+      active_web_contents, "ensureVideoIsPlaying();", &result));
+  ASSERT_TRUE(result);
 
-  const int resize_width = 402, resize_height = 268;
-  GetOverlayWindow()->SetSize(gfx::Size(resize_width, resize_height));
-  base::string16 expected_title = base::ASCIIToUTF16("resized");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPlaying);
 
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  Wait(base::TimeDelta::FromSeconds(3));
-  MoveMouseOverOverlayWindow();
-  TakeOverlayWindowScreenshot(GetOverlayWindow());
+  constexpr gfx::Size kSize = {402, 268};
+  TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
 
   base::FilePath expected_pause_image_path =
       GetFilePath(FILE_PATH_LITERAL("pixel_expected_pause_control.png"));
   base::FilePath expected_play_image_path =
       GetFilePath(FILE_PATH_LITERAL("pixel_expected_play_control.png"));
   // If the test image is cropped, usually off by 1 pixel, use another image.
-  if (GetResultBitmap().width() < resize_width ||
-      GetResultBitmap().height() < resize_height) {
+  if (GetResultBitmap().width() < kSize.width() ||
+      GetResultBitmap().height() < kSize.height()) {
     LOG(INFO) << "Actual image is cropped and backup images are used. "
               << "Test image dimension: "
               << "(" << GetResultBitmap().width() << "x"
               << GetResultBitmap().height() << "). "
               << "Expected image dimension: "
-              << "(" << resize_width << "x" << resize_height << ")";
+              << "(" << kSize.ToString() << ")";
     expected_pause_image_path =
         GetFilePath(FILE_PATH_LITERAL("pixel_expected_pause_control_crop.png"));
     expected_play_image_path =
@@ -476,10 +518,10 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
   ASSERT_TRUE(ReadImageFile(expected_pause_image_path, &expected_image));
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.pause();"));
-  Wait(base::TimeDelta::FromSeconds(3));
-  MoveMouseOverOverlayWindow();
-  TakeOverlayWindowScreenshot(GetOverlayWindow());
+  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.pause();"));
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPaused);
+  TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
   ASSERT_TRUE(ReadImageFile(expected_play_image_path, &expected_image));
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 }
