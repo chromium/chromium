@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
@@ -57,56 +56,19 @@ namespace blink {
 namespace {
 
 // Any reasonable size, will be overridden by the decoder anyway.
-constexpr gfx::Size kDefaultSize(640, 480);
-
-// The initial resolution is just a guess of `kDefaultSize`.  If the minimum
-// resolution is higher than that, then we'd fall back immediately.
-static_assert(RTCVideoDecoderAdapter::kMinHeight <= kDefaultSize.height(),
-              "Minimum size must not be smaller than the initial guess.");
+const gfx::Size kDefaultSize(640, 480);
 
 // Maximum number of buffers that we will queue in |pending_buffers_|.
-constexpr int32_t kMaxPendingBuffers = 8;
+const int32_t kMaxPendingBuffers = 8;
 
 // Maximum number of timestamps that will be maintained in |decode_timestamps_|.
 // Really only needs to be a bit larger than the maximum reorder distance (which
 // is presumably 0 for WebRTC), but being larger doesn't hurt much.
-constexpr int32_t kMaxDecodeHistory = 32;
+const int32_t kMaxDecodeHistory = 32;
 
 // Maximum number of consecutive frames that can fail to decode before
 // requesting fallback to software decode.
-constexpr int32_t kMaxConsecutiveErrors = 5;
-
-// Number of RTCVideoDecoder instances right now.
-class DecoderCounter {
- public:
-  int Count() {
-    base::AutoLock autolock(lock_);
-    return count_;
-  }
-
-  void IncrementCount() {
-    base::AutoLock autolock(lock_);
-    count_++;
-    DCHECK_GT(count_, 0);
-  }
-
-  void DecrementCount() {
-    base::AutoLock autolock(lock_);
-    count_--;
-    DCHECK_GE(count_, 0);
-  }
-
- private:
-  base::Lock lock_;
-  int count_ GUARDED_BY(lock_) = 0;
-};
-
-DecoderCounter* GetDecoderCounter() {
-  static base::NoDestructor<DecoderCounter> s_counter;
-  // Note that this will init only in the first call in the ctor, so it's still
-  // single threaded.
-  return s_counter.get();
-}
+const int32_t kMaxConsecutiveErrors = 5;
 
 // Map webrtc::SdpVideoFormat to a guess for media::VideoCodecProfile.
 media::VideoCodecProfile GuessVideoCodecProfile(
@@ -267,14 +229,12 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
   DETACH_FROM_SEQUENCE(media_sequence_checker_);
-  GetDecoderCounter()->IncrementCount();
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  GetDecoderCounter()->DecrementCount();
 }
 
 bool RTCVideoDecoderAdapter::InitializeSync(
@@ -312,13 +272,6 @@ int32_t RTCVideoDecoderAdapter::InitDecode(
     int32_t number_of_cores) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
-
-  // Don't allow hardware decode for small videos if there are too many
-  // decoder instances.
-  if (codec_settings->height < kMinHeight &&
-      GetDecoderCounter()->Count() > kMaxDecoderInstances) {
-    return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-  }
 
   video_codec_type_ = codec_settings->codecType;
   DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
@@ -672,21 +625,6 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
               std::move(flush_fail).Run();
           },
           base::Passed(&flush_success_cb), base::Passed(&flush_fail_cb)));
-}
-
-// static
-int RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting() {
-  return GetDecoderCounter()->Count();
-}
-
-// static
-void RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting() {
-  GetDecoderCounter()->IncrementCount();
-}
-
-// static
-void RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting() {
-  GetDecoderCounter()->DecrementCount();
 }
 
 }  // namespace blink

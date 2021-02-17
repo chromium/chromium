@@ -420,47 +420,4 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
-  // Make sure that low-resolution decoders fall back if there are too many.
-  webrtc::VideoCodec codec_settings;
-  codec_settings.codecType = webrtc::kVideoCodecVP9;
-
-  // If the count is nonzero, then fail immediately -- the test isn't sane.
-  ASSERT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
-
-  // Creating a decoder should increment the count.
-  ASSERT_TRUE(CreateAndInitialize(true));
-  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
-
-  // Initialize the code with something below and above the threshold.  Both
-  // should succeed, since we don't have too many.
-  codec_settings.height = RTCVideoDecoderAdapter::kMinHeight - 1;
-  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
-            WEBRTC_VIDEO_CODEC_OK);
-  codec_settings.height = RTCVideoDecoderAdapter::kMinHeight;
-  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
-            WEBRTC_VIDEO_CODEC_OK);
-
-  // Pretend that we have many.  The lower resolution one should fail.
-  for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
-    RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting();
-
-  codec_settings.height = RTCVideoDecoderAdapter::kMinHeight - 1;
-  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
-            WEBRTC_VIDEO_CODEC_UNINITIALIZED);
-  codec_settings.height = RTCVideoDecoderAdapter::kMinHeight;
-  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
-            WEBRTC_VIDEO_CODEC_OK);
-
-  for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
-    RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
-
-  // Make sure that it goes back to zero.
-  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
-  media_thread_.task_runner()->DeleteSoon(
-      FROM_HERE, std::move(rtc_video_decoder_adapter_));
-  media_thread_.FlushForTesting();
-  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
-}
-
 }  // namespace blink

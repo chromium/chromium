@@ -11,7 +11,6 @@ include_rules = [
 
     # Dependencies.
     "+base/containers/circular_deque.h",
-    "+base/no_destructor.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
     "+base/task/task_traits.h",
