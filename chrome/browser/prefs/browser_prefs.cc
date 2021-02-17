@@ -220,7 +220,6 @@
 #include "components/feed/buildflags.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
-#include "components/games/core/games_prefs.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
@@ -552,6 +551,9 @@ const char kStabilityBreakpadRegistrationSuccess[] =
 const char kStabilityBreakpadRegistrationFail[] =
     "user_experience_metrics.stability.breakpad_registration_fail";
 
+// Deprecated 02/2021
+const char kGamesInstallDirPref[] = "games.data_files_paths";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -661,6 +663,8 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterInt64Pref(kDataReductionProxyLastConfigRetrievalTime, 0L);
   registry->RegisterStringPref(kDataReductionProxyConfig, std::string());
+
+  registry->RegisterFilePathPref(kGamesInstallDirPref, base::FilePath());
 }
 
 }  // namespace
@@ -996,7 +1000,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if defined(OS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   explore_sites::HistoryStatisticsReporter::RegisterPrefs(registry);
-  games::prefs::RegisterProfilePrefs(registry);
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       registry);
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
@@ -1338,6 +1341,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   feed::MigrateObsoleteProfilePrefsFeb_2021(profile_prefs);
 #endif  // defined(OS_ANDROID)
   syncer::ClearObsoletePassphrasePromptPrefs(profile_prefs);
+
+  // Added 02/2021
+  profile_prefs->ClearPref(kGamesInstallDirPref);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
