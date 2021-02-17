@@ -94,10 +94,12 @@ void TranslateInternalsHandler::AddLanguageDetectionDetails(
   dict.SetString("content_language", details.content_language);
   dict.SetString("model_detected_language", details.model_detected_language);
   dict.SetBoolean("is_model_reliable", details.is_model_reliable);
+  dict.SetDouble("model_reliability_score", details.model_reliability_score);
   dict.SetBoolean("has_notranslate", details.has_notranslate);
   dict.SetString("html_root_language", details.html_root_language);
   dict.SetString("adopted_language", details.adopted_language);
   dict.SetString("content", details.contents);
+  dict.SetString("detection_model_version", details.detection_model_version);
   SendMessageToJs("languageDetectionInfoAdded", dict);
 }
 

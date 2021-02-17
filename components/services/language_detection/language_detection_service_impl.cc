@@ -21,8 +21,9 @@ void LanguageDetectionServiceImpl::DetermineLanguage(
     const ::base::string16& text,
     DetermineLanguageCallback callback) {
   bool is_model_reliable = false;
+  float model_reliability_score = 0.0;
   std::string model_detected_language = translate::DetermineTextLanguage(
-      base::UTF16ToUTF8(text), &is_model_reliable);
+      base::UTF16ToUTF8(text), &is_model_reliable, model_reliability_score);
   std::move(callback).Run(model_detected_language, is_model_reliable);
 }
 

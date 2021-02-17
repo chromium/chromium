@@ -398,13 +398,19 @@ cr.define('cr.translateInternals', function() {
         tr, formatLanguageCode(detail['content_language']),
         'detection-logs-content-language');
     appendTD(
-        tr, formatLanguageCode(detail['model_detected_language']),
-        'detection-logs-cld-language');
-    appendTD(tr, detail['is_model_reliable'], 'detection-logs-is-cld-reliable');
-    appendTD(tr, detail['has_notranslate'], 'detection-logs-has-notranslate');
-    appendTD(
         tr, formatLanguageCode(detail['html_root_language']),
         'detection-logs-html-root-language');
+    appendTD(
+        tr, formatLanguageCode(detail['model_detected_language']),
+        'detection-logs-cld-language');
+    appendTD(
+        tr, detail['detection_model_version'],
+        'detection-logs-detection-model-version');
+    appendTD(
+        tr, detail['model_reliability_score'].toFixed(2),
+        'detection-logs-model-reliability');
+    appendTD(tr, detail['is_model_reliable'], 'detection-logs-is-cld-reliable');
+    appendTD(tr, detail['has_notranslate'], 'detection-logs-has-notranslate');
     appendTD(
         tr, formatLanguageCode(detail['adopted_language']),
         'detection-logs-adopted-language');

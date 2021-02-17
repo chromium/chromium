@@ -122,9 +122,11 @@ namespace translate {
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or 'unknown'
 // if it failed. |is_model_reliable| will be set as true if CLD says the
-// detection is reliable.
+// detection is reliable and |model_reliability_score| will provide the model's
+// confidence in that prediction.
 std::string DetermineTextLanguage(const std::string& utf8_text,
-                                  bool* is_model_reliable) {
+                                  bool* is_model_reliable,
+                                  float& model_reliability_score) {
   // Make a prediction.
   base::TimeTicks lang_id_start = base::TimeTicks::Now();
   chrome_lang_id::NNetLanguageIdentifier lang_id;
@@ -133,6 +135,7 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
   base::UmaHistogramTimes("Translate.CLD3.TopLanguageEvaluationDuration",
                           base::TimeTicks::Now() - lang_id_start);
   const bool is_detection_reliable = lang_id_result.is_reliable;
+  const float model_probability = lang_id_result.probability;
   const std::string& detected_language = lang_id_result.language;
 
   // Update histograms.
@@ -148,6 +151,7 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
   if (is_model_reliable != nullptr) {
     *is_model_reliable = is_detection_reliable;
   }
+  model_reliability_score = model_probability;
   return FilterDetectedLanguage(utf8_text, detected_language,
                                 is_detection_reliable);
 }
@@ -156,16 +160,19 @@ std::string DeterminePageLanguage(const std::string& code,
                                   const std::string& html_lang,
                                   const base::string16& contents,
                                   std::string* model_detected_language,
-                                  bool* is_model_reliable) {
+                                  bool* is_model_reliable,
+                                  float& model_reliability_score) {
   // First determine the language for the text contents.
   bool is_reliable;
+  float model_score = 0.0;
   const std::string utf8_text(base::UTF16ToUTF8(contents));
   std::string detected_language =
-      DetermineTextLanguage(utf8_text, &is_reliable);
+      DetermineTextLanguage(utf8_text, &is_reliable, model_score);
   if (model_detected_language != nullptr)
     *model_detected_language = detected_language;
   if (is_model_reliable != nullptr)
     *is_model_reliable = is_reliable;
+  model_reliability_score = model_score;
   language::ToTranslateLanguageSynonym(&detected_language);
 
   return DeterminePageLanguage(code, html_lang, detected_language, is_reliable);

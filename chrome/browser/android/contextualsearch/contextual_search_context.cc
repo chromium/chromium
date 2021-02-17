@@ -192,10 +192,11 @@ std::string ContextualSearchContext::GetReliableLanguage(
     const base::string16& contents) const {
   std::string model_detected_language;
   bool is_model_reliable;
+  float model_reliability_score;
   std::string language = translate::DeterminePageLanguage(
       /*content_language=*/std::string(),
       /*html_lang=*/std::string(), contents, &model_detected_language,
-      &is_model_reliable);
+      &is_model_reliable, model_reliability_score);
   // Make sure we return an empty string when unreliable or an unknown result.
   if (!is_model_reliable || language == translate::kUnknownLanguageCode)
     language = "";

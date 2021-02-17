@@ -62,6 +62,9 @@ const int kTranslateStatusCheckDelayMs = 400;
 // Language name passed to the Translate element for it to detect the language.
 const char kAutoDetectionLanguage[] = "auto";
 
+// The current CLD model version.
+constexpr char kCLDModelVersion[] = "CLD3";
+
 // Returns the language detection model that is shared across the RenderFrames
 // in the renderer.
 translate::LanguageDetectionModel& GetLanguageDetectionModel() {
@@ -126,6 +129,8 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   std::string html_lang = web_detection_details.html_language.Utf8();
   std::string model_detected_language;
   bool is_model_reliable = false;
+  std::string detection_model_version;
+  float model_reliability_score = 0.0;
 
   std::string language;
   if (translate::IsTFLiteLanguageDetectionEnabled()) {
@@ -140,15 +145,18 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
     bool is_available = language_detection_model.IsAvailable();
     language = is_available ? language_detection_model.DeterminePageLanguage(
                                   content_language, html_lang, contents,
-                                  &model_detected_language, &is_model_reliable)
+                                  &model_detected_language, &is_model_reliable,
+                                  model_reliability_score)
                             : translate::kUnknownLanguageCode;
     LOCAL_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);
+    detection_model_version = language_detection_model.GetModelVersion();
   } else {
-    language =
-        DeterminePageLanguage(content_language, html_lang, contents,
-                              &model_detected_language, &is_model_reliable);
+    language = DeterminePageLanguage(
+        content_language, html_lang, contents, &model_detected_language,
+        &is_model_reliable, model_reliability_score);
+    detection_model_version = kCLDModelVersion;
   }
 
   if (language.empty())
@@ -167,6 +175,8 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   details.has_notranslate = web_detection_details.has_no_translate_meta;
   details.html_root_language = html_lang;
   details.adopted_language = language;
+  details.model_reliability_score = model_reliability_score;
+  details.detection_model_version = detection_model_version;
 
   // TODO(hajimehoshi): If this affects performance, it should be set only if
   // translate-internals tab exists.

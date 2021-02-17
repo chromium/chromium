@@ -137,13 +137,14 @@ void LanguageDetectionController::OnTextRetrieved(
     const base::Value* text_content) {
   std::string model_detected_language;
   bool is_model_reliable;
+  float model_reliability_score = 0.0;
   base::string16 text = text_content && text_content->is_string()
                             ? base::UTF8ToUTF16(text_content->GetString())
                             : base::string16();
   std::string language = translate::DeterminePageLanguage(
       http_content_language, html_lang,
       GetStringByClippingLastWord(text, translate::kMaxIndexChars),
-      &model_detected_language, &is_model_reliable);
+      &model_detected_language, &is_model_reliable, model_reliability_score);
   if (language.empty())
     return;  // No language detected.
 

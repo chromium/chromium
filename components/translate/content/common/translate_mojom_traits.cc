@@ -115,6 +115,10 @@ bool StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
   if (!data.ReadContents(&out->contents))
     return false;
 
+  out->model_reliability_score = data.model_reliability_score();
+  if (!data.ReadDetectionModelVersion(&out->detection_model_version))
+    return false;
+
   return true;
 }
 

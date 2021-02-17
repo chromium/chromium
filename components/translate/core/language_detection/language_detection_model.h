@@ -41,13 +41,16 @@ class LanguageDetectionModel {
   bool IsAvailable() const;
 
   // Determines content page language from Content-Language code and contents.
-  // Returns the contents language results in |predicted_language| and
-  // |is_prediction_reliable|.
+  // Returns the contents language results in |predicted_language|,
+  // |is_prediction_reliable|, and |prediction_reliability_score|.
   std::string DeterminePageLanguage(const std::string& code,
                                     const std::string& html_lang,
                                     const base::string16& contents,
                                     std::string* predicted_language,
-                                    bool* is_prediction_reliable) const;
+                                    bool* is_prediction_reliable,
+                                    float& prediction_reliability_score) const;
+
+  std::string GetModelVersion() const;
 
  private:
   // A memory-mapped file that contains the TFLite model used for

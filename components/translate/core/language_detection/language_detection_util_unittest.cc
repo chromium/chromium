@@ -103,12 +103,14 @@ TEST_F(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
       "is suspicious.</body></html>");
   std::string model_detected_language;
   bool is_model_reliable;
+  float model_reliability_score = 0.0;
   std::string language = translate::DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &model_detected_language,
-      &is_model_reliable);
+      &is_model_reliable, model_reliability_score);
   EXPECT_EQ(translate::kUnknownLanguageCode, language);
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
+  EXPECT_GT(model_reliability_score, 0.5);
   histogram_tester.ExpectTotalCount(
       "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
@@ -124,12 +126,14 @@ TEST_F(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
       "is suspicious.</body></html>");
   std::string model_detected_language;
   bool is_model_reliable;
+  float model_reliability_score = 0.0;
   std::string language = translate::DeterminePageLanguage(
       std::string("en-US"), std::string(), contents, &model_detected_language,
-      &is_model_reliable);
+      &is_model_reliable, model_reliability_score);
   EXPECT_EQ("en", language);
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
+  EXPECT_GT(model_reliability_score, 0.5);
   histogram_tester.ExpectTotalCount(
       "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
@@ -146,12 +150,14 @@ TEST_F(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
       " language will be adopted if the value is invalid.</body></html>");
   std::string model_detected_language;
   bool is_model_reliable;
+  float model_reliability_score = 0.0;
   std::string language = translate::DeterminePageLanguage(
       std::string("utf-8"), std::string(), contents, &model_detected_language,
-      &is_model_reliable);
+      &is_model_reliable, model_reliability_score);
   EXPECT_EQ("en", language);
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
+  EXPECT_GT(model_reliability_score, 0.5);
   histogram_tester.ExpectTotalCount(
       "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
@@ -167,12 +173,14 @@ TEST_F(LanguageDetectionUtilTest, AdoptHtmlLang) {
       "is suspicious.</body></html>");
   std::string model_detected_language;
   bool is_model_reliable;
+  float model_reliability_score = 0.0;
   std::string language = translate::DeterminePageLanguage(
       std::string("ja"), std::string("en"), contents, &model_detected_language,
-      &is_model_reliable);
+      &is_model_reliable, model_reliability_score);
   EXPECT_EQ("en", language);
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
+  EXPECT_GT(model_reliability_score, 0.5);
   histogram_tester.ExpectTotalCount(
       "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }

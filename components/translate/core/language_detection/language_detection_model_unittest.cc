@@ -61,13 +61,15 @@ TEST(LanguageDetectionModelTest, DeterminePageLanguage) {
   EXPECT_TRUE(language_detection_model.IsAvailable());
 
   bool is_prediction_reliable;
+  float model_reliability_score = 0.0;
   std::string predicted_language;
   base::string16 contents =
       base::ASCIIToUTF16("This is a page apparently written in English.");
   std::string language = language_detection_model.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
-      &is_prediction_reliable);
+      &is_prediction_reliable, model_reliability_score);
   EXPECT_FALSE(is_prediction_reliable);
+  EXPECT_EQ(model_reliability_score, 0.0);
   EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
   EXPECT_EQ(translate::kUnknownLanguageCode, language);
   histogram_tester.ExpectUniqueSample(

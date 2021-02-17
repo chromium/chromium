@@ -8,6 +8,9 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "components/translate/core/common/translate_constants.h"
 
+namespace {
+constexpr char kTFLiteModelVersion[] = "TFLiteLanguageDetection_v1";
+}
 namespace translate {
 
 LanguageDetectionModel::LanguageDetectionModel() = default;
@@ -47,7 +50,8 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
     const std::string& html_lang,
     const base::string16& contents,
     std::string* predicted_language,
-    bool* is_prediction_reliable) const {
+    bool* is_prediction_reliable,
+    float& prediction_reliability_score) const {
   DCHECK(IsAvailable());
   // TODO(crbug.com/1151413): Execute the tflite language detection
   // model and finalize the result with the language detection utilty.
@@ -56,7 +60,14 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
                           true);
   *is_prediction_reliable = false;
   *predicted_language = translate::kUnknownLanguageCode;
+  prediction_reliability_score = 0.0;
   return translate::kUnknownLanguageCode;
+}
+
+std::string LanguageDetectionModel::GetModelVersion() const {
+  // TODO(crbug.com/1177992): Return the model version provided
+  // by the model itself.
+  return kTFLiteModelVersion;
 }
 
 }  // namespace translate

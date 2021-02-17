@@ -41,8 +41,8 @@ content::WebUIDataSource* CreateTranslateInternalsHTMLSource() {
     source->AddString(key, value);
   }
 
-  // Current cld-version is "3".
-  source->AddString("cld-version", "3");
+  // Current language detection model is "CLD3".
+  source->AddString("model-version", "CLD3");
 
   return source;
 }

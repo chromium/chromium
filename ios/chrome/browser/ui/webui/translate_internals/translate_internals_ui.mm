@@ -41,7 +41,8 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
     source->AddString(key, value);
   }
 
-  source->AddString("cld-version", "3");
+  // Current language detection model is "CLD3".
+  source->AddString("model-version", "CLD3");
 
   return source;
 }

@@ -67,6 +67,16 @@ struct StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
     return r.contents;
   }
 
+  static float model_reliability_score(
+      const translate::LanguageDetectionDetails& r) {
+    return r.model_reliability_score;
+  }
+
+  static const std::string& detection_model_version(
+      const translate::LanguageDetectionDetails& r) {
+    return r.detection_model_version;
+  }
+
   static bool Read(translate::mojom::LanguageDetectionDetailsDataView data,
                    translate::LanguageDetectionDetails* out);
 };

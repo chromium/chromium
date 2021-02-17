@@ -31,7 +31,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       text_len / 2);
   std::string model_detected_language;
   bool is_model_reliable;
-  translate::DeterminePageLanguage(
-      lang, html_lang, text, &model_detected_language, &is_model_reliable);
+  float model_reliability_score;
+  translate::DeterminePageLanguage(lang, html_lang, text,
+                                   &model_detected_language, &is_model_reliable,
+                                   model_reliability_score);
   return 0;
 }
