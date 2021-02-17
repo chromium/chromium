@@ -5,11 +5,9 @@
 #ifndef UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 #define UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 
-#include "base/macros.h"
-#include "ui/base/glib/glib_integers.h"
+#include <gdk/gdk.h>
 
-using GdkEvent = union _GdkEvent;
-using GdkEventKey = struct _GdkEventKey;
+#include "ui/base/glib/glib_integers.h"
 
 namespace base {
 template <typename Type>
@@ -22,12 +20,13 @@ class GtkEventLoopX11 {
  public:
   static GtkEventLoopX11* EnsureInstance();
 
+  GtkEventLoopX11(const GtkEventLoopX11&) = delete;
+  GtkEventLoopX11& operator=(const GtkEventLoopX11&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<GtkEventLoopX11>;
 
   GtkEventLoopX11();
-  GtkEventLoopX11(const GtkEventLoopX11&) = delete;
-  GtkEventLoopX11& operator=(const GtkEventLoopX11&) = delete;
   ~GtkEventLoopX11();
 
   static void DispatchGdkEvent(GdkEvent* gdk_event, gpointer);

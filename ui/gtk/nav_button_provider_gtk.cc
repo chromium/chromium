@@ -16,6 +16,12 @@ namespace gtk {
 
 namespace {
 
+#if GTK_CHECK_VERSION(3, 90, 0)
+using NavButtonIcon = ScopedGObject<GdkTexture>;
+#else
+using NavButtonIcon = ScopedGObject<GdkPixbuf>;
+#endif
+
 // gtkheaderbar.c uses GTK_ICON_SIZE_MENU, which is 16px.
 const int kNavButtonIconSize = 16;
 
@@ -109,17 +115,41 @@ gfx::Insets MarginFromStyleContext(GtkStyleContext* context,
   return InsetsFromGtkBorder(margin);
 }
 
-ScopedGObject<GdkPixbuf> LoadNavButtonIcon(
+gfx::Size LoadNavButtonIcon(
     views::NavButtonProvider::FrameButtonDisplayType type,
     GtkStyleContext* button_context,
-    int scale) {
+    int scale,
+    NavButtonIcon* icon = nullptr) {
   const char* icon_name = IconNameFromButtonType(type);
+#if GTK_CHECK_VERSION(3, 90, 0)
+  ScopedGObject<GtkIconPaintable> icon_paintable(gtk_icon_theme_lookup_icon(
+      GetDefaultIconTheme(), icon_name, nullptr, kNavButtonIconSize, scale,
+      GTK_TEXT_DIR_NONE, static_cast<GtkIconLookupFlags>(0)));
+  auto* paintable = GDK_PAINTABLE(icon_paintable);
+  int width = gdk_paintable_get_intrinsic_width(paintable);
+  int height = gdk_paintable_get_intrinsic_height(paintable);
+  if (icon) {
+    auto* snapshot = gtk_snapshot_new();
+    gdk_paintable_snapshot(paintable, snapshot, width, height);
+    ScopedGObject<GskRenderNode> node(gtk_snapshot_free_to_node(snapshot));
+    auto rect = GRAPHENE_RECT_INIT(0, 0, width, height);
+    ScopedGObject<GskRenderer> renderer(gsk_cairo_renderer_new());
+    *icon = NavButtonIcon(gsk_renderer_render_texture(renderer, node, &rect));
+  }
+  return {width, height};
+#else
   ScopedGObject<GtkIconInfo> icon_info(gtk_icon_theme_lookup_icon_for_scale(
-      gtk_icon_theme_get_default(), icon_name, kNavButtonIconSize, scale,
+      GetDefaultIconTheme(), icon_name, kNavButtonIconSize, scale,
       static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_USE_BUILTIN |
                                       GTK_ICON_LOOKUP_GENERIC_FALLBACK)));
-  return ScopedGObject<GdkPixbuf>(gtk_icon_info_load_symbolic_for_context(
+  NavButtonIcon icon_pixbuf(gtk_icon_info_load_symbolic_for_context(
       icon_info, button_context, nullptr, nullptr));
+  gfx::Size size{gdk_pixbuf_get_width(icon_pixbuf),
+                 gdk_pixbuf_get_height(icon_pixbuf)};
+  if (icon)
+    *icon = std::move(icon_pixbuf);
+  return size;
+#endif
 }
 
 gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
@@ -129,18 +159,15 @@ gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
   gfx::Rect widget_rect = gfx::Rect(content_size);
   if (content_context)
     widget_rect.Inset(-MarginFromStyleContext(content_context, state));
+#if !GTK_CHECK_VERSION(3, 90, 0)
   if (GtkCheckVersion(3, 20)) {
     int min_width, min_height;
-#if GTK_CHECK_VERSION(3, 90, 0)
-    gtk_style_context_get(widget_context, "min-width", &min_width, "min-height",
-                          &min_height, nullptr);
-#else
     gtk_style_context_get(widget_context, state, "min-width", &min_width,
                           "min-height", &min_height, nullptr);
-#endif
     widget_rect.set_width(std::max(widget_rect.width(), min_width));
     widget_rect.set_height(std::max(widget_rect.height(), min_height));
   }
+#endif
   widget_rect.Inset(-PaddingFromStyleContext(widget_context, state));
   widget_rect.Inset(-BorderFromStyleContext(widget_context, state));
   return widget_rect.size();
@@ -169,11 +196,8 @@ void CalculateUnscaledButtonSize(
       "GtkButton#button.titlebutton." +
           std::string(ButtonStyleClassFromButtonType(type)));
 
-  ScopedGObject<GdkPixbuf> icon_pixbuf =
-      LoadNavButtonIcon(type, button_context, 1);
+  auto icon_size = LoadNavButtonIcon(type, button_context, 1);
 
-  gfx::Size icon_size(gdk_pixbuf_get_width(icon_pixbuf),
-                      gdk_pixbuf_get_height(icon_pixbuf));
   auto image_context =
       AppendCssNodeToStyleContext(button_context, "GtkImage#image");
   gfx::Size image_size = GetMinimumWidgetSize(icon_size, nullptr, image_context,
@@ -198,7 +222,7 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
         active_(active),
         button_size_(button_size) {}
 
-  ~NavButtonImageSource() override {}
+  ~NavButtonImageSource() override = default;
 
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
     // gfx::ImageSkia kindly caches the result of this function, so
@@ -261,11 +285,9 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     // transform.  But the icon is loaded from a pixbuf, so we pick
     // the next-highest integer scale and manually downsize.
     int pixbuf_scale = scale == static_cast<int>(scale) ? scale : scale + 1;
-    ScopedGObject<GdkPixbuf> icon_pixbuf =
-        LoadNavButtonIcon(type_, button_context, pixbuf_scale);
-
-    gfx::Size icon_size(gdk_pixbuf_get_width(icon_pixbuf),
-                        gdk_pixbuf_get_height(icon_pixbuf));
+    NavButtonIcon icon_pixbuf;
+    auto icon_size =
+        LoadNavButtonIcon(type_, button_context, pixbuf_scale, &icon_pixbuf);
 
     SkBitmap bitmap;
     bitmap.allocN32Pixels(scale * button_size_.width(),
@@ -309,9 +331,9 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
 
 }  // namespace
 
-NavButtonProviderGtk::NavButtonProviderGtk() {}
+NavButtonProviderGtk::NavButtonProviderGtk() = default;
 
-NavButtonProviderGtk::~NavButtonProviderGtk() {}
+NavButtonProviderGtk::~NavButtonProviderGtk() = default;
 
 void NavButtonProviderGtk::RedrawImages(int top_area_height,
                                         bool maximized,

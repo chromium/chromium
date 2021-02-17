@@ -597,4 +597,12 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
   return gdk_event;
 }
 
+GtkIconTheme* GetDefaultIconTheme() {
+#if GTK_CHECK_VERSION(3, 90, 0)
+  return gtk_icon_theme_get_for_display(gdk_display_get_default());
+#else
+  return gtk_icon_theme_get_default();
+#endif
+}
+
 }  // namespace gtk

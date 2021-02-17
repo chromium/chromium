@@ -516,7 +516,7 @@ bool GtkUi::GetDefaultUsesSystemTheme() const {
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
                                         int size) const {
   // This call doesn't take a reference.
-  GtkIconTheme* theme = gtk_icon_theme_get_default();
+  GtkIconTheme* theme = GetDefaultIconTheme();
 
   std::string content_types[] = {content_type, kUnknownContentType};
 
