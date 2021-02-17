@@ -1,3 +1,5 @@
+noparent = True
+
 include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/TabWindowManagerSingleton.java",
