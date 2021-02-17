@@ -42,9 +42,16 @@ bool CompositingInputsUpdater::LayerOrDescendantShouldBeComposited(
     if (layout_view->AdditionalCompositingReasons())
       return true;
     // The containing frame may call this function for the root layer of a
-    // throttled frame. Return the current compositing status.
-    if (layout_view->GetFrameView()->ShouldThrottleRendering())
-      return layout_view->UsesCompositing();
+    // throttled frame. In that case, look for a pre-existing root GraphicsLayer
+    // in the iframe's compositor.
+    if (layout_view->GetFrameView()->ShouldThrottleRendering()) {
+      DisableCompositingQueryAsserts disabler;
+      if (auto* inner_compositor = layout_view->Compositor()) {
+        if (inner_compositor->RootGraphicsLayer())
+          return true;
+      }
+      return false;
+    }
   }
   DCHECK(!layer->GetLayoutObject().GetFrameView()->ShouldThrottleRendering());
   PaintLayerCompositor* compositor =
