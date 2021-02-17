@@ -252,11 +252,11 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprint) {
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
   Run();
-  ASSERT_TRUE(client_->session() != nullptr);
+  ASSERT_NE(client_->session(), nullptr);
   EXPECT_TRUE(client_->session()->IsSessionReady());
 }
 
-TEST_F(QuicTransportEndToEndTest, CertificateFingerprintValidiyTooLong) {
+TEST_F(QuicTransportEndToEndTest, CertificateFingerprintValidityTooLong) {
   StartServer();
   QuicTransportClient::Parameters parameters;
   // The default QUIC test certificate is valid for ten years, which exceeds
@@ -272,8 +272,9 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprintValidiyTooLong) {
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnectionFailed()).WillOnce(StopRunning());
   Run();
-  EXPECT_TRUE(client_->session() == nullptr);
-  EXPECT_EQ(client_->error().quic_error, quic::QUIC_HANDSHAKE_FAILED);
+  EXPECT_EQ(client_->session(), nullptr);
+  EXPECT_THAT(client_->error().quic_error,
+              quic::test::IsError(quic::QUIC_TLS_CERTIFICATE_UNKNOWN));
 }
 
 TEST_F(QuicTransportEndToEndTest, CertificateFingerprintMismatch) {
@@ -291,8 +292,9 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprintMismatch) {
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnectionFailed()).WillOnce(StopRunning());
   Run();
-  EXPECT_TRUE(client_->session() == nullptr);
-  EXPECT_EQ(client_->error().quic_error, quic::QUIC_HANDSHAKE_FAILED);
+  EXPECT_EQ(client_->session(), nullptr);
+  EXPECT_THAT(client_->error().quic_error,
+              quic::test::IsError(quic::QUIC_TLS_CERTIFICATE_UNKNOWN));
 }
 
 TEST_F(QuicTransportEndToEndTest, OldVersion) {
