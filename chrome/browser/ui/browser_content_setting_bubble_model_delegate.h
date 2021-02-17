@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 
 class Browser;
@@ -26,7 +27,7 @@ class BrowserContentSettingBubbleModelDelegate
   void ShowLearnMorePage(ContentSettingsType type) override;
 
  private:
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserContentSettingBubbleModelDelegate);
 };

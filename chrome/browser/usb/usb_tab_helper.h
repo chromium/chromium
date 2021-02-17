@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,7 +36,7 @@ class UsbTabHelper : public content::WebContentsUserData<UsbTabHelper> {
   // devices connected to single UsbTabHelper.
   int device_connection_count_ = 0;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

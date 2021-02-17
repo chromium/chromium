@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observer.h"
 #include "base/supports_user_data.h"
@@ -127,7 +128,7 @@ class WebstoreInstaller : public content::NotificationObserver,
     std::string extension_id;
 
     // The profile the extension should be installed into.
-    Profile* profile = nullptr;
+    CheckedPtr<Profile> profile = nullptr;
 
     // The expected manifest, before localization.
     std::unique_ptr<Manifest> manifest;
@@ -264,13 +265,13 @@ class WebstoreInstaller : public content::NotificationObserver,
   content::NotificationRegistrar registrar_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};
-  Profile* profile_;
-  Delegate* delegate_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<Delegate> delegate_;
   std::string id_;
   InstallSource install_source_;
   // The DownloadItem is owned by the DownloadManager and is valid from when
   // OnDownloadStarted is called (with no error) until OnDownloadDestroyed().
-  download::DownloadItem* download_item_ = nullptr;
+  CheckedPtr<download::DownloadItem> download_item_ = nullptr;
   // Used to periodically update the extension's download status. This will
   // trigger at least every second, though sometimes more frequently (depending
   // on number of modules, etc).

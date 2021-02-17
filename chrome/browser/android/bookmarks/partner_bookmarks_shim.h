@@ -13,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -149,7 +150,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
   void SaveNodeMapping();
 
   std::unique_ptr<bookmarks::BookmarkNode> partner_bookmarks_root_;
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   NodeRenamingMap node_rename_remove_map_;
 
   // The observers.

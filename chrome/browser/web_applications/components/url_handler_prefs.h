@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/prefs/pref_service.h"
@@ -103,7 +104,7 @@ class UrlHandlerPrefs {
       const GURL& url) const;
 
  private:
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 };
 
 }  // namespace web_app

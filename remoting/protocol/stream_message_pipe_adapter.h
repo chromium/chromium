@@ -6,6 +6,7 @@
 #define REMOTING_PROTOCOL_STREAM_MESSAGE_PIPE_ADAPTER_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_reader.h"
@@ -36,7 +37,7 @@ class StreamMessagePipeAdapter : public MessagePipe {
  private:
   void CloseOnError(int error);
 
-  EventHandler* event_handler_ = nullptr;
+  CheckedPtr<EventHandler> event_handler_ = nullptr;
 
   std::unique_ptr<P2PStreamSocket> socket_;
   ErrorCallback error_callback_;
@@ -65,7 +66,7 @@ class StreamMessageChannelFactoryAdapter : public MessageChannelFactory {
   void OnChannelCreated(ChannelCreatedCallback callback,
                         std::unique_ptr<P2PStreamSocket> socket);
 
-  StreamChannelFactory* stream_channel_factory_;
+  CheckedPtr<StreamChannelFactory> stream_channel_factory_;
   ErrorCallback error_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(StreamMessageChannelFactoryAdapter);

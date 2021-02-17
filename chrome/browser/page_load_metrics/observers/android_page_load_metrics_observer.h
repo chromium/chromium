@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace network {
@@ -85,7 +86,7 @@ class AndroidPageLoadMetricsObserver
   bool reported_buffered_metrics_ = false;
   int64_t navigation_id_ = -1;
 
-  network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidPageLoadMetricsObserver);
 };

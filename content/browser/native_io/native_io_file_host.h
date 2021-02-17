@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -60,7 +61,7 @@ class NativeIOFileHost : public blink::mojom::NativeIOFileHost {
 
   // Raw pointer use is safe because NativeIOHost owns this NativeIOFileHost,
   // and therefore is guaranteed to outlive it.
-  NativeIOHost* const origin_host_;
+  const CheckedPtr<NativeIOHost> origin_host_;
 
   // The name of the file opened by this host.
   const std::string file_name_;

@@ -13,6 +13,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
@@ -412,7 +413,7 @@ class NET_EXPORT UDPSocketPosix {
     bool watching() { return watching_; }
 
    private:
-    UDPSocketPosix* const socket_;
+    const CheckedPtr<UDPSocketPosix> socket_;
     bool watching_;
 
     DISALLOW_COPY_AND_ASSIGN(WriteAsyncWatcher);
@@ -455,7 +456,7 @@ class NET_EXPORT UDPSocketPosix {
     void OnFileCanWriteWithoutBlocking(int /* fd */) override {}
 
    private:
-    UDPSocketPosix* const socket_;
+    const CheckedPtr<UDPSocketPosix> socket_;
 
     DISALLOW_COPY_AND_ASSIGN(ReadWatcher);
   };
@@ -471,7 +472,7 @@ class NET_EXPORT UDPSocketPosix {
     void OnFileCanWriteWithoutBlocking(int /* fd */) override;
 
    private:
-    UDPSocketPosix* const socket_;
+    const CheckedPtr<UDPSocketPosix> socket_;
 
     DISALLOW_COPY_AND_ASSIGN(WriteWatcher);
   };

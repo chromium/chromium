@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -349,7 +350,7 @@ class AppMenuView : public views::View {
   base::WeakPtr<AppMenu> menu_;
 
   // The menu model containing the increment/decrement/reset items.
-  ButtonMenuItemModel* menu_model_;
+  CheckedPtr<ButtonMenuItemModel> menu_model_;
 };
 
 BEGIN_METADATA(AppMenuView, views::View)
@@ -466,7 +467,7 @@ class AppMenu::ZoomView : public AppMenuView {
     // level can be picked up by screen readers.
     zoom_label_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
 
-    AddChildView(zoom_label_);
+    AddChildView(zoom_label_.get());
     zoom_label_max_width_valid_ = false;
 
     increment_button_ = CreateButtonWithAccName(
@@ -504,7 +505,7 @@ class AppMenu::ZoomView : public AppMenuView {
         /*add_accelerator_text*/ true
 #endif
         ));
-    AddChildView(fullscreen_button_);
+    AddChildView(fullscreen_button_.get());
 
     // Need to set a font list for the zoom label width calculations.
     OnThemeChanged();
@@ -651,15 +652,15 @@ class AppMenu::ZoomView : public AppMenuView {
   base::CallbackListSubscription browser_zoom_subscription_;
 
   // Button for incrementing the zoom.
-  LabelButton* increment_button_;
+  CheckedPtr<LabelButton> increment_button_;
 
   // Label showing zoom as a percent.
-  Label* zoom_label_;
+  CheckedPtr<Label> zoom_label_;
 
   // Button for decrementing the zoom.
-  LabelButton* decrement_button_;
+  CheckedPtr<LabelButton> decrement_button_;
 
-  ImageButton* fullscreen_button_;
+  CheckedPtr<ImageButton> fullscreen_button_;
 
   // Cached width of how wide the zoom label string can be. This is the width at
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
@@ -740,9 +741,9 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   }
 
  private:
-  AppMenu* app_menu_;
-  ui::MenuModel* model_;
-  views::MenuItemView* menu_item_;
+  CheckedPtr<AppMenu> app_menu_;
+  CheckedPtr<ui::MenuModel> model_;
+  CheckedPtr<views::MenuItemView> menu_item_;
 };
 
 // AppMenu ------------------------------------------------------------------

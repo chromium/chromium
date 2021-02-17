@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TAB_SWITCH_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TAB_SWITCH_BUTTON_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/flex_layout_types.h"
 
@@ -40,8 +41,8 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
   bool IsSelected() const;
 
   // The ancestor views.
-  OmniboxPopupContentsView* const popup_contents_view_;
-  OmniboxResultView* const result_view_;
+  const CheckedPtr<OmniboxPopupContentsView> popup_contents_view_;
+  const CheckedPtr<OmniboxResultView> result_view_;
 
   // Only calculate the width of various contents once.
   static bool calculated_widths_;

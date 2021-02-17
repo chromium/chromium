@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -40,7 +41,7 @@ class ServiceWorkerActivationObserver
                              const GURL& scope,
                              ServiceWorkerVersion::Status) override;
 
-  ServiceWorkerContextWrapper* context_;
+  CheckedPtr<ServiceWorkerContextWrapper> context_;
   base::ScopedObservation<ServiceWorkerContextWrapper,
                           ServiceWorkerContextCoreObserver>
       scoped_observation_{this};

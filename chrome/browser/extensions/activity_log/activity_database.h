@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
@@ -176,7 +177,7 @@ class ActivityDatabase {
 
   // A reference a Delegate for policy-specific database behavior.  See the
   // top-level comment for ActivityDatabase for comments on cleanup.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   sql::Database db_;
   bool valid_db_;

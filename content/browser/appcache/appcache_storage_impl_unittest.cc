@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
@@ -173,7 +174,7 @@ class AppCacheStorageImplTest : public testing::Test {
     int64_t found_cache_id_;
     int64_t found_group_id_;
     GURL found_manifest_url_;
-    AppCacheStorageImplTest* test_;
+    CheckedPtr<AppCacheStorageImplTest> test_;
   };
 
   class MockQuotaManagerProxy : public storage::QuotaManagerProxy {
@@ -1495,7 +1496,7 @@ class AppCacheStorageImplTest : public testing::Test {
     }
 
     scoped_refptr<AppCacheStorageReference> observed_old_storage_;
-    AppCacheStorageImplTest* test_;
+    CheckedPtr<AppCacheStorageImplTest> test_;
   };
 
   class MockAppCacheFrontend : public blink::mojom::AppCacheFrontend {

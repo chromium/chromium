@@ -158,8 +158,8 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
       break;
     }
 
-    unwindstack::Elf* elf =
-        map_info->GetElf({process_memory_, [](unwindstack::Memory*) {}}, arch);
+    unwindstack::Elf* elf = map_info->GetElf(
+        {process_memory_.get(), [](unwindstack::Memory*) {}}, arch);
     if (!elf->valid())
       break;
 

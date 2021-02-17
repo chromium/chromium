@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/printing/cloud_print/gcd_api_flow.h"
 
 namespace cloud_print {
@@ -42,7 +43,7 @@ class CloudPrintPrinterList : public CloudPrintApiFlowRequest {
   bool FillPrinterDetails(const base::DictionaryValue& printer_value,
                           Device* printer_details);
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 };
 
 }  // namespace cloud_print

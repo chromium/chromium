@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -100,7 +101,7 @@ class SSLErrorHandler {
   const bool fatal_;
 
   // The WebContents associated with the request that generated the error.
-  WebContents* web_contents_;
+  CheckedPtr<WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(SSLErrorHandler);
 };

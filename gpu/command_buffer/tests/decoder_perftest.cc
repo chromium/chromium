@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/platform_thread.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
@@ -502,7 +503,7 @@ class DecoderPerfTest : public testing::Test {
 
  protected:
   std::unique_ptr<RecordReplayContext> context_;
-  gles2::GLES2Implementation* gl_;
+  CheckedPtr<gles2::GLES2Implementation> gl_;
   GLuint renderbuffer_ = 0;
   GLuint framebuffer_ = 0;
 };

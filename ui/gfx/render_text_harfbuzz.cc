@@ -18,6 +18,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -741,7 +742,7 @@ class HarfBuzzLineBreaker {
   const float glyph_height_for_test_;
   const WordWrapBehavior word_wrap_behavior_;
   const base::string16& text_;
-  const BreakList<size_t>* const words_;
+  const CheckedPtr<const BreakList<size_t>> words_;
   const internal::TextRunList& run_list_;
 
   // Stores the resulting lines.

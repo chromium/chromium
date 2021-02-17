@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -52,7 +53,8 @@ class TFLiteExperimentObserver
                             const std::string&);
 
   // The predictor is capable of running a TFLite model.
-  machine_learning::InProcessTFLitePredictor* tflite_predictor_ = nullptr;
+  CheckedPtr<machine_learning::InProcessTFLitePredictor> tflite_predictor_ =
+      nullptr;
 
   // True when |tflite_predictor_| ran model evaluation. It forces
   // the observer to run tflite prediction only once.

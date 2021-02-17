@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -134,7 +135,7 @@ class OmniboxResultView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // The parent view.
-  OmniboxPopupContentsView* const popup_contents_view_;
+  const CheckedPtr<OmniboxPopupContentsView> popup_contents_view_;
 
   // This result's model index.
   size_t model_index_;
@@ -149,24 +150,26 @@ class OmniboxResultView : public views::View,
   std::unique_ptr<gfx::SlideAnimation> keyword_slide_animation_;
 
   // Container for the first row (for everything expect |button_row_|).
-  views::View* suggestion_container_;
+  CheckedPtr<views::View> suggestion_container_;
 
   // Weak pointers for easy reference.
-  OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.
-  OmniboxMatchCellView* keyword_view_;     // The trailing (or right) view.
-  OmniboxTabSwitchButton* suggestion_tab_switch_button_;
+  CheckedPtr<OmniboxMatchCellView>
+      suggestion_view_;  // The leading (or left) view.
+  CheckedPtr<OmniboxMatchCellView>
+      keyword_view_;  // The trailing (or right) view.
+  CheckedPtr<OmniboxTabSwitchButton> suggestion_tab_switch_button_;
 
   // The blue bar used to indicate selection. This is currently only used if
   // omnibox-refined-focus-state flag is enabled.
-  OmniboxResultSelectionIndicator* selection_indicator_ = nullptr;
+  CheckedPtr<OmniboxResultSelectionIndicator> selection_indicator_ = nullptr;
 
   // The "X" button at the end of the match cell, used to remove suggestions.
-  views::ImageButton* remove_suggestion_button_;
-  views::FocusRing* remove_suggestion_focus_ring_ = nullptr;
+  CheckedPtr<views::ImageButton> remove_suggestion_button_;
+  CheckedPtr<views::FocusRing> remove_suggestion_focus_ring_ = nullptr;
 
   // The row of buttons, only assigned and used if OmniboxSuggestionButtonRow
   // feature is enabled. It is owned by the base view, not this raw pointer.
-  OmniboxSuggestionButtonRowView* button_row_ = nullptr;
+  CheckedPtr<OmniboxSuggestionButtonRowView> button_row_ = nullptr;
 
   // Keeps track of mouse-enter and mouse-exit events of child Views.
   OmniboxMouseEnterExitHandler mouse_enter_exit_handler_;

@@ -16,6 +16,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "content/browser/coop_coep_cross_origin_isolated_info.h"
@@ -594,7 +595,7 @@ class CONTENT_EXPORT RenderFrameHostManager
         const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
     // Set with an existing SiteInstance to be reused.
-    content::SiteInstance* existing_site_instance;
+    CheckedPtr<content::SiteInstance> existing_site_instance;
 
     // In case |existing_site_instance| is null, specify a destination URL.
     UrlInfo dest_url_info;
@@ -925,10 +926,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   NavigationControllerImpl& GetNavigationController();
 
   // For use in creating RenderFrameHosts.
-  FrameTreeNode* frame_tree_node_;
+  CheckedPtr<FrameTreeNode> frame_tree_node_;
 
   // Our delegate, not owned by us. Guaranteed non-null.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // Our RenderFrameHost which is responsible for all communication with a child
   // RenderFrame instance.

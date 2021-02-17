@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
@@ -80,7 +81,7 @@ class ScopedThumbnailCapture {
  private:
   // We track a web contents observer because it's an easy way to see if the
   // web contents has disappeared without having to add another observer.
-  content::WebContentsObserver* const web_contents_observer_;
+  const CheckedPtr<content::WebContentsObserver> web_contents_observer_;
   bool captured_ = false;
 };
 
@@ -196,7 +197,7 @@ class ThumbnailTabHelper::TabStateTracker
     capture_driver_.UpdatePageReadiness(readiness);
   }
 
-  ThumbnailTabHelper* const thumbnail_tab_helper_;
+  const CheckedPtr<ThumbnailTabHelper> thumbnail_tab_helper_;
 
   ThumbnailCaptureDriver capture_driver_{
       this, &thumbnail_tab_helper_->GetScheduler()};

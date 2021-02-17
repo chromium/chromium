@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -67,7 +68,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     }
 
     base::OnceClosure quit_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    CheckedPtr<safe_browsing::ArchiveAnalyzerResults> results_;
 
     DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };

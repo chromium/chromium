@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_STATE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,7 +34,7 @@ class FindBarState : public KeyedService,
   base::string16 GetSearchPrepopulateText() override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   base::string16 last_prepopulate_text_;
 
   DISALLOW_COPY_AND_ASSIGN(FindBarState);

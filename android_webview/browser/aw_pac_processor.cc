@@ -19,6 +19,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -275,7 +276,7 @@ class Bindings : public proxy_resolver::ProxyResolverV8Tracing::Bindings {
   }
 
  private:
-  HostResolver* host_resolver_;
+  CheckedPtr<HostResolver> host_resolver_;
 };
 
 
@@ -333,7 +334,7 @@ class Job {
   base::OnceClosure task_;
   int net_error_ = net::ERR_ABORTED;
   base::WaitableEvent event_;
-  AwPacProcessor* processor_;
+  CheckedPtr<AwPacProcessor> processor_;
 };
 
 class SetProxyScriptJob : public Job {
@@ -341,8 +342,8 @@ class SetProxyScriptJob : public Job {
   SetProxyScriptJob(AwPacProcessor* processor, std::string script) {
     processor_ = processor;
     task_ = base::BindOnce(
-        &AwPacProcessor::SetProxyScriptNative, base::Unretained(processor_),
-        &request_, std::move(script),
+        &AwPacProcessor::SetProxyScriptNative,
+        base::Unretained(processor_.get()), &request_, std::move(script),
         base::BindOnce(&SetProxyScriptJob::OnSignal, base::Unretained(this)));
   }
 
@@ -361,8 +362,9 @@ class MakeProxyRequestJob : public Job {
   MakeProxyRequestJob(AwPacProcessor* processor, std::string url) {
     processor_ = processor;
     task_ = base::BindOnce(
-        &AwPacProcessor::MakeProxyRequestNative, base::Unretained(processor_),
-        &request_, std::move(url), &proxy_info_,
+        &AwPacProcessor::MakeProxyRequestNative,
+        base::Unretained(processor_.get()), &request_, std::move(url),
+        &proxy_info_,
         base::BindOnce(&MakeProxyRequestJob::OnSignal, base::Unretained(this)));
   }
 

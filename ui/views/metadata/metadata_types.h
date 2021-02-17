@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/views_export.h"
 
@@ -123,7 +124,7 @@ class VIEWS_EXPORT ClassMetaData {
     explicit ClassMemberIterator(ClassMetaData* starting_container);
     void IncrementHelper();
 
-    ClassMetaData* current_collection_;
+    CheckedPtr<ClassMetaData> current_collection_;
     size_t current_vector_index_;
   };
 
@@ -136,7 +137,7 @@ class VIEWS_EXPORT ClassMetaData {
  private:
   std::string type_name_;
   std::vector<MemberMetaDataBase*> members_;
-  ClassMetaData* parent_class_meta_data_ = nullptr;
+  CheckedPtr<ClassMetaData> parent_class_meta_data_ = nullptr;
   std::string file_;
   const int line_ = 0;
 };

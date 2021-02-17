@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/browser/notification_observer.h"
@@ -78,7 +79,7 @@ class ThemeConditionChecker : public StatusChangeChecker,
                const content::NotificationDetails& details) override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   const std::string debug_message_;
   base::RepeatingCallback<bool(ThemeService*)> exit_condition_;
 
@@ -109,7 +110,7 @@ class ThemePendingInstallChecker : public StatusChangeChecker,
                const content::NotificationDetails& details) override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   const std::string& theme_;
 
   content::NotificationRegistrar registrar_;

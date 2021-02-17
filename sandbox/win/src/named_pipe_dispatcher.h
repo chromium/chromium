@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -37,7 +38,7 @@ class NamedPipeDispatcher : public Dispatcher {
                        uint32_t in_buffer_size,
                        uint32_t default_timeout);
 
-  PolicyBase* policy_base_;
+  CheckedPtr<PolicyBase> policy_base_;
   DISALLOW_COPY_AND_ASSIGN(NamedPipeDispatcher);
 };
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_
 #define CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_ui_delegate.h"
 
@@ -22,7 +23,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   permissions::PermissionResult GetPermissionStatus(ContentSettingsType type,
                                                     const GURL& url) override;
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_

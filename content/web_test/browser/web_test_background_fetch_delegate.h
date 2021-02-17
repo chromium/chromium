@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/download/public/background_service/client.h"
 #include "content/public/browser/background_fetch_delegate.h"
@@ -51,14 +52,14 @@ class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
  private:
   class WebTestBackgroundFetchDownloadClient;
 
-  BrowserContext* browser_context_;
+  CheckedPtr<BrowserContext> browser_context_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 
   // In-memory instance of the Download Service lazily created by the delegate.
   std::unique_ptr<download::DownloadService> download_service_;
 
   // Weak reference to an instance of our download client.
-  WebTestBackgroundFetchDownloadClient* background_fetch_client_;
+  CheckedPtr<WebTestBackgroundFetchDownloadClient> background_fetch_client_;
 
   DISALLOW_COPY_AND_ASSIGN(WebTestBackgroundFetchDelegate);
 };

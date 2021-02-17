@@ -299,7 +299,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       request->url = modify_url_in_will_start_;
 
     if (will_start_request_callback_)
-      will_start_request_callback_.Run(delegate_, defer);
+      will_start_request_callback_.Run(delegate_.get(), defer);
   }
 
   void WillRedirectRequest(
@@ -312,7 +312,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
     will_redirect_request_called_++;
     if (will_redirect_request_callback_) {
       std::move(will_redirect_request_callback_)
-          .Run(delegate_, defer, removed_headers, modified_headers,
+          .Run(delegate_.get(), defer, removed_headers, modified_headers,
                modified_cors_exempt_headers);
     }
   }
@@ -322,7 +322,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override {
     will_process_response_called_++;
     if (will_process_response_callback_)
-      will_process_response_callback_.Run(delegate_, defer);
+      will_process_response_callback_.Run(delegate_.get(), defer);
     response_url_ = response_url;
   }
 
@@ -332,7 +332,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       bool* defer) override {
     before_will_process_response_called_++;
     if (before_will_process_response_callback_)
-      before_will_process_response_callback_.Run(delegate_, defer);
+      before_will_process_response_callback_.Run(delegate_.get(), defer);
   }
 
   size_t will_start_request_called_ = 0;

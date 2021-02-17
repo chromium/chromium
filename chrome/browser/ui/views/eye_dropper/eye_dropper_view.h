@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -51,7 +52,7 @@ class EyeDropperView : public content::EyeDropper,
    private:
     void OnMouseEvent(ui::MouseEvent* event) override;
 
-    EyeDropperView* view_;
+    CheckedPtr<EyeDropperView> view_;
 #if defined(OS_MAC)
     id clickEventTap_;
     id notificationObserver_;
@@ -69,13 +70,13 @@ class EyeDropperView : public content::EyeDropper,
   // Handles color selection and notifies the listener.
   void OnColorSelected();
 
-  content::RenderFrameHost* render_frame_host_;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_;
 
   gfx::Size GetSize() const;
   float GetDiameter() const;
 
   // Receives the color selection.
-  content::EyeDropperListener* listener_;
+  CheckedPtr<content::EyeDropperListener> listener_;
 
   std::unique_ptr<PreEventDispatchHandler> pre_dispatch_handler_;
   std::unique_ptr<ViewPositionHandler> view_position_handler_;

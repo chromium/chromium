@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/infobar_delegate.h"
 
@@ -44,9 +45,9 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
                                         const SendTabToSelfEntry* entry);
 
   // The web_content the infobar is attached to. Must outlive this class.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
   // The entry that was share to this device. Must outlive this instance.
-  const SendTabToSelfEntry* entry_ = nullptr;
+  CheckedPtr<const SendTabToSelfEntry> entry_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfInfoBarDelegate);
 };

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/nullable_string16.h"
 #include "base/strings/string_piece.h"
@@ -69,7 +70,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
       bool (*should_stop)(base::StringPiece)) const override {
     EXPECT_EQ(BeginPoint::kParentFrame, begin_point);
     std::vector<std::string> result;
-    for (auto* adapter = parent_; adapter; adapter = adapter->parent_) {
+    for (auto* adapter = parent_.get(); adapter; adapter = adapter->parent_) {
       result.push_back(adapter->GetNameForCurrentMode());
       if (should_stop(result.back()))
         break;
@@ -151,7 +152,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
     return true;
   }
 
-  TestFrameAdapter* const parent_;
+  const CheckedPtr<TestFrameAdapter> parent_;
   std::vector<TestFrameAdapter*> children_;
   const int virtual_index_in_parent_;
   UniqueNameHelper unique_name_helper_;

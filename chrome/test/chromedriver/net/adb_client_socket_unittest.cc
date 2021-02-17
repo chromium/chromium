@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
@@ -13,7 +14,7 @@
 class MockSocket : public net::MockClientSocket {
  public:
   int return_values_length;
-  std::string* return_values_array;
+  CheckedPtr<std::string> return_values_array;
   MockSocket(std::string* return_values_array, int return_values_length)
       : MockClientSocket(net::NetLogWithSource()),
         return_values_length(return_values_length),

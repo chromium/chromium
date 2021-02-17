@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -141,9 +142,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
    private:
     void Reset();
 
-    DisplayResourceProvider* resource_provider_ = nullptr;
+    CheckedPtr<DisplayResourceProvider> resource_provider_ = nullptr;
     ResourceId resource_id_ = kInvalidResourceId;
-    ChildResource* resource_ = nullptr;
+    CheckedPtr<ChildResource> resource_ = nullptr;
   };
 
   // All resources that are returned to children while an instance of this
@@ -156,7 +157,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     ~ScopedBatchReturnResources();
 
    private:
-    DisplayResourceProvider* const resource_provider_;
+    const CheckedPtr<DisplayResourceProvider> resource_provider_;
     const bool was_access_to_gpu_thread_allowed_;
   };
 
@@ -179,7 +180,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
     void Synchronize();
 
-    gpu::gles2::GLES2Interface* gl_;
+    CheckedPtr<gpu::gles2::GLES2Interface> gl_;
     bool has_synchronized_;
   };
 
@@ -409,14 +410,14 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   THREAD_CHECKER(thread_checker_);
   const Mode mode_;
-  ContextProvider* const compositor_context_provider_;
-  SharedBitmapManager* const shared_bitmap_manager_;
+  const CheckedPtr<ContextProvider> compositor_context_provider_;
+  const CheckedPtr<SharedBitmapManager> shared_bitmap_manager_;
 
   ResourceMap resources_;
   ChildMap children_;
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
   // Used to release resources held by an external consumer.
-  ExternalUseClient* external_use_client_ = nullptr;
+  CheckedPtr<ExternalUseClient> external_use_client_ = nullptr;
 
   base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
   scoped_refptr<ResourceFence> current_read_lock_fence_;

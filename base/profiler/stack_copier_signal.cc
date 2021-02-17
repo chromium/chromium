@@ -11,6 +11,7 @@
 
 #include <atomic>
 
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
@@ -71,7 +72,7 @@ class ScopedEventSignaller {
   ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
-  AsyncSafeWaitableEvent* event_;
+  CheckedPtr<AsyncSafeWaitableEvent> event_;
 };
 
 // Struct to store the arguments to the signal handler.
@@ -79,25 +80,25 @@ struct HandlerParams {
   uintptr_t stack_base_address;
 
   // The event is signalled when signal handler is done executing.
-  AsyncSafeWaitableEvent* event;
+  CheckedPtr<AsyncSafeWaitableEvent> event;
 
   // Return values:
 
   // Successfully copied the stack segment.
-  bool* success;
+  CheckedPtr<bool> success;
 
   // The thread context of the leaf function.
-  mcontext_t* context;
+  CheckedPtr<mcontext_t> context;
 
   // Buffer to copy the stack segment.
-  StackBuffer* stack_buffer;
-  const uint8_t** stack_copy_bottom;
+  CheckedPtr<StackBuffer> stack_buffer;
+  CheckedPtr<const uint8_t*> stack_copy_bottom;
 
   // The timestamp when the stack was copied.
-  base::Optional<TimeTicks>* maybe_timestamp;
+  CheckedPtr<base::Optional<TimeTicks>> maybe_timestamp;
 
   // The delegate provided to the StackCopier.
-  StackCopier::Delegate* stack_copier_delegate;
+  CheckedPtr<StackCopier::Delegate> stack_copier_delegate;
 };
 
 // Pointer to the parameters to be "passed" to the CopyStackSignalHandler() from
@@ -177,8 +178,8 @@ class ScopedSigaction {
 
  private:
   const int signal_;
-  struct sigaction* const action_;
-  struct sigaction* const original_action_;
+  const CheckedPtr<struct sigaction> action_;
+  const CheckedPtr<struct sigaction> original_action_;
   const bool succeeded_;
 };
 

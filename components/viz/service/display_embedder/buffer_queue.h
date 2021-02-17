@@ -13,6 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/viz/service/viz_service_export.h"
@@ -145,7 +146,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   std::unique_ptr<AllocatedSurface> GetNextSurface(
       gpu::SyncToken* creation_sync_token);
 
-  gpu::SharedImageInterface* const sii_;
+  const CheckedPtr<gpu::SharedImageInterface> sii_;
   gfx::Size size_;
   gfx::ColorSpace color_space_;
 
@@ -165,7 +166,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // may be nullptr, if they represent frames that have been destroyed.
   base::circular_deque<std::unique_ptr<AllocatedSurface>> in_flight_surfaces_;
   gpu::SurfaceHandle surface_handle_;
-  SyncTokenProvider* sync_token_provider_ = nullptr;
+  CheckedPtr<SyncTokenProvider> sync_token_provider_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BufferQueue);
 };

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -59,7 +60,7 @@ class NavigationConsoleLogger
 
   // |handle_| must outlive this class. This is guaranteed because the object
   // tears itself down with |handle_|'s navigation finishes.
-  const content::NavigationHandle* handle_;
+  CheckedPtr<const content::NavigationHandle> handle_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

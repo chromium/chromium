@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/containers/stack.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -71,7 +72,7 @@ class BASE_EXPORT AtExitManager {
 #endif
 
   // Stack of managers to allow shadowing.
-  AtExitManager* const next_manager_;
+  const CheckedPtr<AtExitManager> next_manager_;
 };
 
 #if defined(UNIT_TEST)

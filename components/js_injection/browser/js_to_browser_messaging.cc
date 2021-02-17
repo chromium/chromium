@@ -5,6 +5,7 @@
 #include "components/js_injection/browser/js_to_browser_messaging.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
@@ -55,7 +56,7 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
   }
 
  private:
-  content::RenderFrameHost* render_frame_host_;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_;
   mojo::AssociatedRemote<mojom::BrowserToJsMessaging> java_to_js_messaging_;
 };
 

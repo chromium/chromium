@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -37,7 +38,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     bool valid() const { return !!sk_image_; }
 
    private:
-    DisplayResourceProviderSoftware* const resource_provider_;
+    const CheckedPtr<DisplayResourceProviderSoftware> resource_provider_;
     const ResourceId resource_id_;
     sk_sp<SkImage> sk_image_;
   };

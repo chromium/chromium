@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +60,7 @@ class TestDnsSdRegistry : public DnsSdRegistry {
  private:
   std::map<std::string, MockDnsSdDeviceLister*> listers_;
   // The last delegate used or NULL.
-  DnsSdDelegate* delegate_;
+  CheckedPtr<DnsSdDelegate> delegate_;
 };
 
 class MockDnsSdObserver : public DnsSdRegistry::DnsSdObserver {

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -236,13 +237,13 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
       permissions::PermissionRequestManager::AutoResponseType request_response);
 
   // The current Browser as set in Initialize. May be for an incognito profile.
-  Browser* current_browser_ = nullptr;
+  CheckedPtr<Browser> current_browser_ = nullptr;
 
   // The path element of a URL referencing the html content for this test.
   std::string html_for_tests_ = "/geolocation/simple.html";
 
   // The frame where the JavaScript calls will run.
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_ = nullptr;
 
   // The current url for the top level page.
   GURL current_url_;

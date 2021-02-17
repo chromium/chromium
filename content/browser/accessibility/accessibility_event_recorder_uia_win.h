@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -55,7 +56,7 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
     void ThreadMain() override;
 
    private:
-    AccessibilityEventRecorderUia* owner_ = nullptr;
+    CheckedPtr<AccessibilityEventRecorderUia> owner_ = nullptr;
     HWND hwnd_ = NULL;
     EVENTID shutdown_sentinel_ = 0;
 
@@ -116,7 +117,7 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
       (IUIAutomationElement* sender, EVENTID event_id) override;
 
       // Points to the event recorder to receive notifications.
-      AccessibilityEventRecorderUia::Thread* owner_ = nullptr;
+      CheckedPtr<AccessibilityEventRecorderUia::Thread> owner_ = nullptr;
 
      private:
       std::string GetSenderInfo(IUIAutomationElement* sender);

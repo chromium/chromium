@@ -22,6 +22,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -111,9 +112,9 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
 
   bool is_add = false;
   // New parent if |is_add| is true, old parent if |is_add| is false.
-  View* parent = nullptr;
+  CheckedPtr<View> parent = nullptr;
   // The view being added or removed.
-  View* child = nullptr;
+  CheckedPtr<View> child = nullptr;
   // If this is a move (reparent), meaning AddChildViewAt() is invoked with an
   // existing parent, then a notification for the remove is sent first,
   // followed by one for the add.  This case can be distinguished by a
@@ -122,7 +123,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   // being removed.
   // For the add part of move, |move_view| is the old parent of the View being
   // added.
-  View* move_view = nullptr;
+  CheckedPtr<View> move_view = nullptr;
 };
 
 // Used to identify the CallbackList<> within the PropertyChangedVectors map.
@@ -1948,7 +1949,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  View* parent_ = nullptr;
+  CheckedPtr<View> parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2037,7 +2038,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // A native theme for this view and its descendants. Typically null, in which
   // case the native theme is drawn from the parent view (eventually the
   // widget).
-  ui::NativeTheme* native_theme_ = nullptr;
+  CheckedPtr<ui::NativeTheme> native_theme_ = nullptr;
 
   // RTL painting --------------------------------------------------------------
 
@@ -2073,7 +2074,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accelerators --------------------------------------------------------------
 
   // Focus manager accelerators registered on.
-  FocusManager* accelerator_focus_manager_ = nullptr;
+  CheckedPtr<FocusManager> accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,
@@ -2084,10 +2085,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Focus ---------------------------------------------------------------------
 
   // Next view to be focused when the Tab key is pressed.
-  View* next_focusable_view_ = nullptr;
+  CheckedPtr<View> next_focusable_view_ = nullptr;
 
   // Next view to be focused when the Shift-Tab key combination is pressed.
-  View* previous_focusable_view_ = nullptr;
+  CheckedPtr<View> previous_focusable_view_ = nullptr;
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
@@ -2095,11 +2096,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  ContextMenuController* context_menu_controller_ = nullptr;
+  CheckedPtr<ContextMenuController> context_menu_controller_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
-  DragController* drag_controller_ = nullptr;
+  CheckedPtr<DragController> drag_controller_ = nullptr;
 
   // Input  --------------------------------------------------------------------
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_CLIENT_PIN_ENTRY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_CLIENT_PIN_ENTRY_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -48,9 +49,9 @@ class AuthenticatorClientPinEntryView : public views::View,
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
-  Delegate* const delegate_;
-  views::Textfield* pin_text_field_ = nullptr;
-  views::Textfield* confirmation_text_field_ = nullptr;
+  const CheckedPtr<Delegate> delegate_;
+  CheckedPtr<views::Textfield> pin_text_field_ = nullptr;
+  CheckedPtr<views::Textfield> confirmation_text_field_ = nullptr;
   const bool show_confirmation_text_field_;
 };
 

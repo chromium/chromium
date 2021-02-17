@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
@@ -1879,7 +1880,7 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
   extensions::TestBlocklist& test_blocklist() { return test_blocklist_; }
 
  private:
-  syncer::FakeSyncChangeProcessor* processor_raw_;
+  CheckedPtr<syncer::FakeSyncChangeProcessor> processor_raw_;
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   extensions::TestBlocklist test_blocklist_;

@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
@@ -73,7 +74,7 @@ class PepperIsolatedFileSystemMessageFilter
   const GURL document_url_;
 
   // Not owned by this object.
-  ppapi::host::PpapiHost* ppapi_host_;
+  CheckedPtr<ppapi::host::PpapiHost> ppapi_host_;
 
   // Set of origins that can use CrxFs private APIs from NaCl.
   std::set<std::string> allowed_crxfs_origins_;

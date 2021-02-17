@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_RENDERER_HOST_AW_RENDER_VIEW_HOST_EXT_H_
 #define ANDROID_WEBVIEW_BROWSER_RENDERER_HOST_AW_RENDER_VIEW_HOST_EXT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #include "android_webview/common/mojom/frame.mojom.h"
@@ -98,7 +99,7 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
   bool IsRenderViewReady() const;
 
-  AwRenderViewHostExtClient* client_;
+  CheckedPtr<AwRenderViewHostExtClient> client_;
 
   SkColor background_color_;
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_SCHEMA_INTERNAL_H_
 #define COMPONENTS_POLICY_CORE_COMMON_SCHEMA_INTERNAL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
@@ -132,14 +133,14 @@ union POLICY_EXPORT RestrictionNode {
 // Contains arrays of related nodes. All of the offsets in these nodes reference
 // other nodes in these arrays.
 struct POLICY_EXPORT SchemaData {
-  const SchemaNode* schema_nodes;
-  const PropertyNode* property_nodes;
-  const PropertiesNode* properties_nodes;
-  const RestrictionNode* restriction_nodes;
-  const char* const* required_properties;
+  CheckedPtr<const SchemaNode> schema_nodes;
+  CheckedPtr<const PropertyNode> property_nodes;
+  CheckedPtr<const PropertiesNode> properties_nodes;
+  CheckedPtr<const RestrictionNode> restriction_nodes;
+  CheckedPtr<const char* const> required_properties;
 
-  const int* int_enums;
-  const char* const* string_enums;
+  CheckedPtr<const int> int_enums;
+  CheckedPtr<const char* const> string_enums;
   int validation_schema_root_index;
 };
 
