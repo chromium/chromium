@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -121,7 +122,14 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
   if (type == RequestType::kQueryProtoGET) {
     query_for_url = std::move(query);
   } else {
-    query.SerializeToString(&body);
+    std::string serialized_query;
+    std::string encoded_query;
+    query.SerializeToString(&serialized_query);
+    base::Base64Encode(serialized_query, &encoded_query);
+    // Wrap query payload in a request proto to interface with API Query method.
+    AutofillPageResourceQueryRequest request;
+    request.set_serialized_request(encoded_query);
+    request.SerializeToString(&body);
     query_for_url = base::nullopt;
   }
 
