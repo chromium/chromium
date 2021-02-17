@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_BRIDGE_MESSAGE_FILTER_H_
-#define CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_BRIDGE_MESSAGE_FILTER_H_
+#ifndef CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_BRIDGE_OBJECT_DELETION_MESSAGE_FILTER_H_
+#define CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_BRIDGE_OBJECT_DELETION_MESSAGE_FILTER_H_
 
 #include <stdint.h>
 
@@ -19,22 +19,30 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host_observer.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace IPC {
 class Message;
 }
 
 namespace content {
 
-class AgentSchedulingGroupHost;
 class GinJavaBridgeDispatcherHost;
 class RenderFrameHost;
 
-class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
-                                   public RenderProcessHostObserver {
+// This class is similar to `GinJavaBridgeMessageFilter` with the exception that
+// it only filters and handles Java object deletion messages as opposed to all
+// Java bridge IPC messages. This filter is only used when the `kMBIMode`
+// feature is enabled; in that mode, `GinJavaBridgeMessageFilter` is installed
+// on the `AgentSchedulingGroupHost`'s IPC channel where it handles all Java
+// bridge related IPC messages coming from the renderer's
+// `GinJavaBridgeDispatcher`. However, it is possible for the
+// `GinJavaBridgeObject` to outlive its `AgentSchedulingGroup`, and so the
+// lingering object deletion messages it sends must be sent over the
+// process-global IPC channel, which is what this filter is used to handle. This
+// design is a temporary way to fix the Java bridge in MBI mode until its
+// mojofication complete.
+class GinJavaBridgeObjectDeletionMessageFilter
+    : public BrowserMessageFilter,
+      public RenderProcessHostObserver {
  public:
   // BrowserMessageFilter
   void OnDestruct() const override;
@@ -51,16 +59,16 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
                            RenderFrameHost* render_frame_host);
   void RemoveHost(GinJavaBridgeDispatcherHost* host);
 
-  static scoped_refptr<GinJavaBridgeMessageFilter> FromHost(
-      AgentSchedulingGroupHost& agent_scheduling_group,
+  static scoped_refptr<GinJavaBridgeObjectDeletionMessageFilter> FromHost(
+      RenderProcessHost* rph,
       bool create_if_not_exists);
 
-  GinJavaBridgeMessageFilter(base::PassKey<GinJavaBridgeMessageFilter> pass_key,
-                             AgentSchedulingGroupHost& agent_scheduling_group);
+  GinJavaBridgeObjectDeletionMessageFilter(
+      base::PassKey<GinJavaBridgeObjectDeletionMessageFilter> pass_key);
 
  private:
   friend class BrowserThread;
-  friend class base::DeleteHelper<GinJavaBridgeMessageFilter>;
+  friend class base::DeleteHelper<GinJavaBridgeObjectDeletionMessageFilter>;
 
   // The filter keeps its own routing map of RenderFrames for two reasons:
   //  1. Message dispatching must be done on the background thread,
@@ -71,29 +79,15 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   //     removed from the WebContents' routing table.
   typedef std::map<int32_t, scoped_refptr<GinJavaBridgeDispatcherHost>> HostMap;
 
-  ~GinJavaBridgeMessageFilter() override;
+  ~GinJavaBridgeObjectDeletionMessageFilter() override;
 
   // Called on the background thread.
   scoped_refptr<GinJavaBridgeDispatcherHost> FindHost();
-  void OnGetMethods(GinJavaBoundObject::ObjectID object_id,
-                    std::set<std::string>* returned_method_names);
-  void OnHasMethod(GinJavaBoundObject::ObjectID object_id,
-                   const std::string& method_name,
-                   bool* result);
-  void OnInvokeMethod(GinJavaBoundObject::ObjectID object_id,
-                      const std::string& method_name,
-                      const base::ListValue& arguments,
-                      base::ListValue* result,
-                      content::GinJavaBridgeError* error_code);
   void OnObjectWrapperDeleted(GinJavaBoundObject::ObjectID object_id);
 
   // Accessed both from UI and background threads.
   HostMap hosts_ GUARDED_BY(hosts_lock_);
   base::Lock hosts_lock_;
-
-  // The `AgentSchedulingGroupHost` that this object is associated with. This
-  // filter is installed on the host's channel.
-  AgentSchedulingGroupHost& agent_scheduling_group_;
 
   // The routing id of the RenderFrameHost whose request we are processing.
   // Used on the background thread.
@@ -102,4 +96,4 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_BRIDGE_MESSAGE_FILTER_H_
+#endif  // CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_BRIDGE_OBJECT_DELETION_MESSAGE_FILTER_H_

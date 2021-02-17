@@ -123,6 +123,7 @@ class CONTENT_EXPORT BrowserMessageFilter
                                           BrowserMessageFilterTraits>;
 
   class Internal;
+  friend class AgentSchedulingGroupHost;
   friend class BrowserAssociatedInterfaceTest;
   friend class BrowserChildProcessHostImpl;
   friend class BrowserPpapiHost;

@@ -7,10 +7,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/android/java/gin_java_bound_object_delegate.h"
 #include "content/browser/android/java/gin_java_bridge_message_filter.h"
+#include "content/browser/android/java/gin_java_bridge_object_deletion_message_filter.h"
 #include "content/browser/android/java/java_bridge_thread.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/android/gin_java_bridge_value.h"
 #include "content/common/android/hash_set.h"
@@ -19,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 
 #if !defined(OS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"
@@ -51,17 +55,38 @@ void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterAllRoutingIds() {
     return;
   }
 
-  auto filter = GinJavaBridgeMessageFilter::FromHost(this, true);
   // Unretained() is safe because ForEachFrame() is synchronous.
-  web_contents()->ForEachFrame(
-      base::BindRepeating(&GinJavaBridgeMessageFilter::AddRoutingIdForHost,
-                          filter, base::Unretained(this)));
+  web_contents()->ForEachFrame(base::BindRepeating(
+      [](GinJavaBridgeDispatcherHost* host, RenderFrameHost* frame) {
+        AgentSchedulingGroupHost& agent_scheduling_group =
+            static_cast<RenderFrameHostImpl*>(frame)->GetAgentSchedulingGroup();
+
+        scoped_refptr<GinJavaBridgeMessageFilter> per_asg_filter =
+            GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
+                                                 /*create_if_not_exists=*/true);
+        if (base::FeatureList::IsEnabled(features::kMBIMode)) {
+          scoped_refptr<GinJavaBridgeObjectDeletionMessageFilter>
+              process_global_filter =
+                  GinJavaBridgeObjectDeletionMessageFilter::FromHost(
+                      agent_scheduling_group.GetProcess(),
+                      /*create_if_not_exists=*/true);
+          process_global_filter->AddRoutingIdForHost(host, frame);
+        }
+
+        per_asg_filter->AddRoutingIdForHost(host, frame);
+      },
+      base::Unretained(this)));
 }
 
 void GinJavaBridgeDispatcherHost::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (auto filter = GinJavaBridgeMessageFilter::FromHost(this, false)) {
+  AgentSchedulingGroupHost& agent_scheduling_group =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)
+          ->GetAgentSchedulingGroup();
+  if (scoped_refptr<GinJavaBridgeMessageFilter> filter =
+          GinJavaBridgeMessageFilter::FromHost(
+              agent_scheduling_group, /*create_if_not_exists=*/false)) {
     filter->AddRoutingIdForHost(this, render_frame_host);
   } else {
     InstallFilterAndRegisterAllRoutingIds();
@@ -75,17 +100,29 @@ void GinJavaBridgeDispatcherHost::RenderFrameCreated(
 }
 
 void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
-  scoped_refptr<GinJavaBridgeMessageFilter> filter =
-      GinJavaBridgeMessageFilter::FromHost(this, false);
-  if (filter)
-    filter->RemoveHost(this);
+  // Unretained() is safe because ForEachFrame() is synchronous.
+  web_contents()->ForEachFrame(base::BindRepeating(
+      [](GinJavaBridgeDispatcherHost* host, RenderFrameHost* frame) {
+        AgentSchedulingGroupHost& agent_scheduling_group =
+            static_cast<RenderFrameHostImpl*>(frame)->GetAgentSchedulingGroup();
+        scoped_refptr<GinJavaBridgeMessageFilter> filter =
+            GinJavaBridgeMessageFilter::FromHost(
+                agent_scheduling_group, /*create_if_not_exists=*/false);
+
+        if (filter)
+          filter->RemoveHost(host);
+      },
+      base::Unretained(this)));
 }
 
 void GinJavaBridgeDispatcherHost::RenderViewHostChanged(
     RenderViewHost* old_host,
     RenderViewHost* new_host) {
+  AgentSchedulingGroupHost& agent_scheduling_group =
+      static_cast<RenderViewHostImpl*>(new_host)->GetAgentSchedulingGroup();
   scoped_refptr<GinJavaBridgeMessageFilter> filter =
-      GinJavaBridgeMessageFilter::FromHost(this, false);
+      GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
+                                           /*create_if_not_exists=*/false);
   if (!filter)
     InstallFilterAndRegisterAllRoutingIds();
 }

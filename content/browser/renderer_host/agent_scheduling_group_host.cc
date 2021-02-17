@@ -17,6 +17,7 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/state_transitions.h"
+#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
@@ -223,6 +224,19 @@ void AgentSchedulingGroupHost::OnAssociatedInterfaceRequest(
   // ASG-related interfaces should go through `RouteProvider`.
   bad_message::ReceivedBadMessage(
       &process_, bad_message::ASGH_ASSOCIATED_INTERFACE_REQUEST);
+}
+
+void AgentSchedulingGroupHost::AddFilter(BrowserMessageFilter* filter) {
+  DCHECK(filter);
+  // When MBI mode is disabled, we forward these kinds of requests straight to
+  // the underlying `RenderProcessHost`.
+  if (GetMBIMode() == features::MBIMode::kLegacy) {
+    process_.AddFilter(filter);
+    return;
+  }
+
+  filter->RegisterAssociatedInterfaces(channel_.get());
+  channel_->AddFilter(filter->GetFilter());
 }
 
 RenderProcessHost* AgentSchedulingGroupHost::GetProcess() {

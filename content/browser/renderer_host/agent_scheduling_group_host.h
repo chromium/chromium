@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/id_map.h"
+#include "base/supports_user_data.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
@@ -33,6 +34,7 @@ class Message;
 namespace content {
 
 class AgentSchedulingGroupHostFactory;
+class BrowserMessageFilter;
 class RenderProcessHost;
 class SiteInstance;
 
@@ -45,7 +47,8 @@ class SiteInstance;
 // An AgentSchedulingGroupHost is stored as (and owned by) UserData on the
 // RenderProcessHost.
 class CONTENT_EXPORT AgentSchedulingGroupHost
-    : public RenderProcessHostObserver,
+    : public base::SupportsUserData,
+      public RenderProcessHostObserver,
       public IPC::Listener,
       public mojom::AgentSchedulingGroupHost,
       public mojom::RouteProvider,
@@ -62,6 +65,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Should not be called explicitly. Use `CreateIfNeeded()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
+
+  void AddFilter(BrowserMessageFilter* filter);
 
   RenderProcessHost* GetProcess();
   // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.

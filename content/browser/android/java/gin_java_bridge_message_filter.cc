@@ -5,9 +5,11 @@
 #include "content/browser/android/java/gin_java_bridge_message_filter.h"
 
 #include "base/auto_reset.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/android/java/java_bridge_thread.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/common/gin_java_bridge_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,10 +29,12 @@ const char kGinJavaBridgeMessageFilterKey[] = "GinJavaBridgeMessageFilter";
 
 namespace content {
 
-GinJavaBridgeMessageFilter::GinJavaBridgeMessageFilter()
+GinJavaBridgeMessageFilter::GinJavaBridgeMessageFilter(
+    base::PassKey<GinJavaBridgeMessageFilter> pass_key,
+    AgentSchedulingGroupHost& agent_scheduling_group)
     : BrowserMessageFilter(GinJavaBridgeMsgStart),
-      current_routing_id_(MSG_ROUTING_NONE) {
-}
+      agent_scheduling_group_(agent_scheduling_group),
+      current_routing_id_(MSG_ROUTING_NONE) {}
 
 GinJavaBridgeMessageFilter::~GinJavaBridgeMessageFilter() {
 }
@@ -71,11 +75,13 @@ GinJavaBridgeMessageFilter::OverrideTaskRunnerForMessage(
 void GinJavaBridgeMessageFilter::AddRoutingIdForHost(
       GinJavaBridgeDispatcherHost* host,
       RenderFrameHost* render_frame_host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock locker(hosts_lock_);
   hosts_[render_frame_host->GetRoutingID()] = host;
 }
 
 void GinJavaBridgeMessageFilter::RemoveHost(GinJavaBridgeDispatcherHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock locker(hosts_lock_);
   auto iter = hosts_.begin();
   while (iter != hosts_.end()) {
@@ -93,27 +99,44 @@ void GinJavaBridgeMessageFilter::RenderProcessExited(
   {
     scoped_refptr<GinJavaBridgeMessageFilter> filter =
         base::UserDataAdapter<GinJavaBridgeMessageFilter>::Get(
-            rph, kGinJavaBridgeMessageFilterKey);
+            &agent_scheduling_group_, kGinJavaBridgeMessageFilterKey);
     DCHECK_EQ(this, filter.get());
   }
 #endif
+  // Since the message filter is tied to the `agent_scheduling_group_`,
+  // introducing the concept of an AgentSchedulingGroupHostObserver was under
+  // consideration, but we did not go with this because:
+  //   - For now, this would be the only user of it
+  //   - We'd still be interested in responding to RenderProcessExited in the
+  //     same way, so the new observer's event would end up just duplicating
+  //     this observer method, which seemed unnecessary.
+  // We may introduce this interface later once crbug.com/1141459 is fixed.
   rph->RemoveObserver(this);
-  rph->RemoveUserData(kGinJavaBridgeMessageFilterKey);
+  // While we're observing the `RenderProcessHost`, the message filter is 1:1
+  // with `agent_scheduling_group_`, so at this point we must remove ourselves
+  // from the user data, thus destroying `this`. If later the render process is
+  // restarted and new frames are created, a new `GinJavaBridgeMessageFilter`
+  // will be created and installed on the IPC channel associated with
+  // `agent_scheduling_group_`.
+  agent_scheduling_group_.RemoveUserData(kGinJavaBridgeMessageFilterKey);
+
+  // DO NOT use `this` from here on, as the object has been destroyed.
 }
 
 // static
 scoped_refptr<GinJavaBridgeMessageFilter> GinJavaBridgeMessageFilter::FromHost(
-    GinJavaBridgeDispatcherHost* host, bool create_if_not_exists) {
-  RenderProcessHost* rph = host->web_contents()->GetMainFrame()->GetProcess();
+    AgentSchedulingGroupHost& agent_scheduling_group,
+    bool create_if_not_exists) {
   scoped_refptr<GinJavaBridgeMessageFilter> filter =
       base::UserDataAdapter<GinJavaBridgeMessageFilter>::Get(
-          rph, kGinJavaBridgeMessageFilterKey);
+          &agent_scheduling_group, kGinJavaBridgeMessageFilterKey);
   if (!filter && create_if_not_exists) {
-    filter = new GinJavaBridgeMessageFilter();
-    rph->AddFilter(filter.get());
-    rph->AddObserver(filter.get());
+    filter = base::MakeRefCounted<GinJavaBridgeMessageFilter>(
+        base::PassKey<GinJavaBridgeMessageFilter>(), agent_scheduling_group);
+    agent_scheduling_group.AddFilter(filter.get());
+    agent_scheduling_group.GetProcess()->AddObserver(filter.get());
 
-    rph->SetUserData(
+    agent_scheduling_group.SetUserData(
         kGinJavaBridgeMessageFilterKey,
         std::make_unique<base::UserDataAdapter<GinJavaBridgeMessageFilter>>(
             filter.get()));
