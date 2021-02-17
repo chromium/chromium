@@ -10,7 +10,7 @@ var allTests = [function testGetDisplayNameForLocale() {
       'English',
       chrome.accessibilityPrivate.getDisplayNameForLocale('en', 'en'));
   chrome.test.assertEq(
-      'yue (Hong Kong)',
+      'Cantonese (Hong Kong)',
       chrome.accessibilityPrivate.getDisplayNameForLocale('yue-HK', 'en'));
   chrome.test.succeed();
 }];
