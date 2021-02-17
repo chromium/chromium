@@ -5685,3 +5685,6 @@ crbug.com/1178018 [ Win7 ] external/wpt/webaudio/the-audio-api/the-mediaelementa
 
 # Sheriff 2021-02-16
 crbug.com/1178899 http/tests/devtools/console/console-log-syntax-error.js [ Pass Failure ]
+
+# Sheriff 2021-02-17
+crbug.com/1179117 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
