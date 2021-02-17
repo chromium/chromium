@@ -187,6 +187,14 @@ class BASE_EXPORT Value {
   bool is_dict() const { return type() == Type::DICTIONARY; }
   bool is_list() const { return type() == Type::LIST; }
 
+  // These will return nullopt / nullptr if the type does not match.
+  Optional<bool> GetIfBool() const;
+  Optional<int> GetIfInt() const;
+  // Implicitly converts from int if necessary.
+  Optional<double> GetIfDouble() const;
+  const std::string* GetIfString() const;
+  const BlobStorage* GetIfBlob() const;
+
   // These will all CHECK that the type matches.
   bool GetBool() const;
   int GetInt() const;
@@ -501,19 +509,19 @@ class BASE_EXPORT Value {
   // If the current object can be converted into the given type, the value is
   // returned through the |out_value| parameter and true is returned;
   // otherwise, false is returned and |out_value| is unchanged.
-  // DEPRECATED, use GetBool() instead.
+  // DEPRECATED, use GetIfBool() instead.
   bool GetAsBoolean(bool* out_value) const;
-  // DEPRECATED, use GetInt() instead.
+  // DEPRECATED, use GetIfInt() instead.
   bool GetAsInteger(int* out_value) const;
-  // DEPRECATED, use GetDouble() instead.
+  // DEPRECATED, use GetIfDouble() instead.
   bool GetAsDouble(double* out_value) const;
-  // DEPRECATED, use GetString() instead.
+  // DEPRECATED, use GetIfString() instead.
   bool GetAsString(std::string* out_value) const;
   bool GetAsString(string16* out_value) const;
   bool GetAsString(const Value** out_value) const;
   bool GetAsString(StringPiece* out_value) const;
   // ListValue::From is the equivalent for std::unique_ptr conversions.
-  // DEPRECATED, use GetList() instead.
+  // DEPRECATED, use is_list() instead.
   bool GetAsList(ListValue** out_value);
   bool GetAsList(const ListValue** out_value) const;
   // DictionaryValue::From is the equivalent for std::unique_ptr conversions.

@@ -282,6 +282,26 @@ const char* Value::GetTypeName(Value::Type type) {
   return kTypeNames[static_cast<size_t>(type)];
 }
 
+Optional<bool> Value::GetIfBool() const {
+  return is_bool() ? make_optional(GetBool()) : nullopt;
+}
+
+Optional<int> Value::GetIfInt() const {
+  return is_int() ? make_optional(GetInt()) : nullopt;
+}
+
+Optional<double> Value::GetIfDouble() const {
+  return (is_int() || is_double()) ? make_optional(GetDouble()) : nullopt;
+}
+
+const std::string* Value::GetIfString() const {
+  return absl::get_if<std::string>(&data_);
+}
+
+const Value::BlobStorage* Value::GetIfBlob() const {
+  return absl::get_if<BlobStorage>(&data_);
+}
+
 bool Value::GetBool() const {
   return absl::get<bool>(data_);
 }

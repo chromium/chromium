@@ -74,26 +74,43 @@ TEST(ValuesTest, TestNothrow) {
       "ListIsNothrowMoveConstructibleFromList");
 }
 
+TEST(ValuesTest, EmptyValue) {
+  Value value;
+  EXPECT_EQ(Value::Type::NONE, value.type());
+  EXPECT_EQ(nullopt, value.GetIfBool());
+  EXPECT_EQ(nullopt, value.GetIfInt());
+  EXPECT_EQ(nullopt, value.GetIfDouble());
+  EXPECT_EQ(nullptr, value.GetIfString());
+  EXPECT_EQ(nullptr, value.GetIfBlob());
+}
+
 // Group of tests for the value constructors.
 TEST(ValuesTest, ConstructBool) {
   Value true_value(true);
   EXPECT_EQ(Value::Type::BOOLEAN, true_value.type());
+  EXPECT_THAT(true_value.GetIfBool(), testing::Optional(true));
   EXPECT_TRUE(true_value.GetBool());
 
   Value false_value(false);
   EXPECT_EQ(Value::Type::BOOLEAN, false_value.type());
+  EXPECT_THAT(false_value.GetIfBool(), testing::Optional(false));
   EXPECT_FALSE(false_value.GetBool());
 }
 
 TEST(ValuesTest, ConstructInt) {
   Value value(-37);
   EXPECT_EQ(Value::Type::INTEGER, value.type());
+  EXPECT_THAT(value.GetIfInt(), testing::Optional(-37));
   EXPECT_EQ(-37, value.GetInt());
+
+  EXPECT_THAT(value.GetIfDouble(), testing::Optional(-37.0));
+  EXPECT_EQ(-37.0, value.GetDouble());
 }
 
 TEST(ValuesTest, ConstructDouble) {
   Value value(-4.655);
   EXPECT_EQ(Value::Type::DOUBLE, value.type());
+  EXPECT_THAT(value.GetIfDouble(), testing::Optional(-4.655));
   EXPECT_EQ(-4.655, value.GetDouble());
 }
 
@@ -101,6 +118,7 @@ TEST(ValuesTest, ConstructStringFromConstCharPtr) {
   const char* str = "foobar";
   Value value(str);
   EXPECT_EQ(Value::Type::STRING, value.type());
+  EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
 }
 
@@ -108,6 +126,7 @@ TEST(ValuesTest, ConstructStringFromStringPiece) {
   std::string str = "foobar";
   Value value{StringPiece(str)};
   EXPECT_EQ(Value::Type::STRING, value.type());
+  EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
 }
 
@@ -115,6 +134,7 @@ TEST(ValuesTest, ConstructStringFromStdStringRRef) {
   std::string str = "foobar";
   Value value(std::move(str));
   EXPECT_EQ(Value::Type::STRING, value.type());
+  EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
 }
 
@@ -122,6 +142,7 @@ TEST(ValuesTest, ConstructStringFromConstChar16Ptr) {
   string16 str = ASCIIToUTF16("foobar");
   Value value(str.c_str());
   EXPECT_EQ(Value::Type::STRING, value.type());
+  EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
 }
 
@@ -129,14 +150,16 @@ TEST(ValuesTest, ConstructStringFromStringPiece16) {
   string16 str = ASCIIToUTF16("foobar");
   Value value{StringPiece16(str)};
   EXPECT_EQ(Value::Type::STRING, value.type());
+  EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
 }
 
 TEST(ValuesTest, ConstructBinary) {
-  Value value(Value::BlobStorage({0xF, 0x0, 0x0, 0xB, 0xA, 0x2}));
+  Value::BlobStorage blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  Value value(blob);
   EXPECT_EQ(Value::Type::BINARY, value.type());
-  EXPECT_EQ(Value::BlobStorage({0xF, 0x0, 0x0, 0xB, 0xA, 0x2}),
-            value.GetBlob());
+  EXPECT_THAT(value.GetIfBlob(), testing::Pointee(blob));
+  EXPECT_EQ(blob, value.GetBlob());
 }
 
 TEST(ValuesTest, ConstructDict) {
