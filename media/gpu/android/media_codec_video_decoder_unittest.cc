@@ -20,6 +20,7 @@
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -28,7 +29,6 @@
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_device_info.h"
 #include "media/gpu/android/video_frame_factory.h"
-#include "media/video/supported_video_decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunCallback;

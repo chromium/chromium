@@ -83,6 +83,30 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
 
+// static
+SupportedVideoDecoderConfigs FFmpegVideoDecoder::SupportedConfigsForWebRTC() {
+  SupportedVideoDecoderConfigs supported_configs;
+
+  if (IsCodecSupported(kCodecH264)) {
+    supported_configs.emplace_back(/*profile_min=*/H264PROFILE_BASELINE,
+                                   /*profile_max=*/H264PROFILE_HIGH,
+                                   /*coded_size_min=*/kDefaultSwDecodeSizeMin,
+                                   /*coded_size_max=*/kDefaultSwDecodeSizeMax,
+                                   /*allow_encrypted=*/false,
+                                   /*require_encrypted=*/false);
+  }
+  if (IsCodecSupported(kCodecVP8)) {
+    supported_configs.emplace_back(/*profile_min=*/VP8PROFILE_ANY,
+                                   /*profile_max=*/VP8PROFILE_ANY,
+                                   /*coded_size_min=*/kDefaultSwDecodeSizeMin,
+                                   /*coded_size_max=*/kDefaultSwDecodeSizeMax,
+                                   /*allow_encrypted=*/false,
+                                   /*require_encrypted=*/false);
+  }
+
+  return supported_configs;
+}
+
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
     : media_log_(media_log), state_(kUninitialized), decode_nalus_(false) {
   DVLOG(1) << __func__;

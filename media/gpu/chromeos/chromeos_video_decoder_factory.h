@@ -9,8 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_log.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/supported_video_decoder_config.h"
 
 namespace base {
 class SequencedTaskRunner;

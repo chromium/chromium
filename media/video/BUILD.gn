@@ -31,8 +31,6 @@ source_set("video") {
     "half_float_maker.h",
     "picture.cc",
     "picture.h",
-    "supported_video_decoder_config.cc",
-    "supported_video_decoder_config.h",
     "trace_util.cc",
     "trace_util.h",
     "video_decode_accelerator.cc",
@@ -126,7 +124,6 @@ source_set("unit_tests") {
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
-    "supported_video_decoder_config_unittest.cc",
     "video_encode_accelerator_adapter_test.cc",
   ]
   if (enable_platform_hevc) {

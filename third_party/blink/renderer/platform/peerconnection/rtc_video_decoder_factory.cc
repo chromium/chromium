@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "media/base/decoder_factory.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -35,7 +36,7 @@ struct CodecConfig {
   media::VideoCodecProfile profile;
 };
 
-constexpr std::array<CodecConfig, 7> kCodecConfigs = {{
+constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
     {media::kCodecVP8, media::VP8PROFILE_ANY},
     {media::kCodecVP9, media::VP9PROFILE_PROFILE0},
     {media::kCodecVP9, media::VP9PROFILE_PROFILE1},
@@ -43,6 +44,7 @@ constexpr std::array<CodecConfig, 7> kCodecConfigs = {{
     {media::kCodecH264, media::H264PROFILE_BASELINE},
     {media::kCodecH264, media::H264PROFILE_MAIN},
     {media::kCodecH264, media::H264PROFILE_HIGH},
+    {media::kCodecAV1, media::AV1PROFILE_PROFILE_MAIN},
 }};
 
 // Translate from media::VideoDecoderConfig to webrtc::SdpVideoFormat, or return
@@ -197,6 +199,9 @@ std::vector<webrtc::SdpVideoFormat>
 RTCVideoDecoderFactory::GetSupportedFormats() const {
   CheckAndWaitDecoderSupportStatusIfNeeded();
 
+  media::SupportedVideoDecoderConfigs supported_decoder_factory_configs =
+      decoder_factory_->GetSupportedVideoDecoderConfigsForWebRTC();
+
   // For now, ignore `kUseDecoderStreamForWebRTC`, and advertise support only
   // for hardware-accelerated formats.  For some codecs, like AV1, which don't
   // have an equivalent in rtc, we might want to include them anyway.
@@ -208,18 +213,29 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
         media::VideoColorSpace(), media::kNoTransformation, kDefaultSize,
         gfx::Rect(kDefaultSize), kDefaultSize, media::EmptyExtraData(),
         media::EncryptionScheme::kUnencrypted);
+    base::Optional<webrtc::SdpVideoFormat> format;
     for (auto impl : RTCVideoDecoderAdapter::SupportedImplementations()) {
       if (gpu_factories_->IsDecoderConfigSupported(impl, config) ==
           media::GpuVideoAcceleratorFactories::Supported::kTrue) {
-        base::Optional<webrtc::SdpVideoFormat> format =
-            VdcToWebRtcFormat(config);
-        if (format) {
-          supported_formats.push_back(*format);
-        }
+        format = VdcToWebRtcFormat(config);
         break;
       }
     }
+
+    if (base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC) &&
+        !format.has_value()) {
+      for (auto& supported_config : supported_decoder_factory_configs) {
+        if (supported_config.Matches(config)) {
+          format = VdcToWebRtcFormat(config);
+          break;
+        }
+      }
+    }
+
+    if (format)
+      supported_formats.push_back(*format);
   }
+
   MapBaselineProfile(&supported_formats);
   return supported_formats;
 }

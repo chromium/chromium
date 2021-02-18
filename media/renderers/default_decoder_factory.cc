@@ -85,6 +85,69 @@ void DefaultDecoderFactory::CreateAudioDecoders(
   }
 }
 
+SupportedVideoDecoderConfigs
+DefaultDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
+  SupportedVideoDecoderConfigs supported_configs;
+
+  {
+    base::AutoLock auto_lock(shutdown_lock_);
+    if (external_decoder_factory_) {
+      SupportedVideoDecoderConfigs external_supported_configs =
+          external_decoder_factory_->GetSupportedVideoDecoderConfigsForWebRTC();
+      supported_configs.insert(supported_configs.end(),
+                               external_supported_configs.begin(),
+                               external_supported_configs.end());
+    }
+  }
+
+#if defined(OS_FUCHSIA)
+  // TODO(crbug.com/1173503): Implement capabilities for fuchsia.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSoftwareVideoDecoders)) {
+    // Bypass software codec registration.
+    return supported_configs;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+  SupportedVideoDecoderConfigs vpx_configs =
+      VpxVideoDecoder::SupportedConfigs();
+
+  for (auto& config : vpx_configs) {
+    if (config.profile_min >= VP9PROFILE_MIN &&
+        config.profile_max <= VP9PROFILE_MAX) {
+      supported_configs.emplace_back(config);
+    }
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
+  if (base::FeatureList::IsEnabled(kGav1VideoDecoder)) {
+    SupportedVideoDecoderConfigs gav1_configs =
+        Gav1VideoDecoder::SupportedConfigs();
+    supported_configs.insert(supported_configs.end(), gav1_configs.begin(),
+                             gav1_configs.end());
+  } else
+#endif
+  {
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
+    SupportedVideoDecoderConfigs dav1d_configs =
+        Dav1dVideoDecoder::SupportedConfigs();
+    supported_configs.insert(supported_configs.end(), dav1d_configs.begin(),
+                             dav1d_configs.end());
+#endif
+  }
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  SupportedVideoDecoderConfigs ffmpeg_configs =
+      FFmpegVideoDecoder::SupportedConfigsForWebRTC();
+  supported_configs.insert(supported_configs.end(), ffmpeg_configs.begin(),
+                           ffmpeg_configs.end());
+#endif
+
+  return supported_configs;
+}
+
 void DefaultDecoderFactory::CreateVideoDecoders(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,

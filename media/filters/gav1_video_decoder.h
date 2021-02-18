@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame_pool.h"
 #include "media/filters/offloading_video_decoder.h"
@@ -28,6 +29,8 @@ class MediaLog;
 
 class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
  public:
+  static SupportedVideoDecoderConfigs SupportedConfigs();
+
   explicit Gav1VideoDecoder(MediaLog* media_log,
                             OffloadState offload_state = OffloadState::kNormal);
   ~Gav1VideoDecoder() override;
