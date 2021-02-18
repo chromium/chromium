@@ -3476,10 +3476,6 @@
         "name": "system_health.common_desktop/browse:search:google:2020"
     },
     {
-        "duration": "37.0",
-        "name": "system_health.common_desktop/browse:search:google_india:2018"
-    },
-    {
         "duration": "72.0",
         "name": "system_health.common_desktop/browse:social:facebook_infinite_scroll:2018"
     },
@@ -3794,10 +3790,6 @@
     {
         "duration": "46.0",
         "name": "system_health.memory_desktop/browse:search:google:2020"
-    },
-    {
-        "duration": "30.0",
-        "name": "system_health.memory_desktop/browse:search:google_india:2018"
     },
     {
         "duration": "67.0",
@@ -4156,10 +4148,6 @@
         "name": "v8.browsing_desktop-future/browse:search:google:2020"
     },
     {
-        "duration": "42.0",
-        "name": "v8.browsing_desktop-future/browse:search:google_india:2018"
-    },
-    {
         "duration": "96.0",
         "name": "v8.browsing_desktop-future/browse:social:facebook_infinite_scroll:2018"
     },
@@ -4266,10 +4254,6 @@
     {
         "duration": "64.0",
         "name": "v8.browsing_desktop/browse:search:google:2020"
-    },
-    {
-        "duration": "45.0",
-        "name": "v8.browsing_desktop/browse:search:google_india:2018"
     },
     {
         "duration": "98.0",

@@ -448,13 +448,13 @@ class GoogleIndiaDesktopStory2018(_ArticleBrowsingStory):
     6. Scroll the search result page.
 
   """
-  NAME = 'browse:search:google_india:2018'
+  NAME = 'browse:search:google_india:2021'
   URL = 'https://www.google.co.in/search?q=%E0%A4%AB%E0%A5%82%E0%A4%B2&hl=hi'
   _SEARCH_BOX_SELECTOR = 'input[name="q"]'
-  _SEARCH_BUTTON_SELECTOR = 'button[name="btnG"]'
+  _SEARCH_BUTTON_SELECTOR = 'button[aria-label="Google Search"]'
   _SEARCH_PAGE_2_SELECTOR = 'a[aria-label="Page 2"]'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2018]
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2021]
 
   def _DidLoadDocument(self, action_runner):
     # Refine search query in the search box.

@@ -144,10 +144,6 @@
         "name": "system_health.common_desktop/browse:news:nytimes:2020"
     },
     {
-        "duration": "35.0",
-        "name": "system_health.common_desktop/browse:search:google_india:2018"
-    },
-    {
         "duration": "64.0",
         "name": "system_health.common_desktop/browse:social:facebook_infinite_scroll:2018"
     },

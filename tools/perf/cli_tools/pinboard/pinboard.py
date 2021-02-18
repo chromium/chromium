@@ -100,7 +100,7 @@ ACTIVE_STORIES = set([
     'browse:search:google:2020',
     'browse:news:cnn:2018',
     'browse:news:reddit:2020',
-    'browse:search:google_india:2018',
+    'browse:search:google_india:2021',
     'browse:media:youtubetv:2019',
 
     # Speedometer2.
