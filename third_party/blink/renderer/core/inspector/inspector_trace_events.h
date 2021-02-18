@@ -140,6 +140,13 @@ class CORE_EXPORT InspectorTraceEvents
   DISALLOW_COPY_AND_ASSIGN(InspectorTraceEvents);
 };
 
+#define DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(event_name, function_name, ...) \
+  TRACE_EVENT_INSTANT1("devtools.timeline", event_name,                       \
+                       TRACE_EVENT_SCOPE_THREAD, "data",                      \
+                       [&](perfetto::TracedValue ctx) {                       \
+                         function_name(std::move(ctx), __VA_ARGS__);          \
+                       })
+
 namespace inspector_layout_event {
 std::unique_ptr<TracedValue> BeginData(LocalFrameView*);
 std::unique_ptr<TracedValue> EndData(LayoutObject* root_for_this_layout);
@@ -280,11 +287,12 @@ std::unique_ptr<TracedValue> Data(DocumentLoader*,
 }
 
 namespace inspector_send_request_event {
-std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  uint64_t identifier,
-                                  LocalFrame*,
-                                  const ResourceRequest&,
-                                  RenderBlockingBehavior);
+void Data(perfetto::TracedValue context,
+          DocumentLoader*,
+          uint64_t identifier,
+          LocalFrame*,
+          const ResourceRequest&,
+          RenderBlockingBehavior);
 }
 
 namespace inspector_send_navigation_request_event {

@@ -113,6 +113,25 @@ void SetCallStack(TracedValue* value) {
   v8::CpuProfiler::CollectSample(v8::Isolate::GetCurrent());
 }
 
+void SetCallStack(perfetto::TracedDictionary& dict) {
+  static const unsigned char* trace_category_enabled = nullptr;
+  WTF_ANNOTATE_BENIGN_RACE(&trace_category_enabled, "trace_event category");
+  if (!trace_category_enabled) {
+    trace_category_enabled = TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack"));
+  }
+  if (!*trace_category_enabled)
+    return;
+  // The CPU profiler stack trace does not include call site line numbers.
+  // So we collect the top frame with SourceLocation::capture() to get the
+  // binding call site info.
+  auto source_location = SourceLocation::Capture();
+  if (source_location->HasStackTrace()) {
+    dict.Add("stackTrace", source_location);
+  }
+  v8::CpuProfiler::CollectSample(v8::Isolate::GetCurrent());
+}
+
 void InspectorTraceEvents::WillSendRequest(
     uint64_t identifier,
     DocumentLoader* loader,
@@ -123,11 +142,9 @@ void InspectorTraceEvents::WillSendRequest(
     ResourceType,
     RenderBlockingBehavior render_blocking_behavior) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
-      "data",
-      inspector_send_request_event::Data(loader, identifier, frame, request,
-                                         render_blocking_behavior));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "ResourceSendRequest", inspector_send_request_event::Data, loader,
+      identifier, frame, request, render_blocking_behavior);
 }
 
 void InspectorTraceEvents::WillSendNavigationRequest(
@@ -767,18 +784,18 @@ std::unique_ptr<TracedValue> inspector_change_resource_priority_event::Data(
   return value;
 }
 
-std::unique_ptr<TracedValue> inspector_send_request_event::Data(
+void inspector_send_request_event::Data(
+    perfetto::TracedValue context,
     DocumentLoader* loader,
     uint64_t identifier,
     LocalFrame* frame,
     const ResourceRequest& request,
     RenderBlockingBehavior render_blocking_behavior) {
-  auto value = std::make_unique<TracedValue>();
-  value->SetString("requestId",
-                   IdentifiersFactory::RequestId(loader, identifier));
-  value->SetString("frame", IdentifiersFactory::FrameId(frame));
-  value->SetString("url", request.Url().GetString());
-  value->SetString("requestMethod", request.HttpMethod());
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("requestId", IdentifiersFactory::RequestId(loader, identifier));
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  dict.Add("url", request.Url().GetString());
+  dict.Add("requestMethod", request.HttpMethod());
   String render_blocking_string;
   switch (render_blocking_behavior) {
     case RenderBlockingBehavior::kUnset:
@@ -802,13 +819,12 @@ std::unique_ptr<TracedValue> inspector_send_request_event::Data(
       NOTREACHED();
   }
   if (!render_blocking_string.IsNull()) {
-    value->SetString("renderBlocking", render_blocking_string);
+    dict.Add("renderBlocking", render_blocking_string);
   }
   const char* priority = ResourcePriorityString(request.Priority());
   if (priority)
-    value->SetString("priority", priority);
-  SetCallStack(value.get());
-  return value;
+    dict.Add("priority", priority);
+  SetCallStack(dict);
 }
 
 std::unique_ptr<TracedValue> inspector_send_navigation_request_event::Data(

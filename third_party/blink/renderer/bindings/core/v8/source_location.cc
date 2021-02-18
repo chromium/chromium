@@ -178,6 +178,20 @@ void SourceLocation::ToTracedValue(TracedValue* value, const char* name) const {
   value->EndArray();
 }
 
+void SourceLocation::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  // TODO(altimin): Consider replacing nested dict-inside-array with just an
+  // array here.
+  auto array = std::move(context).WriteArray();
+  auto dict = array.AppendDictionary();
+  // TODO(altimin): Add TracedValue support to v8::StringView and remove
+  // ToCoreString calls.
+  dict.Add("functionName", ToCoreString(stack_trace_->topFunctionName()));
+  dict.Add("scriptId", stack_trace_->topScriptIdAsInteger());
+  dict.Add("url", ToCoreString(stack_trace_->topSourceURL()));
+  dict.Add("lineNumber", stack_trace_->topLineNumber());
+  dict.Add("columnNumber", stack_trace_->topColumnNumber());
+}
+
 std::unique_ptr<SourceLocation> SourceLocation::Clone() const {
   return base::WrapUnique(new SourceLocation(
       url_.IsolatedCopy(), line_number_, column_number_,
