@@ -42,6 +42,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String TAG = "SPTD";
+    private static final String STALE_TAB_THRESHOLD_SECONDS_PARAM =
+            "price_tracking_stale_tab_threshold_seconds";
     private static final String TIME_TO_LIVE_MS_PARAM = "price_tracking_time_to_live_ms";
     private static final String DISPLAY_TIME_MS_PARAM = "price_tracking_display_time_ms";
 
@@ -58,6 +60,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting
     public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
+
+    private static final long NINETY_DAYS_SECONDS = TimeUnit.DAYS.toSeconds(90);
+
+    public static final IntCachedFieldTrialParameter STALE_TAB_THRESHOLD_SECONDS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                    STALE_TAB_THRESHOLD_SECONDS_PARAM, (int) NINETY_DAYS_SECONDS);
 
     public static final IntCachedFieldTrialParameter TIME_TO_LIVE_MS =
             new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
@@ -193,6 +201,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         -> { return new ShoppingPersistedTabData(tab, data, storage, id); },
                 (supplierCallback)
                         -> {
+                    if (getTimeSinceTabLastOpenedMs(tab)
+                            > TimeUnit.SECONDS.toMillis(STALE_TAB_THRESHOLD_SECONDS.getValue())) {
+                        supplierCallback.onResult(null);
+                        return;
+                    }
                     ShoppingPersistedTabData previousShoppingPersistedTabData =
                             PersistedTabData.from(tab, USER_DATA_KEY);
                     ShoppingPersistedTabData.isShoppingPage(tab.getUrl(), (isShoppingPage) -> {
@@ -500,6 +513,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public void destroy() {
         mTab.removeObserver(mUrlUpdatedObserver);
         super.destroy();
+    }
+
+    private static long getTimeSinceTabLastOpenedMs(Tab tab) {
+        return System.currentTimeMillis() - CriticalPersistedTabData.from(tab).getTimestampMillis();
     }
 
     private static void isShoppingPage(GURL url, Callback<Boolean> callback) {

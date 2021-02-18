@@ -157,6 +157,69 @@ public class ShoppingPersistedTabDataTest {
         }
     }
 
+    @SmallTest
+    @Test
+    public void testStaleTab() {
+        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CriticalPersistedTabData.from(tab).setTimestampMillis(
+                    System.currentTimeMillis() - TimeUnit.DAYS.toMillis(100));
+            ShoppingPersistedTabData.from(
+                    tab, (shoppingPersistedTabData) -> { semaphore.release(); });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
+                mPageAnnotationsServiceMock, 0);
+    }
+
+    @SmallTest
+    @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"})
+    public void test2DayTabWithStaleOverride1day() {
+        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CriticalPersistedTabData.from(tab).setTimestampMillis(
+                    System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2));
+            ShoppingPersistedTabData.from(
+                    tab, (shoppingPersistedTabData) -> { semaphore.release(); });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
+                mPageAnnotationsServiceMock, 0);
+    }
+
+    @SmallTest
+    @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"})
+    public void testHalfDayTabWithStaleOverride1day() {
+        ShoppingPersistedTabDataTestUtils.mockPageAnnotationsResponse(mPageAnnotationsServiceMock,
+                ShoppingPersistedTabDataTestUtils.MockPageAnnotationsResponse
+                        .BUYABLE_PRODUCT_INITIAL);
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock, OptimizationGuideDecision.TRUE);
+        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CriticalPersistedTabData.from(tab).setTimestampMillis(
+                    System.currentTimeMillis() - TimeUnit.HOURS.toMillis(12));
+            ShoppingPersistedTabData.from(
+                    tab, (shoppingPersistedTabData) -> { semaphore.release(); });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        ShoppingPersistedTabDataTestUtils.verifyGetPageAnnotationsCalled(
+                mPageAnnotationsServiceMock, 1);
+    }
+
     @UiThreadTest
     @SmallTest
     @Test

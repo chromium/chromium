@@ -85,8 +85,11 @@ public abstract class ShoppingPersistedTabDataTestUtils {
 
     static Tab createTabOnUiThread(int tabId, boolean isIncognito) {
         AtomicReference<Tab> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { res.set(MockTab.createAndInitialize(tabId, isIncognito)); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab tab = MockTab.createAndInitialize(TAB_ID, IS_INCOGNITO);
+            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+            res.set(tab);
+        });
         return res.get();
     }
 
