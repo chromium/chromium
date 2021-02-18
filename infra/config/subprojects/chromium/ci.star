@@ -4895,6 +4895,15 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
+    name = "linux-extended-tracing-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "trc",
+    ),
+    main_console_view = "main",
+)
+
+ci.linux_builder(
     name = "linux-gcc-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release",

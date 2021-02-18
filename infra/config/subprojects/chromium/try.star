@@ -1061,6 +1061,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-extended-tracing-rel",
+)
+
+try_.chromium_linux_builder(
     name = "linux-gcc-rel",
     goma_backend = None,
 )

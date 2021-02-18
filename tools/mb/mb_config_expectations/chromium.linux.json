@@ -148,6 +148,14 @@
       "use_goma": true
     }
   },
+  "linux-extended-tracing-rel": {
+    "gn_args": {
+      "extended_tracing_enabled": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
   "linux-gcc-rel": {
     "gn_args": {
       "is_clang": false,

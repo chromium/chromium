@@ -506,6 +506,7 @@
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
       'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only',
       'linux-bfcache-rel': 'release_bot_blink',
+      'linux-extended-tracing-rel': 'release_bot_extended_tracing',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
       'linux-ozone-rel': 'ozone_linux_release_bot',
       'linux-trusty-rel': 'gpu_tests_release_bot',
@@ -972,6 +973,7 @@
       'linux-clang-tidy-rel': 'release_trybot',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
       'linux-example-builder': 'release_trybot',
+      'linux-extended-tracing-rel': 'release_trybot_extended_tracing',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
@@ -2517,6 +2519,10 @@
       'release_bot_blink', 'enable_v8_oilpan', 'dcheck_always_on',
     ],
 
+    'release_bot_extended_tracing': [
+      'release_bot', 'extended_tracing',
+    ],
+
     'release_bot_fuchsia': [
       'release_bot', 'fuchsia',
     ],
@@ -2579,6 +2585,10 @@
 
     'release_trybot_enable_v8_oilpan': [
       'release_trybot_blink', 'enable_v8_oilpan',
+    ],
+
+    'release_trybot_extended_tracing': [
+      'release_trybot', 'extended_tracing',
     ],
 
     'release_trybot_fuchsia': [
@@ -2966,6 +2976,10 @@
       'gn_args': 'enable_blink_heap_use_v8_oilpan=true',
     },
 
+    'enable_vulkan': {
+      'gn_args': 'enable_vulkan=true',
+    },
+
     'eve': {
       'args_file': '//build/args/chromeos/eve.gni',
     },
@@ -2974,8 +2988,8 @@
       'args_file': '//build/args/chromeos/eve-arc-r.gni',
     },
 
-    'enable_vulkan': {
-      'gn_args': 'enable_vulkan=true',
+    'extended_tracing': {
+      'gn_args': 'extended_tracing_enabled=true',
     },
 
     # This mixin is used to force configs that use it to fail. It

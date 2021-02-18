@@ -473,6 +473,16 @@
       "use_goma": true
     }
   },
+  "linux-extended-tracing-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "extended_tracing_enabled": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "linux-gcc-rel": {
     "gn_args": {
       "is_clang": false,
