@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_browser_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
@@ -177,7 +178,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   ui::SelectFileDialog::SetFactory(new SelectFileDialogExtensionFactory);
 
-
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   exo_parts_ = ExoParts::CreateIfNecessary();
   if (exo_parts_) {
@@ -189,6 +189,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   night_light_client_ = std::make_unique<NightLightClient>(
       g_browser_process->shared_url_loader_factory());
   night_light_client_->Start();
+
+  if (chromeos::features::IsProjectorEnabled()) {
+    projector_client_ = std::make_unique<ProjectorClientImpl>();
+  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {

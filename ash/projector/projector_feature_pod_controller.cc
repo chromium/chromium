@@ -4,7 +4,7 @@
 
 #include "ash/projector/projector_feature_pod_controller.h"
 
-#include "ash/projector/projector_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"

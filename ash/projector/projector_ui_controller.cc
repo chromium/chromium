@@ -4,7 +4,7 @@
 
 #include "ash/projector/projector_ui_controller.h"
 
-#include "ash/projector/projector_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

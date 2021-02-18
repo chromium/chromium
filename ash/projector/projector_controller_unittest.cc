@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/projector/projector_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 
 #include <memory>
 #include <string>
@@ -80,7 +80,7 @@ class ProjectorControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ = std::make_unique<ProjectorController>();
+    controller_ = std::make_unique<ProjectorControllerImpl>();
 
     auto mock_ui_controller = std::make_unique<MockProjectorUiController>();
     mock_ui_controller_ = mock_ui_controller.get();
@@ -96,7 +96,7 @@ class ProjectorControllerTest : public AshTestBase {
  protected:
   MockProjectorUiController* mock_ui_controller_ = nullptr;
   MockProjectorMetadataController* mock_metadata_controller_ = nullptr;
-  std::unique_ptr<ProjectorController> controller_;
+  std::unique_ptr<ProjectorControllerImpl> controller_;
 };
 
 TEST_F(ProjectorControllerTest, ShowToolbar) {

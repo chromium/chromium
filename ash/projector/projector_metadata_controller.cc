@@ -4,7 +4,7 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 
-#include "ash/projector/projector_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

@@ -2,42 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/projector/projector_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_ui_controller.h"
+#include "ash/public/cpp/projector/projector_client.h"
+#include "ash/shell.h"
 
 namespace ash {
 
-ProjectorController::ProjectorController()
+ProjectorControllerImpl::ProjectorControllerImpl()
     : ui_controller_(std::make_unique<ash::ProjectorUiController>()),
       metadata_controller_(
           std::make_unique<ash::ProjectorMetadataController>()) {}
 
-ProjectorController::~ProjectorController() = default;
+ProjectorControllerImpl::~ProjectorControllerImpl() = default;
 
-void ProjectorController::ShowToolbar() {
+void ProjectorControllerImpl::SetClient(ProjectorClient* client) {
+  client_ = client;
+}
+
+void ProjectorControllerImpl::ShowToolbar() {
   ui_controller_->ShowToolbar();
 }
 
-void ProjectorController::SetCaptionState(bool is_on) {
+void ProjectorControllerImpl::SetCaptionState(bool is_on) {
   if (is_on == is_caption_on_)
     return;
 
   is_caption_on_ = is_on;
 }
 
-void ProjectorController::OnRecordingStarted() {
+void ProjectorControllerImpl::OnRecordingStarted() {
   StartSpeechRecognition();
   metadata_controller_->OnRecordingStarted();
 }
 
-void ProjectorController::SaveScreencast(
+void ProjectorControllerImpl::SaveScreencast(
     const base::FilePath& saved_video_path) {
   metadata_controller_->SaveMetadata(saved_video_path);
 }
 
-void ProjectorController::OnTranscription(
+void ProjectorControllerImpl::OnTranscription(
     chromeos::machine_learning::mojom::SpeechRecognizerEventPtr
         speech_recognizer_event) {
   bool is_final = speech_recognizer_event->is_final_result();
@@ -74,23 +80,33 @@ void ProjectorController::OnTranscription(
   }
 }
 
-void ProjectorController::SetProjectorUiControllerForTest(
+void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);
 }
 
-void ProjectorController::SetProjectorMetadataControllerForTest(
+void ProjectorControllerImpl::SetProjectorMetadataControllerForTest(
     std::unique_ptr<ProjectorMetadataController> metadata_controller) {
   metadata_controller_ = std::move(metadata_controller);
 }
 
-void ProjectorController::MarkKeyIdea() {
+void ProjectorControllerImpl::MarkKeyIdea() {
   metadata_controller_->RecordKeyIdea();
   ui_controller_->OnKeyIdeaMarked();
 }
 
-void ProjectorController::StartSpeechRecognition() {
-  // TODO(crbug.com/1165437): Enable speech reognition for mic input.
+void ProjectorControllerImpl::StartSpeechRecognition() {
+  DCHECK(!is_speech_recognition_on_);
+  DCHECK_NE(client_, nullptr);
+  client_->StartSpeechRecognition();
+  is_speech_recognition_on_ = true;
+}
+
+void ProjectorControllerImpl::StopSpeechRecognition() {
+  DCHECK(is_speech_recognition_on_);
+  DCHECK_NE(client_, nullptr);
+  client_->StopSpeechRecognition();
+  is_speech_recognition_on_ = false;
 }
 
 }  // namespace ash
