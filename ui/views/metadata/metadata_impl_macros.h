@@ -66,4 +66,16 @@
           property_type, property_name, ##__VA_ARGS__)>(#property_name,   \
                                                         #property_type);  \
   AddMemberData(std::move(property_name##_prop));
+
+// Adds a ui::ClassProperty of key |property_key| to metadata.
+// If the property value is an pointer of type |TValue*|, specify
+// |property_type| as |TValue| to allow inspecting the actually value.
+// Otherwise the metadata will treat the pointer as it is.
+#define ADD_CLASS_PROPERTY_METADATA(property_type, property_key, ...)   \
+  auto property_key##_prop =                                            \
+      std::make_unique<METADATA_CLASS_PROPERTY_TYPE_INTERNAL(           \
+          property_type, property_key, ##__VA_ARGS__)>(property_key,    \
+                                                       #property_type); \
+  AddMemberData(std::move(property_key##_prop));
+
 #endif  // UI_VIEWS_METADATA_METADATA_IMPL_MACROS_H_

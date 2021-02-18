@@ -52,7 +52,7 @@
   }
 
 #define METADATA_PROPERTY_TYPE_INTERNAL(property_type, property_name, ...) \
-  views::metadata::ClassPropertyMetaData<                                  \
+  views::metadata::ObjectPropertyMetaData<                                 \
       ViewClass, property_type, decltype(&ViewClass::Set##property_name),  \
       &ViewClass::Set##property_name,                                      \
       decltype(std::declval<ViewClass>().Get##property_name()),            \
@@ -60,10 +60,15 @@
 
 #define METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type, property_name, \
                                                  ...)                          \
-  views::metadata::ClassPropertyReadOnlyMetaData<                              \
+  views::metadata::ObjectPropertyReadOnlyMetaData<                             \
       ViewClass, property_type,                                                \
       decltype(std::declval<ViewClass>().Get##property_name()),                \
       &ViewClass::Get##property_name, ##__VA_ARGS__>
+
+#define METADATA_CLASS_PROPERTY_TYPE_INTERNAL(property_type, property_key, \
+                                              ...)                         \
+  views::metadata::ClassPropertyMetaData<decltype(property_key),           \
+                                         property_type, ##__VA_ARGS__>
 
 #define BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,   \
                                 parent_class_name)                           \

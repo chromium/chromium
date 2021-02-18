@@ -5387,6 +5387,18 @@ TEST_F(ViewTest, TestEnabledPropertyMetadata) {
   EXPECT_EQ(enabled_property->GetValueAsString(test_view.get()), false_value);
 }
 
+TEST_F(ViewTest, TestMarginsPropertyMetadata) {
+  auto test_view = std::make_unique<View>();
+  views::metadata::ClassMetaData* view_metadata = View::MetaData();
+  ASSERT_TRUE(view_metadata);
+  views::metadata::MemberMetaDataBase* insets_property =
+      view_metadata->FindMemberData("kMarginsKey");
+  ASSERT_TRUE(insets_property);
+  base::string16 insets_value = base::ASCIIToUTF16("8,8,8,8");
+  insets_property->SetValueAsString(test_view.get(), insets_value);
+  EXPECT_EQ(insets_property->GetValueAsString(test_view.get()), insets_value);
+}
+
 TEST_F(ViewTest, TestEnabledChangedCallback) {
   auto test_view = std::make_unique<View>();
   bool enabled_changed = false;

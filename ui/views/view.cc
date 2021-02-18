@@ -3251,6 +3251,10 @@ ADD_PROPERTY_METADATA(bool, UseDefaultFillLayout)
 ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, X)
 ADD_PROPERTY_METADATA(int, Y)
+ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kMarginsKey)
+ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kInternalPaddingKey)
+ADD_CLASS_PROPERTY_METADATA(LayoutAlignment, kCrossAxisAlignmentKey)
+ADD_CLASS_PROPERTY_METADATA(bool, kViewIgnoredByLayoutKey)
 END_METADATA
 
 }  // namespace views
