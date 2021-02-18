@@ -150,6 +150,10 @@ class CartServiceTest : public testing::Test {
   void TearDown() override {}
 
  protected:
+  // This needs to be destroyed after task_environment, so that any tasks on
+  // other threads that might check if features are enabled complete first.
+  base::test::ScopedFeatureList features_;
+
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -443,29 +447,6 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
   run_loop[2].Run();
 }
 
-TEST_F(CartServiceTest, TestFakeData) {
-  base::RunLoop run_loop[2];
-  TestingProfile fake_profile;
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule,
-      {{"NtpChromeCartModuleDataParam", "fake"}});
-  CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
-  CartDB* fake_db = fake_service->GetDB();
-
-  fake_service->LoadCartsWithFakeData(
-      base::BindOnce(&CartServiceTest::GetEvaluationFakeDataDB,
-                     base::Unretained(this), run_loop[0].QuitClosure()));
-  run_loop[0].Run();
-
-  fake_service->Shutdown();
-
-  fake_db->LoadAllCarts(
-      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
-                     run_loop[1].QuitClosure(), kEmptyExpected));
-  run_loop[1].Run();
-}
-
 // Tests hiding a single cart and undoing the hide.
 TEST_F(CartServiceTest, TestHideCart) {
   CartDB* cart_db_ = service_->GetDB();
@@ -684,4 +665,34 @@ TEST_F(CartServiceTest, TestDomainToCartURLMapping) {
   EXPECT_EQ("https://cart.ebay.com", getDomainCartURL("ebay.com"));
 
   EXPECT_EQ("", getDomainCartURL("example.com"));
+}
+
+class CartServiceTestWithFeature : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceTestWithFeature() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleDataParam", "fake"}});
+  }
+};
+
+TEST_F(CartServiceTestWithFeature, TestFakeData) {
+  base::RunLoop run_loop[2];
+  TestingProfile fake_profile;
+  CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
+  CartDB* fake_db = fake_service->GetDB();
+
+  fake_service->LoadCartsWithFakeData(
+      base::BindOnce(&CartServiceTest::GetEvaluationFakeDataDB,
+                     base::Unretained(this), run_loop[0].QuitClosure()));
+  run_loop[0].Run();
+
+  fake_service->Shutdown();
+
+  fake_db->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
 }
