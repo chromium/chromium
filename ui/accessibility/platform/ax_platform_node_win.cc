@@ -44,6 +44,7 @@
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
@@ -3920,8 +3921,26 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
 
 void AXPlatformNodeWin::GetRuntimeIdArray(
     AXPlatformNodeWin::RuntimeIdArray& runtime_id) {
+  const AXNodeData& data = GetData();
+  int dom_id;
   runtime_id[0] = UiaAppendRuntimeId;
-  runtime_id[1] = GetUniqueId();
+
+  // The combination of tree/frame id and Blink (DOM) id is unique and gives
+  // nodes stable ids across layouts/tree movement. If there's a valid tree
+  // id, use that, otherwise fall back to the globally unique id.
+  AXTreeID tree_id = GetDelegate()->GetTreeData().tree_id;
+  if (data.GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId, &dom_id) &&
+      tree_id != AXTreeIDUnknown()) {
+    AXTreeIDRegistry::FrameID frame_id =
+        AXTreeIDRegistry::GetInstance()->GetFrameID(tree_id);
+    runtime_id[1] = frame_id.first;
+    runtime_id[2] = frame_id.second;
+    runtime_id[3] = dom_id;
+  } else {
+    runtime_id[1] = 0;
+    runtime_id[2] = 0;
+    runtime_id[3] = GetUniqueId();
+  }
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::GetRuntimeId(SAFEARRAY** runtime_id) {

@@ -4867,13 +4867,15 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   LONG array_upper_bound;
   EXPECT_HRESULT_SUCCEEDED(
       ::SafeArrayGetUBound(runtime_id.Get(), 1, &array_upper_bound));
-  EXPECT_EQ(1, array_upper_bound);
+  EXPECT_EQ(3, array_upper_bound);
 
   int* array_data;
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
       runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
   EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
   EXPECT_NE(-1, array_data[1]);
+  EXPECT_NE(-1, array_data[2]);
+  EXPECT_NE(-1, array_data[3]);
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }

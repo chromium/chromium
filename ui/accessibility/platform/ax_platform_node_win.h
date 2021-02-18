@@ -1091,7 +1091,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   HRESULT GetPropertyValueImpl(PROPERTYID property_id, VARIANT* result);
 
   // Helper to return the runtime id (without going through a SAFEARRAY)
-  using RuntimeIdArray = std::array<int, 2>;
+  using RuntimeIdArray = std::array<int, 4>;
   void GetRuntimeIdArray(RuntimeIdArray& runtime_id);
 
   // Updates the active composition range and fires UIA text edit event about

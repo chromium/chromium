@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
@@ -5328,6 +5329,65 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetCurrentValue) {
   slider_iavalue->get_currentValue(slider_value.Receive());
   EXPECT_EQ(VT_R8, slider_value.type());
   EXPECT_DOUBLE_EQ(5.0, V_R8(slider_value.ptr()));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FixedRuntimeId) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <p id="target">foo</p>
+      <div id="newParent">bar</div>
+      )HTML");
+
+  BrowserAccessibility* target = FindNode(ax::mojom::Role::kStaticText, "foo");
+  Microsoft::WRL::ComPtr<IRawElementProviderFragment> target_as_fragment;
+  EXPECT_HRESULT_SUCCEEDED(target->GetNativeViewAccessible()->QueryInterface(
+      IID_PPV_ARGS(&target_as_fragment)));
+
+  base::win::ScopedSafearray original_runtime_id;
+  EXPECT_HRESULT_SUCCEEDED(
+      target_as_fragment->GetRuntimeId(original_runtime_id.Receive()));
+
+  // First verify that the ids of 'target' and 'newParent' are in fact
+  // different.
+  BrowserAccessibility* new_parent =
+      FindNode(ax::mojom::Role::kStaticText, "bar");
+  Microsoft::WRL::ComPtr<IRawElementProviderFragment> new_parent_as_fragment;
+  EXPECT_HRESULT_SUCCEEDED(
+      new_parent->GetNativeViewAccessible()->QueryInterface(
+          IID_PPV_ARGS(&new_parent_as_fragment)));
+  base::win::ScopedSafearray new_parent_runtime_id;
+  EXPECT_HRESULT_SUCCEEDED(
+      new_parent_as_fragment->GetRuntimeId(new_parent_runtime_id.Receive()));
+
+  Microsoft::WRL::ComPtr<IUIAutomation> ui_automation;
+  EXPECT_HRESULT_SUCCEEDED(CoCreateInstance(CLSID_CUIAutomation, NULL,
+                                            CLSCTX_INPROC_SERVER,
+                                            IID_PPV_ARGS(&ui_automation)));
+  BOOL are_same;
+  EXPECT_HRESULT_SUCCEEDED(ui_automation->CompareRuntimeIds(
+      original_runtime_id.Get(), new_parent_runtime_id.Get(), &are_same));
+  EXPECT_FALSE(are_same);
+
+  ExecuteScript(
+      L"let target = document.getElementById('target');"
+      L"let parent = document.getElementById('newParent');"
+      L"parent.appendChild(target);");
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLayoutComplete);
+  waiter.WaitForNotification();
+
+  target = FindNode(ax::mojom::Role::kStaticText, "foo");
+  EXPECT_HRESULT_SUCCEEDED(target->GetNativeViewAccessible()->QueryInterface(
+      IID_PPV_ARGS(&target_as_fragment)));
+
+  base::win::ScopedSafearray new_runtime_id;
+  EXPECT_HRESULT_SUCCEEDED(
+      target_as_fragment->GetRuntimeId(new_runtime_id.Receive()));
+
+  EXPECT_HRESULT_SUCCEEDED(ui_automation->CompareRuntimeIds(
+      original_runtime_id.Get(), new_runtime_id.Get(), &are_same));
+  EXPECT_TRUE(are_same);
 }
 
 }  // namespace content

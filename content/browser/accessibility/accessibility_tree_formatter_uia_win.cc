@@ -48,6 +48,72 @@ std::string UiaIdentifierToCondensedString(int32_t id) {
   return identifier;
 }
 
+// The RuntimeId returned from IUIAutomationElement is different than the one
+// we hand out in IRawElementProviderFragment::GetRuntimeId, as UIA modifies it.
+// This function takes an existing IUIAutomationElement and swaps in the
+// Chromium specific bits of the internal runtime id so that the returned
+// SAFEARRAY can be used in IUIAutomationElement-based search/conditionals.
+void GetUIARuntimeId(IUIAutomationElement* first_child,
+                     IRawElementProviderFragment* start_fragment,
+                     SAFEARRAY** runtime_id_out) {
+  DCHECK(first_child && start_fragment && runtime_id_out);
+  std::array<int, 3> internal_id;
+  {
+    // Get the internal runtime id from the IRawElementProviderFragment based
+    // GetRuntimeId.
+    base::win::ScopedSafearray start_fragment_runtime_id;
+    start_fragment->GetRuntimeId(start_fragment_runtime_id.Receive());
+    LONG lower_bound = 0;
+    HRESULT hr =
+        ::SafeArrayGetLBound(start_fragment_runtime_id.Get(), 1, &lower_bound);
+    CHECK(SUCCEEDED(hr));
+    LONG upper_bound = 0;
+    hr = ::SafeArrayGetUBound(start_fragment_runtime_id.Get(), 1, &upper_bound);
+    CHECK(SUCCEEDED(hr));
+    CHECK(lower_bound >= 0);
+    LONG fragment_id_length = (upper_bound - lower_bound) + 1;
+    CHECK(fragment_id_length == 4);
+
+    int32_t* fragment_id_array = nullptr;
+    ::SafeArrayAccessData(start_fragment_runtime_id.Get(),
+                          reinterpret_cast<void**>(&fragment_id_array));
+    CHECK(fragment_id_array);
+    // Grab out the last three ints from the internal runtime id. This should
+    // correspond with the frame tree id and DOM id.
+    internal_id = {fragment_id_array[1], fragment_id_array[2],
+                   fragment_id_array[3]};
+
+    ::SafeArrayUnaccessData(start_fragment_runtime_id.Get());
+  }
+
+  base::win::ScopedSafearray runtime_id;
+  first_child->GetRuntimeId(runtime_id.Receive());
+  CHECK(runtime_id.Get());
+  LONG lower_bound = 0;
+  HRESULT hr = ::SafeArrayGetLBound(runtime_id.Get(), 1, &lower_bound);
+  CHECK(SUCCEEDED(hr));
+  LONG upper_bound = 0;
+  hr = ::SafeArrayGetUBound(runtime_id.Get(), 1, &upper_bound);
+  CHECK(SUCCEEDED(hr));
+  LONG runtime_id_length = upper_bound - lower_bound + 1;
+  CHECK(runtime_id_length >= 4);
+  {
+    int32_t* runtime_id_array = nullptr;
+    ::SafeArrayAccessData(runtime_id.Get(),
+                          reinterpret_cast<void**>(&runtime_id_array));
+    CHECK(runtime_id_array);
+
+    // Stuff the internal id values in the last three spots in the grabbed
+    // UIA-based runtime id.
+    runtime_id_array[upper_bound - 2] = internal_id[0];
+    runtime_id_array[upper_bound - 1] = internal_id[1];
+    runtime_id_array[upper_bound] = internal_id[2];
+    ::SafeArrayUnaccessData(runtime_id.Get());
+  }
+
+  *runtime_id_out = runtime_id.Release();
+}
+
 }  // namespace
 
 namespace content {
@@ -368,28 +434,17 @@ base::Value AccessibilityTreeFormatterUia::BuildTree(
 
   // Get first_child's RuntimeId and swap out the last element in its SAFEARRAY
   // for the UniqueId of the element we want to start from.
-  base::win::ScopedSafearray runtime_id;
-  first_child->GetRuntimeId(runtime_id.Receive());
-  CHECK(runtime_id.Get());
-  LONG lower_bound = 0;
-  HRESULT hr = ::SafeArrayGetLBound(runtime_id.Get(), 1, &lower_bound);
-  CHECK(SUCCEEDED(hr));
-  LONG upper_bound = 0;
-  hr = ::SafeArrayGetUBound(runtime_id.Get(), 1, &upper_bound);
-  CHECK(SUCCEEDED(hr));
-  {
-    int32_t* runtime_id_array = nullptr;
-    ::SafeArrayAccessData(runtime_id.Get(),
-                          reinterpret_cast<void**>(&runtime_id_array));
-    CHECK(runtime_id_array);
-    CHECK((upper_bound - lower_bound) >= 0);
-    runtime_id_array[upper_bound - lower_bound] =
-        start_internal->GetUniqueId().Get();
-    ::SafeArrayUnaccessData(runtime_id.Get());
-  }
+  Microsoft::WRL::ComPtr<IUnknown> start_unknown =
+      start_internal->GetNativeViewAccessible();
+  Microsoft::WRL::ComPtr<IRawElementProviderFragment> start_fragment;
+  start_unknown.As(&start_fragment);
+  CHECK(start_fragment.Get());
+  base::win::ScopedSafearray uia_runtime_id;
+  GetUIARuntimeId(first_child.Get(), start_fragment.Get(),
+                  uia_runtime_id.Receive());
 
   // Find the element with the desired RuntimeId.
-  base::win::ScopedVariant runtime_id_variant(runtime_id.Release());
+  base::win::ScopedVariant runtime_id_variant(uia_runtime_id.Release());
   Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
   uia_->CreatePropertyCondition(UIA_RuntimeIdPropertyId, runtime_id_variant,
                                 &condition);
