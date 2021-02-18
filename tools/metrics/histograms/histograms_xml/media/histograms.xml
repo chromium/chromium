@@ -5154,6 +5154,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Counts the number of devices known and populated to the Media Router dialog
     three seconds after the dialog loads. Always expected to be non-negative.
+    This includes data recorded from Clank, which uses Android's MediaRouter
+    framework.
   </summary>
 </histogram>
 

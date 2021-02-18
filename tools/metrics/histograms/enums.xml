@@ -9769,6 +9769,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Missing"/>
 </enum>
 
+<enum name="CastNotificationControls">
+  <int value="0" label="Resume"/>
+  <int value="1" label="Pause"/>
+  <int value="2" label="Stop"/>
+</enum>
+
 <enum name="CastOverlayEvents">
   <int value="0" label="Created"/>
   <int value="1" label="Shown"/>
@@ -65202,9 +65208,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="RemotePlaybackDeviceType">
+  <obsolete>
+    Dprecated as of 2021/01.
+  </obsolete>
   <int value="0" label="Cast Generic Media Player"/>
   <int value="1" label="Cast YouTube Player"/>
   <int value="2" label="Non-Cast YouTube Player"/>
+</enum>
+
+<enum name="RemotePlaybackInitiationLocation">
+  <int value="0" label="RemotePlayback API implemented by the sites"/>
+  <int value="1" label="Cast button in the HTML media element"/>
 </enum>
 
 <enum name="RemotePlaybackUrlResolveResult">

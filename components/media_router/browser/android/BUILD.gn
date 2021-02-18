@@ -46,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/components/media_router/MediaRouteDialogDelegate.java",
     "java/src/org/chromium/components/media_router/MediaRouteManager.java",
     "java/src/org/chromium/components/media_router/MediaRouteProvider.java",
+    "java/src/org/chromium/components/media_router/MediaRouteUmaRecorder.java",
     "java/src/org/chromium/components/media_router/MediaRouterClient.java",
     "java/src/org/chromium/components/media_router/MediaSink.java",
     "java/src/org/chromium/components/media_router/MediaSource.java",

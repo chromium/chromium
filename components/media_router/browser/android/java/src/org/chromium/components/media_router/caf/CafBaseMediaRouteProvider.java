@@ -14,6 +14,7 @@ import androidx.mediarouter.media.MediaRouter.RouteInfo;
 
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import org.chromium.base.Log;
 import org.chromium.components.media_router.DiscoveryCallback;
@@ -22,6 +23,7 @@ import org.chromium.components.media_router.FlingingController;
 import org.chromium.components.media_router.MediaRoute;
 import org.chromium.components.media_router.MediaRouteManager;
 import org.chromium.components.media_router.MediaRouteProvider;
+import org.chromium.components.media_router.MediaRouteUmaRecorder;
 import org.chromium.components.media_router.MediaSink;
 import org.chromium.components.media_router.MediaSource;
 
@@ -257,12 +259,22 @@ public abstract class CafBaseMediaRouteProvider
 
     @Override
     public final void onSessionEnding(CastSession session) {
+        RemoteMediaClient client = session.getRemoteMediaClient();
+        if (client != null) {
+            MediaRouteUmaRecorder.castEndedTimeRemaining(
+                    client.getApproximateStreamPosition(), client.getStreamDuration());
+        }
         handleSessionEnd();
     }
 
     @Override
     public final void onSessionEnded(CastSession session, int error) {
         Log.d(TAG, "Session ended with error code " + error);
+        RemoteMediaClient client = session.getRemoteMediaClient();
+        if (client != null) {
+            MediaRouteUmaRecorder.castEndedTimeRemaining(
+                    client.getApproximateStreamPosition(), client.getStreamDuration());
+        }
         handleSessionEnd();
     }
 

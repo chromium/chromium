@@ -13,6 +13,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationListener;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
+import org.chromium.components.media_router.MediaRouteUmaRecorder;
 import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.components.media_router.R;
 import org.chromium.services.media_session.MediaMetadata;
@@ -124,6 +125,8 @@ public abstract class BaseNotificationController
         if (!mSessionController.isConnected()) return;
 
         mSessionController.getRemoteMediaClient().play();
+        MediaRouteUmaRecorder.recordCastNotificationControlsAction(
+                MediaRouteUmaRecorder.CastNotificationControls.RESUME);
     }
 
     @Override
@@ -131,6 +134,8 @@ public abstract class BaseNotificationController
         if (!mSessionController.isConnected()) return;
 
         mSessionController.getRemoteMediaClient().pause();
+        MediaRouteUmaRecorder.recordCastNotificationControlsAction(
+                MediaRouteUmaRecorder.CastNotificationControls.PAUSE);
     }
 
     @Override
@@ -138,6 +143,8 @@ public abstract class BaseNotificationController
         if (!mSessionController.isConnected()) return;
 
         mSessionController.endSession();
+        MediaRouteUmaRecorder.recordCastNotificationControlsAction(
+                MediaRouteUmaRecorder.CastNotificationControls.STOP);
     }
 
     @Override
