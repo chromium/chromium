@@ -5917,6 +5917,27 @@
             ]
         }
     ],
+    "RelatedSearches": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "language_allowlist": "en",
+                        "needs_content": "true",
+                        "needs_url": "true",
+                        "stamp": "1Rb"
+                    },
+                    "enable_features": [
+                        "RelatedSearches"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReleaseNotesNotification": [
         {
             "platforms": [
