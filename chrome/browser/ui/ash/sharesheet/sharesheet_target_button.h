@@ -10,6 +10,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // SharesheetTargetButton is owned by |sharesheet_bubble_view|. It represents
 // a single target (either app or action) in the |sharesheet_bubble_view|. The
@@ -19,6 +20,8 @@
 // associated target.
 class SharesheetTargetButton : public views::Button {
  public:
+  METADATA_HEADER(SharesheetTargetButton);
+
   SharesheetTargetButton(PressedCallback callback,
                          const base::string16& display_name,
                          const base::string16& secondary_display_name,

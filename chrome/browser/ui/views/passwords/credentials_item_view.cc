@@ -23,6 +23,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/tooltip_icon.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -177,3 +178,6 @@ void CredentialsItemView::OnPaintBackground(gfx::Canvas* canvas) {
         ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor));
   }
 }
+
+BEGIN_METADATA(CredentialsItemView, views::Button)
+END_METADATA

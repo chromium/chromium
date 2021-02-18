@@ -29,6 +29,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
@@ -58,6 +59,8 @@ class ColorPickerHighlightPathGenerator : public views::HighlightPathGenerator {
 // circle of the given color.
 class ColorPickerElementView : public views::Button {
  public:
+  METADATA_HEADER(ColorPickerElementView);
+
   ColorPickerElementView(
       base::RepeatingCallback<void(ColorPickerElementView*)> selected_callback,
       const views::BubbleDialogDelegateView* bubble_view,
@@ -99,7 +102,7 @@ class ColorPickerElementView : public views::Button {
     SchedulePaint();
   }
 
-  bool selected() const { return selected_; }
+  bool GetSelected() const { return selected_; }
 
   // views::Button:
   bool IsGroupFocusTraversable() const override {
@@ -115,8 +118,8 @@ class ColorPickerElementView : public views::Button {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::Button::GetAccessibleNodeData(node_data);
     node_data->role = ax::mojom::Role::kRadioButton;
-    node_data->SetCheckedState(selected() ? ax::mojom::CheckedState::kTrue
-                                          : ax::mojom::CheckedState::kFalse);
+    node_data->SetCheckedState(GetSelected() ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   }
 
   base::string16 GetTooltipText(const gfx::Point& p) const override {
@@ -197,6 +200,10 @@ class ColorPickerElementView : public views::Button {
   bool selected_ = false;
 };
 
+BEGIN_METADATA(ColorPickerElementView, views::Button)
+ADD_PROPERTY_METADATA(bool, Selected)
+END_METADATA
+
 ColorPickerView::ColorPickerView(
     const views::BubbleDialogDelegateView* bubble_view,
     const TabGroupEditorBubbleView::Colors& colors,
@@ -250,7 +257,7 @@ ColorPickerView::~ColorPickerView() {
 
 base::Optional<int> ColorPickerView::GetSelectedElement() const {
   for (size_t i = 0; i < elements_.size(); ++i) {
-    if (elements_[i]->selected())
+    if (elements_[i]->GetSelected())
       return static_cast<int>(i);
   }
   return base::nullopt;
@@ -258,7 +265,7 @@ base::Optional<int> ColorPickerView::GetSelectedElement() const {
 
 views::View* ColorPickerView::GetSelectedViewForGroup(int group) {
   for (ColorPickerElementView* element : elements_) {
-    if (element->selected())
+    if (element->GetSelected())
       return element;
   }
   return nullptr;

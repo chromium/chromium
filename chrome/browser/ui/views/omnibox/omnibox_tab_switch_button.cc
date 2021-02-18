@@ -20,7 +20,9 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 // static
 bool OmniboxTabSwitchButton::calculated_widths_ = false;
@@ -144,3 +146,6 @@ bool OmniboxTabSwitchButton::IsSelected() const {
          popup_contents_view_->model()->selected_line_state() ==
              OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH;
 }
+
+BEGIN_METADATA(OmniboxTabSwitchButton, views::MdTextButton)
+END_METADATA

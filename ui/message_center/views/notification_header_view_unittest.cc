@@ -18,6 +18,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
@@ -28,6 +29,9 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
   NotificationHeaderViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  NotificationHeaderViewTest(const NotificationHeaderViewTest&) = delete;
+  NotificationHeaderViewTest& operator=(const NotificationHeaderViewTest&) =
+      delete;
   ~NotificationHeaderViewTest() override = default;
 
   // ViewsTestBase:
@@ -77,8 +81,6 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
  private:
   views::Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationHeaderViewTest);
 };
 
 TEST_F(NotificationHeaderViewTest, UpdatesTimestampOverTime) {
@@ -211,6 +213,10 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 TEST_F(NotificationHeaderViewTest, DefaultFocusBehavior) {
   EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
             notification_header_view_->GetFocusBehavior());
+}
+
+TEST_F(NotificationHeaderViewTest, MetadataTest) {
+  views::test::TestViewMetadata(notification_header_view_);
 }
 
 }  // namespace message_center

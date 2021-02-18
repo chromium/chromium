@@ -12,6 +12,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/linux_ui/status_icon_linux.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -25,7 +26,11 @@ class StatusIconButtonLinux : public views::StatusIconLinux,
                               public views::Button,
                               public views::ContextMenuController {
  public:
+  METADATA_HEADER(StatusIconButtonLinux);
+
   StatusIconButtonLinux();
+  StatusIconButtonLinux(const StatusIconButtonLinux&) = delete;
+  StatusIconButtonLinux& operator=(const StatusIconButtonLinux&) = delete;
   ~StatusIconButtonLinux() override;
 
   // views::StatusIcon:
@@ -48,8 +53,6 @@ class StatusIconButtonLinux : public views::StatusIconLinux,
   aura::WindowTreeHost* host_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconButtonLinux);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_BUTTON_LINUX_H_

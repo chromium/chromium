@@ -32,6 +32,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -66,6 +68,8 @@ constexpr int kMinMovementSquaredToBeDragging = 10;
 class MediaNotificationContainerImplView::DismissButton
     : public views::ImageButton {
  public:
+  METADATA_HEADER(DismissButton);
+
   explicit DismissButton(PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
@@ -73,12 +77,15 @@ class MediaNotificationContainerImplView::DismissButton
         this, kDismissButtonBackgroundRadius);
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   }
-
+  DismissButton(const DismissButton&) = delete;
+  DismissButton& operator=(const DismissButton&) = delete;
   ~DismissButton() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DismissButton);
 };
+
+BEGIN_METADATA(MediaNotificationContainerImplView,
+               DismissButton,
+               views::ImageButton)
+END_METADATA
 
 MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     const std::string& id,
@@ -499,7 +506,7 @@ void MediaNotificationContainerImplView::OnOverlayNotificationShown(
   overlay_ = overlay;
 }
 
-const base::string16& MediaNotificationContainerImplView::GetTitle() {
+const base::string16& MediaNotificationContainerImplView::GetTitle() const {
   return title_;
 }
 
@@ -605,3 +612,7 @@ void MediaNotificationContainerImplView::OnSizeChanged() {
   for (auto& observer : observers_)
     observer.OnContainerSizeChanged();
 }
+
+BEGIN_METADATA(MediaNotificationContainerImplView, views::Button)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Title)
+END_METADATA

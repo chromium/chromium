@@ -7,13 +7,18 @@
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 
 // A resizable playback button with 3 states: play/pause/replay.
 class PlaybackImageButton : public views::ImageButton {
  public:
+  METADATA_HEADER(PlaybackImageButton);
+
   explicit PlaybackImageButton(PressedCallback callback);
+  PlaybackImageButton(const PlaybackImageButton&) = delete;
+  PlaybackImageButton& operator=(const PlaybackImageButton&) = delete;
   ~PlaybackImageButton() override = default;
 
   // Show appropriate images based on playback state.
@@ -32,8 +37,6 @@ class PlaybackImageButton : public views::ImageButton {
   gfx::ImageSkia play_image_;
   gfx::ImageSkia pause_image_;
   gfx::ImageSkia replay_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaybackImageButton);
 };
 
 }  // namespace views

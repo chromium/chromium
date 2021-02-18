@@ -9,6 +9,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -36,5 +37,8 @@ BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
   SetTooltipText(back_to_tab_button_label);
   SetInstallFocusRingOnFocus(true);
 }
+
+BEGIN_METADATA(BackToTabImageButton, views::ImageButton)
+END_METADATA
 
 }  // namespace views

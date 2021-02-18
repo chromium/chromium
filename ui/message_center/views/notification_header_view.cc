@@ -430,4 +430,7 @@ void NotificationHeaderView::UpdateColors() {
   }
 }
 
+BEGIN_METADATA(NotificationHeaderView, views::Button)
+END_METADATA
+
 }  // namespace message_center

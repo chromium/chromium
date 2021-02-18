@@ -47,6 +47,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
@@ -165,6 +166,8 @@ gfx::ImageSkia SizeImageModel(const ui::ImageModel& image_model,
 // TODO(crbug.com/1146998): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
  public:
+  METADATA_HEADER(CircularImageButton);
+
   CircularImageButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
                       const base::string16& text,
@@ -211,6 +214,9 @@ class CircularImageButton : public views::ImageButton {
   const SkColor background_profile_color_;
   bool show_border_;
 };
+
+BEGIN_METADATA(CircularImageButton, views::ImageButton)
+END_METADATA
 
 class FeatureButtonIconView : public views::ImageView {
  public:

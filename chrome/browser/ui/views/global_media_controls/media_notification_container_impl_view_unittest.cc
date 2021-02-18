@@ -25,6 +25,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
 using media_session::mojom::MediaPlaybackState;
@@ -515,6 +516,12 @@ TEST_F(MediaNotificationContainerImplViewTest, SendsSinkUpdates) {
   // been chosen.
   EXPECT_CALL(observer(), OnAudioSinkChosen(kTestNotificationId, "foobar"));
   notification_container()->OnAudioSinkChosen("foobar");
+}
+
+TEST_F(MediaNotificationContainerImplViewTest, MetadataTest) {
+  auto container_view = std::make_unique<MediaNotificationContainerImplView>(
+      kOtherTestNotificationId, nullptr, nullptr);
+  views::test::TestViewMetadata(container_view.get());
 }
 
 TEST_F(MediaNotificationContainerImplViewOverlayControlsTest,

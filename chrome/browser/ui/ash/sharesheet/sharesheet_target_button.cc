@@ -14,6 +14,7 @@
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -125,3 +126,6 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
 gfx::Size SharesheetTargetButton::CalculatePreferredSize() const {
   return gfx::Size(kButtonWidth, kButtonHeight);
 }
+
+BEGIN_METADATA(SharesheetTargetButton, views::Button)
+END_METADATA

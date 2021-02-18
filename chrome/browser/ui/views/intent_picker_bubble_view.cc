@@ -38,6 +38,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -93,6 +94,8 @@ std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
 // A button that represents a candidate intent handler.
 class IntentPickerLabelButton : public views::LabelButton {
  public:
+  METADATA_HEADER(IntentPickerLabelButton);
+
   IntentPickerLabelButton(PressedCallback callback,
                           const gfx::Image* icon,
                           const std::string& display_name)
@@ -109,6 +112,9 @@ class IntentPickerLabelButton : public views::LabelButton {
     SetInkDropBaseColor(SK_ColorGRAY);
     SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   }
+  IntentPickerLabelButton(const IntentPickerLabelButton&) = delete;
+  IntentPickerLabelButton& operator=(const IntentPickerLabelButton&) = delete;
+  ~IntentPickerLabelButton() override = default;
 
   void MarkAsUnselected(const ui::Event* event) {
     AnimateInkDrop(views::InkDropState::HIDDEN,
@@ -123,10 +129,10 @@ class IntentPickerLabelButton : public views::LabelButton {
   views::InkDropState GetTargetInkDropState() {
     return GetInkDrop()->GetTargetInkDropState();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerLabelButton);
 };
+
+BEGIN_METADATA(IntentPickerLabelButton, views::LabelButton)
+END_METADATA
 
 // static
 IntentPickerBubbleView* IntentPickerBubbleView::intent_picker_bubble_ = nullptr;

@@ -13,6 +13,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -123,5 +124,8 @@ void ResizeHandleButton::SetImageForQuadrant(
 
   SetImage(views::Button::STATE_NORMAL, icon);
 }
+
+BEGIN_METADATA(ResizeHandleButton, views::ImageButton)
+END_METADATA
 
 }  // namespace views

@@ -33,6 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
@@ -74,6 +75,8 @@ namespace views {
 
 class MdIPHBubbleButton : public MdTextButton {
  public:
+  METADATA_HEADER(MdIPHBubbleButton);
+
   MdIPHBubbleButton(PressedCallback callback,
                     const base::string16& text,
                     bool has_border)
@@ -94,6 +97,9 @@ class MdIPHBubbleButton : public MdTextButton {
     focus_ring()->SetColor(kBubbleButtonFocusRingColor);
     GetViewAccessibility().OverrideIsLeaf(true);
   }
+  MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
+  MdIPHBubbleButton& operator=(const MdIPHBubbleButton&) = delete;
+  ~MdIPHBubbleButton() override = default;
 
   void UpdateBackgroundColor() override {
     // Prominent MD button does not have a border.
@@ -120,8 +126,10 @@ class MdIPHBubbleButton : public MdTextButton {
 
  private:
   bool has_border_;
-  DISALLOW_COPY_AND_ASSIGN(MdIPHBubbleButton);
 };
+
+BEGIN_METADATA(MdIPHBubbleButton, MdTextButton)
+END_METADATA
 
 }  // namespace views
 

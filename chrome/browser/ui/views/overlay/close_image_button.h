@@ -7,21 +7,23 @@
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 
 // An image button representing a close button.
 class CloseImageButton : public views::ImageButton {
  public:
+  METADATA_HEADER(CloseImageButton);
+
   explicit CloseImageButton(PressedCallback callback);
+  CloseImageButton(const CloseImageButton&) = delete;
+  CloseImageButton& operator=(const CloseImageButton&) = delete;
   ~CloseImageButton() override = default;
 
   // Sets the position of itself with an offset from the given window size.
   void SetPosition(const gfx::Size& size,
                    OverlayWindowViews::WindowQuadrant quadrant);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloseImageButton);
 };
 
 }  // namespace views

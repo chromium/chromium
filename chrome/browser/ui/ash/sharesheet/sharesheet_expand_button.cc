@@ -12,6 +12,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -67,3 +68,6 @@ gfx::Size SharesheetExpandButton::CalculatePreferredSize() const {
   // Width is bubble width - left and right margins
   return gfx::Size((kDefaultBubbleWidth - 2 * kMarginSpacing), kHeight);
 }
+
+BEGIN_METADATA(SharesheetExpandButton, views::Button)
+END_METADATA

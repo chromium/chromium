@@ -52,6 +52,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
@@ -64,6 +65,8 @@ namespace {
 
 class Arrow : public Button {
  public:
+  METADATA_HEADER(Arrow);
+
   explicit Arrow(PressedCallback callback) : Button(std::move(callback)) {
     // Similar to Combobox's TransparentButton.
     SetFocusBehavior(FocusBehavior::NEVER);
@@ -73,6 +76,8 @@ class Arrow : public Button {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
   }
+  Arrow(const Arrow&) = delete;
+  Arrow& operator=(const Arrow&) = delete;
   ~Arrow() override = default;
 
   double GetAnimationValue() const {
@@ -115,9 +120,10 @@ class Arrow : public Button {
     if (GetEnabled())
       node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(Arrow);
 };
+
+BEGIN_METADATA(Arrow, Button)
+END_METADATA
 
 }  // namespace
 

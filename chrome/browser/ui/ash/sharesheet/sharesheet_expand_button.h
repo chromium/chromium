@@ -9,9 +9,12 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class SharesheetExpandButton : public views::Button {
  public:
+  METADATA_HEADER(SharesheetExpandButton);
+
   explicit SharesheetExpandButton(PressedCallback callback);
   SharesheetExpandButton(const SharesheetExpandButton&) = delete;
   SharesheetExpandButton& operator=(const SharesheetExpandButton&) = delete;

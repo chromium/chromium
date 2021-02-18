@@ -16,6 +16,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"

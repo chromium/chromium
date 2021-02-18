@@ -7,19 +7,23 @@
 
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class OmniboxPopupContentsView;
 class OmniboxResultView;
 
 class OmniboxTabSwitchButton : public views::MdTextButton {
  public:
+  METADATA_HEADER(OmniboxTabSwitchButton);
+
   OmniboxTabSwitchButton(PressedCallback callback,
                          OmniboxPopupContentsView* popup_contents_view,
                          OmniboxResultView* result_view,
                          const base::string16& hint,
                          const base::string16& hint_short,
                          const gfx::VectorIcon& icon);
-
+  OmniboxTabSwitchButton(const OmniboxTabSwitchButton&) = delete;
+  OmniboxTabSwitchButton& operator=(const OmniboxTabSwitchButton&) = delete;
   ~OmniboxTabSwitchButton() override;
 
   // views::MdTextButton:
@@ -52,8 +56,6 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
   // Label strings for hint text and its short version (may be same).
   base::string16 hint_;
   base::string16 hint_short_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxTabSwitchButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TAB_SWITCH_BUTTON_H_
