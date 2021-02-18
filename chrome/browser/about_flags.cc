@@ -6714,6 +6714,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMessagesForAndroidPasswordsName,
      flag_descriptions::kMessagesForAndroidPasswordsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidPasswords)},
+    {"messages-for-android-popup-blocked",
+     flag_descriptions::kMessagesForAndroidPopupBlockedName,
+     flag_descriptions::kMessagesForAndroidPopupBlockedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidPopupBlocked)},
 #endif
 
 #if defined(OS_ANDROID)

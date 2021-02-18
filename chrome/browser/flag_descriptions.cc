@@ -2969,6 +2969,9 @@ const char kMessagesForAndroidInfrastructureDescription[] =
 const char kMessagesForAndroidPasswordsName[] = "Passwords Messages UI";
 const char kMessagesForAndroidPasswordsDescription[] =
     "When enabled, password infobars will use the new Messages UI.";
+const char kMessagesForAndroidPopupBlockedName[] = "Popup Blocked Messages UI";
+const char kMessagesForAndroidPopupBlockedDescription[] =
+    "When enabled, popup blocked infobars will use the new Messages UI.";
 
 const char kOfflineIndicatorAlwaysHttpProbeName[] = "Always http probe";
 const char kOfflineIndicatorAlwaysHttpProbeDescription[] =

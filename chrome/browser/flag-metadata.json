@@ -3435,6 +3435,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "messages-for-android-popup-blocked",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "messages-save-card-infobar",
     "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 83

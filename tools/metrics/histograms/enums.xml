@@ -46130,6 +46130,7 @@ from previous Chrome versions.
   <int value="792307132"
       label="KeyboardBasedDisplayArrangementInSettings:enabled"/>
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
+  <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
@@ -47372,6 +47373,7 @@ from previous Chrome versions.
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>
   <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
+  <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>
   <int value="1957273171" label="PageAlmostIdle:disabled"/>
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
   <int value="1957472162"

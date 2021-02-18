@@ -12,9 +12,17 @@ const base::Feature kMessagesForAndroidInfrastructure{
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 
+extern const base::Feature kMessagesForAndroidPopupBlocked{
+    "MessagesForAndroidPopupBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsPasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPasswords);
+}
+
+bool IsPopupBlockedMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
 }
 
 }  // namespace messages
