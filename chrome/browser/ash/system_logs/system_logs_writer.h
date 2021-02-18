@@ -13,7 +13,7 @@
 // Helper function for writing system logs used in Feedback reports. Currently
 // used by chrome://net-internals#chromeos for manual uploading of system logs.
 
-namespace chromeos {
+namespace ash {
 namespace system_logs_writer {
 
 // Writes system_logs.txt.zip to |dest_dir|, containing the contents from
@@ -25,6 +25,14 @@ void WriteSystemLogs(
     bool scrub_data,
     base::OnceCallback<void(base::Optional<base::FilePath>)> callback);
 
+}  // namespace system_logs_writer
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system_logs_writer {
+using ::ash::system_logs_writer::WriteSystemLogs;
 }  // namespace system_logs_writer
 }  // namespace chromeos
 

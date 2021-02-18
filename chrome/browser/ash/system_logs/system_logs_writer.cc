@@ -14,7 +14,7 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "third_party/zlib/google/zip.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -81,4 +81,4 @@ void WriteSystemLogs(
 }
 
 }  // namespace system_logs_writer
-}  // namespace chromeos
+}  // namespace ash

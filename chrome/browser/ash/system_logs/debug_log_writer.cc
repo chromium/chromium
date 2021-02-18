@@ -24,7 +24,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 namespace debug_log_writer {
 
 namespace {
@@ -241,4 +241,4 @@ void StoreLogs(
 }
 
 }  // namespace debug_log_writer
-}  // namespace chromeos
+}  // namespace ash

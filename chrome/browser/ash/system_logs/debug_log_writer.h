@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace debug_log_writer {
 
 // Stores debug logs collected from debugd as a .tgz archive to |out_dir|.
@@ -23,6 +23,14 @@ void StoreLogs(
     base::OnceCallback<void(base::Optional<base::FilePath> logs_path)>
         callback);
 
+}  // namespace debug_log_writer
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace debug_log_writer {
+using ::ash::debug_log_writer::StoreLogs;
 }  // namespace debug_log_writer
 }  // namespace chromeos
 
