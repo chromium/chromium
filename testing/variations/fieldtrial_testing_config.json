@@ -1101,6 +1101,7 @@
                     "params": {
                         "TimeToLiveInBackForwardCacheInSeconds": "180",
                         "allowed_websites": "https://domain1.org,https://domain2.org",
+                        "check_eligibility_after_pagehide": "true",
                         "enable_same_site": "true",
                         "geolocation_supported": "true",
                         "service_worker_supported": "true"

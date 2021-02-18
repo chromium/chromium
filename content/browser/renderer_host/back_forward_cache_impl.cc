@@ -361,8 +361,7 @@ BackForwardCacheCanStoreDocumentResult BackForwardCacheImpl::CanStorePageNow(
     RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result =
       CanPotentiallyStorePageLater(rfh);
-  CheckDynamicStatesOnSubtree(&result, rfh);
-
+  CheckDynamicBlocklistedFeaturesOnSubtree(&result, rfh);
   DVLOG(1) << "CanStorePageNow: " << rfh->GetLastCommittedURL() << " : "
            << result.ToString();
   return result;
@@ -501,7 +500,7 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
 
 // Recursively checks dynamic states that might affect whether this
 // RenderFrameHost and all child frames can be cached right now.
-void BackForwardCacheImpl::CheckDynamicStatesOnSubtree(
+void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
     BackForwardCacheCanStoreDocumentResult* result,
     RenderFrameHostImpl* rfh) {
   if (!rfh->IsDOMContentLoaded())
@@ -509,13 +508,15 @@ void BackForwardCacheImpl::CheckDynamicStatesOnSubtree(
 
   // Check for banned features currently being used. Note that unlike the check
   // in CanStoreRenderFrameHostLater, we are checking all banned features here
-  // (not only the "sticky" features), because this time we're making a final
-  // decision on whether we should store a page in the back-forward cache or
-  // not.
+  // (not only the "sticky" features), because this time we're making a decision
+  // on whether we should store a page in the back-forward cache or not.
   if (uint64_t banned_features =
           GetDisallowedFeatures(rfh, RequestedFeatures::kAll) &
           rfh->scheduler_tracked_features()) {
-    if (!ShouldIgnoreBlocklists()) {
+    bool should_ignore_features_for_now =
+        CheckFeatureUsageOnlyAfterAck() &&
+        !rfh->render_view_host()->DidReceiveBackForwardCacheAck();
+    if (!ShouldIgnoreBlocklists() && !should_ignore_features_for_now) {
       result->NoDueToFeatures(banned_features);
     }
   }
@@ -529,7 +530,8 @@ void BackForwardCacheImpl::CheckDynamicStatesOnSubtree(
   }
 
   for (size_t i = 0; i < rfh->child_count(); i++)
-    CheckDynamicStatesOnSubtree(result, rfh->child_at(i)->current_frame_host());
+    CheckDynamicBlocklistedFeaturesOnSubtree(
+        result, rfh->child_at(i)->current_frame_host());
 }
 
 void BackForwardCacheImpl::StoreEntry(
@@ -718,4 +720,13 @@ bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
   }
   return false;
 }
+
+bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
+  if (!IsBackForwardCacheEnabled())
+    return false;
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kBackForwardCache, "check_eligibility_after_pagehide", false);
+}
+
 }  // namespace content

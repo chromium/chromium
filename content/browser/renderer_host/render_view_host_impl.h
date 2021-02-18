@@ -218,6 +218,10 @@ class CONTENT_EXPORT RenderViewHostImpl
   // RenderViewHost enter the BackForwardCache.
   void EnterBackForwardCache();
 
+  // Indicates whether or not |this| has received an acknowledgement from
+  // renderer that it has enered BackForwardCache.
+  bool DidReceiveBackForwardCacheAck();
+
   // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this
   // RenderViewHost leave the BackForwardCache. This occurs immediately before a
   // restored document is committed.
@@ -235,6 +239,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   void SetIsFrozen(bool frozen);
   void OnBackForwardCacheTimeout();
+  void MaybeEvictFromBackForwardCache();
 
   PageLifecycleStateManager* GetPageLifecycleStateManager() {
     return page_lifecycle_state_manager_.get();

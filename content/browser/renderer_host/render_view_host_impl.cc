@@ -573,6 +573,26 @@ void RenderViewHostImpl::OnBackForwardCacheTimeout() {
   }
 }
 
+void RenderViewHostImpl::MaybeEvictFromBackForwardCache() {
+  // TODO(yuzus): Implement a method to get a list of RenderFrameHosts
+  // associated with |this|, instead of iterating through all the
+  // RenderFrameHosts in bfcache.
+  const auto& entries =
+      frame_tree_->controller().GetBackForwardCache().GetEntries();
+  for (auto& entry : entries) {
+    for (auto* const rvh : entry->render_view_hosts) {
+      if (rvh == this) {
+        RenderFrameHostImpl* rfh = entry->render_frame_host.get();
+        rfh->MaybeEvictFromBackForwardCache();
+      }
+    }
+  }
+}
+
+bool RenderViewHostImpl::DidReceiveBackForwardCacheAck() {
+  return GetPageLifecycleStateManager()->DidReceiveBackForwardCacheAck();
+}
+
 bool RenderViewHostImpl::IsRenderViewLive() {
   return GetProcess()->IsInitializedAndNotDead() && renderer_view_created_;
 }

@@ -154,6 +154,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
         features::kBackForwardCache, "skip_same_site_if_unload_exists",
         skip_same_site_if_unload_exists_ ? "true" : "false");
     EnableFeatureAndSetParams(
+        features::kBackForwardCache, "check_eligibility_after_pagehide",
+        check_eligibility_after_pagehide_ ? "true" : "false");
+    EnableFeatureAndSetParams(
         blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
         "delay_before_tracking_ms", "0");
 #if defined(OS_ANDROID)
@@ -406,6 +409,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
  protected:
   bool same_site_back_forward_cache_enabled_ = true;
   bool skip_same_site_if_unload_exists_ = false;
+  bool check_eligibility_after_pagehide_ = false;
 
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
@@ -3146,6 +3150,84 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                   "window.visibilitychange", "document.freeze",
                   "document.resume", "document.visibilitychange",
                   "window.visibilitychange", "window.pageshow.persisted"));
+}
+
+class BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility
+    : public BackForwardCacheBrowserTest {
+ public:
+  BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility() = default;
+  ~BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility() override =
+      default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    check_eligibility_after_pagehide_ = true;
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
+    DoesNotCacheIfBroadcastChannelStillOpen) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  // 1) Navigate to an empty page.
+  GURL url_a(https_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_broadcastchannel.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  EXPECT_TRUE(ExecJs(rfh_a, "acquireBroadcastChannel();"));
+  EXPECT_TRUE(ExecJs(rfh_a, "setShouldCloseChannelInPageHide(false);"));
+
+  // 3) Navigate cross-site, browser-initiated.
+  // The previous page won't get into the back-forward cache because of the
+  // blocklisted feature.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // 4) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Because the RenderFrameHostManager changed, the blocklisted features will
+  // be tracked in RenderFrameHostManager::UnloadOldFrame.
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
+      FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
+    CacheIfBroadcastChannelIsClosedInPagehide) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  // 1) Navigate to an empty page.
+  GURL url_a(https_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_broadcastchannel.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
+  EXPECT_TRUE(ExecJs(rfh_a, "acquireBroadcastChannel();"));
+  EXPECT_TRUE(ExecJs(rfh_a, "setShouldCloseChannelInPageHide(true);"));
+
+  // 3) Navigate cross-site, browser-initiated.
+  // The previous page won't get into the back-forward cache because of the
+  // blocklisted feature.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // 4) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // Track the events dispatched when a page is deemed ineligible for back-forward

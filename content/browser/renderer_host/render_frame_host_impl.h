@@ -1911,6 +1911,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetAudioOutputDeviceIdForGlobalMediaControls(
       std::string hashed_device_id);
 
+  // Evicts the document from the BackForwardCache if it is in the cache,
+  // and ineligible for caching.
+  void MaybeEvictFromBackForwardCache();
+
   // Returns a filter that should be associated with all AssociatedReceivers for
   // this frame. |interface_name| is used for logging purposes and must be valid
   // for the entire program duration.
@@ -2628,10 +2632,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       NavigationRequest* navigation_request,
       const mojom::DidCommitProvisionalLoadParams& params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params);
-
-  // Evicts the document from the BackForwardCache if it is in the cache,
-  // and ineligible for caching.
-  void MaybeEvictFromBackForwardCache();
 
   // Common handler for displaying a javascript dialog from the Run*Dialog
   // mojo handlers. This method sets up some initial state before asking the
