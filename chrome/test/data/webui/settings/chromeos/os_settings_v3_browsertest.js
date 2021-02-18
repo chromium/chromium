@@ -298,6 +298,7 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.m.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.m.js'],
  ['FilesPage', 'os_files_page_test.m.js'],
+ ['FingerprintPage', 'fingerprint_browsertest_chromeos.m.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.m.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.m.js'],
  ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.m.js'],

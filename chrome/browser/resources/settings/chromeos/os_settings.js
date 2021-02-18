@@ -120,7 +120,9 @@ export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugi
 export {AppState, reduceAction} from './os_apps_page/app_management_page/reducers.m.js';
 export {AppManagementStore} from './os_apps_page/app_management_page/store.m.js';
 export {convertOptionalBoolToBool, createEmptyState, createInitialState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.m.js';
+export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.m.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
+export {FingerprintLocation, FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.m.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
 export {routes} from './os_route.m.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.m.js';

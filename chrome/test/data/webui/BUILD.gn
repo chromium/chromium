@@ -362,6 +362,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_settings_search_handler.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_users_private.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fake_user_action_recorder.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/fingerprint_browsertest_chromeos.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/google_assistant_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/guest_os_shared_paths_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/guest_os_shared_usb_devices_test.m.js",

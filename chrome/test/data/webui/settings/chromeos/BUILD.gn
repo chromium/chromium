@@ -74,6 +74,7 @@ js_modulizer("modulize") {
     "fake_system_display.js",
     "fake_user_action_recorder.js",
     "fake_users_private.js",
+    "fingerprint_browsertest_chromeos.js",
     "google_assistant_page_test.js",
     "guest_os_shared_paths_test.js",
     "guest_os_shared_usb_devices_test.js",
