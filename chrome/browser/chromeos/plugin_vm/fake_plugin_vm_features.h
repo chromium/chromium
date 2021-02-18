@@ -22,11 +22,14 @@ class FakePluginVmFeatures : public PluginVmFeatures {
   ~FakePluginVmFeatures() override;
 
   // PluginVmFeatures:
-  bool IsAllowed(const Profile* profile) override;
+  bool IsAllowed(const Profile* profile, std::string* reason) override;
   bool IsConfigured(const Profile* profile) override;
   bool IsEnabled(const Profile* profile) override;
 
-  void set_allowed(bool allowed) { allowed_ = allowed; }
+  void set_allowed(bool allowed, const std::string& reason) {
+    allowed_ = allowed;
+    disallowed_reason_ = reason;
+  }
   void set_configured(bool configured) { configured_ = configured; }
   void set_enabled(bool enabled) { enabled_ = enabled; }
 
@@ -36,6 +39,7 @@ class FakePluginVmFeatures : public PluginVmFeatures {
   PluginVmFeatures* original_features_;
 
   base::Optional<bool> allowed_;
+  std::string disallowed_reason_;
   base::Optional<bool> configured_;
   base::Optional<bool> enabled_;
 };

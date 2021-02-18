@@ -15,10 +15,13 @@ FakePluginVmFeatures::~FakePluginVmFeatures() {
   PluginVmFeatures::SetForTesting(original_features_);
 }
 
-bool FakePluginVmFeatures::IsAllowed(const Profile* profile) {
-  if (allowed_.has_value())
+bool FakePluginVmFeatures::IsAllowed(const Profile* profile,
+                                     std::string* reason) {
+  if (allowed_.has_value()) {
+    *reason = disallowed_reason_;
     return *allowed_;
-  return original_features_->IsAllowed(profile);
+  }
+  return original_features_->IsAllowed(profile, reason);
 }
 
 bool FakePluginVmFeatures::IsConfigured(const Profile* profile) {

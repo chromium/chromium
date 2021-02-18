@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PLUGIN_VM_PLUGIN_VM_FEATURES_H_
 #define CHROME_BROWSER_CHROMEOS_PLUGIN_VM_PLUGIN_VM_FEATURES_H_
 
+#include <string>
+
 #include "base/callback.h"
 
 class Profile;
@@ -16,6 +18,11 @@ namespace plugin_vm {
 class PluginVmFeatures {
  public:
   static PluginVmFeatures* Get();
+
+  // Checks if Plugin VM is allowed for the current profile and provides
+  // areason if it is not allowed. The reason string is to only be used
+  // in crosh/vmc error messages.
+  virtual bool IsAllowed(const Profile* profile, std::string* reason);
 
   // Checks if Plugin VM is allowed for the current profile.
   virtual bool IsAllowed(const Profile* profile);

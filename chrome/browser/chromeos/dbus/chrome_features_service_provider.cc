@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -29,11 +30,14 @@ namespace {
 
 void SendResponse(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender,
-                  bool answer) {
+                  bool answer,
+                  const std::string& reason = std::string()) {
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
   writer.AppendBool(answer);
+  if (!reason.empty())
+    writer.AppendString(reason);
   std::move(response_sender).Run(std::move(response));
 }
 
@@ -216,9 +220,9 @@ void ChromeFeaturesServiceProvider::IsPluginVmEnabled(
   if (!profile)
     return;
 
-  SendResponse(
-      method_call, std::move(response_sender),
-      profile ? plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile) : false);
+  std::string reason;
+  bool answer = plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile, &reason);
+  SendResponse(method_call, std::move(response_sender), answer, reason);
 }
 
 void ChromeFeaturesServiceProvider::IsVmManagementCliAllowed(
