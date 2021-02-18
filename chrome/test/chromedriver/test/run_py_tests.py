@@ -816,7 +816,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     element = self._driver.FindElement("css selector", "#id")
     self._driver.SwitchToFrame(element)
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
-    with self.assertRaises(chromedriver.NoSuchElement):
+    with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.SwitchToFrame(element)
 
   def testGetTitle(self):
