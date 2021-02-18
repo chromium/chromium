@@ -228,6 +228,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
  protected:
   friend class ScopedAllowGpuAccessForDisplayResourceProvider;
+
+  enum class CanDeleteNowResult { kYes, kYesButLoseResource, kNo };
+
   enum DeleteStyle {
     NORMAL,
     FOR_SHUTDOWN,
@@ -402,6 +405,14 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
       ChildMap::iterator child_it,
       DeleteStyle style,
       const std::vector<ResourceId>& unused);
+  std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
+      Child& child_info,
+      DeleteStyle style,
+      const std::vector<ResourceId>& unused);
+  CanDeleteNowResult CanDeleteNow(const Child& child_info,
+                                  const ChildResource& resource,
+                                  DeleteStyle style);
+
   void DestroyChildInternal(ChildMap::iterator it, DeleteStyle style);
 
   void SetBatchReturnResources(bool aggregate);

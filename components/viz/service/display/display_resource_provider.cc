@@ -387,34 +387,35 @@ void DisplayResourceProvider::DeletePromotionHint(ResourceMap::iterator it) {
 }
 #endif
 
-void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
-    ChildMap::iterator child_it,
+DisplayResourceProvider::CanDeleteNowResult
+DisplayResourceProvider::CanDeleteNow(const Child& child_info,
+                                      const ChildResource& resource,
+                                      DeleteStyle style) {
+  if (resource.InUse()) {
+    // We can't postpone the deletion, so we'll have to lose it.
+    if (style == FOR_SHUTDOWN)
+      return CanDeleteNowResult::kYesButLoseResource;
+
+    // Defer this resource deletion.
+    return CanDeleteNowResult::kNo;
+  } else if (!ReadLockFenceHasPassed(&resource)) {
+    // TODO(dcastagna): see if it's possible to use this logic for
+    // the branch above too, where the resource is locked or still exported.
+    // We can't postpone the deletion, so we'll have to lose it.
+    if (style == FOR_SHUTDOWN || child_info.marked_for_deletion)
+      return CanDeleteNowResult::kYesButLoseResource;
+
+    // Defer this resource deletion.
+    return CanDeleteNowResult::kNo;
+  }
+  return CanDeleteNowResult::kYes;
+}
+
+std::vector<ReturnedResource>
+DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChildImpl(
+    Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(child_it != children_.end());
-  Child* child_info = &child_it->second;
-
-  // No work is done in this case.
-  if (unused.empty() && !child_info->marked_for_deletion)
-    return;
-
-  // Store unused resources while batching is enabled or we can't access gpu
-  // thread right now.
-  // TODO(vasilyt): Technically we need to delay only resources with
-  // |image_context|.
-  if (batch_return_resources_lock_count_ > 0 || !can_access_gpu_thread_) {
-    int child_id = child_it->first;
-    // Ensure that we have an entry in |batched_returning_resources_| for child
-    // even if |unused| is empty, in case child is marked for deletion.
-    // Note: emplace() does not overwrite an entry if already present.
-    batched_returning_resources_.emplace(child_id, std::vector<ResourceId>());
-    auto& child_resources = batched_returning_resources_[child_id];
-    child_resources.reserve(child_resources.size() + unused.size());
-    child_resources.insert(child_resources.end(), unused.begin(), unused.end());
-    return;
-  }
-
   std::vector<ReturnedResource> to_return;
   // Reserve enough space to avoid re-allocating, so we can keep item pointers
   // for later using.
@@ -440,28 +441,17 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     }
 
     ResourceId child_id = resource.transferable.id;
-    DCHECK(child_info->child_to_parent_map.count(child_id));
+    DCHECK(child_info.child_to_parent_map.count(child_id));
 
     bool is_lost = (resource.is_gpu_resource_type() && lost_context_provider_);
-    if (resource.InUse()) {
-      if (style != FOR_SHUTDOWN) {
-        // Defer this resource deletion.
-        resource.marked_for_deletion = true;
-        continue;
-      }
-      // We can't postpone the deletion, so we'll have to lose it.
-      is_lost = true;
-    } else if (!ReadLockFenceHasPassed(&resource)) {
-      // TODO(dcastagna): see if it's possible to use this logic for
-      // the branch above too, where the resource is locked or still exported.
-      if (style != FOR_SHUTDOWN && !child_info->marked_for_deletion) {
-        // Defer this resource deletion.
-        resource.marked_for_deletion = true;
-        continue;
-      }
-      // We can't postpone the deletion, so we'll have to lose it.
-      is_lost = true;
+    auto can_delete = CanDeleteNow(child_info, resource, style);
+    if (can_delete == CanDeleteNowResult::kNo) {
+      // Defer this resource deletion.
+      resource.marked_for_deletion = true;
+      continue;
     }
+
+    is_lost = is_lost || can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     if (resource.is_gpu_resource_type() &&
         resource.gl_id &&
@@ -499,7 +489,7 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
       }
     }
 
-    child_info->child_to_parent_map.erase(child_id);
+    child_info.child_to_parent_map.erase(child_id);
     resource.imported_count = 0;
 #if defined(OS_ANDROID)
     DeletePromotionHint(it);
@@ -534,11 +524,42 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     for (ReturnedResource* returned : need_synchronization_resources)
       returned->sync_token = new_sync_token;
   }
-  if (!to_return.empty())
-    child_info->return_callback.Run(to_return);
 
-  if (child_info->marked_for_deletion &&
-      child_info->child_to_parent_map.empty()) {
+  return to_return;
+}
+
+void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
+    ChildMap::iterator child_it,
+    DeleteStyle style,
+    const std::vector<ResourceId>& unused) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(child_it != children_.end());
+  Child& child_info = child_it->second;
+
+  // No work is done in this case.
+  if (unused.empty() && !child_info.marked_for_deletion)
+    return;
+
+  // Store unused resources while batching is enabled or we can't access gpu
+  // thread right now.
+  // TODO(vasilyt): Technically we need to delay only resources with
+  // |image_context|.
+  if (batch_return_resources_lock_count_ > 0 || !can_access_gpu_thread_) {
+    int child_id = child_it->first;
+    auto& child_resources = batched_returning_resources_[child_id];
+    child_resources.reserve(child_resources.size() + unused.size());
+    child_resources.insert(child_resources.end(), unused.begin(), unused.end());
+    return;
+  }
+
+  std::vector<ReturnedResource> to_return =
+      DeleteAndReturnUnusedResourcesToChildImpl(child_info, style, unused);
+
+  if (!to_return.empty())
+    child_info.return_callback.Run(to_return);
+
+  if (child_info.marked_for_deletion &&
+      child_info.child_to_parent_map.empty()) {
     children_.erase(child_it);
   }
 }
