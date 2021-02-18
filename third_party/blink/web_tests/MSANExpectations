@@ -162,3 +162,8 @@ crbug.com/1177358 [ Linux ] fast/forms/form-invalid-url.html [ Pass Crash ]
 crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-indices.js [ Pass Timeout ]
 crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Pass Timeout ]
 crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Pass Timeout ]
+
+# Sheriff 2021-02-18
+crbug.com/1179829 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-log-linkify-stack-in-errors.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Timeout ]
