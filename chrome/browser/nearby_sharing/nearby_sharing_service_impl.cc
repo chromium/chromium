@@ -235,13 +235,11 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 
   RecordNearbyShareEnabledMetric(prefs);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
     is_screen_locked_ = session_controller->IsScreenLocked();
     session_controller->AddObserver(this);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   nearby_process_observer_.Add(process_manager_);
   power_client_->AddObserver(this);
@@ -303,11 +301,9 @@ void NearbySharingServiceImpl::Shutdown() {
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* session_controller = ash::SessionController::Get();
   if (session_controller)
     session_controller->RemoveObserver(this);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   foreground_receive_callbacks_.Clear();
   background_receive_callbacks_.Clear();

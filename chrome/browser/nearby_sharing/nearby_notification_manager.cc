@@ -57,13 +57,8 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       /*optional_fields=*/{},
       /*delegate=*/nullptr);
   notification.set_vector_small_image(kNearbyShareIcon);
-
-  // TODO(crbug.com/1102348): Also show settings for other platforms once there
-  // is a nearby settings page in Chrome browser.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   notification.set_settings_button_handler(
       message_center::SettingsButtonHandler::DELEGATE);
-#endif
 
   return notification;
 }

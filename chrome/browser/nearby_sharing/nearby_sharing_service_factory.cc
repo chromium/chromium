@@ -10,6 +10,7 @@
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
+#include "chrome/browser/nearby_sharing/power_client_chromeos.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -26,13 +28,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/nearby_sharing/power_client_chromeos.h"
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/nearby_sharing/power_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -74,8 +69,7 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   NearbyProcessManager& process_manager = NearbyProcessManager::GetInstance();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS we will only support the active profile.
+  // We only support the Chrome OS primary profile.
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
     NS_LOG(VERBOSE)
         << __func__
@@ -86,7 +80,6 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
                   << "Nearby Sharing service is forcing primary profile";
   // Force active profile for ChromeOS for now.
   process_manager.SetActiveProfile(profile);
-#endif
 
   PrefService* pref_service = profile->GetPrefs();
   NotificationDisplayService* notification_display_service =
@@ -101,11 +94,7 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   return new NearbySharingServiceImpl(
       pref_service, notification_display_service, profile,
       std::move(nearby_connections_manager), &process_manager,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       std::make_unique<PowerClientChromeos>());
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
-      std::make_unique<PowerClient>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 content::BrowserContext* NearbySharingServiceFactory::GetBrowserContextToUse(

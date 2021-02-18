@@ -17,11 +17,8 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#endif
 
 namespace {
 
@@ -90,11 +87,6 @@ void NearbyNotificationHandler::OnClose(Profile* profile,
 
 void NearbyNotificationHandler::OpenSettings(Profile* profile,
                                              const GURL& origin) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile, chromeos::settings::mojom::kNearbyShareSubpagePath);
-#else
-  // TODO(crbug.com/1102348): Open browser settings once there is a nearby page.
-  NOTREACHED();
-#endif
 }

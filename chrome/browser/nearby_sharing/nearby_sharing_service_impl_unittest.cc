@@ -44,6 +44,7 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
@@ -61,10 +62,6 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/test_session_controller.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::testing::_;
 using testing::AtLeast;
@@ -388,9 +385,7 @@ class NearbySharingServiceImplTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(
         mock_bluetooth_adapter_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     session_controller_ = std::make_unique<TestSessionController>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     service_ = CreateService();
     SetFakeFastInitiationManagerFactory(/*should_succeed_on_start=*/true);
@@ -924,9 +919,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   FakeNearbyShareCertificateManager::Factory certificate_manager_factory_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   NiceMock<MockNearbyProcessManager> mock_nearby_process_manager_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestSessionController> session_controller_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<NearbySharingServiceImpl> service_;
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<FakeFastInitiationManagerFactory>
@@ -965,10 +958,8 @@ struct InvalidSendSurfaceTestData {
   bool bluetooth_enabled;
   net::NetworkChangeNotifier::ConnectionType connection_type;
 } kInvalidSendSurfaceTestData[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Screen locked
     {/*screen_locked=*/true, true, net::NetworkChangeNotifier::CONNECTION_WIFI},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // No network connection and no bluetooth
     {/*screen_locked=*/false, false,
      net::NetworkChangeNotifier::CONNECTION_NONE},
@@ -1452,9 +1443,7 @@ INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplInvalidSendTest,
        RegisterSendSurfaceNotDiscovering) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   session_controller_->SetScreenLocked(GetParam().screen_locked);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   is_bluetooth_present_ = GetParam().bluetooth_enabled;
   SetConnectionType(GetParam().connection_type);
   MockTransferUpdateCallback transfer_callback;
@@ -1660,7 +1649,6 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(NearbySharingServiceImplTest,
        ScreenLockedRegisterReceiveSurfaceNotAdvertising) {
   session_controller_->SetScreenLocked(true);
@@ -1688,7 +1676,6 @@ TEST_F(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
   session_controller_->SetScreenLocked(false);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(NearbySharingServiceImplTest,
        SuspendedRegisterReceiveSurfaceNotAdvertising) {
