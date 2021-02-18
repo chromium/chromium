@@ -344,6 +344,7 @@ void WelcomeScreen::HideImpl() {
   if (view_)
     view_->Hide();
   demo_mode_detector_.reset();
+  CancelChromeVoxHintTimer();
 }
 
 void WelcomeScreen::OnUserAction(const std::string& action_id) {
@@ -562,6 +563,8 @@ void WelcomeScreen::CancelChromeVoxHintTimer() {
 }
 
 void WelcomeScreen::GiveChromeVoxHint() {
+  if (is_hidden())
+    return;
   if (view_)
     view_->GiveChromeVoxHint();
 }

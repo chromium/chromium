@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -750,6 +751,16 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_TrapFocus) {
       nullptr, ui::VKEY_TAB, false /* control */, true /* shift */,
       false /* alt */, false /* command */));
   test::OobeJS().CreateFocusWaiter(kActivateChromeVoxButton)->Wait();
+}
+
+// Verifies that the ChromeVox timer is cancelled when skipToLoginForTesting is
+// called.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, SkipToLoginForTesting) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::ExecuteOobeJS("Oobe.skipToLoginForTesting()");
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+
+  EXPECT_TRUE(welcome_screen()->GetChromeVoxHintTimerCancelledForTesting());
 }
 
 class WelcomeScreenInternationalChromeVoxHintTest
