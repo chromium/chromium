@@ -409,6 +409,10 @@ TEST_F(
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],
+ [
+   'PeoplePageQuickUnlock',
+   'quick_unlock_authenticate_browsertest_chromeos.m.js'
+ ],
  ['PersonalizationPage', 'personalization_page_test.m.js'],
  ['PrintingPage', 'os_printing_page_tests.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
