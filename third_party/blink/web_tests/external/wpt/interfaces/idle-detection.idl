@@ -27,5 +27,5 @@ dictionary IdleOptions {
   readonly attribute ScreenIdleState? screenState;
   attribute EventHandler onchange;
   [Exposed=Window] static Promise<PermissionState> requestPermission();
-  Promise<void> start(optional IdleOptions options = {});
+  Promise<undefined> start(optional IdleOptions options = {});
 };
