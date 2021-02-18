@@ -283,6 +283,12 @@ const base::Feature kDesktopPWAsTabStripLinkCapturing{
 const base::Feature kDesktopPWAsWithoutExtensions{
     "DesktopPWAsWithoutExtensions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
+// Enables fixing dex files which are not present or not world readable. See
+// DexFixer.java for more info.
+const base::Feature kDexFixer{"DexFixer", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

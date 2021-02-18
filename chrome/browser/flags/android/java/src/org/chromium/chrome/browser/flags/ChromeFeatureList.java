@@ -301,6 +301,7 @@ public abstract class ChromeFeatureList {
     public static final String DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC =
             "DecoupleSyncFromAndroidMasterSync";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
+    public static final String DEX_FIXER = "DexFixer";
     public static final String DIRECT_ACTIONS = "DirectActions";
     public static final String DNS_OVER_HTTPS = "DnsOverHttps";
     public static final String DOWNLOAD_FILE_PROVIDER = "DownloadFileProvider";

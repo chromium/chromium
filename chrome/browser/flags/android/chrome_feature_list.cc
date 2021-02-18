@@ -97,6 +97,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &download::features::kUseDownloadOfflineContentProvider,
     &embedder_support::kShowTrustedPublisherURL,
     &features::kClearOldBrowsingData,
+    &features::kDexFixer,
     &features::kDownloadsLocationChange,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
