@@ -91,7 +91,7 @@ GetNetworkTaskRunner();
 // Otherwise, |cert_verifier_creation_params| will just be placed directly into
 // the CertVerifierParams to configure an in-network-service CertVerifier.
 CONTENT_EXPORT network::mojom::CertVerifierServiceRemoteParamsPtr
-GetCertVerifierParams(network::mojom::CertVerifierCreationParamsPtr
+GetCertVerifierParams(cert_verifier::mojom::CertVerifierCreationParamsPtr
                           cert_verifier_creation_params);
 
 // Sets the CertVerifierServiceFactory used to instantiate

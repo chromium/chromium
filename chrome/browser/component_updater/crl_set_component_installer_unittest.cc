@@ -15,6 +15,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -86,7 +87,7 @@ class CRLSetComponentInstallerTest : public PlatformTest {
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
     auto params = network::mojom::NetworkContextParams::New();
     params->cert_verifier_params = content::GetCertVerifierParams(
-        network::mojom::CertVerifierCreationParams::New());
+        cert_verifier::mojom::CertVerifierCreationParams::New());
     return params;
   }
 

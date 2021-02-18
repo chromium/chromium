@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_CERT_VERIFIER_CREATION_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_CERT_VERIFIER_CREATION_H_
+#ifndef SERVICES_CERT_VERIFIER_CERT_VERIFIER_CREATION_H_
+#define SERVICES_CERT_VERIFIER_CERT_VERIFIER_CREATION_H_
 
 #include <memory>
 
@@ -11,9 +11,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 
-namespace network {
+namespace cert_verifier {
 
 // Certain platforms and build configurations require a net::CertNetFetcher in
 // order to instantiate a net::CertVerifier. Callers of CreateCertVerifier() can
@@ -27,6 +27,6 @@ std::unique_ptr<net::CertVerifier> CreateCertVerifier(
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher);
 
-}  // namespace network
+}  // namespace cert_verifier
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_CERT_VERIFIER_CREATION_H_
+#endif  // SERVICES_CERT_VERIFIER_CERT_VERIFIER_CREATION_H_

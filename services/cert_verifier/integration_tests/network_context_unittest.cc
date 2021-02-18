@@ -27,7 +27,7 @@ namespace {
 
 mojo::PendingRemote<mojom::CertVerifierService> GetNewCertVerifierServiceRemote(
     mojom::CertVerifierServiceFactory* cert_verifier_service_factory,
-    network::mojom::CertVerifierCreationParamsPtr creation_params) {
+    mojom::CertVerifierCreationParamsPtr creation_params) {
   mojo::PendingRemote<mojom::CertVerifierService> cert_verifier_remote;
   cert_verifier_service_factory->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
@@ -59,9 +59,8 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
   }
 
   network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
-      network::mojom::CertVerifierCreationParamsPtr
-          cert_verifier_creation_params =
-              network::mojom::CertVerifierCreationParams::New()) {
+      mojom::CertVerifierCreationParamsPtr cert_verifier_creation_params =
+          mojom::CertVerifierCreationParams::New()) {
     if (!cert_verifier_service_factory_) {
       cert_verifier_service_factory_ =
           std::make_unique<CertVerifierServiceFactoryImpl>(
@@ -164,12 +163,11 @@ TEST_F(NetworkContextWithRealCertVerifierTest, UseCertVerifierBuiltin) {
     SCOPED_TRACE(builtin_verifier_enabled);
 
     network::mojom::NetworkContextParamsPtr params = CreateContextParams();
-    auto creation_params = network::mojom::CertVerifierCreationParams::New();
+    auto creation_params = mojom::CertVerifierCreationParams::New();
     creation_params->use_builtin_cert_verifier =
-        builtin_verifier_enabled ? network::mojom::CertVerifierCreationParams::
-                                       CertVerifierImpl::kBuiltin
-                                 : network::mojom::CertVerifierCreationParams::
-                                       CertVerifierImpl::kSystem;
+        builtin_verifier_enabled
+            ? mojom::CertVerifierCreationParams::CertVerifierImpl::kBuiltin
+            : mojom::CertVerifierCreationParams::CertVerifierImpl::kSystem;
     params->cert_verifier_params =
         GetCertVerifierParams(std::move(creation_params));
     std::unique_ptr<network::NetworkContext> network_context =

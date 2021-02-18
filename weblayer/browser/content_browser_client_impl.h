@@ -85,8 +85,8 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       bool in_memory,
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      override;
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

@@ -464,6 +464,7 @@ test("android_webview_unittests") {
     "//mojo/core/embedder",
     "//net:net",
     "//net:test_support",
+    "//services/cert_verifier/public/mojom",
     "//services/network:test_support",
     "//ui/base:ui_base_jni_headers",
     "//ui/gl",

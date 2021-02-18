@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/cert_verifier/cert_verifier_creation.h"
+#include "services/cert_verifier/cert_verifier_creation.h"
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -30,7 +30,7 @@
 #include "services/network/public/cpp/cert_verifier/trial_comparison_cert_verifier_mojo.h"
 #endif
 
-namespace network {
+namespace cert_verifier {
 
 namespace {
 
@@ -55,7 +55,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcForUser(
     crypto::ScopedPK11Slot user_public_slot) {
   return net::CreateCertVerifyProcBuiltin(
       std::move(net_fetcher),
-      std::make_unique<SystemTrustStoreProviderChromeOS>(
+      std::make_unique<network::SystemTrustStoreProviderChromeOS>(
           std::move(user_public_slot)));
 }
 
@@ -63,7 +63,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcWithoutUserSlots(
     scoped_refptr<net::CertNetFetcher> net_fetcher) {
   return net::CreateCertVerifyProcBuiltin(
       std::move(net_fetcher),
-      std::make_unique<SystemTrustStoreProviderChromeOS>());
+      std::make_unique<network::SystemTrustStoreProviderChromeOS>());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -119,7 +119,7 @@ std::unique_ptr<net::CertVerifier> CreateCertVerifier(
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
   if (!cert_verifier && creation_params &&
       creation_params->trial_comparison_cert_verifier_params) {
-    cert_verifier = std::make_unique<TrialComparisonCertVerifierMojo>(
+    cert_verifier = std::make_unique<network::TrialComparisonCertVerifierMojo>(
         creation_params->trial_comparison_cert_verifier_params->initial_allowed,
         std::move(creation_params->trial_comparison_cert_verifier_params
                       ->config_client_receiver),
@@ -147,4 +147,4 @@ std::unique_ptr<net::CertVerifier> CreateCertVerifier(
 
   return cert_verifier;
 }
-}  // namespace network
+}  // namespace cert_verifier

@@ -85,6 +85,7 @@ include_rules = [
   "+mojo/public",
   "+net",
   "+sandbox",
+  "+services/cert_verifier/public/mojom",
   "+services/metrics/public/cpp",
   "+services/network/network_service.h",
   "+services/network/public",

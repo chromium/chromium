@@ -38,13 +38,13 @@ class TestCertVerifierServiceFactoryImpl
     ~GetNewCertVerifierParams();
 
     mojo::PendingReceiver<mojom::CertVerifierService> receiver;
-    network::mojom::CertVerifierCreationParamsPtr creation_params;
+    mojom::CertVerifierCreationParamsPtr creation_params;
   };
 
   // mojom::CertVerifierServiceFactory implementation:
   void GetNewCertVerifier(
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
-      network::mojom::CertVerifierCreationParamsPtr creation_params) override;
+      mojom::CertVerifierCreationParamsPtr creation_params) override;
 
   // Pops the first request off the back of the list and forwards it to the
   // delegate CertVerifierServiceFactory.

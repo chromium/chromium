@@ -252,6 +252,7 @@ cast_source_set("browser_base") {
     "//media/mojo/services",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/cert_verifier/public/mojom",
     "//services/media_session/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/mojom",

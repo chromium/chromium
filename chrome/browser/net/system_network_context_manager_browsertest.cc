@@ -488,18 +488,20 @@ class SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
  public:
   SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest() {
     bool use_builtin_cert_verifier = GetParam();
-    cert_verifier_impl_ = use_builtin_cert_verifier
-                              ? network::mojom::CertVerifierCreationParams::
-                                    CertVerifierImpl::kBuiltin
-                              : network::mojom::CertVerifierCreationParams::
-                                    CertVerifierImpl::kSystem;
+    cert_verifier_impl_ =
+        use_builtin_cert_verifier
+            ? cert_verifier::mojom::CertVerifierCreationParams::
+                  CertVerifierImpl::kBuiltin
+            : cert_verifier::mojom::CertVerifierCreationParams::
+                  CertVerifierImpl::kSystem;
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatureState(
         net::features::kCertVerifierBuiltinFeature,
-        cert_verifier_impl_ == network::mojom::CertVerifierCreationParams::
-                                   CertVerifierImpl::kBuiltin);
+        cert_verifier_impl_ ==
+            cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+                kBuiltin);
 
     content::SetCertVerifierServiceFactoryForTesting(
         &test_cert_verifier_service_factory_);
@@ -517,7 +519,7 @@ class SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
 
   void ExpectUseBuiltinCertVerifierCorrect(
       network::mojom::NetworkContextParamsPtr& network_context_params_ptr,
-      network::mojom::CertVerifierCreationParams::CertVerifierImpl
+      cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl
           use_builtin_cert_verifier) {
     ASSERT_TRUE(network_context_params_ptr);
     ASSERT_TRUE(network_context_params_ptr->cert_verifier_params);
@@ -531,13 +533,13 @@ class SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
     test_cert_verifier_service_factory_.ReleaseNextCertVerifierParams();
   }
 
-  network::mojom::CertVerifierCreationParams::CertVerifierImpl
+  cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl
   cert_verifier_impl() const {
     return cert_verifier_impl_;
   }
 
  private:
-  network::mojom::CertVerifierCreationParams::CertVerifierImpl
+  cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl
       cert_verifier_impl_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -570,7 +572,8 @@ IN_PROC_BROWSER_TEST_P(
           ->CreateDefaultNetworkContextParams();
   ExpectUseBuiltinCertVerifierCorrect(
       network_context_params_ptr,
-      network::mojom::CertVerifierCreationParams::CertVerifierImpl::kBuiltin);
+      cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          kBuiltin);
 
   SetPolicy(&policies, policy::key::kBuiltinCertificateVerifierEnabled,
             base::Value(false));
@@ -581,7 +584,8 @@ IN_PROC_BROWSER_TEST_P(
           ->CreateDefaultNetworkContextParams();
   ExpectUseBuiltinCertVerifierCorrect(
       network_context_params_ptr,
-      network::mojom::CertVerifierCreationParams::CertVerifierImpl::kSystem);
+      cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          kSystem);
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
 }
 

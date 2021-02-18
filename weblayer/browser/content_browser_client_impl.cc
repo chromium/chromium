@@ -427,7 +427,8 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
       context_params, GetUserAgent());
   // Headers coming from the embedder are implicitly trusted and should not

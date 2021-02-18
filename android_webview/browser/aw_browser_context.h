@@ -18,6 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 
 class GURL;
 class PrefService;
@@ -116,7 +117,7 @@ class AwBrowserContext : public content::BrowserContext,
       bool in_memory,
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams*
+      cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaBrowserContext();

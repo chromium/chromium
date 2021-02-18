@@ -33,6 +33,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/url_request/url_request_context.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,7 +62,7 @@ CreateNetworkContextForDefaultStoragePartition(
   mojo::PendingRemote<network::mojom::NetworkContext> network_context_remote;
   auto params = network::mojom::NetworkContextParams::New();
   params->cert_verifier_params = content::GetCertVerifierParams(
-      network::mojom::CertVerifierCreationParams::New());
+      cert_verifier::mojom::CertVerifierCreationParams::New());
   auto network_context = std::make_unique<network::NetworkContext>(
       network_service, network_context_remote.InitWithNewPipeAndPassReceiver(),
       std::move(params));

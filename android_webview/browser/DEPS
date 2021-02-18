@@ -62,6 +62,8 @@ include_rules = [
 
   "+printing",
 
+  "+services/cert_verifier/public/mojom",
+
   "+services/metrics/public/cpp/ukm_source_id.h",
 
   "+services/network/public",

@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -192,9 +193,9 @@ HeadlessRequestContextManager::CreateSystemContext(
 
   ::network::mojom::NetworkContextParamsPtr network_context_params =
       ::network::mojom::NetworkContextParams::New();
-  ::network::mojom::CertVerifierCreationParamsPtr
+  ::cert_verifier::mojom::CertVerifierCreationParamsPtr
       cert_verifier_creation_params =
-          ::network::mojom::CertVerifierCreationParams::New();
+          ::cert_verifier::mojom::CertVerifierCreationParams::New();
   manager->ConfigureNetworkContextParamsInternal(
       network_context_params.get(), cert_verifier_creation_params.get());
   network_context_params->cert_verifier_params =
@@ -249,7 +250,7 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     ::network::mojom::NetworkContextParams* network_context_params,
-    ::network::mojom::CertVerifierCreationParams*
+    ::cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
   ConfigureNetworkContextParamsInternal(network_context_params,
                                         cert_verifier_creation_params);
@@ -257,7 +258,7 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParams(
 
 void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
     ::network::mojom::NetworkContextParams* context_params,
-    ::network::mojom::CertVerifierCreationParams*
+    ::cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
   context_params->user_agent = user_agent_;
   context_params->accept_language = accept_language_;

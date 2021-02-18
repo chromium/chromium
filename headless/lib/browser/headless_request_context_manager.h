@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -39,7 +40,7 @@ class HeadlessRequestContextManager {
       bool in_memory,
       const base::FilePath& relative_partition_path,
       ::network::mojom::NetworkContextParams* network_context_params,
-      ::network::mojom::CertVerifierCreationParams*
+      ::cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
   content::ResourceContext* GetResourceContext() {
@@ -49,7 +50,7 @@ class HeadlessRequestContextManager {
  private:
   void ConfigureNetworkContextParamsInternal(
       ::network::mojom::NetworkContextParams* network_context_params,
-      ::network::mojom::CertVerifierCreationParams*
+      ::cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
   const bool cookie_encryption_enabled_;

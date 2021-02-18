@@ -72,8 +72,8 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
       bool in_memory,
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      final;
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) final;
 
  private:
   fidl::InterfaceRequest<fuchsia::web::Context> request_;

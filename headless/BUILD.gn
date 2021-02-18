@@ -411,6 +411,7 @@ component("headless_non_renderer") {
     "//components/cookie_config",
     "//components/security_state/core",
     "//content/public/common",
+    "//services/cert_verifier/public/mojom",
     "//services/service_manager/public/cpp",
     "//ui/base",
     "//ui/base/clipboard",

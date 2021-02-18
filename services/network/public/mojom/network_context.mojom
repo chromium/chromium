@@ -59,9 +59,6 @@ import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
 [EnableIf=is_ct_supported]
 import "services/network/public/mojom/ct_log_info.mojom";
 
-[EnableIf=is_trial_comparison_cert_verifier_supported]
-import "services/network/public/mojom/trial_comparison_cert_verifier.mojom";
-
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
 // cookies.
@@ -109,34 +106,6 @@ interface CustomProxyConnectionObserver {
   OnTunnelHeadersReceived(
       proxy_resolver.mojom.ProxyServer proxy_server,
       HttpResponseHeaders response_headers);
-};
-
-// Parameters to specify how the net::CertVerifier and net::CertVerifyProc
-// objects should be instantiated.
-struct CertVerifierCreationParams {
-  // Specifies the path to the directory where NSS will store its database.
-  [EnableIf=is_chromeos]
-  mojo_base.mojom.FilePath? nss_path;
-
-  // This is used in combination with nss_path, to ensure that the NSS database
-  // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos]
-  string username_hash;
-
-  // Specifies which cert verifier implementation to use.
-  //   kDefault - Decided by base::Feature
-  //   kBuiltin - Use CertVerifyProcBuiltin
-  //   kSystem  - Use the system CertVerifyProc implementation
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  enum CertVerifierImpl {kDefault, kBuiltin, kSystem};
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  CertVerifierImpl use_builtin_cert_verifier = kDefault;
-
-  // Parameters for the cert verifier comparison trial. This is a temporary
-  // interface and embedders should not use it.
-  // See https://crbug.com/649026
-  [EnableIf=is_trial_comparison_cert_verifier_supported]
-  TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
 };
 
 // Includes a pipe to a CertVerifierService for usage by the

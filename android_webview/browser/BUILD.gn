@@ -248,6 +248,7 @@ source_set("browser") {
     "//content/public/browser",
     "//media/mojo:buildflags",
     "//printing",
+    "//services/cert_verifier/public/mojom",
     "//services/network/public/mojom",
     "//services/preferences/tracked",
     "//services/proxy_resolver:lib",

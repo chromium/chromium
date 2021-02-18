@@ -58,6 +58,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -1419,7 +1420,7 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
       prefetch_proxy_service->proxy_configurator()
           ->NewProxyConnectionObserverRemote();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
-      network::mojom::CertVerifierCreationParams::New());
+      cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {
       content::kCorsExemptPurposeHeaderName};
   context_params->cookie_manager_params =

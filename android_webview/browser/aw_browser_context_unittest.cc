@@ -11,6 +11,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "mojo/core/embedder/embedder.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +56,7 @@ class AwBrowserContextTest : public testing::Test {
 TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
   AwBrowserContext context;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
   context.ConfigureNetworkContextParams(
       false, base::FilePath(), &network_context_params, &cert_verifier_params);
 
@@ -70,7 +71,7 @@ TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
 TEST_F(AwBrowserContextTest, SHA1LocalAnchorsAllowed) {
   AwBrowserContext context;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
   context.ConfigureNetworkContextParams(
       false, base::FilePath(), &network_context_params, &cert_verifier_params);
 

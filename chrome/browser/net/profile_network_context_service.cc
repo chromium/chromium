@@ -53,6 +53,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
 #include "net/ssl/client_cert_store.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -278,7 +279,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   ConfigureNetworkContextParamsInternal(in_memory, relative_partition_path,
                                         network_context_params,
                                         cert_verifier_creation_params);
@@ -639,7 +641,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   if (profile_->IsOffTheRecord())
     in_memory = true;
   base::FilePath path(GetPartitionPath(relative_partition_path));
@@ -766,12 +769,12 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // using the TrialComparisonCertVerifier requires knowing whether Chrome is
   // using the system verifier.
   DCHECK(cert_verifier_creation_params);
-  DCHECK_NE(
-      cert_verifier_creation_params->use_builtin_cert_verifier,
-      network::mojom::CertVerifierCreationParams::CertVerifierImpl::kDefault);
+  DCHECK_NE(cert_verifier_creation_params->use_builtin_cert_verifier,
+            cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+                kDefault);
   if (!in_memory &&
       cert_verifier_creation_params->use_builtin_cert_verifier ==
-          network::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
               kSystem &&
       TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
     mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>

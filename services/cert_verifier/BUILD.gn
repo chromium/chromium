@@ -2,8 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//net/features.gni")
+
 source_set("lib") {
   sources = [
+    "cert_verifier_creation.cc",
+    "cert_verifier_creation.h",
     "cert_verifier_service.cc",
     "cert_verifier_service.h",
     "cert_verifier_service_factory.cc",
@@ -12,9 +16,11 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//net",
     "//services/cert_verifier/cert_net_url_loader",
     "//services/network/public/cpp/cert_verifier:cert_verifier_creation",
+    "//services/network/public/mojom",
   ]
 
   public_deps = [

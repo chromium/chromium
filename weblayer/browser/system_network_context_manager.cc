@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/network_service_instance.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace weblayer {
@@ -53,7 +54,7 @@ SystemNetworkContextManager::CreateDefaultNetworkContextParams(
   network::mojom::NetworkContextParamsPtr network_context_params =
       network::mojom::NetworkContextParams::New();
   network_context_params->cert_verifier_params = content::GetCertVerifierParams(
-      network::mojom::CertVerifierCreationParams::New());
+      cert_verifier::mojom::CertVerifierCreationParams::New());
   ConfigureDefaultNetworkContextParams(network_context_params.get(),
                                        user_agent);
   variations::UpdateCorsExemptHeaderForVariations(network_context_params.get());

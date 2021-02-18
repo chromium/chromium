@@ -578,7 +578,8 @@ void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
 
 void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   variations::UpdateCorsExemptHeaderForVariations(network_context_params);
   GoogleURLLoaderThrottle::UpdateCorsExemptHeader(network_context_params);
 
@@ -672,9 +673,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   cert_verifier_creation_params->use_builtin_cert_verifier =
       ShouldUseBuiltinCertVerifier(local_state_)
-          ? network::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          ? cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kBuiltin
-          : network::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          : cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kSystem;
 #endif
 }
@@ -683,8 +684,9 @@ network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       network::mojom::NetworkContextParams::New();
-  network::mojom::CertVerifierCreationParamsPtr cert_verifier_creation_params =
-      network::mojom::CertVerifierCreationParams::New();
+  cert_verifier::mojom::CertVerifierCreationParamsPtr
+      cert_verifier_creation_params =
+          cert_verifier::mojom::CertVerifierCreationParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get(),
                                        cert_verifier_creation_params.get());
   network_context_params->cert_verifier_params =

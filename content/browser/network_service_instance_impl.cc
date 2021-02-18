@@ -558,7 +558,7 @@ mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
 GetNewCertVerifierServiceRemote(
     cert_verifier::mojom::CertVerifierServiceFactory*
         cert_verifier_service_factory,
-    network::mojom::CertVerifierCreationParamsPtr creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParamsPtr creation_params) {
   mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
       cert_verifier_remote;
   cert_verifier_service_factory->GetNewCertVerifier(
@@ -625,7 +625,7 @@ GetCertVerifierServiceFactory() {
 }  // namespace
 
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
-    network::mojom::CertVerifierCreationParamsPtr
+    cert_verifier::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {
   return network::mojom::CertVerifierServiceRemoteParams::New(
       GetNewCertVerifierServiceRemote(

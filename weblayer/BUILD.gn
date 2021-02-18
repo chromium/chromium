@@ -472,6 +472,7 @@ source_set("weblayer_lib_base") {
     "//net",
     "//net:net_resources",
     "//sandbox",
+    "//services/cert_verifier/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

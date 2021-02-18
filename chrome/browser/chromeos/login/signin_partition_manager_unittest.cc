@@ -30,6 +30,7 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/url_request/url_request_context.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,7 +95,7 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
         network::mojom::NetworkContextParams::New();
     system_network_context_params->cert_verifier_params =
         content::GetCertVerifierParams(
-            network::mojom::CertVerifierCreationParams::New());
+            cert_verifier::mojom::CertVerifierCreationParams::New());
 
     system_network_context_ = std::make_unique<network::NetworkContext>(
         network::NetworkService::GetNetworkServiceForTesting(),
@@ -198,7 +199,7 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
         network::mojom::NetworkContextParams::New();
     signin_network_context_params->cert_verifier_params =
         content::GetCertVerifierParams(
-            network::mojom::CertVerifierCreationParams::New());
+            cert_verifier::mojom::CertVerifierCreationParams::New());
 
     signin_network_context_ = std::make_unique<network::NetworkContext>(
         network::NetworkService::GetNetworkServiceForTesting(),

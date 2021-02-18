@@ -152,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
       ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
   profile_network_context_service->ConfigureNetworkContextParams(
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
@@ -186,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(DiskCachesizeExperiment, ScaledCacheSize) {
       ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
   profile_network_context_service->ConfigureNetworkContextParams(
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
@@ -490,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
       ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
   profile_network_context_service->ConfigureNetworkContextParams(
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
@@ -531,7 +534,7 @@ class ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
   }
 
   void ExpectUseBuiltinCertVerifierCorrect(
-      network::mojom::CertVerifierCreationParams::CertVerifierImpl
+      cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl
           use_builtin_cert_verifier) {
     ASSERT_EQ(1ul, test_cert_verifier_service_factory_.num_captured_params());
     ASSERT_TRUE(test_cert_verifier_service_factory_.GetParamsAtIndex(0)
@@ -573,10 +576,10 @@ IN_PROC_BROWSER_TEST_P(
 
     ExpectUseBuiltinCertVerifierCorrect(
         use_builtin_cert_verifier()
-            ? network::mojom::CertVerifierCreationParams::CertVerifierImpl::
-                  kBuiltin
-            : network::mojom::CertVerifierCreationParams::CertVerifierImpl::
-                  kSystem);
+            ? cert_verifier::mojom::CertVerifierCreationParams::
+                  CertVerifierImpl::kBuiltin
+            : cert_verifier::mojom::CertVerifierCreationParams::
+                  CertVerifierImpl::kSystem);
   }
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
@@ -592,7 +595,8 @@ IN_PROC_BROWSER_TEST_P(
         ->GetNetworkContext();
 
     ExpectUseBuiltinCertVerifierCorrect(
-        network::mojom::CertVerifierCreationParams::CertVerifierImpl::kBuiltin);
+        cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+            kBuiltin);
   }
 
   SetPolicy(&policies, policy::key::kBuiltinCertificateVerifierEnabled,
@@ -604,7 +608,8 @@ IN_PROC_BROWSER_TEST_P(
         ->GetNetworkContext();
 
     ExpectUseBuiltinCertVerifierCorrect(
-        network::mojom::CertVerifierCreationParams::CertVerifierImpl::kSystem);
+        cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+            kSystem);
   }
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
 }
@@ -654,7 +659,8 @@ IN_PROC_BROWSER_TEST_P(
       ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
   profile_network_context_service->ConfigureNetworkContextParams(
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
