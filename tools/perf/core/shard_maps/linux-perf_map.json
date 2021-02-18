@@ -509,6 +509,9 @@
                 "begin": 79,
                 "abridged": false
             },
+            "system_health.pcscan": {
+                "abridged": false
+            },
             "tab_switching.typical_25": {
                 "abridged": false
             },

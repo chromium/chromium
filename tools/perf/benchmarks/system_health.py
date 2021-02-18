@@ -301,7 +301,7 @@ class PCScanSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_system_health.pcscan'
+    return 'system_health.pcscan'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(
