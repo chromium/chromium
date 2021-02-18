@@ -66,6 +66,7 @@ import './os_apps_page/os_apps_page.m.js';
 import './os_icons.m.js';
 import './os_people_page/account_manager.m.js';
 import './os_people_page/os_people_page.m.js';
+import './os_people_page/os_sync_controls.m.js';
 import './os_search_page/os_search_page.m.js';
 import './os_settings_main/os_settings_main.m.js';
 import './os_settings_page/os_settings_page.m.js';
@@ -83,7 +84,7 @@ export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browse
 export {pageVisibility} from '../page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from '../people_page/account_manager_browser_proxy.m.js';
 export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.m.js';
-export {PageStatus, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
+export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.m.js';
 export {Route, Router} from '../router.m.js';
 export {SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.m.js';

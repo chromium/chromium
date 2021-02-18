@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {OsSyncBrowserProxyImpl, Router, StatusAction, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// clang-format on
+
 /** @implements {settings.OsSyncBrowserProxy} */
 class TestOsSyncBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -273,7 +284,7 @@ suite('OsSyncControlsTest', function() {
   test('ClickingTurnOnEnablesFeature', async function() {
     setupWithFeatureDisabled();
     syncControls.$.syncOnOffButton.click();
-    enabled = await browserProxy.whenCalled('setOsSyncFeatureEnabled');
+    const enabled = await browserProxy.whenCalled('setOsSyncFeatureEnabled');
     assertTrue(enabled);
   });
 

@@ -266,6 +266,26 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+// eslint-disable-next-line no-var
+var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kSplitSettingsSync']),
+    };
+  }
+};
+
+TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AccountsPage', 'add_users_tests.m.js'],
