@@ -28,11 +28,28 @@ enum TranslateError {
 // result of the language detection model. Corresponds to
 // LanguageDetectionDetails defined in language_detection_details.h.
 struct LanguageDetectionDetails {
-  mojo_base.mojom.Time time;
+  // All the elements in this section are used for to make decisions related
+  // to page translation.
+  //
   // The URL corresponding to the main frame that had its language detected.
   // Used by the TranslateDriver to determine if the page is eligible for
   // translation.
   url.mojom.Url url;
+  // The calculated language based on the language detection model's prediction
+  // and reliability, content language, and the page language attribute. Used to
+  // determine if the page should be considered for translation.
+  string adopted_language;
+  // Whether no translate was specified within HTML tag to prevent
+  // initiating a translation for the corresponding page load. If true,
+  // the page content should not be translated.
+  bool has_notranslate;
+
+  // All the elements below are used only for debugging and metrics purposes,
+  // e.g., translate-internals.
+  //
+  // The time at which language the language detection was performed. Used only
+  // for debugging.
+  mojo_base.mojom.Time time;
   // The intended language of the audience of the content as specified by the
   // HTTP header. Used only for debugging.
   string content_language;
@@ -43,17 +60,9 @@ struct LanguageDetectionDetails {
   // for use, i.e., if the model's score is above a set threshold. Used
   // only for debugging.
   bool is_model_reliable;
-  // Whether no translate was specified within HTML tag to prevent
-  // initiating a translation for the corresponding page load. If true,
-  // the page content should not be translated.
-  bool has_notranslate;
   // The language of the document specified by the HTML lang attribute.
   // Used only for debugging.
   string html_root_language;
-  // The calculated language based on the language detection model's prediction
-  // and reliability, content language, and the page language attribute. Used to
-  // determine if the page should be considered for translation.
-  string adopted_language;
   // The content of the page that language detection has be executed on.
   // Used only for debugging.
   mojo_base.mojom.String16 contents;
