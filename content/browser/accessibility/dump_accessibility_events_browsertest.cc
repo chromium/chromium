@@ -249,6 +249,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestHelper::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
+// This test suite is empty on some OSes.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DumpAccessibilityEventsTest);
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaAtomicChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-atomic-changed.html"));
