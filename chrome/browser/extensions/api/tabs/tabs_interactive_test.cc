@@ -68,7 +68,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   EXPECT_TRUE(result.get()->GetList(keys::kTabsKey, &tabs));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
+// Flaky on LaCrOS: crbug.com/1179817
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_QueryLastFocusedWindowTabs DISABLED_QueryLastFocusedWindowTabs
+#else
+#define MAYBE_QueryLastFocusedWindowTabs QueryLastFocusedWindowTabs
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   const size_t kExtraWindows = 2;
   for (size_t i = 0; i < kExtraWindows; ++i)
     CreateBrowser(browser()->profile());
