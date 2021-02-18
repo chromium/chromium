@@ -20870,6 +20870,36 @@
       Setting the policy to False prevents Signed HTTP Exchanges from loading.''',
     },
     {
+      'name': 'ContextAwareAccessSignalsAllowlist',
+      'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org'],
+      'future_on': ['chrome.*'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'example_value': ['https://example1.com', 'https://[*.]example2.com', 'https://foo.example3.com/path'],
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': True,
+        'cloud_only': True,
+      },
+      'id': 826,
+      'caption': '''Enable attestation flow for a list of URLs''',
+      'tags': [],
+      'desc': '''Enable <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR">Chrome Enterprise Platform Identity Connector</ph> for a list of URLs.
+
+      Setting this policy specifies which URLs should be allowed to be part of the attestation flow to get the set of signals from the machine.
+
+      Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
+
+      URLs must have HTTPS scheme, e.g. "https://example.com".
+
+      Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+    },
+    {
       'name': 'DeviceQuickFixBuildToken',
       'owners': ['askaraitzhan@chromium.org', 'ultrotter@chromium.org'],
       'type': 'string',
@@ -25620,6 +25650,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 825,
+  'highest_id_currently_used': 826,
   'highest_atomic_group_id_currently_used': 40
 }

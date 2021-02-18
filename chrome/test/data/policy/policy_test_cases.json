@@ -6256,6 +6256,16 @@
     ]
   },
 
+  "ContextAwareAccessSignalsAllowlist": {
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "ContextAwareAccessSignalsAllowlist": ["https://example1.com", "https://[*.]example2.com", "https://foo.example3.com/path"] },
+        "prefs": { "enterprise_connectors.device_trust.origins": { "value": ["https://example1.com", "https://[*.]example2.com", "https://foo.example3.com/path"] } }
+      }
+    ]
+  },
+
   "DeviceQuickFixBuildToken": {
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [

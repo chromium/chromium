@@ -1587,6 +1587,18 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #endif  // defined(OS_ANDROID)
 
+// TODO(crbug/1169547) Remove `BUILDFLAG(IS_CHROMEOS_LACROS)` once the
+// migration is complete.
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kContextAwareAccessSignalsAllowlist,
+          enterprise_connectors::kContextAwareAccessSignalsAllowlistPref,
+          chrome_schema));
+#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
       power_management_idle_legacy_policies;

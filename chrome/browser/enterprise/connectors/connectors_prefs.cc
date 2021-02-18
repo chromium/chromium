@@ -26,6 +26,9 @@ const char kOnBulkDataEntryPref[] = "enterprise_connectors.on_bulk_data_entry";
 
 const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
 
+const char kContextAwareAccessSignalsAllowlistPref[] =
+    "enterprise_connectors.device_trust.origins";
+
 const char kOnFileAttachedScopePref[] =
     "enterprise_connectors.scope.on_file_attached";
 const char kOnFileDownloadedScopePref[] =
@@ -65,6 +68,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
+  registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
 
   RegisterFileSystemPrefs(registry);
 }

@@ -24,6 +24,9 @@ extern const char kOnBulkDataEntryPref[];
 // Pref that maps to the "OnSecurityEventEnterpriseConnector" policy.
 extern const char kOnSecurityEventPref[];
 
+// Pref that maps to the "ContextAwareAccessSignalsAllowlistPref" policy.
+extern const char kContextAwareAccessSignalsAllowlistPref[];
+
 // Prefs that map to the scope of each policy using a
 // EnterpriseConnectorsPolicyHandler.
 extern const char kOnFileAttachedScopePref[];
