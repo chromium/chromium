@@ -101,7 +101,6 @@ void LayoutTextControl::HitInnerEditorElement(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset) {
-  NOT_DESTROYED();
   if (!inner_editor.GetLayoutObject())
     return;
 

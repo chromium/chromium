@@ -302,11 +302,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 // Should be added at the beginning of every method to ensure we are not
 // accessing a LayoutObject after the Desroy() call.
 #if DCHECK_IS_ON()
-// TODO(keishi): Implement once LayoutObject is made GarbageCollected.
-#define NOT_DESTROYED() ((void)0)
+  ALWAYS_INLINE void CheckIsNotDestroyed() const { DCHECK(!is_destroyed_); }
 #else
-#define NOT_DESTROYED() ((void)0)
+  ALWAYS_INLINE void CheckIsNotDestroyed() const {}
 #endif
+#define NOT_DESTROYED() CheckIsNotDestroyed()
 
   // Returns the name of the layout object.
   virtual const char* GetName() const = 0;
