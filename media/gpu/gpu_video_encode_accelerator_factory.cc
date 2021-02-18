@@ -185,6 +185,13 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
     });
   }
 
+  if (gpu_workarounds.disable_accelerated_h264_encode) {
+    base::EraseIf(profiles, [](const auto& vea_profile) {
+      return vea_profile.profile >= H264PROFILE_MIN &&
+             vea_profile.profile <= H264PROFILE_MAX;
+    });
+  }
+
   return profiles;
 }
 
