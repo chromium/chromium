@@ -258,6 +258,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "autofill-address-save-prompt",
+    "owners": [ "mamir", "koerber" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "autofill-always-return-cloud-tokenized-card",
     "owners": [ "aneeshali@google.com", "annelim@google.com", "jsaul@google.com" ],
     "expiry_milestone": 94
@@ -878,7 +883,7 @@
     "name": "decouple-sync-from-android-auto-sync",
     "owners": [ "victorvianna@google.com", "treib@chromium.org" ],
     "expiry_milestone": 92
-  },  
+  },
   {
     "name": "default-browser-fullscreen-promo-cta-experiment",
     "owners": [ "javierrobles", "bling-team@google.com" ],

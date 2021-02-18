@@ -539,6 +539,11 @@ const char kEnableAutofillAccountWalletStorageName[] =
 const char kEnableAutofillAccountWalletStorageDescription[] =
     "Enable the ephemeral storage for account data for autofill.";
 
+const char kEnableAutofillAddressSavePromptName[] =
+    "Autofill Address Save Prompts";
+const char kEnableAutofillAddressSavePromptDescription[] =
+    "Enable the Autofill address save prompts.";
+
 const char kEnableAutofillCreditCardAblationExperimentDisplayName[] =
     "Credit card autofill ablation experiment.";
 const char kEnableAutofillCreditCardAblationExperimentDescription[] =

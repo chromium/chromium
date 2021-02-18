@@ -7104,6 +7104,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kScalableStatusArea)},
 #endif
 
+    {"autofill-address-save-prompt",
+     flag_descriptions::kEnableAutofillAddressSavePromptName,
+     flag_descriptions::kEnableAutofillAddressSavePromptDescription,
+     kOsWin | kOsMac | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
