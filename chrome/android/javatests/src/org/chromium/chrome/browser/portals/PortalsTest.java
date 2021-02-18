@@ -290,6 +290,10 @@ public class PortalsTest {
                 mTestServer.getURL("/chrome/test/data/portal/autofocus.html"));
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final WebContents portalContents = getPortalContents(tab);
+        // Elements with autofocus are only focused after a rendering update, so we call
+        // requestAnimationFrame() to wait for the update.
+        JavaScriptUtils.runJavascriptWithAsyncResult(
+                portalContents, "rAF().then(() => domAutomationController.send(true));");
         Assert.assertEquals("true",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         portalContents, "checkActiveElement()"));

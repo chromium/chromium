@@ -6,8 +6,10 @@
   <script>
     function messageHandler(e) {
       if (e.data === 'check-active-element') {
-        let autofocusedButton = document.querySelector('#two');
-        e.source.postMessage(document.activeElement === autofocusedButton);
+        window.requestAnimationFrame(() => {
+          let autofocusedButton = document.querySelector('#two');
+          e.source.postMessage(document.activeElement === autofocusedButton);
+        });
       }
     }
 

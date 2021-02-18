@@ -63,9 +63,7 @@ IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
   EXPECT_EQ(true, content::EvalJs(portal_contents, "focusPromise"));
 }
 
-// TODO(crbug.com/1059404) Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
-                       DISABLED_AutofocusAcrossActivation) {
+IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest, AutofocusAcrossActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/autofocus.html"));
   ui_test_utils::NavigateToURL(browser(), url);
@@ -73,9 +71,13 @@ IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(contents, "loadComplete"));
 
+  // Elements with autofocus are only focused after a rendering update, so we
+  // call requestAnimationFrame() to wait for the update.
+  WebContents* portal_contents = contents->GetInnerWebContents()[0];
+  EXPECT_EQ(true, content::EvalJs(portal_contents, "rAF()"));
+
   // Check that autofocused element inside the portal is the active element, but
   // focus event hasn't been dispatched.
-  WebContents* portal_contents = contents->GetInnerWebContents()[0];
   EXPECT_EQ(true, content::EvalJs(portal_contents, "checkActiveElement()"));
   EXPECT_EQ(false, content::EvalJs(portal_contents, "focusEventDispatched"));
 
