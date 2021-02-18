@@ -305,8 +305,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // This identifier represents the stable identifier between a
   // LocalFrame  <--> RenderFrameHostImpl or a
   // RemoteFrame <--> RenderFrameProxyHost in the browser process.
-  // TODO(crbug.com/1096617): Make this return a FrameToken instead.
-  const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
+  const FrameToken& GetFrameToken() const { return frame_token_; }
 
   bool GetVisibleToHitTesting() const { return visible_to_hit_testing_; }
   void UpdateVisibleToHitTesting();
@@ -385,7 +384,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
         Frame* parent,
         Frame* previous_sibling,
         FrameInsertType insert_type,
-        const base::UnguessableToken& frame_token,
+        const FrameToken& frame_token,
         WindowProxyManager*,
         WindowAgentFactory* inheriting_agent_factory);
 
@@ -509,7 +508,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // will *not* have the same identifier. This is different than the
   // |devtools_frame_token_| in which all representations of this frame node
   // have the same value in all processes.
-  base::UnguessableToken frame_token_;
+  FrameToken frame_token_;
 
   // This task is used for the async step in form submission when a form is
   // targeting this frame. http://html.spec.whatwg.org/C/#plan-to-navigate

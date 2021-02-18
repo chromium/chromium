@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 
+#include "base/stl_util.h"
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -89,6 +90,13 @@ RemoteFrame* RemoteFrame::FromFrameToken(const RemoteFrameToken& frame_token) {
   return FromFrameToken(frame_token.value());
 }
 
+// static
+RemoteFrame* RemoteFrame::FromFrameToken(const FrameToken& frame_token) {
+  if (!frame_token.Is<RemoteFrameToken>())
+    return nullptr;
+  return FromFrameToken(frame_token.GetAs<RemoteFrameToken>());
+}
+
 RemoteFrame::RemoteFrame(
     RemoteFrameClient* client,
     Page& page,
@@ -96,7 +104,7 @@ RemoteFrame::RemoteFrame(
     Frame* parent,
     Frame* previous_sibling,
     FrameInsertType insert_type,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
     WindowAgentFactory* inheriting_agent_factory,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider)
@@ -122,9 +130,9 @@ RemoteFrame::RemoteFrame(
   // TODO(crbug.com/1094850): Remove this check once the renderer is correctly
   // handling errors during the creation of HTML portal elements, which would
   // otherwise cause RemoteFrame() being created with empty frame tokens.
-  if (!frame_token.is_empty()) {
+  if (!frame_token.value().is_empty()) {
     auto frame_tracking_result = GetRemoteFramesMap().insert(
-        base::UnguessableTokenHash()(frame_token), this);
+        RemoteFrameToken::Hasher()(frame_token), this);
     CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
   }
 
@@ -217,8 +225,12 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   bool initiator_frame_has_download_sandbox_flag = false;
   bool initiator_frame_is_ad = false;
 
-  const base::UnguessableToken* initiator_frame_token =
-      frame_request.GetInitiatorFrameToken();
+  // TODO(1096617): Migrate the navigation stack to use
+  // base::Optional<FrameToken> instead of "base::UnguessableToken*". Using
+  // pointers is no longer possible when the input data can be backed by
+  // multiple distinct types requiring a cast.
+  base::Optional<base::UnguessableToken> initiator_frame_token =
+      base::OptionalFromPtr(frame_request.GetInitiatorFrameToken());
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle =
           frame_request.TakeInitiatorPolicyContainerKeepAliveHandle();
@@ -242,7 +254,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       }
 
       if (!initiator_frame_token) {
-        initiator_frame_token = &window->GetFrame()->GetFrameToken();
+        initiator_frame_token = window->GetFrame()->GetFrameToken();
         initiator_policy_container_keep_alive_handle =
             window->GetFrame()->GetPolicyContainer()->IssueKeepAliveHandle();
       }
@@ -258,7 +270,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
                      is_opener_navigation,
                      initiator_frame_has_download_sandbox_flag,
                      initiator_frame_is_ad, frame_request.GetBlobURLToken(),
-                     frame_request.Impression(), initiator_frame_token,
+                     frame_request.Impression(),
+                     base::OptionalOrNullptr(initiator_frame_token),
                      std::move(initiator_policy_container_keep_alive_handle));
 }
 
@@ -396,9 +409,9 @@ void RemoteFrame::ForwardPostMessage(
     base::Optional<base::UnguessableToken> cluster_id,
     scoped_refptr<const SecurityOrigin> target_security_origin,
     LocalFrame* source_frame) {
-  base::Optional<base::UnguessableToken> source_token;
+  base::Optional<blink::LocalFrameToken> source_token;
   if (source_frame)
-    source_token = source_frame->GetFrameToken();
+    source_token = source_frame->GetLocalFrameToken();
 
   String source_origin = message_event->origin();
   String target_origin = g_empty_string;

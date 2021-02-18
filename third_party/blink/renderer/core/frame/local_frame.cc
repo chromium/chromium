@@ -312,7 +312,7 @@ HitTestResult HitTestResultForRootFramePos(
 }
 
 RemoteFrame* SourceFrameForOptionalToken(
-    const base::Optional<base::UnguessableToken>& source_frame_token) {
+    const base::Optional<RemoteFrameToken>& source_frame_token) {
   if (!source_frame_token)
     return nullptr;
   return RemoteFrame::FromFrameToken(source_frame_token.value());
@@ -436,6 +436,13 @@ LocalFrame* LocalFrame::FromFrameToken(
 // static
 LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
   return FromFrameToken(frame_token.value());
+}
+
+// static
+LocalFrame* LocalFrame::FromFrameToken(const FrameToken& frame_token) {
+  if (!frame_token.Is<LocalFrameToken>())
+    return nullptr;
+  return FromFrameToken(frame_token.GetAs<LocalFrameToken>());
 }
 
 void LocalFrame::Init(Frame* opener) {
@@ -1505,7 +1512,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                        Frame* parent,
                        Frame* previous_sibling,
                        FrameInsertType insert_type,
-                       const base::UnguessableToken& frame_token,
+                       const LocalFrameToken& frame_token,
                        WindowAgentFactory* inheriting_agent_factory,
                        InterfaceRegistry* interface_registry,
                        std::unique_ptr<PolicyContainer> policy_container,
@@ -1546,8 +1553,8 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       lifecycle_state_(mojom::FrameLifecycleState::kRunning),
       policy_container_(policy_container ? std::move(policy_container)
                                          : PolicyContainer::CreateEmpty()) {
-  auto frame_tracking_result = GetLocalFramesMap().insert(
-      base::UnguessableTokenHash()(frame_token), this);
+  auto frame_tracking_result =
+      GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
   if (IsLocalRoot()) {
     probe_sink_ = MakeGarbageCollected<CoreProbeSink>();
@@ -2749,7 +2756,7 @@ void LocalFrame::GetStringForRange(const gfx::Range& range,
 
 void LocalFrame::InstallCoopAccessMonitor(
     network::mojom::blink::CoopAccessReportType report_type,
-    const base::UnguessableToken& accessed_window,
+    const FrameToken& accessed_window,
     mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter,
     bool endpoint_defined,
@@ -3257,7 +3264,7 @@ void LocalFrame::MediaPlayerActionAt(
 
 void LocalFrame::AdvanceFocusInFrame(
     mojom::blink::FocusType focus_type,
-    const base::Optional<base::UnguessableToken>& source_frame_token) {
+    const base::Optional<RemoteFrameToken>& source_frame_token) {
   RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
   if (!source_frame) {
     SetInitialFocus(focus_type == mojom::blink::FocusType::kBackward);
@@ -3334,7 +3341,7 @@ void LocalFrame::OnScreensChange() {
 }
 
 void LocalFrame::PostMessageEvent(
-    const base::Optional<base::UnguessableToken>& source_frame_token,
+    const base::Optional<RemoteFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {
