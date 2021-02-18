@@ -203,6 +203,10 @@ void AndroidBatteryMetrics::MonitorRadioState() {
     TRACE_EVENT_INSTANT0("power", "RadioWakeup", TRACE_EVENT_SCOPE_GLOBAL);
     ++radio_wakeups_;
   }
+  if (last_activity_ != base::android::RadioDataActivity::kDormant &&
+      activity == base::android::RadioDataActivity::kDormant) {
+    TRACE_EVENT_INSTANT0("power", "RadioDormant", TRACE_EVENT_SCOPE_GLOBAL);
+  }
   last_activity_ = activity;
 }
 
