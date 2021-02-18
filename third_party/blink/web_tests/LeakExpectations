@@ -184,6 +184,8 @@ crbug.com/1178725 [ Linux ] http/tests/devtools/sources/snippet-overrides.js [ P
 
 # Sheriff 2021-02-18
 crbug.com/1179722 [ Linux ] http/tests/devtools/console/console-string-format.js [ Pass Failure ]
+crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/database-data.js [ Pass Failure ]
+crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/transaction-promise-console.js [ Pass Failure ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
