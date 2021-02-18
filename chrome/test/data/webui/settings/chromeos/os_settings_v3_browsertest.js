@@ -253,6 +253,7 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
 
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
+ ['AccountsPage', 'add_users_tests.m.js'],
  ['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['AppsPage', 'apps_page_test.m.js'],
  ['AppManagementPage', 'app_management_page_tests.m.js'],

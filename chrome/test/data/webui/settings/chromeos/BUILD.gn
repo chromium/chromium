@@ -32,6 +32,7 @@ js_library("fake_settings_search_handler") {
 
 js_modulizer("modulize") {
   input_files = [
+    "add_users_tests.js",
     "ambient_mode_page_test.js",
     "apps_page_test.js",
     "app_management/app_detail_view_test.js",
@@ -70,6 +71,7 @@ js_modulizer("modulize") {
     "fake_settings_search_handler.js",
     "fake_system_display.js",
     "fake_user_action_recorder.js",
+    "fake_users_private.js",
     "google_assistant_page_test.js",
     "guest_os_shared_paths_test.js",
     "guest_os_shared_usb_devices_test.js",

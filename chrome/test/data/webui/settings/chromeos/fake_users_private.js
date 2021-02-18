@@ -14,8 +14,7 @@ cr.define('settings', function() {
    * @constructor
    * @implements {UsersPrivate}
    */
-  function FakeUsersPrivate() {
-  }
+  /* #export */ function FakeUsersPrivate() {}
 
   FakeUsersPrivate.prototype = {
     users: [],
@@ -37,5 +36,6 @@ cr.define('settings', function() {
     },
   };
 
+  // #cr_define_end
   return {FakeUsersPrivate: FakeUsersPrivate};
 });

@@ -14,6 +14,7 @@ os_test_namespace_rewrites = os_settings_namespace_rewrites + [
                                "settings.FakeSettingsPrivate|FakeSettingsPrivate",
                                "settings.FakeSettingsSearchHandler|FakeSettingsSearchHandler",
                                "settings.FakeUserActionRecorder|FakeUserActionRecorder",
+                               "settings.FakeUsersPrivate|FakeUsersPrivate",
                                "settings.getFakeLanguagePrefs|getFakeLanguagePrefs",
                                "settings.MultiDeviceSettingsMode|MultiDeviceSettingsMode",
                                "settings.TestGuestOsBrowserProxy|TestGuestOsBrowserProxy",
