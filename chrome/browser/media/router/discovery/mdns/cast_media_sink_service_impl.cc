@@ -361,21 +361,14 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
     return;
   }
 
-  // We erase the sink here so that OpenChannel would not find an existing
-  // sink.
-  // Note: a better longer term solution is to introduce a state field to the
-  // sink. We would set it to ERROR here. In OpenChannel(), we would check
-  // create a socket only if the state is not already CONNECTED.
   MediaSinkInternal sink = sink_it->second;
-  RemoveSink(sink);
-
   // If socket is not opened yet, then |OnChannelOpened()| will handle the
   // retry.
   if (socket.ready_state() != cast_channel::ReadyState::CONNECTING) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel, GetWeakPtr(),
-                       sink, nullptr, SinkSource::kConnectionRetry));
+                       sink, nullptr, SinkSource::kConnectionRetryOnError));
   }
 }
 
@@ -472,12 +465,11 @@ void CastMediaSinkServiceImpl::OpenChannel(
   if (sink_source != SinkSource::kDial)
     dial_sink_failure_count_.erase(sink_id);
 
-  // If the sink already exists, then we need to check if there are updates.
-  // If the IP endpoint changed, then we will need to reopen a socket.
-  // If the IP endpoint remained the same but other properties changed, then we
-  // can update the existing sink without opening a new socket.
+  // If there already is a connected sink whose IP endpoint stayed the same,
+  // then there's no need to reopen a socket. We just update the sink info.
   const MediaSinkInternal* existing_sink = GetSinkById(sink_id);
-  if (existing_sink && existing_sink->cast_data().ip_endpoint == ip_endpoint) {
+  if (sink_source != SinkSource::kConnectionRetryOnError && existing_sink &&
+      existing_sink->cast_data().ip_endpoint == ip_endpoint) {
     // This update is only performed if |sink_source| is kMdns. In particular,
     // DIAL-discovered
     // sinks contain incomplete information which should not be used for

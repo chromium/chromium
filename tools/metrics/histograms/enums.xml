@@ -49794,6 +49794,7 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Connection retry"/>
   <int value="4" label="First by mDNS, then by DIAL"/>
   <int value="5" label="First by DIAL, then by mDNS"/>
+  <int value="6" label="Connection retry on error"/>
 </enum>
 
 <enum name="MediaRouterCreateRouteOutcome">
