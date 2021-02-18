@@ -6,11 +6,6 @@ import {
   AppWindow,  // eslint-disable-line no-unused-vars
   getDefaultWindowSize,
 } from './app_window.js';
-import {
-  BackgroundOps,  // eslint-disable-line no-unused-vars
-  createFakeBackgroundOps,
-  ForegroundOps,  // eslint-disable-line no-unused-vars
-} from './background_ops.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert, assertInstanceof} from './chrome_util.js';
 import {
@@ -21,10 +16,12 @@ import {DeviceInfoUpdater} from './device/device_info_updater.js';
 import * as dom from './dom.js';
 import * as error from './error.js';
 import {GalleryButton} from './gallerybutton.js';
+import {Intent} from './intent.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
 import {notifyCameraResourceReady} from './mojo/device_operator.js';
 import * as nav from './nav.js';
+import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
@@ -53,18 +50,27 @@ const appWindow = window['appWindow'];
 
 /**
  * Creates the Camera App main object.
- * @implements {ForegroundOps}
  */
 export class App {
   /**
-   * @param {!BackgroundOps} backgroundOps
+   * @param {{
+   *     perfLogger: !PerfLogger,
+   *     intent: ?Intent,
+   * }} params
+   * @public
    */
-  constructor(backgroundOps) {
+  constructor({perfLogger, intent}) {
     /**
-     * @type {!BackgroundOps}
+     * @type {!PerfLogger}
      * @private
      */
-    this.backgroundOps_ = backgroundOps;
+    this.perfLogger_ = perfLogger;
+
+    /**
+     * @type {?Intent}
+     * @private
+     */
+    this.intent_ = intent;
 
     /**
      * @type {!PhotoConstraintsPreferrer}
@@ -98,18 +104,16 @@ export class App {
      * @private
      */
     this.cameraView_ = (() => {
-      const intent = this.backgroundOps_.getIntent();
-      const perfLogger = this.backgroundOps_.getPerfLogger();
-      if (intent !== null && intent.shouldHandleResult) {
+      if (this.intent_ !== null && this.intent_.shouldHandleResult) {
         state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, true);
         return new CameraIntent(
-            intent, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, perfLogger);
+            this.intent_, this.infoUpdater_, this.photoPreferrer_,
+            this.videoPreferrer_, this.perfLogger_);
       } else {
-        const mode = intent !== null ? intent.mode : Mode.PHOTO;
+        const mode = this.intent_ !== null ? this.intent_.mode : Mode.PHOTO;
         return new Camera(
             this.galleryButton_, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, mode, perfLogger);
+            this.videoPreferrer_, mode, this.perfLogger_);
       }
     })();
 
@@ -147,8 +151,6 @@ export class App {
     ]);
 
     nav.open(ViewName.SPLASH);
-    this.backgroundOps_.bindForegroundOps(this);
-    this.backgroundOps_.bindAppWindow(appWindow);
   }
 
   /**
@@ -228,13 +230,10 @@ export class App {
 
     const showWindow = (async () => {
       windowController.enable();
-      this.backgroundOps_.notifyActivation();
       // For intent only requiring open camera with specific mode without
-      // returning the capture result, called onIntentHandled() right
-      // after app successfully launched.
-      const intent = this.backgroundOps_.getIntent();
-      if (intent !== null && !intent.shouldHandleResult) {
-        intent.finish();
+      // returning the capture result, finish it directly.
+      if (this.intent_ !== null && !this.intent_.shouldHandleResult) {
+        this.intent_.finish();
       }
     })();
 
@@ -270,10 +269,10 @@ export class App {
       nav.open(ViewName.CAMERA);
       await browserProxy.setLaunchingFromWindowCreationStartTime(async () => {
         const windowCreationTime = window['windowCreationTime'];
-        this.backgroundOps_.getPerfLogger().start(
+        this.perfLogger_.start(
             PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
       });
-      this.backgroundOps_.getPerfLogger().stop(
+      this.perfLogger_.stop(
           PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, {hasError: !isSuccess});
       if (appWindow !== null) {
         appWindow.onAppLaunched();
@@ -323,7 +322,6 @@ export class App {
     state.set(state.State.SUSPEND, true);
     await this.cameraView_.start();
     windowController.disable();
-    this.backgroundOps_.notifySuspension();
     nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
@@ -333,7 +331,6 @@ export class App {
   resume() {
     state.set(state.State.SUSPEND, false);
     windowController.enable();
-    this.backgroundOps_.notifyActivation();
     nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 }
@@ -352,16 +349,12 @@ let instance = null;
     return;
   }
 
-  let bgOps;
-  if (window['backgroundOps'] !== undefined) {
-    bgOps = window['backgroundOps'];
-  } else {
-    // TODO(crbug.com/980846): Refactor after migrating to SWA since there is no
-    // background page for SWA.
-    bgOps = createFakeBackgroundOps();
-  }
+  const perfLogger = new PerfLogger();
+  const url = new URL(window.location.href);
+  const intent =
+      url.searchParams.get('intentId') !== null ? Intent.create(url) : null;
 
-  state.set(state.State.INTENT, bgOps.getIntent() !== null);
+  state.set(state.State.INTENT, intent !== null);
 
   browserProxy.setupUnloadListener(() => {
     // For SWA, we don't cancel the unhandled intent here since there is no
@@ -373,16 +366,13 @@ let instance = null;
     }
   });
 
-  const testErrorCallback = bgOps.getTestingErrorCallback();
   metrics.initMetrics();
-  if (testErrorCallback !== null || appWindow !== null) {
+  if (appWindow !== null) {
     metrics.setMetricsEnabled(false);
   }
 
   // TODO(crbug.com/1082585): Initializes it before any other javascript loaded.
-  error.initialize(testErrorCallback);
-
-  const perfLogger = bgOps.getPerfLogger();
+  error.initialize();
 
   // Setup listener for performance events.
   perfLogger.addListener(({event, duration, perfInfo}) => {
@@ -425,7 +415,6 @@ let instance = null;
     });
   });
 
-  instance = new App(
-      /** @type {!BackgroundOps} */ (bgOps));
+  instance = new App({perfLogger, intent});
   await instance.start();
 })();

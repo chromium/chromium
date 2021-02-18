@@ -6,8 +6,6 @@ compile_js_files = [
   "animation.js",
   "app_window.js",
   "async_job_queue.js",
-  "background.js",
-  "background_ops.js",
   "barcode_chip.js",
   "browser_proxy/browser_proxy.js",
   "browser_proxy/browser_proxy_interface.js",
