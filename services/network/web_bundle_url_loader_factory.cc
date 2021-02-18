@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/web_bundle_chunked_buffer.h"
 #include "services/network/web_bundle_memory_quota_consumer.h"
@@ -36,6 +37,11 @@ void DeleteProducerAndRunCallback(
 bool CheckWebBundleServingConstraints(
     const network::mojom::URLResponseHead& response_head,
     std::string& out_error_message) {
+  if (!response_head.headers ||
+      !cors::IsOkStatus(response_head.headers->response_code())) {
+    out_error_message = "Failed to fetch Web Bundle.";
+    return false;
+  }
   if (response_head.mime_type != "application/webbundle") {
     out_error_message =
         "Web Bundle response must have \"application/webbundle\" content-type.";
@@ -566,8 +572,9 @@ void WebBundleURLLoaderFactory::ReportErrorAndCancelPendingLoaders(
     SubresourceWebBundleLoadResult result,
     mojom::WebBundleErrorType error,
     const std::string& message) {
-  MaybeRecordLoadResult(result);
+  DCHECK_NE(SubresourceWebBundleLoadResult::kSuccess, result);
   web_bundle_handle_->OnWebBundleError(error, message);
+  MaybeReportLoadResult(result);
   auto pending_loaders = std::move(pending_loaders_);
   for (auto loader : pending_loaders) {
     if (loader)
@@ -591,7 +598,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
 
   metadata_ = std::move(metadata);
   if (data_completed_)
-    MaybeRecordLoadResult(SubresourceWebBundleLoadResult::kSuccess);
+    MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);
   for (auto loader : pending_loaders_)
     StartLoad(loader);
   pending_loaders_.clear();
@@ -700,17 +707,20 @@ void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
 }
 
 void WebBundleURLLoaderFactory::OnDataCompleted() {
+  DCHECK(!data_completed_);
   data_completed_ = true;
   if (metadata_)
-    MaybeRecordLoadResult(SubresourceWebBundleLoadResult::kSuccess);
+    MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);
 }
 
-void WebBundleURLLoaderFactory::MaybeRecordLoadResult(
+void WebBundleURLLoaderFactory::MaybeReportLoadResult(
     SubresourceWebBundleLoadResult result) {
   if (load_result_.has_value())
     return;
   load_result_ = result;
   base::UmaHistogramEnumeration("SubresourceWebBundles.LoadResult", result);
+  web_bundle_handle_->OnWebBundleLoadFinished(
+      result == SubresourceWebBundleLoadResult::kSuccess);
 }
 
 }  // namespace network

@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
 
   void OnMemoryQuotaExceeded();
   void OnDataCompleted();
-  void MaybeRecordLoadResult(SubresourceWebBundleLoadResult result);
+  void MaybeReportLoadResult(SubresourceWebBundleLoadResult result);
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;

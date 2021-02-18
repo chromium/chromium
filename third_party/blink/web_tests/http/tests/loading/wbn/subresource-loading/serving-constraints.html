@@ -26,18 +26,16 @@ await new Promise((resolve, reject) => {
     const link = document.createElement('link');
     link.rel = 'webbundle';
     link.href = '../resources/wbn/hello.wbn-wrong-mime-type';
+    link.addEventListener('error', resolve);
     document.body.appendChild(link);
-    // Wait for the console message to be logged.
-    setTimeout(resolve, 100);
   });
 
 await new Promise((resolve, reject) => {
     const link = document.createElement('link');
     link.rel = 'webbundle';
     link.href = '../resources/wbn/hello.wbn-without-nosniff';
+    link.addEventListener('error', resolve);
     document.body.appendChild(link);
-    // Wait for the console message to be logged.
-    setTimeout(resolve, 100);
   });
 
 testRunner.notifyDone();

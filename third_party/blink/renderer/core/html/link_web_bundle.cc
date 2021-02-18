@@ -91,17 +91,10 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   bool HasLoaded() const { return !failed_; }
 
   // ThreadableLoaderClient
-  void DidReceiveResponse(uint64_t, const ResourceResponse& response) override {
-    if (!cors::IsOkStatus(response.HttpStatusCode()))
-      failed_ = true;
-  }
-
   void DidStartLoadingResponseBody(BytesConsumer& consumer) override {
     // Drain |consumer| so that DidFinishLoading is surely called later.
     consumer.DrainAsDataPipe();
   }
-
-  void DidFinishLoading(uint64_t) override { link_web_bundle_->NotifyLoaded(); }
   void DidFail(const ResourceError&) override { DidFailInternal(); }
   void DidFailRedirectCheck() override { DidFailInternal(); }
 
@@ -115,6 +108,12 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " +
                                        message.c_str());
   }
+  void OnWebBundleLoadFinished(bool success) override {
+    if (failed_)
+      return;
+    failed_ = !success;
+    link_web_bundle_->NotifyLoaded();
+  }
 
   const KURL& url() const { return url_; }
   scoped_refptr<SecurityOrigin> GetSecurityOrigin() const {
@@ -126,6 +125,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
 
  private:
   void DidFailInternal() {
+    if (failed_)
+      return;
     failed_ = true;
     link_web_bundle_->NotifyLoaded();
   }

@@ -98,6 +98,8 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
       std::move(quit_closure_for_bundle_error_).Run();
   }
 
+  void OnWebBundleLoadFinished(bool success) override {}
+
  private:
   mojo::Receiver<mojom::WebBundleHandle> receiver_;
   base::Optional<std::pair<mojom::WebBundleErrorType, std::string>>
