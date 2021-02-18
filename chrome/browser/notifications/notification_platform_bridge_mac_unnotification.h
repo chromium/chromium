@@ -14,8 +14,8 @@
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/notifications/alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/notification_common.h"
-#include "chrome/browser/notifications/notification_image_retainer.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "chrome/common/notifications/notification_image_retainer.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
 
 @class UNNotificationBuilder;

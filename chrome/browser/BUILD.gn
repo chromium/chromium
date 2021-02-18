@@ -5187,13 +5187,13 @@ static_library("browser") {
   if (is_win || is_mac) {
     # Sources(generally "desktop OS importers") used only on Mac & Windows.
     sources += [
-      "notifications/notification_image_retainer.cc",
-      "notifications/notification_image_retainer.h",
       "recovery/recovery_install_global_error.cc",
       "recovery/recovery_install_global_error.h",
       "recovery/recovery_install_global_error_factory.cc",
       "recovery/recovery_install_global_error_factory.h",
     ]
+
+    deps += [ "//chrome/common/notifications" ]
 
     if (enable_chromium_updater) {
       deps += [ "//chrome/browser/updater:browser_updater_client" ]
