@@ -28,7 +28,7 @@ from proto import Resources_pb2
 
 # First bytes in an .flat.arsc file.
 # uint32: Magic ("ARSC"), version (1), num_entries (1), type (0)
-_FLAT_ARSC_HEADER = 'AAPT\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00'
+_FLAT_ARSC_HEADER = b'AAPT\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00'
 
 # The package ID hardcoded for shared libraries. See
 # _HardcodeSharedLibraryDynamicAttributes() for more details. If this value
@@ -284,8 +284,8 @@ def _FlatBytesFromTable(table):
   proto_bytes = table.SerializeToString()
   size = struct.pack('<Q', len(proto_bytes))
   overage = len(proto_bytes) % 4
-  padding = '\0' * (4 - overage) if overage else ''
-  return ''.join((_FLAT_ARSC_HEADER, size, proto_bytes, padding))
+  padding = b'\0' * (4 - overage) if overage else b''
+  return b''.join((_FLAT_ARSC_HEADER, size, proto_bytes, padding))
 
 
 def StripUnwantedResources(partial_path, keep_predicate):

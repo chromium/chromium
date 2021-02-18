@@ -305,7 +305,7 @@ class ResourceInfoFile(object):
     """
     entries = self._ApplyRenames()
     lines = []
-    for archive_path, source_path in entries.iteritems():
+    for archive_path, source_path in entries.items():
       lines.append('{}\t{}\n'.format(archive_path, source_path))
     with open(info_file_path, 'w') as info_file:
       info_file.writelines(sorted(lines))
@@ -653,7 +653,7 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
   """Render an R.java source file. See _CreateRJaveSourceFile for args info."""
   final_resources_by_type = collections.defaultdict(list)
   non_final_resources_by_type = collections.defaultdict(list)
-  for res_type, resources in all_resources_by_type.iteritems():
+  for res_type, resources in all_resources_by_type.items():
     for entry in resources:
       # Entries in stylable that are not int[] are not actually resource ids
       # but constants.
@@ -753,7 +753,7 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
   """Returns (version_code, version_name, package_name) for the given apk."""
   output = subprocess.check_output([
       aapt2_path, 'dump', 'xmltree', apk_path, '--file', 'AndroidManifest.xml'
-  ])
+  ]).decode('utf-8')
   version_code = re.search(r'versionCode.*?=(\d*)', output).group(1)
   version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
   package_name = re.search(r'package.*?="(.*?)"', output).group(1)
@@ -766,6 +766,7 @@ def ExtractArscPackage(aapt2_path, apk_path):
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
   for line in proc.stdout:
+    line = line.decode('utf-8')
     # Package name=org.chromium.webview_shell id=7f
     if line.startswith('Package'):
       proc.kill()
@@ -1025,13 +1026,13 @@ def GenerateAndroidResourceStringsXml(names_to_utf8_text, namespaces=None):
   result = '<?xml version="1.0" encoding="utf-8"?>\n'
   result += '<resources'
   if namespaces:
-    for prefix, url in sorted(namespaces.iteritems()):
+    for prefix, url in sorted(namespaces.items()):
       result += ' xmlns:%s="%s"' % (prefix, url)
   result += '>\n'
   if not names_to_utf8_text:
     result += '<!-- this file intentionally empty -->\n'
   else:
-    for name, utf8_text in sorted(names_to_utf8_text.iteritems()):
+    for name, utf8_text in sorted(names_to_utf8_text.items()):
       result += '<string name="%s">"%s"</string>\n' % (name, utf8_text)
   result += '</resources>\n'
   return result

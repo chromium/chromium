@@ -188,7 +188,7 @@ def _WriteXmlFile(root, path):
     # makes it a lot easier to read as a human (also on code search).
     f.write(
         minidom.parseString(ElementTree.tostring(
-            root, encoding='utf-8')).toprettyxml(indent='  '))
+            root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
 def _RunLint(lint_binary_path,

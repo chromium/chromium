@@ -13,7 +13,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import Configuration_pb2 as frameworks_dot_base_dot_tools_dot_aapt2_dot_Configuration__pb2
+from . import Configuration_pb2 as frameworks_dot_base_dot_tools_dot_aapt2_dot_Configuration__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(

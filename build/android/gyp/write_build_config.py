@@ -578,6 +578,13 @@ import xml.dom.minidom
 from util import build_utils
 from util import resource_utils
 
+# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+if sys.version_info.major == 2:
+  zip_longest = itertools.izip_longest
+else:
+  zip_longest = itertools.zip_longest
+
+
 # Types that should never be used as a dependency of another build config.
 _ROOT_TYPES = ('android_apk', 'java_binary', 'java_annotation_processor',
                'junit_binary', 'android_app_bundle')
@@ -751,7 +758,7 @@ def _MergeAssets(all_assets):
     dest_map = uncompressed if disable_compression else compressed
     other_map = compressed if disable_compression else uncompressed
     outputs = entry.get('outputs', [])
-    for src, dest in itertools.izip_longest(entry['sources'], outputs):
+    for src, dest in zip_longest(entry['sources'], outputs):
       if not dest:
         dest = os.path.basename(src)
       # Merge so that each path shows up in only one of the lists, and that
@@ -762,7 +769,7 @@ def _MergeAssets(all_assets):
         locale_paks.add(dest)
 
   def create_list(asset_map):
-    ret = ['%s:%s' % (src, dest) for dest, src in asset_map.iteritems()]
+    ret = ['%s:%s' % (src, dest) for dest, src in asset_map.items()]
     # Sort to ensure deterministic ordering.
     ret.sort()
     return ret
@@ -1684,7 +1691,7 @@ def main(argv):
     configs_by_classpath_entry = collections.defaultdict(list)
     static_lib_jar_paths = {}
     for config_path, dep_config in (sorted(
-        static_library_dependent_configs_by_path.iteritems())):
+        static_library_dependent_configs_by_path.items())):
       # For bundles, only the jar path and jni sources of the base module
       # are relevant for proguard. Should be updated when bundle feature
       # modules support JNI.
@@ -1710,7 +1717,7 @@ def main(argv):
     for cp_entry in device_classpath:
       configs_by_classpath_entry[cp_entry].append(options.build_config)
 
-    for cp_entry, candidate_configs in configs_by_classpath_entry.iteritems():
+    for cp_entry, candidate_configs in configs_by_classpath_entry.items():
       config_path = (candidate_configs[0]
                      if len(candidate_configs) == 1 else options.build_config)
       classpath_entries_by_owning_config[config_path].append(cp_entry)
@@ -1720,11 +1727,11 @@ def main(argv):
 
   deps_info['static_library_proguard_mapping_output_paths'] = sorted([
       d['proguard_mapping_path']
-      for d in static_library_dependent_configs_by_path.itervalues()
+      for d in static_library_dependent_configs_by_path.values()
   ])
   deps_info['static_library_dependent_classpath_configs'] = {
       path: sorted(set(classpath))
-      for path, classpath in classpath_entries_by_owning_config.iteritems()
+      for path, classpath in classpath_entries_by_owning_config.items()
   }
   deps_info['extra_main_r_text_files'] = sorted(extra_main_r_text_files)
 

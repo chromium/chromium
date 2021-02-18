@@ -184,7 +184,7 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
 
   stderr_filter = CreateStderrFilter(show_desugar_default_interface_warnings)
 
-  with tempfile.NamedTemporaryFile() as flag_file:
+  with tempfile.NamedTemporaryFile(mode='w') as flag_file:
     # Chosen arbitrarily. Needed to avoid command-line length limits.
     MAX_ARGS = 50
     if len(dex_cmd) > MAX_ARGS:

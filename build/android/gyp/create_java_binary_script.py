@@ -101,7 +101,7 @@ def main(argv):
   java_path = os.path.relpath(
       os.path.join(build_utils.JAVA_HOME, 'bin', 'java'), run_dir)
 
-  with build_utils.AtomicOutput(options.output) as script:
+  with build_utils.AtomicOutput(options.output, mode='w') as script:
     script.write(
         script_template.format(classpath=('"%s"' % '", "'.join(classpath)),
                                java_path=repr(java_path),
@@ -109,7 +109,7 @@ def main(argv):
                                extra_program_args=repr(extra_program_args),
                                noverify_flag=noverify_flag))
 
-  os.chmod(options.output, 0750)
+  os.chmod(options.output, 0o750)
 
 
 if __name__ == '__main__':
