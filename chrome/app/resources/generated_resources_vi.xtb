@@ -1449,7 +1449,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2606454609872547359">Không, tiếp tục mà không dùng ChromeVox</translation>
 <translation id="2606568927909309675">Tự động tạo phụ đề cho âm thanh và video bằng tiếng Anh. Âm thanh và phụ đề chỉ lưu trên thiết bị của bạn.</translation>
 <translation id="2607101320794533334">Thông tin Khoá Công cộng Đối tượng</translation>
-<translation id="2609896558069604090">Tạo phím tắt...</translation>
+<translation id="2609896558069604090">Tạo lối tắt...</translation>
 <translation id="2609980095400624569">Không thể thiết lập đường kết nối</translation>
 <translation id="2610157865375787051">Ngủ</translation>
 <translation id="2610260699262139870">Kíc&amp;h thước thực</translation>
@@ -1612,7 +1612,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Lỗi khi cài đặt ứng dụng Linux</translation>
 <translation id="2783298271312924866">Đã tải xuống</translation>
-<translation id="2783321960289401138">Tạo phím tắt...</translation>
+<translation id="2783321960289401138">Tạo lối tắt...</translation>
 <translation id="2783829359200813069">Chọn loại mã hóa</translation>
 <translation id="2783952358106015700">Sử dụng khóa bảo mật cho <ph name="APP_NAME" /></translation>
 <translation id="2784407158394623927">Đang kích hoạt dịch vụ dữ liệu di động của bạn</translation>
@@ -1837,7 +1837,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3016641847947582299">Thành phần đã cập nhật</translation>
 <translation id="3017079585324758401">Nền</translation>
 <translation id="3019285239893817657">Nút trang con</translation>
-<translation id="3020183492814296499">Phím tắt</translation>
+<translation id="3020183492814296499">Lối tắt</translation>
 <translation id="3020990233660977256">Số Sê-ri: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Trong khi chạy bằng pin</translation>
 <translation id="3021066826692793094">Bướm</translation>
@@ -3895,7 +3895,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5436492226391861498">Chờ đường hầm proxy...</translation>
 <translation id="5436510242972373446">Tìm kiếm <ph name="SITE_NAME" />:</translation>
 <translation id="5439680044267106777">Bỏ qua và thiết lập hồ sơ mới</translation>
-<translation id="544083962418256601">Tạo phím tắt...</translation>
+<translation id="544083962418256601">Tạo lối tắt...</translation>
 <translation id="5442228125690314719">Lỗi khi tạo hình ảnh đĩa. Vui lòng thử lại.</translation>
 <translation id="5442550868130618860">Bật tự động cập nhật</translation>
 <translation id="5445400788035474247">10x</translation>
@@ -7171,7 +7171,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9150079578948279438">Không thể xóa hồ sơ. Vui lòng thử lại hoặc liên hệ với nhà mạng của bạn để được hỗ trợ kỹ thuật.</translation>
 <translation id="9153934054460603056">Lưu nhận dạng và mật khẩu</translation>
 <translation id="9154194610265714752">Đã cập nhật</translation>
-<translation id="91568222606626347">Tạo phím tắt...</translation>
+<translation id="91568222606626347">Tạo lối tắt...</translation>
 <translation id="9157096865782046368">0,8 giây</translation>
 <translation id="9157697743260533322">Không thiết lập được cập nhật tự động cho tất cả người dùng (lỗi khởi chạy kiểm tra <ph name="ERROR_NUMBER" /></translation>
 <translation id="9157915340203975005">Cửa của máy in đang mở</translation>

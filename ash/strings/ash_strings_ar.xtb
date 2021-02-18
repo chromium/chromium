@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">تمت إضافة جهاز <ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">تصوير جزئي</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
+<translation id="1052916631016577720">المسح الضوئي لعنصر</translation>
 <translation id="1056775291175587022">ما من شبكات</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">خلوي: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">جارٍ تحميل المساعد...</translation>
 <translation id="4356930093361201197">وضع التباين العالي</translation>
 <translation id="4371348193907997655">إعدادات الإرسال</translation>
+<translation id="4378479437904450384">قوة إشارة شبكة <ph name="WIRELESS_PROVIDER" /> هي <ph name="SIGNAL_STRENGTH" /> في المئة.</translation>
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
 <translation id="4379531060876907730">هذه هي أدوات قلم الشاشة</translation>
 <translation id="4389184120735010762">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر الذي تم إرساؤه. هل ترغب في تفعيله؟</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">لا تتوافق هذه الشاشة مع <ph name="DEVICE_TYPE" /> (هذه الشاشة غير مدعومة).</translation>
 <translation id="6043994281159824495">الخروج الآن</translation>
 <translation id="6047696787498798094">سيتم إيقاف مشاركة الشاشة عند التبديل إلى مستخدم آخر. هل تريد المتابعة؟</translation>
+<translation id="6050368268239407309">أدوات العروض التقديمية</translation>
 <translation id="6054305421211936131">تسجيل الدخول باستخدام البطاقة الذكية</translation>
 <translation id="6059276912018042191">‏علامات تبويب Chrome الأخيرة</translation>
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>

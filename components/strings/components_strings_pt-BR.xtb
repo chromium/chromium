@@ -198,7 +198,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1640180200866533862">Políticas de usuário</translation>
 <translation id="1640244768702815859">Tente <ph name="BEGIN_LINK" />visitar a página inicial do site<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Adiar saída até</translation>
-<translation id="164212631332220697">Pagar com <ph name="CARD_DETAIL" /> na finalização da compra.</translation>
+<translation id="164212631332220697">Pague com <ph name="CARD_DETAIL" /> na finalização da compra.</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645368109819982629">Protocolo não compatível</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1002,7 +1002,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4879725228911483934">abrir e posicionar janelas nas suas telas.</translation>
 <translation id="4880827082731008257">Histórico de pesquisa</translation>
 <translation id="4881695831933465202">Abrir</translation>
-<translation id="4885256590493466218">Pagar com <ph name="CARD_DETAIL" /> na finalização da compra</translation>
+<translation id="4885256590493466218">Pague com <ph name="CARD_DETAIL" /> na finalização da compra</translation>
 <translation id="4889420713887366944">Botão "Abrir janela anônima". Pressione "Enter" para abrir uma nova janela anônima e navegar com privacidade</translation>
 <translation id="4892518386797173871">Traseira</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>

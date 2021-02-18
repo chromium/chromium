@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">‏غير متاح على Chromium Canary</translation>
 <translation id="3639997914391704523">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chromium من التحقُّق من كلمات المرور.</translation>
 <translation id="3805899903892079518">‏لا تتوفر لدى Chromium إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات نظام التشغيل iOS &gt; الخصوصية &gt; الصور.</translation>
+<translation id="3946918322491238254">سيظل بإمكانك الاطّلاع على جميع الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى المتوفّرة على هذا الجهاز. وفي حال إجراء أي تغييرات، لن يتم مزامنتها مع حسابك.</translation>
 <translation id="4099085513035183040">‏غير متاح على الإصدار التجريبي من Chromium</translation>
 <translation id="4166206055865952171">‏جعل Chromium المتصفِّح التلقائي</translation>
 <translation id="4555020257205549924">‏عند تفعيل هذه الميزة، سيقترح Chromium ترجمة الصفحات المكتوبة بلغات أخرى باستخدام "ترجمة Google". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="5308226104666789935">‏يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="5521125884468363740">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، سجِّل الدخول وفعِّل المزامنة.</translation>
+<translation id="5544795779875591523">‏يُرجى اختيار ما إذا كنت تريد محو بيانات Chromium المخزَّنة على هذا الجهاز أو الاحتفاظ بها.</translation>
 <translation id="5573014823074921752">‏نصيحة لاستخدام Chromium: لمزيد من خيارات علامات التبويب، يُرجى النقر مع الاستمرار على الزر "إظهار علامات التبويب" في شريط الأدوات الموجود أسفل الشاشة أو أعلاها.</translation>
 <translation id="5700709190537129682">‏يتعذّر على متصفِّح Chromium التحقُّق من كلمات المرور.</translation>
 <translation id="5777187867430702742">‏صفحة متصفِّح Chromium</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>
 <translation id="8663480472502753423">‏تحديث متصفِّح Chromium باستمرار</translation>
 <translation id="8776843108004031667">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chromium.</translation>
+<translation id="894437814105052438">‏عند تسجيل الخروج، لن تتم مزامنة أي بيانات جديدة في Chromium مع حسابك على Google. وتظلّ البيانات التي تمت مزامنتها سابقًا متوفّرة في حسابك.</translation>
 <translation id="9022552996538154597">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="921174536258924340">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">‏سيتم محو بيانات Chromium المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" />.</translation>
 </translationbundle>
