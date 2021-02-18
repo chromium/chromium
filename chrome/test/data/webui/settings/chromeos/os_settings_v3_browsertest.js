@@ -286,6 +286,45 @@ TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+// eslint-disable-next-line no-var
+var OSSettingsPeoplePageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_people_page_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled,
+      disabled: ['chromeos::features::kAccountManagementFlowsV2'],
+    };
+  }
+};
+
+TEST_F('OSSettingsPeoplePageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
+var OSSettingsPeoplePageV3TestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsPeoplePageV3Test {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kAccountManagementFlowsV2']),
+      disabled: [],
+    };
+  }
+};
+
+TEST_F(
+    'OSSettingsPeoplePageV3TestWithAccountManagementFlowsV2Enabled',
+    'AllJsTests', () => {
+      mocha.run();
+    });
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AccountsPage', 'add_users_tests.m.js'],
@@ -369,7 +408,6 @@ TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
  ['OsSettingsPage', 'os_settings_page_test.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
- ['PeoplePage', 'os_people_page_test.m.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],
  ['PersonalizationPage', 'personalization_page_test.m.js'],
  ['PrintingPage', 'os_printing_page_tests.m.js'],
