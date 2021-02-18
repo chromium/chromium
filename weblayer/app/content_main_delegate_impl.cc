@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "components/payments/core/features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -169,6 +170,9 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     media::kOverlayFullscreenVideo,
     // TODO(crbug.com/1174856): Support Portals.
     blink::features::kPortals,
+    // TODO(crbug.com/1174566): Enable by default after experiment.
+    content_capture::features::kContentCapture,
+
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
     media::kPictureInPictureAPI,

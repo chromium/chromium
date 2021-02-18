@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/content_capture/common/content_capture_features.h"
+#include "components/content_capture/renderer/content_capture_sender.h"
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
 #include "components/error_page/common/error.h"
 #include "components/grit/components_scaled_resources.h"
@@ -137,6 +139,11 @@ void ContentRendererClientImpl::RenderFrameCreated(
 
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);
+
+  if (content_capture::features::IsContentCaptureEnabled()) {
+    new content_capture::ContentCaptureSender(
+        render_frame, render_frame_observer->associated_interfaces());
+  }
 
   if (!render_frame->IsMainFrame()) {
     auto* main_frame_no_state_prefetch_helper =

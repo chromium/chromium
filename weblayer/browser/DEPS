@@ -13,6 +13,7 @@ include_rules = [
   "+components/captive_portal",
   "+components/cdm/browser",
   "+components/client_hints/browser",
+  "+components/content_capture/browser",
   "+components/content_settings/browser",
   "+components/content_settings/common",
   "+components/content_settings/core/common",

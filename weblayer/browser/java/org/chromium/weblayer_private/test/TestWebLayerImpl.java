@@ -42,6 +42,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -272,5 +273,20 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
             IObjectWrapper /* ValueCallback<String> */ onTokenFetched) throws RemoteException {
         ProfileImpl profileImpl = (ProfileImpl) profile;
         profileImpl.fetchAccessTokenForTesting(scopes, onTokenFetched);
+    }
+
+    @Override
+    public void addContentCaptureConsumer(IBrowser browser,
+            IObjectWrapper /* Runnable */ onNewEvents,
+            IObjectWrapper /* ArrayList<Integer>*/ eventsObserved) {
+        Runnable unwrappedOnNewEvents = ObjectWrapper.unwrap(onNewEvents, Runnable.class);
+        ArrayList<Integer> unwrappedEventsObserved =
+                ObjectWrapper.unwrap(eventsObserved, ArrayList.class);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowserImpl browserImpl = (BrowserImpl) browser;
+            browserImpl.getViewController().addContentCaptureConsumerForTesting(
+                    new TestContentCaptureConsumer(browserImpl.getActiveTab().getWebContents(),
+                            unwrappedOnNewEvents, unwrappedEventsObserved));
+        });
     }
 }

@@ -72,4 +72,9 @@ interface ITestWebLayer {
   boolean isWindowOnSmallDevice(in IBrowser browser) = 21;
   IObjectWrapper getSecurityButton(IObjectWrapper /* View */ urlBarView) = 22;
   void fetchAccessToken(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* ValueCallback<String> */ onTokenFetched) = 23;
+  // Add a TestContentCaptureConsumer for the provided |browser|, with a Runnable |onNewEvent| to notify the
+  // caller when the events happened, the event ID will be received through |eventsObserved| list.
+  void addContentCaptureConsumer(in IBrowser browser,
+                                 in IObjectWrapper /* Runnable */ onNewEvent,
+                                 in IObjectWrapper /* ArrayList<Integer> */ eventsObserved) = 24;
 }

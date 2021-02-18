@@ -1,5 +1,6 @@
 include_rules = [
   "+components/autofill/core/common",
+  "+components/content_capture/common",
   "+components/startup_metric_utils",
   "+components/version_info",
   "+components/viz/common",

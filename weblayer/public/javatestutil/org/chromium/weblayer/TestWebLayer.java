@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -173,5 +174,11 @@ public final class TestWebLayer {
         };
         mITestWebLayer.fetchAccessToken(profile.getIProfile(), ObjectWrapper.wrap(scopes),
                 ObjectWrapper.wrap(valueCallback));
+    }
+
+    public void addContentCaptureConsumer(Browser browser, Runnable runnable,
+            ArrayList<Integer> callbacks) throws RemoteException {
+        mITestWebLayer.addContentCaptureConsumer(
+                browser.getIBrowser(), ObjectWrapper.wrap(runnable), ObjectWrapper.wrap(callbacks));
     }
 }
