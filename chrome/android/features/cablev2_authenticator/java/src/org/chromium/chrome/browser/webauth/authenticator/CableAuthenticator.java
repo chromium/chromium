@@ -535,7 +535,8 @@ class CableAuthenticator {
         Bundle bundle = new Bundle();
         bundle.putBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM", true);
         intent.putExtra("show_fragment_args", bundle);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, ID, intent, 0);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(context, ID, intent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
