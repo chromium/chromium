@@ -341,16 +341,6 @@ void UninstallWebApp(Profile* profile, const AppId& app_id) {
                                                            base::DoNothing());
 }
 
-void UninstallWebAppWithCallback(Profile* profile,
-                                 const AppId& app_id,
-                                 UninstallWebAppCallback callback) {
-  auto* provider = WebAppProviderBase::GetProviderBase(profile);
-  DCHECK(provider);
-  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id));
-  provider->install_finalizer().UninstallExternalAppByUser(app_id,
-                                                           std::move(callback));
-}
-
 SkColor ReadAppIconPixel(Profile* profile,
                          const AppId& app_id,
                          SquareSizePx size,
