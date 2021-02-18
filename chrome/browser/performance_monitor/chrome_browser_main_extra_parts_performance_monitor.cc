@@ -14,14 +14,15 @@ ChromeBrowserMainExtraPartsPerformanceMonitor::
 ChromeBrowserMainExtraPartsPerformanceMonitor::
     ~ChromeBrowserMainExtraPartsPerformanceMonitor() = default;
 
-void ChromeBrowserMainExtraPartsPerformanceMonitor::PreMainMessageLoopStart() {
+void ChromeBrowserMainExtraPartsPerformanceMonitor::PostMainMessageLoopStart() {
   process_monitor_ = performance_monitor::ProcessMonitor::Create();
+  system_monitor_ = performance_monitor::SystemMonitor::Create();
+}
 
+void ChromeBrowserMainExtraPartsPerformanceMonitor::PreMainMessageLoopRun() {
   process_metrics_recorder_ =
       std::make_unique<performance_monitor::ProcessMetricsRecorder>(
           process_monitor_.get());
-}
 
-void ChromeBrowserMainExtraPartsPerformanceMonitor::PostMainMessageLoopStart() {
-  system_monitor_ = performance_monitor::SystemMonitor::Create();
+  process_monitor_->StartGatherCycle();
 }

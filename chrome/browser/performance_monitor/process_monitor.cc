@@ -115,7 +115,6 @@ ProcessMonitor::~ProcessMonitor() {
 
 void ProcessMonitor::StartGatherCycle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   repeating_timer_.Start(FROM_HERE, kGatherInterval, this,
                          &ProcessMonitor::GatherProcesses);
 }

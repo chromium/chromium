@@ -73,7 +73,6 @@
 #include "chrome/browser/metrics/thread_watcher.h"
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/performance_monitor/process_monitor.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
@@ -1729,12 +1728,6 @@ bool ChromeBrowserMainParts::MainMessageLoopRun(int* result_code) {
   RecordBrowserStartupTime();
 
   DCHECK(base::CurrentUIThread::IsSet());
-
-  // The ProcessMonitor is responsible for gathering important processes
-  // metrics.
-  // TODO(1167290): Can this be moved to PreMainMessageLoopStart() without
-  //                impacting those metrics?
-  performance_monitor::ProcessMonitor::Get()->StartGatherCycle();
 
   g_run_loop->Run();
 

@@ -27,8 +27,8 @@ class ChromeBrowserMainExtraPartsPerformanceMonitor
       const ChromeBrowserMainExtraPartsPerformanceMonitor&) = delete;
 
   // ChromeBrowserMainExtraParts:
-  void PreMainMessageLoopStart() override;
   void PostMainMessageLoopStart() override;
+  void PreMainMessageLoopRun() override;
 
  private:
   // The process monitor instance. Collects metrics about every child processes.
