@@ -17,17 +17,10 @@ android_library("java") {
   ]
 
   sources = [
-    "java/src/org/chromium/components/signin/AccessTokenData.java",
     "java/src/org/chromium/components/signin/AccountManagerDelegateException.java",
-    "java/src/org/chromium/components/signin/AccountManagerResult.java",
-    "java/src/org/chromium/components/signin/AccountUtils.java",
-    "java/src/org/chromium/components/signin/AccountsChangeObserver.java",
     "java/src/org/chromium/components/signin/AuthException.java",
-    "java/src/org/chromium/components/signin/ConnectionRetry.java",
     "java/src/org/chromium/components/signin/GmsAvailabilityException.java",
     "java/src/org/chromium/components/signin/GmsJustUpdatedException.java",
-    "java/src/org/chromium/components/signin/MutableObservableValue.java",
-    "java/src/org/chromium/components/signin/ObservableValue.java",
     "java/src/org/chromium/components/signin/util/PatternMatcher.java",
   ]
 }
