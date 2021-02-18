@@ -7,6 +7,8 @@
 
 #include "content/common/input/input_injector.mojom.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_pointer_action_list_params.h"
+#include "content/common/input/synthetic_pointer_action_params.h"
 #include "content/common/input/synthetic_smooth_drag_gesture_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
@@ -24,6 +26,27 @@ struct CONTENT_EXPORT
   static bool FromMojom(
       content::mojom::GestureSourceType input,
       content::SyntheticGestureParams::GestureSourceType* output);
+};
+
+template <>
+struct CONTENT_EXPORT
+    EnumTraits<content::mojom::PointerActionType,
+               content::SyntheticPointerActionParams::PointerActionType> {
+  static content::mojom::PointerActionType ToMojom(
+      content::SyntheticPointerActionParams::PointerActionType input);
+  static bool FromMojom(
+      content::mojom::PointerActionType input,
+      content::SyntheticPointerActionParams::PointerActionType* output);
+};
+
+template <>
+struct CONTENT_EXPORT
+    EnumTraits<content::mojom::SyntheticButton,
+               content::SyntheticPointerActionParams::Button> {
+  static content::mojom::SyntheticButton ToMojom(
+      content::SyntheticPointerActionParams::Button input);
+  static bool FromMojom(content::mojom::SyntheticButton input,
+                        content::SyntheticPointerActionParams::Button* output);
 };
 
 template <>
@@ -146,6 +169,81 @@ struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticTapDataView,
 
   static bool Read(content::mojom::SyntheticTapDataView r,
                    content::SyntheticTapGestureParams* out);
+};
+
+template <>
+struct CONTENT_EXPORT
+    StructTraits<content::mojom::SyntheticPointerActionParamsDataView,
+                 content::SyntheticPointerActionParams> {
+  static content::SyntheticPointerActionParams::PointerActionType
+  pointer_action_type(const content::SyntheticPointerActionParams& r) {
+    return r.pointer_action_type_;
+  }
+
+  static gfx::PointF position(const content::SyntheticPointerActionParams& r) {
+    return r.position_;
+  }
+
+  static uint32_t pointer_id(const content::SyntheticPointerActionParams& r) {
+    return r.pointer_id_;
+  }
+
+  static content::SyntheticPointerActionParams::Button button(
+      const content::SyntheticPointerActionParams& r) {
+    return r.button_;
+  }
+
+  static uint32_t key_modifiers(
+      const content::SyntheticPointerActionParams& r) {
+    return r.key_modifiers_;
+  }
+
+  static float width(const content::SyntheticPointerActionParams& r) {
+    return r.width_;
+  }
+
+  static float height(const content::SyntheticPointerActionParams& r) {
+    return r.height_;
+  }
+
+  static float rotation_angle(const content::SyntheticPointerActionParams& r) {
+    return r.rotation_angle_;
+  }
+
+  static float force(const content::SyntheticPointerActionParams& r) {
+    return r.force_;
+  }
+
+  static base::TimeTicks timestamp(
+      const content::SyntheticPointerActionParams& r) {
+    return r.timestamp_;
+  }
+
+  static base::TimeDelta duration(
+      const content::SyntheticPointerActionParams& r) {
+    return r.duration_;
+  }
+
+  static bool Read(content::mojom::SyntheticPointerActionParamsDataView r,
+                   content::SyntheticPointerActionParams* out);
+};
+
+template <>
+struct CONTENT_EXPORT
+    StructTraits<content::mojom::SyntheticPointerActionDataView,
+                 content::SyntheticPointerActionListParams> {
+  static content::SyntheticGestureParams::GestureSourceType gesture_source_type(
+      const content::SyntheticPointerActionListParams& r) {
+    return r.gesture_source_type;
+  }
+
+  static const std::vector<std::vector<content::SyntheticPointerActionParams>>&
+  params(const content::SyntheticPointerActionListParams& r) {
+    return r.params;
+  }
+
+  static bool Read(content::mojom::SyntheticPointerActionDataView r,
+                   content::SyntheticPointerActionListParams* out);
 };
 
 }  // namespace mojo

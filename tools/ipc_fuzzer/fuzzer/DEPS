@@ -4,4 +4,5 @@ include_rules = [
   "+ui/base/cursor",
   "+ui/base/mojom",
   "+ui/gfx/geometry",
+  "+ui/latency",
 ]

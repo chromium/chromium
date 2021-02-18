@@ -22,7 +22,4 @@ enum ScrollerStyle;
 enum NetworkConnectionType;
 
 [Native]
-struct SyntheticPointerAction;
-
-[Native]
 enum SystemThemeColor;

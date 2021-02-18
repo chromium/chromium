@@ -29,7 +29,6 @@
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input_messages.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"

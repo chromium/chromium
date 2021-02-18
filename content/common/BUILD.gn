@@ -113,7 +113,6 @@ source_set("common") {
     "input/touch_event_stream_validator.h",
     "input/web_touch_event_traits.cc",
     "input/web_touch_event_traits.h",
-    "input_messages.h",
     "media/cdm_info.cc",
     "media/media_player_delegate_messages.h",
     "mojo_core_library_support.cc",
@@ -558,7 +557,6 @@ mojom("mojo_bindings") {
 
       traits_private_headers = [
         "//content/common/frame_messages.h",
-        "//content/common/input_messages.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]

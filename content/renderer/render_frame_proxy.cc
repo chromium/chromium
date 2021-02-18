@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"

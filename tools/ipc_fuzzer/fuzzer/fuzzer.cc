@@ -30,6 +30,7 @@
 #include "tools/ipc_fuzzer/message_lib/message_cracker.h"
 #include "tools/ipc_fuzzer/message_lib/message_file.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/latency/latency_info.h"
 
 #if defined(OS_POSIX)
 #include <unistd.h>

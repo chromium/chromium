@@ -26,7 +26,6 @@
 #include "content/common/input/synthetic_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
