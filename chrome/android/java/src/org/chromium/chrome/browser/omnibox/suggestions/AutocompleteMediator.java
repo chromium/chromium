@@ -62,7 +62,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,6 +71,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                                       OmniboxSuggestionsDropdown.Observer, SuggestionHost {
     private static final String TAG = "Autocomplete";
     private static final int SUGGESTION_NOT_FOUND = -1;
+    private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
 
     // Delay triggering the omnibox results upon key press to allow the location bar to repaint
     // with the new characters.
@@ -83,9 +83,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final PropertyModel mListPropertyModel;
     private final ModelList mSuggestionModels;
-    private final List<Runnable> mDeferredNativeRunnables = new ArrayList<Runnable>();
     private final Handler mHandler;
+    @Nullable
     private AutocompleteResult mAutocompleteResult;
+    @Nullable
+    private Runnable mCurrentAutocompleteRequest;
+    @Nullable
+    private Runnable mDeferredLoadAction;
 
     private LocationBarDataProvider mDataProvider;
 
@@ -116,7 +120,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         int ACTIVATED_BY_QUERY_TILE = 2; // The edit session is triggered from query tile.
     }
     @EditSessionState
-    private int mEditSessionState;
+    private int mEditSessionState = EditSessionState.INACTIVE;
 
     // The timestamp (using SystemClock.elapsedRealtime()) at the point when the user started
     // modifying the omnibox with new input.
@@ -132,7 +136,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     private String mUrlTextAfterSuggestionsReceived;
 
-    private Runnable mRequestSuggestions;
     private DeferredOnSelectionRunnable mDeferredOnSelection;
 
     private boolean mShowCachedZeroSuggestResults;
@@ -313,10 +316,17 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mEnableAdaptiveSuggestionsCount =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
 
-        for (Runnable deferredRunnable : mDeferredNativeRunnables) {
-            mHandler.post(deferredRunnable);
+        if (mDeferredLoadAction != null) {
+            // Re-schedule the load action for execution.
+            mHandler.post(mDeferredLoadAction);
+            mDeferredLoadAction = null;
+            cancelAutocompleteRequests();
+        } else if (mCurrentAutocompleteRequest != null) {
+            // Re-schedule the autocomplete action for immediate execution.
+            // These requests are not executed until Native libraries are loaded.
+            mCurrentAutocompleteRequest.run();
         }
-        mDeferredNativeRunnables.clear();
+
         mDropdownViewInfoListBuilder.onNativeInitialized();
     }
 
@@ -327,16 +337,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mUrlFocusTime = System.currentTimeMillis();
             setSuggestionVisibilityState(SuggestionVisibilityState.PENDING_ALLOW);
 
-            if (mNativeInitialized) {
-                startZeroSuggest();
-            } else {
-                mDeferredNativeRunnables.add(() -> {
-                    if (TextUtils.isEmpty(mUrlBarEditingTextProvider.getTextWithAutocomplete())) {
-                        startZeroSuggest();
-                    }
-                });
-            }
+            postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
         } else {
+            cancelAutocompleteRequests();
             if (mNativeInitialized) mDropdownViewInfoListManager.recordSuggestionsShown();
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
@@ -646,7 +649,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (mShouldPreventOmniboxAutocomplete) return;
 
         mIgnoreOmniboxItemSelection = true;
-        cancelPendingAutocompleteStart();
+        cancelAutocompleteRequests();
 
         if (mEditSessionState == EditSessionState.INACTIVE && mNativeInitialized) {
             mAutocomplete.resetSession();
@@ -659,9 +662,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             // crbug.com/764749
             Log.w(TAG, "onTextChangedForAutocomplete: url is empty");
             hideSuggestions();
-            startZeroSuggest();
+            postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
         } else {
-            assert mRequestSuggestions == null : "Multiple omnibox requests in flight.";
             if (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox()) {
                 boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
                 Profile profile = mDataProvider.getProfile();
@@ -675,17 +677,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                 boolean isQueryStartedFromTiles = mDelegate.didFocusUrlFromQueryTiles()
                         || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE;
 
-                mRequestSuggestions = () -> {
-                    mRequestSuggestions = null;
+                postAutocompleteRequest(() -> {
                     mAutocomplete.start(profile, currentUrl, pageClassification,
                             textWithoutAutocomplete, cursorPosition, preventAutocomplete, null,
                             isQueryStartedFromTiles);
-                };
-                if (mNativeInitialized) {
-                    mHandler.postDelayed(mRequestSuggestions, OMNIBOX_SUGGESTION_START_DELAY_MS);
-                } else {
-                    mDeferredNativeRunnables.add(mRequestSuggestions);
-                }
+                }, OMNIBOX_SUGGESTION_START_DELAY_MS);
             } else {
                 // There may be no tabs when searching form omnibox in overview mode. In that case,
                 // LocationBarDataProvider.getCurrentUrl() returns NTP url.
@@ -758,7 +754,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (mNativeInitialized) {
             findMatchAndLoadUrl(urlText, eventTime);
         } else {
-            mDeferredNativeRunnables.add(() -> findMatchAndLoadUrl(urlText, eventTime));
+            mDeferredLoadAction = () -> findMatchAndLoadUrl(urlText, eventTime);
         }
     }
 
@@ -853,17 +849,19 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
     /**
      * Make a zero suggest request if:
-     * - Native is loaded.
      * - The URL bar has focus.
      * - The the tab/overview is not incognito.
+     * This method should not be called directly. Schedule execution using postAutocompleteRequest.
      */
     private void startZeroSuggest() {
         // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
         // now count as a new session.
         mEditSessionState = EditSessionState.INACTIVE;
         mNewOmniboxEditSessionTimestamp = -1;
+        assert mNativeInitialized
+            : "startZeroSuggest should be scheduled using postAutocompleteRequest";
 
-        if (mNativeInitialized && mDelegate.isUrlBarFocused()
+        if (mDelegate.isUrlBarFocused()
                 && (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox())) {
             int pageClassification =
                     mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
@@ -913,22 +911,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     private void stopAutocomplete(boolean clear) {
         if (mAutocomplete != null) mAutocomplete.stop(clear);
-        cancelPendingAutocompleteStart();
-    }
-
-    /**
-     * Cancels the queued task to start the autocomplete controller, if any.
-     */
-    @VisibleForTesting
-    void cancelPendingAutocompleteStart() {
-        if (mRequestSuggestions != null) {
-            // There is a request for suggestions either waiting for the native side
-            // to start, or on the message queue. Remove it from wherever it is.
-            if (!mDeferredNativeRunnables.remove(mRequestSuggestions)) {
-                mHandler.removeCallbacks(mRequestSuggestions);
-            }
-            mRequestSuggestions = null;
-        }
+        cancelAutocompleteRequests();
     }
 
     /**
@@ -1077,5 +1060,51 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @EditSessionState
     int getEditSessionStateForTest() {
         return mEditSessionState;
+    }
+
+    /**
+     * Schedule Autocomplete action for execution.
+     * Each Autocomplete action posted here will cancel any previously posted Autocomplete action,
+     * ensuring that the actions don't compete against each other. Any action scheduled for
+     * execution before Native libraries are ready will be deferred.
+     *
+     * This call should only be used for regular suggest flows. Do not post arbitrary tasks here.
+     *
+     * @param action Autocomplete action to execute.
+     * @param delayMillis The number of milliseconds by which the action should be delayed.
+     *         Use SCHEDULE_FOR_IMMEDIATE_EXECUTION to post action at front of the message queue.
+     */
+    private void postAutocompleteRequest(@NonNull Runnable action, long delayMillis) {
+        cancelAutocompleteRequests();
+        mCurrentAutocompleteRequest = new Runnable() {
+            @Override
+            public void run() {
+                action.run();
+                // Catch any AutocompleteRequests that post subsequent AutocompleteRequest.
+                // Note: we have to explicitly instantiate a Runnable class, otherwise
+                // 'this' will resolve into a parent class and Runnable.this won't work.
+                assert mCurrentAutocompleteRequest == this;
+                // Release completed Runnable.
+                mCurrentAutocompleteRequest = null;
+            }
+        };
+        if (!mNativeInitialized) return;
+        if (delayMillis == SCHEDULE_FOR_IMMEDIATE_EXECUTION) {
+            // TODO(crbug.com/1174855): Replace the following with postAtFrontOfQueue() and
+            // correct any tests that expect data instantly.
+            mCurrentAutocompleteRequest.run();
+        } else {
+            mHandler.postDelayed(mCurrentAutocompleteRequest, delayMillis);
+        }
+    }
+
+    /**
+     * Cancel any pending autocomplete actions.
+     */
+    private void cancelAutocompleteRequests() {
+        if (mCurrentAutocompleteRequest != null) {
+            mHandler.removeCallbacks(mCurrentAutocompleteRequest);
+            mCurrentAutocompleteRequest = null;
+        }
     }
 }

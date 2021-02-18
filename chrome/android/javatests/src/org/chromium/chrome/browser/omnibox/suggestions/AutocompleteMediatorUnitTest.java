@@ -505,6 +505,135 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
+    public void onUrlFocusChange_onlyOneZeroSuggestRequestIsInvoked() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+
+        // Simulate URL being focus changes.
+        mMediator.onUrlFocusChange(true);
+        mMediator.onUrlFocusChange(false);
+        mMediator.onUrlFocusChange(true);
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+
+        // Simulate native being inititalized. Make sure we only ever issue one request.
+        mMediator.onNativeInitialized();
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, times(1))
+                .startZeroSuggest(mProfile, "", url, pageClassification, title);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
+    public void onUrlFocusChange_preventsZeroSuggestRequestOnFocusLost() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+
+        // Simulate URL being focus changes.
+        mMediator.onUrlFocusChange(true);
+        mMediator.onUrlFocusChange(false);
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+
+        // Simulate native being inititalized. Make sure no suggest requests are sent.
+        mMediator.onNativeInitialized();
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
+    public void onUrlFocusChange_textChangeCancelsOustandingZeroSuggestRequest() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("A");
+
+        // Simulate URL being focus changes, and that user typed text and deleted it.
+        mMediator.onUrlFocusChange(true);
+        mMediator.onTextChanged("A", "Abc");
+        mMediator.onTextChanged("", "");
+        mMediator.onTextChanged("A", "Abc");
+
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, never())
+                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+
+        mMediator.onNativeInitialized();
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, times(1))
+                .start(mProfile, url, pageClassification, "A", 0, true, null, false);
+        verify(mAutocompleteController, times(1))
+                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
+    public void onUrlFocusChange_textChangeCancelsIntermediateZeroSuggestRequests() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+
+        // Simulate URL being focus changes, and that user typed text and deleted it.
+        mMediator.onTextChanged("A", "Abc");
+        mMediator.onTextChanged("", "");
+
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, never())
+                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, never())
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+
+        mMediator.onNativeInitialized();
+        mHandler.runQueuedTasks();
+        verify(mAutocompleteController, never())
+                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, times(1))
+                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionsReceived(
