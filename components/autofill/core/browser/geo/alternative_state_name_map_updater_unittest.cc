@@ -27,6 +27,27 @@ using base::UTF8ToUTF16;
 
 namespace autofill {
 
+class MockAlternativeStateNameMapUpdater
+    : public AlternativeStateNameMapUpdater {
+ public:
+  MockAlternativeStateNameMapUpdater(base::OnceClosure callback,
+                                     PrefService* local_state,
+                                     PersonalDataManager* personal_data_manager)
+      : AlternativeStateNameMapUpdater(local_state, personal_data_manager),
+        callback_(std::move(callback)) {}
+
+  // PersonalDataManagerObserver:
+  void OnPersonalDataFinishedProfileTasks() override {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUseAlternativeStateNameMap)) {
+      PopulateAlternativeStateNameMap(std::move(callback_));
+    }
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
 class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
  public:
   AlternativeStateNameMapUpdaterTest() = default;
@@ -252,6 +273,37 @@ TEST_F(AlternativeStateNameMapUpdaterTest, ContainsState) {
        AlternativeStateNameMap::StateName(ASCIIToUTF16("Bayern")),
        AlternativeStateNameMap::StateName(ASCIIToUTF16("BY"))},
       AlternativeStateNameMap::StateName(ASCIIToUTF16("California"))));
+}
+
+// Tests that the |AlternativeStateNameMap| is populated with the help of the
+// |MockAlternativeStateNameMapUpdater| observer when a new profile is added to
+// the PDM.
+TEST_F(AlternativeStateNameMapUpdaterTest,
+       PopulateAlternativeStateNameUsingObserver) {
+  test::ClearAlternativeStateNameMapForTesting();
+  WritePathToPref(GetPath());
+  base::WriteFile(GetPath().AppendASCII("DE"),
+                  test::CreateStatesProtoAsString());
+
+  AutofillProfile profile;
+  profile.SetInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("Bavaria"), "en-US");
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("DE"), "en-US");
+
+  base::RunLoop run_loop;
+  MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(
+      run_loop.QuitClosure(), autofill_client_.GetPrefs(),
+      &personal_data_manager_);
+  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
+  personal_data_manager_.AddProfile(profile);
+  run_loop.Run();
+  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
+
+  EXPECT_FALSE(
+      AlternativeStateNameMap::GetInstance()->IsLocalisedStateNamesMapEmpty());
+  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
+                "DE", base::ASCIIToUTF16("Bavaria")),
+            AlternativeStateNameMap::CanonicalStateName(
+                base::ASCIIToUTF16("Bayern")));
 }
 
 }  // namespace autofill
