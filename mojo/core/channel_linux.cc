@@ -223,7 +223,6 @@ class EventFDNotifier : public DataAvailableNotifier,
       : DataAvailableNotifier(std::move(cb)),
         fd_(std::move(fd)),
         io_task_runner_(io_task_runner) {
-    DCHECK(watcher_);
     watcher_ =
         std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
     WaitForEventFDOnIOThread();
