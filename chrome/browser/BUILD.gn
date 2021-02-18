@@ -1336,8 +1336,6 @@ static_library("browser") {
     "prefetch/prefetch_proxy/prefetch_proxy_subresource_manager.h",
     "prefetch/prefetch_proxy/prefetch_proxy_tab_helper.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h",
-    "prefetch/prefetch_proxy/prefetch_proxy_url_loader.cc",
-    "prefetch/prefetch_proxy/prefetch_proxy_url_loader.h",
     "prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h",
     "prefetch/prefetch_proxy/prefetched_mainframe_response_container.cc",
