@@ -117,6 +117,12 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   return self;
 }
 
+- (void)interruptSigninCoordinatorWithCompletion:(void (^)(void))completion {
+  [self.coordinator
+      interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+               completion:completion];
+}
+
 - (void)loadView {
   WelcomeToChromeView* welcomeToChromeView =
       [[WelcomeToChromeView alloc] initWithFrame:CGRectZero];
@@ -234,13 +240,10 @@ const BOOL kDefaultStatsCheckboxValue = YES;
           [self.firstRunConfig hasSSOAccount]);
       break;
     }
-    case SigninCoordinatorResultCanceledByUser: {
+    case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResultInterrupted:
       // No-op
       break;
-    }
-    case SigninCoordinatorResultInterrupted: {
-      NOTREACHED();
-    }
   }
 
   BOOL needsAdvancedSignin = signinCompletionInfo.signinCompletionAction ==

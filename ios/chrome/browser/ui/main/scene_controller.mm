@@ -248,6 +248,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 @property(nonatomic, strong)
     NSDictionary<NSString*, NSString*>* specificProductData;
 
+@property(nonatomic, weak)
+    WelcomeToChromeViewController* welcomeToChromeController;
+
 @end
 
 @implementation SceneController {
@@ -983,6 +986,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
           initWithBrowser:browser
                 presenter:self.mainInterface.bvc
                dispatcher:welcomeHandler];
+  self.welcomeToChromeController = welcomeToChrome;
   UINavigationController* navController =
       [[OrientationLimitingNavigationController alloc]
           initWithRootViewController:welcomeToChrome];
@@ -1025,6 +1029,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       removeObserver:self
                 name:kChromeFirstRunUIDidFinishNotification
               object:nil];
+
+  self.welcomeToChromeController = nil;
 
   if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
       !location_permissions_field_trial::IsInFirstRunModalGroup()) {
@@ -1318,6 +1324,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [self interruptSigninCoordinatorAnimated:YES completion:signOut];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
+  } else if (self.sceneState.presentingFirstRunUI &&
+             self.welcomeToChromeController) {
+    [self.welcomeToChromeController
+        interruptSigninCoordinatorWithCompletion:signOut];
   } else {
     signOut();
   }
