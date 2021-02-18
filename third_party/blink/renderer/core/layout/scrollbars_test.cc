@@ -2929,8 +2929,8 @@ class ScrollbarTrackMarginsTest : public ScrollbarsTest {
     ASSERT_TRUE(vertical_track_);
   }
 
-  LayoutCustomScrollbarPart* horizontal_track_ = nullptr;
-  LayoutCustomScrollbarPart* vertical_track_ = nullptr;
+  Persistent<LayoutCustomScrollbarPart> horizontal_track_;
+  Persistent<LayoutCustomScrollbarPart> vertical_track_;
 };
 
 TEST_F(ScrollbarTrackMarginsTest,

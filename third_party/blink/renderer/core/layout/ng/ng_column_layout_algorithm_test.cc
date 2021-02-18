@@ -21,8 +21,7 @@ class NGColumnLayoutAlgorithmTest
   NGColumnLayoutAlgorithmTest()
       : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
-      Element* element) {
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -40,8 +39,8 @@ class NGColumnLayoutAlgorithmTest
   }
 
   String DumpFragmentTree(Element* element) {
-    auto fragment = RunBlockLayoutAlgorithm(element);
-    return DumpFragmentTree(fragment.get());
+    auto* fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment);
   }
 };
 
@@ -65,9 +64,9 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   ASSERT_TRUE(fragment);
   EXPECT_EQ(PhysicalSize(210, 100), fragment->Size());
@@ -105,9 +104,9 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyBlock) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   EXPECT_EQ(PhysicalSize(210, 100), fragment->Size());
   ASSERT_TRUE(fragment);
@@ -154,10 +153,10 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInOneColumn) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
 
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   ASSERT_TRUE(fragment);
   EXPECT_EQ(PhysicalSize(310, 100), fragment->Size());
@@ -2698,8 +2697,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   LayoutObject* layout_object = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(layout_object);
   NGBlockNode node = NGBlockNode(To<LayoutBox>(layout_object));
-  scoped_refptr<ComputedStyle> style =
-      ComputedStyle::Clone(layout_object->StyleRef());
+  ComputedStyle* style = ComputedStyle::Clone(layout_object->StyleRef());
   layout_object->SetStyle(style);
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -3013,10 +3011,10 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancing100By3) {
     </div>
   )HTML");
 
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       RunBlockLayoutAlgorithm(GetElementById("container"));
 
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* multicol = iterator.NextChild();
   ASSERT_TRUE(multicol);
 

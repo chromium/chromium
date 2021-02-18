@@ -38,7 +38,7 @@ class CollapsedBorderValueTest : public testing::Test {
       EBorderStyle border_style,
       const Color& color = Color::kBlack,
       EBorderPrecedence precedence = kBorderPrecedenceCell) {
-    auto style = ComputedStyle::Create();
+    ComputedStyle* style = ComputedStyle::Create();
     style->SetBorderLeftWidth(width);
     style->SetBorderLeftStyle(border_style);
     CollapsedBorderValue v(style->BorderLeft(), color, precedence);

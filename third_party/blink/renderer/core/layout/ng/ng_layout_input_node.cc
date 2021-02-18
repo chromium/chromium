@@ -77,22 +77,23 @@ bool NGLayoutInputNode::IsSliderThumb() const {
 }
 
 bool NGLayoutInputNode::IsEmptyTableSection() const {
-  return box_->IsTableSection() && To<LayoutNGTableSection>(box_)->IsEmpty();
+  return box_->IsTableSection() &&
+         To<LayoutNGTableSection>(box_.Get())->IsEmpty();
 }
 
 wtf_size_t NGLayoutInputNode::TableColumnSpan() const {
   DCHECK(IsTableCol() || IsTableColgroup());
-  return To<LayoutNGTableColumn>(box_)->Span();
+  return To<LayoutNGTableColumn>(box_.Get())->Span();
 }
 
 wtf_size_t NGLayoutInputNode::TableCellColspan() const {
   DCHECK(box_->IsTableCell());
-  return To<LayoutNGTableCell>(box_)->ColSpan();
+  return To<LayoutNGTableCell>(box_.Get())->ColSpan();
 }
 
 wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
   DCHECK(box_->IsTableCell());
-  return To<LayoutNGTableCell>(box_)->ComputedRowSpan();
+  return To<LayoutNGTableCell>(box_.Get())->ComputedRowSpan();
 }
 
 bool NGLayoutInputNode::IsTextControlPlaceholder() const {
@@ -119,7 +120,8 @@ void NGLayoutInputNode::IntrinsicSize(
 
   IntrinsicSizingInfo legacy_sizing_info;
 
-  To<LayoutReplaced>(box_)->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+  To<LayoutReplaced>(box_.Get())
+      ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
   if (!*computed_inline_size && legacy_sizing_info.has_width)
     *computed_inline_size = LayoutUnit(legacy_sizing_info.size.Width());
   if (!*computed_block_size && legacy_sizing_info.has_height)

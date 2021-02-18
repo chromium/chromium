@@ -20,8 +20,7 @@ class NGOutOfFlowLayoutPartTest
  protected:
   NGOutOfFlowLayoutPartTest() : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
-      Element* element) {
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -30,8 +29,8 @@ class NGOutOfFlowLayoutPartTest
   }
 
   String DumpFragmentTree(Element* element) {
-    auto fragment = RunBlockLayoutAlgorithm(element);
-    return DumpFragmentTree(fragment.get());
+    auto* fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment);
   }
 
   String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {
@@ -88,8 +87,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FixedInsideAbs) {
   // Test whether the oof fragments have been collected at NG->Legacy boundary.
   Element* rel = GetDocument().getElementById("rel");
   auto* block_flow = To<LayoutBlockFlow>(rel->GetLayoutObject());
-  scoped_refptr<const NGLayoutResult> result =
-      block_flow->GetCachedLayoutResult();
+  const NGLayoutResult* result = block_flow->GetCachedLayoutResult();
   EXPECT_TRUE(result);
   EXPECT_EQ(result->PhysicalFragment().OutOfFlowPositionedDescendants().size(),
             2u);

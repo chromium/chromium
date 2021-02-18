@@ -70,6 +70,11 @@ void InvalidateInlineItems(LayoutObject* object) {
 
 }  // namespace
 
+void LayoutObjectChildList::Trace(Visitor* visitor) const {
+  visitor->Trace(first_child_);
+  visitor->Trace(last_child_);
+}
+
 void LayoutObjectChildList::DestroyLeftoverChildren() {
   // Destroy any anonymous children remaining in the layout tree, as well as
   // implicit (shadow) DOM elements like those used in the engine-based text

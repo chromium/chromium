@@ -96,6 +96,10 @@ AutoscrollController::AutoscrollController(Page& page) : page_(&page) {}
 
 void AutoscrollController::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
+  visitor->Trace(autoscroll_layout_object_);
+  visitor->Trace(pressed_layout_object_);
+  visitor->Trace(horizontal_autoscroll_layout_box_);
+  visitor->Trace(vertical_autoscroll_layout_box_);
 }
 
 bool AutoscrollController::SelectionAutoscrollInProgress() const {

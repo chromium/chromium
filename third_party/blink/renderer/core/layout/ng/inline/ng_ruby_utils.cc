@@ -277,7 +277,7 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
         }
 
         // Check if we really have an annotation.
-        if (const auto* layout_result = item.layout_result.get()) {
+        if (const auto& layout_result = item.layout_result) {
           LayoutUnit overflow = layout_result->AnnotationOverflow();
           if (IsFlippedLinesWritingMode(line_style.GetWritingMode()))
             overflow = -overflow;

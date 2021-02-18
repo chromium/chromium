@@ -103,8 +103,8 @@ class TextIteratorTextNodeHandler {
   // Used to do the whitespace collapsing logic.
   bool last_text_node_ended_with_collapsed_space_ = false;
 
-  // Used when text boxes are out of order (Hebrew/Arabic w/ embeded LTR text)
-  Vector<InlineTextBox*> sorted_text_boxes_;
+  // Used when text boxes are out of order (Hebrew/Arabic w/ embedded LTR text)
+  HeapVector<Member<InlineTextBox>> sorted_text_boxes_;
   wtf_size_t sorted_text_boxes_position_ = 0;
 
   const TextIteratorBehavior behavior_;

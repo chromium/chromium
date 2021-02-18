@@ -56,6 +56,7 @@ class LayoutGrid final : public LayoutBlock {
  public:
   explicit LayoutGrid(Element*);
   ~LayoutGrid() override;
+  void Trace(Visitor*) const override;
 
   static LayoutGrid* CreateAnonymous(Document*);
   const char* GetName() const override {
@@ -187,9 +188,12 @@ class LayoutGrid final : public LayoutBlock {
       const LayoutBox&,
       GridTrackSizingDirection,
       const GridSpan& specified_positions) const;
-  void PlaceSpecifiedMajorAxisItemsOnGrid(Grid&,
-                                          const Vector<LayoutBox*>&) const;
-  void PlaceAutoMajorAxisItemsOnGrid(Grid&, const Vector<LayoutBox*>&) const;
+  void PlaceSpecifiedMajorAxisItemsOnGrid(
+      Grid&,
+      const HeapVector<Member<LayoutBox>>&) const;
+  void PlaceAutoMajorAxisItemsOnGrid(
+      Grid&,
+      const HeapVector<Member<LayoutBox>>&) const;
   void PlaceAutoMajorAxisItemOnGrid(
       Grid&,
       LayoutBox&,
@@ -321,7 +325,7 @@ class LayoutGrid final : public LayoutBlock {
   ContentAlignmentData offset_between_columns_;
   ContentAlignmentData offset_between_rows_;
 
-  typedef HashMap<const LayoutBox*, base::Optional<size_t>>
+  typedef HeapHashMap<Member<const LayoutBox>, base::Optional<size_t>>
       OutOfFlowPositionsMap;
   OutOfFlowPositionsMap column_of_positioned_item_;
   OutOfFlowPositionsMap row_of_positioned_item_;

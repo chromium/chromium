@@ -64,7 +64,7 @@ LayoutObject* PickerIndicatorElement::CreateLayoutObject(
     return HTMLDivElement::CreateLayoutObject(style, legacy);
 
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByDetailsMarker);
-  return new LayoutDetailsMarker(this);
+  return MakeGarbageCollected<LayoutDetailsMarker>(this);
 }
 
 void PickerIndicatorElement::DefaultEventHandler(Event& event) {

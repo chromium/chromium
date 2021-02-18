@@ -19,6 +19,9 @@ namespace blink {
 // NGPhysicalContainerFragment. It cannot have destructors. Fragment reference
 // counting is done manually.
 struct CORE_EXPORT NGLink {
+  DISALLOW_NEW();
+
+ public:
   PhysicalOffset Offset() const { return offset; }
   const NGPhysicalFragment* get() const { return fragment; }
 
@@ -26,10 +29,14 @@ struct CORE_EXPORT NGLink {
   const NGPhysicalFragment& operator*() const { return *fragment; }
   const NGPhysicalFragment* operator->() const { return fragment; }
 
-  const NGPhysicalFragment* fragment;
+  void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
+
+  Member<const NGPhysicalFragment> fragment;
   PhysicalOffset offset;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGLink)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LINK_H_

@@ -114,6 +114,11 @@ AXLayoutObject::~AXLayoutObject() {
   DCHECK(IsDetached());
 }
 
+void AXLayoutObject::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+  AXNodeObject::Trace(visitor);
+}
+
 bool IsProgrammaticallyScrollable(LayoutBox* box) {
   if (!box->IsScrollContainer())
     return false;
@@ -130,7 +135,7 @@ ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
   if (!layout_object_ || !layout_object_->IsBox())
     return nullptr;
 
-  auto* box = To<LayoutBox>(layout_object_);
+  auto* box = To<LayoutBox>(layout_object_.Get());
 
   // This should possibly use box->CanBeScrolledAndHasScrollableArea() as it
   // used to; however, accessibility must consider any kind of non-visible
@@ -204,7 +209,7 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
   if (IsA<HTMLCanvasElement>(node))
     return ax::mojom::blink::Role::kCanvas;
 
-  if (IsA<LayoutView>(layout_object_))
+  if (IsA<LayoutView>(*layout_object_))
     return ax::mojom::blink::Role::kRootWebArea;
 
   if (layout_object_->IsSVGImage())
@@ -1164,7 +1169,7 @@ String AXLayoutObject::StringValue() const {
   }
 
   if (layout_object_->IsFileUploadControl())
-    return To<LayoutFileUploadControl>(layout_object_)->FileTextValue();
+    return To<LayoutFileUploadControl>(layout_object_.Get())->FileTextValue();
 
   // Handle other HTML input elements that aren't text controls, like date and
   // time controls, by returning their value converted to text, with the
@@ -1215,7 +1220,7 @@ String AXLayoutObject::TextAlternative(bool recursive,
       found_text_alternative = true;
     } else if (layout_object_->IsText() &&
                (!recursive || !layout_object_->IsCounter())) {
-      auto* layout_text = To<LayoutText>(layout_object_);
+      auto* layout_text = To<LayoutText>(layout_object_.Get());
       String visible_text = layout_text->PlainText();  // Actual rendered text.
       // If no text boxes we assume this is unrendered end-of-line whitespace.
       // TODO find robust way to deterministically detect end-of-line space.
@@ -1236,7 +1241,7 @@ String AXLayoutObject::TextAlternative(bool recursive,
       found_text_alternative = true;
     } else if (layout_object_->IsListMarkerForNormalContent() && !recursive) {
       text_alternative =
-          To<LayoutListMarker>(layout_object_)->TextAlternative();
+          To<LayoutListMarker>(layout_object_.Get())->TextAlternative();
       found_text_alternative = true;
     } else if (!recursive) {
       if (ListMarker* marker = ListMarker::Get(layout_object_)) {
@@ -1276,7 +1281,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
             DocumentLifecycle::kPrePaintClean);
 #endif
 
-  PaintLayer* layer = To<LayoutBox>(layout_object_)->Layer();
+  PaintLayer* layer = To<LayoutBox>(layout_object_.Get())->Layer();
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kRetargetForInert);

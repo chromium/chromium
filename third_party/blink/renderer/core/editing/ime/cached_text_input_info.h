@@ -73,7 +73,7 @@ class CORE_EXPORT CachedTextInputInfo final {
   unsigned RangeLength(const EphemeralRange& range) const;
 
   mutable Member<const ContainerNode> container_;
-  mutable const LayoutObject* layout_object_ = nullptr;
+  mutable WeakMember<const LayoutObject> layout_object_;
   // Records offset of text node from start of |container_|.
   mutable HeapHashMap<Member<const Text>, unsigned> offset_map_;
   mutable String text_;

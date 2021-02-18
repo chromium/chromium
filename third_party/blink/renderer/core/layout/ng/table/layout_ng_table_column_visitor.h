@@ -31,7 +31,7 @@ namespace blink {
 //                      bool has_children);
 // }
 template <typename Visitor>
-void VisitLayoutNGTableColumn(const Vector<NGBlockNode>& columns,
+void VisitLayoutNGTableColumn(const HeapVector<NGBlockNode>& columns,
                               wtf_size_t table_column_count,
                               Visitor* visitor) {
   wtf_size_t current_column_index = 0;

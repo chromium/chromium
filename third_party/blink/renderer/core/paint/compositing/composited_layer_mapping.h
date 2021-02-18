@@ -45,23 +45,28 @@ class PaintLayerCompositor;
 // subtree of Layers into a GraphicsLayer.
 struct GraphicsLayerPaintInfo {
   DISALLOW_NEW();
-  PaintLayer* paint_layer;
+
+ public:
+  // TODO(crbug.com/1161155): Use Member or WeakMember
+  UntracedMember<PaintLayer> paint_layer = nullptr;
 
   PhysicalRect composited_bounds;
 
   // The clip rect to apply, in the local coordinate space of the squashed
   // layer, when painting it.
   ClipRect local_clip_rect_for_squashed_layer;
-  PaintLayer* local_clip_rect_root;
+
+  // TODO(crbug.com/1161155): Use Member or WeakMember
+  UntracedMember<PaintLayer> local_clip_rect_root = nullptr;
+
   PhysicalOffset offset_from_clip_rect_root;
 
   // Offset describing where this squashed Layer paints into the shared
   // GraphicsLayer backing.
   IntSize offset_from_layout_object;
-  bool offset_from_layout_object_set;
+  bool offset_from_layout_object_set = false;
 
-  GraphicsLayerPaintInfo()
-      : paint_layer(nullptr), offset_from_layout_object_set(false) {}
+  GraphicsLayerPaintInfo() = default;
 };
 
 enum GraphicsLayerUpdateScope {
@@ -85,21 +90,19 @@ enum GraphicsLayerUpdateScope {
 // - Otherwise the PaintLayer doesn't own or directly reference any
 //   CompositedLayerMapping.
 class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
-  USING_FAST_MALLOC(CompositedLayerMapping);
-
  public:
   explicit CompositedLayerMapping(PaintLayer&);
   CompositedLayerMapping(const CompositedLayerMapping&) = delete;
   CompositedLayerMapping& operator=(const CompositedLayerMapping&) = delete;
   ~CompositedLayerMapping() override;
 
-  PaintLayer& OwningLayer() const { return owning_layer_; }
+  PaintLayer& OwningLayer() const { return *owning_layer_; }
 
   bool UpdateGraphicsLayerConfiguration(
       const PaintLayer* compositing_container);
   void UpdateGraphicsLayerGeometry(
       const PaintLayer* compositing_container,
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   // Update whether layer needs blending.
   void UpdateContentsOpaque();
@@ -144,7 +147,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   void PositionOverflowControlsLayers();
 
   bool MayBeSquashedIntoScrollingContents(const PaintLayer& layer) const {
-    return layer.AncestorScrollingLayer() == &owning_layer_;
+    return layer.AncestorScrollingLayer() == owning_layer_;
   }
 
   // Returns true if the assignment actually changed the assigned squashing
@@ -161,7 +164,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   void FinishAccumulatingSquashingLayers(
       wtf_size_t new_non_scrolling_squashed_layer_count,
       wtf_size_t new_squashed_layer_in_scrolling_contents_count,
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   void UpdateElementId();
 
@@ -299,14 +302,14 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
       const PaintLayer* compositing_container,
       const IntPoint& snapped_offset_from_composited_ancestor,
       Vector<GraphicsLayerPaintInfo>& layers,
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
   void UpdateMainGraphicsLayerGeometry(const IntRect& local_compositing_bounds);
   void UpdateMaskLayerGeometry();
   void UpdateForegroundLayerGeometry();
   void UpdateDecorationOutlineLayerGeometry(
       const IntSize& relative_compositing_bounds_size);
   void UpdateScrollingContentsLayerGeometry(
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   void CreatePrimaryGraphicsLayer();
 
@@ -318,10 +321,10 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
                                     CompositingReasons);
 
   LayoutBoxModelObject& GetLayoutObject() const {
-    return owning_layer_.GetLayoutObject();
+    return owning_layer_->GetLayoutObject();
   }
   PaintLayerCompositor* Compositor() const {
-    return owning_layer_.Compositor();
+    return owning_layer_->Compositor();
   }
 
   void UpdateInternalHierarchy();
@@ -382,7 +385,8 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
       wtf_size_t next_squashed_layer_index);
   void RemoveSquashedLayers(Vector<GraphicsLayerPaintInfo>& squashed_layers);
 
-  PaintLayer& owning_layer_;
+  // TODO(crbug.com/1161155): Use Member or WeakMember
+  UntracedMember<PaintLayer> owning_layer_;
 
   // The hierarchy of layers that is maintained by the CompositedLayerMapping
   // looks like this:

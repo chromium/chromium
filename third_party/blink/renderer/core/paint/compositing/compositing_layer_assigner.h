@@ -44,8 +44,9 @@ class CompositingLayerAssigner {
  public:
   explicit CompositingLayerAssigner(PaintLayerCompositor*);
 
-  void Assign(PaintLayer* update_root,
-              Vector<PaintLayer*>& layers_needing_paint_invalidation);
+  void Assign(
+      PaintLayer* update_root,
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   bool LayersChanged() const { return layers_changed_; }
 
@@ -55,9 +56,12 @@ class CompositingLayerAssigner {
 
  private:
   struct SquashingState {
+    STACK_ALLOCATED();
+
+   public:
     void UpdateSquashingStateForNewMapping(
         CompositedLayerMapping*,
-        Vector<PaintLayer*>& layers_needing_paint_invalidation);
+        HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
     // The most recent composited backing that the layer should squash onto if
     // needed.
@@ -65,15 +69,15 @@ class CompositingLayerAssigner {
 
     // Whether all Layers in the stacking subtree rooted at the most recent
     // mapping's owning layer have had CompositedLayerMappings assigned. Layers
-    // cannot squash into a CompositedLayerMapping owned by a stacking ancestor,
-    // since this changes paint order.
+    // cannot squash into a CompositedLayerMapping owned by a stacking
+    // ancestor, since this changes paint order.
     bool have_assigned_backings_to_entire_squashing_layer_subtree = false;
 
     // This is set to true when most_recent_mapping supports composited
     // scrolling, and reset to false whenever any layer is not squashed into
-    // scrolling contents, to ensure all layers squashed into scrolling contents
-    // are continuous with the scroller in stacking order, without any other
-    // layer interlacing among them.
+    // scrolling contents, to ensure all layers squashed into scrolling
+    // contents are continuous with the scroller in stacking order, without any
+    // other layer interlacing among them.
     bool next_layer_may_squash_into_scrolling_contents = false;
 
     // Counter that tracks what index the next Layer would be if it gets
@@ -96,7 +100,7 @@ class CompositingLayerAssigner {
       PaintLayer* layer,
       PaintLayer* paint_invalidation_container,
       SquashingState&,
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
   SquashingDisallowedReasons GetReasonsPreventingSquashing(
       const PaintLayer*,
       const SquashingState&);
@@ -106,7 +110,7 @@ class CompositingLayerAssigner {
       PaintLayer*,
       SquashingState&,
       CompositingStateTransitionType,
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
   bool NeedsOwnBacking(const PaintLayer*) const;
 
   PaintLayerCompositor* compositor_;

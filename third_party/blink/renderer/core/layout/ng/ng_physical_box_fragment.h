@@ -24,15 +24,15 @@ enum class NGOutlineType;
 class CORE_EXPORT NGPhysicalBoxFragment final
     : public NGPhysicalContainerFragment {
  public:
-  static scoped_refptr<const NGPhysicalBoxFragment> Create(
+  static const NGPhysicalBoxFragment* Create(
       NGBoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
   // Creates a copy of |other| but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
-  static scoped_refptr<const NGPhysicalBoxFragment>
-  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other,
-                               const base::Optional<PhysicalRect>
-                                   updated_layout_overflow = base::nullopt);
+  static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
+      const NGPhysicalBoxFragment& other,
+      const base::Optional<PhysicalRect> updated_layout_overflow =
+          base::nullopt);
 
   using MulticolCollection = NGContainerFragmentBuilder::MulticolCollection;
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
@@ -54,23 +54,23 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                         const PhysicalRect& layout_overflow,
                         bool recalculate_layout_overflow);
 
-  scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
+  const NGLayoutResult* CloneAsHiddenForPaint() const;
 
   ~NGPhysicalBoxFragment() {
-    if (has_fragment_items_)
+    if (const_has_fragment_items_)
       ComputeItemsAddress()->~NGFragmentItems();
-    if (has_rare_data_)
+    if (const_has_rare_data_)
       ComputeRareDataAddress()->~RareData();
-    for (const NGLink& child : Children())
-      child.fragment->Release();
   }
+
+  void Trace(Visitor* visitor) const final;
 
   const NGPhysicalBoxFragment* PostLayout() const;
 
   // Returns |NGFragmentItems| if this fragment has one.
-  bool HasItems() const { return has_fragment_items_; }
+  bool HasItems() const { return const_has_fragment_items_; }
   const NGFragmentItems* Items() const {
-    return has_fragment_items_ ? ComputeItemsAddress() : nullptr;
+    return const_has_fragment_items_ ? ComputeItemsAddress() : nullptr;
   }
 
   base::Optional<LayoutUnit> Baseline() const {
@@ -94,7 +94,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
   const NGTableBorders* TableCollapsedBorders() const {
-    return ComputeRareDataAddress()->table_collapsed_borders.get();
+    return ComputeRareDataAddress()->table_collapsed_borders;
   }
 
   const NGTableFragmentData::CollapsedBordersGeometry*
@@ -138,7 +138,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
   bool HasOutOfFlowPositionedFragmentainerDescendants() const {
-    if (!has_rare_data_)
+    if (!const_has_rare_data_)
       return false;
 
     return !ComputeRareDataAddress()
@@ -147,23 +147,23 @@ class CORE_EXPORT NGPhysicalBoxFragment final
 
   base::span<NGPhysicalOutOfFlowPositionedNode>
   OutOfFlowPositionedFragmentainerDescendants() const {
-    if (!has_rare_data_)
+    if (!const_has_rare_data_)
       return base::span<NGPhysicalOutOfFlowPositionedNode>();
-    Vector<NGPhysicalOutOfFlowPositionedNode>& descendants =
-        const_cast<Vector<NGPhysicalOutOfFlowPositionedNode>&>(
+    HeapVector<NGPhysicalOutOfFlowPositionedNode>& descendants =
+        const_cast<HeapVector<NGPhysicalOutOfFlowPositionedNode>&>(
             ComputeRareDataAddress()->oof_positioned_fragmentainer_descendants);
     return {descendants.data(), descendants.size()};
   }
 
   bool HasMulticolsWithPendingOOFs() const {
-    if (!has_rare_data_)
+    if (!const_has_rare_data_)
       return false;
 
     return !ComputeRareDataAddress()->multicols_with_pending_oofs.IsEmpty();
   }
 
   MulticolCollection MulticolsWithPendingOOFs() const {
-    if (!has_rare_data_)
+    if (!const_has_rare_data_)
       return MulticolCollection();
     return const_cast<MulticolCollection&>(
         ComputeRareDataAddress()->multicols_with_pending_oofs);
@@ -304,7 +304,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     if (IsMathMLFraction())
       return true;
 
-    if (has_rare_data_ && ComputeRareDataAddress()->mathml_paint_info)
+    if (const_has_rare_data_ && ComputeRareDataAddress()->mathml_paint_info)
       return true;
 
     return false;
@@ -314,19 +314,23 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
  private:
-  static size_t ByteSize(wtf_size_t num_fragment_items,
-                         wtf_size_t num_children,
-                         bool has_layout_overflow,
-                         bool has_borders,
-                         bool has_padding,
-                         bool has_inflow_bounds,
-                         bool has_rare_data);
+  static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
+                                   wtf_size_t num_children,
+                                   bool has_layout_overflow,
+                                   bool has_borders,
+                                   bool has_padding,
+                                   bool has_inflow_bounds,
+                                   bool has_rare_data);
 
   struct RareData {
+    DISALLOW_NEW();
+
+   public:
     RareData(const RareData&);
     RareData(NGBoxFragmentBuilder*, PhysicalSize size);
+    void Trace(Visitor*) const;
 
-    Vector<NGPhysicalOutOfFlowPositionedNode>
+    HeapVector<NGPhysicalOutOfFlowPositionedNode>
         oof_positioned_fragmentainer_descendants;
     MulticolCollection multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
@@ -334,24 +338,24 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     // TablesNG rare data.
     PhysicalRect table_grid_rect;
     NGTableFragmentData::ColumnGeometries table_column_geometries;
-    scoped_refptr<const NGTableBorders> table_collapsed_borders;
+    Member<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
         table_collapsed_borders_geometry;
     wtf_size_t table_cell_column_index;
   };
 
   const NGFragmentItems* ComputeItemsAddress() const {
-    DCHECK(has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
-           has_padding_ || has_inflow_bounds_ || has_rare_data_);
+    DCHECK(const_has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
+           has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
     const NGLink* children_end = children_ + Children().size();
     return reinterpret_cast<const NGFragmentItems*>(children_end);
   }
 
   const PhysicalRect* ComputeLayoutOverflowAddress() const {
     DCHECK(has_layout_overflow_ || has_borders_ || has_padding_ ||
-           has_inflow_bounds_ || has_rare_data_);
+           has_inflow_bounds_ || const_has_rare_data_);
     const NGFragmentItems* items = ComputeItemsAddress();
-    if (!has_fragment_items_)
+    if (!const_has_fragment_items_)
       return reinterpret_cast<const PhysicalRect*>(items);
     return reinterpret_cast<const PhysicalRect*>(
         reinterpret_cast<const uint8_t*>(items) + items->ByteSize());
@@ -359,7 +363,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
 
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
     DCHECK(has_borders_ || has_padding_ || has_inflow_bounds_ ||
-           has_rare_data_);
+           const_has_rare_data_);
     const PhysicalRect* address = ComputeLayoutOverflowAddress();
     return has_layout_overflow_
                ? reinterpret_cast<const NGPhysicalBoxStrut*>(address + 1)
@@ -367,13 +371,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
   const NGPhysicalBoxStrut* ComputePaddingAddress() const {
-    DCHECK(has_padding_ || has_inflow_bounds_ || has_rare_data_);
+    DCHECK(has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
     const NGPhysicalBoxStrut* address = ComputeBordersAddress();
     return has_borders_ ? address + 1 : address;
   }
 
   const PhysicalRect* ComputeInflowBoundsAddress() const {
-    DCHECK(has_inflow_bounds_ || has_rare_data_);
+    DCHECK(has_inflow_bounds_ || const_has_rare_data_);
     NGPhysicalBoxStrut* address =
         const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress());
     return has_padding_ ? reinterpret_cast<PhysicalRect*>(address + 1)
@@ -381,7 +385,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
   const RareData* ComputeRareDataAddress() const {
-    DCHECK(has_rare_data_);
+    DCHECK(const_has_rare_data_);
     PhysicalRect* address =
         const_cast<PhysicalRect*>(ComputeInflowBoundsAddress());
     return has_inflow_bounds_ ? reinterpret_cast<RareData*>(address + 1)

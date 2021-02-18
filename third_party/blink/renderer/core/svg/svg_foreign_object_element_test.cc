@@ -27,7 +27,7 @@ TEST_F(SVGForeignObjectElementTest, NoLayoutObjectInNonRendered) {
   Element* foreign_object = GetDocument().getElementById("fo");
   EXPECT_FALSE(foreign_object->GetLayoutObject());
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  ComputedStyle* style = ComputedStyle::Create();
   LayoutObject* layout_object =
       foreign_object->CreateLayoutObject(*style, LegacyLayout::kAuto);
   EXPECT_FALSE(layout_object);

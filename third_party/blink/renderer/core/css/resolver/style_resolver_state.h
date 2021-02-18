@@ -93,14 +93,14 @@ class CORE_EXPORT StyleResolverState {
     return element_context_;
   }
 
-  void SetStyle(scoped_refptr<ComputedStyle>);
-  const ComputedStyle* Style() const { return style_.get(); }
-  ComputedStyle* Style() { return style_.get(); }
+  void SetStyle(ComputedStyle*);
+  const ComputedStyle* Style() const { return style_; }
+  ComputedStyle* Style() { return style_; }
   ComputedStyle& StyleRef() {
     DCHECK(style_);
     return *style_;
   }
-  scoped_refptr<ComputedStyle> TakeStyle();
+  ComputedStyle* TakeStyle();
 
   const CSSToLengthConversionData& CssToLengthConversionData() const {
     return css_to_length_conversion_data_;
@@ -130,12 +130,12 @@ class CORE_EXPORT StyleResolverState {
 
   Element* GetAnimatingElement() const;
 
-  void SetParentStyle(scoped_refptr<const ComputedStyle>);
-  const ComputedStyle* ParentStyle() const { return parent_style_.get(); }
+  void SetParentStyle(const ComputedStyle*);
+  const ComputedStyle* ParentStyle() const { return parent_style_; }
 
-  void SetLayoutParentStyle(scoped_refptr<const ComputedStyle>);
+  void SetLayoutParentStyle(const ComputedStyle*);
   const ComputedStyle* LayoutParentStyle() const {
-    return layout_parent_style_.get();
+    return layout_parent_style_;
   }
 
   ElementStyleResources& GetElementStyleResources() {
@@ -193,17 +193,17 @@ class CORE_EXPORT StyleResolverState {
   Document* document_;
 
   // style_ is the primary output for each element's style resolve.
-  scoped_refptr<ComputedStyle> style_;
+  ComputedStyle* style_ = nullptr;
 
   CSSToLengthConversionData css_to_length_conversion_data_;
 
   // parent_style_ is not always just ElementResolveContext::ParentStyle(),
   // so we keep it separate.
-  scoped_refptr<const ComputedStyle> parent_style_;
+  const ComputedStyle* parent_style_;
   // This will almost-always be the same that parent_style_, except in the
   // presence of display: contents. This is the style against which we have to
   // do adjustment.
-  scoped_refptr<const ComputedStyle> layout_parent_style_;
+  const ComputedStyle* layout_parent_style_;
 
   CSSAnimationUpdate animation_update_;
   bool is_animation_interpolation_map_ready_ = false;

@@ -34,7 +34,7 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   NGInlineNodeData* GetNGInlineNodeData() const final;
   void ResetNGInlineNodeData() final;
   void ClearNGInlineNodeData() final;
-  bool HasNGInlineNodeData() const final { return ng_inline_node_data_.get(); }
+  bool HasNGInlineNodeData() const final { return ng_inline_node_data_; }
 
   LayoutUnit FirstLineBoxBaseline() const final;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const final;
@@ -45,6 +45,8 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
                    HitTestAction) override;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
+
+  void Trace(Visitor*) const override;
 
   using LayoutNGMixin<Base>::CurrentFragment;
 
@@ -64,7 +66,7 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   // behavior as LayoutNGBlockFlow.
   void UpdateNGBlockLayout();
 
-  std::unique_ptr<NGInlineNodeData> ng_inline_node_data_;
+  Member<NGInlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
 

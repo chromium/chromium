@@ -46,6 +46,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
  public:
   AXLayoutObject(LayoutObject*, AXObjectCacheImpl&);
   ~AXLayoutObject() override;
+  void Trace(Visitor*) const override;
 
   // Public, overridden from AXObject.
   LayoutObject* GetLayoutObject() const final { return layout_object_; }
@@ -61,7 +62,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   Element* AnchorElement() const override;
 
  protected:
-  LayoutObject* layout_object_;
+  Member<LayoutObject> layout_object_;
 
   //
   // Overridden from AXObject.

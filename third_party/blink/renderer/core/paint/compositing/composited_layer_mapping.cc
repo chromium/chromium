@@ -117,8 +117,8 @@ static bool UsesCompositedStickyPosition(PaintLayer& layer) {
          layer.AncestorScrollContainerLayer()->NeedsCompositedScrolling();
 }
 
-// Returns the sticky position offset that should be removed from a given layer
-// for use in CompositedLayerMapping.
+// Returns the sticky position offset that should be removed from a given
+// layer for use in CompositedLayerMapping.
 //
 // If the layer is not using composited sticky position, this will return
 // FloatPoint().
@@ -130,10 +130,10 @@ static FloatPoint StickyPositionOffsetForLayer(PaintLayer& layer) {
       layer.AncestorScrollContainerLayer()
           ->GetScrollableArea()
           ->GetStickyConstraintsMap();
-  const StickyPositionScrollingConstraints& constraints =
+  const StickyPositionScrollingConstraints* constraints =
       constraints_map.at(&layer);
 
-  return FloatPoint(constraints.GetOffsetForStickyPosition(constraints_map));
+  return FloatPoint(constraints->GetOffsetForStickyPosition(constraints_map));
 }
 
 static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
@@ -150,8 +150,8 @@ static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
       layout_object.IsCanvas() || IsA<LayoutVideo>(layout_object);
 
   // Unlike normal outlines (whole width is outside of the offset), focus
-  // rings can be drawn with the center of the path aligned with the offset, so
-  // only 2/3 of the width is outside of the offset.
+  // rings can be drawn with the center of the path aligned with the offset,
+  // so only 2/3 of the width is outside of the offset.
   const int outline_drawn_inside =
       layout_object.StyleRef().OutlineStyleIsAuto()
           ? std::ceil(
@@ -166,7 +166,7 @@ static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
 }
 
 CompositedLayerMapping::CompositedLayerMapping(PaintLayer& layer)
-    : owning_layer_(layer), pending_update_scope_(kGraphicsLayerUpdateNone) {
+    : owning_layer_(&layer), pending_update_scope_(kGraphicsLayerUpdateNone) {
   CreatePrimaryGraphicsLayer();
 }
 
@@ -203,7 +203,7 @@ std::unique_ptr<GraphicsLayer> CompositedLayerMapping::CreateGraphicsLayer(
 
   graphics_layer->SetCompositingReasons(reasons);
   graphics_layer->SetSquashingDisallowedReasons(squashing_disallowed_reasons);
-  if (Node* owning_node = owning_layer_.GetLayoutObject().GetNode()) {
+  if (Node* owning_node = owning_layer_->GetLayoutObject().GetNode()) {
     graphics_layer->SetOwnerNodeId(
         static_cast<int>(DOMNodeIds::IdForNode(owning_node)));
   }
@@ -213,8 +213,8 @@ std::unique_ptr<GraphicsLayer> CompositedLayerMapping::CreateGraphicsLayer(
 
 void CompositedLayerMapping::CreatePrimaryGraphicsLayer() {
   graphics_layer_ =
-      CreateGraphicsLayer(owning_layer_.GetCompositingReasons(),
-                          owning_layer_.GetSquashingDisallowedReasons());
+      CreateGraphicsLayer(owning_layer_->GetCompositingReasons(),
+                          owning_layer_->GetSquashingDisallowedReasons());
 
   graphics_layer_->SetHitTestable(true);
 }
@@ -222,7 +222,7 @@ void CompositedLayerMapping::CreatePrimaryGraphicsLayer() {
 void CompositedLayerMapping::UpdateGraphicsLayerContentsOpaque(
     bool should_check_children) {
   if (BackgroundPaintsOntoGraphicsLayer()) {
-    bool contents_opaque = owning_layer_.BackgroundIsKnownToBeOpaqueInRect(
+    bool contents_opaque = owning_layer_->BackgroundIsKnownToBeOpaqueInRect(
         CompositedBounds(), should_check_children);
     graphics_layer_->CcLayer().SetContentsOpaque(contents_opaque);
     if (!contents_opaque) {
@@ -249,7 +249,7 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
     // TODO(flackr): This should actually check the entire overflow rect
     // within the scrolling contents layer but since we currently only trigger
     // this for solid color backgrounds the answer will be the same.
-    bool contents_opaque = owning_layer_.BackgroundIsKnownToBeOpaqueInRect(
+    bool contents_opaque = owning_layer_->BackgroundIsKnownToBeOpaqueInRect(
         To<LayoutBox>(GetLayoutObject()).PhysicalPaddingBoxRect(),
         should_check_children);
     scrolling_contents_layer_->CcLayer().SetContentsOpaque(contents_opaque);
@@ -283,24 +283,25 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
 }
 
 void CompositedLayerMapping::UpdateCompositedBounds() {
-  DCHECK_EQ(owning_layer_.Compositor()->Lifecycle().GetState(),
+  DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
             DocumentLifecycle::kInCompositingAssignmentsUpdate);
   // FIXME: if this is really needed for performance, it would be better to
   // store it on Layer.
-  composited_bounds_ = owning_layer_.BoundingBoxForCompositing();
+  composited_bounds_ = owning_layer_->BoundingBoxForCompositing();
 }
 
 void CompositedLayerMapping::UpdateCompositingReasons() {
   // All other layers owned by this mapping will have the same compositing
   // reason for their lifetime, so they are initialized only when created.
-  graphics_layer_->SetCompositingReasons(owning_layer_.GetCompositingReasons());
+  graphics_layer_->SetCompositingReasons(
+      owning_layer_->GetCompositingReasons());
   graphics_layer_->SetSquashingDisallowedReasons(
-      owning_layer_.GetSquashingDisallowedReasons());
+      owning_layer_->GetSquashingDisallowedReasons());
 }
 
 bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
     const PaintLayer* compositing_container) {
-  DCHECK_EQ(owning_layer_.Compositor()->Lifecycle().GetState(),
+  DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
             DocumentLifecycle::kInCompositingAssignmentsUpdate);
 
   // Note carefully: here we assume that the compositing state of all
@@ -315,17 +316,17 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
   bool layer_config_changed = false;
 
   if (UpdateForegroundLayer(
-          compositor->NeedsContentsCompositingLayer(&owning_layer_)))
+          compositor->NeedsContentsCompositingLayer(owning_layer_)))
     layer_config_changed = true;
 
-  if (UpdateScrollingContentsLayer(owning_layer_.NeedsCompositedScrolling()))
+  if (UpdateScrollingContentsLayer(owning_layer_->NeedsCompositedScrolling()))
     layer_config_changed = true;
 
   // If the outline needs to draw over the composited scrolling contents layer
   // or scrollbar layers (or video or webgl) it needs to be drawn into a
   // separate layer.
   bool needs_decoration_outline_layer =
-      NeedsDecorationOutlineLayer(owning_layer_, layout_object);
+      NeedsDecorationOutlineLayer(*owning_layer_, layout_object);
 
   if (UpdateDecorationOutlineLayer(needs_decoration_outline_layer))
     layer_config_changed = true;
@@ -368,15 +369,16 @@ bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
   }
 
   if (layer_config_changed) {
-    // Changes to either the internal hierarchy or the mask layer have an impact
-    // on painting phases, so we need to update when either are updated.
+    // Changes to either the internal hierarchy or the mask layer have an
+    // impact on painting phases, so we need to update when either are
+    // updated.
     UpdatePaintingPhases();
   }
 
   UpdateElementId();
 
   if (style.Preserves3D() && style.HasOpacity() &&
-      owning_layer_.Has3DTransformedDescendant()) {
+      owning_layer_->Has3DTransformedDescendant()) {
     UseCounter::Count(layout_object.GetDocument(),
                       WebFeature::kOpacityWithPreserve3DQuirk);
   }
@@ -392,8 +394,9 @@ static PhysicalOffset ComputeOffsetFromCompositedAncestor(
   // Add in the offset of the composited bounds from the coordinate space of
   // the PaintLayer, since visualOffsetFromAncestor() requires the pre-offset
   // input to be in the space of the PaintLayer. We also need to add in this
-  // offset before computation of visualOffsetFromAncestor(), because it affects
-  // fragmentation offset if compositedAncestor crosses a pagination boundary.
+  // offset before computation of visualOffsetFromAncestor(), because it
+  // affects fragmentation offset if compositedAncestor crosses a pagination
+  // boundary.
   //
   // Currently, visual fragmentation for composited layers is not implemented.
   // For fragmented contents, we paint in the logical coordinates of the flow
@@ -453,40 +456,42 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
     IntPoint& snapped_offset_from_composited_ancestor) {
   // HACK(chrishtr): adjust for position of inlines.
   PhysicalOffset local_representative_point_for_fragmentation;
-  if (owning_layer_.GetLayoutObject().IsLayoutInline()) {
+  if (owning_layer_->GetLayoutObject().IsLayoutInline()) {
     local_representative_point_for_fragmentation =
-        To<LayoutInline>(owning_layer_.GetLayoutObject()).FirstLineBoxTopLeft();
+        To<LayoutInline>(owning_layer_->GetLayoutObject())
+            .FirstLineBoxTopLeft();
   }
-  // Blink will already have applied any necessary offset for sticky positioned
-  // elements. If the compositor is handling sticky offsets for this layer, we
-  // need to remove the Blink-side offset to avoid double-counting.
+  // Blink will already have applied any necessary offset for sticky
+  // positioned elements. If the compositor is handling sticky offsets for
+  // this layer, we need to remove the Blink-side offset to avoid
+  // double-counting.
   FloatPoint offset_for_sticky_position =
-      StickyPositionOffsetForLayer(owning_layer_);
+      StickyPositionOffsetForLayer(*owning_layer_);
   PhysicalOffset offset_from_composited_ancestor =
       ComputeOffsetFromCompositedAncestor(
-          &owning_layer_, composited_ancestor,
+          owning_layer_, composited_ancestor,
           local_representative_point_for_fragmentation,
           offset_for_sticky_position);
   PhysicalOffset subpixel_accumulation = ComputeSubpixelAccumulation(
-      offset_from_composited_ancestor, owning_layer_,
+      offset_from_composited_ancestor, *owning_layer_,
       snapped_offset_from_composited_ancestor);
 
   // Invalidate the whole layer when subpixel accumulation changes, since
   // the previous subpixel accumulation is baked into the display list.
   // However, don't do so for directly composited layers, to avoid impacting
   // performance.
-  if (subpixel_accumulation != owning_layer_.SubpixelAccumulation()) {
+  if (subpixel_accumulation != owning_layer_->SubpixelAccumulation()) {
     // Always invalidate if under-invalidation checking is on, to avoid
     // false positives.
     if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
-        !(owning_layer_.GetCompositingReasons() &
+        !(owning_layer_->GetCompositingReasons() &
           CompositingReason::kComboAllDirectReasons))
       GetLayoutObject().SetShouldCheckForPaintInvalidation();
   }
 
   // Otherwise discard the sub-pixel remainder because paint offset can't be
   // transformed by a non-translation transform.
-  owning_layer_.SetSubpixelAccumulation(subpixel_accumulation);
+  owning_layer_->SetSubpixelAccumulation(subpixel_accumulation);
 
   base::Optional<IntRect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(GetLayoutObject(), subpixel_accumulation);
@@ -517,7 +522,7 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
     const PaintLayer* compositing_container,
     const IntPoint& snapped_offset_from_composited_ancestor,
     Vector<GraphicsLayerPaintInfo>& layers,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   if (!non_scrolling_squashing_layer_)
     return;
 
@@ -539,7 +544,7 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
     common_transform_ancestor =
         &compositing_container->TransformAncestorOrRoot();
   } else {
-    common_transform_ancestor = owning_layer_.Root();
+    common_transform_ancestor = owning_layer_->Root();
   }
 
   // FIXME: Cache these offsets.
@@ -588,14 +593,14 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
   //
   // The painting offset we want to compute for each squashed PaintLayer is
   // essentially the position of the squashed PaintLayer described w.r.t.
-  // compositingContainer's origin.  So we just need to convert that point from
-  // compositingContainer space to the squashing layer's space. This is done by
-  // subtracting squashLayerOriginInCompositingContainerSpace, but then the
-  // offset overall needs to be negated because that's the direction that the
-  // painting code expects the offset to be.
-  for (wtf_size_t i = 0; i < layers.size(); ++i) {
+  // compositingContainer's origin.  So we just need to convert that point
+  // from compositingContainer space to the squashing layer's space. This is
+  // done by subtracting squashLayerOriginInCompositingContainerSpace, but
+  // then the offset overall needs to be negated because that's the direction
+  // that the painting code expects the offset to be.
+  for (auto& layer : layers) {
     const PhysicalOffset squashed_layer_offset_from_transformed_ancestor =
-        layers[i].paint_layer->ComputeOffsetFromAncestor(
+        layer.paint_layer->ComputeOffsetFromAncestor(
             *common_transform_ancestor);
     const PhysicalOffset offset_from_squash_layer_origin =
         (squashed_layer_offset_from_transformed_ancestor -
@@ -607,14 +612,13 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
     PhysicalOffset subpixel_accumulation =
         offset_from_squash_layer_origin +
         PhysicalOffset(new_offset_from_layout_object);
-    if (layers[i].offset_from_layout_object_set &&
-        layers[i].offset_from_layout_object != new_offset_from_layout_object) {
-      layers_needing_paint_invalidation.push_back(layers[i].paint_layer);
+    if (layer.offset_from_layout_object_set &&
+        layer.offset_from_layout_object != new_offset_from_layout_object) {
+      layers_needing_paint_invalidation.push_back(layer.paint_layer);
     }
-    layers[i].offset_from_layout_object = new_offset_from_layout_object;
-    layers[i].offset_from_layout_object_set = true;
-
-    layers[i].paint_layer->SetSubpixelAccumulation(subpixel_accumulation);
+    layer.offset_from_layout_object = new_offset_from_layout_object;
+    layer.offset_from_layout_object_set = true;
+    layer.paint_layer->SetSubpixelAccumulation(subpixel_accumulation);
   }
 
   non_scrolling_squashing_layer_->SetSize(
@@ -630,17 +634,17 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
     non_scrolling_squashing_layer_offset_from_layout_object_ = new_offset;
     // Need to update squashing LayerState according to the new offset.
     // GraphicsLayerUpdater does this.
-    layers_needing_paint_invalidation.push_back(&owning_layer_);
+    layers_needing_paint_invalidation.push_back(owning_layer_);
   }
 
   for (auto& layer : layers)
-    UpdateLocalClipRectForSquashedLayer(owning_layer_, layers, layer);
+    UpdateLocalClipRectForSquashedLayer(*owning_layer_, layers, layer);
 }
 
 void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
     const PaintLayer* compositing_container,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
-  DCHECK_EQ(owning_layer_.Compositor()->Lifecycle().GetState(),
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
+  DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
             DocumentLifecycle::kInCompositingAssignmentsUpdate);
 
   IntRect local_compositing_bounds;
@@ -658,9 +662,9 @@ void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
   UpdateScrollingContentsLayerGeometry(layers_needing_paint_invalidation);
   UpdateForegroundLayerGeometry();
 
-  if (owning_layer_.GetScrollableArea() &&
-      owning_layer_.GetScrollableArea()->ScrollsOverflow())
-    owning_layer_.GetScrollableArea()->PositionOverflowControls();
+  if (owning_layer_->GetScrollableArea() &&
+      owning_layer_->GetScrollableArea()->ScrollsOverflow())
+    owning_layer_->GetScrollableArea()->PositionOverflowControls();
 
   UpdateContentsRect();
   UpdateDrawsContentAndPaintsHitTest();
@@ -675,17 +679,17 @@ void CompositedLayerMapping::UpdateMainGraphicsLayerGeometry(
       ToIntSize(local_compositing_bounds.Location()));
   graphics_layer_->SetSize(gfx::Size(local_compositing_bounds.Size()));
 
-  // m_graphicsLayer is the corresponding GraphicsLayer for this PaintLayer and
-  // its non-compositing descendants. So, the visibility flag for
+  // m_graphicsLayer is the corresponding GraphicsLayer for this PaintLayer
+  // and its non-compositing descendants. So, the visibility flag for
   // m_graphicsLayer should be true if there are any non-compositing visible
   // layers.
-  bool contents_visible = owning_layer_.HasVisibleContent() ||
-                          HasVisibleNonCompositingDescendant(&owning_layer_);
-  // TODO(sunxd): Investigate and possibly implement computing hit test regions
-  // in PaintTouchActionRects code path, so that cc has correct pointer-events
-  // information.
-  // For now, there is no need to set graphics_layer_'s hit testable bit here,
-  // because it is always hit testable from cc's perspective.
+  bool contents_visible = owning_layer_->HasVisibleContent() ||
+                          HasVisibleNonCompositingDescendant(owning_layer_);
+  // TODO(sunxd): Investigate and possibly implement computing hit test
+  // regions in PaintTouchActionRects code path, so that cc has correct
+  // pointer-events information. For now, there is no need to set
+  // graphics_layer_'s hit testable bit here, because it is always hit
+  // testable from cc's perspective.
   graphics_layer_->SetContentsVisible(contents_visible);
 }
 
@@ -726,7 +730,7 @@ void CompositedLayerMapping::UpdateMaskLayerGeometry() {
 }
 
 void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   if (!scrolling_contents_layer_) {
     DCHECK(squashed_layers_in_scrolling_contents_.IsEmpty());
     return;
@@ -735,21 +739,22 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   DCHECK(scrolling_contents_layer_);
   auto& layout_box = To<LayoutBox>(GetLayoutObject());
   IntRect overflow_clip_rect = PixelSnappedIntRect(
-      layout_box.OverflowClipRect(owning_layer_.SubpixelAccumulation()));
+      layout_box.OverflowClipRect(owning_layer_->SubpixelAccumulation()));
 
   bool scroll_container_size_changed =
       previous_scroll_container_size_ != overflow_clip_rect.Size();
   if (scroll_container_size_changed)
     previous_scroll_container_size_ = overflow_clip_rect.Size();
 
-  PaintLayerScrollableArea* scrollable_area = owning_layer_.GetScrollableArea();
+  PaintLayerScrollableArea* scrollable_area =
+      owning_layer_->GetScrollableArea();
   IntSize scroll_size = scrollable_area->PixelSnappedContentsSize(
-      owning_layer_.SubpixelAccumulation());
+      owning_layer_->SubpixelAccumulation());
 
   // Ensure scrolling contents are at least as large as the scroll clip
   scroll_size = scroll_size.ExpandedTo(overflow_clip_rect.Size());
 
-  auto* scrolling_coordinator = owning_layer_.GetScrollingCoordinator();
+  auto* scrolling_coordinator = owning_layer_->GetScrollingCoordinator();
   scrolling_coordinator->UpdateCompositorScrollOffset(*layout_box.GetFrame(),
                                                       *scrollable_area);
 
@@ -766,8 +771,8 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   for (auto& layer : squashed_layers_in_scrolling_contents_) {
     layer.composited_bounds = layer.paint_layer->BoundingBoxForCompositing();
     PhysicalOffset offset_from_scrolling_contents_layer =
-        layer.paint_layer->ComputeOffsetFromAncestor(owning_layer_) +
-        owning_layer_.SubpixelAccumulation() -
+        layer.paint_layer->ComputeOffsetFromAncestor(*owning_layer_) +
+        owning_layer_->SubpixelAccumulation() -
         PhysicalOffset(scrolling_contents_layer_->OffsetFromLayoutObject());
     IntSize new_offset_from_layout_object =
         -ToIntSize(RoundedIntPoint(offset_from_scrolling_contents_layer));
@@ -785,23 +790,23 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   }
   for (auto& layer : squashed_layers_in_scrolling_contents_) {
     UpdateLocalClipRectForSquashedLayer(
-        owning_layer_, squashed_layers_in_scrolling_contents_, layer);
+        *owning_layer_, squashed_layers_in_scrolling_contents_, layer);
   }
 }
 
 bool CompositedLayerMapping::RequiresHorizontalScrollbarLayer() const {
-  return owning_layer_.GetScrollableArea() &&
-         owning_layer_.GetScrollableArea()->HorizontalScrollbar();
+  return owning_layer_->GetScrollableArea() &&
+         owning_layer_->GetScrollableArea()->HorizontalScrollbar();
 }
 
 bool CompositedLayerMapping::RequiresVerticalScrollbarLayer() const {
-  return owning_layer_.GetScrollableArea() &&
-         owning_layer_.GetScrollableArea()->VerticalScrollbar();
+  return owning_layer_->GetScrollableArea() &&
+         owning_layer_->GetScrollableArea()->VerticalScrollbar();
 }
 
 bool CompositedLayerMapping::RequiresScrollCornerLayer() const {
-  return owning_layer_.GetScrollableArea() &&
-         !owning_layer_.GetScrollableArea()
+  return owning_layer_->GetScrollableArea() &&
+         !owning_layer_->GetScrollableArea()
               ->ScrollCornerAndResizerRect()
               .IsEmpty();
 }
@@ -843,9 +848,9 @@ void CompositedLayerMapping::UpdateInternalHierarchy() {
   graphics_layer_->RemoveFromParent();
 
   bool overflow_controls_after_scrolling_contents =
-      owning_layer_.IsRootLayer() ||
-      (owning_layer_.GetScrollableArea() &&
-       owning_layer_.GetScrollableArea()->HasOverlayOverflowControls());
+      owning_layer_->IsRootLayer() ||
+      (owning_layer_->GetScrollableArea() &&
+       owning_layer_->GetScrollableArea()->HasOverlayOverflowControls());
   if (overflow_controls_after_scrolling_contents && scrolling_contents_layer_)
     graphics_layer_->AddChild(scrolling_contents_layer_.get());
 
@@ -911,8 +916,8 @@ void CompositedLayerMapping::UpdateDrawsContentAndPaintsHitTest() {
                          GetLayoutObject().HasEffectiveAllowedTouchAction() ||
                          GetLayoutObject().InsideBlockingWheelEventHandler();
   bool paints_scroll_hit_test =
-      ((owning_layer_.GetScrollableArea() &&
-        owning_layer_.GetScrollableArea()->ScrollsOverflow()) ||
+      ((owning_layer_->GetScrollableArea() &&
+        owning_layer_->GetScrollableArea()->ScrollsOverflow()) ||
        (GetPluginContainer(GetLayoutObject()) &&
         GetPluginContainer(GetLayoutObject())->WantsWheelEvents()));
   graphics_layer_->SetPaintsHitTest(paints_hit_test || paints_scroll_hit_test);
@@ -922,7 +927,7 @@ void CompositedLayerMapping::UpdateDrawsContentAndPaintsHitTest() {
     // contents need to paint.
     bool has_painted_scrolling_contents =
         !squashed_layers_in_scrolling_contents_.IsEmpty() ||
-        (owning_layer_.HasVisibleContent() &&
+        (owning_layer_->HasVisibleContent() &&
          (GetLayoutObject().StyleRef().HasBackground() ||
           GetLayoutObject().HasNonInitialBackdropFilter() || PaintsChildren()));
     scrolling_contents_layer_->SetDrawsContent(has_painted_scrolling_contents);
@@ -958,9 +963,9 @@ bool CompositedLayerMapping::ToggleScrollbarLayerIfNeeded(
   layer = needs_layer ? CreateGraphicsLayer(reason) : nullptr;
 
   if (PaintLayerScrollableArea* scrollable_area =
-          owning_layer_.GetScrollableArea()) {
+          owning_layer_->GetScrollableArea()) {
     if (ScrollingCoordinator* scrolling_coordinator =
-            owning_layer_.GetScrollingCoordinator()) {
+            owning_layer_->GetScrollingCoordinator()) {
       if (reason == CompositingReason::kLayerForHorizontalScrollbar) {
         scrolling_coordinator->ScrollableAreaScrollbarLayerDidChange(
             scrollable_area, kHorizontalScrollbar);
@@ -978,7 +983,7 @@ bool CompositedLayerMapping::UpdateOverflowControlsLayers(
     bool needs_vertical_scrollbar_layer,
     bool needs_scroll_corner_layer) {
   if (PaintLayerScrollableArea* scrollable_area =
-          owning_layer_.GetScrollableArea()) {
+          owning_layer_->GetScrollableArea()) {
     // If the scrollable area is marked as needing a new scrollbar layer,
     // destroy the layer now so that it will be created again below.
     if (layer_for_horizontal_scrollbar_ && needs_horizontal_scrollbar_layer &&
@@ -1009,7 +1014,7 @@ bool CompositedLayerMapping::UpdateOverflowControlsLayers(
   // and therefore visible content status may be invalid.
   if (needs_horizontal_scrollbar_layer || needs_vertical_scrollbar_layer ||
       needs_scroll_corner_layer) {
-    bool invisible = owning_layer_.SubtreeIsInvisible();
+    bool invisible = owning_layer_->SubtreeIsInvisible();
     needs_horizontal_scrollbar_layer &= !invisible;
     needs_vertical_scrollbar_layer &= !invisible;
     needs_scroll_corner_layer &= !invisible;
@@ -1031,7 +1036,8 @@ bool CompositedLayerMapping::UpdateOverflowControlsLayers(
 
 void CompositedLayerMapping::PositionOverflowControlsLayers() {
   if (GraphicsLayer* layer = LayerForHorizontalScrollbar()) {
-    Scrollbar* h_bar = owning_layer_.GetScrollableArea()->HorizontalScrollbar();
+    Scrollbar* h_bar =
+        owning_layer_->GetScrollableArea()->HorizontalScrollbar();
     if (h_bar) {
       IntRect frame_rect = h_bar->FrameRect();
       layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.Location()));
@@ -1045,7 +1051,7 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
   }
 
   if (GraphicsLayer* layer = LayerForVerticalScrollbar()) {
-    Scrollbar* v_bar = owning_layer_.GetScrollableArea()->VerticalScrollbar();
+    Scrollbar* v_bar = owning_layer_->GetScrollableArea()->VerticalScrollbar();
     if (v_bar) {
       IntRect frame_rect = v_bar->FrameRect();
       layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.Location()));
@@ -1060,7 +1066,7 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
 
   if (GraphicsLayer* layer = LayerForScrollCorner()) {
     const IntRect& scroll_corner_and_resizer =
-        owning_layer_.GetScrollableArea()->ScrollCornerAndResizerRect();
+        owning_layer_->GetScrollableArea()->ScrollCornerAndResizerRect();
     layer->SetOffsetFromLayoutObject(
         ToIntSize(scroll_corner_and_resizer.Location()));
     layer->SetSize(gfx::Size(scroll_corner_and_resizer.Size()));
@@ -1088,15 +1094,15 @@ static void ApplyToGraphicsLayers(const CompositedLayerMapping* mapping,
   null_checking_function(mapping->LayerForScrollCorner());
 }
 
-// You receive an element id if you have an animation, or you're a scroller (and
-// might impl animate).
+// You receive an element id if you have an animation, or you're a scroller
+// (and might impl animate).
 //
 // The element id for the scroll layers is assigned when they're constructed,
 // since this is unconditional. However, the element id for the primary layer
 // may change according to the rules above so we update those values here.
 void CompositedLayerMapping::UpdateElementId() {
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
-      owning_layer_.GetLayoutObject().UniqueId(),
+      owning_layer_->GetLayoutObject().UniqueId(),
       CompositorElementIdNamespace::kPrimary);
 
   graphics_layer_->SetElementId(element_id);
@@ -1166,9 +1172,9 @@ bool CompositedLayerMapping::UpdateMaskLayer(bool needs_mask_layer) {
 bool CompositedLayerMapping::UpdateScrollingContentsLayer(
     bool needs_scrolling_contents_layer) {
   ScrollingCoordinator* scrolling_coordinator =
-      owning_layer_.GetScrollingCoordinator();
+      owning_layer_->GetScrollingCoordinator();
 
-  auto* scrollable_area = owning_layer_.GetScrollableArea();
+  auto* scrollable_area = owning_layer_->GetScrollableArea();
   if (scrollable_area)
     scrollable_area->SetUsesCompositedScrolling(needs_scrolling_contents_layer);
 
@@ -1246,11 +1252,11 @@ CompositedLayerMapping::PaintingPhaseForPrimaryLayer() const {
 }
 
 bool CompositedLayerMapping::PaintsChildren() const {
-  if (owning_layer_.HasVisibleContent() &&
-      owning_layer_.HasNonEmptyChildLayoutObjects())
+  if (owning_layer_->HasVisibleContent() &&
+      owning_layer_->HasNonEmptyChildLayoutObjects())
     return true;
 
-  if (HasVisibleNonCompositingDescendant(&owning_layer_))
+  if (HasVisibleNonCompositingDescendant(owning_layer_))
     return true;
 
   return false;
@@ -1266,7 +1272,7 @@ bool CompositedLayerMapping::HasVisibleNonCompositingDescendant(
   if (!parent->HasVisibleDescendant())
     return false;
 
-  PaintLayerPaintOrderIterator iterator(*parent, kAllChildren);
+  PaintLayerPaintOrderIterator iterator(parent, kAllChildren);
   while (PaintLayer* child_layer = iterator.Next()) {
     if (child_layer->HasCompositedLayerMapping())
       continue;
@@ -1283,15 +1289,15 @@ bool CompositedLayerMapping::ContainsPaintedContent() const {
     return false;
 
   LayoutObject& layout_object = GetLayoutObject();
-  // FIXME: we could optimize cases where the image, video or canvas is known to
-  // fill the border box entirely, and set background color on the layer in that
-  // case, instead of allocating backing store and painting.
+  // FIXME: we could optimize cases where the image, video or canvas is known
+  // to fill the border box entirely, and set background color on the layer in
+  // that case, instead of allocating backing store and painting.
   auto* layout_video = DynamicTo<LayoutVideo>(layout_object);
   if (layout_video && layout_video->GetDisplayMode() == LayoutVideo::kVideo)
-    return owning_layer_.HasBoxDecorationsOrBackground();
+    return owning_layer_->HasBoxDecorationsOrBackground();
 
   if (layout_object.GetNode() && layout_object.GetNode()->IsDocumentNode()) {
-    if (owning_layer_.NeedsCompositedScrolling())
+    if (owning_layer_->NeedsCompositedScrolling())
       return BackgroundPaintsOntoGraphicsLayer();
 
     // Look to see if the root object has a non-simple background
@@ -1314,7 +1320,7 @@ bool CompositedLayerMapping::ContainsPaintedContent() const {
       return true;
   }
 
-  if (owning_layer_.HasVisibleBoxDecorations())
+  if (owning_layer_->HasVisibleBoxDecorations())
     return true;
 
   if (layout_object.HasMask())  // masks require special treatment
@@ -1338,7 +1344,7 @@ void CompositedLayerMapping::ContentChanged(ContentChangeType change_type) {
 // Return the offset from the top-left of this compositing layer at which the
 // LayoutObject's contents are painted.
 PhysicalOffset CompositedLayerMapping::ContentOffsetInCompositingLayer() const {
-  return owning_layer_.SubpixelAccumulation() -
+  return owning_layer_->SubpixelAccumulation() -
          PhysicalOffset(graphics_layer_->OffsetFromLayoutObject());
 }
 
@@ -1349,7 +1355,7 @@ PhysicalRect CompositedLayerMapping::ContentsBox() const {
 }
 
 bool CompositedLayerMapping::NeedsToReparentOverflowControls() const {
-  return owning_layer_.NeedsReorderOverlayOverflowControls();
+  return owning_layer_->NeedsReorderOverlayOverflowControls();
 }
 
 wtf_size_t CompositedLayerMapping::MoveOverflowControlLayersInto(
@@ -1470,7 +1476,7 @@ void CompositedLayerMapping::UpdateLocalClipRectForSquashedLayer(
     paint_info.local_clip_rect_for_squashed_layer =
         ClipRect(PhysicalRect(LayoutRect::InfiniteIntRect()));
     paint_info.offset_from_clip_rect_root = PhysicalOffset();
-    paint_info.local_clip_rect_root = paint_info.paint_layer;
+    paint_info.local_clip_rect_root = paint_info.paint_layer.Get();
     return;
   }
 
@@ -1500,7 +1506,7 @@ void CompositedLayerMapping::UpdateLocalClipRectForSquashedLayer(
   paint_info.local_clip_rect_for_squashed_layer = parent_clip_rect;
   paint_info.offset_from_clip_rect_root =
       PhysicalOffset(ancestor_to_local_offset);
-  paint_info.local_clip_rect_root = ancestor_paint_info->paint_layer;
+  paint_info.local_clip_rect_root = ancestor_paint_info->paint_layer.Get();
 }
 
 void CompositedLayerMapping::DoPaintTask(
@@ -1594,7 +1600,7 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
 
   auto source_state = graphics_layer->GetPropertyTreeState();
 
-  LayoutView* root_view = owning_layer_.GetLayoutObject().View();
+  LayoutView* root_view = owning_layer_->GetLayoutObject().View();
   while (root_view->GetFrame()->OwnerLayoutObject())
     root_view = root_view->GetFrame()->OwnerLayoutObject()->View();
 
@@ -1609,8 +1615,8 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
   FloatRect visible_content_rect(EnclosingIntRect(mapping_rect.Rect()));
 
   FloatRect local_interest_rect;
-  // If the visible content rect is empty, then it makes no sense to map it back
-  // since there is nothing to map.
+  // If the visible content rect is empty, then it makes no sense to map it
+  // back since there is nothing to map.
   if (!visible_content_rect.IsEmpty()) {
     local_interest_rect = visible_content_rect;
     // 3. Map the visible content rect from root view space to local graphics
@@ -1625,9 +1631,9 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     // and return whether the mapping failed.  In some cases,
     // absoluteToLocalQuad can fail to map back to the local space, due to
     // passing through non-invertible transforms or floating-point accuracy
-    // issues. Examples include rotation near 90 degrees or perspective. In such
-    // cases, fall back to painting the first kPixelDistanceToRecord pixels in
-    // each direction.
+    // issues. Examples include rotation near 90 degrees or perspective. In
+    // such cases, fall back to painting the first kPixelDistanceToRecord
+    // pixels in each direction.
 
     // Note that since the interest rect mapping above can produce extremely
     // large numbers in cases of perspective, try our best to "normalize" the
@@ -1636,8 +1642,8 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     const float reasonable_pixel_limit = std::numeric_limits<int>::max() / 2.f;
     auto unpadded_intersection = local_interest_rect;
 
-    // Note that by clamping X and Y, we are effectively moving the rect right /
-    // down. However, this will at most make us paint more content, which is
+    // Note that by clamping X and Y, we are effectively moving the rect right
+    // / down. However, this will at most make us paint more content, which is
     // better than erroneously deciding that the rect produced here is far
     // offscreen.
     if (unpadded_intersection.X() < -reasonable_pixel_limit)
@@ -1654,9 +1660,10 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     }
 
     unpadded_intersection.Intersect(FloatRect(graphics_layer_bounds));
-    // If our unpadded intersection is not empty, then use that before padding,
-    // since it can produce more stable results, and it would not produce any
-    // smaller area than if we used the original local interest rect.
+    // If our unpadded intersection is not empty, then use that before
+    // padding, since it can produce more stable results, and it would not
+    // produce any smaller area than if we used the original local interest
+    // rect.
     if (!unpadded_intersection.IsEmpty())
       local_interest_rect = unpadded_intersection;
 
@@ -1698,8 +1705,8 @@ bool CompositedLayerMapping::InterestRectChangedEnoughToRepaint(
   if (previous_interest_rect.IsEmpty() && new_interest_rect.IsEmpty())
     return false;
 
-  // Repaint when going from empty to not-empty, to cover cases where the layer
-  // is painted for the first time, or otherwise becomes visible.
+  // Repaint when going from empty to not-empty, to cover cases where the
+  // layer is painted for the first time, or otherwise becomes visible.
   if (previous_interest_rect.IsEmpty())
     return true;
 
@@ -1711,10 +1718,10 @@ bool CompositedLayerMapping::InterestRectChangedEnoughToRepaint(
     return true;
 
   // Even if the new interest rect doesn't include enough new area to satisfy
-  // the condition above, repaint anyway if it touches a layer edge not touched
-  // by the existing interest rect.  Because it's impossible to expose more area
-  // in the direction, repainting cannot be deferred until the exposed new area
-  // satisfies the condition above.
+  // the condition above, repaint anyway if it touches a layer edge not
+  // touched by the existing interest rect.  Because it's impossible to expose
+  // more area in the direction, repainting cannot be deferred until the
+  // exposed new area satisfies the condition above.
   if (new_interest_rect.X() == 0 && previous_interest_rect.X() != 0)
     return true;
   if (new_interest_rect.Y() == 0 && previous_interest_rect.Y() != 0)
@@ -1772,13 +1779,13 @@ IntRect CompositedLayerMapping::PaintableRegion(
 }
 
 LayoutSize CompositedLayerMapping::SubpixelAccumulation() const {
-  return owning_layer_.SubpixelAccumulation().ToLayoutSize();
+  return owning_layer_->SubpixelAccumulation().ToLayoutSize();
 }
 
 bool CompositedLayerMapping::NeedsRepaint(
     const GraphicsLayer& graphics_layer) const {
   return IsScrollableAreaLayerWhichNeedsRepaint(&graphics_layer) ||
-         owning_layer_.SelfOrDescendantNeedsRepaint();
+         owning_layer_->SelfOrDescendantNeedsRepaint();
 }
 
 bool CompositedLayerMapping::AdjustForCompositedScrolling(
@@ -1787,10 +1794,10 @@ bool CompositedLayerMapping::AdjustForCompositedScrolling(
   if (graphics_layer == scrolling_contents_layer_.get() ||
       graphics_layer == foreground_layer_.get()) {
     if (PaintLayerScrollableArea* scrollable_area =
-            owning_layer_.GetScrollableArea()) {
+            owning_layer_->GetScrollableArea()) {
       if (scrollable_area->UsesCompositedScrolling()) {
-        // Note: this is the offset from the beginning of flow of the block, not
-        // the offset from the top/left of the overflow rect.
+        // Note: this is the offset from the beginning of flow of the block,
+        // not the offset from the top/left of the overflow rect.
         // offsetFromLayoutObject adds the origin offset from top/left to the
         // beginning of flow.
         ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
@@ -1847,13 +1854,13 @@ void CompositedLayerMapping::PaintContents(
     page->SetIsPainting(true);
 #endif
 
-  DCHECK(owning_layer_.GetLayoutObject()
+  DCHECK(owning_layer_->GetLayoutObject()
              .GetFrameView()
              ->LocalFrameTreeAllowsThrottling());
 
   TRACE_EVENT1(
       "devtools.timeline,rail", "Paint", "data",
-      inspector_paint_event::Data(&owning_layer_.GetLayoutObject(),
+      inspector_paint_event::Data(&owning_layer_->GetLayoutObject(),
                                   PhysicalRect(interest_rect), graphics_layer));
 
   PaintLayerFlags paint_layer_flags =
@@ -1873,15 +1880,15 @@ void CompositedLayerMapping::PaintContents(
     }
 
     GraphicsLayerPaintInfo paint_info;
-    paint_info.paint_layer = &owning_layer_;
+    paint_info.paint_layer = owning_layer_;
     paint_info.composited_bounds = CompositedBounds();
     paint_info.offset_from_layout_object =
         graphics_layer->OffsetFromLayoutObject();
     AdjustForCompositedScrolling(graphics_layer,
                                  paint_info.offset_from_layout_object);
 
-    // We have to use the same root as for hit testing, because both methods can
-    // compute and cache clipRects.
+    // We have to use the same root as for hit testing, because both methods
+    // can compute and cache clipRects.
     DoPaintTask(paint_info, *graphics_layer, paint_layer_flags, context,
                 interest_rect);
 
@@ -1920,7 +1927,8 @@ void CompositedLayerMapping::PaintScrollableArea(
   // Scrollbar::Paint() will paint the scrollbar.
   CullRect cull_rect(interest_rect);
   cull_rect.Move(graphics_layer->OffsetFromLayoutObject());
-  PaintLayerScrollableArea* scrollable_area = owning_layer_.GetScrollableArea();
+  PaintLayerScrollableArea* scrollable_area =
+      owning_layer_->GetScrollableArea();
   ScrollableAreaPainter painter(*scrollable_area);
   if (graphics_layer == LayerForHorizontalScrollbar()) {
     if (Scrollbar* scrollbar = scrollable_area->HorizontalScrollbar())
@@ -1944,7 +1952,7 @@ bool CompositedLayerMapping::IsScrollableAreaLayer(
 bool CompositedLayerMapping::IsScrollableAreaLayerWhichNeedsRepaint(
     const GraphicsLayer* graphics_layer) const {
   if (PaintLayerScrollableArea* scrollable_area =
-          owning_layer_.GetScrollableArea()) {
+          owning_layer_->GetScrollableArea()) {
     if (graphics_layer == LayerForHorizontalScrollbar())
       return scrollable_area->HorizontalScrollbarNeedsPaintInvalidation();
 
@@ -1960,7 +1968,7 @@ bool CompositedLayerMapping::IsScrollableAreaLayerWhichNeedsRepaint(
 
 bool CompositedLayerMapping::ShouldSkipPaintingSubtree() const {
   return GetLayoutObject().GetFrame()->ShouldThrottleRendering() ||
-         owning_layer_.IsUnderSVGHiddenContainer() ||
+         owning_layer_->IsUnderSVGHiddenContainer() ||
          DisplayLockUtilities::NearestLockedExclusiveAncestor(
              GetLayoutObject());
 }
@@ -2071,7 +2079,7 @@ void CompositedLayerMapping::AssertInSquashedLayersVector(
 static void RemoveExtraSquashedLayers(
     Vector<GraphicsLayerPaintInfo>& squashed_layers,
     wtf_size_t new_count,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   DCHECK_GE(squashed_layers.size(), new_count);
   if (squashed_layers.size() == new_count)
     return;
@@ -2083,7 +2091,7 @@ static void RemoveExtraSquashedLayers(
 void CompositedLayerMapping::FinishAccumulatingSquashingLayers(
     wtf_size_t new_non_scrolling_squashed_layer_count,
     wtf_size_t new_squashed_layer_in_scrolling_contents_count,
-    Vector<PaintLayer*>& layers_needing_paint_invalidation) {
+    HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
   wtf_size_t first_removed_layer = layers_needing_paint_invalidation.size();
   RemoveExtraSquashedLayers(non_scrolling_squashed_layers_,
                             new_non_scrolling_squashed_layer_count,
@@ -2094,9 +2102,10 @@ void CompositedLayerMapping::FinishAccumulatingSquashingLayers(
   for (auto i = first_removed_layer;
        i < layers_needing_paint_invalidation.size(); i++) {
     PaintLayer* layer = layers_needing_paint_invalidation[i];
-    // Deal with layers that are no longer squashed. Need to check both vectors
-    // to exclude the layers that are still squashed. A layer may change from
-    // scrolling to non-scrolling or vice versa and still be squashed.
+    // Deal with layers that are no longer squashed. Need to check both
+    // vectors to exclude the layers that are still squashed. A layer may
+    // change from scrolling to non-scrolling or vice versa and still be
+    // squashed.
     if (!LayerInSquashedLayersVector(non_scrolling_squashed_layers_, *layer) &&
         !LayerInSquashedLayersVector(squashed_layers_in_scrolling_contents_,
                                      *layer)) {
@@ -2112,7 +2121,7 @@ String CompositedLayerMapping::DebugName(
     const GraphicsLayer* graphics_layer) const {
   String name;
   if (graphics_layer == graphics_layer_.get()) {
-    name = owning_layer_.DebugName();
+    name = owning_layer_->DebugName();
   } else if (graphics_layer == non_scrolling_squashing_layer_.get()) {
     name = "Squashing Layer (first squashed layer: " +
            (non_scrolling_squashed_layers_.size() > 0
@@ -2120,7 +2129,7 @@ String CompositedLayerMapping::DebugName(
                 : "") +
            ")";
   } else if (graphics_layer == foreground_layer_.get()) {
-    name = owning_layer_.DebugName() + " (foreground) Layer";
+    name = owning_layer_->DebugName() + " (foreground) Layer";
   } else if (graphics_layer == mask_layer_.get()) {
     name = "Mask Layer";
   } else if (graphics_layer == layer_for_horizontal_scrollbar_.get()) {
@@ -2143,7 +2152,7 @@ String CompositedLayerMapping::DebugName(
 const ScrollableArea* CompositedLayerMapping::GetScrollableAreaForTesting(
     const GraphicsLayer* layer) const {
   if (layer == scrolling_contents_layer_.get())
-    return owning_layer_.GetScrollableArea();
+    return owning_layer_->GetScrollableArea();
   return nullptr;
 }
 

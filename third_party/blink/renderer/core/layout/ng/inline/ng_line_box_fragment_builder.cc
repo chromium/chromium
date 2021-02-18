@@ -62,7 +62,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
     }
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
-          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box)),
+          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box.Get())),
           child.Offset(), child.container_direction);
       child.out_of_flow_positioned_box = nullptr;
     }
@@ -72,16 +72,15 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
   MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 
-scoped_refptr<const NGLayoutResult>
-NGLineBoxFragmentBuilder::ToLineBoxFragment() {
+const NGLayoutResult* NGLineBoxFragmentBuilder::ToLineBoxFragment() {
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
 
-  scoped_refptr<const NGPhysicalLineBoxFragment> fragment =
+  const NGPhysicalLineBoxFragment* fragment =
       NGPhysicalLineBoxFragment::Create(this);
 
-  return base::AdoptRef(
-      new NGLayoutResult(NGLayoutResult::NGLineBoxFragmentBuilderPassKey(),
-                         std::move(fragment), this));
+  return MakeGarbageCollected<NGLayoutResult>(
+      NGLayoutResult::NGLineBoxFragmentBuilderPassKey(), std::move(fragment),
+      this);
 }
 
 }  // namespace blink

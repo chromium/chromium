@@ -144,7 +144,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   SelectorChecker::Init init;
   init.mode = mode_;
   init.is_ua_rule = matching_ua_rules_;
-  init.element_style = style_.get();
+  init.element_style = style_;
   init.scrollbar = pseudo_style_request_.scrollbar;
   init.scrollbar_part = pseudo_style_request_.scrollbar_part;
   init.part_names = part_request ? &part_request->part_names : nullptr;

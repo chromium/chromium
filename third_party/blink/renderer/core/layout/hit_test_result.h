@@ -121,7 +121,7 @@ class CORE_EXPORT HitTestResult {
     SetInnerNode(node);
   }
   void SetNodeAndPosition(Node*,
-                          scoped_refptr<const NGPhysicalBoxFragment>,
+                          const NGPhysicalBoxFragment*,
                           const PhysicalOffset&);
 
   // Override an inner node previously set. The new node needs to be monolithic

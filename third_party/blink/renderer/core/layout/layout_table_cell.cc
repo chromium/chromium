@@ -464,7 +464,7 @@ LayoutUnit LayoutTableCell::CellBaselinePosition() const {
 void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
   NOT_DESTROYED();
   DCHECK_NE(StyleRef().GetWritingMode(), row->StyleRef().GetWritingMode());
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
+  ComputedStyle* new_style = ComputedStyle::Clone(StyleRef());
   new_style->SetWritingMode(row->StyleRef().GetWritingMode());
   new_style->UpdateFontOrientation();
   SetModifiedStyleOutsideStyleRecalc(new_style,
@@ -1222,10 +1222,9 @@ void LayoutTableCell::ScrollbarsChanged(bool horizontal_scrollbar_changed,
   }
 }
 
-LayoutTableCell* LayoutTableCell::CreateAnonymous(
-    Document* document,
-    scoped_refptr<ComputedStyle> style,
-    LegacyLayout legacy) {
+LayoutTableCell* LayoutTableCell::CreateAnonymous(Document* document,
+                                                  ComputedStyle* style,
+                                                  LegacyLayout legacy) {
   LayoutBlockFlow* layout_object =
       LayoutObjectFactory::CreateTableCell(*document, *style, legacy);
   layout_object->SetDocumentForAnonymous(document);

@@ -402,7 +402,7 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
 void NGLineTruncator::HideChild(NGLogicalLineItem* child) {
   DCHECK(child->HasInFlowFragment());
 
-  if (const NGLayoutResult* layout_result = child->layout_result.get()) {
+  if (const NGLayoutResult* layout_result = child->layout_result) {
     // Need to propagate OOF descendants in this inline-block child.
     const auto& fragment =
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());

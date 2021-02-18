@@ -2465,8 +2465,7 @@ TEST_F(StyleEngineTest, PseudoElementBaseComputedStyle) {
   before->SetNeedsAnimationStyleRecalc();
   UpdateAllLifecyclePhases();
 
-  scoped_refptr<ComputedStyle> base_computed_style =
-      animations->base_computed_style_;
+  ComputedStyle* base_computed_style = animations->base_computed_style_;
   EXPECT_TRUE(base_computed_style);
 
   before->SetNeedsAnimationStyleRecalc();
@@ -2553,8 +2552,8 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
   EXPECT_FALSE(innermost->GetComputedStyle());
 
   inner->EnsureComputedStyle();
-  scoped_refptr<const ComputedStyle> outer_style = outer->GetComputedStyle();
-  scoped_refptr<const ComputedStyle> inner_style = inner->GetComputedStyle();
+  const ComputedStyle* outer_style = outer->GetComputedStyle();
+  const ComputedStyle* inner_style = inner->GetComputedStyle();
 
   ASSERT_TRUE(outer_style);
   ASSERT_TRUE(inner_style);
@@ -3713,7 +3712,7 @@ namespace {
 
 void SetDependsOnContainerQueries(Element& element) {
   if (const ComputedStyle* style = element.GetComputedStyle()) {
-    scoped_refptr<ComputedStyle> cloned_style = ComputedStyle::Clone(*style);
+    ComputedStyle* cloned_style = ComputedStyle::Clone(*style);
     cloned_style->SetDependsOnContainerQueries(true);
     element.SetComputedStyle(cloned_style);
   }
@@ -3888,8 +3887,7 @@ TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
   ASSERT_TRUE(affected);
   SetDependsOnContainerQueries(*affected);
 
-  scoped_refptr<const ComputedStyle> old_inner_style =
-      inner_editor->GetComputedStyle();
+  const ComputedStyle* old_inner_style = inner_editor->GetComputedStyle();
   EXPECT_TRUE(old_inner_style);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();

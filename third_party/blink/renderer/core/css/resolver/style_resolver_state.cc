@@ -101,15 +101,15 @@ StyleResolverState::~StyleResolverState() {
   animation_update_.Clear();
 }
 
-void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
+void StyleResolverState::SetStyle(ComputedStyle* style) {
   // FIXME: Improve RAII of StyleResolverState to remove this function.
   style_ = std::move(style);
   css_to_length_conversion_data_ = CSSToLengthConversionData(
-      style_.get(), RootElementStyle(), GetDocument().GetLayoutView(),
+      style_, RootElementStyle(), GetDocument().GetLayoutView(),
       style_->EffectiveZoom());
 }
 
-scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
+ComputedStyle* StyleResolverState::TakeStyle() {
   return std::move(style_);
 }
 
@@ -134,14 +134,13 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData()
   return UnzoomedLengthConversionData(Style());
 }
 
-void StyleResolverState::SetParentStyle(
-    scoped_refptr<const ComputedStyle> parent_style) {
-  parent_style_ = std::move(parent_style);
+void StyleResolverState::SetParentStyle(const ComputedStyle* parent_style) {
+  parent_style_ = parent_style;
 }
 
 void StyleResolverState::SetLayoutParentStyle(
-    scoped_refptr<const ComputedStyle> parent_style) {
-  layout_parent_style_ = std::move(parent_style);
+    const ComputedStyle* parent_style) {
+  layout_parent_style_ = parent_style;
 }
 
 void StyleResolverState::LoadPendingResources() {

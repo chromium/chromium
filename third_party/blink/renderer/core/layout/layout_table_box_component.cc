@@ -10,6 +10,11 @@
 
 namespace blink {
 
+void LayoutTableBoxComponent::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutBox::Trace(visitor);
+}
+
 void LayoutTableBoxComponent::InvalidateCollapsedBordersOnStyleChange(
     const LayoutObject& table_part,
     LayoutTable& table,

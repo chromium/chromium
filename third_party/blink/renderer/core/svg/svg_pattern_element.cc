@@ -202,7 +202,7 @@ void SVGPatternElement::InvalidateDependentPatterns() {
 
 LayoutObject* SVGPatternElement::CreateLayoutObject(const ComputedStyle&,
                                                     LegacyLayout) {
-  return new LayoutSVGResourcePattern(this);
+  return MakeGarbageCollected<LayoutSVGResourcePattern>(this);
 }
 
 static void SetPatternAttributes(const SVGPatternElement& element,

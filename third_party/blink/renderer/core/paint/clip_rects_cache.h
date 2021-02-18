@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_CLIP_RECTS_CACHE_H_
 
 #include "third_party/blink/renderer/core/paint/clip_rects.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
@@ -28,25 +29,23 @@ enum ClipRectsCacheSlot {
   kUncachedClipRects,
 };
 
-class ClipRectsCache {
-  USING_FAST_MALLOC(ClipRectsCache);
-
+class ClipRectsCache : public GarbageCollected<ClipRectsCache> {
  public:
   struct Entry {
-    Entry()
-        : root(nullptr)
-#if DCHECK_IS_ON()
-          ,
-          overlay_scrollbar_clip_behavior(kIgnoreOverlayScrollbarSize)
-#endif
-    {
-    }
-    const PaintLayer* root;
+    DISALLOW_NEW();
+
+   public:
+    Entry() : root(nullptr) {}
+    void Trace(Visitor*) const;
+
+    Member<const PaintLayer> root;
     scoped_refptr<ClipRects> clip_rects;
 #if DCHECK_IS_ON()
-    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior;
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior{
+        kIgnoreOverlayScrollbarSize};
 #endif
   };
+
   Entry& Get(ClipRectsCacheSlot slot) {
     DCHECK(slot < kNumberOfClipRectsCacheSlots);
     return entries_[slot];
@@ -56,10 +55,14 @@ class ClipRectsCache {
     entries_[slot] = Entry();
   }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(entries_); }
+
  private:
-  Entry entries_[kNumberOfClipRectsCacheSlots];
+  HeapVector<Entry> entries_{kNumberOfClipRectsCacheSlots};
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ClipRectsCache::Entry)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_CLIP_RECTS_CACHE_H_

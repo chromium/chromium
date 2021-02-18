@@ -38,9 +38,9 @@ class ElementRuleCollectorTest : public PageTestBase {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
-    auto style = ComputedStyle::Create();
+    auto* style = ComputedStyle::Create();
     ElementRuleCollector collector(context, StyleRecalcContext(), filter,
-                                   result, style.get(), InsideLink(element));
+                                   result, style, InsideLink(element));
 
     String rule = selector + " { color: green }";
     auto* style_rule =

@@ -72,6 +72,12 @@ LayoutFlexibleBox::LayoutFlexibleBox(Element* element)
 
 LayoutFlexibleBox::~LayoutFlexibleBox() = default;
 
+void LayoutFlexibleBox::Trace(Visitor* visitor) const {
+  visitor->Trace(intrinsic_size_along_main_axis_);
+  visitor->Trace(relaid_out_children_);
+  LayoutBlock::Trace(visitor);
+}
+
 bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   NOT_DESTROYED();

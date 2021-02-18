@@ -861,7 +861,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
     return ReplaceTextInNode(text_node, start, end - start, string);
   }
 
-  Vector<InlineTextBox*> sorted_text_boxes;
+  HeapVector<Member<InlineTextBox>> sorted_text_boxes;
   wtf_size_t sorted_text_boxes_position = 0;
 
   for (InlineTextBox* text_box : text_layout_object->TextBoxes())
@@ -873,7 +873,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
     std::sort(sorted_text_boxes.begin(), sorted_text_boxes.end(),
               InlineTextBox::CompareByStart);
   InlineTextBox* box = sorted_text_boxes.IsEmpty()
-                           ? 0
+                           ? nullptr
                            : sorted_text_boxes[sorted_text_boxes_position];
 
   unsigned removed = 0;

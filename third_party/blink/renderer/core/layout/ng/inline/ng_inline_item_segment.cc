@@ -206,7 +206,8 @@ void NGInlineItemSegments::Split(unsigned index, unsigned offset) {
                    NGInlineItemSegment(end_offset, segment.segment_data_));
 }
 
-void NGInlineItemSegments::ComputeItemIndex(const Vector<NGInlineItem>& items) {
+void NGInlineItemSegments::ComputeItemIndex(
+    const HeapVector<NGInlineItem>& items) {
   DCHECK_EQ(items.back().EndOffset(), EndOffset());
   unsigned segment_index = 0;
   const NGInlineItemSegment* segment = segments_.begin();

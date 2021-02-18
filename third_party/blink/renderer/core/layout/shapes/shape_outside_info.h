@@ -147,13 +147,11 @@ class ShapeOutsideInfo final {
   LayoutUnit LogicalTopOffset() const;
   LayoutUnit LogicalLeftOffset() const;
 
-  typedef HashMap<const LayoutBox*, std::unique_ptr<ShapeOutsideInfo>> InfoMap;
-  static InfoMap& GetInfoMap() {
-    DEFINE_STATIC_LOCAL(InfoMap, static_info_map, ());
-    return static_info_map;
-  }
+  using InfoMap = HeapHashMap<WeakMember<const LayoutBox>,
+                              std::unique_ptr<ShapeOutsideInfo>>;
+  static InfoMap& GetInfoMap();
 
-  const LayoutBox* const layout_box_;
+  const UntracedMember<const LayoutBox> layout_box_;
   mutable std::unique_ptr<Shape> shape_;
   LayoutSize reference_box_logical_size_;
   LayoutUnit percentage_resolution_inline_size_;

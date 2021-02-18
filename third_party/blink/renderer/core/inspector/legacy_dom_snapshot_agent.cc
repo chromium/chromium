@@ -144,7 +144,7 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
   *computed_styles = std::move(computed_styles_);
   computed_styles_map_.reset();
   css_property_filter_.reset();
-  paint_order_map_.reset();
+  paint_order_map_ = nullptr;
   return Response::Success();
 }
 

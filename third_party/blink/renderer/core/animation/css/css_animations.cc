@@ -1200,14 +1200,14 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
   }
 
   const ComputedStyle* reversing_adjusted_start_value =
-      state.before_change_style.get();
+      state.before_change_style;
   double reversing_shortening_factor = 1;
   if (interrupted_transition) {
     AnimationEffect* effect = interrupted_transition->animation->effect();
     const base::Optional<double> interrupted_progress =
         effect ? effect->Progress() : base::nullopt;
     if (interrupted_progress) {
-      reversing_adjusted_start_value = interrupted_transition->to.get();
+      reversing_adjusted_start_value = interrupted_transition->to;
       reversing_shortening_factor =
           clampTo((interrupted_progress.value() *
                    interrupted_transition->reversing_shortening_factor) +
@@ -1401,7 +1401,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
                                           animating_element);
 }
 
-scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
+const ComputedStyle* CSSAnimations::CalculateBeforeChangeStyle(
     Element* animating_element,
     const ComputedStyle& base_style) {
   ActiveInterpolationsMap interpolations_map;
@@ -1933,6 +1933,13 @@ void CSSAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(running_animations_);
   visitor->Trace(previous_active_interpolations_for_standard_animations_);
   visitor->Trace(previous_active_interpolations_for_custom_animations_);
+}
+
+void CSSAnimations::RunningTransition::Trace(Visitor* visitor) const {
+  visitor->Trace(animation);
+  visitor->Trace(from);
+  visitor->Trace(to);
+  visitor->Trace(reversing_adjusted_start_value);
 }
 
 }  // namespace blink

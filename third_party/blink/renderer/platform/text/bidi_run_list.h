@@ -30,7 +30,7 @@ namespace blink {
 
 template <class Run>
 class BidiRunList final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   BidiRunList()
@@ -53,7 +53,7 @@ class BidiRunList final {
   void MoveRunToEnd(Run*);
   void MoveRunToBeginning(Run*);
 
-  void DeleteRuns();
+  void ClearRuns();
   void ReverseRuns(unsigned start, unsigned end);
   void ReorderRunsFromLevels();
 
@@ -62,8 +62,6 @@ class BidiRunList final {
   void ReplaceRunWithRuns(Run* to_replace, BidiRunList<Run>& new_runs);
 
  private:
-  void ClearWithoutDestroyingRuns();
-
   Run* first_run_;
   Run* last_run_;
   Run* logically_last_run_;
@@ -166,31 +164,15 @@ void BidiRunList<Run>::ReplaceRunWithRuns(Run* to_replace,
   run_count_ +=
       new_runs.RunCount() - 1;  // We added the new runs and removed toReplace.
 
-  delete to_replace;
-  new_runs.ClearWithoutDestroyingRuns();
+  new_runs.ClearRuns();
 }
 
 template <class Run>
-void BidiRunList<Run>::ClearWithoutDestroyingRuns() {
+void BidiRunList<Run>::ClearRuns() {
   first_run_ = nullptr;
   last_run_ = nullptr;
   logically_last_run_ = nullptr;
   run_count_ = 0;
-}
-
-template <class Run>
-void BidiRunList<Run>::DeleteRuns() {
-  if (!first_run_)
-    return;
-
-  Run* curr = first_run_;
-  while (curr) {
-    Run* s = curr->Next();
-    delete curr;
-    curr = s;
-  }
-
-  ClearWithoutDestroyingRuns();
 }
 
 template <class Run>

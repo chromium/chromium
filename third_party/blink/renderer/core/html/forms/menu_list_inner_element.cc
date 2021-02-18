@@ -16,12 +16,11 @@ MenuListInnerElement::MenuListInnerElement(Document& document)
   SetHasCustomStyleCallbacks();
 }
 
-scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
+ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
-  scoped_refptr<ComputedStyle> style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(parent_style,
-                                                     EDisplay::kBlock);
+  ComputedStyle* style = ComputedStyle::CreateAnonymousStyleWithDisplay(
+      parent_style, EDisplay::kBlock);
   style->SetFlexGrow(1);
   style->SetFlexShrink(1);
   // min-width: 0; is needed for correct shrinking.

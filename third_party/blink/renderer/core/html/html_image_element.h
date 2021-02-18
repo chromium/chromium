@@ -204,8 +204,7 @@ class CORE_EXPORT HTMLImageElement final
   void DidMoveToNewDocument(Document& old_document) override;
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) override;
+  ComputedStyle* CustomStyleForLayoutObject(const StyleRecalcContext&) override;
 
  private:
   bool AreAuthorShadowsAllowed() const override { return false; }

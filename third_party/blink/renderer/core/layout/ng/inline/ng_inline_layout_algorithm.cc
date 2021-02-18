@@ -130,7 +130,7 @@ void NGInlineLayoutAlgorithm::PrepareBoxStates(
   // Check if the box states in NGChildLayoutContext is valid for this line.
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
-  const Vector<NGInlineItem>& items = line_info.ItemsData().items;
+  const HeapVector<NGInlineItem>& items = line_info.ItemsData().items;
   if (!break_token->UseFirstLineStyle()) {
     box_states_ =
         context_->BoxStatesIfValidForItemIndex(items, break_token->ItemIndex());
@@ -282,7 +282,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
       has_out_of_flow_positioned_items = true;
     } else if (item.Type() == NGInlineItem::kFloating) {
       if (item_result.positioned_float) {
-        if (scoped_refptr<const NGLayoutResult> layout_result =
+        if (const NGLayoutResult* layout_result =
                 item_result.positioned_float->layout_result) {
           line_box->AddChild(std::move(layout_result),
                              item_result.positioned_float->bfc_offset,
@@ -706,24 +706,25 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     // If this is an empty inline, all floats are positioned during the
     // PositionLeadingFloats step.
     if (child.unpositioned_float) {
-      NGPositionedFloat positioned_float = PositionFloat(
+      NGPositionedFloat* positioned_float = PositionFloat(
           origin_bfc_block_offset, child.unpositioned_float, exclusion_space);
-      if (positioned_float.need_break_before) {
+      if (positioned_float->need_break_before) {
         // We decided to break before the float. No fragment here. Create a
         // break token and propagate it to the block container.
-        NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float));
-        auto break_before = NGBlockBreakToken::CreateBreakBefore(
+        NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float.Get()));
+        auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
-        context_->PropagateBreakToken(std::move(break_before));
+        context_->PropagateBreakToken(break_before);
         continue;
       } else {
         // If the float broke inside, we need to propagate the break token to
         // the block container, so that we'll resume in the next fragmentainer.
-        if (scoped_refptr<const NGBreakToken> token =
-                positioned_float.layout_result->PhysicalFragment().BreakToken())
-          context_->PropagateBreakToken(To<NGBlockBreakToken>(token.get()));
-        child.layout_result = std::move(positioned_float.layout_result);
-        child.bfc_offset = positioned_float.bfc_offset;
+        if (const NGBreakToken* token =
+                positioned_float->layout_result->PhysicalFragment()
+                    .BreakToken())
+          context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
+        child.layout_result = std::move(positioned_float->layout_result);
+        child.bfc_offset = positioned_float->bfc_offset;
         child.unpositioned_float = nullptr;
       }
     }
@@ -924,7 +925,7 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
   return content_size;
 }
 
-scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGExclusionSpace initial_exclusion_space(ConstraintSpace().ExclusionSpace());
 
   const bool is_empty_inline = Node().IsEmptyInline();
@@ -1095,9 +1096,9 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 
     // Propagate any break tokens for floats that we fragmented before or inside
     // to the block container.
-    for (scoped_refptr<const NGBlockBreakToken> float_break_token :
+    for (const NGBlockBreakToken* float_break_token :
          line_breaker.PropagatedBreakTokens())
-      context_->PropagateBreakToken(std::move(float_break_token));
+      context_->PropagateBreakToken(float_break_token);
 
     if (is_empty_inline) {
       DCHECK_EQ(container_builder_.BlockSize(), 0);
@@ -1125,8 +1126,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 
   DCHECK(items_builder);
   container_builder_.PropagateChildrenData(*line_box);
-  scoped_refptr<const NGLayoutResult> layout_result =
-      container_builder_.ToLineBoxFragment();
+  const NGLayoutResult* layout_result = container_builder_.ToLineBoxFragment();
   items_builder->AssociateLogicalLineItems(line_box,
                                            layout_result->PhysicalFragment());
   return layout_result;
@@ -1139,7 +1139,7 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
     NGPositionedFloatVector* positioned_floats) {
   bool is_empty_inline = Node().IsEmptyInline();
 
-  const Vector<NGInlineItem>& items =
+  const HeapVector<NGInlineItem>& items =
       Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = BreakToken() ? BreakToken()->ItemIndex() : 0;
@@ -1167,31 +1167,31 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
         is_empty_inline ? ConstraintSpace().ExpectedBfcBlockOffset()
                         : ConstraintSpace().BfcOffset().block_offset;
 
-    NGPositionedFloat positioned_float = PositionFloat(
+    NGPositionedFloat* positioned_float = PositionFloat(
         origin_bfc_block_offset, item.GetLayoutObject(), exclusion_space);
 
     if (ConstraintSpace().HasBlockFragmentation()) {
       // Propagate any breaks before or inside floats to the block container.
-      if (positioned_float.need_break_before) {
+      if (positioned_float->need_break_before) {
         NGBlockNode float_node(To<LayoutBox>(item.GetLayoutObject()));
-        auto break_before = NGBlockBreakToken::CreateBreakBefore(
+        auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
-        context_->PropagateBreakToken(std::move(break_before));
-        positioned_float.layout_result = nullptr;
-      } else if (scoped_refptr<const NGBreakToken> token =
-                     positioned_float.layout_result->PhysicalFragment()
+        context_->PropagateBreakToken(break_before);
+        positioned_float->layout_result = nullptr;
+      } else if (const NGBreakToken* token =
+                     positioned_float->layout_result->PhysicalFragment()
                          .BreakToken()) {
-        context_->PropagateBreakToken(To<NGBlockBreakToken>(token.get()));
+        context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
       }
     }
 
-    positioned_floats->push_back(std::move(positioned_float));
+    positioned_floats->push_back(positioned_float);
   }
 
   return index;
 }
 
-NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(
+NGPositionedFloat* NGInlineLayoutAlgorithm::PositionFloat(
     LayoutUnit origin_bfc_block_offset,
     LayoutObject* floating_object,
     NGExclusionSpace* exclusion_space) const {
@@ -1269,12 +1269,8 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   // Reorder to the visual order.
   NGLogicalLineItems visual_items;
   visual_items.ReserveInitialCapacity(line_box->size());
-  for (unsigned logical_index : indices_in_visual_order) {
+  for (unsigned logical_index : indices_in_visual_order)
     visual_items.AddChild(std::move((*line_box)[logical_index]));
-    DCHECK(!(*line_box)[logical_index].HasInFlowFragment() ||
-           // |inline_item| will not be null by moving.
-           (*line_box)[logical_index].inline_item);
-  }
   DCHECK_EQ(line_box->size(), visual_items.size());
   *line_box = std::move(visual_items);
 }

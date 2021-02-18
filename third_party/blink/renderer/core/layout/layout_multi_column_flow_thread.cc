@@ -50,12 +50,17 @@ LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread(bool needs_paint_layer)
 
 LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
 
+void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
+  visitor->Trace(last_set_worked_on_);
+  LayoutFlowThread::Trace(visitor);
+}
+
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
     Document& document,
     const ComputedStyle& parent_style,
     bool needs_paint_layer) {
   LayoutMultiColumnFlowThread* layout_object =
-      new LayoutMultiColumnFlowThread(needs_paint_layer);
+      MakeGarbageCollected<LayoutMultiColumnFlowThread>(needs_paint_layer);
   layout_object->SetDocumentForAnonymous(&document);
   layout_object->SetStyle(ComputedStyle::CreateAnonymousStyleWithDisplay(
       parent_style, EDisplay::kBlock));

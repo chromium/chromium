@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -28,15 +29,22 @@ class VisualViewport;
 // It's responsible for bookkeeping tree state in other order, for example, the
 // most recent position container seen.
 struct PaintPropertyTreeBuilderFragmentContext {
-  USING_FAST_MALLOC(PaintPropertyTreeBuilderFragmentContext);
+  DISALLOW_NEW();
 
  public:
   // Initializes all property tree nodes to the roots.
   PaintPropertyTreeBuilderFragmentContext();
 
+  void Trace(Visitor*) const;
+
   // State that propagates on the containing block chain (and so is adjusted
   // when an absolute or fixed position object is encountered).
   struct ContainingBlockContext {
+    DISALLOW_NEW();
+
+   public:
+    void Trace(Visitor*) const;
+
     // The combination of a transform and paint offset describes a linear space.
     // When a layout object recur to its children, the main context is expected
     // to refer the object's border box, then the callee will derive its own
@@ -64,7 +72,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // This field is the diff between the new and the old additional offsets to
     // layout shift root.
     PhysicalOffset additional_offset_to_layout_shift_root_delta;
-
     // For paint invalidation optimization for subpixel movement under
     // composited layer. It's reset to zero if subpixel can't be propagated
     // thus the optimization is not applicable (e.g. when crossing a
@@ -72,7 +79,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
     PhysicalOffset directly_composited_container_paint_offset_subpixel_delta;
 
     // The PaintLayer corresponding to the origin of |paint_offset|.
-    const LayoutObject* paint_offset_root = nullptr;
+    Member<const LayoutObject> paint_offset_root;
     // Whether newly created children should flatten their inherited transform
     // (equivalently, draw into the plane of their parent). Should generally
     // be updated whenever |transform| is; flattening only needs to happen
@@ -157,17 +164,19 @@ struct PaintPropertyTreeBuilderFragmentContext {
   PhysicalOffset translation_2d_to_layout_shift_root_delta;
 };
 
-struct PaintPropertyTreeBuilderContext {
-  DISALLOW_NEW();
-
+struct PaintPropertyTreeBuilderContext final
+    : public GarbageCollected<PaintPropertyTreeBuilderContext> {
  public:
   PaintPropertyTreeBuilderContext();
+  PaintPropertyTreeBuilderContext(PaintPropertyTreeBuilderContext&) = default;
 
-  Vector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
+  void Trace(Visitor* visitor) const;
+
+  HeapVector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
 
   // TODO(mstensho): Stop using these in LayoutNGFragmentTraversal.
-  const LayoutObject* container_for_absolute_position = nullptr;
-  const LayoutObject* container_for_fixed_position = nullptr;
+  Member<const LayoutObject> container_for_absolute_position;
+  Member<const LayoutObject> container_for_fixed_position;
 
   // The physical bounding box of all appearances of the repeating table section
   // in the flow thread or the paged LayoutView.
@@ -179,7 +188,7 @@ struct PaintPropertyTreeBuilderContext {
   bool is_actually_needed = true;
 #endif
 
-  PaintLayer* painting_layer = nullptr;
+  Member<PaintLayer> painting_layer;
 
   // In a fragmented context, repeating table headers and footers and their
   // descendants in paint order repeatedly paint in all fragments after the
@@ -328,5 +337,8 @@ class PaintPropertyTreeBuilder {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::PaintPropertyTreeBuilderFragmentContext)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_H_

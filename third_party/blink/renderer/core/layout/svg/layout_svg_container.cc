@@ -43,6 +43,11 @@ LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
 
 LayoutSVGContainer::~LayoutSVGContainer() = default;
 
+void LayoutSVGContainer::Trace(Visitor* visitor) const {
+  visitor->Trace(content_);
+  LayoutSVGModelObject::Trace(visitor);
+}
+
 void LayoutSVGContainer::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());

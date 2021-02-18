@@ -28,16 +28,14 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final
     kEmptyLineBox
   };
 
-  static scoped_refptr<const NGPhysicalLineBoxFragment> Create(
+  static const NGPhysicalLineBoxFragment* Create(
       NGLineBoxFragmentBuilder* builder);
 
   using PassKey = base::PassKey<NGPhysicalLineBoxFragment>;
   NGPhysicalLineBoxFragment(PassKey, NGLineBoxFragmentBuilder* builder);
+  ~NGPhysicalLineBoxFragment() = default;
 
-  ~NGPhysicalLineBoxFragment() {
-    for (const NGLink& child : Children())
-      child.fragment->Release();
-  }
+  void Trace(Visitor*) const final;
 
   NGLineBoxType LineBoxType() const {
     return static_cast<NGLineBoxType>(sub_type_);

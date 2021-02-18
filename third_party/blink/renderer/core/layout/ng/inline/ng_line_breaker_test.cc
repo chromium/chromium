@@ -56,7 +56,7 @@ class NGLineBreakerTest : public NGLayoutTest {
     builder.SetAvailableSize({available_width, kIndefiniteSize});
     NGConstraintSpace space = builder.ToConstraintSpace();
 
-    scoped_refptr<NGInlineBreakToken> break_token;
+    const NGInlineBreakToken* break_token = nullptr;
 
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
@@ -67,7 +67,7 @@ class NGLineBreakerTest : public NGLayoutTest {
       NGLineInfo line_info;
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
                                  line_opportunity, leading_floats, 0u,
-                                 break_token.get(), &exclusion_space);
+                                 break_token, &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
         callback(line_breaker, line_info);
@@ -275,7 +275,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
     </style>
     <div id=container><span>123 456</span> 789</div>
   )HTML");
-  const Vector<NGInlineItem>& items = node.ItemsData(false).items;
+  const HeapVector<NGInlineItem>& items = node.ItemsData(false).items;
 
   // While "123 456" can fit in a line, "456" has a right margin that cannot
   // fit. Since "456" and its right margin is not breakable, "456" should be on

@@ -20,13 +20,15 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGFragmentItem {
-  struct {
-    void* pointer;
-    NGTextOffset text_offset;
-  } type_data;
+  Member<void*> member;
+  union {
+    NGFragmentItem::TextItem text_;
+    NGFragmentItem::GeneratedTextItem generated_text_;
+    NGFragmentItem::LineItem line_;
+    NGFragmentItem::BoxItem box_;
+  };
   PhysicalRect rect;
   NGInkOverflow ink_overflow;
-  void* pointer;
   wtf_size_t sizes[2];
   unsigned flags;
 };
@@ -44,7 +46,7 @@ NGFragmentItem::NGFragmentItem(
     : layout_object_(inline_item.GetLayoutObject()),
       text_({std::move(shape_result), text_offset}),
       rect_({PhysicalOffset(), size}),
-      type_(kText),
+      const_type_(kText),
       sub_type_(static_cast<unsigned>(inline_item.TextType())),
       style_variant_(static_cast<unsigned>(inline_item.StyleVariant())),
       is_hidden_for_paint_(is_hidden_for_paint),
@@ -74,7 +76,7 @@ NGFragmentItem::NGFragmentItem(
     : layout_object_(&layout_object),
       generated_text_({std::move(shape_result), text_content}),
       rect_({PhysicalOffset(), size}),
-      type_(kGeneratedText),
+      const_type_(kGeneratedText),
       sub_type_(static_cast<unsigned>(text_type)),
       style_variant_(static_cast<unsigned>(style_variant)),
       is_hidden_for_paint_(is_hidden_for_paint),
@@ -107,7 +109,7 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalLineBoxFragment& line)
     : layout_object_(line.ContainerLayoutObject()),
       line_({&line, /* descendants_count */ 1}),
       rect_({PhysicalOffset(), line.Size()}),
-      type_(kLine),
+      const_type_(kLine),
       sub_type_(static_cast<unsigned>(line.LineBoxType())),
       style_variant_(static_cast<unsigned>(line.StyleVariant())),
       is_hidden_for_paint_(false),
@@ -123,7 +125,7 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalBoxFragment& box,
     : layout_object_(box.GetLayoutObject()),
       box_(&box, /* descendants_count */ 1),
       rect_({PhysicalOffset(), box.Size()}),
-      type_(kBox),
+      const_type_(kBox),
       style_variant_(static_cast<unsigned>(box.StyleVariant())),
       is_hidden_for_paint_(box.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(resolved_direction)),
@@ -133,8 +135,11 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalBoxFragment& box,
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
 }
 
+// |const_type_| will be re-initialized in another constructor called inside
+// this one.
 NGFragmentItem::NGFragmentItem(NGLogicalLineItem&& line_item,
-                               WritingMode writing_mode) {
+                               WritingMode writing_mode)
+    : const_type_(0) {
   DCHECK(line_item.CanCreateFragmentItem());
 
   if (line_item.inline_item) {
@@ -184,7 +189,7 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
       fragment_id_(source.fragment_id_),
       delta_to_next_for_same_layout_object_(
           source.delta_to_next_for_same_layout_object_),
-      type_(source.type_),
+      const_type_(source.const_type_),
       sub_type_(source.sub_type_),
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
@@ -221,7 +226,7 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
       fragment_id_(source.fragment_id_),
       delta_to_next_for_same_layout_object_(
           source.delta_to_next_for_same_layout_object_),
-      type_(source.type_),
+      const_type_(source.const_type_),
       sub_type_(source.sub_type_),
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
@@ -329,11 +334,13 @@ NGFragmentItem::BoxItem::BoxItem(const BoxItem& other)
     : box_fragment(other.box_fragment->PostLayout()),
       descendants_count(other.descendants_count) {}
 
-NGFragmentItem::BoxItem::BoxItem(
-    scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
-    wtf_size_t descendants_count)
-    : box_fragment(std::move(box_fragment)),
-      descendants_count(descendants_count) {}
+NGFragmentItem::BoxItem::BoxItem(const NGPhysicalBoxFragment* box_fragment,
+                                 wtf_size_t descendants_count)
+    : box_fragment(box_fragment), descendants_count(descendants_count) {}
+
+void NGFragmentItem::BoxItem::Trace(Visitor* visitor) const {
+  visitor->Trace(box_fragment);
+}
 
 const NGPhysicalBoxFragment* NGFragmentItem::BoxItem::PostLayout() const {
   if (box_fragment)
@@ -363,8 +370,10 @@ inline const LayoutBox* NGFragmentItem::InkOverflowOwnerBox() const {
 }
 
 inline LayoutBox* NGFragmentItem::MutableInkOverflowOwnerBox() {
-  if (Type() == kBox)
-    return DynamicTo<LayoutBox>(const_cast<LayoutObject*>(layout_object_));
+  if (Type() == kBox) {
+    return DynamicTo<LayoutBox>(
+        const_cast<LayoutObject*>(layout_object_.Get()));
+  }
   return nullptr;
 }
 
@@ -742,6 +751,15 @@ unsigned NGFragmentItem::TextOffsetForPoint(
                                  : size.inline_size - point_in_line_direction;
   DCHECK_EQ(1u, TextLength());
   return inline_offset <= size.inline_size / 2 ? StartOffset() : EndOffset();
+}
+
+void NGFragmentItem::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+  // Looking up Type() inside Trace() here is safe since |const_type_| is const.
+  if (Type() == kLine)
+    visitor->Trace(line_);
+  else if (Type() == kBox)
+    visitor->Trace(box_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const NGFragmentItem& item) {

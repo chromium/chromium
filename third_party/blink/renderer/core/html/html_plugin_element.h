@@ -172,8 +172,7 @@ class CORE_EXPORT HTMLPlugInElement
   bool IsFocusableStyle() const final;
   bool IsKeyboardFocusable() const final;
   void DidAddUserAgentShadowRoot(ShadowRoot&) final;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) final;
+  ComputedStyle* CustomStyleForLayoutObject(const StyleRecalcContext&) final;
 
   // HTMLElement overrides:
   bool HasCustomFocusLogic() const override;

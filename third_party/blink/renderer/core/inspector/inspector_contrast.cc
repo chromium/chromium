@@ -374,7 +374,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
 void InspectorContrast::SortElementsByPaintOrder(
     HeapVector<Member<Node>>& unsorted_elements,
     Document* document) {
-  std::unique_ptr<InspectorDOMSnapshotAgent::PaintOrderMap> paint_layer_tree =
+  InspectorDOMSnapshotAgent::PaintOrderMap* paint_layer_tree =
       InspectorDOMSnapshotAgent::BuildPaintLayerTree(document);
 
   std::stable_sort(

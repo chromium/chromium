@@ -181,8 +181,7 @@ class CORE_EXPORT ElementRuleCollector {
   const ElementResolveContext& context_;
   StyleRecalcContext style_recalc_context_;
   const SelectorFilter& selector_filter_;
-  scoped_refptr<ComputedStyle>
-      style_;  // FIXME: This can be mutated during matching!
+  ComputedStyle* style_;  // FIXME: This can be mutated during matching!
 
   PseudoElementStyleRequest pseudo_style_request_;
   SelectorChecker::Mode mode_;

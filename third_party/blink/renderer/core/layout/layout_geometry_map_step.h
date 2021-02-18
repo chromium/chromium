@@ -28,7 +28,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_GEOMETRY_MAP_STEP_H_
 
 #include <memory>
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -59,7 +61,9 @@ struct LayoutGeometryMapStep {
   LayoutGeometryMapStep(const LayoutObject* layout_object,
                         GeometryInfoFlags flags)
       : layout_object_(layout_object), flags_(flags) {}
-  const LayoutObject* layout_object_;
+  void Trace(Visitor*) const;
+
+  Member<const LayoutObject> layout_object_;
   PhysicalOffset offset_;
   std::unique_ptr<TransformationMatrix>
       transform_;  // Includes offset if non-null.

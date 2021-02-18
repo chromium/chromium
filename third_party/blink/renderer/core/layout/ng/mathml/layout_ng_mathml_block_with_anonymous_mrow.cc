@@ -17,12 +17,11 @@ void LayoutNGMathMLBlockWithAnonymousMrow::AddChild(
     LayoutObject* before_child) {
   LayoutBlock* anonymous_mrow = To<LayoutBlock>(FirstChild());
   if (!anonymous_mrow) {
-    scoped_refptr<ComputedStyle> new_style =
-        ComputedStyle::CreateAnonymousStyleWithDisplay(StyleRef(),
-                                                       EDisplay::kBlockMath);
+    ComputedStyle* new_style = ComputedStyle::CreateAnonymousStyleWithDisplay(
+        StyleRef(), EDisplay::kBlockMath);
 
     UpdateAnonymousChildStyle(nullptr, *new_style);
-    anonymous_mrow = new LayoutNGMathMLBlock(nullptr);
+    anonymous_mrow = MakeGarbageCollected<LayoutNGMathMLBlock>(nullptr);
     anonymous_mrow->SetDocumentForAnonymous(&GetDocument());
     anonymous_mrow->SetStyle(std::move(new_style));
     LayoutBox::AddChild(anonymous_mrow);

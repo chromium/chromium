@@ -130,7 +130,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   // We don't care about intermediate changes of LayoutBlock because they are
   // not painted.
   if (!previous_layout_block_)
-    previous_layout_block_ = layout_block_;
+    previous_layout_block_ = layout_block_.Get();
 
   CaretRectAndPainterBlock rect_and_block =
       ComputeCaretRectAndPainterBlock(caret_position);

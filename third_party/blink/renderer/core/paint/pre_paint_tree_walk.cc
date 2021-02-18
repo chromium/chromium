@@ -617,10 +617,9 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   if (is_wheel_event_regions_enabled_)
     UpdateBlockingWheelEventHandler(object, context);
 
-  if (paint_invalidator_.InvalidatePaint(
-          object, pre_paint_info,
-          base::OptionalOrNullptr(context.tree_builder_context),
-          paint_invalidator_context))
+  if (paint_invalidator_.InvalidatePaint(object, pre_paint_info,
+                                         context.tree_builder_context,
+                                         paint_invalidator_context))
     needs_invalidate_chrome_client_ = true;
 
   InvalidatePaintForHitTesting(object, context);
@@ -747,7 +746,7 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
       }
 
       PaintPropertyTreeBuilderContext& tree_builder_context =
-          context_storage_.back().tree_builder_context.value();
+          *context_storage_.back().tree_builder_context;
       PaintPropertyTreeBuilderFragmentContext& context =
           tree_builder_context.fragments[0];
       PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*

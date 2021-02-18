@@ -5,16 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_
 
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
 
 class LayoutObject;
 
 // Put data inside a forward-declared struct, to avoid including LayoutObject.h.
-struct DepthOrderedLayoutObjectListData;
+class DepthOrderedLayoutObjectListData;
 
 class DepthOrderedLayoutObjectList {
   DISALLOW_NEW();
@@ -22,6 +24,7 @@ class DepthOrderedLayoutObjectList {
  public:
   DepthOrderedLayoutObjectList();
   ~DepthOrderedLayoutObjectList();
+  void Trace(Visitor*) const;
 
   void Add(LayoutObject&);
   void Remove(LayoutObject&);
@@ -31,13 +34,16 @@ class DepthOrderedLayoutObjectList {
   bool IsEmpty() const;
 
   struct LayoutObjectWithDepth {
-    LayoutObjectWithDepth(LayoutObject* in_object)
+    DISALLOW_NEW();
+    explicit LayoutObjectWithDepth(LayoutObject* in_object)
         : object(in_object), depth(DetermineDepth(in_object)) {}
 
-    LayoutObjectWithDepth() : object(nullptr), depth(0) {}
+    LayoutObjectWithDepth() : object(nullptr) {}
 
-    LayoutObject* object;
-    unsigned depth;
+    void Trace(Visitor*) const;
+
+    Member<LayoutObject> object;
+    unsigned depth = 0;
 
     LayoutObject& operator*() const { return *object; }
     LayoutObject* operator->() const { return object; }
@@ -51,13 +57,16 @@ class DepthOrderedLayoutObjectList {
     static unsigned DetermineDepth(LayoutObject*);
   };
 
-  const HashSet<LayoutObject*>& Unordered() const;
-  const Vector<LayoutObjectWithDepth>& Ordered();
+  const HeapHashSet<Member<LayoutObject>>& Unordered() const;
+  const HeapVector<LayoutObjectWithDepth>& Ordered();
 
  private:
-  DepthOrderedLayoutObjectListData* data_;
+  Member<DepthOrderedLayoutObjectListData> data_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::DepthOrderedLayoutObjectList::LayoutObjectWithDepth)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_

@@ -26,19 +26,11 @@ ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
 
 }  // namespace
 
-scoped_refptr<const NGPhysicalLineBoxFragment>
-NGPhysicalLineBoxFragment::Create(NGLineBoxFragmentBuilder* builder) {
-  // We store the children list inline in the fragment as a flexible
-  // array. Therefore, we need to make sure to allocate enough space for
-  // that array here, which requires a manual allocation + placement new.
-  // The initialization of the array is done by NGPhysicalContainerFragment;
-  // we pass the buffer as a constructor argument.
-  void* data = ::WTF::Partitions::FastMalloc(
-      sizeof(NGPhysicalLineBoxFragment) +
-          builder->children_.size() * sizeof(NGLink),
-      ::WTF::GetStringWithTypeName<NGPhysicalLineBoxFragment>());
-  new (data) NGPhysicalLineBoxFragment(PassKey(), builder);
-  return base::AdoptRef(static_cast<NGPhysicalLineBoxFragment*>(data));
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
+    NGLineBoxFragmentBuilder* builder) {
+  size_t byte_size = builder->children_.size() * sizeof(NGLink);
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), builder);
 }
 
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
@@ -139,6 +131,11 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
 bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
   const auto* break_token = To<NGInlineBreakToken>(BreakToken());
   return break_token && !break_token->IsForcedBreak();
+}
+
+void NGPhysicalLineBoxFragment::Trace(Visitor* visitor) const {
+  // |children_| is traced in |NGPhysicalContainerFragment|.
+  NGPhysicalContainerFragment::Trace(visitor);
 }
 
 }  // namespace blink

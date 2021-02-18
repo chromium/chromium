@@ -258,8 +258,7 @@ String PrintContext::PageProperty(LocalFrame* frame,
   // want to collect @page rules and figure out what declarations apply on a
   // given page (that may or may not exist).
   print_context->BeginPrintMode(800, 1000);
-  scoped_refptr<const ComputedStyle> style =
-      document->StyleForPage(page_number);
+  const ComputedStyle* style = document->StyleForPage(page_number);
 
   // Implement formatters for properties we care about.
   if (!strcmp(property_name, "margin-left")) {

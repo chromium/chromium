@@ -29,14 +29,13 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   explicit NGInlineNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
-    return To<LayoutBlockFlow>(box_);
+    return To<LayoutBlockFlow>(box_.Get());
   }
   NGLayoutInputNode NextSibling() const { return nullptr; }
 
-  scoped_refptr<const NGLayoutResult> Layout(
-      const NGConstraintSpace&,
-      const NGBreakToken*,
-      NGInlineChildLayoutContext* context) const;
+  const NGLayoutResult* Layout(const NGConstraintSpace&,
+                               const NGBreakToken*,
+                               NGInlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break
@@ -120,10 +119,10 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   struct FloatingObject {
     DISALLOW_NEW();
 
-    void Trace(Visitor* visitor) const {}
+    void Trace(Visitor* visitor) const;
 
-    const ComputedStyle& float_style;
-    const ComputedStyle& style;
+    Member<const ComputedStyle> const float_style;
+    Member<const ComputedStyle> const style;
     LayoutUnit float_inline_max_size_with_margin;
   };
 
@@ -137,7 +136,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // Prepare inline and text content for layout. Must be called before
   // calling the Layout method.
   void PrepareLayoutIfNeeded() const;
-  void PrepareLayout(std::unique_ptr<NGInlineNodeData> previous_data) const;
+  void PrepareLayout(NGInlineNodeData* previous_data) const;
 
   void CollectInlines(NGInlineNodeData*,
                       NGInlineNodeData* previous_data = nullptr) const;
@@ -145,24 +144,25 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void SegmentScriptRuns(NGInlineNodeData*) const;
   void SegmentFontOrientation(NGInlineNodeData*) const;
   void SegmentBidiRuns(NGInlineNodeData*) const;
-  void ShapeText(NGInlineItemsData*,
-                 const String* previous_text = nullptr,
-                 const Vector<NGInlineItem>* previous_items = nullptr) const;
+  void ShapeText(
+      NGInlineItemsData*,
+      const String* previous_text = nullptr,
+      const HeapVector<NGInlineItem>* previous_items = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 
   NGInlineNodeData* MutableData() const {
-    return To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   const NGInlineNodeData& Data() const {
     DCHECK(IsPrepareLayoutFinished() &&
            !GetLayoutBlockFlow()->NeedsCollectInlines());
-    return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return *To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   // Same as |Data()| but can access even when |NeedsCollectInlines()| is set.
   const NGInlineNodeData& MaybeDirtyData() const {
     DCHECK(IsPrepareLayoutFinished());
-    return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return *To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   const NGInlineNodeData& EnsureData() const;
 

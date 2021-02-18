@@ -116,7 +116,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
  public:
   explicit LayoutInline(Element*);
 
-  ~LayoutInline() override;
+  void Trace(Visitor*) const override;
 
   static LayoutInline* CreateAnonymous(Document*);
 
@@ -446,17 +446,16 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   LayoutObjectChildList children_;
 
-  union {
-    // All of the line boxes created for this inline flow. For example,
-    // <i>Hello<br>world.</i> will have two <i> line boxes.
-    // Valid only when !IsInLayoutNGInlineFormattingContext().
-    LineBoxList line_boxes_;
-    // The index of the first fragment item associated with this object in
-    // |NGFragmentItems::Items()|. Zero means there are no such item.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    wtf_size_t first_fragment_item_index_;
+  // All of the line boxes created for this inline flow. For example,
+  // <i>Hello<br>world.</i> will have two <i> line boxes.
+  // Valid only when !IsInLayoutNGInlineFormattingContext().
+  LineBoxList line_boxes_;
+
+  // The index of the first fragment item associated with this object in
+  // |NGFragmentItems::Items()|. Zero means there are no such item.
+  // Valid only when IsInLayoutNGInlineFormattingContext().
+  wtf_size_t first_fragment_item_index_ = 0u;
   };
-};
 
 inline LineBoxList* LayoutInline::MutableLineBoxes() {
   CHECK(!IsInLayoutNGInlineFormattingContext());

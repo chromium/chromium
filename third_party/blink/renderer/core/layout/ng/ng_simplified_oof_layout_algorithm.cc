@@ -68,7 +68,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGSimplifiedOOFLayoutAlgorithm::Layout() {
   // There might not be any children to append, whether it's because we are in a
   // new fragmentainer or because they have all been added in Step 1.
   if (iterator_ != children_.end()) {
@@ -91,7 +91,7 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
-    scoped_refptr<const NGLayoutResult> result) {
+    const NGLayoutResult* result) {
   // Add the new result directly to the builder when the fragment of the result
   // to append is not the first fragment of its corresponding layout box,
   // meaning that it's positioned directly at the start of the fragmentainer.

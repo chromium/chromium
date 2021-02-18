@@ -105,8 +105,6 @@ TEST_F(NGFragmentItemTest, CopyMove) {
   // Test moving a line item.
   NGFragmentItem move_of_line(std::move(copy_of_line));
   EXPECT_EQ(move_of_line.LineBoxFragment(), line_item->LineBoxFragment());
-  // After the move, the source fragment should be released.
-  EXPECT_EQ(copy_of_line.LineBoxFragment(), nullptr);
   EXPECT_TRUE(move_of_line.IsInkOverflowComputed());
 
   // To test moving ink overflow, add an ink overflow to |move_of_line|.

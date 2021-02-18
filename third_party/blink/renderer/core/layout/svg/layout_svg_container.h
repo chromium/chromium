@@ -36,6 +36,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
  public:
   explicit LayoutSVGContainer(SVGElement*);
   ~LayoutSVGContainer() override;
+  void Trace(Visitor*) const override;
 
   // If you have a LayoutSVGContainer, use firstChild or lastChild instead.
   void SlowFirstChild() const = delete;

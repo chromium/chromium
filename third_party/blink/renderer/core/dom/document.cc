@@ -2008,7 +2008,7 @@ void Document::SetupFontBuilder(ComputedStyle& document_style) {
 bool PropagateScrollSnapStyleToViewport(
     Document& document,
     const ComputedStyle* document_element_style,
-    scoped_refptr<ComputedStyle> new_viewport_style) {
+    ComputedStyle* new_viewport_style) {
   bool changed = false;
   // We only propagate the properties related to snap container since viewport
   // defining element cannot be a snap area.
@@ -2044,8 +2044,7 @@ void Document::PropagateStyleToViewport() {
       body && body->GetLayoutObject() ? body->GetComputedStyle() : nullptr;
 
   const ComputedStyle& viewport_style = GetLayoutView()->StyleRef();
-  scoped_refptr<ComputedStyle> new_viewport_style =
-      ComputedStyle::Clone(viewport_style);
+  ComputedStyle* new_viewport_style = ComputedStyle::Clone(viewport_style);
   bool changed = false;
   bool update_scrollbar_style = false;
 
@@ -2768,7 +2767,7 @@ void Document::ClearFocusedElementTimerFired(TimerBase*) {
     focused_element_->blur();
 }
 
-scoped_refptr<const ComputedStyle> Document::StyleForPage(uint32_t page_index) {
+const ComputedStyle* Document::StyleForPage(int32_t page_index) {
   UpdateDistributionForUnknownReasons();
 
   AtomicString page_name;
@@ -2803,7 +2802,7 @@ bool Document::IsPageBoxVisible(uint32_t page_index) {
 
 void Document::GetPageDescription(uint32_t page_index,
                                   WebPrintPageDescription* description) {
-  scoped_refptr<const ComputedStyle> style = StyleForPage(page_index);
+  const ComputedStyle* style = StyleForPage(page_index);
 
   double width = description->size.Width();
   double height = description->size.Height();
@@ -2915,7 +2914,7 @@ void Document::Initialize() {
   DCHECK_EQ(lifecycle_.GetState(), DocumentLifecycle::kInactive);
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
-  layout_view_ = new LayoutView(this);
+  layout_view_ = MakeGarbageCollected<LayoutView>(this);
   SetLayoutObject(layout_view_);
 
   layout_view_->SetStyle(GetStyleResolver().StyleForViewport());
@@ -8144,6 +8143,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(did_associate_form_controls_timer_);
   visitor->Trace(user_action_elements_);
   visitor->Trace(svg_extensions_);
+  visitor->Trace(layout_view_);
   visitor->Trace(document_animations_);
   visitor->Trace(timeline_);
   visitor->Trace(pending_animations_);

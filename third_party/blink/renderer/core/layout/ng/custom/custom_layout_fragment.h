@@ -37,7 +37,7 @@ class CustomLayoutFragment : public ScriptWrappable {
  public:
   CustomLayoutFragment(CustomLayoutChild*,
                        CustomLayoutToken*,
-                       scoped_refptr<const NGLayoutResult>,
+                       const NGLayoutResult*,
                        const LogicalSize& size,
                        const base::Optional<LayoutUnit> baseline,
                        v8::Isolate*);
@@ -83,7 +83,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   // that the last layout on the child wasn't with the same inputs, and force a
   // layout again.
 
-  scoped_refptr<const NGLayoutResult> layout_result_;
+  Member<const NGLayoutResult> layout_result_;
 
   // The inline and block size on this object should never change.
   const double inline_size_;

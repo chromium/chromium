@@ -16,7 +16,7 @@ NGMathSpaceLayoutAlgorithm::NGMathSpaceLayoutAlgorithm(
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-scoped_refptr<const NGLayoutResult> NGMathSpaceLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathSpaceLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();

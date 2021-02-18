@@ -34,12 +34,15 @@
 namespace blink {
 
 SVGComputedStyle::SVGComputedStyle() {
-  static SVGComputedStyle* initial_style = new SVGComputedStyle(kCreateInitial);
-
-  fill = initial_style->fill;
-  stroke = initial_style->stroke;
-  inherited_resources = initial_style->inherited_resources;
-  resources = initial_style->resources;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<SVGComputedStyle*>,
+                                  initial_style, ());
+  if (!*initial_style) {
+    *initial_style = new SVGComputedStyle(kCreateInitial);
+  }
+  fill = (*initial_style)->fill;
+  stroke = (*initial_style)->stroke;
+  inherited_resources = (*initial_style)->inherited_resources;
+  resources = (*initial_style)->resources;
 
   SetBitDefaults();
 }

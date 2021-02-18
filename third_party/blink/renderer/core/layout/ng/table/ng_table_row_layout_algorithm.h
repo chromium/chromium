@@ -21,7 +21,7 @@ class CORE_EXPORT NGTableRowLayoutAlgorithm
  public:
   explicit NGTableRowLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
 };

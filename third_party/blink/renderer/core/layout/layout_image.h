@@ -50,6 +50,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
  public:
   LayoutImage(Element*);
   ~LayoutImage() override;
+  void Trace(Visitor*) const override;
 
   static LayoutImage* CreateAnonymous(PseudoElement&);
 
@@ -174,7 +175,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   // * For generated content, the resource is loaded during style resolution
   // and thus is stored in ComputedStyle (see ContentData::image) that gets
   // propagated to the anonymous LayoutImage in LayoutObject::createObject.
-  Persistent<LayoutImageResource> image_resource_;
+  Member<LayoutImageResource> image_resource_;
   bool did_increment_visually_non_empty_pixel_count_;
 
   // This field stores whether this image is generated with 'content'.

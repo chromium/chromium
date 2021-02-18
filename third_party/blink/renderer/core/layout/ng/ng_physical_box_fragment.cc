@@ -47,7 +47,7 @@ inline bool IsHitTestCandidate(const NGPhysicalBoxFragment& fragment) {
 }  // namespace
 
 // static
-scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
+const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
     NGBoxFragmentBuilder* builder,
     WritingMode block_or_line_writing_mode) {
   const auto writing_direction = builder->GetWritingDirection();
@@ -110,26 +110,23 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
 
   wtf_size_t num_fragment_items =
       builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
-  size_t byte_size = ByteSize(num_fragment_items, builder->children_.size(),
-                              has_layout_overflow, has_borders, has_padding,
-                              inflow_bounds.has_value(), has_rare_data);
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, builder->children_.size(), has_layout_overflow,
+      has_borders, has_padding, inflow_bounds.has_value(), has_rare_data);
 
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
   // that array here, which requires a manual allocation + placement new.
   // The initialization of the array is done by NGPhysicalContainerFragment;
   // we pass the buffer as a constructor argument.
-  void* data = ::WTF::Partitions::FastMalloc(
-      byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
-  new (data) NGPhysicalBoxFragment(PassKey(), builder, has_layout_overflow,
-                                   layout_overflow, has_borders, borders,
-                                   has_padding, padding, inflow_bounds,
-                                   has_rare_data, block_or_line_writing_mode);
-  return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
+  return MakeGarbageCollected<NGPhysicalBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), builder, has_layout_overflow,
+      layout_overflow, has_borders, borders, has_padding, padding,
+      inflow_bounds, has_rare_data, block_or_line_writing_mode);
 }
 
 // static
-scoped_refptr<const NGPhysicalBoxFragment>
+const NGPhysicalBoxFragment*
 NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     const NGPhysicalBoxFragment& other,
     const base::Optional<PhysicalRect> updated_layout_overflow) {
@@ -143,29 +140,26 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
 
   // The size of the new fragment shouldn't differ from the old one.
   wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
-  size_t byte_size =
-      ByteSize(num_fragment_items, other.num_children_, has_layout_overflow,
-               other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
-               other.has_rare_data_);
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, other.const_num_children_, has_layout_overflow,
+      other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
+      other.const_has_rare_data_);
 
-  void* data = ::WTF::Partitions::FastMalloc(
-      byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
-  new (data) NGPhysicalBoxFragment(
-      PassKey(), other, has_layout_overflow, layout_overflow,
+  return MakeGarbageCollected<NGPhysicalBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), other, has_layout_overflow,
+      layout_overflow,
       /* recalculate_layout_overflow */ updated_layout_overflow.has_value());
-  return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
 }
 
 // static
-size_t NGPhysicalBoxFragment::ByteSize(wtf_size_t num_fragment_items,
-                                       wtf_size_t num_children,
-                                       bool has_layout_overflow,
-                                       bool has_borders,
-                                       bool has_padding,
-                                       bool has_inflow_bounds,
-                                       bool has_rare_data) {
-  return sizeof(NGPhysicalBoxFragment) +
-         NGFragmentItems::ByteSizeFor(num_fragment_items) +
+size_t NGPhysicalBoxFragment::AdditionalByteSize(wtf_size_t num_fragment_items,
+                                                 wtf_size_t num_children,
+                                                 bool has_layout_overflow,
+                                                 bool has_borders,
+                                                 bool has_padding,
+                                                 bool has_inflow_bounds,
+                                                 bool has_rare_data) {
+  return NGFragmentItems::ByteSizeFor(num_fragment_items) +
          sizeof(NGLink) * num_children +
          (has_layout_overflow ? sizeof(PhysicalRect) : 0) +
          (has_borders ? sizeof(NGPhysicalBoxStrut) : 0) +
@@ -194,11 +188,11 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
 
-  has_fragment_items_ = false;
+  const_has_fragment_items_ = false;
   if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
     // Omit |NGFragmentItems| if there were no items; e.g., display-lock.
     if (items_builder->Size()) {
-      has_fragment_items_ = true;
+      const_has_fragment_items_ = true;
       NGFragmentItems* items =
           const_cast<NGFragmentItems*>(ComputeItemsAddress());
       DCHECK_EQ(items_builder->GetWritingMode(), block_or_line_writing_mode);
@@ -221,8 +215,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   has_inflow_bounds_ = inflow_bounds.has_value();
   if (has_inflow_bounds_)
     *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) = *inflow_bounds;
-  has_rare_data_ = has_rare_data;
-  if (has_rare_data_) {
+  const_has_rare_data_ = has_rare_data;
+  if (const_has_rare_data_) {
     new (const_cast<RareData*>(ComputeRareDataAddress()))
         RareData(builder, Size());
   }
@@ -279,7 +273,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
                                   children_),
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_) {
-  if (has_fragment_items_) {
+  if (const_has_fragment_items_) {
     NGFragmentItems* items =
         const_cast<NGFragmentItems*>(ComputeItemsAddress());
     new (items) NGFragmentItems(*other.ComputeItemsAddress());
@@ -301,7 +295,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) =
         *other.ComputeInflowBoundsAddress();
   }
-  if (has_rare_data_) {
+  if (const_has_rare_data_) {
     new (const_cast<RareData*>(ComputeRareDataAddress()))
         RareData(*other.ComputeRareDataAddress());
   }
@@ -336,7 +330,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   if (builder->table_column_geometries_)
     table_column_geometries = *builder->table_column_geometries_;
   if (builder->table_collapsed_borders_)
-    table_collapsed_borders = std::move(builder->table_collapsed_borders_);
+    table_collapsed_borders = builder->table_collapsed_borders_;
   if (builder->table_collapsed_borders_geometry_) {
     table_collapsed_borders_geometry =
         std::move(builder->table_collapsed_borders_geometry_);
@@ -362,8 +356,7 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
               : nullptr),
       table_cell_column_index(other.table_cell_column_index) {}
 
-scoped_refptr<const NGLayoutResult>
-NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
+const NGLayoutResult* NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
   const ComputedStyle& style = Style();
   NGBoxFragmentBuilder builder(GetMutableLayoutObject(), &style,
                                style.GetWritingDirection());
@@ -555,6 +548,9 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
   // - Float / OOF overflow is added as is.
   // - Children not reachable by scroll overflow do not contribute to it.
   struct ComputeOverflowContext {
+    STACK_ALLOCATED();
+
+   public:
     ComputeOverflowContext(const NGPhysicalBoxFragment& container,
                            TextHeightType height_type)
         : container(container),
@@ -1073,7 +1069,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(has_collapsed_borders_, other.has_collapsed_borders_);
 
   DCHECK_EQ(is_inline_formatting_context_, other.is_inline_formatting_context_);
-  DCHECK_EQ(has_fragment_items_, other.has_fragment_items_);
+  DCHECK_EQ(const_has_fragment_items_, other.const_has_fragment_items_);
   DCHECK_EQ(include_border_top_, other.include_border_top_);
   DCHECK_EQ(include_border_right_, other.include_border_right_);
   DCHECK_EQ(include_border_bottom_, other.include_border_bottom_);
@@ -1173,5 +1169,23 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
   }
 }
 #endif
+
+void NGPhysicalBoxFragment::Trace(Visitor* visitor) const {
+  // |children_| is traced in |NGPhysicalContainerFragment|.
+  // These if branches are safe since |const_has_fragment_items_| and
+  // |const_has_rare_data_| are const and set in ctor.
+  if (const_has_fragment_items_)
+    visitor->Trace(*ComputeItemsAddress());
+  if (const_has_rare_data_)
+    visitor->Trace(*ComputeRareDataAddress());
+  NGPhysicalContainerFragment::Trace(visitor);
+}
+
+void NGPhysicalBoxFragment::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(oof_positioned_fragmentainer_descendants);
+  visitor->Trace(multicols_with_pending_oofs);
+  visitor->Trace(table_column_geometries);
+  visitor->Trace(table_collapsed_borders);
+}
 
 }  // namespace blink

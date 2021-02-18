@@ -669,13 +669,13 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
 
   // See if there's a good breakpoint inside the child.
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;
-  if (scoped_refptr<const NGEarlyBreak> breakpoint =
-          layout_result.GetEarlyBreak()) {
+  if (const NGEarlyBreak* breakpoint = layout_result.GetEarlyBreak()) {
     appeal_inside = CalculateBreakAppealInside(space, child, layout_result);
     if (builder->BreakAppeal() <= appeal_inside) {
       // Found a good breakpoint inside the child. Add the child to the early
       // break container chain, and store it.
-      auto parent_break = base::AdoptRef(new NGEarlyBreak(child, breakpoint));
+      auto* parent_break =
+          MakeGarbageCollected<NGEarlyBreak>(child, breakpoint);
       builder->SetEarlyBreak(parent_break, appeal_inside);
     }
   }
@@ -687,7 +687,7 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
   if (appeal_before < builder->BreakAppeal() || appeal_before == appeal_inside)
     return;
 
-  builder->SetEarlyBreak(base::AdoptRef(new NGEarlyBreak(child)),
+  builder->SetEarlyBreak(MakeGarbageCollected<NGEarlyBreak>(child),
                          appeal_before);
 }
 

@@ -24,7 +24,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
  public:
   NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
 
@@ -40,9 +40,8 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // column that was laid out. The rows themselves don't create fragments. If
   // we're in a nested fragmentation context and completely out of outer
   // fragmentainer space, nullptr will be returned.
-  scoped_refptr<const NGLayoutResult> LayoutRow(
-      const NGBlockBreakToken* next_column_token,
-      NGMarginStrut*);
+  const NGLayoutResult* LayoutRow(const NGBlockBreakToken* next_column_token,
+                                  NGMarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
   // before the spanner or not. If |NGBreakStatus::kContinue| is returned, and
@@ -74,7 +73,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // discovered in the first pass. This happens when we run out of space in a
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
   // such as break-before:avoid or break-after:avoid.
-  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier();
+  const NGLayoutResult* RelayoutAndBreakEarlier();
 
   // Get the percentage resolution size to use for column content (i.e. not
   // spanners).

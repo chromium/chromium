@@ -33,7 +33,7 @@ NGFragmentChildIterator::NGFragmentChildIterator(
 NGFragmentChildIterator::NGFragmentChildIterator(
     const NGInlineCursor& parent,
     const NGBlockBreakToken* parent_break_token,
-    base::span<const NGBreakToken* const> child_break_tokens)
+    base::span<const Member<const NGBreakToken>> child_break_tokens)
     : parent_break_token_(parent_break_token),
       child_break_tokens_(child_break_tokens) {
   current_.block_break_token_ = parent_break_token;
@@ -63,7 +63,7 @@ bool NGFragmentChildIterator::AdvanceChildFragment() {
   DCHECK(parent_fragment_);
   const auto children = parent_fragment_->Children();
   const NGPhysicalBoxFragment* previous_fragment =
-      To<NGPhysicalBoxFragment>(current_.link_.fragment);
+      To<NGPhysicalBoxFragment>(current_.link_.fragment.Get());
   DCHECK(previous_fragment);
   if (child_fragment_idx_ < children.size())
     child_fragment_idx_++;
@@ -89,8 +89,8 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
   DCHECK(current_.link_.fragment);
   SkipToBlockBreakToken();
   if (child_break_token_idx_ < child_break_tokens_.size()) {
-    current_.block_break_token_ =
-        To<NGBlockBreakToken>(child_break_tokens_[child_break_token_idx_]);
+    current_.block_break_token_ = To<NGBlockBreakToken>(
+        child_break_tokens_[child_break_token_idx_].Get());
     // TODO(mstensho): Clean up this. What we're trying to do here is to detect
     // whether the incoming break token matches the current fragment or not.
     // Figuring out if a fragment is generated from a given node is currently

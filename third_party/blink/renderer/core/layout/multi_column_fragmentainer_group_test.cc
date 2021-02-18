@@ -27,15 +27,15 @@ class MultiColumnFragmentainerGroupTest : public RenderingTest {
   static int GroupCount(const MultiColumnFragmentainerGroupList&);
 
  private:
-  LayoutMultiColumnFlowThread* flow_thread_;
-  LayoutMultiColumnSet* column_set_;
+  Persistent<LayoutMultiColumnFlowThread> flow_thread_;
+  Persistent<LayoutMultiColumnSet> column_set_;
 };
 
 void MultiColumnFragmentainerGroupTest::SetUp() {
   RenderingTest::SetUp();
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  ComputedStyle* style = ComputedStyle::Create();
   flow_thread_ = LayoutMultiColumnFlowThread::CreateAnonymous(
-      GetDocument(), *style.get(), /* needs_paint_layer */ true);
+      GetDocument(), *style, /* needs_paint_layer */ true);
   column_set_ = LayoutMultiColumnSet::CreateAnonymous(*flow_thread_,
                                                       *flow_thread_->Style());
 }

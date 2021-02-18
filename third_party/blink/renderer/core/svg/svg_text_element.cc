@@ -29,7 +29,7 @@ SVGTextElement::SVGTextElement(Document& doc)
 
 LayoutObject* SVGTextElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return new LayoutSVGText(this);
+  return MakeGarbageCollected<LayoutSVGText>(this);
 }
 
 }  // namespace blink

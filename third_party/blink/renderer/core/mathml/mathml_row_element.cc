@@ -20,7 +20,7 @@ LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style,
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
       !style.IsDisplayMathType())
     return MathMLElement::CreateLayoutObject(style, legacy);
-  return new LayoutNGMathMLBlock(this);
+  return MakeGarbageCollected<LayoutNGMathMLBlock>(this);
 }
 
 void MathMLRowElement::ChildrenChanged(const ChildrenChange& change) {

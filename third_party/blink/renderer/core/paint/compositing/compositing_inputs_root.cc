@@ -33,4 +33,8 @@ void CompositingInputsRoot::Update(PaintLayer* new_root_layer) {
   root_layer_ = common_ancestor;
 }
 
+void CompositingInputsRoot::Trace(Visitor* visitor) const {
+  visitor->Trace(root_layer_);
+}
+
 }  // namespace blink

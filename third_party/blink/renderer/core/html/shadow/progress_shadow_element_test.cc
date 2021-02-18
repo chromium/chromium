@@ -44,7 +44,7 @@ TEST_F(ProgressShadowElementTest, LayoutObjectIsNeeded) {
   GetDocument().GetStyleEngine().RecalcStyle();
   EXPECT_TRUE(shadow_element->GetComputedStyle());
 
-  scoped_refptr<ComputedStyle> style =
+  ComputedStyle* style =
       shadow_element->StyleForLayoutObject(StyleRecalcContext());
   EXPECT_TRUE(shadow_element->LayoutObjectIsNeeded(*style));
 }

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_PHYSICAL_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_PHYSICAL_FRAGMENT_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -14,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 #include <unicode/ubidi.h>
 
@@ -45,7 +43,7 @@ struct CORE_EXPORT NGPhysicalFragmentTraits {
 // NGFragment wrapper classes which transforms information into the logical
 // coordinate system.
 class CORE_EXPORT NGPhysicalFragment
-    : public RefCounted<const NGPhysicalFragment, NGPhysicalFragmentTraits> {
+    : public GarbageCollected<NGPhysicalFragment> {
  public:
   enum NGFragmentType {
     kFragmentBox = 0,
@@ -72,6 +70,18 @@ class CORE_EXPORT NGPhysicalFragment
     // IsFormattingContextRoot().
     kMinimumFormattingContextRoot = kAtomicInline
   };
+
+  NGPhysicalFragment(NGFragmentBuilder*,
+                     NGFragmentType type,
+                     unsigned sub_type);
+
+  NGPhysicalFragment(LayoutObject* layout_object,
+                     NGStyleVariant,
+                     PhysicalSize size,
+                     NGFragmentType type,
+                     unsigned sub_type);
+
+  NGPhysicalFragment(const NGPhysicalFragment& other);
 
   ~NGPhysicalFragment();
 
@@ -267,13 +277,13 @@ class CORE_EXPORT NGPhysicalFragment
   PaintLayer* Layer() const {
     if (!HasLayer())
       return nullptr;
-    return To<LayoutBoxModelObject>(layout_object_)->Layer();
+    return To<LayoutBoxModelObject>(layout_object_.Get())->Layer();
   }
 
   // Whether this object has a self-painting |Layer()|.
   bool HasSelfPaintingLayer() const {
-    return HasLayer() &&
-           To<LayoutBoxModelObject>(layout_object_)->HasSelfPaintingLayer();
+    return HasLayer() && To<LayoutBoxModelObject>(layout_object_.Get())
+                             ->HasSelfPaintingLayer();
   }
 
   // True if overflow != 'visible', except for certain boxes that do not allow
@@ -462,22 +472,12 @@ class CORE_EXPORT NGPhysicalFragment
   static void ShowFragmentTree(const LayoutObject& root);
 #endif
 
+  virtual void Trace(Visitor*) const;
+
  protected:
-  NGPhysicalFragment(NGFragmentBuilder*,
-                     NGFragmentType type,
-                     unsigned sub_type);
-
-  NGPhysicalFragment(LayoutObject* layout_object,
-                     NGStyleVariant,
-                     PhysicalSize size,
-                     NGFragmentType type,
-                     unsigned sub_type);
-
-  NGPhysicalFragment(const NGPhysicalFragment& other);
-
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  const Vector<NGInlineItem>& InlineItemsOfContainingBlock() const;
+  const HeapVector<NGInlineItem>& InlineItemsOfContainingBlock() const;
 
   // The following bitfields are only to be used by NGPhysicalContainerFragment
   // (it's defined here to save memory, since that class has no bitfields).
@@ -493,7 +493,7 @@ class CORE_EXPORT NGPhysicalFragment
   // The following bitfields are only to be used by NGPhysicalBoxFragment
   // (it's defined here to save memory, since that class has no bitfields).
   unsigned is_inline_formatting_context_ : 1;
-  unsigned has_fragment_items_ : 1;
+  unsigned const_has_fragment_items_ : 1;
   unsigned include_border_top_ : 1;
   unsigned include_border_right_ : 1;
   unsigned include_border_bottom_ : 1;
@@ -502,10 +502,10 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_borders_ : 1;
   unsigned has_padding_ : 1;
   unsigned has_inflow_bounds_ : 1;
-  unsigned has_rare_data_ : 1;
+  unsigned const_has_rare_data_ : 1;
   unsigned is_first_for_node_ : 1;
 
-  LayoutObject* layout_object_;
+  Member<LayoutObject> layout_object_;
   const PhysicalSize size_;
 
   const unsigned type_ : 1;           // NGFragmentType
@@ -541,7 +541,10 @@ class CORE_EXPORT NGPhysicalFragment
 struct CORE_EXPORT NGPhysicalFragmentWithOffset {
   DISALLOW_NEW();
 
-  scoped_refptr<const NGPhysicalFragment> fragment;
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
+
+  Member<const NGPhysicalFragment> fragment;
   PhysicalOffset offset_to_container_box;
 
   PhysicalRect RectInContainerBox() const;
@@ -556,5 +559,8 @@ inline void NGPhysicalFragment::CheckCanUpdateInkOverflow() const {}
 #endif
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGPhysicalFragmentWithOffset)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_PHYSICAL_FRAGMENT_H_

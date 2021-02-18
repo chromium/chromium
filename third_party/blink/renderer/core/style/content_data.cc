@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/impl/heap.h"
 
 namespace blink {
 
@@ -97,7 +98,8 @@ LayoutObject* CounterContentData::CreateLayoutObject(
     PseudoElement& pseudo,
     const ComputedStyle& pseudo_style,
     LegacyLayout) const {
-  LayoutObject* layout_object = new LayoutCounter(pseudo, *this);
+  LayoutObject* layout_object =
+      MakeGarbageCollected<LayoutCounter>(pseudo, *this);
   layout_object->SetPseudoElementStyle(&pseudo_style);
   return layout_object;
 }
@@ -111,7 +113,8 @@ LayoutObject* QuoteContentData::CreateLayoutObject(
     PseudoElement& pseudo,
     const ComputedStyle& pseudo_style,
     LegacyLayout) const {
-  LayoutObject* layout_object = new LayoutQuote(pseudo, quote_);
+  LayoutObject* layout_object =
+      MakeGarbageCollected<LayoutQuote>(pseudo, quote_);
   layout_object->SetPseudoElementStyle(&pseudo_style);
   return layout_object;
 }

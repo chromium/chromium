@@ -20,11 +20,12 @@ namespace blink {
 
 void CanvasFormattedText::Trace(Visitor* visitor) const {
   visitor->Trace(text_runs_);
+  visitor->Trace(block_);
   ScriptWrappable::Trace(visitor);
 }
 
 CanvasFormattedText::CanvasFormattedText(Document* document) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  ComputedStyle* style = ComputedStyle::Create();
   style->SetDisplay(EDisplay::kBlock);
   block_ =
       LayoutBlockFlow::CreateAnonymous(document, style, LegacyLayout::kAuto);
@@ -40,7 +41,7 @@ void CanvasFormattedText::Dispose() {
 LayoutBlockFlow* CanvasFormattedText::GetLayoutBlock(
     Document& document,
     const FontDescription& defaultFont) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  ComputedStyle* style = ComputedStyle::Create();
   style->SetDisplay(EDisplay::kBlock);
   style->SetFontDescription(defaultFont);
   block_->SetStyle(style);
@@ -50,7 +51,7 @@ LayoutBlockFlow* CanvasFormattedText::GetLayoutBlock(
 CanvasFormattedTextRun* CanvasFormattedText::appendRun(
     CanvasFormattedTextRun* run) {
   text_runs_.push_back(run);
-  scoped_refptr<ComputedStyle> text_style = ComputedStyle::Create();
+  ComputedStyle* text_style = ComputedStyle::Create();
   text_style->SetDisplay(EDisplay::kInline);
   LayoutText* text =
       LayoutText::CreateAnonymous(block_->GetDocument(), std::move(text_style),
@@ -84,8 +85,7 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   LogicalSize available_size = {available_logical_width, kIndefiniteSize};
   builder.SetAvailableSize(available_size);
   NGConstraintSpace space = builder.ToConstraintSpace();
-  scoped_refptr<const NGLayoutResult> block_results =
-      block_node.Layout(space, nullptr);
+  const NGLayoutResult* block_results = block_node.Layout(space, nullptr);
   const auto& fragment =
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());
   block->RecalcInlineChildrenVisualOverflow();

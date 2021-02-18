@@ -66,7 +66,7 @@ class DataListIndicatorElement final : public HTMLDivElement {
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) override {
     UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByDetailsMarker);
-    return new LayoutDetailsMarker(this);
+    return MakeGarbageCollected<LayoutDetailsMarker>(this);
   }
 
   EventDispatchHandlingState* PreDispatchEventHandler(Event& event) override {

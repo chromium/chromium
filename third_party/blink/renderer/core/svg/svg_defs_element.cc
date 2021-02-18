@@ -30,7 +30,7 @@ SVGDefsElement::SVGDefsElement(Document& document)
 
 LayoutObject* SVGDefsElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return new LayoutSVGHiddenContainer(this);
+  return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
 }
 
 }  // namespace blink

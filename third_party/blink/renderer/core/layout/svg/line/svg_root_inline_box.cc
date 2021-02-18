@@ -51,7 +51,7 @@ void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
   auto& text_root =
       To<LayoutSVGText>(*LineLayoutAPIShim::LayoutObjectFrom(Block()));
 
-  const Vector<LayoutSVGInlineText*>& descendant_text_nodes =
+  const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes =
       text_root.DescendantTextNodes();
   if (descendant_text_nodes.IsEmpty())
     return;
@@ -161,8 +161,8 @@ static inline void SwapPositioningValuesInTextBoxes(
 }
 
 static inline void ReverseInlineBoxRangeAndValueListsIfNeeded(
-    Vector<InlineBox*>::iterator first,
-    Vector<InlineBox*>::iterator last) {
+    HeapVector<Member<InlineBox>>::iterator first,
+    HeapVector<Member<InlineBox>>::iterator last) {
   // This is a copy of std::reverse(first, last). It additionally assures
   // that the metrics map within the layoutObjects belonging to the
   // InlineBoxes are reordered as well.
@@ -170,8 +170,8 @@ static inline void ReverseInlineBoxRangeAndValueListsIfNeeded(
     if (first == last || first == --last)
       return;
 
-    auto* first_text_box = DynamicTo<SVGInlineTextBox>(*first);
-    auto* last_text_box = DynamicTo<SVGInlineTextBox>(*last);
+    auto* first_text_box = DynamicTo<SVGInlineTextBox>(first->Get());
+    auto* last_text_box = DynamicTo<SVGInlineTextBox>(last->Get());
     if (last_text_box && first_text_box) {
       // Reordering is only necessary for BiDi text that is _absolutely_
       // positioned.
@@ -188,7 +188,7 @@ static inline void ReverseInlineBoxRangeAndValueListsIfNeeded(
 }
 
 void SVGRootInlineBox::ReorderValueLists() {
-  Vector<InlineBox*> leaf_boxes_in_logical_order;
+  HeapVector<Member<InlineBox>> leaf_boxes_in_logical_order;
   CollectLeafBoxesInLogicalOrder(leaf_boxes_in_logical_order,
                                  ReverseInlineBoxRangeAndValueListsIfNeeded);
 }
