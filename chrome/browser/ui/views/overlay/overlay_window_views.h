@@ -245,7 +245,7 @@ class OverlayWindowViews : public content::OverlayWindow,
 
   // If set, controls will always either be shown or hidden, instead of showing
   // and hiding automatically. Only used for testing.
-  base::Optional<bool> force_controls_visible_ = false;
+  base::Optional<bool> force_controls_visible_;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayWindowViews);
 };
