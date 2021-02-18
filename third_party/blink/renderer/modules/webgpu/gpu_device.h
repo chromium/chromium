@@ -133,16 +133,6 @@ class GPUDevice final : public EventTargetWithInlineData,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateReadyRenderPipelineCallback(ScriptPromiseResolver* resolver,
-                                           WGPUCreateReadyPipelineStatus status,
-                                           WGPURenderPipeline render_pipeline,
-                                           const char* message);
-  void OnCreateReadyComputePipelineCallback(
-      ScriptPromiseResolver* resolver,
-      WGPUCreateReadyPipelineStatus status,
-      WGPUComputePipeline compute_pipeline,
-      const char* message);
-
   Member<GPUAdapter> adapter_;
   Vector<String> extension_name_list_;
   Member<GPUQueue> queue_;
