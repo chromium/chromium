@@ -134,7 +134,7 @@ Polymer({
       type: Boolean,
       value: false,
       computed: 'computeShouldShowMoveMultiplePasswordsBanner_(' +
-          'allDevicePasswords_)',
+          'savedPasswords, savedPasswords.splices)',
     },
 
 
@@ -280,8 +280,27 @@ Polymer({
    * @return {boolean}
    */
   computeShouldShowMoveMultiplePasswordsBanner_() {
-    return loadTimeData.getBoolean('enableMovingMultiplePasswordsToAccount') &&
-        (this.allDevicePasswords_.length > 0);
+    if (!loadTimeData.getBoolean('enableMovingMultiplePasswordsToAccount')) {
+      return false;
+    }
+
+    if (this.allDevicePasswords_.length === 0) {
+      return false;
+    }
+
+    // Check if all username, and urls are unique. The existence of two entries
+    // with the same url and username indicate that they must have conflicting
+    // passwords, otherwise, they would have been deduped in
+    // MergePasswordsStoreCopiesBehavior. This however may mistakenly exclude
+    // users who have conflicting duplicates within the same store, which is an
+    // acceptable compromise.
+    return this.savedPasswords.every(
+        p1 =>
+            (this.savedPasswords
+                 .filter(
+                     p2 => p1.username === p2.username &&
+                         p1.urls.origin === p2.urls.origin)
+                 .length === 1));
   },
 
   /**

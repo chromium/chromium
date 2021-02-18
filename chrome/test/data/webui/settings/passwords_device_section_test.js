@@ -395,4 +395,34 @@ suite('PasswordsDeviceSection', function() {
                         .hidden);
       });
 
+  test(
+      'moveMultiplePasswordsBannerHiddenWhenConflictingLocalAndDevicesPasswords',
+      async function() {
+        loadTimeData.overrideValues(
+            {enableMovingMultiplePasswordsToAccount: true});
+
+        // The existence of two entries with the same url and password username
+        // indicate that they must have different passwords. Otherwise, they
+        // would have deduped earlier.
+        const devicePassword = createPasswordEntry({
+          url: 'www.test.com',
+          username: 'username',
+          id: 0,
+          fromAccountStore: false
+        });
+        const accountPassword = createPasswordEntry({
+          url: 'www.test.com',
+          username: 'username',
+          id: 1,
+          fromAccountStore: true
+        });
+
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager,
+            [devicePassword, accountPassword]);
+
+        assertTrue(passwordsDeviceSection.shadowRoot
+                       .querySelector('#moveMultiplePasswordsBanner')
+                       .hidden);
+      });
 });
