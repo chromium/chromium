@@ -339,8 +339,6 @@ const std::vector<SearchConcept>& GetParentalSearchConcepts() {
 void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
                                   Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"accountManagerPrimaryAccountDescription",
-       IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_DESCRIPTION},
       {"accountManagerChildDescription",
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION},
       {"accountManagerChildFirstMessage",

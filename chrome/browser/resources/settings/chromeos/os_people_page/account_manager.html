@@ -212,20 +212,7 @@
     </div>
 
     <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-      <!-- Primary account description -->
-      <div class="settings-box first">
-        <div class="start two-line account-manager-description">
-          <div>
-            <h2>$i18n{accountManagerUnmanagedLabel}</h2>
-            <settings-localized-link
-                localized-string=
-                  "$i18n{accountManagerPrimaryAccountDescription}"
-                on-link-clicked="goToSyncSettings_">
-            </settings-localized-link>
-          </div>
-        </div>
-      </div>
-
+      <!-- Managed account badge and message -->
       <template is="dom-if" if="[[isDeviceAccountManaged_]]">
         <div class="settings-box first managed-message">
           <iron-icon icon="[[getManagedAccountTooltipIcon_(isChildUser_,

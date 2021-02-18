@@ -422,17 +422,4 @@ Polymer({
         /** @type {?settings.Account} */ (this.actionMenuAccount_));
     this.closeActionMenu_();
   },
-
-  /**
-   * @param {Event} event
-   * @private
-   */
-  goToSyncSettings_(event) {
-    event.detail.event.preventDefault();
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
-      settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
-    } else {
-      settings.Router.getInstance().navigateTo(settings.routes.SYNC_ADVANCED);
-    }
-  },
 });
