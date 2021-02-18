@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/cppgc/platform.h"
+#include "v8/include/cppgc/process-heap-statistics.h"
 
 namespace blink {
 
@@ -21,9 +22,13 @@ class PLATFORM_EXPORT ProcessHeap {
     cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator());
   }
 
-  static size_t TotalAllocatedObjectSize() { return 0; }
+  static size_t TotalAllocatedObjectSize() {
+    return cppgc::ProcessHeapStatistics::TotalAllocatedObjectSize();
+  }
 
-  static size_t TotalAllocatedSpace() { return 0; }
+  static size_t TotalAllocatedSpace() {
+    return cppgc::ProcessHeapStatistics::TotalAllocatedSpace();
+  }
 };
 
 }  // namespace blink
