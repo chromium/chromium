@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFilterQuality.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -293,6 +294,12 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
       (context_type == CanvasRenderingContext::kContextXRPresent &&
        !RuntimeEnabledFeatures::WebXREnabled(execution_context))) {
     return nullptr;
+  }
+
+  if (attributes.color_space != kSRGBCanvasColorSpaceName ||
+      attributes.pixel_format != kUint8CanvasPixelFormatName) {
+    if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext()))
+      UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
   }
 
   // Log the aliased context type used.
