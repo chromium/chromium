@@ -205,7 +205,8 @@ base::string16 ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
     text.push_back(additional_text.value());
   }
   // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
-  // construct this string instead of concatenation.
+  // construct this string instead of concatenation. This currently only happens
+  // for stock ticker symbols.
   return base::JoinString(text, base::ASCIIToUTF16(" "));
 }
 
@@ -378,59 +379,54 @@ void OmniboxResult::UpdateIcon() {
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
-  if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
-    if (match_.answer.has_value()) {
-      const auto& additional_text =
-          GetAdditionalText(match_.answer->first_line());
-      // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
-      // construct this string instead of concatenation.
-      SetTitle(additional_text ? base::JoinString(
-                                     {match_.contents, additional_text.value()},
-                                     base::ASCIIToUTF16(" "))
-                               : match_.contents);
-      SetDetails(ImageLineToString16(match_.answer->second_line()));
-    } else {
-      ChromeSearchResult::Tags title_tags;
-      ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                   &title_tags);
-      SetTitle(match_.contents);
-      SetTitleTags(title_tags);
+  if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
+      match_.answer.has_value()) {
+    const auto& additional_text =
+        GetAdditionalText(match_.answer->first_line());
+    // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
+    // construct this string instead of concatenation. This currently only
+    // happens for stock ticker symbols.
+    SetTitle(additional_text
+                 ? base::JoinString({match_.contents, additional_text.value()},
+                                    base::ASCIIToUTF16(" "))
+                 : match_.contents);
+    SetDetails(ImageLineToString16(match_.answer->second_line()));
+  } else if (!IsUrlResultWithDescription()) {
+    SetTitle(match_.contents);
+    ChromeSearchResult::Tags title_tags;
+    ACMatchClassificationsToTags(match_.contents, match_.contents_class,
+                                 &title_tags);
+    SetTitleTags(title_tags);
 
+    if (!app_list_features::IsOmniboxRichEntitiesEnabled() ||
+        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+      SetDetails(match_.description);
       ChromeSearchResult::Tags details_tags;
       ACMatchClassificationsToTags(match_.description, match_.description_class,
                                    &details_tags);
-      SetDetails(match_.description);
       SetDetailsTags(details_tags);
+    }
+
+    if (AutocompleteMatch::IsSearchType(match_.type)) {
+      SetAccessibleName(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, title(),
+          GetDefaultSearchEngineName(
+              TemplateURLServiceFactory::GetForProfile(profile_))));
     }
   } else {
     // For url result with non-empty description, swap title and details. Thus,
     // the url description is presented as title, and url itself is presented as
     // details.
-    const bool use_directly = !IsUrlResultWithDescription();
+    SetTitle(match_.description);
     ChromeSearchResult::Tags title_tags;
-    ChromeSearchResult::Tags details_tags;
-    if (use_directly) {
-      SetTitle(match_.contents);
-      ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                   &title_tags);
-      SetDetails(match_.description);
-      ACMatchClassificationsToTags(match_.description, match_.description_class,
-                                   &details_tags);
-      if (AutocompleteMatch::IsSearchType(match_.type)) {
-        SetAccessibleName(l10n_util::GetStringFUTF16(
-            IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, title(),
-            GetDefaultSearchEngineName(
-                TemplateURLServiceFactory::GetForProfile(profile_))));
-      }
-    } else {
-      SetTitle(match_.description);
-      ACMatchClassificationsToTags(match_.description, match_.description_class,
-                                   &title_tags);
-      SetDetails(match_.contents);
-      ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                   &details_tags);
-    }
+    ACMatchClassificationsToTags(match_.description, match_.description_class,
+                                 &title_tags);
     SetTitleTags(title_tags);
+
+    SetDetails(match_.contents);
+    ChromeSearchResult::Tags details_tags;
+    ACMatchClassificationsToTags(match_.contents, match_.contents_class,
+                                 &details_tags);
     SetDetailsTags(details_tags);
   }
 }
