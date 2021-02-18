@@ -4,6 +4,7 @@
 
 #include "ash/system/audio/audio_detailed_view.h"
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,7 +14,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"

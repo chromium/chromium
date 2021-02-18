@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
@@ -147,8 +149,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/audio/audio_devices_pref_handler_impl.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/drivefs/fake_drivefs_launcher_client.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"

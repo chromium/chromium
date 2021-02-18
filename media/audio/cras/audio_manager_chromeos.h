@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/audio/audio_device.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/audio/audio_device.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 

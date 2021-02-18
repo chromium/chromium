@@ -4,14 +4,14 @@
 
 #include "chromeos/services/assistant/platform/audio_devices.h"
 
+#include "ash/components/audio/audio_device.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "chromeos/audio/audio_device.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 
 namespace chromeos {

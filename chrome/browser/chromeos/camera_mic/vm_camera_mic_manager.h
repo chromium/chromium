@@ -8,13 +8,13 @@
 #include <bitset>
 #include <memory>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"
 #include "ui/message_center/public/cpp/notification.h"

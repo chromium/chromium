@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/audio/audio_devices_pref_handler_impl.h"
+#include "ash/components/audio/audio_devices_pref_handler_impl.h"
 
 #include <stdint.h>
 
+#include "ash/components/audio/audio_device.h"
+#include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/audio/audio_device.h"
-#include "chromeos/audio/audio_devices_pref_handler.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"

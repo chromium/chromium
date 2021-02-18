@@ -5,11 +5,11 @@
 #ifndef ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLEINT_H_
 #define ASH_ACCESSIBILITY_TEST_ACCESSIBILITY_CONTROLLER_CLEINT_H_
 
+#include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chromeos/audio/chromeos_sounds.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ash {

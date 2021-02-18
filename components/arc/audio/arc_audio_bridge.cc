@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/components/audio/audio_device.h"
 #include "ash/public/cpp/system_tray.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "chromeos/audio/audio_device.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 

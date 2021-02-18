@@ -2406,6 +2406,7 @@ static_library("browser") {
       "apps/digital_goods/util.h",
     ]
     deps += [
+      "//ash/components/audio",
       "//ash/constants",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/nearby_sharing/common",
@@ -2415,7 +2416,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
-      "//chromeos/audio",
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/camera_app_ui:mojo_bindings",
       "//chromeos/components/chromebox_for_meetings/buildflags",

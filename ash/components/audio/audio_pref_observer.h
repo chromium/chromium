@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_AUDIO_AUDIO_PREF_OBSERVER_H_
-#define CHROMEOS_AUDIO_AUDIO_PREF_OBSERVER_H_
+#ifndef ASH_COMPONENTS_AUDIO_AUDIO_PREF_OBSERVER_H_
+#define ASH_COMPONENTS_AUDIO_AUDIO_PREF_OBSERVER_H_
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
@@ -11,7 +11,7 @@
 namespace chromeos {
 
 // Interface for observing audio preference changes.
-class COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioPrefObserver {
+class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioPrefObserver {
  public:
   // Called when audio policy prefs changed.
   virtual void OnAudioPolicyPrefChanged() = 0;
@@ -22,4 +22,4 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioPrefObserver {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_AUDIO_AUDIO_PREF_OBSERVER_H_
+#endif  // ASH_COMPONENTS_AUDIO_AUDIO_PREF_OBSERVER_H_

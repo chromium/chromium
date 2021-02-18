@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_
-#define CHROMEOS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_
+#ifndef ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_
+#define ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_
 
 #include <stdint.h>
 
 #include <map>
 
+#include "ash/components/audio/audio_devices_pref_handler.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/audio/audio_devices_pref_handler.h"
 
 namespace chromeos {
 
 // Stub class for AudioDevicesPrefHandler, used for testing.
-class COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevicesPrefHandlerStub
+class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerStub
     : public AudioDevicesPrefHandler {
  public:
   struct DeviceState {
@@ -59,4 +59,4 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevicesPrefHandlerStub
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_
+#endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_

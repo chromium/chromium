@@ -7,6 +7,6 @@ include_rules = [
   "+components/prefs",
   "+media",
   "+mojo/public/cpp/bindings",
-  "+testing",
   "+services/media_session/public",
+  "+testing",
 ]

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"

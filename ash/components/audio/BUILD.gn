@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("audio") {
-  defines = [ "IS_CHROMEOS_AUDIO_IMPL" ]
+  defines = [ "IS_ASH_COMPONENTS_AUDIO_IMPL" ]
   deps = [
     "//ash/constants",
     "//base",
@@ -25,9 +26,9 @@ component("audio") {
     "audio_devices_pref_handler_stub.cc",
     "audio_devices_pref_handler_stub.h",
     "audio_pref_observer.h",
-    "chromeos_sounds.h",
     "cras_audio_handler.cc",
     "cras_audio_handler.h",
+    "sounds.h",
   ]
 }
 

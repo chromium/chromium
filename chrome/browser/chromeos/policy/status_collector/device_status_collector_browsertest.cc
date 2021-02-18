@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -56,7 +57,6 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"

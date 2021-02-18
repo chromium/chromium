@@ -81,7 +81,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"

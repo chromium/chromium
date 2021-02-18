@@ -229,8 +229,8 @@ source_set("app_shell_lib") {
       "browser/shell_screen.h",
     ]
     deps += [
+      "//ash/components/audio",
       "//ash/constants",
-      "//chromeos/audio",
       "//chromeos/dbus",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/power",
@@ -357,7 +357,7 @@ test("app_shell_unittests") {
       "browser/shell_screen_unittest.cc",
     ]
     deps += [
-      "//chromeos/audio",
+      "//ash/components/audio",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/power",

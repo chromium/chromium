@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/macros.h"
-#include "chromeos/audio/cras_audio_handler.h"
 
 namespace extensions {
 

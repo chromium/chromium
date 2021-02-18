@@ -1585,7 +1585,7 @@ test("content_browsertests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chromeos/audio",
+      "//ash/components/audio",
       "//chromeos/dbus/audio",
       "//chromeos/system",
     ]
@@ -2434,7 +2434,7 @@ test("content_unittests") {
   }
   if (is_chromeos_ash) {
     deps += [
-      "//chromeos/audio",
+      "//ash/components/audio",
       "//chromeos/dbus/audio",
     ]
   }

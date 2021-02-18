@@ -527,7 +527,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
-      "//chromeos/audio",
+      "//ash/components/audio",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/media_analytics",

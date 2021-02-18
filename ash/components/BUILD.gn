@@ -10,7 +10,10 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 # component and add a reference here.
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//ash/components/account_manager:unit_tests" ]
+  deps = [
+    "//ash/components/account_manager:unit_tests",
+    "//ash/components/audio:unit_tests",
+  ]
 
   data_deps = [
     "//chromeos/strings:chromeos_test_strings",

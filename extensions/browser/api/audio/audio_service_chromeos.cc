@@ -7,13 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "ash/components/audio/audio_device.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/audio/audio_device.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/audio/audio_device_id_calculator.h"
 

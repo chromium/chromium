@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/components/account_manager",
+  "+ash/components/audio",
   "+chrome/browser/image_decoder",
   # TODO(ananta): Remove this when we move files which display UI in
   # chrome/browser/chromeos to chrome/browser/ui/views/chromeos
@@ -32,6 +34,7 @@ specific_include_rules = {
   ],
   ".*test.*": [
    "!ash",
+   "+ash/components/audio",
    "+ash/constants",
    "+ash/public",
   ],

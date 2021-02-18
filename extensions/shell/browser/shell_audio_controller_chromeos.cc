@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "chromeos/audio/audio_device.h"
+#include "ash/components/audio/audio_device.h"
 
 namespace extensions {
 

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/accessibility/dictation.h"
 
+#include "ash/components/audio/sounds.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognizer.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/audio/chromeos_sounds.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"

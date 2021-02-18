@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -9,7 +10,6 @@
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/assistant/test_support/expect_utils.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/service.h"

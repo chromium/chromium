@@ -4,11 +4,11 @@
 
 #include "chromeos/services/assistant/platform/audio_devices.h"
 
+#include "ash/components/audio/audio_device.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/audio/audio_device.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"

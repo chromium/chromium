@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/audio/audio_devices_pref_handler_stub.h"
+#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 
+#include "ash/components/audio/audio_device.h"
 #include "base/containers/contains.h"
-#include "chromeos/audio/audio_device.h"
 
 namespace chromeos {
 

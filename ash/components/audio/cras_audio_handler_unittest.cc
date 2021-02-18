@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/audio/audio_devices_pref_handler.h"
+#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -18,8 +20,6 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/audio/audio_devices_pref_handler.h"
-#include "chromeos/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/base/video_facing.h"

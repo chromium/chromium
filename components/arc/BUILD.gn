@@ -97,11 +97,11 @@ static_library("arc") {
 
   deps = [
     "//ash:ash",
+    "//ash/components/audio",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//base",
-    "//chromeos/audio",
     "//chromeos/components/sensors:sensors",
     "//chromeos/cryptohome",
     "//chromeos/dbus",

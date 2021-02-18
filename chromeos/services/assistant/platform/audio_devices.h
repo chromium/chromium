@@ -6,11 +6,12 @@
 #define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICES_H_
 
 #include <cstdint>
+
+#include "ash/components/audio/audio_device.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "chromeos/audio/audio_device.h"
 
 namespace chromeos {
 class CrasAudioHandler;

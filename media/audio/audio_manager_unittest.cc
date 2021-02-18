@@ -56,8 +56,8 @@
 #endif  // defined(USE_PULSEAUDIO)
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/audio/audio_devices_pref_handler_stub.h"
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
 #elif defined(USE_CRAS) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))

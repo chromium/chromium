@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 
+#include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
-#include "chromeos/audio/chromeos_sounds.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"

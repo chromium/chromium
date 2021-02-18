@@ -7,9 +7,9 @@
 
 #include <map>
 
+#include "ash/components/audio/audio_device.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/macros.h"
-#include "chromeos/audio/audio_device.h"
 
 namespace gfx {
 struct VectorIcon;

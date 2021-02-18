@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/audio/sounds.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
@@ -21,8 +23,6 @@
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chromeos/audio/chromeos_sounds.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
@@ -260,7 +260,7 @@ class AccessibilityManager
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // the their mapped event has occurred. The |sound_key| enums can be found in
-  // chromeos/audio/chromeos_sounds.h.
+  // ash/components/audio/sounds.h.
   bool PlayEarcon(ash::Sound sound_key, PlaySoundOption option);
 
   // Forward an accessibility gesture from the touch exploration controller

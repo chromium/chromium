@@ -4,6 +4,8 @@
 
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
+#include "ash/components/audio/audio_devices_pref_handler.h"
+#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
@@ -11,8 +13,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/audio/audio_devices_pref_handler.h"
-#include "chromeos/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/media_session/public/mojom/media_controller.mojom-test-utils.h"

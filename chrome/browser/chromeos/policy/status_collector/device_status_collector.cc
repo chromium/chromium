@@ -17,6 +17,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -64,7 +65,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
