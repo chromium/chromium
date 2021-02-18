@@ -125,10 +125,16 @@ export class EmojiSearch extends PolymerElement {
   }
 
   /**
+   * Format the emoji data for search:
+   * 1) Remove duplicates.
+   * 2) Remove groupings.
    * @param {!EmojiGroupData} emojiData
    */
   computeEmojiList(emojiData) {
-    return emojiData.map(group => group.emoji).flat(1);
+    return new Map(emojiData.map(group => group.emoji)
+                       .flat(1)
+                       .map(emoji => [emoji.base.string, emoji]))
+        .values();
   }
 
   /**
