@@ -24,12 +24,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
-#include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
-#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -37,6 +36,10 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+
+// TODO(crbug.com/1175907): Remove this include once we remove
+// VideoFrame::createImageBitmap().
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"  // nogncheck
 
 namespace blink {
 
@@ -205,14 +208,14 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
 
 scoped_refptr<StaticBitmapImage> CreateImage(
     scoped_refptr<media::VideoFrame> frame) {
-  // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
-  // may never happen, and SkColorSpace doesn't know about it.
-  auto sk_color_space =
-      frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
-  if (!sk_color_space)
-    sk_color_space = SkColorSpace::MakeSRGB();
-
   if (CanUseZeroCopyImages(*frame)) {
+    // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
+    // may never happen, and SkColorSpace doesn't know about it.
+    auto sk_color_space =
+        frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+    if (!sk_color_space)
+      sk_color_space = SkColorSpace::MakeSRGB();
+
     const SkImageInfo sk_image_info = SkImageInfo::Make(
         frame->coded_size().width(), frame->coded_size().height(),
         kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
@@ -239,14 +242,22 @@ scoped_refptr<StaticBitmapImage> CreateImage(
         Thread::Current()->GetTaskRunner(), std::move(release_callback));
   }
 
+  // TODO(crbug.com/1175907): Share the code below with
+  // ImageBitmap::ImageBitmap(VideoElement). If the zero copy path above works
+  // in that case we should look into it as well.
   auto raster_context_provider = GetRasterContextProvider();
 
   std::unique_ptr<CanvasResourceProvider> resource_provider;
   if (frame->HasTextures()) {
-    if (!raster_context_provider)
+    if (!raster_context_provider) {
+      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                     "RasterContextProvider.";
       return nullptr;  // Unable to get/create a shared main thread context.
+    }
     if (!raster_context_provider->GrContext() &&
         !raster_context_provider->ContextCapabilities().supports_oop_raster) {
+      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                     "GrContext or OOP raster support.";
       return nullptr;  // The context has been lost.
     }
   }
@@ -731,12 +742,70 @@ VideoFrame* VideoFrame::CloneFromNative(ExecutionContext* context) {
 ScriptPromise VideoFrame::createImageBitmap(ScriptState* script_state,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
+  VideoFrameLogger::From(*ExecutionContext::From(script_state))
+      .LogCreateImageBitmapDeprecationNotice();
+
   base::Optional<IntRect> crop_rect;
   if (auto local_frame = handle_->frame())
     crop_rect = IntRect(local_frame->visible_rect());
 
   return ImageBitmapFactories::CreateImageBitmap(script_state, this, crop_rect,
                                                  options, exception_state);
+}
+
+scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
+    SourceImageStatus* status,
+    const FloatSize&) {
+  const auto local_handle = handle_->CloneForInternalUse();
+  if (!local_handle) {
+    DLOG(ERROR) << "GetSourceImageForCanvas() called for closed frame.";
+    *status = kInvalidSourceImageStatus;
+    return nullptr;
+  }
+
+  if (auto sk_img = local_handle->sk_image()) {
+    *status = kNormalSourceImageStatus;
+    return UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
+  }
+
+  const auto image = CreateImage(local_handle->frame());
+  if (!image) {
+    *status = kInvalidSourceImageStatus;
+    return nullptr;
+  }
+
+  *status = kNormalSourceImageStatus;
+  return image;
+}
+
+bool VideoFrame::WouldTaintOrigin() const {
+  // VideoFrames can't be created from untainted sources currently. If we ever
+  // add that ability we will need a tainting signal on the VideoFrame itself.
+  // One example would be allowing <video> elements to provide a VideoFrame.
+  return false;
+}
+
+FloatSize VideoFrame::ElementSize(
+    const FloatSize& default_object_size,
+    const RespectImageOrientationEnum respect_orientation) const {
+  // TODO(crbug.com/1140137): This will need consideration for orientation.
+  return FloatSize(BitmapSourceSize());
+}
+
+bool VideoFrame::IsVideoFrame() const {
+  return true;
+}
+
+bool VideoFrame::IsOpaque() const {
+  if (auto local_frame = handle_->frame())
+    return media::IsOpaque(local_frame->format());
+  return false;
+}
+
+bool VideoFrame::IsAccelerated() const {
+  if (const auto& frame = handle_->frame())
+    return CanUseZeroCopyImages(*frame);
+  return false;
 }
 
 IntSize VideoFrame::BitmapSourceSize() const {
@@ -750,15 +819,15 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                             base::Optional<IntRect> crop_rect,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
-  const auto& frame = handle_->frame();
-  if (!frame) {
+  const auto local_handle = handle_->CloneForInternalUse();
+  if (!local_handle) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Cannot create ImageBitmap from destroyed VideoFrame.");
+        "Cannot create ImageBitmap from closed VideoFrame.");
     return ScriptPromise();
   }
 
-  if (auto sk_img = handle_->sk_image()) {
+  if (auto sk_img = local_handle->sk_image()) {
     auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
         UnacceleratedStaticBitmapImage::Create(std::move(sk_img)), crop_rect,
         options);
@@ -766,11 +835,12 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                                  exception_state);
   }
 
-  const auto image = CreateImage(frame);
+  const auto image = CreateImage(local_handle->frame());
   if (!image) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        String(("Unsupported VideoFrame: " + frame->AsHumanReadableString())
+        String(("Unsupported VideoFrame: " +
+                local_handle->frame()->AsHumanReadableString())
                    .c_str()));
     return ScriptPromise();
   }

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -1314,6 +1315,15 @@ static inline CanvasImageSource* ToImageSourceInternal(
       return nullptr;
     }
     return value.GetAsOffscreenCanvas();
+  }
+  if (value.IsVideoFrame()) {
+    auto* video_frame = static_cast<VideoFrame*>(value.GetAsVideoFrame());
+    if (!video_frame->frame()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The VideoFrame has been closed");
+      return nullptr;
+    }
+    return video_frame;
   }
   NOTREACHED();
   return nullptr;

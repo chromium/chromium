@@ -39,7 +39,8 @@ typedef (CSSImageValue or
          HTMLVideoElement or
          HTMLCanvasElement or
          ImageBitmap or
-         OffscreenCanvas) CanvasImageSource;
+         OffscreenCanvas or
+         VideoFrame) CanvasImageSource;
 
 enum CanvasFillRule { "nonzero", "evenodd" };
 enum ImageSmoothingQuality {"low", "medium", "high"};

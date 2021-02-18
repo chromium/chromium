@@ -9503,6 +9503,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="HTML Video Element"/>
   <int value="6" label="OffscreenCanvas"/>
   <int value="7" label="SVG Image Element"/>
+  <int value="8" label="VideoFrame"/>
 </enum>
 
 <enum name="CanvasDisplayListFallbackReason">

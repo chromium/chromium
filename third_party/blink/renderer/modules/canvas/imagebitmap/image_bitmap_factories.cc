@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -72,7 +73,8 @@ enum CreateImageBitmapSource {
   kCreateImageBitmapSourceHTMLVideoElement = 5,
   kCreateImageBitmapSourceOffscreenCanvas = 6,
   kCreateImageBitmapSourceSVGImageElement = 7,
-  kMaxValue = kCreateImageBitmapSourceSVGImageElement,
+  kCreateImageBitmapSourceVideoFrame = 8,
+  kMaxValue = kCreateImageBitmapSourceVideoFrame,
 };
 
 }  // namespace
@@ -120,6 +122,11 @@ static inline ImageBitmapSource* ToImageBitmapSourceInternal(
     UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
                               kCreateImageBitmapSourceOffscreenCanvas);
     return value.GetAsOffscreenCanvas();
+  }
+  if (value.IsVideoFrame()) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
+                              kCreateImageBitmapSourceVideoFrame);
+    return value.GetAsVideoFrame();
   }
   NOTREACHED();
   return nullptr;

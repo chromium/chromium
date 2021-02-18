@@ -70,8 +70,8 @@ class HitTestCanvasResult;
 class Path2D;
 class TextMetrics;
 
-typedef CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvas
-    CanvasImageSourceUnion;
+using CanvasImageSourceUnion =
+    CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvasOrVideoFrame;
 
 class MODULES_EXPORT CanvasRenderingContext2D final
     : public CanvasRenderingContext,
