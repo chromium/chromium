@@ -221,7 +221,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     base::Optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
     : action_module_(std::make_unique<action::CrosActionModule>(
-          this,
           features::IsAppSupportEnabled(),
           features::IsWaitSchedulingEnabled())),
       assistant_settings_(
@@ -242,6 +241,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           device_id_override,
           ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
+  scoped_action_observer_.Observe(action_module_.get());
+
   if (libassistant_service_host) {
     // During unittests a custom host is passed in, so we'll use that one.
     libassistant_service_host_ = std::move(libassistant_service_host);
