@@ -293,8 +293,9 @@ class PCScan<thread_safe>::PCScanTask final {
   // Returns the size of marked objects.
   size_t ScanPartitions();
 
-  // Clear quarantined objects inside the PCScan task.
-  void ClearQuarantinedObjects() const;
+  // Clear quarantined objects and filter out super pages that don't contain
+  // quarantine.
+  void ClearQuarantinedObjectsAndFilterSuperPages();
 
   // Sweeps (frees) unreachable quarantined entries. Returns the size of swept
   // objects.
@@ -384,24 +385,36 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
 }
 
 template <bool thread_safe>
-void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
+void PCScan<
+    thread_safe>::PCScanTask::ClearQuarantinedObjectsAndFilterSuperPages() {
   using AccessType = QuarantineBitmap::AccessType;
 
   PCSCAN_EVENT(scopes::kClear);
 
+  SuperPages filtered_super_pages;
   for (auto super_page : super_pages_) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
-    bitmap->template Iterate<AccessType::kNonAtomic>([root](uintptr_t ptr) {
-      auto* object = reinterpret_cast<void*>(ptr);
-      auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
-      // Use zero as a zapping value to speed up the fast bailout check in
-      // ScanPartitions.
-      memset(object, 0, slot_span->GetUsableSize(root));
-    });
+    bool visited = false;
+    bitmap->template Iterate<AccessType::kNonAtomic>(
+        [root, &visited](uintptr_t ptr) {
+          auto* object = reinterpret_cast<void*>(ptr);
+          auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
+          // Use zero as a zapping value to speed up the fast bailout check in
+          // ScanPartitions.
+          memset(object, 0, slot_span->GetUsableSize(root));
+          visited = true;
+        });
+    if (visited) {
+      // Filter out super pages that don't contain quarantined objects to bail
+      // out earlier in the fast path (and avoid expensive cache-misses while
+      // checking the quarantine bit).
+      filtered_super_pages.insert(super_page);
+    }
   }
+  super_pages_ = std::move(filtered_super_pages);
 }
 
 // Class used to perform actual scanning. Dispatches at runtime based on
@@ -737,14 +750,14 @@ template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   PCSCAN_EVENT(scopes::kPCScan);
 
-  const bool is_with_gigacage = features::IsPartitionAllocGigaCageEnabled();
-  if (is_with_gigacage) {
-    // Prepare super page bitmap for fast scanning.
+  // First, clear all quarantined objects and filter out super pages that don't
+  // contain quarantined objects.
+  ClearQuarantinedObjectsAndFilterSuperPages();
+
+  // Then, prepare the super page bitmap for fast scanning.
+  if (features::IsPartitionAllocGigaCageEnabled()) {
     super_pages_bitmap_.Populate(super_pages_);
   }
-
-  // Clear all quarantined objects.
-  ClearQuarantinedObjects();
 
   // Mark and sweep the quarantine list.
   const size_t new_quarantine_size = ScanPartitions();
