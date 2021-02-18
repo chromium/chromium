@@ -29,7 +29,7 @@ class BeaconTest : public testing::Test {
 
  private:
   void SetUp() override {
-    base::string16 temp;
+    std::wstring temp;
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(HKEY_CURRENT_USER, &temp));
     ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, temp));
@@ -43,7 +43,7 @@ class BeaconTest : public testing::Test {
   }
 
   void TearDown() override {
-    ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, base::string16()));
+    ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, std::wstring()));
   }
 };
 

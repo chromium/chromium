@@ -40,7 +40,7 @@ third_party_dlls::ExitCode LoadDll(std::wstring name) {
 
 // Utility function to protect the local registry.
 void RegRedirect(registry_util::RegistryOverrideManager* rom) {
-  base::string16 temp;
+  std::wstring temp;
   rom->OverrideRegistry(HKEY_CURRENT_USER, &temp);
   nt::SetTestingOverride(nt::HKCU, temp);
 }
@@ -52,7 +52,7 @@ void RegRedirect(registry_util::RegistryOverrideManager* rom) {
 bool MatchPath(const wchar_t* arg_path, const third_party_dlls::LogEntry& log) {
   base::FilePath drive_path;
   if (!base::DevicePathToDriveLetterPath(
-          base::FilePath(base::UTF8ToUTF16(log.path)), &drive_path)) {
+          base::FilePath(base::UTF8ToWide(log.path)), &drive_path)) {
     return false;
   }
 

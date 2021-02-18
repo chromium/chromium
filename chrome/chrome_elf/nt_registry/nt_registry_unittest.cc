@@ -298,7 +298,7 @@ TEST(NtRegistryTestMisc, SanitizeSubkeyPaths) {
 class NtRegistryTest : public testing::Test {
  protected:
   void SetUp() override {
-    base::string16 temp;
+    std::wstring temp;
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(HKEY_CURRENT_USER, &temp));
     ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, temp));
@@ -308,7 +308,7 @@ class NtRegistryTest : public testing::Test {
   }
 
   void TearDown() override {
-    base::string16 temp;
+    std::wstring temp;
     ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, temp));
     ASSERT_TRUE(nt::SetTestingOverride(nt::HKLM, temp));
   }
