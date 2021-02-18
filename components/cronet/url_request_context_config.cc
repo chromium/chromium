@@ -553,6 +553,27 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
         quic_params->ios_network_service_type = quic_ios_network_service_type;
       }
 
+      // Do not enable IETF QUIC when connection migration is enabled because
+      // our current connection migration code does not yet fully support the
+      // version of connection migration in the IETF spec.
+      // TODO(dschinazi) remove this once we support the spec.
+      if ((quic_migrate_sessions_on_network_change_v2 ||
+           quic_migrate_idle_sessions || quic_migrate_sessions_early_v2) &&
+          quic_version_string.empty()) {
+        quic::ParsedQuicVersionVector migration_versions;
+        for (const quic::ParsedQuicVersion& version :
+             quic_params->supported_versions) {
+          if (!version.UsesHttp3()) {
+            migration_versions.push_back(version);
+          }
+        }
+        quic_params->supported_versions = migration_versions;
+        if (quic_params->supported_versions.empty()) {
+          quic_params->supported_versions =
+              quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050()};
+        }
+      }
+
     } else if (it.key() == kAsyncDnsFieldTrialName) {
       const base::DictionaryValue* async_dns_args = nullptr;
       if (!it.value().GetAsDictionary(&async_dns_args)) {
