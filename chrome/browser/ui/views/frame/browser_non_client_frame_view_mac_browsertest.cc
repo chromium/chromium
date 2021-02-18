@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -116,8 +117,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
 
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
+// TODO(crbug.com/1156050): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_ToolbarLayoutFullscreenTransition \
+  DISABLED_ToolbarLayoutFullscreenTransition
+#else
+#define MAYBE_ToolbarLayoutFullscreenTransition \
+  ToolbarLayoutFullscreenTransition
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest,
-                       ToolbarLayoutFullscreenTransition) {
+                       MAYBE_ToolbarLayoutFullscreenTransition) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
   const GURL start_url = GetInstallableAppURL();
