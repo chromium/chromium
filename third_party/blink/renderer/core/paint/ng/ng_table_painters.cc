@@ -386,12 +386,12 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                            const IntRect& visual_rect) {
   DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
   const NGTableBorders* collapsed_borders = fragment_.TableCollapsedBorders();
-  const NGTableFragmentData::CollapsedBordersGeometry*
-      collapsed_borders_geometry = fragment_.TableCollapsedBordersGeometry();
   if (!collapsed_borders)
     return;
+  const NGTableFragmentData::CollapsedBordersGeometry*
+      collapsed_borders_geometry = fragment_.TableCollapsedBordersGeometry();
+  CHECK(collapsed_borders_geometry);
 
-  BoxDecorationData box_decoration_data(paint_info, fragment_);
   const LayoutNGTable& layout_table =
       *To<LayoutNGTable>(fragment_.GetLayoutObject());
   if (DrawingRecorder::UseCachedDrawingIfPossible(
@@ -418,10 +418,12 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     wtf_size_t table_row = edge.TableRow();
     wtf_size_t table_column = edge.TableColumn();
     if (edge.IsInlineAxis()) {
+      CHECK_LT(table_column + 1, collapsed_borders_geometry->columns.size());
       inline_start = collapsed_borders_geometry->columns[table_column];
       inline_size = collapsed_borders_geometry->columns[table_column + 1] -
                     collapsed_borders_geometry->columns[table_column];
       block_size = edge.BorderWidth();
+      CHECK_LT(table_row, collapsed_borders_geometry->rows.size());
       block_start =
           collapsed_borders_geometry->rows[table_row] - edge.BorderWidth() / 2;
       LogicalSize start_joint;
@@ -443,9 +445,11 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
         inline_size -= end_joint.inline_size / 2;
       }
     } else {  // block_axis
+      CHECK_LT(table_row + 1, collapsed_borders_geometry->rows.size());
       block_start = collapsed_borders_geometry->rows[table_row];
       block_size =
           collapsed_borders_geometry->rows[table_row + 1] - block_start;
+      CHECK_LT(table_column, collapsed_borders_geometry->columns.size());
       inline_start = collapsed_borders_geometry->columns[table_column] -
                      edge.BorderWidth() / 2;
       inline_size = edge.BorderWidth();
