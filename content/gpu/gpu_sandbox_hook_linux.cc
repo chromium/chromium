@@ -387,13 +387,15 @@ void LoadArmGpuLibraries() {
         break;
     }
   } else {
-    dlopen(kLibMaliPath, dlopen_flag);
+    bool is_mali = dlopen(kLibMaliPath, dlopen_flag) != nullptr;
 
     // Preload the Tegra V4L2 (video decode acceleration) library.
-    dlopen(kLibTegraPath, dlopen_flag);
+    bool is_tegra = dlopen(kLibTegraPath, dlopen_flag) != nullptr;
 
     // Preload mesa related libraries for devices which use mesa
-    if (nullptr != dlopen("libglapi.so", dlopen_flag)) {
+    // (ie. not mali or tegra):
+    if (!is_mali && !is_tegra &&
+        (nullptr != dlopen("libglapi.so", dlopen_flag))) {
       const char* driver_paths[] = {
 #if defined(DRI_DRIVER_DIR)
         DRI_DRIVER_DIR "/msm_dri.so",
