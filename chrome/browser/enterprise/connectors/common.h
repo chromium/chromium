@@ -101,6 +101,7 @@ struct FileSystemSettings {
   FileSystemSettings& operator=(FileSystemSettings&&);
   ~FileSystemSettings();
 
+  std::string service_provider;
   GURL home;
   GURL authorization_endpoint;
   GURL token_endpoint;

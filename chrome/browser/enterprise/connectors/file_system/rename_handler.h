@@ -8,12 +8,15 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 
 namespace enterprise_connectors {
+
+class AccessTokenFetcher;
 
 // Experimental flag to enable or disable the file system connector.
 extern const base::Feature kFileSystemConnectorEnabled;
@@ -38,12 +41,16 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
       download::DownloadItem* download_item,
       FileSystemSettings settings);
 
-  void NotifyResultToDownloadThread(bool success);
-
   // download::DownloadItemRenameHandler interface.
   void Start(Callback callback) override;
   void OpenDownload() override;
   void ShowDownloadInContext() override;
+
+  void StartInternal();
+  void OnAccessTokenFetched(bool status,
+                            const std::string& access_token,
+                            const std::string& refresh_token);
+  void NotifyResultToDownloadThread(bool success);
 
   // Fields copied from |download_item| or from policy settings.  These are
   // constant for the life of the rename handler.
@@ -52,6 +59,8 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
   // Invoked to tell the download system when the rename has completed.
   Callback download_callback_;
+  std::unique_ptr<AccessTokenFetcher> token_fetcher_;
+  base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors

@@ -66,6 +66,9 @@ class FileSystemServiceSettings {
   std::set<std::string> GetMimeTypes(
       const std::set<url_matcher::URLMatcherConditionSet::ID>& matches) const;
 
+  // The service provider name.
+  std::string service_provider_name_;
+
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.

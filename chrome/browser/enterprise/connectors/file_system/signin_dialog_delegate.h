@@ -9,6 +9,7 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/download/public/common/download_item_impl.h"
@@ -32,18 +33,18 @@ class FileSystemSigninDialogDelegate
   METADATA_HEADER(FileSystemSigninDialogDelegate);
 
   // Called with success or failure of this authorization attempt.
-  using AuthorizationCompletedCallback = base::OnceCallback<void(bool)>;
+  // The tokens passed to this callback have not been saved.  The callback
+  // is expected to save them if needed.
+  using AuthorizationCompletedCallback = AccessTokenFetcher::TokenCallback;
 
   ~FileSystemSigninDialogDelegate() override;
 
   static void ShowDialog(content::WebContents* web_contents,
-                         const std::string& service_provider,
                          const FileSystemSettings& settings,
                          AuthorizationCompletedCallback callback);
 
  private:
   FileSystemSigninDialogDelegate(content::BrowserContext* browser_context,
-                                 const std::string& service_provider,
                                  const FileSystemSettings& settings,
                                  AuthorizationCompletedCallback callback);
 
@@ -72,7 +73,6 @@ class FileSystemSigninDialogDelegate
                         const std::string& access_token,
                         const std::string& refresh_token);
 
-  const std::string service_provider_;
   const FileSystemSettings settings_;
   std::unique_ptr<views::WebView> web_view_;
   std::unique_ptr<OAuth2AccessTokenFetcherImpl> token_fetcher_;

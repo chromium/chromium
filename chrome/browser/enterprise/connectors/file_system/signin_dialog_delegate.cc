@@ -9,10 +9,8 @@
 
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -51,11 +49,9 @@ namespace enterprise_connectors {
 
 FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
     content::BrowserContext* browser_context,
-    const std::string& service_provider,
     const FileSystemSettings& settings,
     AuthorizationCompletedCallback callback)
-    : service_provider_(service_provider),
-      settings_(settings),
+    : settings_(settings),
       web_view_(std::make_unique<views::WebView>(browser_context)),
       callback_(std::move(callback)) {
   SetHasWindowSizeControls(true);
@@ -88,14 +84,13 @@ FileSystemSigninDialogDelegate::~FileSystemSigninDialogDelegate() = default;
 // static
 void FileSystemSigninDialogDelegate::ShowDialog(
     content::WebContents* web_contents,
-    const std::string& service_provider,
     const FileSystemSettings& settings,
     AuthorizationCompletedCallback callback) {
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   gfx::NativeView parent = web_contents->GetNativeView();
 
   FileSystemSigninDialogDelegate* delegate = new FileSystemSigninDialogDelegate(
-      browser_context, service_provider, settings, std::move(callback));
+      browser_context, settings, std::move(callback));
   // Object will be deleted internally by widget via DeleteDelegate().
   // TODO(https://crbug.com/1160012): use std::unique_ptr instead?
 
@@ -172,8 +167,8 @@ void FileSystemSigninDialogDelegate::DidFinishNavigation(
 
   // No refresh_token, so need to get both tokens with authorization code.
   token_fetcher_ = std::make_unique<AccessTokenFetcher>(
-      url_loader, service_provider_, settings_.token_endpoint, std::string(),
-      auth_code, std::move(callback));
+      url_loader, settings_.service_provider, settings_.token_endpoint,
+      std::string(), auth_code, std::move(callback));
   token_fetcher_->Start(settings_.client_id, settings_.client_secret,
                         settings_.scopes);
 }
@@ -182,15 +177,8 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
     bool success,
     const std::string& access_token,
     const std::string& refresh_token) {
-  if (success) {
-    PrefService* prefs =
-        Profile::FromBrowserContext(web_view_->GetBrowserContext())->GetPrefs();
-    success = SetFileSystemOAuth2Tokens(prefs, service_provider_, access_token,
-                                        refresh_token);
-  }
-
   token_fetcher_ = nullptr;
-  std::move(callback_).Run(success);
+  std::move(callback_).Run(success, access_token, refresh_token);
   GetWidget()->Close();
 }
 

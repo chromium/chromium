@@ -28,6 +28,8 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   if (!service_provider_)
     return;
 
+  service_provider_name_ = *service_provider_name;
+
   const std::string* enterprise_id =
       settings_value.FindStringKey(kKeyEnterpriseId);
   if (enterprise_id) {
@@ -89,6 +91,7 @@ base::Optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
     return base::nullopt;
 
   FileSystemSettings settings;
+  settings.service_provider = service_provider_name_;
   settings.home = GURL(service_provider_->fs_home_url());
   settings.authorization_endpoint =
       GURL(service_provider_->fs_authorization_endpoint());
