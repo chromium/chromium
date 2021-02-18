@@ -3997,12 +3997,12 @@
   {
     "name": "password-change-in-settings",
     "owners": [ "kolos" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "password-change-support",
     "owners": [ "selakovic@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 95
   },
   {
     "name": "password-check",
@@ -4021,7 +4021,7 @@
   {
     "name": "password-scripts-fetching",
     "owners": [ "kolos" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "PasswordImport",
