@@ -246,10 +246,6 @@ void TestMediaRouteProvider::CreateMediaRouteController(
   std::move(callback).Run(false);
 }
 
-void TestMediaRouteProvider::ProvideSinks(
-    const std::string& provider_name,
-    const std::vector<media_router::MediaSinkInternal>& sinks) {}
-
 void TestMediaRouteProvider::GetState(GetStateCallback callback) {
   std::move(callback).Run(nullptr);
 }

@@ -248,12 +248,6 @@ void WiredDisplayMediaRouteProvider::UpdateMediaSinks(
     media_router_->OnSinksReceived(kProviderId, media_source, GetSinks(), {});
 }
 
-void WiredDisplayMediaRouteProvider::ProvideSinks(
-    const std::string& provider_name,
-    const std::vector<media_router::MediaSinkInternal>& sinks) {
-  NOTREACHED();
-}
-
 void WiredDisplayMediaRouteProvider::CreateMediaRouteController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,

@@ -81,9 +81,6 @@ class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
   void DetachRoute(const std::string& route_id) override;
   void EnableMdnsDiscovery() override;
   void UpdateMediaSinks(const std::string& media_source) override;
-  void ProvideSinks(
-      const std::string& provider_name,
-      const std::vector<media_router::MediaSinkInternal>& sinks) override;
   void CreateMediaRouteController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
@@ -147,9 +144,6 @@ class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
   void DoDetachRoute(const std::string& route_id);
   void DoEnableMdnsDiscovery();
   void DoUpdateMediaSinks(const std::string& media_source);
-  void DoProvideSinks(
-      const std::string& provider_name,
-      const std::vector<media_router::MediaSinkInternal>& sinks);
   void DoCreateMediaRouteController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,

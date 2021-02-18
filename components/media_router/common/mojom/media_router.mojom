@@ -481,11 +481,6 @@ interface MediaRouteProvider {
   // |media_source| parameter.
   UpdateMediaSinks(string media_source);
 
-  // Called when the list of MediaSinks discovered by Media Router has been
-  // updated. The sinks are supplied to the MediaRouteProvider so that they can
-  // be used for other operations, such as route creation.
-  ProvideSinks(string provider_name, array<MediaSink> sinks);
-
   // Creates a controller for the media route with given |route_id| and binds it
   // to |media_controller| for receiving media commands. This method returns
   // false if such a media route doesn't exist, a controller already exists

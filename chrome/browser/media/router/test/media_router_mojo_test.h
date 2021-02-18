@@ -128,8 +128,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
   MOCK_METHOD1(StopObservingMediaRoutes, void(const std::string& source));
   MOCK_METHOD0(EnableMdnsDiscovery, void());
   MOCK_METHOD1(UpdateMediaSinks, void(const std::string& source));
-  MOCK_METHOD2(ProvideSinks,
-               void(const std::string&, const std::vector<MediaSinkInternal>&));
   void CreateMediaRouteController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,

@@ -629,12 +629,6 @@ void DialMediaRouteProvider::UpdateMediaSinks(const std::string& media_source) {
   media_sink_service_->OnUserGesture();
 }
 
-void DialMediaRouteProvider::ProvideSinks(
-    const std::string& provider_name,
-    const std::vector<media_router::MediaSinkInternal>& sinks) {
-  NOTIMPLEMENTED();
-}
-
 void DialMediaRouteProvider::CreateMediaRouteController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,

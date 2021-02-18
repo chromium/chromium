@@ -148,39 +148,6 @@ TEST_F(MediaRouterDesktopTest, SyncStateToMediaRouteProvider) {
   EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_extension_provider_));
 }
 
-TEST_F(MediaRouterDesktopTest, ProvideSinks) {
-  std::vector<MediaSinkInternal> sinks;
-  MediaSink sink("sinkId", "sinkName", SinkIconType::CAST,
-                 MediaRouteProviderId::EXTENSION);
-  CastSinkExtraData extra_data;
-  net::IPAddress ip_address;
-  EXPECT_TRUE(ip_address.AssignFromIPLiteral("192.168.1.3"));
-  extra_data.ip_endpoint = net::IPEndPoint(ip_address, 0);
-  extra_data.capabilities = 2;
-  extra_data.cast_channel_id = 3;
-  MediaSinkInternal expected_sink(sink, extra_data);
-  sinks.push_back(expected_sink);
-  const std::string kCastProviderName = "cast";
-
-  // |router()| is already registered with |media_sink_service_| during
-  // |SetUp()|.
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kCastProviderName, sinks));
-  media_sink_service()->OnSinksDiscovered(kCastProviderName, sinks);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kCastProviderName, sinks));
-  static_cast<MediaRouterDesktop*>(router())->ProvideSinksToExtension();
-  base::RunLoop().RunUntilIdle();
-
-  const std::string kDialProviderName = "dial";
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kCastProviderName, sinks));
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kDialProviderName, sinks))
-      .Times(0);
-  media_sink_service()->OnSinksDiscovered(kDialProviderName, sinks);
-  static_cast<MediaRouterDesktop*>(router())->ProvideSinksToExtension();
-  base::RunLoop().RunUntilIdle();
-}
-
 // Tests that auto-join and Cast SDK join requests are routed to the extension
 // MediaRouteProvider.
 TEST_F(MediaRouterDesktopTest, SendCastJoinRequestsToExtension) {
