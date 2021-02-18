@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/debug/leak_annotations.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -109,6 +110,49 @@ DomStorageDatabase::Status ForEachWithPrefix(leveldb::DB* db,
   return iter->status();
 }
 
+template <typename... Args>
+void CreateSequenceBoundDomStorageDatabase(
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    DomStorageDatabase::OpenCallback callback,
+    Args&&... args) {
+  auto database = std::make_unique<base::SequenceBound<DomStorageDatabase>>();
+
+  // Subtle: We bind `database` as an unmanaged pointer during the async opening
+  // operation so that it leaks in case the bound callback below never gets a
+  // chance to run (because scheduler shutdown happens first).
+  //
+  // This is because the callback below is posted to
+  // SequencedTaskRunnerHandle::Get(), which may not itself be
+  // shutdown-blocking; so if shutdown completes before the task runs, the
+  // callback below is destroyed along with any of its owned arguments.
+  // Meanwhile, SequenceBound destruction posts a task to its bound TaskRunner,
+  // which in this case is one which runs shutdown-blocking tasks.
+  //
+  // The net result of all of this is that if the SequenceBound were an owned
+  // argument, it might attempt to post a shutdown-blocking task after shutdown
+  // has completed, which is not allowed and will DCHECK. Leaving the object
+  // temporarily unmanaged during this window of potential failure avoids such a
+  // DCHECK, and if shutdown does not happen during that window, the object's
+  // ownership will finally be left to the caller's discretion.
+  //
+  // See https://crbug.com/1174179.
+  auto* database_ptr = database.release();
+  ANNOTATE_LEAKING_OBJECT_PTR(database_ptr);
+  *database_ptr = base::SequenceBound<DomStorageDatabase>(
+      blocking_task_runner, args..., base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(
+          [](base::SequenceBound<DomStorageDatabase>* database_ptr,
+             DomStorageDatabase::OpenCallback callback,
+             leveldb::Status status) {
+            auto database = base::WrapUnique(database_ptr);
+            if (status.ok())
+              std::move(callback).Run(std::move(*database), status);
+            else
+              std::move(callback).Run({}, status);
+          },
+          database_ptr, std::move(callback)));
+}
+
 }  // namespace
 
 DomStorageDatabase::KeyValuePair::KeyValuePair() = default;
@@ -201,20 +245,9 @@ void DomStorageDatabase::OpenDirectory(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
   DCHECK(directory.IsAbsolute());
-  auto database = std::make_unique<base::SequenceBound<DomStorageDatabase>>();
-  auto* database_ptr = database.get();
-  *database_ptr = base::SequenceBound<DomStorageDatabase>(
-      blocking_task_runner, directory, name, options, memory_dump_id,
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(
-          [](std::unique_ptr<base::SequenceBound<DomStorageDatabase>> database,
-             OpenCallback callback, leveldb::Status status) {
-            if (status.ok())
-              std::move(callback).Run(std::move(*database), status);
-            else
-              std::move(callback).Run({}, status);
-          },
-          std::move(database), std::move(callback)));
+  CreateSequenceBoundDomStorageDatabase(std::move(blocking_task_runner),
+                                        std::move(callback), directory, name,
+                                        options, memory_dump_id);
 }
 
 // static
@@ -224,20 +257,9 @@ void DomStorageDatabase::OpenInMemory(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
-  auto database = std::make_unique<base::SequenceBound<DomStorageDatabase>>();
-  auto* database_ptr = database.get();
-  *database_ptr = base::SequenceBound<DomStorageDatabase>(
-      blocking_task_runner, name, memory_dump_id,
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(
-          [](std::unique_ptr<base::SequenceBound<DomStorageDatabase>> database,
-             OpenCallback callback, leveldb::Status status) {
-            if (status.ok())
-              std::move(callback).Run(std::move(*database), status);
-            else
-              std::move(callback).Run({}, status);
-          },
-          std::move(database), std::move(callback)));
+  CreateSequenceBoundDomStorageDatabase(std::move(blocking_task_runner),
+                                        std::move(callback), name,
+                                        memory_dump_id);
 }
 
 // static
