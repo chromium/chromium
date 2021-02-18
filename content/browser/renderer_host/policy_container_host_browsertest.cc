@@ -706,6 +706,65 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
                 ->referrer_policy);
 }
 
+// This is a regression test. A document navigates a remote subframe away from
+// about:blank. The new FrameNavigationEntry used to wrongly inherit a
+// policies from the about:blank document.
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
+                       PoliciesNotInheritedForRemoteNonLocalScheme) {
+  NavigationControllerImpl& controller = web_contents()->GetController();
+
+  // Create a main frame with referrer policy 'unsafe-url'.
+  GURL always_referrer_url(embedded_test_server()->GetURL(
+      "/set-header?Referrer-Policy: unsafe-url"));
+  ASSERT_TRUE(NavigateToURL(shell(), always_referrer_url));
+
+  // Create a cross-origin child frame with referrer policy 'no-referrer'.
+  GURL cross_origin_no_referrer_url(embedded_test_server()->GetURL(
+      "b.com", "/set-header?Referrer-Policy: no-referrer"));
+  EXPECT_TRUE(
+      ExecJs(current_frame_host(), JsReplace(R"(
+    child_frame = document.createElement('iframe');
+    child_frame.src = $1;
+    document.body.appendChild(child_frame);
+  )",
+                                             cross_origin_no_referrer_url)));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  FrameTreeNode* child = current_frame_host()->child_at(0);
+  EXPECT_NE(nullptr, child);
+
+  // Navigate the child frame to "about:blank", but keep it in a remote frame
+  // w.r.t. the main frame.
+  EXPECT_TRUE(ExecJs(child->current_frame_host(), R"(
+    location.href = "about:blank";
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  EXPECT_EQ(
+      network::mojom::ReferrerPolicy::kNever,
+      child->current_frame_host()->policy_container_host()->referrer_policy());
+  EXPECT_EQ(2, controller.GetEntryCount());
+  NavigationEntryImpl* entry1 = controller.GetEntryAtIndex(1);
+
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+            entry1->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
+
+  // Now navigate the child from the main frame to another empty url.
+  GURL empty_url(embedded_test_server()->GetURL("c.com", "/empty.html"));
+  EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    child_frame.src = $1;
+  )",
+                                                     empty_url)));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The child should have default referrer policy.
+  EXPECT_EQ(
+      network::mojom::ReferrerPolicy::kDefault,
+      child->current_frame_host()->policy_container_host()->referrer_policy());
+}
+
 // The following tests shows the behavior of the policy container during the
 // early commit following a crashed frame: If an embedder pauses the navigation
 // that causing the early commit, they can then execute javascript in the

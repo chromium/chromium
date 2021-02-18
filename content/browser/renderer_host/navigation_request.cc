@@ -1354,6 +1354,12 @@ NavigationRequest::MaybeInheritPolicyContainerHost(
     const FrameNavigationEntry* frame_navigation_entry) {
   if (frame_navigation_entry &&
       frame_navigation_entry->policy_container_policies()) {
+    // Only local scheme urls should have policies stored in history.
+    DCHECK(common_params_->url.SchemeIs(url::kAboutScheme) ||
+           common_params_->url.SchemeIs(url::kDataScheme) ||
+           common_params_->url.SchemeIs(url::kBlobScheme) ||
+           common_params_->url.SchemeIs(url::kFileSystemScheme));
+
     // If there is a history entry with some document policies, initialize the
     // PolicyContainerHost with them, so that they will get applied to the
     // document created by the navigation.

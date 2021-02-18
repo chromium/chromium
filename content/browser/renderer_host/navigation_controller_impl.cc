@@ -2369,23 +2369,13 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
       // CreateNavigationEntry() may have changed the transition type.
       page_transition = entry->GetTransitionType();
     }
-    std::unique_ptr<PolicyContainerPolicies> policies;
-    if (GetLastCommittedEntry()) {
-      FrameNavigationEntry* previous_frame_entry =
-          GetLastCommittedEntry()->GetFrameEntry(node);
-      if (previous_frame_entry &&
-          previous_frame_entry->policy_container_policies()) {
-        policies = std::make_unique<PolicyContainerPolicies>(
-            *previous_frame_entry->policy_container_policies());
-      }
-    }
     entry->AddOrUpdateFrameEntry(
         node, -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         base::nullopt /* commit_origin */, referrer, initiator_origin,
         std::vector<GURL>(), blink::PageState(), method, -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
-        std::move(policies));
+        nullptr /* policy_container_policies */);
   } else {
     // Main frame case.
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
