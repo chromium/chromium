@@ -170,6 +170,9 @@ const char kCrosRegionsModeHide[] = "hide";
 // "Override" value for kCrosRegionsMode (region's data is read first).
 const char kCrosRegionsModeOverride[] = "override";
 
+// Controls if AuthSession API should be used when interacting with cryptohomed.
+const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
+
 // Indicates that the wallpaper images specified by
 // kAshDefaultWallpaper{Large,Small} are OEM-specific (i.e. they are not
 // downloadable from Google).
@@ -592,6 +595,11 @@ bool MemoryPressureHandlingEnabled() {
     return false;
   }
   return true;
+}
+
+bool IsAuthSessionCryptohomeEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kCryptohomeUseAuthSession);
 }
 
 bool IsGaiaIdMigrationStarted() {

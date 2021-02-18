@@ -58,6 +58,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegionsMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegionsModeHide[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCrosRegionsModeOverride[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCryptohomeUseAuthSession[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperIsOem[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperSmall[];
@@ -223,6 +224,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool MemoryPressureHandlingEnabled();
 // Returns true if flags are set indicating that stored user keys are being
 // converted to GAIA IDs.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaIdMigrationStarted();
+
+// Returns true if flag if AuthSession should be used to communicate with
+// cryptohomed instead of explicitly authorizing each operation.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthSessionCryptohomeEnabled();
 
 // Returns true if this is a Cellular First device.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularFirstDevice();
