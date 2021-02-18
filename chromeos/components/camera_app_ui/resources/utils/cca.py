@@ -40,11 +40,11 @@ def run_node(args):
 
 def build_preload_images_js(outdir):
     with open('images/images.gni') as f:
-        in_app_assets = ast.literal_eval(
-            re.search(r'in_app_assets\s*=\s*(\[.*\])', f.read(),
+        in_app_images = ast.literal_eval(
+            re.search(r'in_app_images\s*=\s*(\[.*?\])', f.read(),
                       re.DOTALL).group(1))
     with tempfile.NamedTemporaryFile('w') as f:
-        f.writelines(asset + '\n' for asset in in_app_assets)
+        f.writelines(asset + '\n' for asset in in_app_images)
         f.flush()
         cmd = [
             'utils/gen_preload_images_js.py',
@@ -67,13 +67,19 @@ def deploy(args):
     build_pak_cmd = [
         'tools/grit/grit.py',
         '-i',
-        os.path.join(cca_root, 'camera_app_resources.grd'),
+        os.path.join(
+            target_dir, 'gen/chromeos/components/camera_app_ui/' +
+            'chromeos_camera_app_resources.grd'),
         'build',
         '-o',
         os.path.join(target_dir, 'gen/chromeos'),
         '-f',
         os.path.join(target_dir,
                      'gen/tools/gritsettings/default_resource_ids'),
+        '-D',
+        f'SHARED_INTERMEDIATE_DIR={os.path.join(target_dir, "gen")}',
+        '-E',
+        f'root_src_dir={get_chromium_root()}',
         '-E',
         f'root_gen_dir={os.path.join(target_dir, "gen")}',
     ]
