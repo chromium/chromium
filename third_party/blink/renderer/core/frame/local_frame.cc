@@ -2599,6 +2599,8 @@ void LocalFrame::WasAttachedAsLocalMainFrame() {
 
 void LocalFrame::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
+  if (!GetPage()->GetPageScheduler()->IsInBackForwardCache())
+    return;
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
   GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(reason);
 }
