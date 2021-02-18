@@ -4,9 +4,8 @@
 
 #include "components/performance_manager/public/freezing/freezing.h"
 
-#include <memory>
-
 #include "base/bind.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -32,16 +31,27 @@ class FreezingVoteTokenPMImpl : public PageNode::ObserverDefaultImpl {
   FreezingVoteTokenPMImpl(const FreezingVoteTokenPMImpl& other) = delete;
   FreezingVoteTokenPMImpl& operator=(const FreezingVoteTokenPMImpl&) = delete;
 
+  void InitializeOnGraph(base::WeakPtr<PageNode> page_node,
+                         FreezingVote vote,
+                         Graph* graph);
+
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
  private:
-  const PageNode* page_node_ = nullptr;
-  Graph* graph_ = nullptr;
+  // Resets this instance so it is no longer casting a vote for |page_node_|.
+  void Reset();
 
-  // Voting channel wrapper. This objects should only be used on the PM
-  // sequence.
-  std::unique_ptr<FreezingVotingChannelWrapper> voter_;
+  const PageNode* page_node_ = nullptr;
+
+  base::ScopedObservation<Graph,
+                          PageNodeObserver,
+                          &Graph::AddPageNodeObserver,
+                          &Graph::RemovePageNodeObserver>
+      page_node_observation_{this};
+
+  // Voting channel.
+  FreezingVotingChannelWrapper voting_channel_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -57,8 +67,7 @@ class FreezingVoteTokenImpl : public FreezingVoteToken {
   FreezingVoteTokenImpl& operator=(const FreezingVoteTokenImpl&) = delete;
 
  private:
-  // Voting channel wrapper. This objects should only be used on the PM
-  // sequence.
+  // Implementation that lives on the PM sequence.
   std::unique_ptr<FreezingVoteTokenPMImpl, base::OnTaskRunnerDeleter> pm_impl_;
 };
 
@@ -75,49 +84,59 @@ FreezingVoteTokenPMImpl::FreezingVoteTokenPMImpl(content::WebContents* content,
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, FreezingVoteValue vote_value,
-             const char* vote_reason, FreezingVoteTokenPMImpl* voter_pm_impl,
-             Graph* graph) {
-            voter_pm_impl->voter_ =
-                std::make_unique<FreezingVotingChannelWrapper>();
-            voter_pm_impl->graph_ = graph;
-            graph->AddPageNodeObserver(voter_pm_impl);
-            voter_pm_impl->voter_->SetVotingChannel(
-                graph->GetRegisteredObjectAs<FreezingVoteAggregator>()
-                    ->GetVotingChannel());
-            if (page_node) {
-              voter_pm_impl->voter_->SubmitVote(page_node.get(),
-                                                {vote_value, vote_reason});
-              voter_pm_impl->page_node_ = page_node.get();
-            }
-          },
-          PerformanceManager::GetPageNodeForWebContents(content), vote_value,
-          // It's safe to use Unretained because |vote_reason| is a static
-          // string.
-          base::Unretained(vote_reason),
+          &FreezingVoteTokenPMImpl::InitializeOnGraph,
           // It's safe to use Unretained because |this| can only be deleted
           // from a task running on the PM sequence after this callback.
-          base::Unretained(this)));
+          base::Unretained(this),
+          PerformanceManager::GetPageNodeForWebContents(content),
+          FreezingVote(vote_value, vote_reason)));
 }
 
 FreezingVoteTokenPMImpl::~FreezingVoteTokenPMImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (graph_)
-    graph_->RemovePageNodeObserver(this);
+  Reset();
+}
+
+void FreezingVoteTokenPMImpl::InitializeOnGraph(
+    base::WeakPtr<PageNode> page_node,
+    FreezingVote vote,
+    Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // No need to initialize if the page node doesn't exist anymore.
+  if (!page_node)
+    return;
+
+  page_node_ = page_node.get();
+  page_node_observation_.Observe(graph);
+
+  voting_channel_.SetVotingChannel(
+      graph->GetRegisteredObjectAs<FreezingVoteAggregator>()
+          ->GetVotingChannel());
+  voting_channel_.SubmitVote(page_node_, vote);
 }
 
 void FreezingVoteTokenPMImpl::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (page_node == page_node_) {
-    // Invalidate the vote if its associated page node is destroyed. This can
-    // happen if a freezing vote token is released after the destruction of the
-    // WebContents it's associated with.
-    voter_->InvalidateVote(page_node);
-    page_node_ = nullptr;
-    graph_->RemovePageNodeObserver(this);
-    graph_ = nullptr;
-  }
+
+  if (page_node != page_node_)
+    return;
+
+  // Invalidate the vote if its associated page node is destroyed. This can
+  // happen if a freezing vote token is released after the destruction of the
+  // WebContents it's associated with.
+  Reset();
+}
+
+void FreezingVoteTokenPMImpl::Reset() {
+  if (!page_node_)
+    return;
+
+  voting_channel_.InvalidateVote(page_node_);
+  voting_channel_ = FreezingVotingChannelWrapper();
+  page_node_observation_.Reset();
+  page_node_ = nullptr;
 }
 
 FreezingVoteTokenImpl::FreezingVoteTokenImpl(content::WebContents* content,

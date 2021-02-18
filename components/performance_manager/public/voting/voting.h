@@ -987,7 +987,9 @@ template <class VoteImpl>
 VotingChannelWrapper<VoteImpl>::VotingChannelWrapper() = default;
 
 template <class VoteImpl>
-VotingChannelWrapper<VoteImpl>::~VotingChannelWrapper() = default;
+VotingChannelWrapper<VoteImpl>::~VotingChannelWrapper() {
+  DCHECK(vote_receipts_.empty());
+}
 
 template <class VoteImpl>
 VotingChannelWrapper<VoteImpl>::VotingChannelWrapper(VotingChannelWrapper&&) =

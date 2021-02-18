@@ -162,6 +162,10 @@ TEST_F(FreezingVoteAggregatorTest, EndToEnd) {
       observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
   EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode1,
                                  kCannotFreezeVote1));
+
+  // Clear the votes.
+  voter0.InvalidateVote(kPageNode0);
+  voter0.InvalidateVote(kPageNode1);
 }
 
 TEST_F(FreezingVoteAggregatorTest, VoteIntegrity) {

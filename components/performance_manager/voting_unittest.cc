@@ -237,6 +237,9 @@ TEST(VotingTest, VotingChannelWrapper_SubmitDuplicateVote) {
 
   EXPECT_DCHECK_DEATH(
       voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(10, kReason)));
+
+  // Clean up.
+  voting_channel_wrapper.InvalidateVote(kDummyContext1);
 }
 
 // Tests that calling ChangeVote() for a context before a vote was submitted for
