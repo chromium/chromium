@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
+#ifndef COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
+#define COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
 
 #include <stdint.h>
 
@@ -19,12 +19,14 @@
 
 namespace component_updater {
 
-class ComponentUpdateService;
-
 class OriginTrialsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   OriginTrialsComponentInstallerPolicy() = default;
   ~OriginTrialsComponentInstallerPolicy() override = default;
+  OriginTrialsComponentInstallerPolicy(
+      const OriginTrialsComponentInstallerPolicy&) = delete;
+  OriginTrialsComponentInstallerPolicy& operator=(
+      const OriginTrialsComponentInstallerPolicy&) = delete;
 
  private:
   bool VerifyInstallation(const base::DictionaryValue& manifest,
@@ -42,14 +44,8 @@ class OriginTrialsComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialsComponentInstallerPolicy);
 };
-
-// Call once during startup to make the component update service aware of
-// the origin trials update component.
-void RegisterOriginTrialsComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
+#endif  // COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_

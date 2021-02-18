@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/origin_trials_component_installer.h"
+#include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 
 #include <string>
 #include <utility>
@@ -66,7 +66,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    policy_.reset(new OriginTrialsComponentInstallerPolicy());
+    policy_ = std::make_unique<ChromeOriginTrialsComponentInstallerPolicy>();
   }
 
   void LoadUpdates(std::unique_ptr<base::DictionaryValue> manifest) {
