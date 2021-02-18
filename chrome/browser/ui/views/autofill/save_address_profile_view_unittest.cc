@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -20,6 +22,7 @@ class MockSaveAddressProfileBubbleController
     : public SaveAddressProfileBubbleController {
  public:
   MOCK_METHOD(base::string16, GetWindowTitle, (), (const, override));
+  MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
   MOCK_METHOD(void,
               OnUserDecision,
               (AutofillClient::SaveAddressProfileOfferUserDecision decision),
@@ -42,6 +45,9 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  const AutofillProfile& address_profile_to_save() {
+    return address_profile_to_save_;
+  }
   SaveAddressProfileView* view() { return view_; }
   MockSaveAddressProfileBubbleController* mock_controller() {
     return &mock_controller_;
@@ -50,6 +56,7 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
+  AutofillProfile address_profile_to_save_ = test::GetFullProfile();
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -69,6 +76,8 @@ SaveAddressProfileViewTest::SaveAddressProfileViewTest() {
 void SaveAddressProfileViewTest::CreateViewAndShow() {
   ON_CALL(*mock_controller(), GetWindowTitle())
       .WillByDefault(testing::Return(base::string16()));
+  ON_CALL(*mock_controller(), GetProfileToSave())
+      .WillByDefault(testing::ReturnRef(address_profile_to_save()));
 
   // The bubble needs the parent as an anchor.
   views::Widget::InitParams params =

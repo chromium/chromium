@@ -40,6 +40,7 @@ class SaveAddressProfileBubbleControllerImpl
 
   // SaveAddressProfileBubbleController:
   base::string16 GetWindowTitle() const override;
+  const AutofillProfile& GetProfileToSave() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision) override;
   void OnBubbleClosed() override;

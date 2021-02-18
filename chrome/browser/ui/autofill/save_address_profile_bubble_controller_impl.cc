@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -37,7 +38,14 @@ void SaveAddressProfileBubbleControllerImpl::OfferSave(
 }
 
 base::string16 SaveAddressProfileBubbleControllerImpl::GetWindowTitle() const {
-  return base::string16();
+  // TODO(crbug.com/1167060): Use ineternationalized string upon having final
+  // strings.
+  return base::UTF8ToUTF16("Save Address?");
+}
+
+const AutofillProfile&
+SaveAddressProfileBubbleControllerImpl::GetProfileToSave() const {
+  return address_profile_;
 }
 
 void SaveAddressProfileBubbleControllerImpl::OnUserDecision(
