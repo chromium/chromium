@@ -73,7 +73,7 @@
         errorLine1="            if (AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(desc.type)) return true;"
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/signin/core/browser/android/java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java"
+            file="../../components/signin/public/android/java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java"
             line="188"
             column="30"/>
     </issue>
@@ -832,7 +832,7 @@
         errorLine1="        assert AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(account.type);"
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/signin/core/browser/android/java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java"
+            file="../../components/signin/public/android/java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java"
             line="141"
             column="29"/>
     </issue>

@@ -385,7 +385,6 @@ test("components_unittests") {
       "//components/policy/android:native_test_support_java",
       "//components/policy/android:policy_java",
       "//components/signin/core/browser",
-      "//components/signin/core/browser/android:java",
       "//components/signin/public/android:java",
       "//components/spellcheck/browser/android:java",
       "//components/variations/android:variations_java",
