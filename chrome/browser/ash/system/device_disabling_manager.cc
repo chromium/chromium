@@ -23,7 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 DeviceDisablingManager::Observer::~Observer() {
@@ -243,4 +243,4 @@ void DeviceDisablingManager::UpdateFromCrosSettings() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

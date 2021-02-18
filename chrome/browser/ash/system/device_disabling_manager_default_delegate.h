@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class DeviceDisablingManagerDefaultDelegate
@@ -25,6 +25,6 @@ class DeviceDisablingManagerDefaultDelegate
 };
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_DEVICE_DISABLING_MANAGER_DEFAULT_DELEGATE_H_

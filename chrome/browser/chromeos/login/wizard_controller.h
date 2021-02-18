@@ -56,6 +56,9 @@
 #include "chrome/browser/chromeos/login/screens/update_screen.h"
 #include "chrome/browser/chromeos/login/screens/user_creation_screen.h"
 #include "chrome/browser/chromeos/login/screens/welcome_screen.h"
+// TODO(https://crbug.com/1164001): move LoginDisplayHost to forward
+// declaration when moved to chrome/browser/ash/.
+#include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "components/account_id/account_id.h"
 
@@ -70,7 +73,6 @@ class NetworkStateHelper;
 class DemoSetupController;
 class ErrorScreen;
 struct Geoposition;
-class LoginDisplayHost;
 class SimpleGeolocationProvider;
 class TimeZoneProvider;
 struct TimeZoneResponseData;

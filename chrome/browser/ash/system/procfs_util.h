@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // A single process data from a /proc/[pid]/stat file.
@@ -58,6 +58,16 @@ base::Optional<int64_t> GetCpuTimeJiffies(
 base::Optional<int64_t> GetUsedMemTotalKB(
     const base::FilePath& meminfo_file = base::FilePath("/proc/meminfo"));
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::GetCpuTimeJiffies;
+using ::ash::system::GetSingleProcStat;
+using ::ash::system::SingleProcStat;
 }  // namespace system
 }  // namespace chromeos
 

@@ -87,4 +87,9 @@ class OobeScreenWaiter : public OobeUI::Observer,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::OobeScreenWaiter;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OOBE_SCREEN_WAITER_H_

@@ -43,7 +43,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -96,7 +96,6 @@ class DeviceDisablingTest
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDisablingTest);
 };
-
 
 void DeviceDisablingTest::SetDeviceDisabledPolicy() {
   // Prepare a policy fetch response that indicates the device is disabled.
@@ -305,4 +304,4 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingBeforeLoginHostCreated,
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

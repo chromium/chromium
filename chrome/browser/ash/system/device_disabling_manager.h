@@ -22,7 +22,7 @@ namespace user_manager {
 class UserManager;
 }
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // If an enrolled device is lost or stolen, it can be remotely disabled by its
@@ -151,6 +151,14 @@ class DeviceDisablingManager {
   DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManager);
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::DeviceDisablingManager;
 }  // namespace system
 }  // namespace chromeos
 

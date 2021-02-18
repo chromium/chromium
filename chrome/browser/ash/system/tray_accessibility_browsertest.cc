@@ -41,7 +41,7 @@ using testing::Return;
 using testing::_;
 using testing::WithParamInterface;
 
-namespace chromeos {
+namespace ash {
 
 enum PrefSettingMechanism {
   PREF_SERVICE,
@@ -767,4 +767,4 @@ INSTANTIATE_TEST_SUITE_P(TrayAccessibilityLoginTestInstance,
                          TrayAccessibilityLoginTest,
                          testing::Values(PREF_SERVICE, POLICY));
 
-}  // namespace chromeos
+}  // namespace ash

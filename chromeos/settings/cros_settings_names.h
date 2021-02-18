@@ -302,6 +302,11 @@ using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage;
 using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyId;
 using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppId;
 using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyType;
+using ::chromeos::kDeviceDisabled;
+using ::chromeos::kDeviceDisabledMessage;
+using ::chromeos::kSystemTimezone;
+using ::chromeos::kSystemTimezonePolicy;
+using ::chromeos::kSystemUse24HourClock;
 }  // namespace ash
 
 #endif  // CHROMEOS_SETTINGS_CROS_SETTINGS_NAMES_H_

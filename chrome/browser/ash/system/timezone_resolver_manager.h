@@ -13,7 +13,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
@@ -109,6 +109,14 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   DISALLOW_COPY_AND_ASSIGN(TimeZoneResolverManager);
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::TimeZoneResolverManager;
 }  // namespace system
 }  // namespace chromeos
 

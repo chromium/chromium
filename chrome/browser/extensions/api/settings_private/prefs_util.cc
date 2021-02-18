@@ -82,7 +82,7 @@ namespace {
 bool IsPrivilegedCrosSetting(const std::string& pref_name) {
   if (!chromeos::CrosSettings::IsCrosSettings(pref_name))
     return false;
-  if (!chromeos::system::PerUserTimezoneEnabled()) {
+  if (!ash::system::PerUserTimezoneEnabled()) {
     // kSystemTimezone should be changeable by all users.
     if (pref_name == chromeos::kSystemTimezone)
       return false;
@@ -124,7 +124,7 @@ bool IsSettingReadOnly(const std::string& pref_name) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System timezone is never directly changeable by the user.
   if (pref_name == chromeos::kSystemTimezone)
-    return chromeos::system::PerUserTimezoneEnabled();
+    return ash::system::PerUserTimezoneEnabled();
   // enable_screen_lock and pin_unlock_autosubmit_enabled
   // must be changed through the quickUnlockPrivate API.
   if (pref_name == ash::prefs::kEnableAutoScreenLock ||
@@ -1037,7 +1037,7 @@ settings_private::SetPrefResult PrefsUtil::SetCrosSettingsPref(
       return settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
     const user_manager::User* user =
         chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-    if (user && chromeos::system::SetSystemTimezone(user, string_value))
+    if (user && ash::system::SetSystemTimezone(user, string_value))
       return settings_private::SetPrefResult::SUCCESS;
     return settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
@@ -1102,7 +1102,7 @@ bool PrefsUtil::IsPrefEnterpriseManaged(const std::string& pref_name) {
     return true;
   if (pref_name == chromeos::kSystemTimezone ||
       pref_name == prefs::kUserTimezone) {
-    return chromeos::system::IsTimezonePrefsManaged(pref_name);
+    return ash::system::IsTimezonePrefsManaged(pref_name);
   }
   return false;
 }

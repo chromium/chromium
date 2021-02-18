@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // This fake just memorizes current values of input devices settings.
@@ -70,6 +70,6 @@ class FakeInputDeviceSettings : public InputDeviceSettings,
 };
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_FAKE_INPUT_DEVICE_SETTINGS_H_

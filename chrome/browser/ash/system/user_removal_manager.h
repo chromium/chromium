@@ -14,7 +14,7 @@
 // to the login screen, while RemoveUsersIfNeeded does the actual removal at the
 // login screen.
 
-namespace chromeos {
+namespace ash {
 namespace user_removal_manager {
 
 // This function is called early in the startup sequence on the login screen. It
@@ -37,6 +37,17 @@ void OverrideLogOutForTesting(base::OnceClosure callback);
 // do some network communication, but the connection is lost).
 void InitiateUserRemoval(base::OnceClosure on_pref_persisted_callback);
 
+}  // namespace user_removal_manager
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace user_removal_manager {
+using ::ash::user_removal_manager::InitiateUserRemoval;
+using ::ash::user_removal_manager::LogOut;
+using ::ash::user_removal_manager::OverrideLogOutForTesting;
+using ::ash::user_removal_manager::RemoveUsersIfNeeded;
 }  // namespace user_removal_manager
 }  // namespace chromeos
 

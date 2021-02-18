@@ -117,4 +117,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace ash {
+using ::chromeos::FakeUpdateEngineClient;
+}
+
 #endif  // CHROMEOS_DBUS_FAKE_UPDATE_ENGINE_CLIENT_H_

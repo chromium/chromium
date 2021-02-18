@@ -36,7 +36,7 @@
 using testing::_;
 using testing::Mock;
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -78,13 +78,13 @@ class DeviceDisablingManagerTestBase : public testing::Test,
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::FakeChromeUserManager fake_user_manager_;
   std::unique_ptr<DeviceDisablingManager> device_disabling_manager_;
-  FakeStatisticsProvider statistics_provider_;
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManagerTestBase);
 };
 
 DeviceDisablingManagerTestBase::DeviceDisablingManagerTestBase() {
-  system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+  chromeos::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 }
 
 void DeviceDisablingManagerTestBase::TearDown() {
@@ -140,7 +140,7 @@ class DeviceDisablingManagerOOBETest : public DeviceDisablingManagerTestBase {
   void OnDeviceDisabledChecked(bool device_disabled);
 
   TestingPrefServiceSimple local_state_;
-  FakeStatisticsProvider statistics_provider_;
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 
   base::RunLoop run_loop_;
   bool device_disabled_;
@@ -159,7 +159,7 @@ void DeviceDisablingManagerOOBETest::SetUp() {
   policy::DeviceCloudPolicyManagerChromeOS::RegisterPrefs(
       local_state_.registry());
   CreateDeviceDisablingManager();
-  system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+  chromeos::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 }
 
 void DeviceDisablingManagerOOBETest::TearDown() {
@@ -492,4 +492,4 @@ TEST_F(DeviceDisablingManagerTest, HonorDeviceDisablingDuringNormalOperation) {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

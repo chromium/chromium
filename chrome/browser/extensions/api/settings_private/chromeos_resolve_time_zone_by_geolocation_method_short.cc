@@ -67,7 +67,7 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
     return SetPrefResult::PREF_TYPE_MISMATCH;
 
   // Check if preference is policy or primary-user controlled.
-  if (chromeos::system::TimeZoneResolverManager::
+  if (ash::system::TimeZoneResolverManager::
           IsTimeZoneResolutionPolicyControlled() ||
       !profile_->IsSameOrParent(ProfileManager::GetPrimaryUserProfile())) {
     return SetPrefResult::PREF_NOT_MODIFIABLE;
@@ -81,10 +81,10 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
     return SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 
-  const chromeos::system::TimeZoneResolverManager::TimeZoneResolveMethod
-      new_value = chromeos::system::TimeZoneResolverManager::
-          TimeZoneResolveMethodFromInt(value->GetInt());
-  const chromeos::system::TimeZoneResolverManager::TimeZoneResolveMethod
+  const ash::system::TimeZoneResolverManager::TimeZoneResolveMethod new_value =
+      ash::system::TimeZoneResolverManager::TimeZoneResolveMethodFromInt(
+          value->GetInt());
+  const ash::system::TimeZoneResolverManager::TimeZoneResolveMethod
       current_value = g_browser_process->platform_part()
                           ->GetTimezoneResolverManager()
                           ->GetEffectiveUserTimeZoneResolveMethod(

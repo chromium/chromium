@@ -12,7 +12,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 PointerDeviceObserver::PointerDeviceObserver() {}
@@ -82,4 +82,4 @@ PointerDeviceObserver::Observer::~Observer() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

@@ -82,7 +82,7 @@ BrowserProcessPlatformPart::~BrowserProcessPlatformPart() {
 void BrowserProcessPlatformPart::InitializeAutomaticRebootManager() {
   DCHECK(!automatic_reboot_manager_);
 
-  automatic_reboot_manager_.reset(new chromeos::system::AutomaticRebootManager(
+  automatic_reboot_manager_.reset(new ash::system::AutomaticRebootManager(
       base::DefaultTickClock::GetInstance()));
 }
 
@@ -106,8 +106,8 @@ void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {
   DCHECK(!device_disabling_manager_);
 
   device_disabling_manager_delegate_.reset(
-      new chromeos::system::DeviceDisablingManagerDefaultDelegate);
-  device_disabling_manager_.reset(new chromeos::system::DeviceDisablingManager(
+      new ash::system::DeviceDisablingManagerDefaultDelegate);
+  device_disabling_manager_.reset(new ash::system::DeviceDisablingManager(
       device_disabling_manager_delegate_.get(), chromeos::CrosSettings::Get(),
       user_manager::UserManager::Get()));
   device_disabling_manager_->Init();
@@ -237,7 +237,7 @@ chromeos::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
         GetTimezoneResolverManager(),
         g_browser_process->shared_url_loader_factory(),
         chromeos::SimpleGeolocationProvider::DefaultGeolocationProviderURL(),
-        base::BindRepeating(&chromeos::system::ApplyTimeZone),
+        base::BindRepeating(&ash::system::ApplyTimeZone),
         base::BindRepeating(&chromeos::DelayNetworkCall,
                             base::TimeDelta::FromMilliseconds(
                                 chromeos::kDefaultNetworkRetryDelayMS)),

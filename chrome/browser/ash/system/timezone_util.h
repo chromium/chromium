@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "base/strings/string16.h"
+// TODO(https://crbug.com/1164001): move TimeZoneResponseData to forward
+// declaration when moved to chrome/browser/ash/.
+#include "chromeos/timezone/timezone_request.h"
 
 class Profile;
 
@@ -19,10 +22,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
-
-struct TimeZoneResponseData;
-
+namespace ash {
 namespace system {
 
 // Gets the current timezone's display name.
@@ -71,6 +71,21 @@ void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id);
 // Returns true if fine-grained time zone detection is enabled.
 bool FineGrainedTimeZoneDetectionEnabled();
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::GetCurrentTimezoneName;
+using ::ash::system::GetTimezoneList;
+using ::ash::system::HasSystemTimezonePolicy;
+using ::ash::system::PerUserTimezoneEnabled;
+using ::ash::system::SetSystemAndSigninScreenTimezone;
+using ::ash::system::SetSystemTimezone;
+using ::ash::system::SetTimezoneFromUI;
+using ::ash::system::UpdateSystemTimezone;
 }  // namespace system
 }  // namespace chromeos
 

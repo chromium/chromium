@@ -8,7 +8,7 @@
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -433,7 +433,7 @@ bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
 
   bool keyboard_driven = false;
   if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineFlag(
-          kOemKeyboardDrivenOobeKey, &keyboard_driven)) {
+          chromeos::system::kOemKeyboardDrivenOobeKey, &keyboard_driven)) {
     return keyboard_driven;
   }
 
@@ -441,4 +441,4 @@ bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

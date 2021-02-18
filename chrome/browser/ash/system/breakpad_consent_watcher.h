@@ -9,7 +9,7 @@
 
 #include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // Watches the crash reporting consent setting (cros.metrics.reportingEnabled).
@@ -49,6 +49,14 @@ class BreakpadConsentWatcher {
   base::CallbackListSubscription subscription_;
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::BreakpadConsentWatcher;
 }  // namespace system
 }  // namespace chromeos
 

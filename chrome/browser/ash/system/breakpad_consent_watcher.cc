@@ -13,7 +13,7 @@
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 BreakpadConsentWatcher::BreakpadConsentWatcher() = default;
@@ -61,4 +61,4 @@ void BreakpadConsentWatcher::OnConsentChangeCollectStatsConsentThread() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

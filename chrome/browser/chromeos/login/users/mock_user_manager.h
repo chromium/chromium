@@ -190,4 +190,9 @@ class MockUserManager : public ChromeUserManager {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::MockUserManager;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_USERS_MOCK_USER_MANAGER_H_

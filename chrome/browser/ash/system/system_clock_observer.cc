@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/system/system_clock_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 SystemClockObserver::~SystemClockObserver() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

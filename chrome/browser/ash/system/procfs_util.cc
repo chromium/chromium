@@ -9,7 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 base::Optional<SingleProcStat> GetSingleProcStat(
@@ -155,4 +155,4 @@ base::Optional<int64_t> GetUsedMemTotalKB(const base::FilePath& meminfo_file) {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

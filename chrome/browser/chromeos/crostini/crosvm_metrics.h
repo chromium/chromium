@@ -27,8 +27,7 @@ class CrosvmMetrics {
   // Start taking snapshot of crosvm process resource usage.
   void Start();
 
-  using PidStatMap =
-      std::unordered_map<pid_t, chromeos::system::SingleProcStat>;
+  using PidStatMap = std::unordered_map<pid_t, ash::system::SingleProcStat>;
 
   // Returns Crosvm process resident memory percentage of the total used memory.
   // This is exposed only for testing.

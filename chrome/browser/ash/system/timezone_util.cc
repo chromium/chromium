@@ -195,7 +195,7 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 base::string16 GetCurrentTimezoneName() {
@@ -409,4 +409,4 @@ bool FineGrainedTimeZoneDetectionEnabled() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 FakeInputDeviceSettings::FakeInputDeviceSettings() {}
@@ -186,4 +186,4 @@ FakeInputDeviceSettings::current_pointing_stick_settings() const {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

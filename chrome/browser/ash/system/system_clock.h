@@ -23,7 +23,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class SystemClockObserver;
@@ -98,6 +98,14 @@ class SystemClock : public chromeos::LoginState::Observer,
   DISALLOW_COPY_AND_ASSIGN(SystemClock);
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::SystemClock;
 }  // namespace system
 }  // namespace chromeos
 

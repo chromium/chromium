@@ -9,7 +9,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 DeviceDisablingManagerDefaultDelegate::DeviceDisablingManagerDefaultDelegate() {
@@ -29,4 +29,4 @@ void DeviceDisablingManagerDefaultDelegate::ShowDeviceDisabledScreen() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

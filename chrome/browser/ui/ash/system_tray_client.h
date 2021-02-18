@@ -25,7 +25,7 @@ class Profile;
 // relevant state changes in chrome.
 // TODO: Consider renaming this to SystemTrayClientImpl.
 class SystemTrayClient : public ash::SystemTrayClient,
-                         public chromeos::system::SystemClockObserver,
+                         public ash::system::SystemClockObserver,
                          public policy::CloudPolicyStore::Observer,
                          public UpgradeObserver {
  public:
@@ -96,8 +96,8 @@ class SystemTrayClient : public ash::SystemTrayClient,
   // Requests that ash show the update available icon.
   void HandleUpdateAvailable(ash::UpdateType update_type);
 
-  // chromeos::system::SystemClockObserver:
-  void OnSystemClockChanged(chromeos::system::SystemClock* clock) override;
+  // ash::system::SystemClockObserver:
+  void OnSystemClockChanged(ash::system::SystemClock* clock) override;
 
   // UpgradeObserver implementation.
   void OnUpdateOverCellularAvailable() override;

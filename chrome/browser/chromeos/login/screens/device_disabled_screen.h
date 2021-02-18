@@ -11,10 +11,6 @@
 
 namespace chromeos {
 
-namespace system {
-class DeviceDisablingManager;
-}
-
 class DeviceDisabledScreenView;
 
 // Screen informing the user that the device has been disabled by its owner.

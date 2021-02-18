@@ -266,4 +266,11 @@ WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
 }  // namespace test
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace test {
+using ::chromeos::test::CreateOobeScreenWaiter;
+}  // namespace test
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_JS_CHECKER_H_

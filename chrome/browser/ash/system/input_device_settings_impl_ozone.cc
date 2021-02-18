@@ -14,7 +14,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 namespace {
 
@@ -237,7 +237,7 @@ void InputDeviceSettingsImplOzone::SetTouchscreensEnabled(bool enabled) {
 // static
 InputDeviceSettings* InputDeviceSettings::Get() {
   if (!g_input_device_settings_impl_ozone_instance) {
-    if (IsRunningAsSystemCompositor())
+    if (chromeos::IsRunningAsSystemCompositor())
       g_input_device_settings_impl_ozone_instance =
           new InputDeviceSettingsImplOzone;
     else
@@ -248,4 +248,4 @@ InputDeviceSettings* InputDeviceSettings::Get() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

@@ -21,7 +21,15 @@ class Profile;
 namespace ash {
 class AccountManagerFactory;
 class ProfileHelper;
-}
+
+namespace system {
+class AutomaticRebootManager;
+class DeviceDisablingManager;
+class DeviceDisablingManagerDefaultDelegate;
+class TimeZoneResolverManager;
+class SystemClock;
+}  // namespace system
+}  // namespace ash
 
 namespace chromeos {
 class ChromeSessionManager;
@@ -29,14 +37,6 @@ class ChromeUserManager;
 class InSessionPasswordChangeManager;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
-
-namespace system {
-class AutomaticRebootManager;
-class DeviceDisablingManager;
-class DeviceDisablingManagerDefaultDelegate;
-class SystemClock;
-class TimeZoneResolverManager;
-}  // namespace system
 }  // namespace chromeos
 
 namespace policy {
@@ -87,7 +87,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   // users and their profiles in Chrome OS multi user session.
   ash::ProfileHelper* profile_helper();
 
-  chromeos::system::AutomaticRebootManager* automatic_reboot_manager() {
+  ash::system::AutomaticRebootManager* automatic_reboot_manager() {
     return automatic_reboot_manager_.get();
   }
 
@@ -105,7 +105,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return scheduler_configuration_manager_.get();
   }
 
-  chromeos::system::DeviceDisablingManager* device_disabling_manager() {
+  ash::system::DeviceDisablingManager* device_disabling_manager() {
     return device_disabling_manager_.get();
   }
 
@@ -114,14 +114,14 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return cros_component_manager_;
   }
 
-  chromeos::system::TimeZoneResolverManager* GetTimezoneResolverManager();
+  ash::system::TimeZoneResolverManager* GetTimezoneResolverManager();
 
   chromeos::TimeZoneResolver* GetTimezoneResolver();
 
   // Overridden from BrowserProcessPlatformPartBase:
   void StartTearDown() override;
 
-  chromeos::system::SystemClock* GetSystemClock();
+  ash::system::SystemClock* GetSystemClock();
   void DestroySystemClock();
 
   ash::AccountManagerFactory* GetAccountManagerFactory();
@@ -143,21 +143,21 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   bool created_profile_helper_;
   std::unique_ptr<ash::ProfileHelper> profile_helper_;
 
-  std::unique_ptr<chromeos::system::AutomaticRebootManager>
+  std::unique_ptr<ash::system::AutomaticRebootManager>
       automatic_reboot_manager_;
 
   std::unique_ptr<chromeos::ChromeUserManager> chrome_user_manager_;
 
-  std::unique_ptr<chromeos::system::DeviceDisablingManagerDefaultDelegate>
+  std::unique_ptr<ash::system::DeviceDisablingManagerDefaultDelegate>
       device_disabling_manager_delegate_;
-  std::unique_ptr<chromeos::system::DeviceDisablingManager>
+  std::unique_ptr<ash::system::DeviceDisablingManager>
       device_disabling_manager_;
 
-  std::unique_ptr<chromeos::system::TimeZoneResolverManager>
+  std::unique_ptr<ash::system::TimeZoneResolverManager>
       timezone_resolver_manager_;
   std::unique_ptr<chromeos::TimeZoneResolver> timezone_resolver_;
 
-  std::unique_ptr<chromeos::system::SystemClock> system_clock_;
+  std::unique_ptr<ash::system::SystemClock> system_clock_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 

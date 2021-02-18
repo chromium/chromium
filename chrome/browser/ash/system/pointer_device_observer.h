@@ -10,7 +10,7 @@
 #include "base/observer_list.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class PointerDeviceObserver : public ui::InputDeviceEventObserver {
@@ -58,6 +58,14 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
   DISALLOW_COPY_AND_ASSIGN(PointerDeviceObserver);
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::PointerDeviceObserver;
 }  // namespace system
 }  // namespace chromeos
 

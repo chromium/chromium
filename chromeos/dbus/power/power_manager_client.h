@@ -363,4 +363,9 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::PowerManagerClient;
+}
+
 #endif  // CHROMEOS_DBUS_POWER_POWER_MANAGER_CLIENT_H_

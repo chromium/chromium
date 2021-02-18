@@ -74,4 +74,26 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::DIR_DEVICE_DISPLAY_PROFILES;
+using ::chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD;
+using ::chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE;
+using ::chromeos::DIR_DEVICE_LOCAL_ACCOUNT_COMPONENT_POLICY;
+using ::chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS;
+using ::chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA;
+using ::chromeos::DIR_DEVICE_POLICY_EXTERNAL_DATA;
+using ::chromeos::DIR_PREINSTALLED_COMPONENTS;
+using ::chromeos::DIR_SIGNIN_PROFILE_COMPONENT_POLICY;
+using ::chromeos::DIR_SIGNIN_PROFILE_EXTENSIONS;
+using ::chromeos::FILE_DEFAULT_APP_ORDER;
+using ::chromeos::FILE_MACHINE_INFO;
+using ::chromeos::FILE_STARTUP_CUSTOMIZATION_MANIFEST;
+using ::chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME;
+using ::chromeos::FILE_UPTIME;
+using ::chromeos::FILE_VPD;
+using ::chromeos::PATH_END;
+using ::chromeos::PATH_START;
+}  // namespace ash
+
 #endif  // ASH_CONSTANTS_ASH_PATHS_H_

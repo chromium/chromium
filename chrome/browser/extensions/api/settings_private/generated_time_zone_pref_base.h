@@ -19,7 +19,7 @@ namespace settings_private {
 // Base class for several generated Time Zone preferences.
 class GeneratedTimeZonePrefBase
     : public GeneratedPref,
-      public chromeos::system::TimeZoneResolverManager::Observer {
+      public ash::system::TimeZoneResolverManager::Observer {
  public:
   ~GeneratedTimeZonePrefBase() override;
 

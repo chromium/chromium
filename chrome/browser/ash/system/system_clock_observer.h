@@ -7,12 +7,12 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class SystemClock;
 
-// This is observer for chromeos::system::SystemClock .
+// This is observer for ash::system::SystemClock .
 class SystemClockObserver {
  public:
   virtual ~SystemClockObserver();
@@ -20,6 +20,6 @@ class SystemClockObserver {
 };
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_SYSTEM_CLOCK_OBSERVER_H_

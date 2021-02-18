@@ -21,7 +21,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace user_removal_manager {
 
 namespace {
@@ -90,4 +90,4 @@ void InitiateUserRemoval(base::OnceClosure on_pref_persisted_callback) {
 }
 
 }  // namespace user_removal_manager
-}  // namespace chromeos
+}  // namespace ash

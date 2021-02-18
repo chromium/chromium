@@ -13,7 +13,7 @@
 
 namespace crostini {
 
-using PidStatMap = std::unordered_map<pid_t, chromeos::system::SingleProcStat>;
+using PidStatMap = std::unordered_map<pid_t, ash::system::SingleProcStat>;
 
 // Returns a map from crosvm PIDs to their stat map.
 // |slash_proc| is "/proc" for production and is only changed for tests.

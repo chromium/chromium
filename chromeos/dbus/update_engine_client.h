@@ -171,4 +171,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) UpdateEngineClient : public DBusClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace ash {
+using ::chromeos::UpdateEngineClient;
+}
+
 #endif  // CHROMEOS_DBUS_UPDATE_ENGINE_CLIENT_H_

@@ -18,7 +18,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -132,9 +132,8 @@ TimeZoneResolverManager::TimeZoneResolverManager() {
   local_state_pref_change_registrar_.Init(g_browser_process->local_state());
   local_state_pref_change_registrar_.Add(
       prefs::kSystemTimezoneAutomaticDetectionPolicy,
-      base::BindRepeating(
-          &::chromeos::system::TimeZoneResolverManager::UpdateTimezoneResolver,
-          base::Unretained(this)));
+      base::BindRepeating(&TimeZoneResolverManager::UpdateTimezoneResolver,
+                          base::Unretained(this)));
 }
 
 TimeZoneResolverManager::~TimeZoneResolverManager() {}
@@ -175,7 +174,7 @@ int TimeZoneResolverManager::GetTimezoneManagementSetting() {
 
 void TimeZoneResolverManager::UpdateTimezoneResolver() {
   initialized_ = true;
-  chromeos::TimeZoneResolver* resolver =
+  TimeZoneResolver* resolver =
       g_browser_process->platform_part()->GetTimezoneResolver();
   // Local state becomes initialized when policy data is loaded,
   // and we need policies to decide whether resolver can be started.
@@ -317,4 +316,4 @@ bool TimeZoneResolverManager::IfServiceShouldBeRunningForSigninScreen() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

@@ -400,7 +400,7 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertyTimezone) {
-    if (chromeos::system::PerUserTimezoneEnabled()) {
+    if (ash::system::PerUserTimezoneEnabled()) {
       const PrefService::Preference* timezone =
           Profile::FromBrowserContext(browser_context())
               ->GetPrefs()
@@ -415,7 +415,7 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertySupportedTimezones) {
-    return chromeos::system::GetTimezoneList();
+    return ash::system::GetTimezoneList();
   }
 
   const char* pref_name = GetBoolPrefNameForApiProperty(property_name.c_str());
@@ -442,7 +442,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   if (param_name == kPropertyTimezone) {
     std::string param_value;
     EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &param_value));
-    if (chromeos::system::PerUserTimezoneEnabled()) {
+    if (ash::system::PerUserTimezoneEnabled()) {
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->SetString(prefs::kUserTimezone, param_value);
@@ -451,7 +451,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
           chromeos::ProfileHelper::Get()->GetUserByProfile(
               Profile::FromBrowserContext(browser_context()));
       if (user)
-        chromeos::system::SetSystemTimezone(user, param_value);
+        ash::system::SetSystemTimezone(user, param_value);
     }
 
   } else {

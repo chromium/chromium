@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class InputDeviceSettings;
@@ -307,6 +307,18 @@ class InputDeviceSettings {
   virtual void SetTouchscreensEnabled(bool enabled) {}
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace system {
+using ::ash::system::InputDeviceSettings;
+using ::ash::system::MouseSettings;
+using ::ash::system::PointerSensitivity;
+using ::ash::system::PointingStickSettings;
+using ::ash::system::TouchpadSettings;
 }  // namespace system
 }  // namespace chromeos
 

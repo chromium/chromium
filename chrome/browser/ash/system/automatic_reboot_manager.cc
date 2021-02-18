@@ -43,7 +43,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -407,4 +407,4 @@ void AutomaticRebootManager::Reboot() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

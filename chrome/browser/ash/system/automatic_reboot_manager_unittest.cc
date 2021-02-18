@@ -49,7 +49,7 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::ReturnPointee;
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -547,8 +547,8 @@ void AutomaticRebootManagerBasicTest::LogIn() {
   const AccountId account_id =
       AccountId::FromUserEmailGaiaId("email", "123456");
   session_manager_.CreateSession(
-      account_id,
-      chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting("email"), true);
+      account_id, ProfileHelper::GetUserIdHashByUserIdForTesting("email"),
+      true);
   session_manager_.SessionStarted();
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
 }
@@ -2273,4 +2273,4 @@ INSTANTIATE_TEST_SUITE_P(
         AUTOMATIC_REBOOT_MANAGER_TEST_SCENARIO_NON_KIOSK_APP_SESSION));
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

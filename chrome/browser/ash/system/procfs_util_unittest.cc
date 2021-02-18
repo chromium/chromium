@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ash/system/procfs_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 class ProcfsUtilTest : public testing::Test {
@@ -100,4 +100,4 @@ TEST_F(ProcfsUtilTest, GetUsedMemTotalSuccess) {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

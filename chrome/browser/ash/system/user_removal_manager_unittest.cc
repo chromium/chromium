@@ -18,7 +18,7 @@
 #include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -93,4 +93,4 @@ TEST_F(UserRemovalManagerTest, TestFailsafeTimer) {
   EXPECT_TRUE(log_out_called);
 }
 
-}  // namespace chromeos
+}  // namespace ash

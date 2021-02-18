@@ -15,6 +15,9 @@
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/ash/system/breakpad_consent_watcher.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/chromeos/external_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
@@ -99,7 +102,6 @@ class Controller;
 
 namespace system {
 class DarkResumeController;
-class BreakpadConsentWatcher;
 }  // namespace system
 
 // ChromeBrowserMainParts implementation for chromeos specific code.
