@@ -110,7 +110,7 @@ void WINAPI ServiceMain(DWORD argc, LPTSTR* argv) {
   // terminated at any time.
 }
 
-constexpr base::char16 kLogFileExtension[] = L"log";
+constexpr wchar_t kLogFileExtension[] = L"log";
 
 }  // namespace
 
@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
   // Service main.
 
   // SERVICE_TABLE_ENTRY::lpServiceName takes a non-const string.
-  base::char16 empty_string[] = L"";
+  wchar_t empty_string[] = L"";
 
   SERVICE_TABLE_ENTRY dispatch_table[] = {{empty_string, ServiceMain},
                                           {nullptr, nullptr}};
