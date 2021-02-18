@@ -188,8 +188,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 // account while the dialog is still opened.
 // TODO(crbug.com/1166148) This test needs to be moved back into
 // accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
-// TODO(crbug.com/1179458): Re-enable.
-- (void)DISABLED_testRemovePrimaryAccountWhileSignOutConfirmation {
+- (void)testRemovePrimaryAccountWhileSignOutConfirmation {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -201,6 +200,8 @@ id<GREYMatcher> NoBookmarksLabel() {
   // Opens the sign out confirmation dialog.
   [ChromeEarlGreyUI
       tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  // Wait until the sheet is fully presented before removing the identity.
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Remove the primary accounts.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -251,12 +252,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 // URL.
 // TODO(crbug.com/1166148) This test needs to be moved back into
 // accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
-// TODO(crbug.com/1179458): Re-enable.
-- (void)DISABLED_testRemoveInterrupSignOutConfirmation {
-  if (@available(iOS 13, *)) {
-    // TODO(crbug.com/1179231) Enable the test for iOS 13.
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 13.");
-  }
+- (void)testRemoveInterruptSignOutConfirmation {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -268,6 +264,8 @@ id<GREYMatcher> NoBookmarksLabel() {
   // Opens the sign out confirmation dialog.
   [ChromeEarlGreyUI
       tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  // Wait until the sheet is fully presented before to opening an external URL.
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
   [ChromeEarlGrey simulateExternalAppURLOpening];
   // Verifies we are still signed in.
