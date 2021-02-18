@@ -61,25 +61,51 @@ class DeviceSystemWideTracingEnabledPolicyTest
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// Test that system-wide tracing is enabled by default for an unmanaged device
-// and can then be updated by the policy.
-IN_PROC_BROWSER_TEST_F(DeviceSystemWideTracingEnabledPolicyTest,
-                       PolicyApplied) {
+class DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest
+    : public DeviceSystemWideTracingEnabledPolicyTest {
+ protected:
+  DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest()
+      : install_attributes_(StubInstallAttributes::CreateConsumerOwned()) {}
+  ~DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest() override = default;
+
+  chromeos::ScopedStubInstallAttributes install_attributes_;
+};
+
+// Test that system-wide tracing is enabled by default for a consumer-owned
+// device.
+IN_PROC_BROWSER_TEST_F(DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest,
+                       DefaultEnabled) {
   auto tracing_delegate = std::make_unique<ChromeTracingDelegate>();
-  ASSERT_FALSE(g_browser_process->local_state()->IsManagedPreference(
-      chromeos::prefs::kDeviceSystemWideTracingEnabled));
   ASSERT_TRUE(tracing_delegate->IsSystemWideTracingEnabled());
+}
+
+class DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest
+    : public DeviceSystemWideTracingEnabledPolicyTest {
+ protected:
+  DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest()
+      : install_attributes_(
+            StubInstallAttributes::CreateCloudManaged("fake-domain.com",
+                                                      "fake-id")) {}
+  ~DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest() override =
+      default;
+
+  chromeos::ScopedStubInstallAttributes install_attributes_;
+};
+
+// Test that system-wide tracing is disabled by default for a managed device and
+// can be turned on by the policy.
+IN_PROC_BROWSER_TEST_F(
+    DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest,
+    PolicyApplied) {
+  auto tracing_delegate = std::make_unique<ChromeTracingDelegate>();
+  ASSERT_FALSE(tracing_delegate->IsSystemWideTracingEnabled());
 
   UpdatePolicy(true);
   SyncRefreshDevicePolicy();
-  ASSERT_TRUE(g_browser_process->local_state()->IsManagedPreference(
-      chromeos::prefs::kDeviceSystemWideTracingEnabled));
   ASSERT_TRUE(tracing_delegate->IsSystemWideTracingEnabled());
 
   UpdatePolicy(false);
   SyncRefreshDevicePolicy();
-  ASSERT_TRUE(g_browser_process->local_state()->IsManagedPreference(
-      chromeos::prefs::kDeviceSystemWideTracingEnabled));
   ASSERT_FALSE(tracing_delegate->IsSystemWideTracingEnabled());
 }
 

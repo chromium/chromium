@@ -591,17 +591,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
-
-  if (policy.has_device_system_wide_tracing_enabled()) {
-    const em::DeviceSystemWideTracingEnabledProto& container(
-        policy.device_system_wide_tracing_enabled());
-    if (container.has_enabled()) {
-      policies->Set(key::kDeviceSystemWideTracingEnabled,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
-                    nullptr);
-    }
-  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
@@ -1905,6 +1894,19 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SOURCE_CLOUD, base::Value(container.value()),
                     nullptr);
     }
+  }
+
+  if (policy.has_device_system_wide_tracing_enabled() &&
+      policy.device_system_wide_tracing_enabled().has_enabled()) {
+    bool enabled = policy.device_system_wide_tracing_enabled().enabled();
+    policies->Set(key::kDeviceSystemWideTracingEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  base::Value(enabled), nullptr);
+  } else {
+    // Set policy default to false if the policy is unset.
+    policies->Set(key::kDeviceSystemWideTracingEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                  base::Value(false), nullptr);
   }
 
   if (policy.has_device_pci_peripheral_data_access_enabled()) {

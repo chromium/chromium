@@ -276,14 +276,8 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-
-  const auto* pref = local_state->FindPreference(
+  return local_state->GetBoolean(
       chromeos::prefs::kDeviceSystemWideTracingEnabled);
-  DCHECK(pref);
-  // For a managed device, disable by default if unspecified or use the value
-  // specified by the device policy.
-  // For an unmanaged device, always enable.
-  return pref->GetValue()->GetBool() || !pref->IsManaged();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1173395): Enable for Lacros-Chrome.
   return false;

@@ -8478,16 +8478,36 @@
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "device_system_wide_tracing_enabled": {
+            "value": true,
+            "location": "local_state",
+            "expect_default": true
+          }
+        }
+      },
+      {
         "policies": {
           "DeviceSystemWideTracingEnabled": true
         },
-        "prefs": { "device_system_wide_tracing_enabled": { "value": true, "location": "local_state" } }
+        "prefs": {
+          "device_system_wide_tracing_enabled": {
+            "value": true,
+            "location": "local_state"
+          }
+        }
       },
       {
         "policies": {
           "DeviceSystemWideTracingEnabled": false
         },
-        "prefs": { "device_system_wide_tracing_enabled": { "value": false, "location": "local_state" } }
+        "prefs": {
+          "device_system_wide_tracing_enabled": {
+            "value": false,
+            "location": "local_state"
+          }
+        }
       }
     ]
   },
