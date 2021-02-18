@@ -191,7 +191,7 @@
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
 
@@ -405,9 +405,9 @@ void BrowserProcessImpl::StartTearDown() {
     TRACE_EVENT0("shutdown",
                  "BrowserProcessImpl::StartTearDown:ProfileManager");
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // The desktop User Manager needs to be closed before the guest profile
+    // The desktop profile picker needs to be closed before the guest profile
     // can be destroyed.
-    UserManager::Hide();
+    ProfilePicker::Hide();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
     // `profile_manager_` must be destroyed before `background_mode_manager_`,
     // because the background mode manager does not stop observing profile

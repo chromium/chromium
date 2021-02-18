@@ -52,11 +52,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -605,8 +606,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         chrome::ShowAboutChrome(bmd->GetBrowserWindow());
       } else {
-        UserManager::Show(base::FilePath(),
-                          profiles::USER_MANAGER_SELECT_PROFILE_ABOUT_CHROME);
+        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager,
+                            GURL(chrome::kChromeUIHelpURL));
       }
       break;
     case IDC_TASK_MANAGER:
@@ -614,8 +615,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         chrome::OpenTaskManager(bmd->GetBrowserWindow());
       } else {
-        UserManager::Show(base::FilePath(),
-                          profiles::USER_MANAGER_SELECT_PROFILE_TASK_MANAGER);
+        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager,
+                            GURL(ProfilePicker::kTaskManagerUrl));
       }
       break;
     case IDC_EXIT:
@@ -642,8 +643,7 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         bmd->ExecuteCommand(command_id, event_flags);
       } else {
-        UserManager::Show(base::FilePath(),
-                          profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager);
       }
       break;
   }

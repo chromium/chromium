@@ -34,6 +34,10 @@ extern const base::Feature kEnableProfilePickerOnStartupFeature;
 
 class ProfilePicker {
  public:
+  // Only work when passed as the argument 'on_select_profile_target_url' to
+  // ProfilePicker::Show.
+  static const char kTaskManagerUrl[];
+
   // An entry point that triggers the profile picker window to open.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -45,7 +49,10 @@ class ProfilePicker {
     // A new session was sarted while Chrome was already running (e.g. by
     // clicking on the tray icon on Windows).
     kNewSessionOnExistingProcess = 4,
-    kMaxValue = kNewSessionOnExistingProcess,
+    kProfileLocked = 5,
+    kUnableToCreateBrowser = 6,
+    kBackgroundModeManager = 7,
+    kMaxValue = kBackgroundModeManager,
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
@@ -111,6 +118,9 @@ class ProfilePicker {
 
   // Returns whether the profile picker is currently open.
   static bool IsOpen();
+
+  // Returns whether the Profile picker is showing and active.
+  static bool IsActive();
 
   // Returns the global profile picker view for testing.
   static views::View* GetViewForTesting();

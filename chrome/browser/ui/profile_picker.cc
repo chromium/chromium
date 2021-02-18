@@ -49,6 +49,9 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 
 }  // namespace
 
+const char ProfilePicker::kTaskManagerUrl[] =
+    "chrome://profile-picker/task-manager";
+
 const base::Feature kEnableProfilePickerOnStartupFeature{
     "EnableProfilePickerOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
 

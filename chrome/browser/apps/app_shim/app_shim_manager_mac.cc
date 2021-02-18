@@ -37,8 +37,8 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
@@ -552,7 +552,7 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
     chrome::mojom::AppShimLaunchResult result) {
   // If we failed because the profile was locked, launch the profile manager.
   if (result == chrome::mojom::AppShimLaunchResult::kProfileLocked)
-    LaunchUserManager();
+    LaunchProfilePicker();
 
   // If the app specified a URL, but we tried and failed to launch it, then
   // open that URL in a new browser window.
@@ -757,9 +757,8 @@ void AppShimManager::OpenAppURLInBrowserWindow(
   Navigate(&params);
 }
 
-void AppShimManager::LaunchUserManager() {
-  UserManager::Show(base::FilePath(),
-                    profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+void AppShimManager::LaunchProfilePicker() {
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
 }
 
 void AppShimManager::MaybeTerminate() {

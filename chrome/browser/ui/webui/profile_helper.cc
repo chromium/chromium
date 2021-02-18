@@ -16,7 +16,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -36,10 +35,9 @@ void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
 void OpenNewWindowForProfile(Profile* profile) {
   if (profiles::IsProfileLocked(profile->GetPath())) {
     DCHECK(signin_util::IsForceSigninEnabled());
-    // Displays the UserManager without any sign-in dialog opened.
-    if (!UserManager::IsShowing() && !ProfilePicker::IsOpen()) {
-      UserManager::Show(base::FilePath(),
-                        profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+    // Displays the ProfilePicker without any sign-in dialog opened.
+    if (!ProfilePicker::IsOpen()) {
+      ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
     }
 
     g_browser_process->profile_manager()->CreateProfileAsync(

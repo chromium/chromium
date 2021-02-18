@@ -139,6 +139,9 @@ GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
     case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
     case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess:
+    case ProfilePicker::EntryPoint::kProfileLocked:
+    case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
+    case ProfilePicker::EntryPoint::kBackgroundModeManager:
       return base_url;
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
       return base_url.Resolve("new-profile");
@@ -314,6 +317,17 @@ void ProfilePicker::Hide() {
 // static
 bool ProfilePicker::IsOpen() {
   return g_profile_picker_view;
+}
+
+bool ProfilePicker::IsActive() {
+  if (!IsOpen())
+    return false;
+
+#if defined(OS_MAC)
+  return g_profile_picker_view->GetWidget()->IsVisible();
+#else
+  return g_profile_picker_view->GetWidget()->IsActive();
+#endif
 }
 
 // static
@@ -548,7 +562,10 @@ void ProfilePickerView::CancelSignIn() {
     case ProfilePicker::EntryPoint::kOnStartup:
     case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
     case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
-    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess: {
+    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess:
+    case ProfilePicker::EntryPoint::kProfileLocked:
+    case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
+    case ProfilePicker::EntryPoint::kBackgroundModeManager: {
       // Navigate to the very beginning which is guaranteed to be the profile
       // picker.
       system_profile_contents_->GetController().GoToIndex(0);

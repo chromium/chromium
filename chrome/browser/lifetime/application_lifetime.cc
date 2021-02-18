@@ -53,7 +53,7 @@
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #endif
 
 #if defined(OS_WIN)
@@ -247,7 +247,7 @@ void AttemptUserExit() {
   // Reset the restart bit that might have been set in cancelled restart
   // request.
 #if !defined(OS_ANDROID)
-  UserManager::Hide();
+  ProfilePicker::Hide();
 #endif
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);

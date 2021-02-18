@@ -62773,6 +62773,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Add new profile button in the profile menu"/>
   <int value="3" label="Open new window after profile deletion"/>
   <int value="4" label="New session while running (e.g. from Windows tray)"/>
+  <int value="5" label="Profile locked"/>
+  <int value="6" label="Unable to create a browser"/>
+  <int value="7" label="Background mode manager"/>
 </enum>
 
 <enum name="ProfilePickerPages">

@@ -23,17 +23,6 @@ class UserManager {
   static constexpr int kWindowWidth = 800;
   static constexpr int kWindowHeight = 600;
 
-  // Shows the User Manager or re-activates an existing one, focusing the
-  // profile given by |profile_path_to_focus|; passing an empty base::FilePath
-  // focuses no user pod. Depending on the value of |user_manager_action|,
-  // executes an action once the user manager displays or after a profile is
-  // opened.
-  static void Show(const base::FilePath& profile_path_to_focus,
-                   profiles::UserManagerAction user_manager_action);
-
-  // Hides the User Manager.
-  static void Hide();
-
   // Returns whether the User Manager is showing and active.
   // TODO(zmin): Rename the function to something less confusing.
   // https://crbug.com/649380.
@@ -51,6 +40,16 @@ class UserManager {
   static base::FilePath GetSigninProfilePath();
 
  private:
+  friend class UserManagerScreenHandler;
+  friend class SigninCreateProfileHandler;
+
+  // Deprecated. User ProfilePicker::Show
+  static void Show(const base::FilePath& profile_path_to_focus,
+                   profiles::UserManagerAction user_manager_action);
+
+  // Deprecated. User ProfilePicker::Hide
+  static void Hide();
+
   DISALLOW_IMPLICIT_CONSTRUCTORS(UserManager);
 };
 

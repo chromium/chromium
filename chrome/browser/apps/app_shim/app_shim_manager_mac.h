@@ -212,7 +212,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // Launch the user manager (in response to attempting to access a locked
   // profile).
-  virtual void LaunchUserManager();
+  virtual void LaunchProfilePicker();
 
   // Terminate Chrome if Chrome attempted to quit, but was prevented from
   // quitting due to apps being open.

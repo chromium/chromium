@@ -45,13 +45,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/signin/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -253,13 +253,12 @@ void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,
                                  InlineLoginHandlerImpl* handler) {
   SetProfileLocked(profile_path, false);
   handler->CloseDialogFromJavascript();
-  UserManager::Hide();
+  ProfilePicker::Hide();
 }
 
 void LockProfileAndShowUserManager(const base::FilePath& profile_path) {
   SetProfileLocked(profile_path, true);
-  UserManager::Show(profile_path,
-                    profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
 }
 
 // Callback for DiceTurnOnSyncHelper.
@@ -675,7 +674,7 @@ void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
   ProfileManager* manager = g_browser_process->profile_manager();
   base::FilePath path = profiles::GetPathOfProfileWithEmail(manager, email);
   if (path.empty())
-    path = UserManager::GetSigninProfilePath();
+    path = ProfilePicker::GetForceSigninProfilePath();
   if (path.empty())
     return;
 
@@ -852,7 +851,7 @@ void InlineLoginHandlerImpl::HandleLoginError(const std::string& error_msg,
 
   if (profile->IsSystemProfile())
     profile = g_browser_process->profile_manager()->GetProfileByPath(
-        UserManager::GetSigninProfilePath());
+        ProfilePicker::GetForceSigninProfilePath());
   if (!error_msg.empty()) {
     LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
         browser, base::UTF8ToUTF16(error_msg), email);

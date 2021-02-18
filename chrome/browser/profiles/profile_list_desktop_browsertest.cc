@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SignOut) {
   // But the User Manager is shown only when the system profile is created,
   // which happens asynchronously.
   profile_waiter.WaitForProfileAdded();
-  UserManager::Hide();
+  ProfilePicker::Hide();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

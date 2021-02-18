@@ -92,7 +92,6 @@
 #else
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/user_manager.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_X11)
@@ -319,17 +318,13 @@ bool ShouldShowProfilePickerAtProcessLaunch(
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void ShowUserManager(bool is_process_startup) {
+void ShowProfilePicker(bool is_process_startup) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     ProfilePicker::Show(
         is_process_startup
             ? ProfilePicker::EntryPoint::kOnStartup
             : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
     return;
-  }
-  UserManager::Show(base::FilePath(),
-                    profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -964,7 +959,7 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
        last_used_profile->IsEphemeralGuestProfile())) {
     // The guest session is used to indicate the the profile picker should be
     // displayed on start-up. See GetStartupProfilePath().
-    ShowUserManager(/*is_process_startup=*/process_startup);
+    ShowProfilePicker(/*is_process_startup=*/process_startup);
     return true;
   }
 
@@ -1000,8 +995,8 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
                            std::make_unique<LaunchModeRecorder>());
     }
 
-    // Show UserManager if |last_used_profile| can't be auto opened.
-    ShowUserManager(/*is_process_startup=*/process_startup);
+    // Show ProfilePicker if |last_used_profile| can't be auto opened.
+    ShowProfilePicker(/*is_process_startup=*/process_startup);
     return true;
   }
   return ProcessLastOpenedProfiles(command_line, cur_dir, is_process_startup,
@@ -1074,7 +1069,7 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
 // activation this one.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_process_startup == chrome::startup::IS_PROCESS_STARTUP)
-    ShowUserManager(/*is_process_startup=*/true);
+    ShowProfilePicker(/*is_process_startup=*/true);
   else
 #endif
     profile_launch_observer.Get().set_profile_to_activate(last_used_profile);

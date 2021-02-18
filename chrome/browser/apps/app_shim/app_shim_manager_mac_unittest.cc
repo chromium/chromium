@@ -148,7 +148,7 @@ class TestingAppShimManager : public AppShimManager {
   }
   MOCK_METHOD2(OpenAppURLInBrowserWindow,
                void(const base::FilePath&, const GURL& url));
-  MOCK_METHOD0(LaunchUserManager, void());
+  MOCK_METHOD0(LaunchProfilePicker, void());
   MOCK_METHOD0(MaybeTerminate, void());
 
   void CaptureLoadProfileCallback(const base::FilePath& path,
@@ -558,7 +558,7 @@ TEST_F(AppShimManagerTest, LaunchProfileIsLocked) {
   // Profile is locked.
   EXPECT_CALL(*manager_, IsProfileLockedForPath(profile_path_a_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*manager_, LaunchUserManager());
+  EXPECT_CALL(*manager_, LaunchProfilePicker());
   EXPECT_CALL(*manager_, OpenAppURLInBrowserWindow(profile_path_a_, _));
   NormalLaunch(bootstrap_aa_, nullptr);
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kProfileLocked,

@@ -88,7 +88,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -97,6 +96,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -1126,8 +1126,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (IsProfileSignedOut(lastProfile) || lastProfile->IsSystemProfile() ||
       (lastProfile->IsGuestSession() && prefService &&
        !prefService->GetBoolean(prefs::kBrowserGuestModeEnabled))) {
-    UserManager::Show(base::FilePath(),
-                      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
     return;
   }
 
@@ -1341,11 +1340,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   }
   if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
       lastProfile->IsSystemProfile()) {
-    // Note: If the profile picker feature is enabled, this opens the profile
-    // picker, unless forced signin is enabled (in which case the old user
-    // manager is still shown).
-    UserManager::Show(base::FilePath(),
-                      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
   } else if (ProfilePicker::ShouldShowAtLaunch()) {
     ProfilePicker::Show(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
@@ -1548,9 +1543,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // No browser window, so create one for the options tab.
     chrome::OpenOptionsWindow([self safeLastProfileForNewWindows]);
   } else {
-    // No way to create a browser, default to the User Manager.
-    UserManager::Show(base::FilePath(),
-                      profiles::USER_MANAGER_SELECT_PROFILE_CHROME_SETTINGS);
+    // No way to create a browser, default to the Profile Picker. On profile
+    // selection, it opens the profile on the settings page.
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kUnableToCreateBrowser,
+                        GURL(chrome::kChromeUISettingsURL));
   }
 }
 
@@ -1561,9 +1557,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // No browser window, so create one for the options tab.
     chrome::OpenAboutWindow([self safeLastProfileForNewWindows]);
   } else {
-    // No way to create a browser, default to the User Manager.
-    UserManager::Show(base::FilePath(),
-                      profiles::USER_MANAGER_SELECT_PROFILE_ABOUT_CHROME);
+    // No way to create a browser, default to the User Manager. On profile
+    // selection, it opens the profile on chrome help page.
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kUnableToCreateBrowser,
+                        GURL(chrome::kChromeUIHelpURL));
   }
 }
 
