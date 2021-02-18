@@ -36,7 +36,7 @@ class RootVoteObserver : public VoteObserver {
                          const ExecutionContext* context) override;
 
   // Provides the VotingChannel to our input voter.
-  VoteConsumerDefaultImpl vote_consumer_default_impl_;
+  VotingChannelFactory voting_channel_factory_{this};
 
   // The ID of the only voting channel we've vended.
   VoterId voter_id_;

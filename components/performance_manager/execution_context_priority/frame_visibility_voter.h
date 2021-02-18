@@ -35,7 +35,7 @@ class FrameVisibilityVoter : public FrameNode::ObserverDefaultImpl {
                                 FrameNode::Visibility previous_value) override;
 
  private:
-  VotingChannelWrapper voting_channel_;
+  VotingChannel voting_channel_;
 };
 
 }  // namespace execution_context_priority

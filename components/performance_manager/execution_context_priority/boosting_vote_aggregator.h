@@ -78,7 +78,7 @@ class BoostingVoteAggregator : public VoteObserver {
   // Both of these must be called in order for the aggregator to be setup
   // ("IsSetup" will return true). Both of these should be called exactly once.
   VotingChannel GetVotingChannel();
-  void SetUpstreamVotingChannel(VotingChannel&& channel);
+  void SetUpstreamVotingChannel(VotingChannel channel);
 
   bool IsSetup() const;
 
@@ -381,10 +381,10 @@ class BoostingVoteAggregator : public VoteObserver {
   voting::VoterId<Vote> input_voter_id_;
 
   // Our channel for upstreaming our votes.
-  VotingChannelWrapper channel_;
+  VotingChannel channel_;
 
   // Provides a VotingChannel to our input voter.
-  VoteConsumerDefaultImpl vote_consumer_default_impl_;
+  VotingChannelFactory voting_channel_factory_{this};
 
   // Nodes and associated metadata in the "priority flow graph". An entry exists
   // in this map for any node that has an active non-default vote, or for any

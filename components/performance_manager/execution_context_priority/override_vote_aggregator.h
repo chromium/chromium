@@ -28,7 +28,7 @@ class OverrideVoteAggregator : public VoteObserver {
   // fully setup.
   VotingChannel GetOverrideVotingChannel();
   VotingChannel GetDefaultVotingChannel();
-  void SetUpstreamVotingChannel(VotingChannel&& channel);
+  void SetUpstreamVotingChannel(VotingChannel channel);
 
   bool IsSetup() const;
 
@@ -91,10 +91,10 @@ class OverrideVoteAggregator : public VoteObserver {
   VoterId default_voter_id_;
 
   // Our channel for upstreaming our votes.
-  VotingChannelWrapper channel_;
+  VotingChannel channel_;
 
   // Provides VotingChannels to our input voters.
-  VoteConsumerDefaultImpl vote_consumer_default_impl_;
+  VotingChannelFactory voting_channel_factory_{this};
 
   // The votes we've upstreamed to our consumer.
   VoteDataMap vote_data_map_;

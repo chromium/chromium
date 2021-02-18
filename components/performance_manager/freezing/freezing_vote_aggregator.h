@@ -20,8 +20,6 @@ class PageNode;
 
 namespace freezing {
 
-using FreezingVoteReceipt = voting::VoteReceipt<FreezingVote>;
-
 // An aggregator for freezing votes. It upstreams an aggregated vote to an
 // upstream channel every time the freezing decision changes for a PageNode. It
 // allows freezing of a given PageNode upon reception of one or several
@@ -133,9 +131,6 @@ class FreezingVoteAggregator final
 
     // kCannotFreeze votes are always at the beginning of the deque.
     VotesDeque votes_;
-
-    // The receipt for the vote we've upstreamed.
-    FreezingVoteReceipt receipt_;
   };
   using VoteDataMap = base::flat_map<const PageNode*, FreezingVoteData>;
 
@@ -147,10 +142,10 @@ class FreezingVoteAggregator final
   VoteDataMap vote_data_map_;
 
   // The channel for upstreaming our votes.
-  FreezingVotingChannelWrapper channel_;
+  FreezingVotingChannel channel_;
 
   // Provides FreezingVotingChannels to our input voters.
-  FreezingVoteConsumerDefaultImpl vote_consumer_default_impl_;
+  FreezingVotingChannelFactory freezing_voting_channel_factory_{this};
 };
 
 }  // namespace freezing

@@ -44,6 +44,7 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   frame_audible_voter_.SetVotingChannel(
       max_vote_aggregator_.GetVotingChannel());
 }
+
 ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
     default;
 

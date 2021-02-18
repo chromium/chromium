@@ -49,7 +49,7 @@ FrameVisibilityVoter::FrameVisibilityVoter() = default;
 FrameVisibilityVoter::~FrameVisibilityVoter() = default;
 
 void FrameVisibilityVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_.SetVotingChannel(std::move(voting_channel));
+  voting_channel_ = std::move(voting_channel);
 }
 
 void FrameVisibilityVoter::OnFrameNodeAdded(const FrameNode* frame_node) {

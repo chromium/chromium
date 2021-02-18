@@ -18,17 +18,17 @@ namespace {
 const char kDescriberName[] = "FreezingVoteAggregator";
 }
 
-FreezingVoteAggregator::FreezingVoteAggregator()
-    : vote_consumer_default_impl_(this) {}
+FreezingVoteAggregator::FreezingVoteAggregator() = default;
+
 FreezingVoteAggregator::~FreezingVoteAggregator() = default;
 
 FreezingVotingChannel FreezingVoteAggregator::GetVotingChannel() {
-  return vote_consumer_default_impl_.BuildVotingChannel();
+  return freezing_voting_channel_factory_.BuildVotingChannel();
 }
 
 void FreezingVoteAggregator::SetUpstreamVotingChannel(
     FreezingVotingChannel&& channel) {
-  channel_.SetVotingChannel(std::move(channel));
+  channel_ = std::move(channel);
 }
 
 void FreezingVoteAggregator::OnVoteSubmitted(FreezingVoterId voter_id,

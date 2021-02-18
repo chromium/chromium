@@ -73,8 +73,7 @@ class MaxVoteAggregatorTest : public testing::Test {
 // Tests that in the case of a single voter, the vote is simply propagated
 // upwards.
 TEST_F(MaxVoteAggregatorTest, SingleVoter) {
-  VotingChannelWrapper voter0;
-  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
 
   EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
 
@@ -124,10 +123,8 @@ TEST_F(MaxVoteAggregatorTest, SingleVoter) {
 }
 
 TEST_F(MaxVoteAggregatorTest, TwoVotersOneContext) {
-  VotingChannelWrapper voter0;
-  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
-  VotingChannelWrapper voter1;
-  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
+  VotingChannel voter1 = aggregator()->GetVotingChannel();
 
   EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
 
@@ -176,10 +173,8 @@ TEST_F(MaxVoteAggregatorTest, TwoVotersOneContext) {
 // A less extensive test than TwoVotersOneContext that sanity checks that votes
 // for different contextes are aggregated independently.
 TEST_F(MaxVoteAggregatorTest, TwoVotersMultipleContext) {
-  VotingChannelWrapper voter0;
-  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
-  VotingChannelWrapper voter1;
-  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
+  VotingChannel voter1 = aggregator()->GetVotingChannel();
 
   // Vote for execution context 1, making sure the first voter submits a higher
   // priority vote.
@@ -211,12 +206,11 @@ TEST_F(MaxVoteAggregatorTest, TwoVotersMultipleContext) {
 // voters.
 TEST_F(MaxVoteAggregatorTest, LotsOfVoters) {
   static constexpr int kNumVoters = 2000;
-  std::vector<VotingChannelWrapper> voters;
+  std::vector<VotingChannel> voters;
 
   voters.reserve(kNumVoters);
   for (int i = 0; i < kNumVoters; ++i) {
-    VotingChannelWrapper voter;
-    voter.SetVotingChannel(aggregator()->GetVotingChannel());
+    VotingChannel voter = aggregator()->GetVotingChannel();
     voters.push_back(std::move(voter));
   }
 

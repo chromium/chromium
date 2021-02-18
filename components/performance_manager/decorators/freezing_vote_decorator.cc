@@ -11,7 +11,7 @@ namespace performance_manager {
 
 FreezingVoteDecorator::FreezingVoteDecorator() {
   freezing_vote_aggregator_.SetUpstreamVotingChannel(
-      vote_consumer_default_impl_.BuildVotingChannel());
+      freezing_voting_channel_factory_.BuildVotingChannel());
 }
 
 FreezingVoteDecorator::~FreezingVoteDecorator() = default;

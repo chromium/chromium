@@ -118,7 +118,7 @@ class PageFreezingPolicy : public GraphObserver,
                                       CannotFreezeReason reason);
 
   // Holds one voting channel per CannotFreezeReason.
-  std::array<freezing::FreezingVotingChannelWrapper, CannotFreezeReason::kCount>
+  std::array<freezing::FreezingVotingChannel, CannotFreezeReason::kCount>
       voting_channels_;
 
   // The page node being removed, used to avoid freezing/unfreezing a page node

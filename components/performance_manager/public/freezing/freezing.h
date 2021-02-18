@@ -32,9 +32,7 @@ using FreezingVote =
 using FreezingVoterId = voting::VoterId<FreezingVote>;
 using FreezingVoteObserver = voting::VoteObserver<FreezingVote>;
 using FreezingVotingChannel = voting::VotingChannel<FreezingVote>;
-using FreezingVoteConsumerDefaultImpl =
-    voting::VoteConsumerDefaultImpl<FreezingVote>;
-using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
+using FreezingVotingChannelFactory = voting::VotingChannelFactory<FreezingVote>;
 
 // A freezing vote token, instances of this are meant to be retrieved by calling
 // |EmitFreezingVoteForWebContents|.

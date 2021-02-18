@@ -7,16 +7,15 @@
 namespace performance_manager {
 namespace execution_context_priority {
 
-OverrideVoteAggregator::OverrideVoteAggregator()
-    : vote_consumer_default_impl_(this) {}
+OverrideVoteAggregator::OverrideVoteAggregator() = default;
 
 OverrideVoteAggregator::~OverrideVoteAggregator() = default;
 
 VotingChannel OverrideVoteAggregator::GetOverrideVotingChannel() {
   DCHECK(vote_data_map_.empty());
   DCHECK(!override_voter_id_);
-  DCHECK_GT(2u, vote_consumer_default_impl_.voting_channels_issued());
-  auto channel = vote_consumer_default_impl_.BuildVotingChannel();
+  DCHECK_GT(2u, voting_channel_factory_.voting_channels_issued());
+  auto channel = voting_channel_factory_.BuildVotingChannel();
   override_voter_id_ = channel.voter_id();
   return channel;
 }
@@ -24,14 +23,14 @@ VotingChannel OverrideVoteAggregator::GetOverrideVotingChannel() {
 VotingChannel OverrideVoteAggregator::GetDefaultVotingChannel() {
   DCHECK(vote_data_map_.empty());
   DCHECK(!default_voter_id_);
-  DCHECK_GT(2u, vote_consumer_default_impl_.voting_channels_issued());
-  auto channel = vote_consumer_default_impl_.BuildVotingChannel();
+  DCHECK_GT(2u, voting_channel_factory_.voting_channels_issued());
+  auto channel = voting_channel_factory_.BuildVotingChannel();
   default_voter_id_ = channel.voter_id();
   return channel;
 }
 
-void OverrideVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
-  channel_.SetVotingChannel(std::move(channel));
+void OverrideVoteAggregator::SetUpstreamVotingChannel(VotingChannel channel) {
+  channel_ = std::move(channel);
 }
 
 bool OverrideVoteAggregator::IsSetup() const {

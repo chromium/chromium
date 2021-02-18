@@ -31,7 +31,7 @@ AdFrameVoter::AdFrameVoter() = default;
 AdFrameVoter::~AdFrameVoter() = default;
 
 void AdFrameVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_.SetVotingChannel(std::move(voting_channel));
+  voting_channel_ = std::move(voting_channel);
 }
 
 void AdFrameVoter::OnFrameNodeAdded(const FrameNode* frame_node) {

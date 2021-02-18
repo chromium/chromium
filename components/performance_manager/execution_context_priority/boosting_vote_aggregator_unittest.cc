@@ -12,7 +12,6 @@ namespace execution_context_priority {
 
 namespace {
 
-using DummyVoter = voting::test::DummyVoter<Vote>;
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 // Some dummy execution contexts.
@@ -60,7 +59,7 @@ class BoostingVoteAggregatorTest : public testing::Test {
     aggregator_voter_id_ = channel.voter_id();
     aggregator_.SetUpstreamVotingChannel(std::move(channel));
 
-    voter_.SetVotingChannel(aggregator_.GetVotingChannel());
+    voter_ = aggregator_.GetVotingChannel();
     EXPECT_TRUE(aggregator_.nodes_.empty());
     EXPECT_TRUE(aggregator_.forward_edges_.empty());
     EXPECT_TRUE(aggregator_.reverse_edges_.empty());
@@ -72,7 +71,7 @@ class BoostingVoteAggregatorTest : public testing::Test {
 
   TestBoostingVoteAggregator* aggregator() { return &aggregator_; }
 
-  VotingChannelWrapper* voter() { return &voter_; }
+  VotingChannel* voter() { return &voter_; }
 
   void ExpectEdges(size_t count) {
     EXPECT_EQ(count, aggregator_.forward_edges_.size());
@@ -91,7 +90,7 @@ class BoostingVoteAggregatorTest : public testing::Test {
   voting::VoterId<Vote> aggregator_voter_id_;
   DummyVoteObserver observer_;
   TestBoostingVoteAggregator aggregator_;
-  VotingChannelWrapper voter_;
+  VotingChannel voter_;
 };
 
 }  // namespace

@@ -51,7 +51,7 @@ class FreezingVoteTokenPMImpl : public PageNode::ObserverDefaultImpl {
       page_node_observation_{this};
 
   // Voting channel.
-  FreezingVotingChannelWrapper voting_channel_;
+  FreezingVotingChannel voting_channel_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -110,9 +110,8 @@ void FreezingVoteTokenPMImpl::InitializeOnGraph(
   page_node_ = page_node.get();
   page_node_observation_.Observe(graph);
 
-  voting_channel_.SetVotingChannel(
-      graph->GetRegisteredObjectAs<FreezingVoteAggregator>()
-          ->GetVotingChannel());
+  voting_channel_ = graph->GetRegisteredObjectAs<FreezingVoteAggregator>()
+                        ->GetVotingChannel();
   voting_channel_.SubmitVote(page_node_, vote);
 }
 
@@ -134,7 +133,7 @@ void FreezingVoteTokenPMImpl::Reset() {
     return;
 
   voting_channel_.InvalidateVote(page_node_);
-  voting_channel_ = FreezingVotingChannelWrapper();
+  voting_channel_.Reset();
   page_node_observation_.Reset();
   page_node_ = nullptr;
 }

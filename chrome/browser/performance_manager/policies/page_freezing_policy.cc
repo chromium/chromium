@@ -71,14 +71,14 @@ void PageFreezingPolicy::OnBeforeGraphDestroyed(Graph* graph) {
   // Clean up voting channels here as it must be done before the aggregator is
   // torn down, which may happen before our OnTakenFromGraph() would be called.
   for (int i = 0; i < CannotFreezeReason::kCount; ++i)
-    voting_channels_[i] = freezing::FreezingVotingChannelWrapper();
+    voting_channels_[i].Reset();
 }
 
 void PageFreezingPolicy::OnPassedToGraph(Graph* graph) {
   for (int i = 0; i < CannotFreezeReason::kCount; ++i) {
-    voting_channels_[i].SetVotingChannel(
+    voting_channels_[i] =
         graph->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>()
-            ->GetVotingChannel());
+            ->GetVotingChannel();
   }
 
   graph->AddGraphObserver(this);

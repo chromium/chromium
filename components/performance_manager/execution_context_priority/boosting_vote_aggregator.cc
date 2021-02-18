@@ -238,8 +238,7 @@ const char* BoostingVoteAggregator::EdgeData::GetActiveReason() const {
   return reasons_[0];
 }
 
-BoostingVoteAggregator::BoostingVoteAggregator()
-    : vote_consumer_default_impl_(this) {}
+BoostingVoteAggregator::BoostingVoteAggregator() = default;
 
 BoostingVoteAggregator::~BoostingVoteAggregator() {
   DCHECK(forward_edges_.empty());
@@ -249,14 +248,14 @@ BoostingVoteAggregator::~BoostingVoteAggregator() {
 VotingChannel BoostingVoteAggregator::GetVotingChannel() {
   DCHECK(nodes_.empty());
   DCHECK(!input_voter_id_);
-  DCHECK_GT(1u, vote_consumer_default_impl_.voting_channels_issued());
-  auto channel = vote_consumer_default_impl_.BuildVotingChannel();
+  DCHECK_GT(1u, voting_channel_factory_.voting_channels_issued());
+  auto channel = voting_channel_factory_.BuildVotingChannel();
   input_voter_id_ = channel.voter_id();
   return channel;
 }
 
-void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
-  channel_.SetVotingChannel(std::move(channel));
+void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel channel) {
+  channel_ = std::move(channel);
 }
 
 bool BoostingVoteAggregator::IsSetup() const {

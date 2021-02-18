@@ -38,11 +38,10 @@ TEST_F(FreezingVoteDecoratorTest, VotesAreForwarded) {
   auto page_node = CreateNode<PageNodeImpl>();
   EXPECT_FALSE(page_node->freezing_vote());
 
-  freezing::FreezingVotingChannelWrapper voter;
-  voter.SetVotingChannel(
+  freezing::FreezingVotingChannel voter =
       graph()
           ->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>()
-          ->GetVotingChannel());
+          ->GetVotingChannel();
 
   voter.SubmitVote(page_node.get(), kCannotFreezeVote);
   ASSERT_TRUE(page_node->freezing_vote().has_value());

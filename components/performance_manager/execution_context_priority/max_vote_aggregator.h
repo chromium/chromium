@@ -27,7 +27,7 @@ class MaxVoteAggregator : public VoteObserver {
   VotingChannel GetVotingChannel();
 
   // Sets the upstream voting channel. Should only be called once.
-  void SetUpstreamVotingChannel(VotingChannel&& channel);
+  void SetUpstreamVotingChannel(VotingChannel channel);
 
  protected:
   // VoteObserver implementation:
@@ -117,13 +117,13 @@ class MaxVoteAggregator : public VoteObserver {
   VoteDataMap::iterator GetVoteData(const ExecutionContext* execution_context);
 
   // Our channel for upstreaming our votes.
-  VotingChannelWrapper channel_;
+  VotingChannel channel_;
 
   // Provides VotingChannels to our input voters.
-  VoteConsumerDefaultImpl vote_consumer_default_impl_;
+  VotingChannelFactory voting_channel_factory_{this};
 
   // The next StampedVote ID to use.
-  uint32_t next_vote_id_;
+  uint32_t next_vote_id_ = 0;
 
   // Received votes, plus all of the upstreamed votes.
   VoteDataMap vote_data_map_;
