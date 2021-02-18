@@ -182,6 +182,9 @@ void ContentSecurityPolicy::BindToDelegate(
   // call this function multiple times.
   delegate_ = &delegate;
   ApplyPolicySideEffectsToDelegate();
+
+  // Report use counters for all the policies that have been parsed until now.
+  ReportUseCounters(policies_);
 }
 
 void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
@@ -205,7 +208,16 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
     delegate_->AddConsoleMessage(console_message);
   console_messages_.clear();
 
-  for (const auto& policy : policies_) {
+  // We disable 'eval()' even in the case of report-only policies, and rely on
+  // the check in the V8Initializer::codeGenerationCheckCallbackInMainThread
+  // callback to determine whether the call should execute or not.
+  if (!disable_eval_error_message_.IsNull())
+    delegate_->DisableEval(disable_eval_error_message_);
+}
+
+void ContentSecurityPolicy::ReportUseCounters(
+    const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies) {
+  for (const auto& policy : policies) {
     Count(GetUseCounterHelperType(policy->header->type));
     if (CSPDirectiveListAllowDynamic(*policy,
                                      CSPDirectiveName::ScriptSrcAttr) ||
@@ -266,12 +278,6 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
       Count(WebFeature::kTrustedTypesAllowDuplicates);
     }
   }
-
-  // We disable 'eval()' even in the case of report-only policies, and rely on
-  // the check in the V8Initializer::codeGenerationCheckCallbackInMainThread
-  // callback to determine whether the call should execute or not.
-  if (!disable_eval_error_message_.IsNull())
-    delegate_->DisableEval(disable_eval_error_message_);
 }
 
 ContentSecurityPolicy::~ContentSecurityPolicy() = default;
@@ -343,10 +349,13 @@ void ContentSecurityPolicy::AddPolicies(
     policies_.push_back(std::move(policy));
   }
 
+  // If this ContentSecurityPolicy is not bound to a delegate yet, return. The
+  // following logic will be executed in BindToDelegate when that will happen.
   if (!delegate_)
     return;
 
   ApplyPolicySideEffectsToDelegate();
+  ReportUseCounters(policies_to_report);
 
   // Notify about the new header, so that it can be reported back to the
   // browser process. This is needed in order to:

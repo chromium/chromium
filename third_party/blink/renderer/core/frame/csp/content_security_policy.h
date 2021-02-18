@@ -469,6 +469,8 @@ class CORE_EXPORT ContentSecurityPolicy final
       network::mojom::ContentSecurityPolicyType,
       network::mojom::ContentSecurityPolicySource);
   void ApplyPolicySideEffectsToDelegate();
+  void ReportUseCounters(
+      const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies);
   void ComputeInternalStateForParsedPolicy(
       const network::mojom::blink::ContentSecurityPolicy& csp);
 
