@@ -3195,9 +3195,29 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   }
 }
 
-bool AXNodeObject::IsHtmlTable() const {
-  return IsTableLikeRole() && GetLayoutObject() &&
-         GetLayoutObject()->IsTable() && IsA<HTMLTableElement>(GetNode());
+bool AXNodeObject::HasValidHTMLTableStructureAndLayout() const {
+  // Is it a visible <table> with a table-like role and layout?
+  if (!IsTableLikeRole() || !GetLayoutObject() ||
+      !GetLayoutObject()->IsTable() || !IsA<HTMLTableElement>(GetNode()))
+    return false;
+
+  // Check for any invalid children, as far as W3C table validity is concerned.
+  // * If no invalid children exist, this will be considered a valid table,
+  //   and AddTableChildren() can be used to add the children in rendered order.
+  // * If any invalid children exist, this table will be considered invalid.
+  //   In that case the children will still be added via AddNodeChildren(),
+  //   so that no content is lost.
+  // See comments in AddTableChildren() for more information about valid tables.
+  for (Element* child = ElementTraversal::FirstChild(*GetElement()); child;
+       child = ElementTraversal::NextSibling(*child)) {
+    if (!IsA<HTMLTableSectionElement>(child) &&
+        !IsA<HTMLTableCaptionElement>(child) &&
+        !child->HasTagName(html_names::kColgroupTag)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void AXNodeObject::AddTableChildren() {
@@ -3205,10 +3225,10 @@ void AXNodeObject::AddTableChildren() {
   //
   // Implementation notes:
   //
-  // * There is always at least one section child DOM node.
-  //   For example, if the .html file specifies direct <tr> children of the
-  //   table, Blink will insert a <tbody> as a child of the table, and parent of
-  //   the <tr> elements.
+  // * In a valid table, there is always at least one section child DOM node.
+  //   For example, if the HTML of the web page includes <tr>s as direct
+  //   children of a <table>, Blink will insert a <tbody> as a child of the
+  //   table, and parent of the <tr> elements.
   //
   // * Rendered order can differ from DOM order:
   //   The valid DOM order of <table> children is specified here:
@@ -3222,7 +3242,7 @@ void AXNodeObject::AddTableChildren() {
   //   The following code ensures that the children are added to the AX tree in
   //   the same order as Blink renders them.
 
-  DCHECK(IsA<HTMLTableElement>(GetNode()));
+  DCHECK(HasValidHTMLTableStructureAndLayout());
   auto* html_table_element = To<HTMLTableElement>(GetNode());
   AddNodeChild(html_table_element->caption());
   AddNodeChild(html_table_element->tHead());
@@ -3618,7 +3638,7 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (IsHtmlTable())
+  if (HasValidHTMLTableStructureAndLayout())
     AddTableChildren();
   else if (ShouldUseLayoutObjectTraversalForChildren())
     AddLayoutChildren();

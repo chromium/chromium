@@ -305,7 +305,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddInlineTextBoxChildren(bool force = false);
   void AddImageMapChildren();
   void AddPopupChildren();
-  bool IsHtmlTable() const;
+  bool HasValidHTMLTableStructureAndLayout() const;
   void AddTableChildren();
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();

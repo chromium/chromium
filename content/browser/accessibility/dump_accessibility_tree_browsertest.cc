@@ -2587,6 +2587,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgG) {
   RunHtmlTest(AccessibilitySvgG_TestFile);
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableRowAdd) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-row-add.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableSimple) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
