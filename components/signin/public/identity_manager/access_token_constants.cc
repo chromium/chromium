@@ -30,6 +30,7 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Chrome sync is accessible for tab sharing and other datatypes that
       // require in-feature consent.
       GaiaConstants::kChromeSyncOAuth2Scope,
+      GaiaConstants::kFCMOAuthScope,
 
       // Google Pay is accessible as it has its own consent dialogs.
       GaiaConstants::kPaymentsOAuth2Scope,
@@ -64,7 +65,6 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kClearCutOAuth2Scope,
       GaiaConstants::kCloudTranslationOAuth2Scope,
       GaiaConstants::kDriveOAuth2Scope,
-      GaiaConstants::kFCMOAuthScope,
       GaiaConstants::kKidFamilyReadonlyOAuth2Scope,
       GaiaConstants::kKidManagementPrivilegedOAuth2Scope,
       GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope,
