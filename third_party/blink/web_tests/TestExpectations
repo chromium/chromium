@@ -4361,10 +4361,6 @@ crbug.com/849978 http/tests/devtools/elements/styles-4/stylesheet-source-url-com
 
 crbug.com/854538 [ Win7 ] http/tests/security/contentSecurityPolicy/1.1/form-action-src-default-ignored-with-redirect.html [ Skip ]
 
-# The compositor scrollbar controller lacks a Mac-specific behavior so this
-# test fails when run with compositing enabled.
-crbug.com/1133538 [ Mac ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/track-scroll.html [ Failure ]
-
 # User Activation
 crbug.com/736415 crbug.com/1066190 external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.tentative.html [ Failure Timeout ]
 crbug.com/736415 external/wpt/html/user-activation/navigation-state-reset-sameorigin.tentative.html [ Failure ]
