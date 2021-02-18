@@ -930,6 +930,7 @@
     'tryserver.chromium.linux': {
       'cast_shell_audio_linux': 'cast_audio_release_trybot',
       'cast_shell_linux': 'cast_release_trybot',
+      'cast-binary-size': 'cast_binary_size',
       'chromium_presubmit': 'presubmit',
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast',
@@ -1613,6 +1614,10 @@
 
     'cast_release_trybot': [
       'cast', 'release_trybot',
+    ],
+
+    'cast_binary_size': [
+      'cast', 'goma', 'minimal_symbols', 'official_optimize',
     ],
 
     'cast_audio_release_bot': [

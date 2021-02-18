@@ -884,6 +884,22 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "cast-binary-size",
+    builderless = True,
+    executable = "recipe:binary_size_cast_trybot",
+    properties = {
+        "$build/binary_size": {
+            "analyze_targets": [
+                "//chromecast:cast_shell",
+            ],
+            "compile_targets": [
+                "cast_shell",
+            ],
+        },
+    },
+)
+
+try_.chromium_linux_builder(
     name = "chromium_presubmit",
     branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",

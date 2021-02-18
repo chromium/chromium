@@ -56,6 +56,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:binary_size_cast_trybot",
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 
