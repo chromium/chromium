@@ -42,6 +42,8 @@ class VIEWS_EXPORT AXAuraObjWrapper {
   // Actions.
   virtual bool HandleAccessibleAction(const ui::AXActionData& action);
 
+  const AXAuraObjCache* cache() const { return aura_obj_cache_; }
+
  protected:
   // The cache associated with this wrapper. Subclasses should initialize this
   // cache on construction.

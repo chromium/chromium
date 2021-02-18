@@ -745,6 +745,15 @@ TEST_F(AXVirtualViewTest, HitTesting) {
             virtual_label_->HitTestSync(point_3.x(), point_3.y()));
 }
 
+#if defined(USE_AURA)
+TEST_F(AXVirtualViewTest, GetOrCreateWrapper) {
+  std::unique_ptr<AXAuraObjCache> cache;
+  auto* wrapper1 = virtual_label_->GetOrCreateWrapper(cache.get());
+  cache = std::make_unique<AXAuraObjCache>();
+  EXPECT_NE(wrapper1, virtual_label_->GetOrCreateWrapper(cache.get()));
+}
+#endif
+
 // Test for GetTargetForNativeAccessibilityEvent().
 #if defined(OS_WIN)
 TEST_F(AXVirtualViewTest, GetTargetForEvents) {

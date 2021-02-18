@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -381,4 +382,28 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   cache_ptr->set_focused_widget_for_testing(nullptr);
 
   AddFailureOnWidgetAccessibilityError(widget);
+}
+
+// Verify that re-enabling AutomationManagerAura after disable will not cause
+// crash.  See https://crbug.com/1177042.
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       ReenableDoesNotCauseCrash) {
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->Enable();
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  manager->Disable();
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  manager->Enable();
 }
