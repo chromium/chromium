@@ -238,7 +238,7 @@
         name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
                 "-webkit-user-drag", "object-fit", "object-position",
-                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask-type",
+                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask", "mask-type",
                 "stop-color", "stop-opacity", "flood-color", "flood-opacity",
                 "lighting-color"],
         methods_to_diff: [
@@ -379,7 +379,7 @@
     },
     {
         name: "UpdatePropertySpecificDifferencesMask",
-        fields_to_diff: ["Mask", "MaskBoxImage"],
+        fields_to_diff: ["Mask", "MaskBoxImage", "mask"],
     },
     {
         name: "UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow",

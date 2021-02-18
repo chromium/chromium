@@ -144,31 +144,6 @@ class CORE_EXPORT StyleStrokeData : public RefCounted<StyleStrokeData> {
   StyleStrokeData(const StyleStrokeData&);
 };
 
-// Non-inherited resources
-class StyleResourceData : public RefCounted<StyleResourceData> {
-  USING_FAST_MALLOC(StyleResourceData);
-
- public:
-  static scoped_refptr<StyleResourceData> Create() {
-    return base::AdoptRef(new StyleResourceData);
-  }
-  ~StyleResourceData();
-  scoped_refptr<StyleResourceData> Copy() const {
-    return base::AdoptRef(new StyleResourceData(*this));
-  }
-
-  bool operator==(const StyleResourceData&) const;
-  bool operator!=(const StyleResourceData& other) const {
-    return !(*this == other);
-  }
-
-  scoped_refptr<StyleSVGResource> masker;
-
- private:
-  StyleResourceData();
-  StyleResourceData(const StyleResourceData&);
-};
-
 // Inherited resources
 class StyleInheritedResourceData
     : public RefCounted<StyleInheritedResourceData> {

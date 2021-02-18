@@ -1125,10 +1125,6 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   float FillOpacity() const { return SvgStyle().FillOpacity(); }
   void SetFillOpacity(float f) { AccessSVGStyle().SetFillOpacity(f); }
 
-  StyleSVGResource* MaskerResource() const {
-    return SvgStyle().MaskerResource();
-  }
-
   // marker-* helpers
   StyleSVGResource* MarkerStartResource() const {
     return SvgStyle().MarkerStartResource();

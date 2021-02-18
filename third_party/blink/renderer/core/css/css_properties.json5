@@ -2621,7 +2621,12 @@
     {
       name: "mask",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      svg: true,
+      field_group: "*",
+      field_template: "pointer",
+      type_name: "StyleSVGResource",
+      include_paths: ["third_party/blink/renderer/core/style/style_svg_resource.h"],
+      wrapper_pointer_name: "scoped_refptr",
+      default_value: "nullptr",
       name_for_methods: "MaskerResource",
       converter: "ConvertElementReference",
     },

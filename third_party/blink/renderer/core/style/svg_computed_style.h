@@ -54,9 +54,7 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   CORE_EXPORT ~SVGComputedStyle();
 
   bool InheritedEqual(const SVGComputedStyle&) const;
-  bool NonInheritedEqual(const SVGComputedStyle&) const;
   void InheritFrom(const SVGComputedStyle&);
-  void CopyNonInheritedFromCached(const SVGComputedStyle&);
 
   CORE_EXPORT StyleDifference Diff(const SVGComputedStyle&) const;
 
@@ -86,7 +84,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   static UnzoomedLength InitialStrokeWidth() {
     return UnzoomedLength(Length::Fixed(1));
   }
-  static StyleSVGResource* InitialMaskerResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerStartResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerMidResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerEndResource() { return nullptr; }
@@ -166,9 +163,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
       stroke.Access()->dash_offset = dash_offset;
   }
 
-  // Setters for non-inherited resources
-  void SetMaskerResource(scoped_refptr<StyleSVGResource> resource);
-
   // Setters for inherited resources
   void SetMarkerStartResource(scoped_refptr<StyleSVGResource> resource);
 
@@ -209,7 +203,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   float StrokeMiterLimit() const { return stroke->miter_limit; }
   const UnzoomedLength& StrokeWidth() const { return stroke->width; }
   const Length& StrokeDashOffset() const { return stroke->dash_offset; }
-  StyleSVGResource* MaskerResource() const { return resources->masker.get(); }
   StyleSVGResource* MarkerStartResource() const {
     return inherited_resources->marker_start.get();
   }
@@ -268,9 +261,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   DataRef<StyleFillData> fill;
   DataRef<StyleStrokeData> stroke;
   DataRef<StyleInheritedResourceData> inherited_resources;
-
-  // non-inherited attributes
-  DataRef<StyleResourceData> resources;
 
  private:
   enum CreateInitialType { kCreateInitial };

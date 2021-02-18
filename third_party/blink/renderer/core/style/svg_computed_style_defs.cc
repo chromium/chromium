@@ -75,18 +75,6 @@ bool StyleStrokeData::operator==(const StyleStrokeData& other) const {
          visited_link_paint == other.visited_link_paint;
 }
 
-StyleResourceData::StyleResourceData()
-    : masker(SVGComputedStyle::InitialMaskerResource()) {}
-
-StyleResourceData::StyleResourceData(const StyleResourceData& other)
-    : RefCounted<StyleResourceData>(), masker(other.masker) {}
-
-StyleResourceData::~StyleResourceData() = default;
-
-bool StyleResourceData::operator==(const StyleResourceData& other) const {
-  return DataEquivalent(masker, other.masker);
-}
-
 StyleInheritedResourceData::StyleInheritedResourceData()
     : marker_start(SVGComputedStyle::InitialMarkerStartResource()),
       marker_mid(SVGComputedStyle::InitialMarkerMidResource()),

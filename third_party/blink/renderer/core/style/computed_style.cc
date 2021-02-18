@@ -514,9 +514,6 @@ void ComputedStyle::CopyNonInheritedFromCached(const ComputedStyle& other) {
   // m_affectedByActive
   // m_affectedByDrag
   // m_isLink
-
-  if (svg_style_ != other.svg_style_)
-    svg_style_.Access()->CopyNonInheritedFromCached(*other.svg_style_);
 }
 
 bool ComputedStyle::operator==(const ComputedStyle& o) const {
@@ -589,8 +586,7 @@ bool ComputedStyle::NonIndependentInheritedEqual(
 
 bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
   // compare everything except the pseudoStyle pointer
-  return ComputedStyleBase::NonInheritedEqual(other) &&
-         svg_style_->NonInheritedEqual(*other.svg_style_);
+  return ComputedStyleBase::NonInheritedEqual(other);
 }
 
 bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
