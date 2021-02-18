@@ -99,7 +99,10 @@ public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable 
 
     @Override
     public void onFinishNativeInitialization() {
-        mPresenter = new ChromeTabModalPresenter(mActivity, mTabObscuringHandlerSupplier);
+        mPresenter = new ChromeTabModalPresenter(mActivity, mTabObscuringHandlerSupplier,
+                mActivity::getToolbarManager, mActivity::getActivityTab,
+                mActivity::getContextualSearchManager, mActivity.getFullscreenManager(),
+                mActivity.getBrowserControlsManager());
         mAppVisibilityDelegate.get().addDelegate(mPresenter.getBrowserControlsVisibilityDelegate());
         mManager.registerPresenter(mPresenter, ModalDialogType.TAB);
 
