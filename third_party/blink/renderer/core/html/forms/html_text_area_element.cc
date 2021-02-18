@@ -646,6 +646,7 @@ void HTMLTextAreaElement::SetPlaceholderVisibility(bool visible) {
 void HTMLTextAreaElement::UpdatePlaceholderText() {
   HTMLElement* placeholder = PlaceholderElement();
   const String placeholder_text = GetPlaceholderValue();
+  const bool is_suggested_value = !SuggestedValue().IsEmpty();
   if (placeholder_text.IsEmpty()) {
     if (placeholder)
       UserAgentShadowRoot()->RemoveChild(placeholder);
@@ -661,6 +662,12 @@ void HTMLTextAreaElement::UpdatePlaceholderText() {
         CSSPropertyID::kDisplay,
         IsPlaceholderVisible() ? CSSValueID::kBlock : CSSValueID::kNone, true);
     UserAgentShadowRoot()->InsertBefore(placeholder, InnerEditorElement());
+  }
+  if (is_suggested_value) {
+    placeholder->SetInlineStyleProperty(CSSPropertyID::kUserSelect,
+                                        CSSValueID::kNone, true);
+  } else {
+    placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
   String normalized_value = placeholder_text;
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-placeholder

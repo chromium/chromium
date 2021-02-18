@@ -484,7 +484,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
   return true;
 }
 
-void TextFieldInputType::UpdatePlaceholderText() {
+void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
   if (!SupportsPlaceholder())
     return;
   HTMLElement* placeholder = GetElement().PlaceholderElement();
@@ -511,6 +511,12 @@ void TextFieldInputType::UpdatePlaceholderText() {
     Node* previous = container ? container : GetElement().InnerEditorElement();
     previous->parentNode()->InsertBefore(placeholder, previous);
     SECURITY_DCHECK(placeholder->parentNode() == previous->parentNode());
+  }
+  if (is_suggested_value) {
+    placeholder->SetInlineStyleProperty(CSSPropertyID::kUserSelect,
+                                        CSSValueID::kNone, true);
+  } else {
+    placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
   placeholder->setTextContent(placeholder_text);
 }

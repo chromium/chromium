@@ -135,7 +135,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void CapsLockStateMayHaveChanged();
   virtual bool ShouldDrawCapsLockIndicator() const;
   virtual void UpdateClearButtonVisibility();
-  virtual void UpdatePlaceholderText();
+  virtual void UpdatePlaceholderText(bool is_suggested_value);
   virtual AXObject* PopupRootAXObject();
   virtual void EnsureFallbackContent() {}
   virtual void EnsurePrimaryContent() {}
