@@ -112,17 +112,6 @@ TEST(VotingTest, VoteReceiptsWork) {
   EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
   EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[1]));
 
-  // Change a vote, but making no change.
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(0, consumer.votes_[0].vote().value());
-  EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
-  voter.receipts_[0].ChangeVote(0, DummyVoter::kReason);
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(0, consumer.votes_[0].vote().value());
-  EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
-
   // Change the vote and expect the change to propagate.
   static const char kReason[] = "another reason";
   voter.receipts_[0].ChangeVote(5, kReason);

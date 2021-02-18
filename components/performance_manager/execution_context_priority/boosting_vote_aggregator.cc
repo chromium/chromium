@@ -547,25 +547,25 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
   // specific higher votes.
   if (priority == base::TaskPriority::LOWEST) {
     if (node_data->HasOutgoingVote()) {
-      channel_.InvalidateVote(execution_context);
       node_data->CancelOutgoingVote();
+      channel_.InvalidateVote(execution_context);
     }
     return;
   }
 
-  // Get the reason for this vote.
-  const char* reason = GetVoteReason(node);
+  const Vote vote(priority, GetVoteReason(node));
 
-  // If the node already has a vote, then change it. This is a nop if the vote
-  // details are identical.
+  // Update the vote if the node already has one. If it changed, the new vote
+  // must be upstreamed.
   if (node_data->HasOutgoingVote()) {
-    channel_.ChangeVote(execution_context, Vote(priority, reason));
+    if (node_data->UpdateOutgoingVote(vote))
+      channel_.ChangeVote(execution_context, vote);
     return;
   }
 
   // Create an outgoing vote.
-  node_data->SetHasOutgoingVote();
-  channel_.SubmitVote(execution_context, Vote(priority, reason));
+  node_data->SetOutgoingVote(vote);
+  channel_.SubmitVote(execution_context, vote);
 }
 
 void BoostingVoteAggregator::UpstreamChanges(const NodeDataPtrSet& changes) {

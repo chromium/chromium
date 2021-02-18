@@ -170,18 +170,6 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
   ExpectEntangled(voter.receipts_[1], consumer.votes_[1]);
 
-  // Change a vote, but making no change.
-  ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
-  EXPECT_EQ(base::TaskPriority::LOWEST, consumer.votes_[0].vote().value());
-  EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
-  voter.receipts_[0].ChangeVote(base::TaskPriority::LOWEST,
-                                DummyVoter::kReason);
-  ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyExecutionContext1, consumer.votes_[0].context());
-  EXPECT_EQ(base::TaskPriority::LOWEST, consumer.votes_[0].vote().value());
-  EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
-
   // Change the vote and expect the change to propagate.
   static const char kReason[] = "another reason";
   voter.receipts_[0].ChangeVote(base::TaskPriority::HIGHEST, kReason);

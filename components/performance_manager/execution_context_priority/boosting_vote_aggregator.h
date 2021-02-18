@@ -129,26 +129,38 @@ class BoostingVoteAggregator : public VoteObserver {
 
     const Vote& incoming_vote() const { return incoming_vote_.value(); }
 
+    // Sets/Cancels the incoming vote.
     void SetIncomingVote(const Vote& incoming_vote) {
       DCHECK(!incoming_vote_.has_value());
-      incoming_vote_ = incoming_vote;
-    }
-    void UpdateIncomingVote(const Vote& incoming_vote) {
-      DCHECK(incoming_vote_.has_value());
       incoming_vote_ = incoming_vote;
     }
     void RemoveIncomingVote() {
       DCHECK(incoming_vote_.has_value());
       incoming_vote_ = base::nullopt;
     }
-
-    void CancelOutgoingVote() {
-      DCHECK(has_outgoing_vote_);
-      has_outgoing_vote_ = false;
+    // Updates the incoming vote.
+    void UpdateIncomingVote(const Vote& incoming_vote) {
+      DCHECK(incoming_vote_.has_value());
+      incoming_vote_ = incoming_vote;
     }
-    void SetHasOutgoingVote() {
-      DCHECK(!has_outgoing_vote_);
-      has_outgoing_vote_ = true;
+
+    // Sets/Cancels the outgoing vote.
+    void SetOutgoingVote(const Vote& outgoing_vote) {
+      DCHECK(!outgoing_vote_.has_value());
+      outgoing_vote_ = outgoing_vote;
+    }
+    void CancelOutgoingVote() {
+      DCHECK(outgoing_vote_.has_value());
+      outgoing_vote_ = base::nullopt;
+    }
+    // Updates the outgoing vote. Returns true if it changed.
+    bool UpdateOutgoingVote(const Vote& outgoing_vote) {
+      DCHECK(outgoing_vote_.has_value());
+      if (outgoing_vote == outgoing_vote_.value())
+        return false;
+
+      outgoing_vote_ = outgoing_vote;
+      return true;
     }
 
     // Returns true if this node has an active |incoming| vote. If false that
@@ -157,7 +169,7 @@ class BoostingVoteAggregator : public VoteObserver {
     bool HasIncomingVote() const { return incoming_vote_.has_value(); }
 
     // Returns true if this node has an active outgoing vote.
-    bool HasOutgoingVote() const { return has_outgoing_vote_; }
+    bool HasOutgoingVote() const { return outgoing_vote_.has_value(); }
 
     // Returns true if this node is involved in any edges.
     bool HasEdges() const { return edge_count_ > 0; }
@@ -181,9 +193,8 @@ class BoostingVoteAggregator : public VoteObserver {
     // The input vote we've received, if any.
     base::Optional<Vote> incoming_vote_;
 
-    // Indicates that a corresponding vote has been emitted via the
-    // voting channel.
-    bool has_outgoing_vote_ = false;
+    // The output vote we're emitted, if any.
+    base::Optional<Vote> outgoing_vote_;
   };
 
   // NOTE: It is important that NodeDataMap preserve pointers to NodeData

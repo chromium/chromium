@@ -591,10 +591,9 @@ void VoteReceipt<VoteImpl>::ChangeVote(typename VoteImpl::VoteType new_vote,
                                        const char* reason) {
   DCHECK(vote_);
 
-  // Do nothing if the vote hasn't actually changed.
+  // Ensure the vote was actually changed.
   const auto& vote = vote_->vote();
-  if (vote.value() == new_vote && vote.reason() == reason)
-    return;
+  DCHECK(vote.value() != new_vote || vote.reason() != reason);
 
   vote_->ChangeVote(PassKey(), new_vote, reason);
 }
