@@ -145,6 +145,10 @@ public class AssistantTriggerScript {
                             // animation controlled by the scroll-to-hide gesture listener.
                             return;
                         }
+                        // This happens when hide sheet is immediately called after expand sheet.
+                        if (listener == null) {
+                            return;
+                        }
                         listener.onSizeChanged(width, height, oldWidth, oldHeight);
                     }
                 });

@@ -16,6 +16,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
@@ -371,12 +372,14 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
 
     /** Request showing the Assistant bottom bar view and expand the sheet. */
     public void showContent(boolean shouldExpand, boolean animate) {
+        freezeBottomSheetAnimation();
         BottomSheetUtils.showContentAndMaybeExpand(
                 mBottomSheetController, mContent, shouldExpand, animate);
     }
 
     /** Hide the Assistant bottom bar view. */
     public void hide() {
+        freezeBottomSheetAnimation();
         mBottomSheetController.hideContent(mContent, /* animate= */ true);
     }
 
@@ -488,5 +491,13 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         }
 
         mInsetSupplier.set(resizing);
+    }
+
+    private void freezeBottomSheetAnimation() {
+        Callback<Integer> offsetController = mContent.getOffsetController();
+        if (offsetController == null) {
+            return;
+        }
+        offsetController.onResult(mBottomSheetController.getCurrentOffset());
     }
 }
