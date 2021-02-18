@@ -263,7 +263,8 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
 
                             return null;
                         }
-                    });
+                    },
+                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         }
 
         @DrawableRes

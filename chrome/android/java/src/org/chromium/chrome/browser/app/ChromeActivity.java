@@ -2228,7 +2228,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             this::getModalDialogManager,
                             /*offlinePageLoadUrlDelegate=*/
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(currentTab)),
-                    new ChromePermissionParamsListBuilderDelegate());
+                    new ChromePermissionParamsListBuilderDelegate(),
+                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             return true;
         }
 

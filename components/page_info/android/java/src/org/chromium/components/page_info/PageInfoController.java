@@ -29,6 +29,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -72,6 +73,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         int TOOLBAR = 2;
         int VR = 3;
     }
+    @ContentSettingsType
+    public static final int NO_HIGHLIGHTED_PERMISSION = ContentSettingsType.DEFAULT;
 
     private Context mContext;
     private final WindowAndroid mWindowAndroid;
@@ -146,11 +149,14 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * @param publisher                The name of the content publisher, if any.
      * @param delegate                 The PageInfoControllerDelegate used to provide
      *                                 embedder-specific info.
+     * @param highlightedPermission    The ContentSettingsType to be highlighted on this page or
+     *                                 NO_HIGHLIGHTED_PERMISSION for no highlight.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public PageInfoController(WebContents webContents, int securityLevel, String publisher,
             PageInfoControllerDelegate delegate,
-            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate) {
+            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate,
+            @ContentSettingsType int highlightedPermission) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -282,8 +288,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             PageInfoViewV2 view2 = (PageInfoViewV2) mView;
             mConnectionController = new PageInfoConnectionController(
                     this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
-            mPermissionsController = new PageInfoPermissionsController(
-                    this, view2.getPermissionsRowView(), mDelegate, mFullUrl.getSpec());
+            mPermissionsController =
+                    new PageInfoPermissionsController(this, view2.getPermissionsRowView(),
+                            mDelegate, mFullUrl.getSpec(), highlightedPermission);
             mCookiesController = new PageInfoCookiesController(
                     this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
         } else {
@@ -541,11 +548,14 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * @param contentPublisher The name of the publisher of the content.
      * @param source Determines the source that triggered the popup.
      * @param delegate The PageInfoControllerDelegate used to provide embedder-specific info.
+     * @param highlightedPermission The ContentSettingsType to be highlighted on this page or
+     *            NO_HIGHLIGHTED_PERMISSION for no highlight.
      */
     public static void show(final Activity activity, WebContents webContents,
             final String contentPublisher, @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
-            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate) {
+            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate,
+            @ContentSettingsType int highlightedPermission) {
         // If the activity's decor view is not attached to window, we don't show the dialog because
         // the window manager might have revoked the window token for this activity. See
         // https://crbug.com/921450.
@@ -564,7 +574,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         sLastPageInfoControllerForTesting = new WeakReference<>(new PageInfoController(webContents,
                 SecurityStateModel.getSecurityLevelForWebContents(webContents), contentPublisher,
-                delegate, permissionParamsListBuilderDelegate));
+                delegate, permissionParamsListBuilderDelegate, highlightedPermission));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

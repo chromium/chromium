@@ -86,7 +86,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
     private final CallbackController mCallbackController = new CallbackController();
-    private @ContentSettingsType int mLastPermission;
+    @ContentSettingsType
+    private int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
 
     private boolean mUrlBarTextIsSearch = true;

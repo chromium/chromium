@@ -144,6 +144,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         mActivity::getModalDialogManager,
                         /*offlinePageLoadUrlDelegate=*/
                         new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents)),
-                new ChromePermissionParamsListBuilderDelegate());
+                new ChromePermissionParamsListBuilderDelegate(),
+                PageInfoController.NO_HIGHLIGHTED_PERMISSION);
     }
 }

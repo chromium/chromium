@@ -689,7 +689,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 mModalDialogManagerSupplier,
                                 /*offlinePageLoadUrlDelegate=*/
                                 new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(currentTab)),
-                        new ChromePermissionParamsListBuilderDelegate());
+                        new ChromePermissionParamsListBuilderDelegate(),
+                        PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             });
         }
 

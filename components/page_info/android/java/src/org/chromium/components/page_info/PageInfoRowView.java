@@ -34,6 +34,7 @@ public class PageInfoRowView extends FrameLayout {
         public CharSequence subtitle;
         public Runnable clickCallback;
         public boolean decreaseIconSize;
+        public @ColorRes int rowTint;
     }
 
     private final ChromeImageView mIcon;
@@ -74,6 +75,9 @@ public class PageInfoRowView extends FrameLayout {
             setClickable(true);
             setFocusable(true);
             getChildAt(0).setOnClickListener((v) -> params.clickCallback.run());
+        }
+        if (params.rowTint != 0) {
+            setBackgroundColor(params.rowTint);
         }
     }
 

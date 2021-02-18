@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.text.format.Formatter;
 import android.view.View;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -195,6 +196,13 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             PREF_CLEAR_DATA,
     };
 
+    /** The permission type to be highlighted on this page, if any. */
+    @ContentSettingsType
+    private int mHighlightedPermission = ContentSettingsType.DEFAULT;
+    /** The highlight color. */
+    @ColorRes
+    private int mHighlightColor;
+
     // The callback to be run after this site is reset.
     private Observer mWebsiteSettingsObserver;
 
@@ -347,6 +355,17 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     public void setWebsiteSettingsObserver(Observer observer) {
         mWebsiteSettingsObserver = observer;
+    }
+
+    /**
+     * Sets the permission row that should be highlighted on the page, with its corresponding color.
+     * @param permission The ContentSettingsType for the permission to be highlighted.
+     * @param colorResId The color resource id for the background color of the permission row.
+     */
+    public void setHighlightedPermission(
+            @ContentSettingsType int permission, @ColorRes int colorResId) {
+        mHighlightedPermission = permission;
+        mHighlightColor = colorResId;
     }
 
     /**
@@ -558,6 +577,11 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         newPreference.setKey(oldPreference.getKey());
         setUpPreferenceCommon(newPreference, value);
         newPreference.setSummary(newSummary);
+        @ContentSettingsType
+        int contentType = getContentSettingsTypeFromPreferenceKey(newPreference.getKey());
+        if (isActionableContentSettingsEnabled() && contentType == mHighlightedPermission) {
+            newPreference.setBackgroundColor(mHighlightColor);
+        }
 
         return newPreference;
     }
@@ -746,6 +770,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                             removePreferenceSafely(PREF_PERMISSIONS_HEADER);
                         }
                     });
+            if (isActionableContentSettingsEnabled()
+                    && info.getContentSettingsType() == mHighlightedPermission) {
+                preference.setBackgroundColor(mHighlightColor);
+            }
 
             preference.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
                     getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
@@ -886,6 +914,11 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                         ? getString(R.string.automatically_blocked)
                         : getString(ContentSettingsResources.getCategorySummary(value)));
         switchPreference.setOnPreferenceChangeListener(this);
+        @ContentSettingsType
+        int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
+        if (contentType == mHighlightedPermission) {
+            switchPreference.setBackgroundColor(mHighlightColor);
+        }
     }
 
     /**
@@ -923,6 +956,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
      */
     private void setUpPreferenceCommon(
             Preference preference, @ContentSettingValues @Nullable Integer value) {
+        @ContentSettingsType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         int titleResourceId = ContentSettingsResources.getTitle(contentType);
 

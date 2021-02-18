@@ -135,7 +135,8 @@ public class PageInfoViewTest {
                             sActivityTestRule.getActivity().getModalDialogManagerSupplier(),
                             /*offlinePageLoadUrlDelegate=*/
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate());
+                    new ChromePermissionParamsListBuilderDelegate(),
+                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
 
         if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {
@@ -516,7 +517,8 @@ public class PageInfoViewTest {
                     };
             PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
                     PageInfoController.OpenedFromSource.MENU, pageInfoControllerDelegate,
-                    new ChromePermissionParamsListBuilderDelegate());
+                    new ChromePermissionParamsListBuilderDelegate(),
+                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
         onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()));
     }

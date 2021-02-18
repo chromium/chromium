@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.util.List;
 
@@ -28,13 +30,20 @@ public class PageInfoPermissionsController
     private String mTitle;
     private String mPageUrl;
     private SingleWebsiteSettings mSubPage;
+    @ContentSettingsType
+    private int mHighlightedPermission = ContentSettingsType.DEFAULT;
+    @ColorRes
+    private int mHighlightColor;
 
     public PageInfoPermissionsController(PageInfoMainController mainController,
-            PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl) {
+            PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl,
+            @ContentSettingsType int highlightedPermission) {
         mMainController = mainController;
         mRowView = view;
         mDelegate = delegate;
         mPageUrl = pageUrl;
+        mHighlightedPermission = highlightedPermission;
+        mHighlightColor = mRowView.getContext().getResources().getColor(R.color.iph_highlight_blue);
     }
 
     private void launchSubpage() {
@@ -56,6 +65,9 @@ public class PageInfoPermissionsController
         mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
         mSubPage.setHideNonPermissionPreferences(true);
         mSubPage.setWebsiteSettingsObserver(this);
+        if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
+            mSubPage.setHighlightedPermission(mHighlightedPermission, mHighlightColor);
+        }
         mDelegate.getFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
         return mSubPage.requireView();
     }
@@ -81,6 +93,9 @@ public class PageInfoPermissionsController
         rowParams.clickCallback = this::launchSubpage;
         rowParams.subtitle = getPermissionSummaryString(params.permissions, resources);
         rowParams.visible = mDelegate.isSiteSettingsAvailable() && rowParams.subtitle != null;
+        if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
+            rowParams.rowTint = mHighlightColor;
+        }
         mRowView.setParams(rowParams);
     }
 

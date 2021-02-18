@@ -578,7 +578,8 @@ public class VrShell extends GvrLayout
                         mActivity::getModalDialogManager,
                         /*offlinePageLoadUrlDelegate=*/
                         new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                new ChromePermissionParamsListBuilderDelegate());
+                new ChromePermissionParamsListBuilderDelegate(),
+                PageInfoController.NO_HIGHLIGHTED_PERMISSION);
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

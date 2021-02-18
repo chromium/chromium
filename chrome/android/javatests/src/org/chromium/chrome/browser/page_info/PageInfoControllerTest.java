@@ -79,7 +79,8 @@ public class PageInfoControllerTest {
                             activity::getModalDialogManager,
                             /*offlinePageLoadUrlDelegate=*/
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate());
+                    new ChromePermissionParamsListBuilderDelegate(),
+                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
     }
 
@@ -109,7 +110,8 @@ public class PageInfoControllerTest {
             PageInfoController pageInfo =
                     new PageInfoController(tab.getWebContents(), ConnectionSecurityLevel.NONE,
                             /*publisher=*/null, chromePageInfoControllerDelegate,
-                            chromePermissionParamsListBuilderDelegate);
+                            chromePermissionParamsListBuilderDelegate,
+                            PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             PageInfoView pageInfoView = (PageInfoView) pageInfo.getPageInfoViewForTesting();
             // Test that the title contains the Unicode hostname rather than strict equality, as
             // the test server will be bound to a random port.

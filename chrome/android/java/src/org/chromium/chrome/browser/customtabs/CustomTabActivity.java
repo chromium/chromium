@@ -216,7 +216,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                             this::getModalDialogManager,
                             /*offlinePageLoadUrlDelegate=*/
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate());
+                    new ChromePermissionParamsListBuilderDelegate(),
+                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);
