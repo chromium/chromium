@@ -25,6 +25,7 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/thread_policy.h>
+#include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #endif
@@ -463,6 +464,9 @@ class RealtimeTestThread : public FunctionTestThread {
     mach_timebase_info(&tb_info);
 
     if (FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac) &&
+#if defined(OS_MAC)
+        !mac::IsOS10_14() &&  // Should not be applied on 10.14.
+#endif
         !realtime_period_.is_zero()) {
       uint32_t abs_realtime_period = saturated_cast<uint32_t>(
           realtime_period_.InNanoseconds() *
