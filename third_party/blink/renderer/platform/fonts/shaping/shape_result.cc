@@ -426,6 +426,18 @@ size_t ShapeResult::ByteSize() const {
   return self_byte_size;
 }
 
+bool ShapeResult::IsStartSafeToBreak() const {
+  CHECK(!runs_.IsEmpty());
+  if (!Rtl()) {
+    const scoped_refptr<RunInfo>& run = runs_.front();
+    const HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.front();
+    return glyph_data.safe_to_break_before;
+  }
+  const scoped_refptr<RunInfo>& run = runs_.back();
+  const HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.back();
+  return glyph_data.safe_to_break_before;
+}
+
 unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
   for (auto* it = runs_.begin(); it != runs_.end(); ++it) {
     const auto& run = *it;

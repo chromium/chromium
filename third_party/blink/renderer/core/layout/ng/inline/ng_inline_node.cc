@@ -415,10 +415,22 @@ inline bool ShouldBreakShapingAfterBox(const NGInlineItem& item,
 }
 
 inline bool NeedsShaping(const NGInlineItem& item) {
-  return item.Type() == NGInlineItem::kText && !item.TextShapeResult() &&
-         // Text item with length==0 exists to maintain LayoutObject states such
-         // as ClearNeedsLayout, but not needed to shape.
-         item.Length();
+  if (item.Type() != NGInlineItem::kText)
+    return false;
+  // Text item with length==0 exists to maintain LayoutObject states such as
+  // ClearNeedsLayout, but not needed to shape.
+  if (!item.Length())
+    return false;
+  const ShapeResult* shape_result = item.TextShapeResult();
+  if (!shape_result)
+    return true;
+  // |StartOffset| is usually safe-to-break, but it is not when we shape across
+  // elements and split the |ShapeResult|. Such |ShapeResult| is not safe to
+  // reuse.
+  DCHECK_EQ(item.StartOffset(), shape_result->StartIndex());
+  if (!shape_result->IsStartSafeToBreak())
+    return true;
+  return false;
 }
 
 // Determine if reshape is needed for ::first-line style.
@@ -1790,6 +1802,10 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
     const LayoutBlockFlow* block_flow) {
   return ShouldReportLetterSpacingUseCounter(layout_object, first_line,
                                              block_flow);
+}
+
+bool NGInlineNode::NeedsShapingForTesting(const NGInlineItem& item) {
+  return NeedsShaping(item);
 }
 
 String NGInlineNode::ToString() const {

@@ -187,6 +187,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // For memory reporting.
   size_t ByteSize() const;
 
+  // True if |StartIndex()| is safe to break.
+  bool IsStartSafeToBreak() const;
+
   // Returns the next or previous offsets respectively at which it is safe to
   // break without reshaping.
   // The |offset| given and the return value is for the original string, between

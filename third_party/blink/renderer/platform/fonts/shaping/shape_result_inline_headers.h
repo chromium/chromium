@@ -493,6 +493,15 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
     unsigned size() const { return offsets_.size(); }
     bool IsEmpty() const { return size() == 0; }
 
+    const HarfBuzzRunGlyphData& front() const {
+      CHECK(!IsEmpty());
+      return (*this)[0];
+    }
+    const HarfBuzzRunGlyphData& back() const {
+      CHECK(!IsEmpty());
+      return (*this)[size() - 1];
+    }
+
     void Reverse() {
       std::reverse(begin(), end());
       offsets_.Reverse();

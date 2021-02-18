@@ -127,6 +127,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
     LayoutUnit float_inline_max_size_with_margin;
   };
 
+  static bool NeedsShapingForTesting(const NGInlineItem& item);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(NGInlineNodeTest, SegmentBidiChangeSetsNeedsLayout);
 

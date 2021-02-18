@@ -1363,6 +1363,58 @@ TEST_F(NGInlineNodeTest, ReusingRTLAsLTR) {
   TEST_ITEM_OFFSET_DIR(Items()[2], 10u, 10u, TextDirection::kLtr);
 }
 
+TEST_F(NGInlineNodeTest, ReuseFirstNonSafe) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    p {
+      font-size: 50px;
+    }
+    </style>
+    <p id="p">
+      <span>A</span>V
+    </p>
+  )HTML");
+  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  ASSERT_TRUE(data);
+  const Vector<NGInlineItem>& items = data->items;
+
+  // We shape "AV" together, which usually has kerning between "A" and "V", then
+  // split the |ShapeResult| to two |NGInlineItem|s. The |NGInlineItem| for "V"
+  // is not safe to reuse even if its style does not change.
+  const NGInlineItem& item_v = items[3];
+  EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
+  EXPECT_EQ(
+      StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
+      "V");
+  EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
+}
+
+TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    p {
+      font-size: 50px;
+      unicode-bidi: bidi-override;
+      direction: rtl;
+    }
+    </style>
+    <p id="p">
+      <span>A</span>V
+    </p>
+  )HTML");
+  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  ASSERT_TRUE(data);
+  const Vector<NGInlineItem>& items = data->items;
+  const NGInlineItem& item_v = items[4];
+  EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
+  EXPECT_EQ(
+      StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
+      "V");
+  EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
+}
+
 TEST_F(NGInlineNodeTest, LetterSpacingUseCounterFalse) {
   SetBodyInnerHTML(R"HTML(
     <p id="p" style="letter-spacing: 1em; text-align: center">
