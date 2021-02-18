@@ -44,8 +44,8 @@ component("arcore") {
 
   deps = [
     "//base",
-    "//device/vr:vr",
     "//device/vr:vr_base",
+    "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",

@@ -30,8 +30,16 @@ source_set("vr_gl_bindings") {
 }
 
 if (enable_vr) {
-  # TODO(https://crbug.com/1073113): Flesh out and cleanup this target.
+  # This target is intended to contain generic base classes or utils that are
+  # used by ALL (or almost All) XR devices/runtimes.
+  # TODO(https://crbug.com/1073113): Flesh out and cleanup this target, this
+  # includes determination of which things (if any) should be in the public
+  # target.
   component("vr_base") {
+    # This list should not be expanded, ideally all references outside of this
+    # directory would be removed; we should consider moving the classes that
+    # the isolated_xr_device service needs to the public target, or document why
+    # we opted to leave the exception.
     visibility = [
       # TODO(https://crbug.com/843374): Move arcore_device
       "//chrome/browser/*",
@@ -62,10 +70,13 @@ if (enable_vr) {
     ]
   }
 
-  component("vr") {
-    output_name = "device_vr"
+  # Contains useful helper classes that are used by either multiple XR Devices,
+  # or are useful to classes interacting with them (e.g. to measure performance
+  # or to ease working with data coming in/out of mojom).
+  component("vr_util") {
+    output_name = "device_vr_util"
+    defines = [ "IS_DEVICE_VR_UTIL_IMPL" ]
 
-    defines = [ "DEVICE_VR_IMPLEMENTATION" ]
     sources = [
       "util/fps_meter.cc",
       "util/fps_meter.h",
@@ -81,12 +92,28 @@ if (enable_vr) {
       "util/transform_utils.h",
       "util/xr_standard_gamepad_builder.cc",
       "util/xr_standard_gamepad_builder.h",
-      "vr_export.h",
     ]
+
+    deps = [
+      "//base",
+      "//device/vr/public/mojom:isolated_xr_service",
+      "//ui/gfx",
+    ]
+  }
+
+  # TODO(alcooper): Ultimately, this component should be either deleted entirely
+  # or used as a helper component aggregating all XR Runtimes that are in use.
+  # Each XR Device should be split into its own component.
+  component("vr") {
+    output_name = "device_vr"
+
+    defines = [ "DEVICE_VR_IMPLEMENTATION" ]
+    sources = [ "vr_export.h" ]
 
     public_deps = [ "//device/vr/public/cpp" ]
     deps = [
       ":vr_base",
+      ":vr_util",
       "//base",
       "//components/ukm:ukm",
       "//device/base",

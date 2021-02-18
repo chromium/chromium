@@ -4,6 +4,7 @@
 #ifndef DEVICE_VR_UTIL_XR_STANDARD_GAMEPAD_BUILDER_H_
 #define DEVICE_VR_UTIL_XR_STANDARD_GAMEPAD_BUILDER_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/util/gamepad_builder.h"
@@ -13,7 +14,7 @@ namespace device {
 // Centralizes the logic of properly ordering the buttons and input axes for
 // xr-standard Gamepads so that the various platforms don't have to worry about
 // it themselves.
-class XRStandardGamepadBuilder {
+class COMPONENT_EXPORT(DEVICE_VR_UTIL) XRStandardGamepadBuilder {
  public:
   XRStandardGamepadBuilder(device::mojom::XRHandedness handedness);
   virtual ~XRStandardGamepadBuilder();

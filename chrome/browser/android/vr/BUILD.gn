@@ -86,6 +86,7 @@ static_library("vr_android") {
     "//content/public/common",
     "//device/vr",
     "//device/vr:vr_base",
+    "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//device/vr/buildflags:buildflags",
     "//services/device/public/mojom",

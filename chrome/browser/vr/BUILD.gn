@@ -262,7 +262,7 @@ component("vr_common") {
     "//components/ukm/content",
     "//content/public/browser",
     "//device/base",
-    "//device/vr",
+    "//device/vr:vr_util",
     "//device/vr/buildflags:buildflags",
     "//device/vr/public/mojom:isolated_xr_service",
     "//media",
