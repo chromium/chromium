@@ -182,11 +182,13 @@ static SupportedCodecs GetSupportedCodecs(
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       case media::VideoCodec::kCodecHEVC:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         if (is_secure && base::FeatureList::IsEnabled(
                              chromeos::features::kCdmFactoryDaemon)) {
           supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
           supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
         }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       default:
