@@ -138,11 +138,11 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   float spacing = 0;
 
   bool has_letter_spacing =
-      letter_spacing_ || (parameters.advance_proportional_override != 1.0);
+      letter_spacing_ || (parameters.advance_override != 1.0);
   if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character)) {
-    spacing += parameters.original_advance *
-                   (parameters.advance_proportional_override - 1.0) +
-               letter_spacing_;
+    spacing +=
+        parameters.original_advance * (parameters.advance_override - 1.0) +
+        letter_spacing_;
   }
 
   if (treat_as_space && (index || character == kNoBreakSpaceCharacter))

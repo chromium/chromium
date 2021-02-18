@@ -727,7 +727,7 @@ enum CSSSampleId {
     kLineGapOverride = 675,
     kMathShift = 676,
     kMathDepth = 677,
-    kAdvanceProportionalOverride = 678,
+    // kAdvanceProportionalOverride = 678,
     kOverflowClipMargin = 679,
     kScrollbarWidth = 680,
     // @counter-style descriptors

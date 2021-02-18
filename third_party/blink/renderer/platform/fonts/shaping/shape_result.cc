@@ -888,8 +888,7 @@ void ShapeResult::ApplySpacingImpl(
       typename ShapeResultSpacing<TextContainerType>::ComputeSpacingParameters
           parameters{.index = run_start_index + glyph_data.character_index,
                      .original_advance = glyph_data.advance,
-                     .advance_proportional_override =
-                         run->font_data_->GetAdvanceProportionalOverride()};
+                     .advance_override = run->font_data_->GetAdvanceOverride()};
       space = spacing.ComputeSpacing(parameters, offset);
       glyph_data.advance += space;
       total_space_for_run += space;

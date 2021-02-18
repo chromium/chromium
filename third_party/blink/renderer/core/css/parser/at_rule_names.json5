@@ -58,7 +58,7 @@
       name: "initial-value"
     },
     {
-      name: "advance-proportional-override"
+      name: "advance-override"
     },
     {
       name: "fallback",

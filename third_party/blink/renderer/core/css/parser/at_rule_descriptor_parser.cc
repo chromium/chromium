@@ -207,9 +207,9 @@ CSSValue* ConsumeFontMetricOverride(CSSParserTokenRange& range,
                                            kValueRangeNonNegative);
 }
 
-CSSValue* ConsumeAdvanceProportionalOverride(CSSParserTokenRange& range,
-                                             const CSSParserContext& context) {
-  if (!RuntimeEnabledFeatures::CSSFontFaceAdvanceProportionalOverrideEnabled())
+CSSValue* ConsumeAdvanceOverride(CSSParserTokenRange& range,
+                                 const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::CSSFontFaceAdvanceOverrideEnabled())
     return nullptr;
   return ConsumeFontMetricOverride(range, context);
 }
@@ -268,8 +268,8 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
     case AtRuleDescriptorID::LineGapOverride:
       parsed_value = ConsumeFontMetricOverride(range, context);
       break;
-    case AtRuleDescriptorID::AdvanceProportionalOverride:
-      parsed_value = ConsumeAdvanceProportionalOverride(range, context);
+    case AtRuleDescriptorID::AdvanceOverride:
+      parsed_value = ConsumeAdvanceOverride(range, context);
       break;
     default:
       break;

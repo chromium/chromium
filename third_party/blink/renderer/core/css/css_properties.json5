@@ -5413,11 +5413,10 @@
       runtime_flag: "CSSFontMetricsOverride",
     },
     {
-      // TODO(xiaochengh): Rename it to advance-override
-      name: "advance-proportional-override",
+      name: "advance-override",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontFaceAdvanceProportionalOverride",
+      runtime_flag: "CSSFontFaceAdvanceOverride",
     },
     {
       name: "line-gap-override",

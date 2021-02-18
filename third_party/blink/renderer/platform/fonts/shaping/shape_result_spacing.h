@@ -65,7 +65,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   struct ComputeSpacingParameters {
     unsigned index;
     float original_advance = 0.0;
-    float advance_proportional_override = 1.0;
+    float advance_override = 1.0;
   };
   float ComputeSpacing(unsigned index, float& offset) {
     return ComputeSpacing(ComputeSpacingParameters{.index = index}, offset);

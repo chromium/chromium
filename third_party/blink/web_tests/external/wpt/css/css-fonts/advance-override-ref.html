@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5533">
-<link rel="assert" title="Tests that advance-proportional-override sets advance to characters rendered with the font face only">
-<title>Tests the advance-proportional-override descriptor of @font-face</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override">
+<link rel="assert" title="Tests that advance-override sets advance to characters rendered with the font face only">
+<title>Tests the advance-override descriptor of @font-face</title>
 <style>
 @font-face {
   font-family: custom-font;
@@ -21,13 +21,13 @@
 
 </style>
 
-<p>advance-proportional-override should affect Ahem characters only.</p>
+<p>advance-override should affect Ahem characters only.</p>
 
 <div class="target">
   <span class="letter-spacing">XXX</span>一二三<span class="letter-spacing">XXX</span>
 </div>
 
-<p>advance-proportional-override: 100% should be the same as no override.</p>
+<p>advance-override: 100% should be the same as no override.</p>
 
 <div class="target">
   XXX一二三XXX
