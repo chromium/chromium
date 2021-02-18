@@ -70,68 +70,28 @@ const std::set<int> GetContentResourceIds() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const std::map<int, std::string> CreateChromeosMojoResourceIdToAliasMap() {
-  return std::map<int, std::string>{
-      {IDR_CELLULAR_SETUP_MOJOM_HTML,
-       "mojo/chromeos/services/cellular_setup/public/mojom/"
-       "cellular_setup.mojom.html"},
-      {IDR_CELLULAR_SETUP_MOJOM_LITE_JS,
-       "mojo/chromeos/services/cellular_setup/public/mojom/"
-       "cellular_setup.mojom-lite.js"},
-      {IDR_ESIM_MANAGER_MOJOM_HTML,
-       "mojo/chromeos/services/cellular_setup/public/mojom/"
-       "esim_manager.mojom.html"},
-      {IDR_ESIM_MANAGER_MOJOM_LITE_JS,
-       "mojo/chromeos/services/cellular_setup/public/mojom/"
-       "esim_manager.mojom-lite.js"},
-      {IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML,
-       "mojo/chromeos/services/device_sync/public/mojom/"
-       "device_sync.mojom.html"},
-      {IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
-       "mojo/chromeos/services/device_sync/public/mojom/"
-       "device_sync.mojom-lite.js"},
-      {IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_HTML,
-       "mojo/chromeos/services/multidevice_setup/public/mojom/"
-       "multidevice_setup.mojom.html"},
-      {IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
-       "mojo/chromeos/services/multidevice_setup/public/mojom/"
-       "multidevice_setup.mojom-lite.js"},
-      {IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_HTML,
-       "mojo/chromeos/components/multidevice/mojom/"
-       "multidevice_types.mojom.html"},
-      {IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
-       "mojo/chromeos/components/multidevice/mojom/"
-       "multidevice_types.mojom-lite.js"},
-      {IDR_NETWORK_CONFIG_MOJOM_HTML,
-       "mojo/chromeos/services/network_config/public/mojom/"
-       "cros_network_config.mojom.html"},
-      {IDR_NETWORK_CONFIG_MOJOM_LITE_JS,
-       "mojo/chromeos/services/network_config/public/mojom/"
-       "cros_network_config.mojom-lite.js"},
-      {IDR_NETWORK_CONFIG_TYPES_MOJOM_HTML,
-       "mojo/chromeos/services/network_config/public/mojom/"
-       "network_types.mojom.html"},
-      {IDR_NETWORK_CONFIG_TYPES_MOJOM_LITE_JS,
-       "mojo/chromeos/services/network_config/public/mojom/"
-       "network_types.mojom-lite.js"},
-      {IDR_IP_ADDRESS_MOJOM_HTML,
-       "mojo/services/network/public/mojom/"
-       "ip_address.mojom.html"},
-      {IDR_IP_ADDRESS_MOJOM_LITE_JS,
-       "mojo/services/network/public/mojom/"
-       "ip_address.mojom-lite.js"},
-      {IDR_NETWORK_HEALTH_MOJOM_HTML,
-       "mojo/chromeos/services/network_health/public/mojom/"
-       "network_health.mojom.html"},
-      {IDR_NETWORK_HEALTH_MOJOM_LITE_JS,
-       "mojo/chromeos/services/network_health/public/mojom/"
-       "network_health.mojom-lite.js"},
-      {IDR_NETWORK_DIAGNOSTICS_MOJOM_HTML,
-       "mojo/chromeos/services/network_health/public/mojom/"
-       "network_diagnostics.mojom.html"},
-      {IDR_NETWORK_DIAGNOSTICS_MOJOM_LITE_JS,
-       "mojo/chromeos/services/network_health/public/mojom/"
-       "network_diagnostics.mojom-lite.js"},
+const std::set<int> GetChromeosMojoResourceIds() {
+  return std::set<int>{
+      IDR_CELLULAR_SETUP_MOJOM_HTML,
+      IDR_CELLULAR_SETUP_MOJOM_LITE_JS,
+      IDR_ESIM_MANAGER_MOJOM_HTML,
+      IDR_ESIM_MANAGER_MOJOM_LITE_JS,
+      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML,
+      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
+      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_HTML,
+      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
+      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_HTML,
+      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
+      IDR_NETWORK_CONFIG_MOJOM_HTML,
+      IDR_NETWORK_CONFIG_MOJOM_LITE_JS,
+      IDR_NETWORK_CONFIG_TYPES_MOJOM_HTML,
+      IDR_NETWORK_CONFIG_TYPES_MOJOM_LITE_JS,
+      IDR_IP_ADDRESS_MOJOM_HTML,
+      IDR_IP_ADDRESS_MOJOM_LITE_JS,
+      IDR_NETWORK_HEALTH_MOJOM_HTML,
+      IDR_NETWORK_HEALTH_MOJOM_LITE_JS,
+      IDR_NETWORK_DIAGNOSTICS_MOJOM_HTML,
+      IDR_NETWORK_DIAGNOSTICS_MOJOM_LITE_JS,
   };
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -159,28 +119,6 @@ void AddResources(const std::set<int>& resource_ids,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Adds |resources| to |resources_map|, but renames each resource according to
-// the scheme in |resource_aliases|, which maps from resource ID to resource
-// alias. Note that resources which do not have an alias will not be added.
-// TODO(dpapad): Delete in favor of |AddResources()|.
-void AddAliasedResourcesToMap(
-    const std::map<int, std::string>& resource_aliases,
-    const webui::ResourcePath resources[],
-    size_t resources_size,
-    ResourcesMap* resources_map) {
-  for (size_t i = 0; i < resources_size; ++i) {
-    const auto& resource = resources[i];
-
-    const auto it = resource_aliases.find(resource.id);
-    if (it == resource_aliases.end())
-      continue;
-
-    AddResource(it->second, resource.id, resources_map);
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Adds |resources| to |resources_map| using the path given by resource_path in
 // each GRD entry.
 void AddGritResourcesToMap(base::span<const webui::ResourcePath> resources,
@@ -207,8 +145,8 @@ const ResourcesMap* CreateResourcesMap() {
   AddGritResourcesToMap(base::make_span(kSkiaResources, kSkiaResourcesSize),
                         result);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddAliasedResourcesToMap(CreateChromeosMojoResourceIdToAliasMap(),
-                           kChromeosResources, kChromeosResourcesSize, result);
+  AddResources(GetChromeosMojoResourceIds(), kChromeosResources,
+               kChromeosResourcesSize, result);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return result;
 }
