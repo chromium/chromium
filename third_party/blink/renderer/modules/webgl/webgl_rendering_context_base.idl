@@ -630,6 +630,9 @@ interface mixin WebGLRenderingContextBase {
     [RaisesException] void texImage2D(
         GLenum target, GLint level, GLint internalformat,
         GLenum format, GLenum type, ImageBitmap bitmap);
+    [CallWith=ExecutionContext, RaisesException, RuntimeEnabled=WebCodecs] void texImage2D(
+        GLenum target, GLint level, GLint internalformat,
+        GLenum format, GLenum type, VideoFrame frame);
 
     void texSubImage2D(
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
@@ -653,6 +656,9 @@ interface mixin WebGLRenderingContextBase {
     [RaisesException] void texSubImage2D(
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
         GLenum format, GLenum type, ImageBitmap bitmap);
+    [CallWith=ExecutionContext, RaisesException, RuntimeEnabled=WebCodecs] void texSubImage2D(
+        GLenum target, GLint level, GLint xoffset, GLint yoffset,
+        GLenum format, GLenum type, VideoFrame frame);
 
     void uniform1f(WebGLUniformLocation? location, GLfloat x);
     void uniform1fv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Float32Array v);

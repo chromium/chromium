@@ -105,7 +105,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // GarbageCollected override
   void Trace(Visitor*) const override;
 
- private:
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                const FloatSize&) override;
@@ -116,6 +115,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
 
+ private:
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   IntSize BitmapSourceSize() const override;

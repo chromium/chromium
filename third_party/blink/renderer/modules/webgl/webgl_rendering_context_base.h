@@ -87,6 +87,7 @@ class ImageBitmap;
 class ImageData;
 class IntSize;
 class OESVertexArrayObject;
+class VideoFrame;
 class WebGLActiveInfo;
 class WebGLBuffer;
 class WebGLCompressedTextureASTC;
@@ -428,6 +429,14 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                   GLenum type,
                   HTMLVideoElement*,
                   ExceptionState&);
+  void texImage2D(ExecutionContext*,
+                  GLenum target,
+                  GLint level,
+                  GLint internalformat,
+                  GLenum format,
+                  GLenum type,
+                  VideoFrame*,
+                  ExceptionState&);
   void texImage2D(GLenum target,
                   GLint level,
                   GLint internalformat,
@@ -481,6 +490,15 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                      GLenum format,
                      GLenum type,
                      HTMLVideoElement*,
+                     ExceptionState&);
+  void texSubImage2D(ExecutionContext*,
+                     GLenum target,
+                     GLint level,
+                     GLint xoffset,
+                     GLint yoffset,
+                     GLenum format,
+                     GLenum type,
+                     VideoFrame*,
                      ExceptionState&);
   void texSubImage2D(GLenum target,
                      GLint level,
@@ -1353,6 +1371,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     kSourceHTMLVideoElement,
     kSourceImageBitmap,
     kSourceUnpackBuffer,
+    kSourceVideoFrame,
   };
 
   // Helper function for tex{Sub}Image{2|3}D to check if the input
@@ -1763,6 +1782,23 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                       GLsizei,
                                       GLint,
                                       ExceptionState&);
+
+  void TexImageHelperVideoFrame(const SecurityOrigin*,
+                                TexImageFunctionID,
+                                GLenum,
+                                GLint,
+                                GLint,
+                                GLenum,
+                                GLenum,
+                                GLint,
+                                GLint,
+                                GLint,
+                                VideoFrame*,
+                                const IntRect&,
+                                GLsizei,
+                                GLint,
+                                ExceptionState&);
+
   void TexImageHelperImageBitmap(TexImageFunctionID,
                                  GLenum,
                                  GLint,

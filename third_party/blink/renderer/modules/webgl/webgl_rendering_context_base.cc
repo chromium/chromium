@@ -36,6 +36,8 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "media/base/video_frame.h"
+#include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -67,6 +69,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/core/typed_arrays/flexible_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/angle_instanced_arrays.h"
 #include "third_party/blink/renderer/modules/webgl/ext_blend_min_max.h"
 #include "third_party/blink/renderer/modules/webgl/ext_frag_depth.h"
@@ -5884,6 +5887,184 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
   texture->UpdateLastUploadedFrame(frame_metadata);
 }
 
+void WebGLRenderingContextBase::TexImageHelperVideoFrame(
+    const SecurityOrigin* security_origin,
+    TexImageFunctionID function_id,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLenum format,
+    GLenum type,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    VideoFrame* frame,
+    const IntRect& source_image_rect,
+    GLsizei depth,
+    GLint unpack_image_height,
+    ExceptionState& exception_state) {
+  const char* func_name = GetTexImageFunctionName(function_id);
+  if (isContextLost())
+    return;
+
+  WebGLTexture* texture =
+      ValidateTexImageBinding(func_name, function_id, target);
+  if (!texture)
+    return;
+
+  TexImageFunctionType function_type;
+  if (function_id == kTexImage2D || function_id == kTexImage3D)
+    function_type = kTexImage;
+  else
+    function_type = kTexSubImage;
+
+  auto media_video_frame = frame->frame();
+  if (!media_video_frame)
+    return;
+
+  const auto visible_rect = media_video_frame->visible_rect();
+  if (!ValidateTexFunc(func_name, function_type, kSourceVideoFrame, target,
+                       level, internalformat, visible_rect.width(),
+                       visible_rect.height(), 1, 0, format, type, xoffset,
+                       yoffset, zoffset)) {
+    return;
+  }
+
+  if (!source_image_rect.IsValid()) {
+    SynthesizeGLError(GL_INVALID_OPERATION, func_name,
+                      "source sub-rectangle specified via pixel unpack "
+                      "parameters is invalid");
+    return;
+  }
+
+  const GLint adjusted_internalformat =
+      ConvertTexInternalFormat(internalformat, type);
+  const bool source_image_rect_is_default =
+      source_image_rect == SentinelEmptyRect() ||
+      source_image_rect == IntRect(visible_rect);
+  const auto& caps = GetDrawingBuffer()->ContextProvider()->GetCapabilities();
+  const bool may_need_image_external_essl3 =
+      caps.egl_image_external &&
+      Extensions3DUtil::CopyTextureCHROMIUMNeedsESSL3(internalformat);
+  const bool have_image_external_essl3 = caps.egl_image_external_essl3;
+  const bool use_copy_texture_chromium =
+      function_id == kTexImage2D && source_image_rect_is_default &&
+      depth == 1 && GL_TEXTURE_2D == target &&
+      (have_image_external_essl3 || !may_need_image_external_essl3) &&
+      CanUseTexImageViaGPU(format, type);
+
+  media::PaintCanvasVideoRenderer video_renderer;
+
+  // Format of source VideoFrame may be 16-bit format, e.g. Y16 format.
+  // glCopyTextureCHROMIUM requires the source texture to be in 8-bit format.
+  // Converting 16-bits formatted source texture to 8-bits formatted texture
+  // will cause precision lost. So, uploading such video texture to half float
+  // or float texture can not use GPU-GPU path.
+  if (use_copy_texture_chromium && media_video_frame->HasTextures()) {
+    DCHECK(Extensions3DUtil::CanUseCopyTextureCHROMIUM(target));
+    DCHECK_EQ(xoffset, 0);
+    DCHECK_EQ(yoffset, 0);
+    DCHECK_EQ(zoffset, 0);
+
+    viz::RasterContextProvider* raster_context_provider = nullptr;
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      if (auto* context_provider = wrapper->ContextProvider())
+        raster_context_provider = context_provider->RasterContextProvider();
+    }
+
+    // Go through the fast path doing a GPU-GPU textures copy without a readback
+    // to system memory if possible.  Otherwise, it will fall back to the normal
+    // SW path.
+
+    if (video_renderer.CopyVideoFrameTexturesToGLTexture(
+            raster_context_provider, ContextGL(), media_video_frame, target,
+            texture->Object(), adjusted_internalformat, format, type, level,
+            unpack_premultiply_alpha_, unpack_flip_y_)) {
+      return;
+    }
+
+    // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
+    // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
+    // then copy into the target texture.
+    if (video_renderer.CopyVideoFrameYUVDataToGLTexture(
+            raster_context_provider, ContextGL(), *media_video_frame, target,
+            texture->Object(), adjusted_internalformat, format, type, level,
+            unpack_premultiply_alpha_, unpack_flip_y_)) {
+      return;
+    }
+  }
+
+  if (source_image_rect_is_default && media_video_frame->IsMappable() &&
+      media_video_frame->format() == media::PIXEL_FORMAT_Y16) {
+    // Try using optimized CPU-GPU path for some formats: e.g. Y16 and Y8. It
+    // leaves early for other formats or if frame is stored on GPU.
+    ScopedUnpackParametersResetRestore unpack_params(
+        this, unpack_flip_y_ || unpack_premultiply_alpha_);
+
+    const bool premultiply_alpha =
+        unpack_premultiply_alpha_ && unpack_colorspace_conversion_ == GL_NONE;
+
+    if (function_id == kTexImage2D &&
+        media::PaintCanvasVideoRenderer::TexImage2D(
+            target, texture->Object(), ContextGL(), caps,
+            media_video_frame.get(), level, adjusted_internalformat, format,
+            type, unpack_flip_y_, premultiply_alpha)) {
+      return;
+    } else if (function_id == kTexSubImage2D &&
+               media::PaintCanvasVideoRenderer::TexSubImage2D(
+                   target, ContextGL(), media_video_frame.get(), level, format,
+                   type, xoffset, yoffset, unpack_flip_y_, premultiply_alpha)) {
+      return;
+    }
+  }
+
+  // TODO(crbug.com/1175907): Double check that the premultiply alpha settings
+  // are all correct below. When we go through the CanvasResourceProvider for
+  // Image creation, CanvasResourceParams { kPremul_SkAlphaType } is used.
+  //
+  // We probably need some stronger checks on the accelerated upload path if
+  // unmultiply has been requested or we need to never premultiply for Image
+  // creation from a VideoFrame.
+
+  SourceImageStatus source_image_status = kInvalidSourceImageStatus;
+  scoped_refptr<Image> image = frame->GetSourceImageForCanvas(
+      &source_image_status,
+      FloatSize(source_image_rect.Width(), source_image_rect.Height()));
+  if (!image)
+    return;
+
+  const bool upload_via_gpu =
+      (function_id == kTexImage2D || function_id == kTexSubImage2D) &&
+      CanUseTexImageViaGPU(format, type) && image->IsTextureBacked();
+
+  if (upload_via_gpu) {
+    auto adjusted_source_image_rect = source_image_rect;
+    if (adjusted_source_image_rect == SentinelEmptyRect())
+      adjusted_source_image_rect = GetTextureSourceSize(image.get());
+
+    auto* accel_image = static_cast<AcceleratedStaticBitmapImage*>(image.get());
+    if (function_id == kTexImage2D) {
+      TexImage2DBase(
+          target, level, internalformat, adjusted_source_image_rect.Width(),
+          adjusted_source_image_rect.Height(), 0, format, type, nullptr);
+      TexImageViaGPU(function_id, texture, target, level, 0, 0, 0, accel_image,
+                     nullptr, adjusted_source_image_rect,
+                     unpack_premultiply_alpha_, unpack_flip_y_);
+    } else {
+      TexImageViaGPU(function_id, texture, target, level, xoffset, yoffset, 0,
+                     accel_image, nullptr, adjusted_source_image_rect,
+                     unpack_premultiply_alpha_, unpack_flip_y_);
+    }
+  } else {
+    TexImageImpl(function_id, target, level, adjusted_internalformat, xoffset,
+                 yoffset, zoffset, format, type, image.get(),
+                 // Note: kHtmlDomVideo means alpha won't be unmultiplied.
+                 WebGLImageConversion::kHtmlDomVideo, unpack_flip_y_,
+                 unpack_premultiply_alpha_, source_image_rect, depth,
+                 unpack_image_height);
+  }
+}
+
 void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
                                            GLenum target,
                                            GLint level,
@@ -5896,6 +6077,19 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
                                  kTexImage2D, target, level, internalformat,
                                  format, type, 0, 0, 0, video,
                                  SentinelEmptyRect(), 1, 0, exception_state);
+}
+
+void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
+                                           GLenum target,
+                                           GLint level,
+                                           GLint internalformat,
+                                           GLenum format,
+                                           GLenum type,
+                                           VideoFrame* frame,
+                                           ExceptionState& exception_state) {
+  TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), kTexImage2D,
+                           target, level, internalformat, format, type, 0, 0, 0,
+                           frame, SentinelEmptyRect(), 1, 0, exception_state);
 }
 
 void WebGLRenderingContextBase::TexImageHelperImageBitmap(
@@ -6244,6 +6438,22 @@ void WebGLRenderingContextBase::texSubImage2D(
                                  kTexSubImage2D, target, level, 0, format, type,
                                  xoffset, yoffset, 0, video,
                                  SentinelEmptyRect(), 1, 0, exception_state);
+}
+
+void WebGLRenderingContextBase::texSubImage2D(
+    ExecutionContext* execution_context,
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    GLenum format,
+    GLenum type,
+    VideoFrame* frame,
+    ExceptionState& exception_state) {
+  TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(),
+                           kTexSubImage2D, target, level, 0, format, type,
+                           xoffset, yoffset, 0, frame, SentinelEmptyRect(), 1,
+                           0, exception_state);
 }
 
 void WebGLRenderingContextBase::texSubImage2D(GLenum target,
@@ -7663,7 +7873,8 @@ bool WebGLRenderingContextBase::ValidateTexFuncParameters(
   if (source_type == kSourceHTMLImageElement ||
       source_type == kSourceHTMLCanvasElement ||
       source_type == kSourceHTMLVideoElement ||
-      source_type == kSourceImageData || source_type == kSourceImageBitmap) {
+      source_type == kSourceImageData || source_type == kSourceImageBitmap ||
+      source_type == kSourceVideoFrame) {
     if (!ValidateTexImageSourceFormatAndType(function_name, function_type,
                                              internalformat, format, type)) {
       return false;
