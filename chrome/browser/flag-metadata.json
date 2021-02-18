@@ -137,7 +137,7 @@
   {
     "name": "app-cache",
     "owners": [ "enne" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "app-service-adaptive-icon",
