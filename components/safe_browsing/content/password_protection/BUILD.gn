@@ -54,6 +54,9 @@ source_set("password_protection") {
   if (safe_browsing_mode == 1) {
     deps += [ "//components/zoom" ]
   }
+  if (is_android && safe_browsing_mode == 2) {
+    deps += [ "//ui/android" ]
+  }
 }
 
 source_set("password_protection_unittest") {

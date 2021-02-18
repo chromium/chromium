@@ -131,6 +131,10 @@ extern const base::Feature kTriggerThrottlerDailyQuotaFeature;
 // Controls whether Chrome uses new download warning UX.
 extern const base::Feature kUseNewDownloadWarnings;
 
+// Controls whether we include visual features in password protection pings on
+// Android.
+extern const base::Feature kVisualFeaturesInPasswordProtectionAndroid;
+
 // Controls whether the delayed warning experiment is enabled.
 extern const base::Feature kDelayedWarnings;
 // True if mouse clicks should undelay the warnings immediately when delayed

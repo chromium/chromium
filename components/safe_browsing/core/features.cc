@@ -135,6 +135,10 @@ const base::Feature kTriggerThrottlerDailyQuotaFeature{
 const base::Feature kUseNewDownloadWarnings{"UseNewDownloadWarnings",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kVisualFeaturesInPasswordProtectionAndroid{
+    "VisualFeaturesInPasswordProtectionAndroid",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should be
 // set to true if the experiment state should be listed on

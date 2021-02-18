@@ -186,8 +186,17 @@ class PasswordProtectionRequest
   void FillRequestProto(bool is_sampled_ping);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // Returns whether client side detection feature collection is available.
+  virtual bool IsClientSideDetectionEnabled();
+
   // Extracts DOM features.
   virtual void GetDomFeatures() = 0;
+
+  // Returns whether visual feature collection is available.
+  virtual bool IsVisualFeaturesEnabled();
+
+  // Extracts visual features, if the page meets certain privacy conditions.
+  virtual void MaybeCollectVisualFeatures() = 0;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if defined(OS_ANDROID)

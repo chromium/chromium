@@ -22,11 +22,8 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 class GURL;
 class PasswordProtectionServiceBase;
@@ -95,6 +92,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
       const LoginReputationClientResponse& response) override;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  bool IsClientSideDetectionEnabled() override;
+
   // Extracts DOM features.
   void GetDomFeatures() override;
 
@@ -105,12 +104,12 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // Called when the DOM feature extraction times out.
   void OnGetDomFeatureTimeout();
 
+  bool IsVisualFeaturesEnabled() override;
+
   // If appropriate, collects visual features, otherwise continues on to sending
   // the request.
-  void MaybeCollectVisualFeatures();
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  void MaybeCollectVisualFeatures() override;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
   // Collects visual features from the current login page.
   void CollectVisualFeatures();
 
@@ -120,7 +119,7 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // Called when the visual feature extraction is complete.
   void OnVisualFeatureCollectionDone(
       std::unique_ptr<VisualFeatures> visual_features);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if defined(OS_ANDROID)
   void SetReferringAppInfo() override;

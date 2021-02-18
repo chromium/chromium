@@ -54,15 +54,6 @@ std::vector<std::string> GetMatchingDomains(
   return base::flat_set<std::string>(std::move(matching_domains)).extract();
 }
 
-bool IsClientSideDetectionEnabled() {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  return true;
-#else
-  return base::FeatureList::IsEnabled(
-      safe_browsing::kClientSideDetectionForAndroid);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-}
-
 }  // namespace
 
 PasswordProtectionRequest::PasswordProtectionRequest(
@@ -238,6 +229,10 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   SetReferringAppInfo();
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_ANDROID)
+  SetReferringAppInfo();
+#endif  // defined(OS_ANDROID)
+
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
       LoginReputationClientRequest::Frame::Form* password_form;
@@ -294,14 +289,28 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       NOTREACHED();
   }
 
-  if (IsClientSideDetectionEnabled()) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (IsClientSideDetectionEnabled()) {
     GetDomFeatures();
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  } else if (IsVisualFeaturesEnabled()) {
+    MaybeCollectVisualFeatures();
   } else {
     SendRequest();
   }
+#else
+  SendRequest();
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+bool PasswordProtectionRequest::IsClientSideDetectionEnabled() {
+  return false;
+}
+
+bool PasswordProtectionRequest::IsVisualFeaturesEnabled() {
+  return false;
+}
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
