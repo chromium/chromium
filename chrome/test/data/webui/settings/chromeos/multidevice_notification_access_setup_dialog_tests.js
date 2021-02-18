@@ -5,8 +5,12 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
+// #import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+// clang-format on
 
 /**
  * @fileoverview

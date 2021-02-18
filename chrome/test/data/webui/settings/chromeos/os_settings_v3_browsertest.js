@@ -316,6 +316,10 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.m.js'],
  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.m.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.m.js'],
+ [
+   'MultideviceNotificationAccessSetupDialog',
+   'multidevice_notification_access_setup_dialog_tests.m.js'
+ ],
  ['MultidevicePage', 'multidevice_page_tests.m.js'],
  ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
