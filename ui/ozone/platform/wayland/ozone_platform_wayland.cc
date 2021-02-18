@@ -228,6 +228,8 @@ class OzonePlatformWayland : public OzonePlatform {
       // https://github.com/wayland-project/wayland-protocols/commit/76d1ae8c65739eff3434ef219c58a913ad34e988
       properties->custom_frame_pref_default = true;
 
+      properties->uses_external_vulkan_image_factory = true;
+
       // Wayland doesn't provide clients with global screen coordinates.
       // Instead, it forces clients to position windows relative to their top
       // level windows if the have child-parent relationship. In case of

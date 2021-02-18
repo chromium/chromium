@@ -35,11 +35,7 @@ bool InitializeVulkanFunctionPointers(
 }  // namespace
 
 VulkanImplementationWayland::VulkanImplementationWayland(bool use_swiftshader)
-    : gpu::VulkanImplementation(use_swiftshader) {
-  // TODO(crbug.com/1179137): Implement the support.
-  if (use_swiftshader)
-    NOTIMPLEMENTED_LOG_ONCE() << "This platform does not support Swiftshader.";
-}
+    : gpu::VulkanImplementation(use_swiftshader) {}
 
 VulkanImplementationWayland::~VulkanImplementationWayland() {}
 
@@ -51,14 +47,20 @@ bool VulkanImplementationWayland::InitializeVulkanInstance(bool using_surface) {
 
   auto* vulkan_function_pointers = gpu::GetVulkanFunctionPointers();
 
-  base::FilePath path("libvulkan.so.1");
+  base::FilePath path;
+  if (use_swiftshader()) {
+    if (!base::PathService::Get(base::DIR_MODULE, &path))
+      return false;
+
+    path = path.Append("libvk_swiftshader.so");
+  } else {
+    path = base::FilePath("libvulkan.so.1");
+  }
 
   if (!InitializeVulkanFunctionPointers(path, vulkan_function_pointers))
     return false;
 
-  if (!vulkan_instance_.Initialize(required_extensions, {}))
-    return false;
-  return true;
+  return vulkan_instance_.Initialize(required_extensions, {});
 }
 
 gpu::VulkanInstance* VulkanImplementationWayland::GetVulkanInstance() {
@@ -81,13 +83,16 @@ bool VulkanImplementationWayland::GetPhysicalDevicePresentationSupport(
 
 std::vector<const char*>
 VulkanImplementationWayland::GetRequiredDeviceExtensions() {
-  return {
-      VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
+  std::vector<const char*> result{
       VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
       VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
   };
+
+  if (!use_swiftshader())
+    result.push_back(VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME);
+  return result;
 }
 
 std::vector<const char*>
