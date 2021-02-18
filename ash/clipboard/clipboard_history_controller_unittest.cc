@@ -302,8 +302,14 @@ TEST_F(ClipboardHistoryControllerTest,
   // Write a single item to ClipboardHistory.
   WriteToClipboard("test");
 
+  ASSERT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
   ShowMenu();
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // The cursor is visible after showing the clipboard history menu through
+  // the accelerator.
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   FlushMessageLoop();

@@ -2343,6 +2343,7 @@ test("ash_unittests") {
     "wm/client_controlled_state_unittest.cc",
     "wm/collision_detection/collision_detection_utils_unittest.cc",
     "wm/container_finder_unittest.cc",
+    "wm/cursor_manager_chromeos_unittest.cc",
     "wm/default_window_resizer_unittest.cc",
     "wm/desks/autotest_desks_api_unittests.cc",
     "wm/desks/desk_animation_impl_unittest.cc",
