@@ -38,7 +38,6 @@
   ]);
 
   function dumpGoToSourceDialog(next) {
-    QuickOpen.QuickOpen.show('');
     TestRunner.addSnifferPromise(QuickOpen.QuickOpen.prototype, '_providerLoadedForTest').then(provider => {
       var keys = [];
       for (var i = 0; i < provider.itemCount(); ++i)
@@ -48,5 +47,6 @@
       UI.Dialog._instance.hide();
       next();
     });
+    QuickOpen.QuickOpen.show('');
   }
 })();
