@@ -44,7 +44,15 @@ class TerminaInstaller {
   // Ensure that termina is installed. This will also attempt to remove any
   // other instances of termina that may be installed, but will not block on or
   // check the result of this.
-  void Install(base::OnceCallback<void(InstallResult)> callback);
+  //
+  // |is_initial_install| should be set to true when this is called from the
+  // crostini installer, and false otherwise. This allows us to fall back to the
+  // cros-termina component if transitioning to DLC fails while still requiring
+  // it for new installs. In the future this may also allow us to force the DLC
+  // to be installed even on tethered connections during the install, as in this
+  // case we can expect the user already knows we will download things.
+  void Install(base::OnceCallback<void(InstallResult)> callback,
+               bool is_initial_install);
 
   // Remove termina entirely. This will also attempt to remove any
   // other instances of termina that may be installed.

@@ -438,7 +438,8 @@ class CrostiniManager::CrostiniRestarter
     StartStage(mojom::InstallerState::kInstallImageLoader);
     crostini_manager_->InstallTermina(
         base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        is_initial_install_);
   }
 
   base::OneShotTimer stage_timeout_timer_;
@@ -1159,31 +1160,34 @@ void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
         CrostiniUpgradeAvailableNotification::Show(profile_, base::DoNothing());
   }
   // TODO(crbug/953544) Remove this once we have transitioned completely to DLC
-  InstallTermina(base::DoNothing());
+  InstallTermina(base::DoNothing(), /*is_initial_install=*/false);
 }
 
-void CrostiniManager::InstallTermina(CrostiniResultCallback callback) {
+void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
+                                     bool is_initial_install) {
   if (install_termina_never_completes_) {
     return;
   }
-  termina_installer_.Install(base::BindOnce(
-      [](CrostiniResultCallback callback,
-         TerminaInstaller::InstallResult result) {
-        CrostiniResult res;
-        if (result == TerminaInstaller::InstallResult::Success) {
-          res = CrostiniResult::SUCCESS;
-        } else if (result == TerminaInstaller::InstallResult::Offline) {
-          res = CrostiniResult::OFFLINE_WHEN_UPGRADE_REQUIRED;
-        } else if (result == TerminaInstaller::InstallResult::Failure) {
-          res = CrostiniResult::LOAD_COMPONENT_FAILED;
-        } else {
-          CHECK(false)
-              << "Got unexpected value of TerminaInstaller::InstallResult";
-          res = CrostiniResult::LOAD_COMPONENT_FAILED;
-        }
-        std::move(callback).Run(res);
-      },
-      std::move(callback)));
+  termina_installer_.Install(
+      base::BindOnce(
+          [](CrostiniResultCallback callback,
+             TerminaInstaller::InstallResult result) {
+            CrostiniResult res;
+            if (result == TerminaInstaller::InstallResult::Success) {
+              res = CrostiniResult::SUCCESS;
+            } else if (result == TerminaInstaller::InstallResult::Offline) {
+              res = CrostiniResult::OFFLINE_WHEN_UPGRADE_REQUIRED;
+            } else if (result == TerminaInstaller::InstallResult::Failure) {
+              res = CrostiniResult::LOAD_COMPONENT_FAILED;
+            } else {
+              CHECK(false)
+                  << "Got unexpected value of TerminaInstaller::InstallResult";
+              res = CrostiniResult::LOAD_COMPONENT_FAILED;
+            }
+            std::move(callback).Run(res);
+          },
+          std::move(callback)),
+      is_initial_install);
 }
 
 void CrostiniManager::UninstallTermina(BoolCallback callback) {

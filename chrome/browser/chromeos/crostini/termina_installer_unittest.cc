@@ -282,7 +282,8 @@ TEST_F(TerminaInstallTest, UninstallWithBothInstalled) {
 
 TEST_F(TerminaDlcInstallTest, InstallDlc) {
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 
   CheckDlcInstalled();
@@ -292,7 +293,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlcError) {
   fake_dlc_client_->set_install_error("An error");
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectFailure,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 }
 
@@ -305,7 +307,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlcOffline) {
       network::mojom::ConnectionType::CONNECTION_NONE);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectOffline,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 }
 
@@ -314,7 +317,8 @@ TEST_F(TerminaDlcInstallTest, InstallDlcWithComponentInstalled) {
       {imageloader::kTerminaComponentName});
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 
   CheckDlcInstalled();
@@ -330,17 +334,82 @@ TEST_F(TerminaDlcInstallTest, InstallDlcWithComponentInstalledUninstallError) {
   component_manager_->set_unload_component_result(false);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 
   CheckDlcInstalled();
+}
+
+TEST_F(TerminaDlcInstallTest, InstallDlcFallback) {
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/false);
+  run_loop_.Run();
+
+  CheckDlcInstalled();
+}
+
+TEST_F(TerminaDlcInstallTest, InstallDlcFallbackError) {
+  fake_dlc_client_->set_install_error("An error");
+  PrepareComponentForLoad();
+
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/false);
+  run_loop_.Run();
+
+  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
+      imageloader::kTerminaComponentName));
+  EXPECT_EQ(termina_installer_.GetInstallLocation(), component_mount_path_);
+  EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
+}
+
+TEST_F(TerminaDlcInstallTest, InstallDlcFallbackOffline) {
+  fake_dlc_client_->set_install_error("An error");
+  PrepareComponentForLoad();
+
+  auto* network_connection_tracker =
+      network::TestNetworkConnectionTracker::GetInstance();
+  network_connection_tracker->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectOffline,
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/false);
+  run_loop_.Run();
+
+  EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
+      imageloader::kTerminaComponentName));
+}
+
+TEST_F(TerminaDlcInstallTest,
+       InstallDlcFallbackOfflineComponentAlreadyInstalled) {
+  fake_dlc_client_->set_install_error("An error");
+  PrepareComponentForLoad();
+  component_manager_->RegisterCompatiblePath(imageloader::kTerminaComponentName,
+                                             component_install_path_);
+
+  auto* network_connection_tracker =
+      network::TestNetworkConnectionTracker::GetInstance();
+  network_connection_tracker->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/false);
+  run_loop_.Run();
+
+  EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
+      imageloader::kTerminaComponentName));
 }
 
 TEST_F(TerminaComponentInstallTest, InstallComponent) {
   PrepareComponentForLoad();
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 
   EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
@@ -357,7 +426,8 @@ TEST_F(TerminaComponentInstallTest, InstallComponentOffline) {
       network::mojom::ConnectionType::CONNECTION_NONE);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectOffline,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 }
 
@@ -366,7 +436,8 @@ TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalled) {
   InjectDlc();
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 
   EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
@@ -382,7 +453,8 @@ TEST_F(TerminaComponentInstallTest, InstallComponentWithDlcInstalledError) {
   fake_dlc_client_->set_uninstall_error("An error");
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   run_loop_.Run();
 
   EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
@@ -399,7 +471,8 @@ TEST_F(TerminaComponentInstallTest, LoadComponentAlreadyInstalled) {
                                              component_install_path_);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -423,7 +496,8 @@ TEST_F(TerminaComponentInstallTest, LoadComponentInitiallyOffline) {
       network::mojom::ConnectionType::CONNECTION_NONE);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_FALSE(
@@ -437,7 +511,8 @@ TEST_F(TerminaComponentInstallTest, LoadComponentInitiallyOffline) {
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess2,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -456,7 +531,8 @@ TEST_F(TerminaComponentInstallTest, ComponentUpdatesOnlyOnce) {
   component_manager_->set_queue_load_requests(true);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -467,7 +543,8 @@ TEST_F(TerminaComponentInstallTest, ComponentUpdatesOnlyOnce) {
                     component_mount_path_));
   run_loop_.Run();
 
-  termina_installer_.Install(base::DoNothing());
+  termina_installer_.Install(base::DoNothing(),
+                             /*is_initial_install=*/true);
   EXPECT_FALSE(
       component_manager_->UpdateRequested(imageloader::kTerminaComponentName));
 }
@@ -480,7 +557,8 @@ TEST_F(TerminaComponentInstallTest, UpdateComponentErrorRetry) {
                                              component_install_path_);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -500,7 +578,8 @@ TEST_F(TerminaComponentInstallTest, UpdateComponentErrorRetry) {
                     component_mount_path_));
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess2,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -520,7 +599,8 @@ TEST_F(TerminaComponentInstallTest, InstallComponentErrorNoRetry) {
   component_manager_->set_queue_load_requests(true);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectFailure,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -531,7 +611,8 @@ TEST_F(TerminaComponentInstallTest, InstallComponentErrorNoRetry) {
                     base::FilePath()));
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess2,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(
@@ -551,7 +632,8 @@ TEST_F(TerminaComponentInstallTest, UpdateInProgressTriggersRetry) {
   component_manager_->set_queue_load_requests(true);
 
   termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
-                                            base::Unretained(this)));
+                                            base::Unretained(this)),
+                             /*is_initial_install=*/true);
   EXPECT_TRUE(component_manager_->HasPendingInstall(
       imageloader::kTerminaComponentName));
   EXPECT_TRUE(

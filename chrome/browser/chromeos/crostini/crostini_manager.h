@@ -238,7 +238,7 @@ class CrostiniManager : public KeyedService,
 
   // Installs termina using either component updater or the DLC service
   // depending on the value of chromeos::features::kCrostiniUseDlc
-  void InstallTermina(CrostiniResultCallback callback);
+  void InstallTermina(CrostiniResultCallback callback, bool is_initial_install);
 
   // Unloads and removes termina.
   void UninstallTermina(BoolCallback callback);

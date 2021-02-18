@@ -168,7 +168,8 @@ class CrostiniManagerTest : public testing::Test {
     crostini_manager()->InstallTermina(
         base::BindOnce([](base::OnceClosure callback,
                           CrostiniResult) { std::move(callback).Run(); },
-                       run_loop.QuitClosure()));
+                       run_loop.QuitClosure()),
+        /*is_initial_install=*/false);
     run_loop.Run();
   }
 
