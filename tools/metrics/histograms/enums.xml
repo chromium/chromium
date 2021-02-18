@@ -41791,6 +41791,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Notification (eg. SW Notification, Media Controls, etc.)"/>
   <int value="12" label="External VIEW intent"/>
   <int value="13" label="Other - From Chrome"/>
+  <int value="14" label="WebApk installed by Chrome"/>
+  <int value="15" label="WebApk not installed by Chrome"/>
+  <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
 </enum>
 
 <enum name="LauncherRankingItemType">
