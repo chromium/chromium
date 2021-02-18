@@ -85,12 +85,6 @@ bool IsDynamicExpectCTEnabled() {
       TransportSecurityState::kDynamicExpectCTFeature);
 }
 
-void RecordUMAForHPKPReportFailure(const GURL& report_uri,
-                                   int net_error,
-                                   int http_response_code) {
-  base::UmaHistogramSparse("Net.PublicKeyPinReportSendingFailure2", -net_error);
-}
-
 base::Value GetPEMEncodedChainAsList(const net::X509Certificate* cert_chain) {
   if (!cert_chain)
     return base::Value(base::Value::Type::LIST);
@@ -790,7 +784,7 @@ TransportSecurityState::CheckPinsAndMaybeSendReport(
   report_sender_->Send(pkp_state.report_uri, "application/json; charset=utf-8",
                        serialized_report, network_isolation_key,
                        base::OnceCallback<void()>(),
-                       base::BindOnce(RecordUMAForHPKPReportFailure));
+                       base::OnceCallback<void(const GURL&, int, int)>());
   return PKPStatus::VIOLATED;
 }
 
