@@ -24058,6 +24058,18 @@
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
+      {
         "args": [
           "--test-type=integration"
         ],
@@ -24285,6 +24297,20 @@
   "ToTMac (dbg)": {
     "additional_compile_targets": [
       "all"
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTMacASan": {
@@ -26531,6 +26557,18 @@
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
         "args": [

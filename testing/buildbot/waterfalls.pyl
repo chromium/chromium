@@ -1911,7 +1911,7 @@
       'ToTMac': {
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
           'all',
@@ -1921,6 +1921,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
       },
       'ToTMacASan': {
         'test_suites': {
@@ -1940,7 +1943,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
         },
         'additional_compile_targets': [
           'all',

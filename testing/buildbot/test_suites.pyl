@@ -5680,6 +5680,16 @@
       'telemetry_perf_unittests_isolated_scripts',
     ],
 
+    'chromium_mac_rel_isolated_scripts_and_sizes': [
+      'chrome_sizes',
+      'chromedriver_py_tests_isolated_scripts',
+      'components_perftests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'mac_specific_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts',
+    ],
+
     # Pixel tests only enabled on Win 10. So this is
     # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
     # 'non_android_chromium_gtests_skia_gold'.
