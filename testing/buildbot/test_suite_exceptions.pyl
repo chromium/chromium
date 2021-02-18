@@ -873,6 +873,15 @@
   },
   'chrome_sizes': {
     'modifications': {
+      'lacros-amd64-generic-chrome': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-16.04',
+            },
+          ],
+        },
+      },
       'win-chrome': {
         'swarming': {
           # TODO(crbug.com/1124829): Remove this exception once pool
