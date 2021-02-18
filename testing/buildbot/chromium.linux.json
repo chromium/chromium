@@ -7081,8 +7081,7 @@
       {
         "args": [
           "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_cc_unittests.filter"
+          "--enable-features=UseOzonePlatform"
         ],
         "merge": {
           "args": [],

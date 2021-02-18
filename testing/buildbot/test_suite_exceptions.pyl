@@ -666,17 +666,6 @@
       },
     },
   },
-  'cc_unittests_x11': {
-    'modifications': {
-      # CI tester.
-      'Linux Tester (Ozone X11)': {
-        # https://crbug.com/1178392
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_cc_unittests.filter',
-        ],
-      },
-    },
-  },
   'check_static_initializers': {
     'modifications': {
       'Mac Builder': {
