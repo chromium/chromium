@@ -84,9 +84,17 @@
         width: 15px;
       }
 
+      .settings-box.secondary-accounts-box {
+        align-items: flex-end;
+      }
+
       #account-list-header > h2 {
         padding-bottom: 12px;
         padding-top: 12px;
+      }
+
+      #account-list-header {
+        padding-bottom: 12px;
       }
 
       cr-policy-indicator {
@@ -267,19 +275,15 @@
     </div>
 
     <!-- Secondary Accounts list header -->
-    <div class="settings-box first">
+    <div class="secondary-accounts-box settings-box first">
       <div id="account-list-header" class="start">
         <h2>
           [[getAccountListHeader_(isChildUser_)]]
-          <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-            <cr-tooltip-icon
-                class="secondary-accounts-tooltip"
-                icon-class="cr:info-outline"
-                tooltip-text="[[getSecondaryAccountsTooltip_(accounts_)]]"
-                icon-aria-label="[[getSecondaryAccountsTooltip_(accounts_)]]">
-            </cr-tooltip-icon>
-          </template>
         </h2>
+        <span class="secondary"
+            hidden$="[[!isAccountManagementFlowsV2Enabled_]]">
+          $i18n{accountListDescription}
+        </span>
       </div>
       <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
           id="add-account-button" on-click="addAccount_"

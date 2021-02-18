@@ -202,8 +202,8 @@
   </message>
   <message name="IDS_OS_SETTINGS_PROFILE_LABEL_V2" desc="Label underneath the profile's real name, listing the number of accounts">
     {COUNT, plural,
-     =1 {1 Google Account}
-     other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
+     =1 {1 Google Account added}
+     other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts added}}
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PAGE_TITLE" desc="Settings sub-page title for sync.">
     Sync your settings
@@ -1239,17 +1239,14 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER" desc="List header for Account List in Account Manager Settings page.">
     Accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2" desc="List header for secondary account List in Account Manager Settings page.">
-    Secondary accounts
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2" desc="List header for additional account List in Account Manager Settings page.">
+    Additional accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD" desc="List header for secondary account List in Account Manager Settings page for Child user.">
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD" desc="List header for additional account List in Account Manager Settings page for Child user.">
     School accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_TOOLTIP" desc="List tooltip for secondary account List in Account Manager Settings page.">
-    Apps and OS settings are not synced to secondary accounts.
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_TOOLTIP_NO_SECONDARY_ACCOUNTS" desc="List tooltip for secondary account List in Account Manager Settings page when user doesn't have secondary accounts.">
-    When you add a secondary account here, you may browse the web, download apps, check your Gmail and other Google services using that account.
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page.">
+    You can add additional accounts for <ph name="NAME">$1<ex>John</ex></ph> to access websites and apps.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings describing how to sign out.">
     To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".

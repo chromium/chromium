@@ -190,16 +190,6 @@ Polymer({
   },
 
   /**
-   * @return {string} tooltip text
-   * @private
-   */
-  getSecondaryAccountsTooltip_() {
-    return this.getAccounts_().length === 0 ?
-        this.i18n('accountListTooltipNoSecondaryAccounts') :
-        this.i18n('accountListTooltip');
-  },
-
-  /**
    * @param {string} iconUrl
    * @return {string} A CSS image-set for multiple scale factors.
    * @private

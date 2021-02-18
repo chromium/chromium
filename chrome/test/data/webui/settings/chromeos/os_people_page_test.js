@@ -309,7 +309,7 @@ cr.define('settings_people_page', function() {
       await peoplePage.updateAccounts_();
       if (peoplePage.isAccountManagementFlowsV2Enabled_) {
         assertEquals(
-            '3 Google Accounts',
+            '3 Google Accounts added',
             peoplePage.$$('#profile-label').textContent.trim());
       } else {
         assertEquals(
