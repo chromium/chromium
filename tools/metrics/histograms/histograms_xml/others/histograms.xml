@@ -1770,6 +1770,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}" units="ms"
+    expires_after="2022-02-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Logs the duration in milliseconds between bookmark creation time and
+    bookmark open time based on device local time. Recorded when the bookmark is
+    opened. Bookmark folder is not considered. Can be logged in multiple browser
+    sessions.
+  </summary>
+  <token key="BookmarkType">
+    <variant name="Normal" summary="A normal bookmark."/>
+    <variant name="Partner" summary="A partner bookmark."/>
+    <variant name="ReadingList" summary="A reading list article."/>
+  </token>
+</histogram>
+
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
     expires_after="2021-08-01">
   <owner>wychen@chromium.org</owner>

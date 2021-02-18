@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -384,6 +385,12 @@ public class BookmarkUtils {
                 "Bookmarks.OpenBookmarkType", bookmarkId.getType(), BookmarkType.LAST + 1);
 
         BookmarkItem bookmarkItem = model.getBookmarkById(bookmarkId);
+        assert bookmarkItem != null;
+        RecordHistogram.recordCustomTimesHistogram("Bookmarks.OpenBookmarkTimeInterval."
+                        + bookmarkTypeToHistogramSuffix(bookmarkId.getType()),
+                System.currentTimeMillis() - bookmarkItem.getDateAdded(), 1,
+                DateUtils.DAY_IN_MILLIS * 30, 50);
+
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
@@ -392,6 +399,19 @@ public class BookmarkUtils {
             openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName);
         }
         return true;
+    }
+
+    private static String bookmarkTypeToHistogramSuffix(@BookmarkType int type) {
+        switch (type) {
+            case BookmarkType.NORMAL:
+                return "Normal";
+            case BookmarkType.PARTNER:
+                return "Partner";
+            case BookmarkType.READING_LIST:
+                return "ReadingList";
+        }
+        assert false : "Unknown BookmarkType";
+        return "";
     }
 
     /**
