@@ -27991,6 +27991,18 @@
     ],
     "isolated_scripts": [
       {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
+      {
         "isolate_name": "mini_installer_tests",
         "merge": {
           "args": [],
@@ -29255,6 +29267,20 @@
         "test": "zucchini_unittests",
         "test_id_prefix": "ninja://components/zucchini:zucchini_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
     ]
   },
   "ToTWin(dll)": {
@@ -30490,6 +30516,18 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
       {
         "isolate_name": "mini_installer_tests",
         "merge": {
@@ -32245,6 +32283,23 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
       {
         "isolate_name": "mini_installer_tests",
         "merge": {
@@ -34106,6 +34161,24 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-18363"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
       {
         "isolate_name": "mini_installer_tests",
         "merge": {
@@ -35969,6 +36042,24 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-18363"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
       {
         "isolate_name": "mini_installer_tests",
         "merge": {
@@ -39784,6 +39875,18 @@
     ],
     "isolated_scripts": [
       {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
+      {
         "isolate_name": "mini_installer_tests",
         "merge": {
           "args": [],
@@ -41050,6 +41153,18 @@
       }
     ],
     "isolated_scripts": [
+      {
+        "isolate_name": "chrome_sizes",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
       {
         "isolate_name": "mini_installer_tests",
         "merge": {

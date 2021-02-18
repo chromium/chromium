@@ -6648,6 +6648,11 @@
       'webview_ui_instrumentation_tests',
       'webview_ui_instrumentation_tests_no_field_trial',
     ],
+
+    'win_specific_isolated_scripts_and_sizes': [
+      'chrome_sizes',
+      'win_specific_isolated_scripts',
+    ],
   },
 
   ##############################################################################
