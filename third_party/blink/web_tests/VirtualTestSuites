@@ -177,6 +177,7 @@
               "http/tests/preload",
               "external/wpt/custom-elements/parser",
               "external/wpt/domparsing",
+              "external/wpt/dom",
               "external/wpt/html/syntax/parsing",
               "external/wpt/html/the-xhtml-syntax",
               "external/wpt/preload",

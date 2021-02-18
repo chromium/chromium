@@ -1034,6 +1034,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // very expensive), so expire the budget, yield, and permit paint if
       // needed.
       budget = 0;
+      if (!should_run_until_completion) {
+        should_yield = true;
+        break;
+      }
     }
     {
       RUNTIME_CALL_TIMER_SCOPE(
