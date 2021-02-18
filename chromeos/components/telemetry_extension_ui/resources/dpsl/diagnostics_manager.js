@@ -10,7 +10,7 @@
  */
 
 (() => {
-  const messagePipe = chromeos.internal.messagePipe;
+  const messagePipe = dpsl.internal.messagePipe;
 
   /**
    * DPSL Diagnostics Manager.

@@ -10,9 +10,14 @@
 /**
  * Namespace for DPSL APIs.
  */
+var dpsl = {};
+dpsl.internal = {};
+dpsl.internal.messagePipe =
+  new MessagePipe('chrome://telemetry-extension', window.parent);
+
+/**
+ * Namespace for ChromeOS APIs.
+ */
 var chromeos = {};
 chromeos.diagnostics = null;
 chromeos.telemetry = null;
-chromeos.internal = {};
-chromeos.internal.messagePipe =
-  new MessagePipe('chrome://telemetry-extension', window.parent);
