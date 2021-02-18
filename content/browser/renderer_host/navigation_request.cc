@@ -744,18 +744,31 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
 network::mojom::IPAddressSpace IPAddressSpaceForSpecialScheme(const GURL& url) {
   // This only handles schemes that are known to the content/ layer.
   // List here: content/public/common/url_constants.cc.
+  // TODO(crbug.com/1167698): kGuestCheme and kExternalFileScheme look like
+  // strong candidates to be on this list. Verify if that makes sense. Also
+  // handle the chrome/ layer schemes.
   const char* special_content_schemes[] = {
       kChromeDevToolsScheme,
       kChromeUIScheme,
       kChromeUIUntrustedScheme,
   };
-  // TODO(crbug.com/1167698): kGuestCheme and kExternalFileScheme look like
-  // strong candidates to be on this list. Verify if that makes sense. Also
-  // handle the chrome/ layer schemes.
+
   for (auto* scheme : special_content_schemes) {
     if (url.SchemeIs(scheme))
       return network::mojom::IPAddressSpace::kLocal;
   }
+
+  // Some of these schemes are only known from the chrome layer. Query the
+  // embedder for these.
+  ContentBrowserClient* client = GetContentClient()->browser();
+  std::vector<std::string> special_chrome_schemes;
+  client->GetAdditionalLocalAddressSpaceSchemes(&special_chrome_schemes);
+
+  for (auto& scheme : special_chrome_schemes) {
+    if (url.SchemeIs(scheme))
+      return network::mojom::IPAddressSpace::kLocal;
+  }
+
   return network::mojom::IPAddressSpace::kUnknown;
 }
 

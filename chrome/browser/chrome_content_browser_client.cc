@@ -1769,6 +1769,17 @@ void ChromeContentBrowserClient::GetAdditionalViewSourceSchemes(
 #endif
 }
 
+void ChromeContentBrowserClient::GetAdditionalLocalAddressSpaceSchemes(
+    std::vector<std::string>* additional_schemes) {
+  additional_schemes->push_back(chrome::kChromeSearchScheme);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  additional_schemes->push_back(extensions::kExtensionScheme);
+#endif
+
+  // TODO(crbug.com/1167698): dom_distiller::kDomDistillerScheme looks like a
+  // strong candidate. Verify if that makes sense.
+}
+
 bool ChromeContentBrowserClient::LogWebUIUrl(const GURL& web_ui_url) {
   return webui::LogWebUIUrl(web_ui_url);
 }

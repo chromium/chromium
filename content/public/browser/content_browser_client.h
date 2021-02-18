@@ -437,10 +437,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool is_for_isolated_world,
       network::mojom::URLLoaderFactoryParams* factory_params);
 
-  // Returns a list additional WebUI schemes, if any.  These additional schemes
-  // act as aliases to the chrome: scheme.  The additional schemes may or may
-  // not serve specific WebUI pages depending on the particular URLDataSource
-  // and its override of URLDataSource::ShouldServiceRequest.
+  // Returns a list of additional WebUI schemes, if any.  These additional
+  // schemes act as aliases to the chrome: scheme.  The additional schemes may
+  // or may not serve specific WebUI pages depending on the particular
+  // URLDataSource and its override of URLDataSource::ShouldServiceRequest.
   virtual void GetAdditionalWebUISchemes(
       std::vector<std::string>* additional_schemes) {}
 
@@ -448,6 +448,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // the list of WebUI schemes returned by GetAdditionalWebUISchemes.
   virtual void GetAdditionalViewSourceSchemes(
       std::vector<std::string>* additional_schemes);
+
+  // Returns a list of additional schemes that the content layer should
+  // interpret as having a local address space for the purpose of blocking
+  // insecure private network requests.
+  // See https://wicg.github.io/private-network-access/ for details.
+  virtual void GetAdditionalLocalAddressSpaceSchemes(
+      std::vector<std::string>* additional_schemes) {}
 
   // Called when WebUI objects are created to get aggregate usage data (i.e. is
   // chrome://downloads used more than chrome://bookmarks?). Only internal (e.g.
