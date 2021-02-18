@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/commander/commander_view_model.h"
 #include "chrome/browser/ui/commander/open_url_command_source.h"
 #include "chrome/browser/ui/commander/simple_command_source.h"
+#include "chrome/browser/ui/commander/tab_command_source.h"
 #include "chrome/browser/ui/commander/window_command_source.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -25,6 +26,7 @@ CommanderController::CommandSources CreateDefaultSources() {
   sources.push_back(std::make_unique<OpenURLCommandSource>());
   sources.push_back(std::make_unique<BookmarkCommandSource>());
   sources.push_back(std::make_unique<WindowCommandSource>());
+  sources.push_back(std::make_unique<TabCommandSource>());
   return sources;
 }
 

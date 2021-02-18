@@ -942,6 +942,8 @@ static_library("ui") {
       "commander/open_url_command_source.h",
       "commander/simple_command_source.cc",
       "commander/simple_command_source.h",
+      "commander/tab_command_source.cc",
+      "commander/tab_command_source.h",
       "commander/window_command_source.cc",
       "commander/window_command_source.h",
       "confirm_bubble_model.cc",
