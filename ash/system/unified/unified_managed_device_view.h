@@ -33,6 +33,7 @@ class ASH_EXPORT UnifiedManagedDeviceView : public views::Button,
 
   // EnterpriseDomainObserver:
   void OnEnterpriseDomainChanged() override;
+  void OnEnterpriseAccountDomainChanged() override;
 
   // views::Button:
   const char* GetClassName() const override;

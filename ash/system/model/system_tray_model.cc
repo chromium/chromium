@@ -69,6 +69,11 @@ void SystemTrayModel::SetEnterpriseDomainInfo(
                                                active_directory_managed);
 }
 
+void SystemTrayModel::SetEnterpriseAccountDomainInfo(
+    const std::string& account_domain_manager) {
+  enterprise_domain()->SetEnterpriseAccountDomainInfo(account_domain_manager);
+}
+
 void SystemTrayModel::SetPerformanceTracingIconVisible(bool visible) {
   tracing()->SetIsTracing(visible);
 }

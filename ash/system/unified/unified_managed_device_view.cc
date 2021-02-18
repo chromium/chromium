@@ -71,6 +71,10 @@ void UnifiedManagedDeviceView::OnEnterpriseDomainChanged() {
   Update();
 }
 
+void UnifiedManagedDeviceView::OnEnterpriseAccountDomainChanged() {
+  Update();
+}
+
 const char* UnifiedManagedDeviceView::GetClassName() const {
   return "UnifiedManagedDeviceView";
 }
@@ -87,21 +91,34 @@ void UnifiedManagedDeviceView::Update() {
   EnterpriseDomainModel* model =
       Shell::Get()->system_tray_model()->enterprise_domain();
   std::string enterprise_domain_manager = model->enterprise_domain_manager();
+  std::string account_domain_manager = model->account_domain_manager();
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   if (session->ShouldDisplayManagedUI() || model->active_directory_managed() ||
-      !enterprise_domain_manager.empty()) {
+      !enterprise_domain_manager.empty() || !account_domain_manager.empty()) {
     // Show enterpised managed UI.
     icon_->SetImage(gfx::CreateVectorIcon(kSystemTrayManagedIcon, icon_color));
 
-    base::string16 managed_string =
-        enterprise_domain_manager.empty()
-            ? l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED,
-                                         ui::GetChromeOSDeviceName())
-            : l10n_util::GetStringFUTF16(
-                  IDS_ASH_SHORT_MANAGED_BY,
-                  base::UTF8ToUTF16(enterprise_domain_manager));
+    base::string16 managed_string;
+    if (enterprise_domain_manager.empty() && account_domain_manager.empty()) {
+      managed_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName());
+    } else if (!enterprise_domain_manager.empty() &&
+               !account_domain_manager.empty() &&
+               enterprise_domain_manager != account_domain_manager) {
+      managed_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_SHORT_MANAGED_BY_MULTIPLE,
+          base::UTF8ToUTF16(enterprise_domain_manager),
+          base::UTF8ToUTF16(account_domain_manager));
+    } else {
+      base::string16 display_domain_manager =
+          enterprise_domain_manager.empty()
+              ? base::UTF8ToUTF16(account_domain_manager)
+              : base::UTF8ToUTF16(enterprise_domain_manager);
+      managed_string = l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
+                                                  display_domain_manager);
+    }
     label_->SetText(managed_string);
     SetAccessibleName(managed_string);
     SetVisible(true);

@@ -16,12 +16,14 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/set_time_dialog.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -54,6 +57,7 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/vpn_provider/vpn_service.h"
 #include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
@@ -127,9 +131,81 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
 
 }  // namespace
 
+class SystemTrayClient::EnterpriseAccountObserver
+    : public user_manager::UserManager::UserSessionStateObserver,
+      public policy::CloudPolicyStore::Observer,
+      public session_manager::SessionManagerObserver {
+ public:
+  explicit EnterpriseAccountObserver(SystemTrayClient* owner) : owner_(owner) {
+    user_manager::UserManager* manager = user_manager::UserManager::Get();
+    session_state_observation_.Observe(manager);
+    session_observation_.Observe(session_manager::SessionManager::Get());
+    UpdateProfile();
+  }
+  EnterpriseAccountObserver(const EnterpriseAccountObserver&) = delete;
+  EnterpriseAccountObserver& operator=(const EnterpriseAccountObserver&) =
+      delete;
+  ~EnterpriseAccountObserver() override = default;
+
+ private:
+  SystemTrayClient* const owner_;
+  Profile* profile_ = nullptr;
+
+  base::ScopedObservation<
+      user_manager::UserManager,
+      user_manager::UserManager::UserSessionStateObserver,
+      &user_manager::UserManager::AddSessionStateObserver,
+      &user_manager::UserManager::RemoveSessionStateObserver>
+      session_state_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+  base::ScopedObservation<policy::CloudPolicyStore,
+                          policy::CloudPolicyStore::Observer>
+      policy_observation_{this};
+
+  // user_manager::UserManager::UserSessionStateObserver:
+  void ActiveUserChanged(user_manager::User* active_user) override {
+    UpdateProfile();
+  }
+
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override { UpdateProfile(); }
+
+  // policy::CloudPolicyStore::Observer
+  void OnStoreLoaded(policy::CloudPolicyStore* store) override {
+    owner_->UpdateEnterpriseAccountDomainInfo(profile_);
+  }
+  void OnStoreError(policy::CloudPolicyStore* store) override {
+    owner_->UpdateEnterpriseAccountDomainInfo(profile_);
+  }
+
+  void UpdateProfile() {
+    user_manager::User* user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    Profile* profile =
+        user ? ash::ProfileHelper::Get()->GetProfileByUser(user) : nullptr;
+    if (profile == profile_)
+      return;
+
+    policy_observation_.Reset();
+
+    profile_ = profile;
+    if (profile_) {
+      policy::UserCloudPolicyManagerChromeOS* manager =
+          profile_->GetUserCloudPolicyManagerChromeOS();
+      if (manager)
+        policy_observation_.Observe(manager->core()->store());
+    }
+    owner_->UpdateEnterpriseAccountDomainInfo(profile_);
+  }
+};
+
 SystemTrayClient::SystemTrayClient()
     : system_tray_(ash::SystemTray::Get()),
-      update_notification_style_(ash::NotificationStyle::kDefault) {
+      update_notification_style_(ash::NotificationStyle::kDefault),
+      enterprise_account_observer_(
+          std::make_unique<EnterpriseAccountObserver>(this)) {
   // If this observes clock setting changes before ash comes up the IPCs will
   // be queued on |system_tray_|.
   chromeos::system::SystemClock* clock =
@@ -573,4 +649,15 @@ void SystemTrayClient::UpdateEnterpriseDomainInfo() {
                                         active_directory_managed);
   last_enterprise_domain_manager_ = enterprise_domain_manager;
   last_active_directory_managed_ = active_directory_managed;
+}
+
+void SystemTrayClient::UpdateEnterpriseAccountDomainInfo(Profile* profile) {
+  const std::string account_manager =
+      profile ? ManagementUIHandler::GetAccountManager(profile) : std::string();
+  if (account_manager == last_enterprise_account_domain_manager_)
+    return;
+
+  // Send to ash, which will add an item to the system tray.
+  system_tray_->SetEnterpriseAccountDomainInfo(account_manager);
+  last_enterprise_account_domain_manager_ = account_manager;
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/test/local_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
@@ -41,6 +42,12 @@ using chromeos::ProfileHelper;
 using user_manager::UserManager;
 
 using SystemTrayClientEnterpriseTest = policy::DevicePolicyCrosBrowserTest;
+
+const char kManager[] = "admin@example.com";
+const char kNewUser[] = "new_test_user@gmail.com";
+const char kNewGaiaID[] = "11111";
+const char kManagedUser[] = "user@example.com";
+const char kManagedGaiaID[] = "33333";
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
   auto test_api = ash::SystemTrayTestApi::Create();
@@ -197,4 +204,114 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
   // Should get back to the system settings.
   EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id1_));
   EXPECT_TRUE(tray_test_api->Is24HourClock());
+}
+
+class SystemTrayClientEnterpriseAccountTest
+    : public chromeos::LoginManagerTest {
+ protected:
+  SystemTrayClientEnterpriseAccountTest() : LoginManagerTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kManagedDeviceUIRedesign);
+
+    std::unique_ptr<chromeos::ScopedUserPolicyUpdate>
+        scoped_user_policy_update = user_policy_mixin_.RequestPolicyUpdate();
+    scoped_user_policy_update->policy_data()->set_managed_by(kManager);
+  }
+  SystemTrayClientEnterpriseAccountTest(
+      const SystemTrayClientEnterpriseAccountTest&) = delete;
+  SystemTrayClientEnterpriseAccountTest& operator=(
+      const SystemTrayClientEnterpriseAccountTest&) = delete;
+  ~SystemTrayClientEnterpriseAccountTest() override = default;
+
+  const chromeos::LoginManagerMixin::TestUserInfo unmanaged_user_{
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
+  const chromeos::LoginManagerMixin::TestUserInfo managed_user_{
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
+  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
+                                               managed_user_.account_id};
+  chromeos::LoginManagerMixin login_mixin_{&mixin_host_,
+                                           {managed_user_, unmanaged_user_}};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
+                       TrayEnterpriseManagedAccount) {
+  auto test_api = ash::SystemTrayTestApi::Create();
+
+  // User hasn't signed in yet, user management should not be shown in tray.
+  EXPECT_FALSE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                             true /* open_tray */));
+
+  // After login, the tray should show user management information.
+  LoginUser(managed_user_.account_id);
+  EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                            true /* open_tray */));
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
+                                       base::UTF8ToUTF16(kManager)),
+            test_api->GetBubbleViewText(ash::VIEW_ID_TRAY_ENTERPRISE_LABEL));
+
+  // Switch to unmanaged account should still show the managed string (since the
+  // primary user is managed user). However, the string should not contain the
+  // account manager of the primary user.
+  chromeos::UserAddingScreen::Get()->Start();
+  AddUser(unmanaged_user_.account_id);
+  EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                            true /* open_tray */));
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED,
+                                       ui::GetChromeOSDeviceName()),
+            test_api->GetBubbleViewText(ash::VIEW_ID_TRAY_ENTERPRISE_LABEL));
+
+  // Switch back to managed account.
+  UserManager::Get()->SwitchActiveUser(managed_user_.account_id);
+  EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                            true /* open_tray */));
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
+                                       base::UTF8ToUTF16(kManager)),
+            test_api->GetBubbleViewText(ash::VIEW_ID_TRAY_ENTERPRISE_LABEL));
+}
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
+                       TrayEnterpriseUnmanagedAccount) {
+  auto test_api = ash::SystemTrayTestApi::Create();
+
+  EXPECT_FALSE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                             true /* open_tray */));
+
+  // After login with unmanaged user, the tray should not show user management
+  // information.
+  LoginUser(unmanaged_user_.account_id);
+  EXPECT_FALSE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                             true /* open_tray */));
+}
+
+class SystemTrayClientEnterpriseSessionRestoreTest
+    : public SystemTrayClientEnterpriseAccountTest {
+ protected:
+  SystemTrayClientEnterpriseSessionRestoreTest() {
+    login_mixin_.set_session_restore_enabled();
+  }
+  SystemTrayClientEnterpriseSessionRestoreTest(
+      const SystemTrayClientEnterpriseSessionRestoreTest&) = delete;
+  SystemTrayClientEnterpriseSessionRestoreTest& operator=(
+      const SystemTrayClientEnterpriseSessionRestoreTest&) = delete;
+  ~SystemTrayClientEnterpriseSessionRestoreTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseSessionRestoreTest,
+                       PRE_SessionRestore) {
+  LoginUser(managed_user_.account_id);
+}
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseSessionRestoreTest,
+                       SessionRestore) {
+  auto test_api = ash::SystemTrayTestApi::Create();
+
+  // Verify that tray is showing info on chrome restart.
+  EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
+                                            true /* open_tray */));
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
+                                       base::UTF8ToUTF16(kManager)),
+            test_api->GetBubbleViewText(ash::VIEW_ID_TRAY_ENTERPRISE_LABEL));
 }

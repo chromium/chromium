@@ -43,6 +43,8 @@ void ManagedDeviceTrayItemView::OnEnterpriseDomainChanged() {
   Update();
 }
 
+void ManagedDeviceTrayItemView::OnEnterpriseAccountDomainChanged() {}
+
 const char* ManagedDeviceTrayItemView::GetClassName() const {
   return "ManagedDeviceTrayItemView";
 }

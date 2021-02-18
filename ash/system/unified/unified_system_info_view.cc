@@ -300,6 +300,7 @@ class EnterpriseManagedView : public ManagedStateView,
 
   // EnterpriseDomainObserver:
   void OnEnterpriseDomainChanged() override;
+  void OnEnterpriseAccountDomainChanged() override;
 
   // SessionObserver:
   void OnLoginStatusChanged(LoginStatus status) override;
@@ -336,6 +337,8 @@ EnterpriseManagedView::~EnterpriseManagedView() {
 void EnterpriseManagedView::OnEnterpriseDomainChanged() {
   Update();
 }
+
+void EnterpriseManagedView::OnEnterpriseAccountDomainChanged() {}
 
 void EnterpriseManagedView::OnLoginStatusChanged(LoginStatus status) {
   Update();

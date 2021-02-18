@@ -72,6 +72,19 @@ TEST_F(UnifiedManagedDeviceViewTest, ActiveDirectoryManagedDevice) {
   EXPECT_TRUE(managed_device_view_->GetVisible());
 }
 
+TEST_F(UnifiedManagedDeviceViewTest, EnterpriseUserManagedDevice) {
+  // By default, UnifiedManagedDeviceView is not shown.
+  EXPECT_FALSE(managed_device_view_->GetVisible());
+
+  // Simulate enterprise account information becoming available.
+  Shell::Get()
+      ->system_tray_model()
+      ->enterprise_domain()
+      ->SetEnterpriseAccountDomainInfo("example.com");
+
+  EXPECT_TRUE(managed_device_view_->GetVisible());
+}
+
 using UnifiedManagedDeviceViewNoSessionTest = NoSessionAshTestBase;
 
 TEST_F(UnifiedManagedDeviceViewNoSessionTest, ChildUserDevice) {

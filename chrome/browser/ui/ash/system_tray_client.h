@@ -19,6 +19,8 @@ enum class NotificationStyle;
 enum class UpdateType;
 }  // namespace ash
 
+class Profile;
+
 // Handles method calls delegated back to chrome from ash. Also notifies ash of
 // relevant state changes in chrome.
 // TODO: Consider renaming this to SystemTrayClientImpl.
@@ -84,6 +86,8 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
 
  private:
+  // Observes profile changed and profile's policy changed.
+  class EnterpriseAccountObserver;
 
   // Helper function shared by ShowNetworkSettings() and ShowNetworkConfigure().
   void ShowNetworkSettingsHelper(const std::string& network_id,
@@ -105,6 +109,7 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void OnStoreError(policy::CloudPolicyStore* store) override;
 
   void UpdateEnterpriseDomainInfo();
+  void UpdateEnterpriseAccountDomainInfo(Profile* profile);
 
   // The system tray model in ash.
   ash::SystemTray* const system_tray_;
@@ -122,6 +127,9 @@ class SystemTrayClient : public ash::SystemTrayClient,
   // suppress duplicate IPCs during the session.
   std::string last_enterprise_domain_manager_;
   bool last_active_directory_managed_ = false;
+  std::string last_enterprise_account_domain_manager_;
+
+  std::unique_ptr<EnterpriseAccountObserver> enterprise_account_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemTrayClient);
 };
