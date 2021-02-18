@@ -486,15 +486,16 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
             case PrimaryAccountChangeEvent.Type.CLEARED:
                 // This event can occur in two cases:
                 // - Syncing account is signed out. User may choose to delete data from UI prompt
-                //   if account is not managed.
+                //   if account is not managed. In this case mSigninOutState is set.
                 // - RevokeSyncConsent() is called in native code. In this case the user may still
                 //   be signed in with Consentlevel::NOT_REQUIRED and just lose sync privileges.
-                //   Currently it is not possible to reach this flow from java code. If the account
-                //   is managed then data should be deleted. But it may not be possible to know if
-                //   the account is managed or not as nativeSignOut() may potentially clear it.
-                //   So data is deleted regardless of the account being managed or not.
+                //   If the account is managed then the data should be wiped.
+                //
+                //   TODO(https://crbug.com/1173016): It might be too late to get management status
+                //       here. ProfileSyncService should call RevokeSyncConsent/ClearPrimaryAccount
+                //       in SigninManager instead.
                 if (mSignOutState == null) {
-                    mSignOutState = new SignOutState(null, true);
+                    mSignOutState = new SignOutState(null, getManagementDomain() != null);
                 }
 
                 // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
