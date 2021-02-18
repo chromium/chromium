@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.survey;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
 import org.chromium.base.annotations.CalledByNative;
@@ -110,6 +112,7 @@ public class SurveyHttpClientBridge {
      * @param headerKeys Keys of the headers for the HttpResponse.
      * @param headerValues Values of the headers for the HttpResponse.
      */
+    @VisibleForTesting
     @CalledByNative
     public static HttpResponse createHttpResponse(int responseCode, int netErrorCode, byte[] body,
             String[] headerKeys, String[] headerValues) {
