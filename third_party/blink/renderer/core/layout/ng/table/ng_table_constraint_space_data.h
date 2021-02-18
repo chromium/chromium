@@ -40,11 +40,13 @@ class NGTableConstraintSpaceData
   struct Section {
     Section(wtf_size_t start_row_index, wtf_size_t rowspan)
         : start_row_index(start_row_index), rowspan(rowspan) {}
-    bool operator==(const Section& other) const {
-      return start_row_index == other.start_row_index &&
-             rowspan == other.rowspan;
+
+    bool MaySkipLayout(const Section& other) const {
+      // We don't compare |start_row_index| as this is allowed to change.
+      return rowspan == other.rowspan;
     }
-    wtf_size_t start_row_index;  // first section row in table grid.
+
+    wtf_size_t start_row_index;  // First section row in table grid.
     wtf_size_t rowspan;
   };
 
@@ -63,15 +65,16 @@ class NGTableConstraintSpaceData
           has_baseline_aligned_percentage_block_size_descendants(
               has_baseline_aligned_percentage_block_size_descendants),
           is_collapsed(is_collapsed) {}
-    bool operator==(const Row& other) const {
+
+    bool MaySkipLayout(const Row& other) const {
+      // We don't compare |start_cell_index| as this is allowed to change.
       return baseline == other.baseline && block_size == other.block_size &&
-             start_cell_index == other.start_cell_index &&
              cell_count == other.cell_count &&
              has_baseline_aligned_percentage_block_size_descendants ==
                  other.has_baseline_aligned_percentage_block_size_descendants &&
              is_collapsed == other.is_collapsed;
     }
-    bool operator!=(const Row& other) const { return !(*this == other); }
+
     LayoutUnit baseline;
     LayoutUnit block_size;
     wtf_size_t start_cell_index;
@@ -93,6 +96,7 @@ class NGTableConstraintSpaceData
     bool operator==(const Cell& other) const {
       return border_box_borders == other.border_box_borders &&
              block_size == other.block_size &&
+             start_column == other.start_column &&
              is_constrained == other.is_constrained;
     }
     bool operator!=(const Cell& other) const { return !(*this == other); }
@@ -115,34 +119,67 @@ class NGTableConstraintSpaceData
   }
 
   bool MaySkipRowLayout(const NGTableConstraintSpaceData& other,
-                        wtf_size_t row_index) const {
-    if (other.rows.size() <= row_index)
+                        wtf_size_t new_row_index,
+                        wtf_size_t old_row_index) const {
+    DCHECK_LT(new_row_index, rows.size());
+    DCHECK_LT(old_row_index, other.rows.size());
+
+    const Row& new_row = rows[new_row_index];
+    const Row& old_row = other.rows[old_row_index];
+    if (!new_row.MaySkipLayout(old_row))
       return false;
-    if (rows[row_index] != other.rows[row_index])
-      return false;
-    DCHECK_LT(row_index, rows.size());
-    wtf_size_t end_index =
-        rows[row_index].start_cell_index + rows[row_index].cell_count;
-    for (wtf_size_t cell_index = rows[row_index].start_cell_index;
-         cell_index < end_index; ++cell_index) {
-      if (cells[cell_index] != other.cells[cell_index])
+
+    DCHECK_EQ(new_row.cell_count, old_row.cell_count);
+
+    const wtf_size_t new_start_cell_index = new_row.start_cell_index;
+    const wtf_size_t old_start_cell_index = old_row.start_cell_index;
+
+    const wtf_size_t new_end_cell_index =
+        new_start_cell_index + new_row.cell_count;
+    const wtf_size_t old_end_cell_index =
+        old_start_cell_index + old_row.cell_count;
+
+    for (wtf_size_t new_cell_index = new_start_cell_index,
+                    old_cell_index = old_start_cell_index;
+         new_cell_index < new_end_cell_index &&
+         old_cell_index < old_end_cell_index;
+         ++new_cell_index, ++old_cell_index) {
+      if (cells[new_cell_index] != other.cells[old_cell_index])
         return false;
     }
+
     return true;
   }
 
   bool MaySkipSectionLayout(const NGTableConstraintSpaceData& other,
-                            wtf_size_t section_index) const {
-    if (other.sections.size() <= section_index)
+                            wtf_size_t new_section_index,
+                            wtf_size_t old_section_index) const {
+    DCHECK_LE(new_section_index, sections.size());
+    DCHECK_LE(old_section_index, other.sections.size());
+
+    const Section& new_section = sections[new_section_index];
+    const Section& old_section = other.sections[old_section_index];
+    if (!new_section.MaySkipLayout(old_section))
       return false;
-    DCHECK_LT(section_index, sections.size());
-    wtf_size_t end_index = sections[section_index].start_row_index +
-                           sections[section_index].rowspan;
-    for (wtf_size_t row_index = sections[section_index].start_row_index;
-         row_index < end_index; ++row_index) {
-      if (!MaySkipRowLayout(other, row_index))
+
+    DCHECK_EQ(new_section.rowspan, old_section.rowspan);
+
+    const wtf_size_t new_start_row_index = new_section.start_row_index;
+    const wtf_size_t old_start_row_index = old_section.start_row_index;
+
+    const wtf_size_t new_end_row_index =
+        new_start_row_index + new_section.rowspan;
+    const wtf_size_t old_end_row_index =
+        old_start_row_index + old_section.rowspan;
+
+    for (wtf_size_t new_row_index = new_start_row_index,
+                    old_row_index = old_start_row_index;
+         new_row_index < new_end_row_index && old_row_index < old_end_row_index;
+         ++new_row_index, ++old_row_index) {
+      if (!MaySkipRowLayout(other, new_row_index, old_row_index))
         return false;
     }
+
     return true;
   }
 

@@ -710,10 +710,10 @@ class CORE_EXPORT NGConstraintSpace final {
     return true;
   }
 
-  void ReplaceTableConstraintSpaceData(
-      const NGTableConstraintSpaceData& table_data) {
+  void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
+                           const wtf_size_t row_index) {
     DCHECK(HasRareData());
-    rare_data_->ReplaceTableConstraintSpaceData(table_data);
+    rare_data_->ReplaceTableRowData(table_data, row_index);
   }
 
   String ToString() const;
@@ -1029,30 +1029,33 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureTableSectionData()->section_index = section_index;
     }
 
-    void ReplaceTableConstraintSpaceData(
-        const NGTableConstraintSpaceData& table_data) {
+    void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
+                             wtf_size_t row_index) {
       DCHECK_EQ(data_union_type, kTableRowData);
-      DCHECK(table_data.IsTableSpecificDataEqual(
-          *(EnsureTableRowData()->table_data)));
-      EnsureTableRowData()->table_data = &table_data;
+      DCHECK(
+          table_data.IsTableSpecificDataEqual(*(table_row_data_.table_data)));
+      DCHECK(table_data.MaySkipRowLayout(*table_row_data_.table_data, row_index,
+                                         table_row_data_.row_index));
+      table_row_data_.table_data = &table_data;
+      table_row_data_.row_index = row_index;
     }
 
     const NGTableConstraintSpaceData* TableData() {
       if (data_union_type == kTableRowData)
-        return EnsureTableRowData()->table_data.get();
+        return table_row_data_.table_data.get();
       if (data_union_type == kTableSectionData)
-        return EnsureTableSectionData()->table_data.get();
+        return table_section_data_.table_data.get();
       return nullptr;
     }
 
-    wtf_size_t TableRowIndex() {
-      return data_union_type == kTableRowData ? EnsureTableRowData()->row_index
+    wtf_size_t TableRowIndex() const {
+      return data_union_type == kTableRowData ? table_row_data_.row_index
                                               : kNotFound;
     }
 
-    wtf_size_t TableSectionIndex() {
+    wtf_size_t TableSectionIndex() const {
       return data_union_type == kTableSectionData
-                 ? EnsureTableSectionData()->section_index
+                 ? table_section_data_.section_index
                  : kNotFound;
     }
 
@@ -1166,7 +1169,8 @@ class CORE_EXPORT NGConstraintSpace final {
     struct TableRowData {
       bool MaySkipLayout(const TableRowData& other) const {
         return table_data->IsTableSpecificDataEqual(*other.table_data) &&
-               table_data->MaySkipRowLayout(*other.table_data, row_index);
+               table_data->MaySkipRowLayout(*other.table_data, row_index,
+                                            other.row_index);
       }
       bool IsInitialForMaySkipLayout() const {
         return !table_data && row_index == kNotFound;
@@ -1179,8 +1183,8 @@ class CORE_EXPORT NGConstraintSpace final {
     struct TableSectionData {
       bool MaySkipLayout(const TableSectionData& other) const {
         return table_data->IsTableSpecificDataEqual(*other.table_data) &&
-               table_data->MaySkipSectionLayout(*other.table_data,
-                                                section_index);
+               table_data->MaySkipSectionLayout(
+                   *other.table_data, section_index, other.section_index);
       }
       bool IsInitialForMaySkipLayout() const {
         return !table_data && section_index == kNotFound;
