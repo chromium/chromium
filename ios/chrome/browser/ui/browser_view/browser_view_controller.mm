@@ -2863,12 +2863,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(panHandler);
   self.thumbStripPanHandler = panHandler;
 
-  // Add animatees first to make sure that the BVC's view is loaded for the
-  // rest of setup
-  [panHandler addAnimatee:self.primaryToolbarCoordinator.animatee];
+  // Add self as animatee first to make sure that the BVC's view is loaded for
+  // the rest of setup
   [panHandler addAnimatee:self];
 
   DCHECK([self isViewLoaded]);
+  DCHECK(self.locationBarModel);
+  DCHECK(self.primaryToolbarCoordinator.animatee);
 
   BrowserViewHiderCoordinator* browserViewHiderCoordinator =
       [[BrowserViewHiderCoordinator alloc]
@@ -2878,6 +2879,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [browserViewHiderCoordinator start];
   [panHandler addAnimatee:browserViewHiderCoordinator.animatee];
   self.browserViewHiderCoordinator = browserViewHiderCoordinator;
+
+  [panHandler addAnimatee:self.primaryToolbarCoordinator.animatee];
 
   self.primaryToolbarCoordinator.panGestureHandler = panHandler;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
