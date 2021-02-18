@@ -54,7 +54,7 @@ const char kProtocolKey[] = "protocol_str";
 const char kHostKey[] = "host";
 const char kPortKey[] = "port";
 const char kExpirationKey[] = "expiration";
-const char kAdvertisedVersionsKey[] = "advertised_versions";
+const char kAdvertisedAlpnsKey[] = "advertised_alpns";
 const char kNetworkStatsKey[] = "network_stats";
 const char kSrttKey[] = "srtt";
 const char kBrokenAlternativeServicesKey[] = "broken_alternative_services";
@@ -532,9 +532,8 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
   }
 
   // Advertised versions list is optional.
-  // It is only used for versions that use the legacy Google AltSvc format.
-  if (dict.FindKey(kAdvertisedVersionsKey)) {
-    const base::Value* versions_list = dict.FindListKey(kAdvertisedVersionsKey);
+  if (dict.FindKey(kAdvertisedAlpnsKey)) {
+    const base::Value* versions_list = dict.FindListKey(kAdvertisedAlpnsKey);
     if (!versions_list) {
       DVLOG(1) << "Malformed alternative service advertised versions list for "
                << "server: " << server_str;
@@ -542,20 +541,16 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
     }
     quic::ParsedQuicVersionVector advertised_versions;
     for (const auto& value : versions_list->GetList()) {
-      int version;
-      if (!value.GetAsInteger(&version)) {
+      std::string version_string;
+      if (!value.GetAsString(&version_string)) {
         DVLOG(1) << "Malformed alternative service version for server: "
                  << server_str;
         return false;
       }
-      for (const quic::ParsedQuicVersion& supported :
-           quic::AllSupportedVersions()) {
-        if (supported.UsesQuicCrypto() &&
-            supported.SupportsGoogleAltSvcFormat() &&
-            static_cast<int>(supported.transport_version) == version) {
-          advertised_versions.push_back(supported);
-          break;
-        }
+      quic::ParsedQuicVersion version =
+          quic::ParseQuicVersionString(version_string);
+      if (version != quic::ParsedQuicVersion::Unsupported()) {
+        advertised_versions.push_back(version);
       }
     }
     alternative_service_info->set_advertised_versions(advertised_versions);
@@ -806,9 +801,9 @@ void HttpServerPropertiesManager::SaveAlternativeServiceToServerPrefs(
             alternative_service_info.expiration().ToInternalValue()));
     base::Value advertised_versions_list(base::Value::Type::LIST);
     for (const auto& version : alternative_service_info.advertised_versions()) {
-      advertised_versions_list.Append(version.transport_version);
+      advertised_versions_list.Append(quic::AlpnForVersion(version));
     }
-    alternative_service_dict.SetKey(kAdvertisedVersionsKey,
+    alternative_service_dict.SetKey(kAdvertisedAlpnsKey,
                                     std::move(advertised_versions_list));
     alternative_service_list.Append(std::move(alternative_service_dict));
   }

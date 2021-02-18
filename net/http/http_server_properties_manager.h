@@ -125,6 +125,8 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
                            DoNotLoadAltSvcForInsecureOrigins);
   FRIEND_TEST_ALL_PREFIXES(HttpServerPropertiesManagerTest,
                            DoNotLoadExpiredAlternativeService);
+  FRIEND_TEST_ALL_PREFIXES(HttpServerPropertiesManagerTest,
+                           AdvertisedVersionsRoundTrip);
 
   void AddServerData(const base::Value& server_dict,
                      HttpServerProperties::ServerInfoMap* server_info_map,
