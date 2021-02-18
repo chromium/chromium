@@ -54,33 +54,18 @@ namespace {
 
 using ResourcesMap = std::unordered_map<std::string, int>;
 
-const std::map<int, std::string> CreateContentResourceIdToAliasMap() {
-  return std::map<int, std::string>{
-      {IDR_ORIGIN_MOJO_HTML, "mojo/url/mojom/origin.mojom.html"},
-      {IDR_ORIGIN_MOJO_JS, "mojo/url/mojom/origin.mojom-lite.js"},
-      {IDR_ORIGIN_MOJO_WEBUI_JS, "mojo/url/mojom/origin.mojom-webui.js"},
-      {IDR_UNGUESSABLE_TOKEN_MOJO_HTML,
-       "mojo/mojo/public/mojom/base/unguessable_token.mojom.html"},
-      {IDR_UNGUESSABLE_TOKEN_MOJO_JS,
-       "mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js"},
-      {IDR_URL_MOJO_HTML, "mojo/url/mojom/url.mojom.html"},
-      {IDR_URL_MOJO_JS, "mojo/url/mojom/url.mojom-lite.js"},
-      {IDR_URL_MOJOM_WEBUI_JS, "mojo/url/mojom/url.mojom-webui.js"},
-      {IDR_VULKAN_INFO_MOJO_JS, "gpu/ipc/common/vulkan_info.mojom-webui.js"},
-      {IDR_VULKAN_TYPES_MOJO_JS, "gpu/ipc/common/vulkan_types.mojom-webui.js"},
-  };
-}
-
-const std::map<int, std::string> CreateSkiaResourceIdToAliasMap() {
-  return std::map<int, std::string>{
-      {IDR_SKIA_BITMAP_MOJOM_LITE_JS,
-       "mojo/skia/public/mojom/bitmap.mojom-lite.js"},
-      {IDR_SKIA_IMAGE_INFO_MOJOM_LITE_JS,
-       "mojo/skia/public/mojom/image_info.mojom-lite.js"},
-      {IDR_SKIA_SKCOLOR_MOJOM_LITE_JS,
-       "mojo/skia/public/mojom/skcolor.mojom-lite.js"},
-      {IDR_SKIA_SKCOLOR_MOJOM_WEBUI_JS,
-       "mojo/skia/public/mojom/skcolor.mojom-webui.js"},
+const std::set<int> GetContentResourceIds() {
+  return std::set<int>{
+      IDR_ORIGIN_MOJO_HTML,
+      IDR_ORIGIN_MOJO_JS,
+      IDR_ORIGIN_MOJO_WEBUI_JS,
+      IDR_UNGUESSABLE_TOKEN_MOJO_HTML,
+      IDR_UNGUESSABLE_TOKEN_MOJO_JS,
+      IDR_URL_MOJO_HTML,
+      IDR_URL_MOJO_JS,
+      IDR_URL_MOJOM_WEBUI_JS,
+      IDR_VULKAN_INFO_MOJO_JS,
+      IDR_VULKAN_TYPES_MOJO_JS,
   };
 }
 
@@ -158,16 +143,27 @@ void AddResource(const std::string& path,
     NOTREACHED() << "Redefinition of '" << path << "'";
 }
 
-void AddResourcesToMap(ResourcesMap* resources_map) {
-  for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
-    const auto& resource = kWebuiResources[i];
+// Adds all resources with IDs in |resource_ids| to |resources_map|.
+void AddResources(const std::set<int>& resource_ids,
+                  const webui::ResourcePath resources[],
+                  size_t resources_size,
+                  ResourcesMap* resources_map) {
+  for (size_t i = 0; i < resources_size; ++i) {
+    const auto& resource = resources[i];
+
+    const auto it = resource_ids.find(resource.id);
+    if (it == resource_ids.end())
+      continue;
+
     AddResource(resource.path, resource.id, resources_map);
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds |resources| to |resources_map|, but renames each resource according to
 // the scheme in |resource_aliases|, which maps from resource ID to resource
 // alias. Note that resources which do not have an alias will not be added.
+// TODO(dpapad): Delete in favor of |AddResources()|.
 void AddAliasedResourcesToMap(
     const std::map<int, std::string>& resource_aliases,
     const webui::ResourcePath resources[],
@@ -183,6 +179,7 @@ void AddAliasedResourcesToMap(
     AddResource(it->second, resource.id, resources_map);
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Adds |resources| to |resources_map| using the path given by resource_path in
 // each GRD entry.
@@ -194,20 +191,21 @@ void AddGritResourcesToMap(base::span<const webui::ResourcePath> resources,
 
 const ResourcesMap* CreateResourcesMap() {
   ResourcesMap* result = new ResourcesMap();
-  AddResourcesToMap(result);
-  AddAliasedResourcesToMap(CreateContentResourceIdToAliasMap(),
-                           kContentResources, kContentResourcesSize, result);
-  AddAliasedResourcesToMap(CreateContentResourceIdToAliasMap(),
-                           kMediaInternalsResources,
-                           kMediaInternalsResourcesSize, result);
+  AddGritResourcesToMap(base::make_span(kWebuiResources, kWebuiResourcesSize),
+                        result);
+  AddResources(GetContentResourceIds(), kContentResources,
+               kContentResourcesSize, result);
+  AddGritResourcesToMap(
+      base::make_span(kMediaInternalsResources, kMediaInternalsResourcesSize),
+      result);
   AddGritResourcesToMap(
       base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize),
       result);
   AddGritResourcesToMap(
       base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize),
       result);
-  AddAliasedResourcesToMap(CreateSkiaResourceIdToAliasMap(), kSkiaResources,
-                           kSkiaResourcesSize, result);
+  AddGritResourcesToMap(base::make_span(kSkiaResources, kSkiaResourcesSize),
+                        result);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddAliasedResourcesToMap(CreateChromeosMojoResourceIdToAliasMap(),
                            kChromeosResources, kChromeosResourcesSize, result);
