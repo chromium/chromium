@@ -77,16 +77,6 @@ enum NotificationType {
 
   // WebContents ---------------------------------------------------------------
 
-  // This message is sent after a WebContents is disconnected from the
-  // renderer process.  The source is a Source<WebContents> with a pointer to
-  // the WebContents (the pointer is usable).  No details are expected.
-  // DEPRECATED: This is fired in two situations: when the render process
-  // crashes, in which case use WebContentsObserver::RenderProcessGone, and when
-  // the WebContents is being torn down, in which case use
-  // WebContentsObserver::WebContentsDestroyed()
-  // TODO(https://crbug.com/1174766): Remove.
-  NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-
   // This notification is sent when a WebContents is being destroyed. Any
   // object holding a reference to a WebContents can listen to that
   // notification to properly reset the reference. The source is a

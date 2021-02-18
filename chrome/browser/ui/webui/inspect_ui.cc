@@ -24,12 +24,8 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -372,7 +368,7 @@ void DevToolsUIBindingsEnabler::DidFinishNavigation(
 // InspectUI --------------------------------------------------------
 
 InspectUI::InspectUI(content::WebUI* web_ui)
-    : WebUIController(web_ui) {
+    : WebUIController(web_ui), WebContentsObserver(web_ui->GetWebContents()) {
   web_ui->AddMessageHandler(std::make_unique<InspectMessageHandler>(this));
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, CreateInspectUIHTMLSource());
@@ -498,11 +494,8 @@ void InspectUI::InspectDevices(Browser* browser) {
   ShowSingletonTabOverwritingNTP(browser, std::move(params));
 }
 
-void InspectUI::Observe(int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  if (source == content::Source<WebContents>(web_ui()->GetWebContents()))
-    StopListeningNotifications();
+void InspectUI::WebContentsDestroyed() {
+  StopListeningNotifications();
 }
 
 void InspectUI::StartListeningNotifications() {
@@ -529,10 +522,6 @@ void InspectUI::StartListeningNotifications() {
       base::BindRepeating(&InspectUI::PopulatePortStatus,
                           base::Unretained(this)),
       profile);
-
-  notification_registrar_.Add(this,
-                              content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-                              content::NotificationService::AllSources());
 
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
@@ -565,7 +554,6 @@ void InspectUI::StopListeningNotifications() {
 
   port_status_serializer_.reset();
 
-  notification_registrar_.RemoveAll();
   pref_change_registrar_.RemoveAll();
 }
 

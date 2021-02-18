@@ -118,25 +118,19 @@ RenderWidgetHostViewAura* ToRenderWidgetHostViewAura(
 
 // Listens to all mouse drag events during a drag and drop and sends them to
 // the renderer.
-class WebDragSourceAura : public NotificationObserver {
+class WebDragSourceAura : public content::WebContentsObserver {
  public:
   WebDragSourceAura(aura::Window* window, WebContentsImpl* contents)
-      : window_(window),
-        contents_(contents) {
-    registrar_.Add(this,
-                   NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-                   Source<WebContents>(contents));
+      : WebContentsObserver(contents), window_(window) {}
+
+  // content::WebContentsObserver
+  void RenderProcessGone(base::TerminationStatus status) override {
+    CancelDrag();
   }
 
-  ~WebDragSourceAura() override {}
+  void WebContentsDestroyed() override { CancelDrag(); }
 
-  // NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override {
-    if (type != NOTIFICATION_WEB_CONTENTS_DISCONNECTED)
-      return;
-
+  void CancelDrag() {
     // Cancel the drag if it is still in progress.
     aura::client::DragDropClient* dnd_client =
         aura::client::GetDragDropClient(window_->GetRootWindow());
@@ -144,14 +138,12 @@ class WebDragSourceAura : public NotificationObserver {
       dnd_client->DragCancel();
 
     window_ = nullptr;
-    contents_ = nullptr;
   }
 
   aura::Window* window() const { return window_; }
 
  private:
   aura::Window* window_;
-  WebContentsImpl* contents_;
   NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(WebDragSourceAura);

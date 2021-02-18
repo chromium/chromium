@@ -1604,7 +1604,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void NotifyFrameSwapped(RenderFrameHost* old_frame,
                           RenderFrameHost* new_frame,
                           bool is_main_frame);
-  void NotifyDisconnected();
 
   // TODO(creis): This should take in a FrameTreeNode to know which node's
   // render manager to return.  For now, we just return the root's.

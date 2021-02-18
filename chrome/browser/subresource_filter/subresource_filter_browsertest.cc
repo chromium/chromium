@@ -662,13 +662,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // component is faulty. The CHECK assumes that the crash URL and other
   // renderer debug URLs do not create a navigation throttle. See
   // crbug.com/736658.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-      content::NotificationService::AllSources());
+  content::RenderProcessHostWatcher crash_observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser()->OpenURL(content::OpenURLParams(
       GURL(content::kChromeUICrashURL), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-  observer.Wait();
+  crash_observer.Wait();
 }
 
 // Test that resources in frames with an aborted initial load due to a doc.write

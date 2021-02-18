@@ -29,7 +29,9 @@
 // UnloadController, public:
 
 UnloadController::UnloadController(Browser* browser)
-    : browser_(browser), is_attempting_to_close_browser_(false) {
+    : browser_(browser),
+      web_contents_collection_(this),
+      is_attempting_to_close_browser_(false) {
   browser_->tab_strip_model()->AddObserver(this);
 }
 
@@ -226,17 +228,15 @@ void UnloadController::CancelWindowClose() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// UnloadController, content::NotificationObserver implementation:
+// UnloadController, WebContentsCollection::Observer implementation:
 
-void UnloadController::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED, type);
-
+void UnloadController::RenderProcessGone(content::WebContents* web_contents,
+                                         base::TerminationStatus status) {
   if (is_attempting_to_close_browser_) {
-    ClearUnloadState(content::Source<content::WebContents>(source).ptr(),
+    ClearUnloadState(web_contents,
                      false);  // See comment for ClearUnloadState().
   }
+  web_contents_collection_.StopObserving(web_contents);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -278,15 +278,13 @@ void UnloadController::TabStripEmpty() {
 void UnloadController::TabAttachedImpl(content::WebContents* contents) {
   // If the tab crashes in the beforeunload or unload handler, it won't be
   // able to ack. But we know we can close it.
-  registrar_.Add(this, content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-                 content::Source<content::WebContents>(contents));
+  web_contents_collection_.StartObserving(contents);
 }
 
 void UnloadController::TabDetachedImpl(content::WebContents* contents) {
   if (is_attempting_to_close_browser_)
     ClearUnloadState(contents, false);
-  registrar_.Remove(this, content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-                    content::Source<content::WebContents>(contents));
+  web_contents_collection_.StopObserving(contents);
 }
 
 void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {

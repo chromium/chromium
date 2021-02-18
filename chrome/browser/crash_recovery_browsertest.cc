@@ -45,13 +45,13 @@ using content::WebContents;
 namespace {
 
 void SimulateRendererCrash(Browser* browser) {
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-      content::NotificationService::AllSources());
+  content::RenderProcessHostWatcher crash_observer(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser->OpenURL(OpenURLParams(GURL(content::kChromeUICrashURL), Referrer(),
                                  WindowOpenDisposition::CURRENT_TAB,
                                  ui::PAGE_TRANSITION_TYPED, false));
-  observer.Wait();
+  crash_observer.Wait();
 }
 
 // A request handler which returns a different result each time but stays fresh

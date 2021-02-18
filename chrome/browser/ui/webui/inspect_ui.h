@@ -13,8 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -32,7 +31,7 @@ class DevToolsTargetsUIHandler;
 class PortForwardingStatusSerializer;
 
 class InspectUI : public content::WebUIController,
-                  public content::NotificationObserver {
+                  public content::WebContentsObserver {
  public:
   explicit InspectUI(content::WebUI* web_ui);
   ~InspectUI() override;
@@ -56,10 +55,8 @@ class InspectUI : public content::WebUIController,
   static void InspectDevices(Browser* browser);
 
  private:
-  // content::NotificationObserver overrides.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
 
   void StartListeningNotifications();
   void StopListeningNotifications();
@@ -92,9 +89,6 @@ class InspectUI : public content::WebUIController,
   void PopulatePortStatus(base::Value status);
 
   void ShowIncognitoWarning();
-
-  // A scoped container for notification registries.
-  content::NotificationRegistrar notification_registrar_;
 
   // A scoped container for preference change registries.
   PrefChangeRegistrar pref_change_registrar_;

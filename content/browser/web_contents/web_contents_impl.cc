@@ -941,8 +941,6 @@ WebContentsImpl::~WebContentsImpl() {
   color_chooser_.reset();
   find_request_manager_.reset();
 
-  NotifyDisconnected();
-
   // Notify any observer that have a reference on this WebContents.
   NotificationService::current()->Notify(
       NOTIFICATION_WEB_CONTENTS_DESTROYED,
@@ -6207,20 +6205,6 @@ void WebContentsImpl::NotifyFrameSwapped(RenderFrameHost* old_frame,
                              old_frame, new_frame);
 }
 
-// TODO(avi): Remove this entire function because this notification is already
-// covered by two observer functions. http://crbug.com/170921
-void WebContentsImpl::NotifyDisconnected() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyDisconnected");
-  if (!notify_disconnection_)
-    return;
-
-  notify_disconnection_ = false;
-  NotificationService::current()->Notify(
-      NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-      Source<WebContents>(this),
-      NotificationService::NoDetails());
-}
-
 void WebContentsImpl::NotifyNavigationEntryCommitted(
     const LoadCommittedDetails& load_details) {
   OPTIONAL_TRACE_EVENT0("content",
@@ -6853,7 +6837,6 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // webpage? Once this function is called at a more granular frame level, we
   // probably will need to more granularly reset the state here.
   ResetLoadProgressState();
-  NotifyDisconnected();
   SetMainFrameProcessStatus(status, error_code);
 
   TRACE_EVENT0("content",
