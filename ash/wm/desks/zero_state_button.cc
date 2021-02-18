@@ -57,7 +57,11 @@ DeskButtonBase::DeskButtonBase(const base::string16& text,
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON));
+  const base::string16 tooltip_text =
+      text.empty() ? l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON)
+                   : text;
+  SetAccessibleName(tooltip_text);
+  SetTooltipText(tooltip_text);
 
   auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
   border_ptr_ = border.get();
