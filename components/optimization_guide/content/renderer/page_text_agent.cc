@@ -73,7 +73,7 @@ uint64_t PageTextAgent::GetFrameArea() const {
   int width = frame_->GetWebFrame()->DocumentSize().width;
   int height = frame_->GetWebFrame()->DocumentSize().height;
 
-  return uint64_t(width * height);
+  return uint64_t(width) * uint64_t(height);
 }
 
 base::OnceCallback<void(const base::string16&)>
