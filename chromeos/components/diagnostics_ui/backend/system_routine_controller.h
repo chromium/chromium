@@ -15,6 +15,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace base {
 class OneShotTimer;
@@ -53,6 +55,11 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   void BindInterface(
       mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver);
+
+  void SetWakeLockProviderForTesting(
+      mojo::Remote<device::mojom::WakeLockProvider> provider) {
+    wake_lock_provider_ = std::move(provider);
+  }
 
  private:
   void OnAvailableRoutinesFetched(
@@ -121,6 +128,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   bool IsLoggingEnabled() const;
 
+  void AcquireWakeLock();
+
+  void ReleaseWakeLock();
+
   RoutineLog* routine_log_ptr_ = nullptr;  // Not Owned.
 
   // Keeps track of the id created by CrosHealthd for the currently running
@@ -142,6 +153,12 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       diagnostics_service_;
 
   mojo::Receiver<mojom::SystemRoutineController> receiver_{this};
+
+  // `wake_lock_` is used to prevent the device from sleeping during the
+  // memory test.
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
+
+  mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
 
   base::WeakPtrFactory<SystemRoutineController> weak_factory_{this};
 };

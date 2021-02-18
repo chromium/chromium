@@ -18,6 +18,8 @@
 #include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "content/public/browser/device_service.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -38,6 +40,8 @@ constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 constexpr char kChargePercentKey[] = "chargePercent";
 constexpr char kDischargePercentKey[] = "dischargePercent";
 constexpr char kResultDetailsKey[] = "resultDetails";
+
+const char kWakeLockReason[] = "DiagnosticsMemoryRoutine";
 
 mojom::RoutineResultInfoPtr ConstructStandardRoutineResultInfoPtr(
     mojom::RoutineType type,
@@ -316,6 +320,7 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
                          base::Unretained(this), routine_type));
       break;
     case mojom::RoutineType::kMemory:
+      AcquireWakeLock();
       diagnostics_service_->RunMemoryRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
@@ -625,6 +630,7 @@ void SystemRoutineController::OnStandardRoutineResult(
   SendRoutineResult(std::move(result_info));
   metrics::EmitRoutineResult(routine_type, result);
   if (routine_type == mojom::RoutineType::kMemory) {
+    ReleaseWakeLock();
     metrics::EmitMemoryRoutineDuration(base::Time::Now() -
                                        memory_routine_start_timestamp_);
   }
@@ -678,6 +684,11 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
   // status of a cancelled routine.
   inflight_routine_timer_->Stop();
 
+  // Release `wake_lock_` if necessary.
+  if (wake_lock_) {
+    ReleaseWakeLock();
+  }
+
   // Make a best effort attempt to remove the routine.
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetRoutineUpdate(
@@ -708,6 +719,27 @@ void SystemRoutineController::OnRoutineCancelAttempted(
 
 bool SystemRoutineController::IsLoggingEnabled() const {
   return routine_log_ptr_ != nullptr;
+}
+
+void SystemRoutineController::AcquireWakeLock() {
+  if (!wake_lock_) {
+    if (!wake_lock_provider_) {
+      content::GetDeviceService().BindWakeLockProvider(
+          wake_lock_provider_.BindNewPipeAndPassReceiver());
+    }
+
+    wake_lock_provider_->GetWakeLockWithoutContext(
+        device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
+        device::mojom::WakeLockReason::kOther, kWakeLockReason,
+        wake_lock_.BindNewPipeAndPassReceiver());
+  }
+
+  wake_lock_->RequestWakeLock();
+}
+
+void SystemRoutineController::ReleaseWakeLock() {
+  DCHECK(wake_lock_);
+  wake_lock_->CancelWakeLock();
 }
 
 }  // namespace diagnostics

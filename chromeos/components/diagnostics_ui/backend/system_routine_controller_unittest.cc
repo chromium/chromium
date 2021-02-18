@@ -22,6 +22,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -161,6 +162,14 @@ class SystemRoutineControllerTest : public testing::Test {
   SystemRoutineControllerTest() {
     chromeos::CrosHealthdClient::InitializeFake();
     system_routine_controller_ = std::make_unique<SystemRoutineController>();
+
+    wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>();
+
+    mojo::Remote<device::mojom::WakeLockProvider> remote_provider;
+    wake_lock_provider_->BindReceiver(
+        remote_provider.BindNewPipeAndPassReceiver());
+    system_routine_controller_->SetWakeLockProviderForTesting(
+        std::move(remote_provider));
   }
 
   ~SystemRoutineControllerTest() override {
@@ -174,6 +183,22 @@ class SystemRoutineControllerTest : public testing::Test {
                                                      bool charge) {
     return CreateMojoHandle(
         ConstructPowerRoutineResultJson(charge_percent, charge));
+  }
+
+  bool IsActiveWakeLock() {
+    base::RunLoop run_loop;
+    int result_count = 0;
+    wake_lock_provider_->GetActiveWakeLocksForTests(
+        device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
+        base::BindOnce(
+            [](base::RunLoop* run_loop, int* result_count, int32_t count) {
+              *result_count = count;
+              LOG(ERROR) << *result_count;
+              run_loop->Quit();
+            },
+            &run_loop, &result_count));
+    run_loop.Run();
+    return result_count == 1;
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -197,6 +222,7 @@ class SystemRoutineControllerTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  std::unique_ptr<device::TestWakeLockProvider> wake_lock_provider_;
 };
 
 TEST_F(SystemRoutineControllerTest, RejectedByCrosHealthd) {
@@ -828,6 +854,66 @@ TEST_F(SystemRoutineControllerTest, CancelThenStartRoutine) {
   EXPECT_FALSE(routine_runner_2.result.is_null());
   VerifyRoutineResult(*routine_runner_2.result, mojom::RoutineType::kCpuStress,
                       mojom::StandardRoutineResult::kTestPassed);
+}
+
+TEST_F(SystemRoutineControllerTest, MemoryAcquiresWakeLock) {
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kMemory,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Confirm that a wake lock is held.
+  EXPECT_TRUE(IsActiveWakeLock());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1000));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kMemory,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  // Confirm the wake lock is released.
+  EXPECT_FALSE(IsActiveWakeLock());
+}
+
+TEST_F(SystemRoutineControllerTest, CancelMemoryReleasesWakeLock) {
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  auto routine_runner = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kMemory,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // Confirm that a wake lock is held.
+  EXPECT_TRUE(IsActiveWakeLock());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Close the routine_runner
+  routine_runner.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Confirm the wake lock is released.
+  EXPECT_FALSE(IsActiveWakeLock());
 }
 
 }  // namespace diagnostics

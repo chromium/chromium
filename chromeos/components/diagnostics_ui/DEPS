@@ -6,6 +6,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+services/data_decoder/public",
+  "+services/device/public",
   "+ui/base",
   "+ui/gfx",
   "+ui/resources",
