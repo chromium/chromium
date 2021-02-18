@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -33,7 +34,9 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     public static PendingIntent getStopRecordingIntent(Context context) {
         Intent intent = new Intent(context, TracingNotificationService.class);
         intent.setAction(ACTION_STOP_RECORDING);
-        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     /**
@@ -45,7 +48,9 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     public static PendingIntent getDiscardTraceIntent(Context context) {
         Intent intent = new Intent(context, TracingNotificationService.class);
         intent.setAction(ACTION_DISCARD_TRACE);
-        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     /**
@@ -57,7 +62,9 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     public static PendingIntent getShareTraceIntent(Context context) {
         Intent intent = new Intent(context, TracingNotificationService.class);
         intent.setAction(ACTION_SHARE_TRACE);
-        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     @Override
