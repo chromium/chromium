@@ -23,7 +23,7 @@ namespace chromeos {
 
 class FileFlusher::Job {
  public:
-  Job(const base::WeakPtr<FileFlusher>& master,
+  Job(const base::WeakPtr<FileFlusher>& flusher,
       const base::FilePath& path,
       bool recursive,
       const FileFlusher::OnFlushCallback& on_flush_callback,
@@ -43,10 +43,10 @@ class FileFlusher::Job {
   // Schedule a FinishOnUIThread task to run on the UI thread.
   void ScheduleFinish();
 
-  // Finish the job by notifying |master_| and self destruct on the UI thread.
+  // Finish the job by notifying |flusher_| and self destruct on the UI thread.
   void FinishOnUIThread();
 
-  base::WeakPtr<FileFlusher> master_;
+  base::WeakPtr<FileFlusher> flusher_;
   const base::FilePath path_;
   const bool recursive_;
   const FileFlusher::OnFlushCallback on_flush_callback_;
@@ -59,12 +59,12 @@ class FileFlusher::Job {
   DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
-FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& master,
+FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& flusher,
                       const base::FilePath& path,
                       bool recursive,
                       const FileFlusher::OnFlushCallback& on_flush_callback,
                       base::OnceClosure callback)
-    : master_(master),
+    : flusher_(flusher),
       path_(path),
       recursive_(recursive),
       on_flush_callback_(on_flush_callback),
@@ -93,7 +93,7 @@ void FileFlusher::Job::Cancel() {
 
   cancel_flag_.Set();
 
-  // Cancel() could be called in an iterator/range loop in master thus don't
+  // Cancel() could be called in an iterator/range loop in |flusher_| thus don't
   // invoke FinishOnUIThread in-place.
   if (!started())
     ScheduleFinish();
@@ -137,8 +137,8 @@ void FileFlusher::Job::FinishOnUIThread() {
   if (!callback_.is_null())
     std::move(callback_).Run();
 
-  if (master_)
-    master_->OnJobDone(this);
+  if (flusher_)
+    flusher_->OnJobDone(this);
 
   delete this;
 }
@@ -146,7 +146,7 @@ void FileFlusher::Job::FinishOnUIThread() {
 ////////////////////////////////////////////////////////////////////////////////
 // FileFlusher
 
-FileFlusher::FileFlusher() {}
+FileFlusher::FileFlusher() = default;
 
 FileFlusher::~FileFlusher() {
   for (auto* job : jobs_)

@@ -53,7 +53,7 @@ using ::chromeos::ChromeUserManager;
 using ::chromeos::FileFlusher;
 using ::chromeos::OAuth2LoginManager;
 
-// This array contains a subset of explicitly whitelist extensions that, which
+// This array contains a subset of the explicitly allowlisted extensions that
 // are defined in extensions/common/api/_behavior_features.json. The extension
 // is treated as risky if it has some UI elements which remain accessible
 // after the signin was completed.

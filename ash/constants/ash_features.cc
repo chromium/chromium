@@ -633,8 +633,8 @@ const base::Feature kSmartDimModelV3{"SmartDimModelV3",
 // - Moves app, wallpaper and Wi-Fi sync to OS settings
 // - Provides a separate toggle for OS preferences, distinct from browser
 //   preferences
-// - Makes the OS ModelTypes run in sync transport mode, controlled by a
-//   master pref for the OS sync feature
+// - Makes the OS ModelTypes run in sync transport mode, controlled by a single
+//   pref for the entire OS sync feature
 // - Updates the OOBE sync consent screen
 //
 // NOTE: The feature is rolling out via a client-side Finch trial, so the actual

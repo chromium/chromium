@@ -12,8 +12,8 @@
 namespace ash {
 
 // Throttle that is applied on WebContents which are opening settings pages
-// opened in kiosk mode. It restricts the navigationgs inside of these
-// WebContents to the list of whitelisted urls.
+// opened in kiosk mode. It restricts the navigations inside of these
+// WebContents to the list of allowed urls.
 class KioskSettingsNavigationThrottle : public content::NavigationThrottle {
  public:
   struct SettingsPage {
@@ -24,6 +24,7 @@ class KioskSettingsNavigationThrottle : public content::NavigationThrottle {
   // Whether this page is a settings page that is allowed to be open in kiosk
   // mode.
   static bool IsSettingsPage(const std::string& url);
+
   // Replaces the list of allowed settings plages with the provided one.
   static void SetSettingPagesForTesting(std::vector<SettingsPage>* pages);
 
