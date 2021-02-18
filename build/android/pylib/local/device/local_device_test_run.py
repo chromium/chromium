@@ -52,6 +52,8 @@ class LocalDeviceTestRun(test_run.TestRun):
   def __init__(self, env, test_instance):
     super(LocalDeviceTestRun, self).__init__(env, test_instance)
     self._tools = {}
+    # This is intended to be filled by a child class.
+    self._installed_packages = []
     env.SetPreferredAbis(test_instance.GetPreferredAbis())
 
   #override
@@ -62,6 +64,10 @@ class LocalDeviceTestRun(test_run.TestRun):
 
     @local_device_environment.handle_shard_failures
     def run_tests_on_device(dev, tests, results):
+      # This is performed here instead of during setup because restarting the
+      # device clears app compatibility flags, which will happen if a device
+      # needs to be recovered.
+      SetAppCompatibilityFlagsIfNecessary(self._installed_packages, dev)
       consecutive_device_errors = 0
       for test in tests:
         if exit_now.isSet():
@@ -280,6 +286,28 @@ class LocalDeviceTestRun(test_run.TestRun):
 
   def _ShouldShard(self):
     raise NotImplementedError
+
+
+def SetAppCompatibilityFlagsIfNecessary(packages, device):
+  """Sets app compatibility flags on the given packages and device.
+
+  Args:
+    packages: A list of strings containing package names to apply flags to.
+    device: A DeviceUtils instance to apply the flags on.
+  """
+
+  def set_flag_for_packages(flag, enable):
+    enable_str = 'enable' if enable else 'disable'
+    for p in packages:
+      cmd = ['am', 'compat', enable_str, flag, p]
+      device.RunShellCommand(cmd)
+
+  sdk_version = device.build_version_sdk
+  if sdk_version >= version_codes.R:
+    # These flags are necessary to use the legacy storage permissions on R+.
+    # See crbug.com/1173699 for more information.
+    set_flag_for_packages('DEFAULT_SCOPED_STORAGE', False)
+    set_flag_for_packages('FORCE_ENABLE_SCOPED_STORAGE', False)
 
 
 class NoTestsError(Exception):

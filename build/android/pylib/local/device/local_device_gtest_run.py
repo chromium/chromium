@@ -297,8 +297,11 @@ class _ApkDelegate(object):
         extras[_EXTRA_TEST] = test[0]
     # pylint: enable=redefined-variable-type
 
+    # We need to use GetAppWritablePath here instead of GetExternalStoragePath
+    # since we will not have yet applied legacy storage permission workarounds
+    # on R+.
     stdout_file = device_temp_file.DeviceTempFile(
-        device.adb, dir=device.GetExternalStoragePath(), suffix='.gtest_out')
+        device.adb, dir=device.GetAppWritablePath(), suffix='.gtest_out')
     extras[_EXTRA_STDOUT_FILE] = stdout_file.name
 
     if self._wait_for_java_debugger:
@@ -441,6 +444,11 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     assert isinstance(env, local_device_environment.LocalDeviceEnvironment)
     assert isinstance(test_instance, gtest_test_instance.GtestTestInstance)
     super(LocalDeviceGtestRun, self).__init__(env, test_instance)
+
+    if self._test_instance.apk_helper:
+      self._installed_packages = [
+          self._test_instance.apk_helper.GetPackageName()
+      ]
 
     # pylint: disable=redefined-variable-type
     if self._test_instance.apk:
