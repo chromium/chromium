@@ -11,7 +11,7 @@ namespace content_capture {
 
 namespace features {
 
-extern const base::Feature kContentCaptureEnabled;
+extern const base::Feature kContentCapture;
 
 // ContentCapture is triggered in the unpredictable conditions which might be
 // changed on different aiai release or configuration push, this feature allows
