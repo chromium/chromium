@@ -29,7 +29,6 @@ public class NewTabButton
     private final ColorStateList mLightModeTint;
     private final ColorStateList mDarkModeTint;
     private final boolean mIsTablet;
-    private final boolean mAccessibilityLayoutEnabled;
     private IncognitoStateProvider mIncognitoStateProvider;
     private boolean mIsIncognito;
     private boolean mIsGridTabSwitcherEnabled;
@@ -49,7 +48,6 @@ public class NewTabButton
         setImageDrawable(VectorDrawableCompat.create(
                 getContext().getResources(), R.drawable.new_tab_icon, getContext().getTheme()));
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-        mAccessibilityLayoutEnabled = DeviceClassManager.enableAccessibilityLayout();
         updateDrawableTint();
         setOnLongClickListener(this);
     }
@@ -112,7 +110,7 @@ public class NewTabButton
     /** Update the tint for the icon drawable for Chrome Modern. */
     private void updateDrawableTint() {
         final boolean shouldUseLightMode = mIsTablet
-                || ((mAccessibilityLayoutEnabled || mIsGridTabSwitcherEnabled
+                || ((DeviceClassManager.enableAccessibilityLayout() || mIsGridTabSwitcherEnabled
                             || mIsStartSurfaceEnabled)
                         && mIsIncognito);
         ApiCompatibilityUtils.setImageTintList(
