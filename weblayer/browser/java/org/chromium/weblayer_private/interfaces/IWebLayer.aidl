@@ -114,6 +114,9 @@ interface IWebLayer {
       in IRemoteFragmentClient remoteFragmentClient,
       in IObjectWrapper fragmentArgs) = 25;
 
+  // Creates an instance of GooglePayDataCallbacksService.
+  IObjectWrapper createGooglePayDataCallbacksService() = 26;
+
   // WARNING: when choosing next value make sure you look back for the max, as
   // merges may mean the last function does not have the max value.
 }

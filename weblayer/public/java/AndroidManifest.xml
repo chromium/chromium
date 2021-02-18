@@ -104,6 +104,16 @@
             android:isolatedProcess="true"
             android:process=":decoder_service" />
 
+        <!-- Used for GPay Dynamic Update -->
+        <service
+            android:name="org.chromium.weblayer.GooglePayDataCallbacksServiceWrapper"
+            android:permission="com.google.android.gms.permission.BIND_PAYMENTS_CALLBACK_SERVICE"
+            android:exported="true">
+            <intent-filter>
+              <action android:name="com.google.android.gms.wallet.callback.PAYMENT_DATA_CALLBACKS"/>
+            </intent-filter>
+        </service>
+
         <!-- Cast support -->
         <!-- TODO(crbug.com/1148410): remove this. -->
         <meta-data

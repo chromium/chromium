@@ -457,6 +457,12 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     @Override
+    public IObjectWrapper createGooglePayDataCallbacksService() {
+        StrictModeWorkaround.apply();
+        return ObjectWrapper.wrap(GmsBridge.getInstance().createGooglePayDataCallbacksService());
+    }
+
+    @Override
     public void enumerateAllProfileNames(IObjectWrapper valueCallback) {
         StrictModeWorkaround.apply();
         final ValueCallback<String[]> callback =

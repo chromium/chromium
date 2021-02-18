@@ -507,6 +507,7 @@ android_library("gms_bridge_java") {
   deps = [
     "//base:base_java",
     "//components/embedder_support/android/metrics:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   # The appropriate .class file will be loaded via a dependency to a library

@@ -4,8 +4,11 @@
 
 package org.chromium.weblayer_private;
 
+import android.app.Service;
 import android.os.Handler;
 import android.os.HandlerThread;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
@@ -74,6 +77,13 @@ public abstract class GmsBridge {
 
     public void initializeBuiltInPaymentApps() {
         // We don't have this specialized service here.
+    }
+
+    /** Creates an instance of GooglePayDataCallbacksService. */
+    @Nullable
+    public Service createGooglePayDataCallbacksService() {
+        // We don't have this specialized service here.
+        return null;
     }
 
     // Overriding implementations may call "callback" asynchronously. For simplicity (and not
