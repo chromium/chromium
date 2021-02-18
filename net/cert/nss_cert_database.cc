@@ -437,15 +437,14 @@ bool NSSCertDatabase::IsReadOnly(const CERTCertificate* cert) {
 // static
 bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
   PK11SlotInfo* slot = cert->slot;
-  if (!slot || !PK11_IsHW(slot))
+  if (!slot)
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Chaps announces PK11_IsHW(slot) for all slots. However, it is possible for
-  // a key in chaps to be not truly hardware-backed, either because it has been
-  // requested to be software-backed, or because the TPM does not support the
-  // key algorithm. Chaps sets kKeyInSoftware attribute to true for private keys
-  // not wrapped by the TPM.
+  // For keys in Chaps, it's possible that they are truly hardware backed, or
+  // they can be software-backed, such as if the creator requested it, or if the
+  // TPM does not support the key algorithm. Chaps sets a kKeyInSoftware
+  // attribute to true for private keys that aren't wrapped by the TPM.
   if (crypto::IsSlotProvidedByChaps(slot)) {
     static PK11HasAttributeSetFunction pk11_has_attribute_set =
         reinterpret_cast<PK11HasAttributeSetFunction>(
@@ -462,9 +461,11 @@ bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
         return false;
       }
     }
+    // All keys in chaps without the attribute are hardware backed.
+    return true;
   }
 #endif
-  return true;
+  return PK11_IsHW(slot);
 }
 
 void NSSCertDatabase::AddObserver(Observer* observer) {

@@ -20,6 +20,7 @@
 #include "chromeos/network/certificate_helper.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
+#include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_database.h"
@@ -397,11 +398,11 @@ void NetworkCertLoader::RemoveObserver(NetworkCertLoader::Observer* observer) {
 }
 
 // static
+// TODO(https://crbug.com/1179239): Rename this to match what it does.
 bool NetworkCertLoader::IsCertificateHardwareBacked(CERTCertificate* cert) {
   if (g_force_hardware_backed_for_test)
     return true;
-  PK11SlotInfo* slot = cert->slot;
-  return slot && PK11_IsHW(slot);
+  return crypto::IsSlotProvidedByChaps(cert->slot);
 }
 
 bool NetworkCertLoader::initial_load_of_any_database_running() const {
