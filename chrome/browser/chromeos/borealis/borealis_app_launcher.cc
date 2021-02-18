@@ -84,7 +84,10 @@ void BorealisAppLauncher::Launch(std::string app_id,
     borealis::ShowBorealisInstallerView(profile_);
     return;
   }
-
+  if (!borealis::BorealisService::GetForProfile(profile_)
+           ->ContextManager()
+           .IsRunning())
+    borealis::ShowBorealisSplashScreenView(profile_);
   BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
       base::BindOnce(
           [](std::string app_id,
@@ -94,6 +97,9 @@ void BorealisAppLauncher::Launch(std::string app_id,
               LOG(ERROR) << "Failed to launch " << app_id << "(code "
                          << result.Error().error()
                          << "): " << result.Error().description();
+              // If splash screen is showing and borealis did not launch
+              // properly, close it.
+              borealis::CloseBorealisSplashScreenView();
               std::move(callback).Run(LaunchResult::kError);
               return;
             }

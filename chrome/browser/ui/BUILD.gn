@@ -2113,6 +2113,8 @@ static_library("ui") {
       "views/arc_data_removal_dialog_view.cc",
       "views/borealis/borealis_installer_view.cc",
       "views/borealis/borealis_installer_view.h",
+      "views/borealis/borealis_splash_screen_view.cc",
+      "views/borealis/borealis_splash_screen_view.h",
       "views/chrome_views_delegate_chromeos.cc",
       "views/crostini/crostini_ansible_software_config_view.cc",
       "views/crostini/crostini_ansible_software_config_view.h",

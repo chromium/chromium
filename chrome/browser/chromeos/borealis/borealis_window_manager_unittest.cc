@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_window_manager_mock.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager_test_helper.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/exo/shell_surface_util.h"
-#include "components/services/app_service/public/cpp/instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,46 +24,7 @@ namespace {
 
 class BorealisWindowManagerTest : public testing::Test {
  protected:
-  // A helper class used to emulate the behaviour of the InstanceRegistry when
-  // windows are created/destroyed.
-  class ScopedTestWindow {
-   public:
-    ScopedTestWindow(std::unique_ptr<aura::Window> window,
-                     BorealisWindowManager* manager)
-        : window_(std::move(window)), manager_(manager) {
-      apps::Instance instance(manager_->GetShelfAppId(window_.get()),
-                              window_.get());
-      manager_->OnInstanceUpdate(apps::InstanceUpdate(nullptr, &instance));
-    }
-
-    ~ScopedTestWindow() {
-      apps::Instance instance(manager_->GetShelfAppId(window_.get()),
-                              window_.get());
-      std::unique_ptr<apps::Instance> delta = instance.Clone();
-      delta->UpdateState(apps::InstanceState::kDestroyed, base::Time::Now());
-      manager_->OnInstanceUpdate(apps::InstanceUpdate(&instance, delta.get()));
-    }
-
-   private:
-    std::unique_ptr<aura::Window> window_;
-    BorealisWindowManager* manager_;
-  };
-
   Profile* profile() { return &profile_; }
-  // Creates a widget for use in testing.
-  std::unique_ptr<aura::Window> MakeWindow(std::string name) {
-    auto win = std::make_unique<aura::Window>(nullptr);
-    win->Init(ui::LAYER_NOT_DRAWN);
-    exo::SetShellApplicationId(win.get(), name);
-    return win;
-  }
-
-  std::unique_ptr<ScopedTestWindow> MakeAndTrackWindow(
-      std::string name,
-      BorealisWindowManager* manager) {
-    return std::make_unique<ScopedTestWindow>(MakeWindow(std::move(name)),
-                                              manager);
-  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;

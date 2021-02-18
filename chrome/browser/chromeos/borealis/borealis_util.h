@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_UTIL_H_
 
 #include <string>
-
+#include "ui/views/widget/widget.h"
 class Profile;
 
 namespace borealis {
@@ -27,6 +27,11 @@ void ShowBorealisInstallerView(Profile* profile);
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
 bool GetBorealisAppId(std::string exec, int& app_id);
+
+// Shows the splash screen (borealis_splash_screen_view).
+void ShowBorealisSplashScreenView(Profile* profile);
+// Closes the splash screen (borealis_splash_screen_view).
+void CloseBorealisSplashScreenView();
 
 }  // namespace borealis
 
