@@ -22,3 +22,4 @@ Local changes:
 build pass.
 - remove unneeded CRC32 stuff.
 - formating to make 'git cl format' happy.
+- Use the builtins for bswap when compiling with clang.
