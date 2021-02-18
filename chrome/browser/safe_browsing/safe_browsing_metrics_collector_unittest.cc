@@ -417,4 +417,30 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       /* expected_count */ 1);
 }
 
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       RemoveOldEventsFromPref_OldEventsRemoved) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingMetricsLastLogTime(base::Time::Now());
+  SetSafeBrowsingState(&pref_service_, STANDARD_PROTECTION);
+  metrics_collector_->StartLogging();
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::DATABASE_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::TimeDelta::FromDays(1),
+                         EventType::CSD_INTERSITITAL_BYPASS);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(30));
+  const base::Value* db_timestamps = GetTsFromUserStateAndEventType(
+      UserState::STANDARD_PROTECTION, EventType::DATABASE_INTERSTITIAL_BYPASS);
+  // The event is removed from pref because it was logged more than 30 days.
+  EXPECT_EQ(0u, db_timestamps->GetList().size());
+  const base::Value* csd_timestamps = GetTsFromUserStateAndEventType(
+      UserState::STANDARD_PROTECTION, EventType::CSD_INTERSITITAL_BYPASS);
+  // The CSD event is still in pref because it was logged less than 30 days.
+  EXPECT_EQ(1u, csd_timestamps->GetList().size());
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  // The CSD event is also removed because it was logged more than 30 days now.
+  EXPECT_EQ(0u, csd_timestamps->GetList().size());
+}
+
 }  // namespace safe_browsing

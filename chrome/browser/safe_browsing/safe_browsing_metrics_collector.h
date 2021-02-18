@@ -82,6 +82,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
   void LogDailyOptInMetrics();
   void LogDailyEventMetrics();
+  void RemoveOldEventsFromPref();
 
   // For pref listeners.
   void OnEnhancedProtectionPrefChanged();

@@ -26,6 +26,8 @@ const int kTimestampsMaxLength = 30;
 // The quota for ESB disabled metrics. ESB disabled metrics should not be logged
 // more than the quota in a week.
 const int kEsbDisabledMetricsQuota = 3;
+// Events that are older than 30 days are removed from pref.
+const int kEventMaxDurationDay = 30;
 
 std::string EventTypeToPrefKey(const EventType& type) {
   return base::NumberToString(static_cast<int>(type));
@@ -92,6 +94,7 @@ void SafeBrowsingMetricsCollector::StartLogging() {
 void SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging() {
   LogDailyOptInMetrics();
   LogDailyEventMetrics();
+  RemoveOldEventsFromPref();
 
   pref_service_->SetInt64(
       prefs::kSafeBrowsingMetricsLastLogTime,
@@ -139,6 +142,20 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
                                   GetUserStateMetricSuffix(user_state) +
                                   ".AllEvents",
                               total_bypass_count);
+}
+
+void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
+  DictionaryPrefUpdate update(pref_service_,
+                              prefs::kSafeBrowsingEventTimestamps);
+  base::DictionaryValue* mutable_state_dict = update.Get();
+  for (auto state_map : mutable_state_dict->DictItems()) {
+    for (auto event_map : state_map.second.DictItems()) {
+      event_map.second.EraseListValueIf([&](const auto& timestamp) {
+        return base::Time::Now() - PrefValueToTime(timestamp) >
+               base::TimeDelta::FromDays(kEventMaxDurationDay);
+      });
+    }
+  }
 }
 
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
