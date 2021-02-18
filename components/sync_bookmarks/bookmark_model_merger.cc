@@ -104,6 +104,11 @@ void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
       "Sync.ProblematicServerSideBookmarksDuringMerge", problem);
 }
 
+void LogBookmarkReuploadNeeded(bool is_reupload_needed) {
+  base::UmaHistogramBoolean("Sync.BookmarkEntityReuploadNeeded.OnInitialMerge",
+                            is_reupload_needed);
+}
+
 // Gets the bookmark node corresponding to a permanent folder identified by
 // |server_defined_unique_tag|. |bookmark_model| must not be null.
 const bookmarks::BookmarkNode* GetPermanentFolder(
@@ -639,10 +644,13 @@ void BookmarkModelMerger::MergeSubtree(
       local_subtree_root, remote_update_entity.id,
       remote_node.response_version(), remote_update_entity.creation_time,
       remote_update_entity.unique_position, remote_update_entity.specifics);
-  if (!local_subtree_root->is_permanent_node() &&
-      IsBookmarkEntityReuploadNeeded(remote_update_entity)) {
+  const bool is_reupload_needed =
+      !local_subtree_root->is_permanent_node() &&
+      IsBookmarkEntityReuploadNeeded(remote_update_entity);
+  if (is_reupload_needed) {
     bookmark_tracker_->IncrementSequenceNumber(entity);
   }
+  LogBookmarkReuploadNeeded(is_reupload_needed);
 
   // If there are remote child updates, try to match them.
   for (size_t remote_index = 0; remote_index < remote_node.children().size();
@@ -794,9 +802,12 @@ void BookmarkModelMerger::ProcessRemoteCreation(
       bookmark_node, remote_update_entity.id, remote_node.response_version(),
       remote_update_entity.creation_time, remote_update_entity.unique_position,
       specifics);
-  if (IsBookmarkEntityReuploadNeeded(remote_node.entity())) {
+  const bool is_reupload_needed =
+      IsBookmarkEntityReuploadNeeded(remote_node.entity());
+  if (is_reupload_needed) {
     bookmark_tracker_->IncrementSequenceNumber(entity);
   }
+  LogBookmarkReuploadNeeded(is_reupload_needed);
 
   // Recursively, match by GUID or, if not possible, create local node for all
   // child remote nodes.

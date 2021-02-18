@@ -809,9 +809,14 @@ void BookmarkRemoteUpdatesHandler::ReuploadEntityIfNeeded(
   DCHECK_EQ(tracked_entity->metadata()->server_id(), entity_data.id);
   // Do not initiate reupload if the local entity is a tombstone or a permanent
   // node.
-  if (tracked_entity->bookmark_node() &&
+  const bool is_reupload_needed =
+      tracked_entity->bookmark_node() &&
       !tracked_entity->bookmark_node()->is_permanent_node() &&
-      IsBookmarkEntityReuploadNeeded(entity_data)) {
+      IsBookmarkEntityReuploadNeeded(entity_data);
+  base::UmaHistogramBoolean(
+      "Sync.BookmarkEntityReuploadNeeded.OnIncrementalUpdate",
+      is_reupload_needed);
+  if (is_reupload_needed) {
     bookmark_tracker_->IncrementSequenceNumber(tracked_entity);
   }
 }

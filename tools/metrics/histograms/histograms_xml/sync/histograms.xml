@@ -59,6 +59,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarkEntityReuploadNeeded.On{UpdateType}"
+    enum="Boolean" expires_after="M92">
+  <owner>mastiz@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Records if the entity is marked to be reuploaded. It is recorded on each
+    incoming bookmark update from the server during {UpdateType}.
+  </summary>
+  <token key="UpdateType">
+    <variant name="IncrementalUpdate" summary="incremental update"/>
+    <variant name="InitialMerge" summary="initial merge"/>
+  </token>
+</histogram>
+
 <histogram name="Sync.BookmarkGUIDSource2" enum="BookmarkGUIDSource"
     expires_after="2021-07-13">
   <owner>rushans@google.com</owner>
