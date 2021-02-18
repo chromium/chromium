@@ -167,7 +167,7 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
-bool PrivacySandboxSettings::PrivacySandboxSettingsFunctional() {
+/*static*/ bool PrivacySandboxSettings::PrivacySandboxSettingsFunctional() {
   // The order in which the features are checked matters here. Preventing
   // checking for the PrivacySandboxSettings if all the APIs are disabled
   // avoids polluting rollout data, as it stops clients reporting as active

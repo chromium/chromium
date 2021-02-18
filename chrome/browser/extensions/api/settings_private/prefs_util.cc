@@ -18,6 +18,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 #include "chrome/common/chrome_features.h"
@@ -268,9 +269,14 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
 
   // Privacy sandbox
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings))
+  if (PrivacySandboxSettings::PrivacySandboxSettingsFunctional()) {
     (*s_allowlist)[::prefs::kPrivacySandboxApisEnabled] =
         settings_api::PrefType::PREF_TYPE_BOOLEAN;
+    (*s_allowlist)[::prefs::kPrivacySandboxManuallyControlled] =
+        settings_api::PrefType::PREF_TYPE_BOOLEAN;
+    (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
+        settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  }
 
   // Security page
   (*s_allowlist)[::kGeneratedPasswordLeakDetectionPref] =

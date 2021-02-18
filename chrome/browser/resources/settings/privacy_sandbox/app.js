@@ -10,19 +10,16 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from '../settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior} from '../settings.js';
 
 Polymer({
   is: 'privacy-sandbox-app',
 
   _template: html`{__html_template__}`,
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: Object,
-  },
+  behaviors: [
+    PrefsBehavior,
+  ],
 
   /** @private {?MetricsBrowserProxy} */
   metricsBrowserProxy_: null,
@@ -47,6 +44,11 @@ Polymer({
       controlledSettingRecommendedDiffers:
           loadTimeData.getString('controlledSettingRecommendedDiffers'),
     };
+
+    CrSettingsPrefs.initialized.then(() => {
+      // Wait for preferences to be initialized before writing.
+      this.setPrefValue('privacy_sandbox.page_viewed', true);
+    });
   },
 
   /** @private */
@@ -66,5 +68,6 @@ Polymer({
     this.metricsBrowserProxy_.recordAction(
         privacySandboxApisEnabled ? 'Settings.PrivacySandbox.ApisEnabled' :
                                     'Settings.PrivacySandbox.ApisDisabled');
+    this.setPrefValue('privacy_sandbox.manually_controlled', true);
   },
 });

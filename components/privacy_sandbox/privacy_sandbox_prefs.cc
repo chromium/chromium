@@ -18,6 +18,8 @@ const char kPrivacySandboxManuallyControlled[] =
 const char kPrivacySandboxPreferencesReconciled[] =
     "privacy_sandbox.preferences_reconciled";
 
+const char kPrivacySandboxPageViewed[] = "privacy_sandbox.page_viewed";
+
 const char kPrivacySandboxFlocDataAccessibleSince[] =
     "privacy_sandbox.floc_data_accessible_since";
 
@@ -34,6 +36,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxPreferencesReconciled,
                                 false);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);
   registry->RegisterTimePref(prefs::kPrivacySandboxFlocDataAccessibleSince,
                              base::Time());
 }

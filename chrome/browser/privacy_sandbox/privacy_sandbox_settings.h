@@ -57,7 +57,7 @@ class PrivacySandboxSettings : public KeyedService,
   // rather than direct inspection of the feature itself, should be used to
   // determine if the privacy sandbox is available to users.
   // TODO(crbug.com/1174572) Remove this when one API is fully launched.
-  bool PrivacySandboxSettingsFunctional();
+  static bool PrivacySandboxSettingsFunctional();
 
   // Determines whether FLoC is allowable in a particular context.
   // |top_frame_origin| is used to check for content settings which could both

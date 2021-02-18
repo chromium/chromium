@@ -5,9 +5,9 @@
 import 'chrome://settings/privacy_sandbox/app.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertEquals, assertTrue} from '../chai_assert.js';
 import {flushTasks} from '../test_util.m.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -25,6 +25,8 @@ suite('PrivacySandbox', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
 
+    CrSettingsPrefs.deferInitialization = true;
+
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.instance_ = openWindowProxy;
 
@@ -32,7 +34,12 @@ suite('PrivacySandbox', function() {
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
+
     return flushTasks();
+  });
+
+  teardown(function() {
+    CrSettingsPrefs.resetForTesting();
   });
 
   test('clickApiToggleTest', async function() {
@@ -41,12 +48,14 @@ suite('PrivacySandbox', function() {
       page.prefs = {
         privacy_sandbox: {
           apis_enabled: {value: apisEnabledPrior},
+          manually_controlled: {value: false},
         },
       };
       await flushTasks();
       metricsBrowserProxy.resetResolver('recordAction');
       // User clicks the API toggle.
       toggleButton.click();
+      assertTrue(page.prefs.privacy_sandbox.manually_controlled.value);
       // Ensure UMA is logged.
       assertEquals(
           apisEnabledPrior ? 'Settings.PrivacySandbox.ApisDisabled' :
@@ -66,5 +75,11 @@ suite('PrivacySandbox', function() {
     assertEquals(
         loadTimeData.getString('privacySandboxURL'),
         await openWindowProxy.whenCalled('openURL'));
+  });
+
+  test('viewedPref', async function() {
+    page.$$('#prefs').initialize();
+    await CrSettingsPrefs.initialized;
+    assertTrue(!!page.getPref('privacy_sandbox.page_viewed').value);
   });
 });
