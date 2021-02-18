@@ -2084,6 +2084,11 @@ void WebContentsImpl::SetIgnoreInputEvents(bool ignore_input_events) {
   ignore_input_events_ = ignore_input_events;
 }
 
+bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
+  return IsFullscreen() &&
+         media_web_contents_observer_->HasActiveEffectivelyFullscreenVideo();
+}
+
 #if defined(OS_ANDROID)
 void WebContentsImpl::SetMainFrameImportance(
     ChildProcessImportance importance) {
@@ -6621,10 +6626,6 @@ bool WebContentsImpl::IsSpatialNavigationDisabled() const {
 
 RenderFrameHostImpl* WebContentsImpl::GetPendingMainFrame() {
   return GetRenderManager()->speculative_frame_host();
-}
-
-bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() const {
-  return media_web_contents_observer_->HasActiveEffectivelyFullscreenVideo();
 }
 
 bool WebContentsImpl::IsPictureInPictureAllowedForFullscreenVideo() const {

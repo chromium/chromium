@@ -548,6 +548,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #endif
   bool HasRecentInteractiveInputEvent() override;
   void SetIgnoreInputEvents(bool ignore_input_events) override;
+  bool HasActiveEffectivelyFullscreenVideo() override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;
@@ -1098,13 +1099,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Called when the WebContents gains or loses a persistent video.
   void SetHasPersistentVideo(bool has_persistent_video);
-
-  // Whether the WebContents has an active player is effectively fullscreen.
-  // That means that the video is either fullscreen or it is the content of
-  // a fullscreen page (in other words, a fullscreen video with custom
-  // controls).
-  // |IsFullscreen| must return |true| when this method is called.
-  bool HasActiveEffectivelyFullscreenVideo() const;
 
   // Whether the WebContents effectively fullscreen active player allows
   // Picture-in-Picture.

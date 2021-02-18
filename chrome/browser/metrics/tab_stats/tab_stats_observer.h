@@ -61,6 +61,9 @@ class TabStatsObserver : public base::CheckedObserver {
   // players this will only be called when there's no more player playing a
   // video.
   virtual void OnVideoStoppedPlaying(content::WebContents* web_contents) {}
+
+  // NOTE: TabStatsTracker::AddObserverAndSetInitialState should be updated
+  // after adding a new method to this interface.
 };
 
 }  // namespace metrics

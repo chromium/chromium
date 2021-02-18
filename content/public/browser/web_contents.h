@@ -1182,6 +1182,12 @@ class WebContents : public PageNavigator,
   virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect,
                                            const gfx::Insets& insets) = 0;
 
+  // Whether the WebContents has an active player that is effectively
+  // fullscreen. That means that the video is either fullscreen or it is the
+  // content of a fullscreen page (in other words, a fullscreen video with
+  // custom controls).
+  virtual bool HasActiveEffectivelyFullscreenVideo() = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;

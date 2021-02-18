@@ -235,6 +235,8 @@ void TabStatsTracker::AddObserverAndSetInitialState(
       observer->OnTabAdded(wc);
       if (wc->GetCurrentlyPlayingVideoCount())
         observer->OnVideoStartedPlaying(wc);
+      if (wc->IsFullscreen() && wc->HasActiveEffectivelyFullscreenVideo())
+        observer->OnMediaEffectivelyFullscreenChanged(wc, true);
     }
   }
 }
