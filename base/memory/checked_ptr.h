@@ -21,6 +21,7 @@
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #endif
@@ -106,6 +107,10 @@ struct BackupRefPtrImpl {
   // will occur.
 
   static ALWAYS_INLINE bool IsSupportedAndNotNull(void* ptr) {
+#if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
+    // This covers the nullptr case, as address 0 is never in GigaCage.
+    return IsManagedByPartitionAllocNormalBuckets(ptr);
+#else
     // There is a problem on 32-bit systems, where the fake "GigaCage" has many
     // normal bucket pool regions spread throughout the address space. A pointer
     // immediately past an allocation may fall into the normal bucket pool,
@@ -129,6 +134,7 @@ struct BackupRefPtrImpl {
     // This covers the nullptr case, as address 0 is never in GigaCage.
     is_in_normal_buckets &= IsManagedByPartitionAllocNormalBuckets(ptr);
     return is_in_normal_buckets;
+#endif
   }
 
   // Wraps a pointer, and returns its uintptr_t representation.

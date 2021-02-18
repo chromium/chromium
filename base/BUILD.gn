@@ -81,6 +81,10 @@ declare_args() {
   # Enable additional safety checks for BackupRefPtr that are too expensive to
   # have on by default.
   enable_backup_ref_ptr_slow_checks = false
+
+  # Set to true to make bytes per 1 bit of normal bucket bitmap PartitionPageSize().
+  # Enabled-by-default if use_backup_ref_ptr is enabled.
+  make_gigacage_granularity_partition_page_size = true
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -2394,6 +2398,8 @@ should_enable_backup_ref_ptr_slow_checks =
     enable_backup_ref_ptr_slow_checks && use_partition_alloc && !is_nacl
 should_place_ref_count_at_end_of_allocation =
     is_ref_count_at_end_of_allocation && use_partition_alloc && !is_nacl
+should_make_gigacage_granularity_partition_page_size =
+    make_gigacage_granularity_partition_page_size && use_backup_ref_ptr
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
@@ -2405,6 +2411,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$should_enable_runtime_backup_ref_ptr_control",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$should_enable_backup_ref_ptr_slow_checks",
     "REF_COUNT_AT_END_OF_ALLOCATION=$should_place_ref_count_at_end_of_allocation",
+    "MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE=$should_make_gigacage_granularity_partition_page_size",
   ]
 }
 

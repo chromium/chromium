@@ -8,6 +8,7 @@
 #include <bitset>
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
@@ -22,8 +23,21 @@ class BASE_EXPORT AddressPoolManagerBitmap {
  public:
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
+
+#if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
+  static constexpr size_t kBitShiftOfNormalBucketBitmap = PartitionPageShift();
+  static constexpr size_t kBytesPer1BitOfNormalBucketBitmap =
+      PartitionPageSize();
+  static constexpr size_t kGuardOffsetOfNormalBucketBitmap = 1;
+  static constexpr size_t kGuardBitsOfNormalBucketBitmap = 2;
+#else
+  static constexpr size_t kBitShiftOfNormalBucketBitmap = kSuperPageShift;
+  static constexpr size_t kBytesPer1BitOfNormalBucketBitmap = kSuperPageSize;
+  static constexpr size_t kGuardOffsetOfNormalBucketBitmap = 0;
+  static constexpr size_t kGuardBitsOfNormalBucketBitmap = 0;
+#endif
   static constexpr size_t kNormalBucketBits =
-      kAddressSpaceSize / kSuperPageSize;
+      kAddressSpaceSize / kBytesPer1BitOfNormalBucketBitmap;
   static constexpr size_t kDirectMapBits =
       kAddressSpaceSize / PageAllocationGranularity();
 
@@ -42,7 +56,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
     return TS_UNCHECKED_READ(normal_bucket_bits_)
-        .test(address_as_uintptr >> kSuperPageShift);
+        .test(address_as_uintptr >> kBitShiftOfNormalBucketBitmap);
   }
 
  private:
