@@ -68,7 +68,7 @@ cat ~/scratch/rewriter.out \
 cat ~/scratch/automated-fields-to-ignore.txt \
     tools/clang/rewrite_raw_ptr_fields/manual-fields-to-ignore.txt \
     | grep -v "base::FileDescriptorWatcher::Controller::watcher_" \
-    >> ~/scratch/combined-fields-to-ignore.txt
+    > ~/scratch/combined-fields-to-ignore.txt
 
 # Main rewrite.
 echo "*** Running the main rewrite phase ***"
