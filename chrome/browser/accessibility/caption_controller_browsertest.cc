@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/soda/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"

@@ -40,7 +40,7 @@ constexpr char kLanguagePackManifestName[] = "SODA %s Models";
 
 SodaLanguagePackComponentInstallerPolicy::
     SodaLanguagePackComponentInstallerPolicy(
-        SodaLanguagePackComponentConfig language_config,
+        speech::SodaLanguagePackComponentConfig language_config,
         OnSodaLanguagePackComponentInstalledCallback on_installed_callback,
         OnSodaLanguagePackComponentReadyCallback on_ready_callback)
     : language_config_(language_config),
@@ -52,9 +52,8 @@ SodaLanguagePackComponentInstallerPolicy::
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
     speech::LanguageCode language_code) {
-  base::Optional<SodaLanguagePackComponentConfig> config =
-      SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
-          language_code);
+  base::Optional<speech::SodaLanguagePackComponentConfig> config =
+      speech::GetLanguageComponentConfig(language_code);
 
   if (config) {
     return crx_file::id_util::GenerateIdFromHash(
@@ -67,8 +66,8 @@ std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
 base::flat_set<std::string>
 SodaLanguagePackComponentInstallerPolicy::GetExtensionIds() {
   base::flat_set<std::string> ids;
-  for (const SodaLanguagePackComponentConfig& config :
-       kLanguageComponentConfigs) {
+  for (const speech::SodaLanguagePackComponentConfig& config :
+       speech::kLanguageComponentConfigs) {
     ids.insert(crx_file::id_util::GenerateIdFromHash(
         config.public_key_sha, sizeof(config.public_key_sha)));
   }
@@ -91,32 +90,6 @@ void SodaLanguagePackComponentInstallerPolicy::
                  "with error: "
               << static_cast<int>(error);
       }));
-}
-
-base::Optional<SodaLanguagePackComponentConfig>
-SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
-    speech::LanguageCode language_code) {
-  for (const SodaLanguagePackComponentConfig& config :
-       kLanguageComponentConfigs) {
-    if (config.language_code == language_code) {
-      return config;
-    }
-  }
-
-  return base::nullopt;
-}
-
-base::Optional<SodaLanguagePackComponentConfig>
-SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
-    const std::string& language_name) {
-  for (const SodaLanguagePackComponentConfig& config :
-       kLanguageComponentConfigs) {
-    if (config.language_name == language_name) {
-      return config;
-    }
-  }
-
-  return base::nullopt;
 }
 
 bool SodaLanguagePackComponentInstallerPolicy::VerifyInstallation(
@@ -185,9 +158,8 @@ void UpdateSodaLanguagePackInstallDirPref(speech::LanguageCode language_code,
                                           PrefService* prefs,
                                           const base::FilePath& install_dir) {
 #if !defined(OS_ANDROID)
-  base::Optional<SodaLanguagePackComponentConfig> config =
-      SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
-          language_code);
+  base::Optional<speech::SodaLanguagePackComponentConfig> config =
+      speech::GetLanguageComponentConfig(language_code);
   if (config) {
     prefs->SetFilePath(
         config.value().config_path_pref,
@@ -197,7 +169,7 @@ void UpdateSodaLanguagePackInstallDirPref(speech::LanguageCode language_code,
 }
 
 void RegisterSodaLanguagePackComponent(
-    SodaLanguagePackComponentConfig language_config,
+    speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
     PrefService* prefs,
     base::OnceClosure on_ready_callback) {
@@ -207,7 +179,7 @@ void RegisterSodaLanguagePackComponent(
       std::make_unique<SodaLanguagePackComponentInstallerPolicy>(
           language_config,
           base::BindRepeating(
-              [](SodaLanguagePackComponentConfig language_config,
+              [](speech::SodaLanguagePackComponentConfig language_config,
                  ComponentUpdateService* cus, PrefService* prefs,
                  const base::FilePath& install_dir) {
                 content::GetUIThreadTaskRunner(

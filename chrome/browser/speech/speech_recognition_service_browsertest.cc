@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/media_switches.h"

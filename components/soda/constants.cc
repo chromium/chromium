@@ -5,8 +5,10 @@
 
 #include "components/soda/constants.h"
 
+#include <string>
+
 #include "base/files/file_enumerator.h"
-#include "base/notreached.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "components/component_updater/component_updater_paths.h"
 
@@ -68,4 +70,27 @@ const base::FilePath GetSodaBinaryPath() {
                           : soda_dir.Append(kSodaBinaryRelativePath);
 }
 
+base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+    LanguageCode language_code) {
+  for (const SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    if (config.language_code == language_code) {
+      return config;
+    }
+  }
+
+  return base::nullopt;
+}
+
+base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+    const std::string& language_name) {
+  for (const SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    if (config.language_name == language_name) {
+      return config;
+    }
+  }
+
+  return base::nullopt;
+}
 }  // namespace speech

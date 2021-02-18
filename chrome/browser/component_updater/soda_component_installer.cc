@@ -180,8 +180,8 @@ void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry) {
   registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
 
   // Register language pack config path preferences.
-  for (const component_updater::SodaLanguagePackComponentConfig& config :
-       kLanguageComponentConfigs) {
+  for (const speech::SodaLanguagePackComponentConfig& config :
+       speech::kLanguageComponentConfigs) {
     registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
   }
 }
@@ -233,10 +233,9 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       base::FeatureList::IsEnabled(media::kLiveCaption)) {
     if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-      base::Optional<component_updater::SodaLanguagePackComponentConfig>
-          config = SodaLanguagePackComponentInstallerPolicy::
-              GetLanguageComponentConfig(
-                  profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
+      base::Optional<speech::SodaLanguagePackComponentConfig> config =
+          speech::GetLanguageComponentConfig(
+              profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
       if (config) {
         RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,
                                           std::move(on_ready_callback));

@@ -6,6 +6,8 @@ source_set("constants") {
   sources = [
     "constants.cc",
     "constants.h",
+    "pref_names.cc",
+    "pref_names.h",
   ]
 
   deps = [
