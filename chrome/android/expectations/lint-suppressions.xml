@@ -192,23 +192,20 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
 
-    <!-- crbug.com/1127531 remove this line and following 9 lines after the bug is resolved -->
-    <ignore regexp="The resource `R.string.app_language_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.change_chrome_lang` appears to be unused"/>
-    <ignore regexp="The resource `R.string.default_lang_subtitle` appears to be unused"/>
+    <!-- crbug.com/1127531 remove this line and following 18 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.languages_content_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_content_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_infobar_ready` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_infobar_restart` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_select_suggested` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_select_other` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_select` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_send_translate_switch` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_settings_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_advanced` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_automatic` appears to be unused"/>
-    <ignore regexp="The resource `R.string.languages_settings_dont_offer_lang` appears to be unused"/>
+    <ignore regexp="The resource `R.string.languages_settings_automatic_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.languages_settings_dont_offer_langs` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_dont_offer_sites` appears to be unused"/>
+    <ignore regexp="The resource `R.string.languages_settings_never_langs_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.languages_settings_never_sites_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_settings_target` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_split_downloading` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_split_ready` appears to be unused"/>
