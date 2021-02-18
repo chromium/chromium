@@ -5,6 +5,7 @@
 #include "ash/system/caps_lock_notification_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -44,6 +45,13 @@ std::unique_ptr<Notification> CreateNotification() {
       kNotificationCapslockIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_pinned(true);
+
+  if (ash::features::IsScalableStatusAreaEnabled()) {
+    // Set the priority to low to prevent the notification showing as a popup
+    // because we already show an icon in tray for this in the feature.
+    notification->set_priority(message_center::LOW_PRIORITY);
+  }
+
   return notification;
 }
 
