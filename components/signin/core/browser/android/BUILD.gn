@@ -16,11 +16,6 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 
-  sources = [
-    "java/src/org/chromium/components/signin/AccountManagerDelegateException.java",
-    "java/src/org/chromium/components/signin/AuthException.java",
-    "java/src/org/chromium/components/signin/GmsAvailabilityException.java",
-    "java/src/org/chromium/components/signin/GmsJustUpdatedException.java",
-    "java/src/org/chromium/components/signin/util/PatternMatcher.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/components/signin/util/PatternMatcher.java" ]
 }
