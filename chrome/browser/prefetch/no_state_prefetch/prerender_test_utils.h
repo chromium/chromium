@@ -26,7 +26,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -35,50 +35,6 @@
 namespace prerender {
 
 namespace test_utils {
-
-// A SafeBrowsingDatabaseManager implementation that returns a fixed result for
-// a given URL.
-class FakeSafeBrowsingDatabaseManager
-    : public safe_browsing::TestSafeBrowsingDatabaseManager {
- public:
-  FakeSafeBrowsingDatabaseManager();
-
-  // Called on the IO thread to check if the given url is safe or not.  If we
-  // can synchronously determine that the url is safe, CheckUrl returns true.
-  // Otherwise it returns false, and "client" is called asynchronously with the
-  // result when it is ready.
-  // Returns true, indicating a SAFE result, unless the URL is the fixed URL
-  // specified by the user, and the user-specified result is not SAFE
-  // (in which that result will be communicated back via a call into the
-  // client, and false will be returned).
-  // Overrides SafeBrowsingDatabaseManager::CheckBrowseUrl.
-  bool CheckBrowseUrl(const GURL& gurl,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client) override;
-
-  void SetThreatTypeForUrl(const GURL& url,
-                           safe_browsing::SBThreatType threat_type) {
-    bad_urls_[url.spec()] = threat_type;
-  }
-
-  // These are called when checking URLs, so we implement them.
-  bool IsSupported() const override;
-  bool ChecksAreAlwaysAsync() const override;
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination /* request_destination */)
-      const override;
-
-  bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
-                         Client* client) override;
-
- private:
-  ~FakeSafeBrowsingDatabaseManager() override;
-
-  void OnCheckBrowseURLDone(const GURL& gurl, Client* client);
-
-  std::unordered_map<std::string, safe_browsing::SBThreatType> bad_urls_;
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
-};
 
 class TestNoStatePrefetchContents : public NoStatePrefetchContents,
                                     public content::RenderWidgetHostObserver {
@@ -338,7 +294,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
     return safe_browsing_factory_.get();
   }
 
-  test_utils::FakeSafeBrowsingDatabaseManager*
+  safe_browsing::FakeSafeBrowsingDatabaseManager*
   GetFakeSafeBrowsingDatabaseManager();
 
   TestNoStatePrefetchContentsFactory* no_state_prefetch_contents_factory()

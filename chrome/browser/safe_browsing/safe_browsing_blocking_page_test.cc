@@ -65,7 +65,7 @@
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/features.h"
@@ -242,71 +242,6 @@ bool ClickAndWaitForDetach(Browser* browser, const std::string& node_id) {
   observer.WaitForNavigationFinished();
   return true;
 }
-
-// A SafeBrowsingDatabaseManager class that allows us to inject the malicious
-// URLs.
-class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
- public:
-  FakeSafeBrowsingDatabaseManager() {}
-
-  // Called on the IO thread to check if the given url is safe or not.  If we
-  // can synchronously determine that the url is safe, CheckUrl returns true.
-  // Otherwise it returns false, and "client" is called asynchronously with the
-  // result when it is ready.
-  // Overrides SafeBrowsingDatabaseManager::CheckBrowseUrl.
-  bool CheckBrowseUrl(const GURL& gurl,
-                      const SBThreatTypeSet& threat_types,
-                      Client* client) override {
-    if (badurls_.find(gurl.spec()) == badurls_.end() ||
-        badurls_[gurl.spec()] == SB_THREAT_TYPE_SAFE)
-      return true;
-
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FakeSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
-                       this, gurl, client));
-    return false;
-  }
-
-  void OnCheckBrowseURLDone(const GURL& gurl, Client* client) {
-    if (badurls_.find(gurl.spec()) != badurls_.end())
-      client->OnCheckBrowseUrlResult(gurl, badurls_[gurl.spec()],
-                                     ThreatMetadata());
-    else
-      NOTREACHED();
-  }
-
-  void SetURLThreatType(const GURL& url, SBThreatType threat_type) {
-    badurls_[url.spec()] = threat_type;
-  }
-
-  void ClearBadURL(const GURL& url) { badurls_.erase(url.spec()); }
-
-  // These are called when checking URLs, so we implement them.
-  bool IsSupported() const override { return true; }
-  bool ChecksAreAlwaysAsync() const override { return false; }
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination /* request_destination */)
-      const override {
-    return true;
-  }
-
-  // Called during startup, so must not check-fail.
-  bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
-                         Client* client) override {
-    return true;
-  }
-
-  safe_browsing::ThreatSource GetThreatSource() const override {
-    return safe_browsing::ThreatSource::LOCAL_PVER4;
-  }
-
- private:
-  ~FakeSafeBrowsingDatabaseManager() override {}
-
-  std::map<std::string, SBThreatType> badurls_;
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
-};
 
 // A SafeBrowingUIManager class that allows intercepting malware details.
 class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
@@ -550,7 +485,7 @@ class SafeBrowsingBlockingPageBrowserTest
 
     static_cast<FakeSafeBrowsingDatabaseManager*>(
         service->database_manager().get())
-        ->SetURLThreatType(url, threat_type);
+        ->AddDangerousUrl(url, threat_type);
   }
 
   void ClearBadURL(const GURL& url) {
@@ -559,7 +494,7 @@ class SafeBrowsingBlockingPageBrowserTest
 
     static_cast<FakeSafeBrowsingDatabaseManager*>(
         service->database_manager().get())
-        ->ClearBadURL(url);
+        ->ClearDangerousUrl(url);
   }
 
   // The basic version of this method, which uses an HTTP test URL.
@@ -1968,7 +1903,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
 
     static_cast<FakeSafeBrowsingDatabaseManager*>(
         service->database_manager().get())
-        ->SetURLThreatType(url, threat_type);
+        ->AddDangerousUrl(url, threat_type);
   }
 
  protected:
@@ -2868,7 +2803,7 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
 
     static_cast<FakeSafeBrowsingDatabaseManager*>(
         service->database_manager().get())
-        ->SetURLThreatType(url, SB_THREAT_TYPE_URL_MALWARE);
+        ->AddDangerousUrl(url, SB_THREAT_TYPE_URL_MALWARE);
 
     ui_test_utils::NavigateToURL(browser, url);
     EXPECT_TRUE(WaitForReady(browser));

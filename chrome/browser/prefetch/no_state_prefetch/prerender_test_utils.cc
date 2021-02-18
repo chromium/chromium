@@ -90,51 +90,6 @@ class NeverRunsExternalProtocolHandlerDelegate
 
 }  // namespace
 
-FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager() {}
-
-bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
-    const GURL& gurl,
-    const safe_browsing::SBThreatTypeSet& threat_types,
-    Client* client) {
-  if (bad_urls_.find(gurl.spec()) == bad_urls_.end() ||
-      bad_urls_[gurl.spec()] == safe_browsing::SB_THREAT_TYPE_SAFE) {
-    return true;
-  }
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
-                     this, gurl, client));
-  return false;
-}
-
-bool FakeSafeBrowsingDatabaseManager::IsSupported() const {
-  return true;
-}
-
-bool FakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  return false;
-}
-
-bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination /* request_destination */) const {
-  return true;
-}
-
-bool FakeSafeBrowsingDatabaseManager::CheckExtensionIDs(
-    const std::set<std::string>& extension_ids,
-    Client* client) {
-  return true;
-}
-
-FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {}
-
-void FakeSafeBrowsingDatabaseManager::OnCheckBrowseURLDone(const GURL& gurl,
-                                                           Client* client) {
-  client->OnCheckBrowseUrlResult(gurl, bad_urls_[gurl.spec()],
-                                 safe_browsing::ThreatMetadata());
-}
-
 TestNoStatePrefetchContents::TestNoStatePrefetchContents(
     NoStatePrefetchManager* no_state_prefetch_manager,
     content::BrowserContext* browser_context,
@@ -498,9 +453,9 @@ net::EmbeddedTestServer* PrerenderInProcessBrowserTest::src_server() {
   return embedded_test_server();
 }
 
-test_utils::FakeSafeBrowsingDatabaseManager*
+safe_browsing::FakeSafeBrowsingDatabaseManager*
 PrerenderInProcessBrowserTest::GetFakeSafeBrowsingDatabaseManager() {
-  return static_cast<test_utils::FakeSafeBrowsingDatabaseManager*>(
+  return static_cast<safe_browsing::FakeSafeBrowsingDatabaseManager*>(
       safe_browsing_factory()
           ->test_safe_browsing_service()
           ->database_manager()
@@ -510,7 +465,7 @@ PrerenderInProcessBrowserTest::GetFakeSafeBrowsingDatabaseManager() {
 void PrerenderInProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
   safe_browsing_factory_->SetTestDatabaseManager(
-      new test_utils::FakeSafeBrowsingDatabaseManager());
+      new safe_browsing::FakeSafeBrowsingDatabaseManager());
   safe_browsing::SafeBrowsingService::RegisterFactory(
       safe_browsing_factory_.get());
 }

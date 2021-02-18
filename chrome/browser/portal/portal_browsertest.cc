@@ -29,7 +29,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -408,64 +408,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, BrowserHistoryUpdatesOnActivation) {
       base::Contains(ui_test_utils::HistoryEnumerator(profile).urls(), url2));
 }
 
-namespace {
-
-// Allows us to treat certain URLs as dangerous with Safe Browsing.
-class FakeSafeBrowsingDatabaseManager
-    : public safe_browsing::TestSafeBrowsingDatabaseManager {
- public:
-  FakeSafeBrowsingDatabaseManager() = default;
-
-  void AddDangerousUrl(const GURL& dangerous_url) {
-    dangerous_urls_.insert(dangerous_url);
-  }
-
-  // safe_browsing::TestSafeBrowsingDatabaseManager:
-  bool CheckBrowseUrl(const GURL& url,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client) override {
-    if (!dangerous_urls_.contains(url))
-      return true;
-
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::IO},
-        base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync,
-                       this, url, client));
-    return false;
-  }
-  bool IsSupported() const override { return true; }
-  bool ChecksAreAlwaysAsync() const override { return false; }
-  bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
-                         Client* client) override {
-    return true;
-  }
-  bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override {
-    return true;
-  }
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const override {
-    return true;
-  }
-  safe_browsing::ThreatSource GetThreatSource() const override {
-    // This choice is arbitrary. The blocking page expects this to not be
-    // |UNKNOWN|.
-    return safe_browsing::ThreatSource::LOCAL_PVER4;
-  }
-
- private:
-  ~FakeSafeBrowsingDatabaseManager() override = default;
-
-  void CheckBrowseURLAsync(const GURL& url, Client* client) {
-    client->OnCheckBrowseUrlResult(url,
-                                   safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-                                   safe_browsing::ThreatMetadata());
-  }
-
-  base::flat_set<GURL> dangerous_urls_;
-};
-
-}  // namespace
-
 class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
  public:
   PortalSafeBrowsingBrowserTest()
@@ -477,7 +419,7 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
-        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>();
     safe_browsing_factory_->SetTestDatabaseManager(
         fake_safe_browsing_database_manager_.get());
     safe_browsing::SafeBrowsingService::RegisterFactory(
@@ -491,11 +433,12 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
   }
 
   void AddDangerousUrl(const GURL& dangerous_url) {
-    fake_safe_browsing_database_manager_->AddDangerousUrl(dangerous_url);
+    fake_safe_browsing_database_manager_->AddDangerousUrl(
+        dangerous_url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
   }
 
  private:
-  scoped_refptr<FakeSafeBrowsingDatabaseManager>
+  scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
       fake_safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
