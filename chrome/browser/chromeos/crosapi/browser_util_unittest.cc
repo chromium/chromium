@@ -79,7 +79,7 @@ TEST_F(BrowserUtilTest, ChannelTest) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
   EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::DEV));
   EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::BETA));
-  EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::STABLE));
+  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::STABLE));
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacrosEnabled) {

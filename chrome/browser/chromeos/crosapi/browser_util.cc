@@ -97,7 +97,7 @@ void AddVersion(InterfaceVersions* map) {
 
 // When this feature is enabled, Lacros will be available on stable channel.
 const base::Feature kLacrosAllowOnStableChannel{
-    "LacrosAllowOnStableChannel", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LacrosAllowOnStableChannel", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
 const char kLacrosStabilityLessStable[] = "less-stable";
