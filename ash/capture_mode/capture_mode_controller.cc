@@ -563,7 +563,7 @@ void CaptureModeController::PushNewRootSizeToRecordingService(
   DCHECK(video_recording_watcher_);
   DCHECK(recording_service_remote_);
 
-  recording_service_remote_->OnDisplaySizeChanged(root_size);
+  recording_service_remote_->OnFrameSinkSizeChanged(root_size);
 }
 
 void CaptureModeController::OnRecordedWindowChangingRoot(
@@ -584,6 +584,15 @@ void CaptureModeController::OnRecordedWindowChangingRoot(
 
   recording_service_remote_->OnRecordedWindowChangingRoot(
       new_root->GetFrameSinkId(), new_root->GetBoundsInRootWindow().size());
+}
+
+void CaptureModeController::OnRecordedWindowSizeChanged(
+    const gfx::Size& new_size) {
+  DCHECK(is_recording_in_progress_);
+  DCHECK(video_recording_watcher_);
+  DCHECK(recording_service_remote_);
+
+  recording_service_remote_->OnRecordedWindowSizeChanged(new_size);
 }
 
 bool CaptureModeController::ShouldBlockRecordingForContentProtection(
@@ -740,10 +749,10 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
       recording_service_remote_->RecordWindow(
           std::move(client), video_capturer_remote.Unbind(),
           std::move(audio_stream_factory), frame_sink_id,
-          capture_params.window->subtree_capture_id(), bounds.size(),
           capture_params.window->GetRootWindow()
               ->GetBoundsInRootWindow()
-              .size());
+              .size(),
+          capture_params.window->subtree_capture_id(), bounds.size());
       break;
 
     case CaptureModeSource::kRegion:

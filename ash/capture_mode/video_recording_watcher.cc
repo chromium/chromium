@@ -44,6 +44,12 @@ namespace {
 constexpr base::TimeDelta kCursorEventsThrottleDelay =
     base::TimeDelta::FromHz(30);
 
+// Window resizes can be done on many intermediate steps. This delay is used to
+// throttle these resize events so that we send the final size of the window to
+// the recording service when it stabilizes.
+constexpr base::TimeDelta kWindowSizeChangeThrottleDelay =
+    base::TimeDelta::FromMilliseconds(250);
+
 // Returns true if |window_1| and |window_2| are both windows that belong to
 // the same Desk. Note that it will return false for windows that don't belong
 // to any desk (such as always-on-top windows or PIPs).
@@ -254,6 +260,27 @@ void VideoRecordingWatcher::OnWindowVisibilityChanged(aura::Window* window,
     UpdateShouldPaintLayer();
 }
 
+void VideoRecordingWatcher::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  DCHECK(controller_->is_recording_in_progress());
+
+  if (recording_source_ != CaptureModeSource::kWindow)
+    return;
+
+  // We care only about size changes, since the location of the window won't
+  // affect the recorded video frames of it, however, the size of the window
+  // affects the size of the frames.
+  if (old_bounds.size() == new_bounds.size())
+    return;
+
+  window_size_change_throttle_timer_.Start(
+      FROM_HERE, kWindowSizeChangeThrottleDelay, this,
+      &VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring);
+}
+
 void VideoRecordingWatcher::OnWindowOpacitySet(
     aura::Window* window,
     ui::PropertyChangeReason reason) {
@@ -437,6 +464,10 @@ void VideoRecordingWatcher::FlushCursorOverlayForTesting() {
   cursor_capture_overlay_remote_.FlushForTesting();
 }
 
+void VideoRecordingWatcher::SendThrottledWindowSizeChangedNowForTesting() {
+  window_size_change_throttle_timer_.FireNow();
+}
+
 void VideoRecordingWatcher::SetLayer(std::unique_ptr<ui::Layer> layer) {
   if (layer) {
     layer->set_delegate(this);
@@ -598,7 +629,7 @@ void VideoRecordingWatcher::UpdateOrThrottleCursorOverlay(
   UpdateCursorOverlayNow(location);
   cursor_events_throttle_timer_.Start(
       FROM_HERE, kCursorEventsThrottleDelay, this,
-      &VideoRecordingWatcher::OnThrottleTimerFiring);
+      &VideoRecordingWatcher::OnCursorThrottleTimerFiring);
 }
 
 void VideoRecordingWatcher::UpdateCursorOverlayNow(
@@ -664,9 +695,17 @@ void VideoRecordingWatcher::HideCursorOverlay() {
   cursor_capture_overlay_remote_->SetBounds(last_cursor_overlay_bounds_);
 }
 
-void VideoRecordingWatcher::OnThrottleTimerFiring() {
+void VideoRecordingWatcher::OnCursorThrottleTimerFiring() {
   if (throttled_cursor_location_)
     UpdateCursorOverlayNow(*throttled_cursor_location_);
+}
+
+void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
+  DCHECK(controller_->is_recording_in_progress());
+  DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
+
+  controller_->OnRecordedWindowSizeChanged(
+      window_being_recorded_->bounds().size());
 }
 
 }  // namespace ash

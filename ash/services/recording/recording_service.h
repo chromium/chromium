@@ -47,27 +47,28 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& video_size) override;
+      const gfx::Size& frame_sink_size) override;
   void RecordWindow(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& frame_sink_size,
       const viz::SubtreeCaptureId& subtree_capture_id,
-      const gfx::Size& initial_video_size,
-      const gfx::Size& max_video_size) override;
+      const gfx::Size& window_size) override;
   void RecordRegion(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& full_capture_size,
+      const gfx::Size& frame_sink_size,
       const gfx::Rect& crop_region) override;
   void StopRecording() override;
   void OnRecordedWindowChangingRoot(
       const viz::FrameSinkId& new_frame_sink_id,
-      const gfx::Size& new_max_video_size) override;
-  void OnDisplaySizeChanged(const gfx::Size& new_display_size) override;
+      const gfx::Size& new_frame_sink_size) override;
+  void OnRecordedWindowSizeChanged(const gfx::Size& new_window_size) override;
+  void OnFrameSinkSizeChanged(const gfx::Size& new_frame_sink_size) override;
 
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(

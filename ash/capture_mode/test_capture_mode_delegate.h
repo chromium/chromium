@@ -27,6 +27,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   // Gets the current frame sink id being captured by the fake service.
   viz::FrameSinkId GetCurrentFrameSinkId() const;
 
+  // Gets the current size of the frame sink being recorded.
+  gfx::Size GetCurrentFrameSinkSize() const;
+
   // Gets the current video size being captured by the fake service.
   gfx::Size GetCurrentVideoSize() const;
 
