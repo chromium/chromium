@@ -71,7 +71,6 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
 
 }  // namespace
 
-using Directive = DumpAccessibilityTestHelper::Directive;
 using ui::AXPropertyFilter;
 using ui::AXTreeFormatter;
 
@@ -142,43 +141,6 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   return formatter->Format(GetRootAccessibilityNode(shell()->web_contents()));
 }
 
-void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
-    const std::string& test_html,
-    std::vector<std::string>* no_load_expected,
-    std::vector<std::string>* wait_for,
-    std::vector<std::string>* execute,
-    std::vector<std::string>* run_until,
-    std::vector<std::string>* default_action_on) {
-  for (const std::string& line : base::SplitString(
-           test_html, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (test_helper_.ParsePropertyFilter(line, &property_filters_) ||
-        test_helper_.ParseNodeFilter(line, &node_filters_)) {
-      continue;
-    }
-
-    Directive directive = test_helper_.ParseDirective(line);
-    switch (directive.type) {
-      case Directive::kNoLoadExpected:
-        no_load_expected->push_back(directive.value);
-        break;
-      case Directive::kWaitFor:
-        wait_for->push_back(directive.value);
-        break;
-      case Directive::kExecuteAndWaitFor:
-        execute->push_back(directive.value);
-        break;
-      case Directive::kRunUntil:
-        run_until->push_back(directive.value);
-        break;
-      case Directive::kDefaultActionOn:
-        default_action_on->push_back(directive.value);
-        break;
-      default:  // Directive::kNone
-        break;
-    }
-  }
-}
-
 void DumpAccessibilityTestBase::RunTest(const base::FilePath file_path,
                                         const char* file_dir) {
   RunTestForPlatform(file_path, file_dir);
@@ -240,17 +202,12 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     }
   }
 
-  // Parse filters and other directives in the test file.
-  std::vector<std::string> no_load_expected;
-  std::vector<std::string> wait_for;
-  std::vector<std::string> execute;
-  std::vector<std::string> run_until;
-  std::vector<std::string> default_action_on;
-  property_filters_.clear();
-  node_filters_.clear();
-  AddDefaultFilters(&property_filters_);
-  ParseHtmlForExtraDirectives(html_contents, &no_load_expected, &wait_for,
-                              &execute, &run_until, &default_action_on);
+  // Parse the test html file and parse special directives, usually
+  // beginning with an '@' and inside an HTML comment, that control how the
+  // test is run and how the results are interpreted.
+  std::vector<std::string> lines = base::SplitString(
+      html_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  scenario_ = test_helper_.ParseScenario(lines, DefaultFilters());
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +
@@ -275,7 +232,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
 
   // Perform default action on any elements specified by the test.
-  for (const auto& str : default_action_on) {
+  for (const auto& str : scenario_.default_action_on) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kClicked);
@@ -300,13 +257,13 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     waiter.WaitForNotification();
   }
 
-  WaitForAXTreeLoaded(web_contents, no_load_expected, wait_for);
+  WaitForAXTreeLoaded(web_contents);
 
   // Call the subclass to dump the output.
-  std::vector<std::string> actual_lines = Dump(run_until);
+  std::vector<std::string> actual_lines = Dump(scenario_.run_until);
 
   // Execute and wait for specified string
-  for (const auto& function_name : execute) {
+  for (const auto& function_name : scenario_.execute) {
     DLOG(INFO) << "executing: " << function_name;
     base::Value result =
         ExecuteScriptAndGetValue(web_contents->GetMainFrame(), function_name);
@@ -319,7 +276,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       if (tree_dump.find(str) != std::string::npos) {
         wait_for_string = false;
         // Append an additional dump if the specified string was found.
-        std::vector<std::string> additional_dump = Dump(run_until);
+        std::vector<std::string> additional_dump = Dump(scenario_.run_until);
         actual_lines.emplace_back("=== Start Continuation ===");
         actual_lines.insert(actual_lines.end(), additional_dump.begin(),
                             additional_dump.end());
@@ -379,9 +336,7 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
 }
 
 void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
-    WebContentsImpl* web_contents,
-    const std::vector<std::string>& no_load_expected,
-    const std::vector<std::string>& wait_for) {
+    WebContentsImpl* web_contents) {
   // Wait for the accessibility tree to fully load for all frames,
   // by searching for the WEB_AREA node in the accessibility tree
   // with the url of each frame in our frame tree. Note that this
@@ -407,7 +362,7 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
       // A test may change the url for a frame, for example by setting
       // window.location.href, so collect the current list of urls.
       const std::vector<std::string> all_frame_urls =
-          CollectAllFrameUrls(web_contents, no_load_expected);
+          CollectAllFrameUrls(web_contents, scenario_.no_load_expected);
       for (const auto& url : all_frame_urls) {
         if (!AccessibilityTreeContainsLoadedDocWithUrl(accessibility_root,
                                                        url)) {
@@ -420,7 +375,7 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
       // Check to see if the @WAIT-FOR text has appeared yet.
       bool all_wait_for_strings_found = true;
       std::string tree_dump = DumpUnfilteredAccessibilityTreeAsString();
-      for (const auto& str : wait_for) {
+      for (const auto& str : scenario_.wait_for) {
         if (tree_dump.find(str) == std::string::npos) {
           VLOG(1) << "Still waiting on this text to be found: " << str;
           all_wait_for_strings_found = false;
@@ -441,9 +396,10 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
     accessibility_waiter.WaitForNotification();
   }
 
+  // No wait for for inner documents.
+  scenario_.wait_for.clear();
   for (WebContents* inner_contents : web_contents->GetInnerWebContents()) {
-    WaitForAXTreeLoaded(static_cast<WebContentsImpl*>(inner_contents),
-                        no_load_expected, std::vector<std::string>());
+    WaitForAXTreeLoaded(static_cast<WebContentsImpl*>(inner_contents));
   }
 }
 

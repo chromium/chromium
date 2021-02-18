@@ -3127,18 +3127,20 @@ class PDFExtensionAccessibilityTreeDumpTest
   using AXPropertyFilter = ui::AXPropertyFilter;
 
   //  See chrome/test/data/pdf/accessibility/readme.md for more info.
-  void ParsePdfForExtraDirectives(
-      const std::string& pdf_contents,
-      std::vector<AXPropertyFilter>* property_filters) {
+  content::DumpAccessibilityTestHelper::Scenario ParsePdfForExtraDirectives(
+      const std::string& pdf_contents) {
     const char kCommentMark = '%';
+
+    std::vector<std::string> lines;
     for (const std::string& line : base::SplitString(
              pdf_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       if (line.size() > 1 && line[0] == kCommentMark) {
         // Remove first character since it's the comment mark.
-        std::string trimmed_line = line.substr(1);
-        test_helper_.ParsePropertyFilter(trimmed_line, property_filters);
+        lines.push_back(line.substr(1));
       }
     }
+
+    return test_helper_.ParseScenario(lines, DefaultFilters());
   }
 
   void RunTest(const base::FilePath& test_file_path, const char* file_dir) {
@@ -3150,12 +3152,12 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Set up the tree formatter. Parse filters and other directives in the test
     // file.
+    content::DumpAccessibilityTestHelper::Scenario scenario =
+        ParsePdfForExtraDirectives(pdf_contents);
+
     std::unique_ptr<AXTreeFormatter> formatter =
         AXInspectFactory::CreateFormatter(GetParam());
-    std::vector<AXPropertyFilter> property_filters;
-    AddDefaultFilters(&property_filters);
-    ParsePdfForExtraDirectives(pdf_contents, &property_filters);
-    formatter->SetPropertyFilters(property_filters,
+    formatter->SetPropertyFilters(scenario.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
 
     // Exit without running the test if we can't find an expectation file or if
@@ -3203,39 +3205,34 @@ class PDFExtensionAccessibilityTreeDumpTest
         test_file_path, expected_file_path, actual_lines, *expected_lines));
   }
 
-  void AddDefaultFilters(std::vector<AXPropertyFilter>* property_filters) {
-    AddPropertyFilter(property_filters, "value='*'");
+  std::vector<AXPropertyFilter> DefaultFilters() const {
+    std::vector<AXPropertyFilter> property_filters;
+
+    property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
     // The value attribute on the document object contains the URL of the
     // current page which will not be the same every time the test is run.
     // The PDF plugin uses the 'chrome-extension' protocol, so block that as
     // well.
-    AddPropertyFilter(property_filters, "value='http*'",
-                      AXPropertyFilter::DENY);
-    AddPropertyFilter(property_filters, "value='chrome-extension*'",
-                      AXPropertyFilter::DENY);
+    property_filters.emplace_back("value='http*'", AXPropertyFilter::DENY);
+    property_filters.emplace_back("value='chrome-extension*'",
+                                  AXPropertyFilter::DENY);
     // Object attributes.value
-    AddPropertyFilter(property_filters, "layout-guess:*",
-                      AXPropertyFilter::ALLOW);
+    property_filters.emplace_back("layout-guess:*", AXPropertyFilter::ALLOW);
 
-    AddPropertyFilter(property_filters, "select*");
-    AddPropertyFilter(property_filters, "descript*");
-    AddPropertyFilter(property_filters, "check*");
-    AddPropertyFilter(property_filters, "horizontal");
-    AddPropertyFilter(property_filters, "multiselectable");
-    AddPropertyFilter(property_filters, "isPageBreakingObject*");
+    property_filters.emplace_back("select*", AXPropertyFilter::ALLOW);
+    property_filters.emplace_back("descript*", AXPropertyFilter::ALLOW);
+    property_filters.emplace_back("check*", AXPropertyFilter::ALLOW);
+    property_filters.emplace_back("horizontal", AXPropertyFilter::ALLOW);
+    property_filters.emplace_back("multiselectable", AXPropertyFilter::ALLOW);
+    property_filters.emplace_back("isPageBreakingObject*",
+                                  AXPropertyFilter::ALLOW);
 
     // Deny most empty values
-    AddPropertyFilter(property_filters, "*=''", AXPropertyFilter::DENY);
+    property_filters.emplace_back("*=''", AXPropertyFilter::DENY);
     // After denying empty values, because we want to allow name=''
-    AddPropertyFilter(property_filters, "name=*",
-                      AXPropertyFilter::ALLOW_EMPTY);
-  }
+    property_filters.emplace_back("name=*", AXPropertyFilter::ALLOW_EMPTY);
 
-  void AddPropertyFilter(
-      std::vector<AXPropertyFilter>* property_filters,
-      std::string filter,
-      AXPropertyFilter::Type type = AXPropertyFilter::ALLOW) {
-    property_filters->push_back(AXPropertyFilter(filter, type));
+    return property_filters;
   }
 
   content::DumpAccessibilityTestHelper test_helper_;

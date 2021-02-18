@@ -61,14 +61,7 @@ using ui::AXTreeFormatter;
 //    exactly match.
 class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
  public:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
-  void AddPropertyFilter(
-      std::vector<AXPropertyFilter>* property_filters,
-      const std::string& filter,
-      AXPropertyFilter::Type type = AXPropertyFilter::ALLOW) {
-    property_filters->push_back(AXPropertyFilter(filter, type));
-  }
+  std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DumpAccessibilityTestBase::SetUpCommandLine(command_line);
@@ -167,9 +160,9 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     waiter.WaitForNotification();
 
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-    formatter->SetPropertyFilters(property_filters_,
+    formatter->SetPropertyFilters(scenario_.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
-    formatter->SetNodeFilters(node_filters_);
+    formatter->SetNodeFilters(scenario_.node_filters);
     std::string actual_contents =
         formatter->Format(GetRootAccessibilityNode(web_contents));
     return base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
@@ -239,28 +232,28 @@ class DumpAccessibilityTreeTestWithIgnoredNodes
   }
 };
 
-void DumpAccessibilityTreeTest::AddDefaultFilters(
-    std::vector<AXPropertyFilter>* property_filters) {
-  AddPropertyFilter(property_filters, "value='*'");
+std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
+    const {
+  std::vector<AXPropertyFilter> property_filters;
+  property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
   // The value attribute on the document object contains the URL of the current
   // page which will not be the same every time the test is run.
-  AddPropertyFilter(property_filters, "value='http*'", AXPropertyFilter::DENY);
+  property_filters.emplace_back("value='http*'", AXPropertyFilter::DENY);
   // Object attributes.value
-  AddPropertyFilter(property_filters, "layout-guess:*",
-                    AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("layout-guess:*", AXPropertyFilter::ALLOW);
 
-  AddPropertyFilter(property_filters, "select*");
-  AddPropertyFilter(property_filters, "selectedFromFocus=*",
-                    AXPropertyFilter::DENY);
-  AddPropertyFilter(property_filters, "descript*");
-  AddPropertyFilter(property_filters, "check*");
-  AddPropertyFilter(property_filters, "horizontal");
-  AddPropertyFilter(property_filters, "multiselectable");
+  property_filters.emplace_back("select*", AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("selectedFromFocus=*", AXPropertyFilter::DENY);
+  property_filters.emplace_back("descript*", AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("check*", AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("horizontal", AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("multiselectable", AXPropertyFilter::ALLOW);
 
   // Deny most empty values
-  AddPropertyFilter(property_filters, "*=''", AXPropertyFilter::DENY);
+  property_filters.emplace_back("*=''", AXPropertyFilter::DENY);
   // After denying empty values, because we want to allow name=''
-  AddPropertyFilter(property_filters, "name=*", AXPropertyFilter::ALLOW_EMPTY);
+  property_filters.emplace_back("name=*", AXPropertyFilter::ALLOW_EMPTY);
+  return property_filters;
 }
 
 // Parameterize the tests so that each test-pass is run independently.

@@ -60,8 +60,7 @@ class DumpAccessibilityTestBase
       std::vector<std::string>& run_until) = 0;
 
   // Add the default filters that are applied to all tests.
-  virtual void AddDefaultFilters(
-      std::vector<ui::AXPropertyFilter>* property_filters) = 0;
+  virtual std::vector<ui::AXPropertyFilter> DefaultFilters() const = 0;
 
   // This gets called if the diff didn't match; the test can print
   // additional useful info.
@@ -79,33 +78,6 @@ class DumpAccessibilityTestBase
   // and return it as a string.
   std::string DumpUnfilteredAccessibilityTreeAsString();
 
-  // Parse the test html file and parse special directives, usually
-  // beginning with an '@' and inside an HTML comment, that control how the
-  // test is run and how the results are interpreted.
-  //
-  // When the accessibility tree is dumped as text, each node and each attribute
-  // is run through filters before being appended to the string. An "allow"
-  // filter specifies attribute strings that should be dumped, and a "deny"
-  // filter specifies strings or nodes that should be suppressed. As an example,
-  // @MAC-ALLOW:AXSubrole=* means that the AXSubrole attribute should be
-  // printed, while @MAC-ALLOW:AXSubrole=AXList* means that any subrole
-  // beginning with the text "AXList" should be printed.
-  //
-  // The @WAIT-FOR:text directive allows the test to specify that the document
-  // may dynamically change after initial load, and the test is to wait
-  // until the given string (e.g., "text") appears in the resulting dump.
-  // A test can make some changes to the document, then append a magic string
-  // indicating that the test is done, and this framework will wait for that
-  // string to appear before comparing the results. There can be multiple
-  // @WAIT-FOR: directives.
-  void ParseHtmlForExtraDirectives(
-      const std::string& test_html,
-      std::vector<std::string>* no_load_expected,
-      std::vector<std::string>* wait_for,
-      std::vector<std::string>* execute,
-      std::vector<std::string>* run_until,
-      std::vector<std::string>* default_action_on);
-
   void RunTestForPlatform(const base::FilePath file_path, const char* file_dir);
 
   // Retrieve the accessibility node that matches the accessibility name. There
@@ -120,12 +92,8 @@ class DumpAccessibilityTestBase
 
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
 
-  // The default property filters plus the property filters loaded from the test
-  // file.
-  std::vector<ui::AXPropertyFilter> property_filters_;
-
-  // The node filters loaded from the test file.
-  std::vector<ui::AXNodeFilter> node_filters_;
+  // Test scenario loaded from the test file.
+  DumpAccessibilityTestHelper::Scenario scenario_;
 
   // Whether we should enable accessibility after navigating to the page,
   // otherwise we enable it first.
@@ -147,9 +115,7 @@ class DumpAccessibilityTestBase
       WebContentsImpl* web_contents,
       const std::vector<std::string>& skip_urls);
 
-  void WaitForAXTreeLoaded(WebContentsImpl* web_contents,
-                           const std::vector<std::string>& no_load_expected,
-                           const std::vector<std::string>& wait_for);
+  void WaitForAXTreeLoaded(WebContentsImpl* web_contents);
 };
 
 }  // namespace content

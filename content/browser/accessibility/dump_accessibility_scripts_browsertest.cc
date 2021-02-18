@@ -27,8 +27,7 @@ using ui::AXTreeFormatter;
 //    exactly match.
 class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
  public:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
+  std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
   void AddPropertyFilter(
       std::vector<AXPropertyFilter>* property_filters,
       const std::string& filter,
@@ -40,7 +39,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
 
     // Set test provided property filters.
-    formatter->SetPropertyFilters(property_filters_,
+    formatter->SetPropertyFilters(scenario_.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
 
     // No accessible tree nodes, just run scripts.
@@ -65,8 +64,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   }
 };
 
-void DumpAccessibilityScriptTest::AddDefaultFilters(
-    std::vector<AXPropertyFilter>* property_filters) {}
+std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
+    const {
+  return {};
+}
 
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {

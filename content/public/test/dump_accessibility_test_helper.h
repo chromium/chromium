@@ -37,6 +37,77 @@ class DumpAccessibilityTestHelper {
   // Sets up a command line for the test.
   void SetUpCommandLine(base::CommandLine*) const;
 
+  // Describes the test execution flow, which is determined by a sequence of
+  // testing directives (instructions).
+  struct Scenario {
+    explicit Scenario(
+        const std::vector<ui::AXPropertyFilter>& default_filters = {});
+    Scenario(Scenario&&);
+    ~Scenario();
+
+    Scenario& operator=(Scenario&&);
+
+    // A list of URLs of resources that are never expected to load. For example,
+    // a broken image url, which otherwise would make a test failing.
+    std::vector<std::string> no_load_expected;
+
+    // A list of strings must be present in the formatted tree before the test
+    // starts
+    std::vector<std::string> wait_for;
+
+    // A list of string indicating an element the default accessible action
+    // should be performed at before the test starts.
+    std::vector<std::string> default_action_on;
+
+    // A list of JavaScripts functions to be executed consequently. Function
+    // may return a value, which has to be present in a formatter tree before
+    // the next function evaluated.
+    std::vector<std::string> execute;
+
+    // A list of strings indicating that event recording should be terminated
+    // when one of them is present in a formatted tree.
+    std::vector<std::string> run_until;
+
+    // A list of property filters which defines generated output of a formatted
+    // tree.
+    std::vector<ui::AXPropertyFilter> property_filters;
+
+    // The node filters indicating subtrees that should be not included into
+    // a formatted tree.
+    std::vector<ui::AXNodeFilter> node_filters;
+  };
+
+  // Parses a given testing scenario. Prepends default property filters if any
+  // so the test file filters will take precedence over default filters in case
+  // of conflict.
+  Scenario ParseScenario(
+      const std::vector<std::string>& lines,
+      const std::vector<ui::AXPropertyFilter>& default_filters = {});
+
+  // Returns a platform-dependent list of inspect types used in dump tree
+  // testing.
+  static std::vector<AXInspectFactory::Type> TreeTestPasses();
+
+  // Returns a platform-dependent list of inspect types used in dump events
+  // testing.
+  static std::vector<AXInspectFactory::Type> EventTestPasses();
+
+  // Loads the given expectation file and returns the contents. An expectation
+  // file may be empty, in which case an empty vector is returned.
+  // Returns nullopt if the file contains a skip marker.
+  static base::Optional<std::vector<std::string>> LoadExpectationFile(
+      const base::FilePath& expected_file);
+
+  // Compares the given actual dump against the given expectation and generates
+  // a new expectation file if switches::kGenerateAccessibilityTestExpectations
+  // has been set. Returns true if the result matches the expectation.
+  static bool ValidateAgainstExpectation(
+      const base::FilePath& test_file_path,
+      const base::FilePath& expected_file,
+      const std::vector<std::string>& actual_lines,
+      const std::vector<std::string>& expected_lines);
+
+ private:
   // Parses property filter directive, if the line is a valid property filter
   // directive, then a new property filter is created and appneded to the list,
   // true is returned, otherwise false.
@@ -81,30 +152,6 @@ class DumpAccessibilityTestHelper {
   // Parses directives from the given line.
   Directive ParseDirective(const std::string& line) const;
 
-  // Returns a platform-dependent list of inspect types used in dump tree
-  // testing.
-  static std::vector<AXInspectFactory::Type> TreeTestPasses();
-
-  // Returns a platform-dependent list of inspect types used in dump events
-  // testing.
-  static std::vector<AXInspectFactory::Type> EventTestPasses();
-
-  // Loads the given expectation file and returns the contents. An expectation
-  // file may be empty, in which case an empty vector is returned.
-  // Returns nullopt if the file contains a skip marker.
-  static base::Optional<std::vector<std::string>> LoadExpectationFile(
-      const base::FilePath& expected_file);
-
-  // Compares the given actual dump against the given expectation and generates
-  // a new expectation file if switches::kGenerateAccessibilityTestExpectations
-  // has been set. Returns true if the result matches the expectation.
-  static bool ValidateAgainstExpectation(
-      const base::FilePath& test_file_path,
-      const base::FilePath& expected_file,
-      const std::vector<std::string>& actual_lines,
-      const std::vector<std::string>& expected_lines);
-
- private:
   // Suffix of the expectation file corresponding to html file.
   // Overridden by each platform subclass.
   // Example:

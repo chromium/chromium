@@ -72,17 +72,18 @@ using ui::AXTreeFormatter;
 // the end of the test; anything received after that is too late.
 class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
  public:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override {
+  std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
+    std::vector<ui::AXPropertyFilter> property_filters;
     // Suppress spurious focus events on the document object.
-    property_filters->push_back(AXPropertyFilter("EVENT_OBJECT_FOCUS*DOCUMENT*",
-                                                 AXPropertyFilter::DENY));
-    property_filters->push_back(AXPropertyFilter(
-        "AutomationFocusChanged*document*", AXPropertyFilter::DENY));
+    property_filters.emplace_back("EVENT_OBJECT_FOCUS*DOCUMENT*",
+                                  AXPropertyFilter::DENY);
+    property_filters.emplace_back("AutomationFocusChanged*document*",
+                                  AXPropertyFilter::DENY);
     // Implementing IRawElementProviderAdviseEvents causes Win7 to fire
     // spurious focus events (regardless of what the implementation does).
-    property_filters->push_back(AXPropertyFilter(
-        "AutomationFocusChanged on role=region", AXPropertyFilter::DENY));
+    property_filters.emplace_back("AutomationFocusChanged on role=region",
+                                  AXPropertyFilter::DENY);
+    return property_filters;
   }
 
   std::vector<std::string> Dump(std::vector<std::string>& run_until) override;
@@ -196,8 +197,8 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     std::sort(event_logs.begin(), event_logs.end());
 
     for (auto& event_log : event_logs) {
-      if (AXTreeFormatter::MatchesPropertyFilters(property_filters_, event_log,
-                                                  true)) {
+      if (AXTreeFormatter::MatchesPropertyFilters(scenario_.property_filters,
+                                                  event_log, true)) {
         result.push_back(event_log);
       }
     }

@@ -172,6 +172,49 @@ void DumpAccessibilityTestHelper::SetUpCommandLine(
   }
 }
 
+DumpAccessibilityTestHelper::Scenario::Scenario(
+    const std::vector<ui::AXPropertyFilter>& default_filters)
+    : property_filters(default_filters) {}
+DumpAccessibilityTestHelper::Scenario::Scenario(Scenario&&) = default;
+DumpAccessibilityTestHelper::Scenario::~Scenario() = default;
+DumpAccessibilityTestHelper::Scenario&
+DumpAccessibilityTestHelper::Scenario::operator=(Scenario&&) = default;
+
+DumpAccessibilityTestHelper::Scenario
+DumpAccessibilityTestHelper::ParseScenario(
+    const std::vector<std::string>& lines,
+    const std::vector<ui::AXPropertyFilter>& default_filters) {
+  Scenario scenario(default_filters);
+  for (const std::string& line : lines) {
+    if (ParsePropertyFilter(line, &scenario.property_filters) ||
+        ParseNodeFilter(line, &scenario.node_filters)) {
+      continue;
+    }
+
+    Directive directive = ParseDirective(line);
+    switch (directive.type) {
+      case Directive::kNoLoadExpected:
+        scenario.no_load_expected.push_back(directive.value);
+        break;
+      case Directive::kWaitFor:
+        scenario.wait_for.push_back(directive.value);
+        break;
+      case Directive::kExecuteAndWaitFor:
+        scenario.execute.push_back(directive.value);
+        break;
+      case Directive::kRunUntil:
+        scenario.run_until.push_back(directive.value);
+        break;
+      case Directive::kDefaultActionOn:
+        scenario.default_action_on.push_back(directive.value);
+        break;
+      default:  // Directive::kNone
+        break;
+    }
+  }
+  return scenario;
+}
+
 bool DumpAccessibilityTestHelper::ParsePropertyFilter(
     const std::string& line,
     std::vector<AXPropertyFilter>* filters) const {
