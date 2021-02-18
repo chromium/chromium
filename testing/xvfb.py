@@ -243,6 +243,21 @@ def _run_with_weston(cmd, env, stdoutfile):
     signal.signal(signal.SIGTERM, raise_weston_error)
     signal.signal(signal.SIGINT, raise_weston_error)
 
+    # The bundled weston (//third_party/weston) is used by Linux Ozone Wayland
+    # CI and CQ testers and compiled by //ui/ozone/platform/wayland whenever
+    # there is a dependency on the Ozone/Wayland and use_bundled_weston is set
+    # in gn args. However, some tests do not require Wayland or do not use
+    # //ui/ozone at all, but still have --use-weston flag set by the
+    # OZONE_WAYLAND variant (see //testing/buildbot/variants.pyl). This results
+    # in failures and those tests cannot be run because of the exception that
+    # informs about missing weston binary. Thus, to overcome the issue before
+    # a better solution is found, add a check for the "weston" binary here and
+    # run tests without Wayland compositor if the weston binary is not found.
+    # TODO(https://1178788): find a better solution.
+    if not os.path.isfile("./weston"):
+      print('Weston is not available. Starting without Wayland compositor')
+      return test_env.run_executable(cmd, env, stdoutfile)
+
     # Set $XDG_RUNTIME_DIR if it is not set.
     _set_xdg_runtime_dir(env)
 

@@ -2503,6 +2503,16 @@
       'Optional Linux Release (NVIDIA)',
     ],
   },
+  'ui_base_unittests_wayland': {
+    'modifications': {
+      # CI Ozone/Wayland tester.
+      'Linux Tester (Ozone Wayland)': {
+        'args': [
+        '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.ui_base_unittests_wayland.filter',
+        ],
+      },
+    }
+  },
   'ui_base_unittests_x11': {
     'modifications': {
       # CI tester.

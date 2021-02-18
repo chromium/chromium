@@ -4118,7 +4118,8 @@
       'ozone_unittests': {},
       'services_unittests': {},
     },
-
+    
+    # These tests run on Ozone/Wayland/X11 CQ.
     'linux_ozone_wayland_and_x11_gtests': {
       'accessibility_unittests': {},
       'aura_unittests': {},
@@ -4133,6 +4134,23 @@
           'shards': 2
         },
       },
+      'gpu_unittests': {},
+      'ui_touch_selection_unittests': {},
+      'views_unittests': {},
+      'viz_unittests': {},
+    },
+
+    # This is a separate suite for CI bot as browser_tests and content_browsertests
+    # conflict with the existing browser_tests and content_browsertests entry in the
+    # chromium_gtests. Thus, this suite doesn't include browser_tests and
+    # content_browsertests, but still has almost the same set of tests that
+    # linux_ozone_wayland_and_x11_gtests has.
+    # TODO(msisov): remove this suite once Wayland includes all the gtests
+    # that chromium_linux_gtests has.
+    'linux_ozone_wayland_ci_gtests': {
+      'accessibility_unittests': {},
+      'aura_unittests': {},
+      'compositor_unittests': {},
       'gpu_unittests': {},
       'ui_touch_selection_unittests': {},
       'views_unittests': {},
@@ -7005,12 +7023,12 @@
           'OZONE_WAYLAND',
         ]
       },
-      'linux_ozone_wayland_and_x11_gtests': {
+      'chromium_gtests': {
         'variants': [
           'OZONE_WAYLAND',
         ]
       },
-      'linux_ozone_common_gtests': {
+      'linux_ozone_wayland_ci_gtests': {
         'variants': [
           'OZONE_WAYLAND',
         ]
