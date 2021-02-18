@@ -820,6 +820,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TimeToBeReady" units="ms" expires_after="M77">
+  <obsolete>
+    Removed M90. Replaced with Translate.Translation.TimeToBeReady.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -829,6 +832,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TimeToLoad" units="ms" expires_after="M77">
+  <obsolete>
+    Removed M90. Replaced with Translate.Translation.TimeToLoad.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -838,6 +844,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TimeToTranslate" units="ms" expires_after="M77">
+  <obsolete>
+    Removed M90. Replaced with Translate.Translation.TimeToTranslate.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>The time from starting translation to the completion.</summary>
@@ -963,6 +972,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the target language used for a translation. This is the langauge
     being translated to.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.TimeToBeReady" units="ms"
+    expires_after="M94">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the time from injecting the translation scripts to being ready to
+    perform translation.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.TimeToLoad" units="ms"
+    expires_after="M94">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the time from injecting the translation scripts to finish loading
+    all dependent libraries.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.TimeToTranslate" units="ms"
+    expires_after="M94">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the time from when the translation script beings translating to when
+    it finishes.
 
     This is recorded when a translation (both manual and automatic) is started.
   </summary>

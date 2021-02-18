@@ -21,9 +21,10 @@ namespace metrics_internal {
 const char kTranslateContentLanguage[] = "Translate.ContentLanguage";
 const char kTranslateHtmlLang[] = "Translate.HtmlLang";
 const char kTranslateLanguageVerification[] = "Translate.LanguageVerification";
-const char kTranslateTimeToBeReady[] = "Translate.TimeToBeReady";
-const char kTranslateTimeToLoad[] = "Translate.TimeToLoad";
-const char kTranslateTimeToTranslate[] = "Translate.TimeToTranslate";
+const char kTranslateTimeToBeReady[] = "Translate.Translation.TimeToBeReady";
+const char kTranslateTimeToLoad[] = "Translate.Translation.TimeToLoad";
+const char kTranslateTimeToTranslate[] =
+    "Translate.Translation.TimeToTranslate";
 const char kTranslateUserActionDuration[] = "Translate.UserActionDuration";
 const char kTranslatePageScheme[] = "Translate.PageScheme";
 const char kTranslateSimilarLanguageMatch[] = "Translate.SimilarLanguageMatch";
