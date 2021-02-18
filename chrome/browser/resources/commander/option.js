@@ -49,6 +49,8 @@ export class CommanderOptionElement extends PolymerElement {
         return 'commander-icons:tab';
       case Entity.WINDOW:
         return 'commander-icons:window';
+      case Entity.GROUP:
+        return 'commander-icons:group';
     }
     assertNotReached();
     return '';

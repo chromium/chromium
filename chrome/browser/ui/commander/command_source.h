@@ -53,6 +53,7 @@ struct CommandItem {
     kBookmark,
     kTab,
     kWindow,
+    kGroup,
   };
 
   using CompositeCommandProvider =
