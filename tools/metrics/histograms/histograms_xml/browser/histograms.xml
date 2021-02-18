@@ -61,8 +61,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Browser.ContinuousSearch.BackNavigationToSrp" units="count"
-    expires_after="2021-06-20">
+<histogram
+    name="Browser.ContinuousSearch.BackNavigationToSrp{ExperimentCategory}"
+    units="count" expires_after="2021-06-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
@@ -71,9 +72,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the number of back navigations to the Google search result page
     while in a search session. It is emitted when the session is considered
     ended. Different actions that cause the search session to end include
-    navigating away from SRP (or one on the pages linked in SRP), closing the
+    navigating away from SRP (or one of the pages linked in SRP), closing the
     SRP tab and closing the browser.
   </summary>
+  <token key="ExperimentCategory">
+    <variant name="">
+      <obsolete>
+        Deprecated 2021-02. Replaced by experiment arm suffixes.
+      </obsolete>
+    </variant>
+    <variant name=".News"/>
+    <variant name=".Organic"/>
+  </token>
 </histogram>
 
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"

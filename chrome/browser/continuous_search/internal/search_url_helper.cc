@@ -45,6 +45,25 @@ JNI_SearchUrlHelper_GetQueryIfValidSrpUrl(
              : base::android::ScopedJavaLocalRef<jstring>();
 }
 
+base::android::ScopedJavaLocalRef<jstring>
+JNI_SearchUrlHelper_GetHistogramSuffixForUrl(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_gurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  if (!url->is_valid())
+    return base::android::ScopedJavaLocalRef<jstring>();
+
+  SearchResultCategory category = GetResultCategoryForUrl(*url);
+  switch (category) {
+    case SearchResultCategory::kOrganic:
+      return base::android::ConvertUTF8ToJavaString(env, ".Organic");
+    case SearchResultCategory::kNews:
+      return base::android::ConvertUTF8ToJavaString(env, ".News");
+    case SearchResultCategory::kNone:
+      return base::android::ScopedJavaLocalRef<jstring>();
+  }
+}
+
 base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
   if (!google_util::IsGoogleSearchUrl(url) ||
       GetResultCategoryForUrl(url) == SearchResultCategory::kNone)

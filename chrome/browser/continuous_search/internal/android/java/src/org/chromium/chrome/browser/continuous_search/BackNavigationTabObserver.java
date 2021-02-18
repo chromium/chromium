@@ -21,6 +21,7 @@ import org.chromium.url.GURL;
 public class BackNavigationTabObserver extends EmptyTabObserver {
     private GURL mLastVisitedUrl;
     private String mLastSrpUrlQuery;
+    private String mHistogramSuffix;
     private int mBackNavigationCount;
 
     public BackNavigationTabObserver(Tab tab) {
@@ -52,6 +53,7 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
                 // Encountered a new SRP session. Record the previous session and start a new one.
                 recordMetricAndClearCache();
                 mLastSrpUrlQuery = query;
+                mHistogramSuffix = SearchUrlHelper.getHistogramSuffixForUrl(entry.getUrl());
             }
             // A page opened through SRP has google.com as its referrer URL. Treat other cases as
             // navigating away from the SRP session.
@@ -89,7 +91,8 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
     private void recordMetricAndClearCache() {
         if (mLastSrpUrlQuery != null) {
             RecordHistogram.recordCount100Histogram(
-                    "Browser.ContinuousSearch.BackNavigationToSrp", mBackNavigationCount);
+                    "Browser.ContinuousSearch.BackNavigationToSrp" + mHistogramSuffix,
+                    mBackNavigationCount);
         }
         mLastSrpUrlQuery = null;
         mBackNavigationCount = 0;

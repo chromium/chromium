@@ -36,9 +36,21 @@ public class SearchUrlHelper {
         return SearchUrlHelperJni.get().getQueryIfValidSrpUrl(url);
     }
 
+    /**
+     * Returns the appropriate histogram suffix (".Organic", ".News") based on the given URL.
+     * @param url the url to determine the histogram suffix with
+     * @return the suffix string
+     */
+    public static String getHistogramSuffixForUrl(GURL url) {
+        String suffix = SearchUrlHelperJni.get().getHistogramSuffixForUrl(url);
+        assert suffix != null;
+        return suffix;
+    }
+
     @NativeMethods
     interface Natives {
         boolean isGoogleDomainUrl(GURL url);
         String getQueryIfValidSrpUrl(GURL url);
+        String getHistogramSuffixForUrl(GURL url);
     }
 }

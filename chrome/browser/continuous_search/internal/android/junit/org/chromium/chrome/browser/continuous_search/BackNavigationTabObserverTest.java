@@ -19,10 +19,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
-import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -33,10 +33,13 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * Unit tests for the {@link BackNavigationTabObserver} class.
  */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(shadows = {ShadowRecordHistogram.class})
 public class BackNavigationTabObserverTest {
     private static final String HISTOGRAM = "Browser.ContinuousSearch.BackNavigationToSrp";
@@ -52,6 +55,16 @@ public class BackNavigationTabObserverTest {
     private SearchUrlHelper.Natives mSearchUrlHelperJniMock;
 
     private BackNavigationTabObserver mBackNavigationTabObserver;
+    private String mHistogramSuffix;
+
+    public BackNavigationTabObserverTest(String histogramSuffix) {
+        mHistogramSuffix = histogramSuffix;
+    }
+
+    @ParameterizedRobolectricTestRunner.Parameters
+    public static Collection histogramSuffixes() {
+        return Arrays.asList(new Object[][] {{".Organic"}, {".News"}});
+    }
 
     @Before
     public void setUp() {
@@ -65,10 +78,9 @@ public class BackNavigationTabObserverTest {
         when(webContents.getNavigationController()).thenReturn(mNavigationController);
 
         GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
+        GURL searchUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL);
         doReturn("test").when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(searchUrl));
-        doReturn("query")
-                .when(mSearchUrlHelperJniMock)
-                .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL)));
+        doReturn("query").when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(searchUrl2));
         doReturn(null)
                 .when(mSearchUrlHelperJniMock)
                 .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
@@ -80,6 +92,12 @@ public class BackNavigationTabObserverTest {
                 .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
         doReturn(true).when(mSearchUrlHelperJniMock).isGoogleDomainUrl(eq(searchUrl));
         doReturn(false).when(mSearchUrlHelperJniMock).isGoogleDomainUrl(eq(GURL.emptyGURL()));
+        doReturn(mHistogramSuffix)
+                .when(mSearchUrlHelperJniMock)
+                .getHistogramSuffixForUrl(eq(searchUrl));
+        doReturn(mHistogramSuffix)
+                .when(mSearchUrlHelperJniMock)
+                .getHistogramSuffixForUrl(eq(searchUrl2));
     }
 
     private NavigationEntry createNavigationEntry(GURL url) {
@@ -107,6 +125,12 @@ public class BackNavigationTabObserverTest {
         }
     }
 
+    private void assertHistogramRecorded(int expectedCount, int bucket) {
+        assertEquals(expectedCount,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM + mHistogramSuffix, bucket));
+    }
+
     @Test
     public void testEndSessionWith3PSite() {
         navigateThroughEntries(
@@ -119,7 +143,7 @@ public class BackNavigationTabObserverTest {
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)),
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
 
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 2));
+        assertHistogramRecorded(1, 2);
     }
 
     @Test
@@ -132,7 +156,7 @@ public class BackNavigationTabObserverTest {
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)),
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
 
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 1));
+        assertHistogramRecorded(1, 1);
     }
 
     @Test
@@ -146,7 +170,7 @@ public class BackNavigationTabObserverTest {
                         JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)),
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL)));
 
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 1));
+        assertHistogramRecorded(1, 1);
     }
 
     @Test
@@ -160,7 +184,7 @@ public class BackNavigationTabObserverTest {
                         JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)));
         mBackNavigationTabObserver.onDestroyed(mTab);
 
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 1));
+        assertHistogramRecorded(1, 1);
         verify(mTab, times(1)).removeObserver(eq(mBackNavigationTabObserver));
     }
 
@@ -176,7 +200,7 @@ public class BackNavigationTabObserverTest {
 
         when(mTab.isNativePage()).thenReturn(true);
         mBackNavigationTabObserver.onContentChanged(mTab);
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 1));
+        assertHistogramRecorded(1, 1);
     }
 
     @Test
@@ -190,7 +214,7 @@ public class BackNavigationTabObserverTest {
                         JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)));
 
         mBackNavigationTabObserver.onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 1));
+        assertHistogramRecorded(1, 1);
     }
 
     @Test
@@ -201,7 +225,7 @@ public class BackNavigationTabObserverTest {
                         JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)),
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
 
-        assertEquals(1, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 0));
+        assertHistogramRecorded(1, 0);
     }
 
     @Test
@@ -210,6 +234,6 @@ public class BackNavigationTabObserverTest {
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)),
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
 
-        assertEquals(0, ShadowRecordHistogram.getHistogramValueCountForTesting(HISTOGRAM, 0));
+        assertHistogramRecorded(0, 0);
     }
 }
