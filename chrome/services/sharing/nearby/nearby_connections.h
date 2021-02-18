@@ -154,9 +154,24 @@ class NearbyConnections : public mojom::NearbyConnections {
   scoped_refptr<base::SingleThreadTaskRunner> GetThreadTaskRunner();
 
  private:
+  // These values are used for metrics. Entries should not be renumbered and
+  // numeric values should never be reused. If entries are added, kMaxValue
+  // should be updated.
+  enum class MojoDependencyName {
+    kNearbyConnections = 0,
+    kBluetoothAdapter = 1,
+    kSocketManager = 2,
+    kMdnsResponder = 3,
+    kIceConfigFetcher = 4,
+    kWebRtcSignalingMessenger = 5,
+    kMaxValue = kWebRtcSignalingMessenger
+  };
+
   Core* GetCore(const std::string& service_id);
 
-  void OnDisconnect(const std::string dependency_name);
+  std::string GetMojoDependencyName(MojoDependencyName dependency_name);
+
+  void OnDisconnect(MojoDependencyName dependency_name);
 
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
   base::OnceClosure on_disconnect_;

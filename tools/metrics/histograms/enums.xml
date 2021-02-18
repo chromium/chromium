@@ -51937,6 +51937,15 @@ Called by update_use_counter_css.py.-->
   <int value="14" label="Payload unknown"/>
 </enum>
 
+<enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
+  <int value="0" label="Nearby Connections"/>
+  <int value="1" label="Bluetooth Adapter"/>
+  <int value="2" label="Socket Manager"/>
+  <int value="3" label="MDNS Responder"/>
+  <int value="4" label="ICE Config Fetcher"/>
+  <int value="5" label="WebRTC Signaling Messenger"/>
+</enum>
+
 <enum name="NearbyConnectionsUtilityProcessShutdownReason">
   <int value="0" label="Normal"/>
   <int value="1" label="Crash"/>
