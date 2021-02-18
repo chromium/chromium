@@ -33,11 +33,11 @@ float CalculateTextAnchorShift(const ComputedStyle& style, float length) {
     default:
       NOTREACHED();
       FALLTHROUGH;
-    case TA_START:
+    case ETextAnchor::kStart:
       return is_ltr ? 0 : -length;
-    case TA_MIDDLE:
+    case ETextAnchor::kMiddle:
       return -length / 2;
-    case TA_END:
+    case ETextAnchor::kEnd:
       return is_ltr ? -length : 0;
   }
 }
@@ -50,11 +50,11 @@ bool NeedsTextAnchorAdjustment(const ComputedStyle& style) {
     default:
       NOTREACHED();
       FALLTHROUGH;
-    case TA_START:
+    case ETextAnchor::kStart:
       return !is_ltr;
-    case TA_MIDDLE:
+    case ETextAnchor::kMiddle:
       return true;
-    case TA_END:
+    case ETextAnchor::kEnd:
       return is_ltr;
   }
 }

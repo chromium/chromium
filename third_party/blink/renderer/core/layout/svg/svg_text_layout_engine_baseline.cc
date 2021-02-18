@@ -19,7 +19,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_engine_baseline.h"
 
-#include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
@@ -62,42 +61,42 @@ SVGTextLayoutEngineBaseline::DominantBaselineToAlignmentBaseline(
   DCHECK(text_line_layout.Style());
 
   EDominantBaseline baseline = text_line_layout.StyleRef().DominantBaseline();
-  if (baseline == DB_AUTO) {
+  if (baseline == EDominantBaseline::kAuto) {
     if (is_vertical_text)
-      baseline = DB_CENTRAL;
+      baseline = EDominantBaseline::kCentral;
     else
-      baseline = DB_ALPHABETIC;
+      baseline = EDominantBaseline::kAlphabetic;
   }
 
   switch (baseline) {
-    case DB_USE_SCRIPT:
+    case EDominantBaseline::kUseScript:
       // TODO(fs): The dominant-baseline and the baseline-table components
       // are set by determining the predominant script of the character data
       // content.
       return EAlignmentBaseline::kAlphabetic;
-    case DB_NO_CHANGE:
+    case EDominantBaseline::kNoChange:
       DCHECK(text_line_layout.Parent());
       return DominantBaselineToAlignmentBaseline(is_vertical_text,
                                                  text_line_layout.Parent());
-    case DB_RESET_SIZE:
+    case EDominantBaseline::kResetSize:
       DCHECK(text_line_layout.Parent());
       return DominantBaselineToAlignmentBaseline(is_vertical_text,
                                                  text_line_layout.Parent());
-    case DB_IDEOGRAPHIC:
+    case EDominantBaseline::kIdeographic:
       return EAlignmentBaseline::kIdeographic;
-    case DB_ALPHABETIC:
+    case EDominantBaseline::kAlphabetic:
       return EAlignmentBaseline::kAlphabetic;
-    case DB_HANGING:
+    case EDominantBaseline::kHanging:
       return EAlignmentBaseline::kHanging;
-    case DB_MATHEMATICAL:
+    case EDominantBaseline::kMathematical:
       return EAlignmentBaseline::kMathematical;
-    case DB_CENTRAL:
+    case EDominantBaseline::kCentral:
       return EAlignmentBaseline::kCentral;
-    case DB_MIDDLE:
+    case EDominantBaseline::kMiddle:
       return EAlignmentBaseline::kMiddle;
-    case DB_TEXT_AFTER_EDGE:
+    case EDominantBaseline::kTextAfterEdge:
       return EAlignmentBaseline::kTextAfterEdge;
-    case DB_TEXT_BEFORE_EDGE:
+    case EDominantBaseline::kTextBeforeEdge:
       return EAlignmentBaseline::kTextBeforeEdge;
     default:
       NOTREACHED();

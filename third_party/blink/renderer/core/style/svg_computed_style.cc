@@ -109,13 +109,6 @@ bool SVGComputedStyle::DiffNeedsLayoutAndPaintInvalidation(
   if (inherited_resources != other.inherited_resources)
     return true;
 
-  // All text related properties influence layout.
-  if (svg_inherited_flags.text_anchor !=
-          other.svg_inherited_flags.text_anchor ||
-      svg_inherited_flags.dominant_baseline !=
-          other.svg_inherited_flags.dominant_baseline)
-    return true;
-
   // These properties affect the cached stroke bounding box rects.
   if (svg_inherited_flags.cap_style != other.svg_inherited_flags.cap_style ||
       svg_inherited_flags.join_style != other.svg_inherited_flags.join_style)
@@ -164,18 +157,6 @@ bool SVGComputedStyle::DiffNeedsPaintInvalidation(
         fill->opacity != other.fill->opacity)
       return true;
   }
-
-  // Changes of these flags only cause paint invalidations.
-  if (svg_inherited_flags.shape_rendering !=
-          other.svg_inherited_flags.shape_rendering ||
-      svg_inherited_flags.clip_rule != other.svg_inherited_flags.clip_rule ||
-      svg_inherited_flags.fill_rule != other.svg_inherited_flags.fill_rule ||
-      svg_inherited_flags.color_interpolation !=
-          other.svg_inherited_flags.color_interpolation ||
-      svg_inherited_flags.color_interpolation_filters !=
-          other.svg_inherited_flags.color_interpolation_filters ||
-      svg_inherited_flags.paint_order != other.svg_inherited_flags.paint_order)
-    return true;
 
   return false;
 }

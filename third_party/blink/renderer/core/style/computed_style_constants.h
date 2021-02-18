@@ -357,6 +357,23 @@ enum class EListStyleType : unsigned {
 
 enum class EBaselineShiftType : unsigned { kLength, kSub, kSuper };
 
+enum EPaintOrderType {
+  PT_NONE = 0,
+  PT_FILL = 1,
+  PT_STROKE = 2,
+  PT_MARKERS = 3
+};
+
+enum EPaintOrder {
+  kPaintOrderNormal,
+  kPaintOrderFillStrokeMarkers,
+  kPaintOrderFillMarkersStroke,
+  kPaintOrderStrokeFillMarkers,
+  kPaintOrderStrokeMarkersFill,
+  kPaintOrderMarkersFillStroke,
+  kPaintOrderMarkersStrokeFill
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_

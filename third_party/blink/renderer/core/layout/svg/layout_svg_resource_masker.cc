@@ -56,7 +56,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
   PaintRecordBuilder builder(context);
 
   ColorFilter mask_content_filter =
-      StyleRef().ColorInterpolation() == CI_LINEARRGB
+      StyleRef().ColorInterpolation() == EColorInterpolation::kLinearrgb
           ? kColorFilterSRGBToLinearRGB
           : kColorFilterNone;
   builder.Context().SetColorFilter(mask_content_filter);

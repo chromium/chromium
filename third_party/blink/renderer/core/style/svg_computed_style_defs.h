@@ -42,50 +42,6 @@ namespace blink {
 
 class StyleSVGResource;
 
-enum ETextAnchor { TA_START, TA_MIDDLE, TA_END };
-
-enum EColorInterpolation { CI_AUTO, CI_SRGB, CI_LINEARRGB };
-
-enum EColorRendering { CR_AUTO, CR_OPTIMIZESPEED, CR_OPTIMIZEQUALITY };
-enum EShapeRendering {
-  SR_AUTO,
-  SR_OPTIMIZESPEED,
-  SR_CRISPEDGES,
-  SR_GEOMETRICPRECISION
-};
-
-enum EDominantBaseline {
-  DB_AUTO,
-  DB_USE_SCRIPT,
-  DB_NO_CHANGE,
-  DB_RESET_SIZE,
-  DB_IDEOGRAPHIC,
-  DB_ALPHABETIC,
-  DB_HANGING,
-  DB_MATHEMATICAL,
-  DB_CENTRAL,
-  DB_MIDDLE,
-  DB_TEXT_AFTER_EDGE,
-  DB_TEXT_BEFORE_EDGE
-};
-
-enum EPaintOrderType {
-  PT_NONE = 0,
-  PT_FILL = 1,
-  PT_STROKE = 2,
-  PT_MARKERS = 3
-};
-
-enum EPaintOrder {
-  kPaintOrderNormal = 0,
-  kPaintOrderFillStrokeMarkers = 1,
-  kPaintOrderFillMarkersStroke = 2,
-  kPaintOrderStrokeFillMarkers = 3,
-  kPaintOrderStrokeMarkersFill = 4,
-  kPaintOrderMarkersFillStroke = 5,
-  kPaintOrderMarkersStrokeFill = 6
-};
-
 // Inherited/Non-Inherited Style Datastructures
 class StyleFillData : public RefCounted<StyleFillData> {
   USING_FAST_MALLOC(StyleFillData);

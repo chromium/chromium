@@ -156,15 +156,16 @@ static EColorInterpolation ColorInterpolationForElement(
 
 InterpolationSpace SVGFilterBuilder::ResolveInterpolationSpace(
     EColorInterpolation color_interpolation) {
-  return color_interpolation == CI_LINEARRGB ? kInterpolationSpaceLinear
-                                             : kInterpolationSpaceSRGB;
+  return color_interpolation == EColorInterpolation::kLinearrgb
+             ? kInterpolationSpaceLinear
+             : kInterpolationSpaceSRGB;
 }
 
 void SVGFilterBuilder::BuildGraph(Filter* filter,
                                   SVGFilterElement& filter_element,
                                   const FloatRect& reference_box) {
   EColorInterpolation filter_color_interpolation =
-      ColorInterpolationForElement(filter_element, CI_AUTO);
+      ColorInterpolationForElement(filter_element, EColorInterpolation::kAuto);
   SVGUnitTypes::SVGUnitType primitive_units =
       filter_element.primitiveUnits()->CurrentEnumValue();
 

@@ -65,8 +65,9 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
                                   paint_info.phase);
       const ComputedStyle& style = layout_svg_shape_.StyleRef();
 
-      bool should_anti_alias = style.ShapeRendering() != SR_CRISPEDGES &&
-                               style.ShapeRendering() != SR_OPTIMIZESPEED;
+      bool should_anti_alias =
+          style.ShapeRendering() != EShapeRendering::kCrispedges &&
+          style.ShapeRendering() != EShapeRendering::kOptimizespeed;
 
       for (int i = 0; i < 3; i++) {
         switch (style.PaintOrderType(i)) {

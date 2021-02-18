@@ -21,7 +21,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ENGINE_BASELINE_H_
 
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 

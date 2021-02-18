@@ -1096,19 +1096,6 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   const SVGComputedStyle& SvgStyle() const { return *svg_style_.Get(); }
   SVGComputedStyle& AccessSVGStyle() { return *svg_style_.Access(); }
 
-  WindRule ClipRule() const { return SvgStyle().ClipRule(); }
-  EColorInterpolation ColorInterpolation() const {
-    return SvgStyle().ColorInterpolation();
-  }
-  EColorInterpolation ColorInterpolationFilters() const {
-    return SvgStyle().ColorInterpolationFilters();
-  }
-  EColorRendering ColorRendering() const { return SvgStyle().ColorRendering(); }
-  EDominantBaseline DominantBaseline() const {
-    return SvgStyle().DominantBaseline();
-  }
-  WindRule FillRule() const { return SvgStyle().FillRule(); }
-
   const SVGPaint& FillPaint() const { return SvgStyle().FillPaint(); }
   const SVGPaint& InternalVisitedFillPaint() const {
     return SvgStyle().InternalVisitedFillPaint();
@@ -1140,10 +1127,7 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   }
 
   // paint-order helper
-  EPaintOrder PaintOrder() const { return SvgStyle().PaintOrder(); }
   EPaintOrderType PaintOrderType(unsigned index) const;
-
-  EShapeRendering ShapeRendering() const { return SvgStyle().ShapeRendering(); }
 
   // stroke helpers
   bool HasStroke() const { return !StrokePaint().IsNone(); }
@@ -1190,8 +1174,6 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
   void SetStrokeWidth(const UnzoomedLength& w) {
     AccessSVGStyle().SetStrokeWidth(w);
   }
-
-  ETextAnchor TextAnchor() const { return SvgStyle().TextAnchor(); }
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.

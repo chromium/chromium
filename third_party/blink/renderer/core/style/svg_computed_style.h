@@ -62,18 +62,8 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   bool operator!=(const SVGComputedStyle& o) const { return !(*this == o); }
 
   // Initial values for all the properties
-  static EDominantBaseline InitialDominantBaseline() { return DB_AUTO; }
   static LineCap InitialCapStyle() { return kButtCap; }
-  static WindRule InitialClipRule() { return RULE_NONZERO; }
-  static EColorInterpolation InitialColorInterpolation() { return CI_SRGB; }
-  static EColorInterpolation InitialColorInterpolationFilters() {
-    return CI_LINEARRGB;
-  }
-  static EColorRendering InitialColorRendering() { return CR_AUTO; }
-  static WindRule InitialFillRule() { return RULE_NONZERO; }
   static LineJoin InitialJoinStyle() { return kMiterJoin; }
-  static EShapeRendering InitialShapeRendering() { return SR_AUTO; }
-  static ETextAnchor InitialTextAnchor() { return TA_START; }
   static float InitialFillOpacity() { return 1; }
   static SVGPaint InitialFillPaint() { return SVGPaint(Color::kBlack); }
   static float InitialStrokeOpacity() { return 1; }
@@ -87,32 +77,10 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   static StyleSVGResource* InitialMarkerStartResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerMidResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerEndResource() { return nullptr; }
-  static EPaintOrder InitialPaintOrder() { return kPaintOrderNormal; }
 
   // SVG CSS Property setters
-  void SetDominantBaseline(EDominantBaseline val) {
-    svg_inherited_flags.dominant_baseline = val;
-  }
   void SetCapStyle(LineCap val) { svg_inherited_flags.cap_style = val; }
-  void SetClipRule(WindRule val) { svg_inherited_flags.clip_rule = val; }
-  void SetColorInterpolation(EColorInterpolation val) {
-    svg_inherited_flags.color_interpolation = val;
-  }
-  void SetColorInterpolationFilters(EColorInterpolation val) {
-    svg_inherited_flags.color_interpolation_filters = val;
-  }
-  void SetColorRendering(EColorRendering val) {
-    svg_inherited_flags.color_rendering = val;
-  }
-  void SetFillRule(WindRule val) { svg_inherited_flags.fill_rule = val; }
   void SetJoinStyle(LineJoin val) { svg_inherited_flags.join_style = val; }
-  void SetShapeRendering(EShapeRendering val) {
-    svg_inherited_flags.shape_rendering = val;
-  }
-  void SetTextAnchor(ETextAnchor val) { svg_inherited_flags.text_anchor = val; }
-  void SetPaintOrder(EPaintOrder val) {
-    svg_inherited_flags.paint_order = (int)val;
-  }
   void SetFillOpacity(float obj) {
     if (!(fill->opacity == obj))
       fill.Access()->opacity = obj;
@@ -171,29 +139,9 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   void SetMarkerEndResource(scoped_refptr<StyleSVGResource> resource);
 
   // Read accessors for all the properties
-  EDominantBaseline DominantBaseline() const {
-    return (EDominantBaseline)svg_inherited_flags.dominant_baseline;
-  }
   LineCap CapStyle() const { return (LineCap)svg_inherited_flags.cap_style; }
-  WindRule ClipRule() const { return (WindRule)svg_inherited_flags.clip_rule; }
-  EColorInterpolation ColorInterpolation() const {
-    return (EColorInterpolation)svg_inherited_flags.color_interpolation;
-  }
-  EColorInterpolation ColorInterpolationFilters() const {
-    return (EColorInterpolation)svg_inherited_flags.color_interpolation_filters;
-  }
-  EColorRendering ColorRendering() const {
-    return (EColorRendering)svg_inherited_flags.color_rendering;
-  }
-  WindRule FillRule() const { return (WindRule)svg_inherited_flags.fill_rule; }
   LineJoin JoinStyle() const {
     return (LineJoin)svg_inherited_flags.join_style;
-  }
-  EShapeRendering ShapeRendering() const {
-    return (EShapeRendering)svg_inherited_flags.shape_rendering;
-  }
-  ETextAnchor TextAnchor() const {
-    return (ETextAnchor)svg_inherited_flags.text_anchor;
   }
   float FillOpacity() const { return fill->opacity; }
   const SVGPaint& FillPaint() const { return fill->paint; }
@@ -212,9 +160,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   StyleSVGResource* MarkerEndResource() const {
     return inherited_resources->marker_end.get();
   }
-  EPaintOrder PaintOrder() const {
-    return (EPaintOrder)svg_inherited_flags.paint_order;
-  }
 
   const SVGPaint& InternalVisitedFillPaint() const {
     return fill->visited_link_paint;
@@ -227,34 +172,15 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   // inherit
   struct InheritedFlags {
     bool operator==(const InheritedFlags& other) const {
-      return (color_rendering == other.color_rendering) &&
-             (shape_rendering == other.shape_rendering) &&
-             (clip_rule == other.clip_rule) && (fill_rule == other.fill_rule) &&
-             (cap_style == other.cap_style) &&
-             (join_style == other.join_style) &&
-             (text_anchor == other.text_anchor) &&
-             (color_interpolation == other.color_interpolation) &&
-             (color_interpolation_filters ==
-              other.color_interpolation_filters) &&
-             (paint_order == other.paint_order) &&
-             (dominant_baseline == other.dominant_baseline);
+      return (cap_style == other.cap_style) && (join_style == other.join_style);
     }
 
     bool operator!=(const InheritedFlags& other) const {
       return !(*this == other);
     }
 
-    unsigned color_rendering : 2;              // EColorRendering
-    unsigned shape_rendering : 2;              // EShapeRendering
-    unsigned clip_rule : 1;                    // WindRule
-    unsigned fill_rule : 1;                    // WindRule
     unsigned cap_style : 2;                    // LineCap
     unsigned join_style : 2;                   // LineJoin
-    unsigned text_anchor : 2;                  // ETextAnchor
-    unsigned color_interpolation : 2;          // EColorInterpolation
-    unsigned color_interpolation_filters : 2;  // EColorInterpolation_
-    unsigned paint_order : 3;                  // EPaintOrder
-    unsigned dominant_baseline : 4;            // EDominantBaseline
   } svg_inherited_flags;
 
   // inherited attributes
@@ -274,18 +200,8 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   bool DiffNeedsPaintInvalidation(const SVGComputedStyle& other) const;
 
   void SetBitDefaults() {
-    svg_inherited_flags.clip_rule = InitialClipRule();
-    svg_inherited_flags.color_rendering = InitialColorRendering();
-    svg_inherited_flags.fill_rule = InitialFillRule();
-    svg_inherited_flags.shape_rendering = InitialShapeRendering();
-    svg_inherited_flags.text_anchor = InitialTextAnchor();
     svg_inherited_flags.cap_style = InitialCapStyle();
     svg_inherited_flags.join_style = InitialJoinStyle();
-    svg_inherited_flags.color_interpolation = InitialColorInterpolation();
-    svg_inherited_flags.color_interpolation_filters =
-        InitialColorInterpolationFilters();
-    svg_inherited_flags.paint_order = InitialPaintOrder();
-    svg_inherited_flags.dominant_baseline = InitialDominantBaseline();
   }
 };
 
