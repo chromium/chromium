@@ -1212,7 +1212,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2332742915001411729">Obnoviť na predvolené hodnoty</translation>
 <translation id="2335111415680198280">{0,plural, =1{Zavrieť # okno}few{Zavrieť # okná}many{Close # windows}other{Zavrieť # okien}}</translation>
 <translation id="2335122562899522968">Táto stránka nastavila súbory cookie.</translation>
-<translation id="2336228925368920074">Všetky karty uložiť ako záložky...</translation>
+<translation id="2336228925368920074">Uložiť všetky karty ako záložky...</translation>
 <translation id="2336376423977300504">Vždy vymazať súbory cookie pri zavretí okien</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">Súbor <ph name="FILE_NAME" /> nie je možné bezpečne stiahnuť</translation>
@@ -3893,7 +3893,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5446983216438178612">Zobrazovať certifikáty organizácie</translation>
 <translation id="5448293924669608770">Hops, pri prihlásení sa niečo pokazilo</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
-<translation id="5449588825071916739">Všetky karty uložiť ako záložky</translation>
+<translation id="5449588825071916739">Uložiť všetky karty ako záložky</translation>
 <translation id="5449716055534515760">Zavrieť o&amp;kno</translation>
 <translation id="5452974209916053028">Aktuálna relácia anonymného režimu: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">Bublinu s prepisom ste presunuli <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % naprieč a <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % nadol</translation>

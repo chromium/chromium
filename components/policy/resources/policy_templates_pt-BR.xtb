@@ -1371,7 +1371,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você definir a política, os usuários não poderão mudá-la.
 
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
-<translation id="2949765875529121431">Definir a política especifica uma lista de nomes do host isentos da verificação da política HSTS que faria o upgrade de solicitações http para https. Apenas nomes de host de etiqueta única são permitidos nesta política. Nomes de host precisam ser canonizados. Todos os IDNs precisam ser convertidos no formato de etiqueta A, e todas as letras ASCII precisam ser minúsculas. Essa política se aplica exclusivamente aos nomes do host especificados, e não aos subdomínios desses nomes.</translation>
+<translation id="2949765875529121431">Definir a política especifica uma lista de nomes do host isentos da verificação da política HSTS que faria o upgrade de solicitações http para https. Apenas nomes de host de rótulo único são permitidos nesta política. Nomes de host precisam ser canonizados. Todos os IDNs precisam ser convertidos no formato de rótulo A, e todas as letras ASCII precisam ser minúsculas. Essa política é válida exclusivamente para nomes do host especificados, e não para subdomínios desses nomes.</translation>
 <translation id="2952347049958405264">Restrições:</translation>
 <translation id="2957047180944828740">Especifica se sites não seguros podem fazer solicitações para endpoints de uma rede mais privada</translation>
 <translation id="2957506574938329824">Não permite que nenhum site solicite acesso a dispositivos Bluetooth por meio da API Web Bluetooth</translation>

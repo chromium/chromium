@@ -607,7 +607,7 @@
 <translation id="7544853251252956727">Riproduzione casuale</translation>
 <translation id="7547780573915868306">Lituano</translation>
 <translation id="7547811415869834682">Olandese</translation>
-<translation id="7551643184018910560">Fissa sullo shelf</translation>
+<translation id="7551643184018910560">Blocca sullo shelf</translation>
 <translation id="7553492409867692754">Concedi alle app Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="7575645593344061397">Ripristino del file "<ph name="FILENAME" />" in corso…</translation>
 <translation id="7576032389798113292">6 x 4</translation>
@@ -706,7 +706,7 @@
 <translation id="8395901698320285466">Dimensioni</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Nome non valido</translation>
-<translation id="8461467696380332069">Fai clic con il pulsante destro del mouse su un file e seleziona "Fissa sullo shelf" per accedervi rapidamente dallo shelf.</translation>
+<translation id="8461467696380332069">Fai clic con il pulsante destro del mouse su un file e seleziona "Blocca sullo shelf" per accedervi rapidamente dallo shelf.</translation>
 <translation id="8463494891489624050">Vietnamita VIQR</translation>
 <translation id="8466234950814670489">Archivio Tar</translation>
 <translation id="8475647382427415476">Al momento non è possibile sincronizzare il file "<ph name="FILENAME" />" con Google Drive. Google Drive riproverà più tardi.</translation>
@@ -733,7 +733,7 @@
 <translation id="8714406895390098252">Bicicletta</translation>
 <translation id="8719721339511222681">È stato selezionato l'elemento <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croato</translation>
-<translation id="8750438273876807512">Tocca e tieni premuto un file, tocca <ph name="ICON" /> e seleziona "Fissa sullo shelf" per accedervi rapidamente dallo shelf.</translation>
+<translation id="8750438273876807512">Tocca e tieni premuto un file, tocca <ph name="ICON" /> e seleziona "Blocca sullo shelf" per accedervi rapidamente dallo shelf.</translation>
 <translation id="8775404590947523323">Le modifiche vengono salvate automaticamente.<ph name="BREAKS" />Per conservare una copia dell'immagine originale, deseleziona l'opzione "Sovrascrivi originale".</translation>
 <translation id="8808686172382650546">Gatto</translation>
 <translation id="8810671769985673465">Compressione non riuscita. Elemento esistente: "<ph name="FILE_NAME" />"</translation>
