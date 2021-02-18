@@ -19,15 +19,15 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_cursor_factory.h"  // nogncheck
-#endif
-
 namespace ui {
 class ContextFactory;
 class EventObserver;
 class GestureRecognizer;
 class PlatformEventSource;
+
+#if defined(OS_WIN) || defined(USE_X11)
+class CursorFactory;
+#endif
 }  // namespace ui
 
 namespace aura {
@@ -182,8 +182,8 @@ class AURA_EXPORT Env : public ui::EventTarget,
 
   std::unique_ptr<ui::GestureRecognizer> gesture_recognizer_;
 
-#if defined(USE_X11)
-  std::unique_ptr<ui::X11CursorFactory> cursor_factory_;
+#if defined(OS_WIN) || defined(USE_X11)
+  std::unique_ptr<ui::CursorFactory> cursor_factory_;
 #endif
 
   std::unique_ptr<InputStateLookup> input_state_lookup_;

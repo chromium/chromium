@@ -9,6 +9,7 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/string_util_win.h"
+#include "ui/base/cursor/win/win_cursor.h"
 #include "ui/base/win/shell.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -146,7 +147,8 @@ bool WinWindow::ShouldUseNativeFrame() const {
 }
 
 void WinWindow::SetCursor(PlatformCursor cursor) {
-  ::SetCursor(cursor);
+  DCHECK(cursor);
+  ::SetCursor(static_cast<WinCursor*>(cursor)->hcursor());
 }
 
 void WinWindow::MoveCursorTo(const gfx::Point& location) {

@@ -14,6 +14,8 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+
+#include "ui/base/cursor/win/win_cursor.h"
 #endif
 
 namespace content {
@@ -208,7 +210,9 @@ void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
   display.set_device_scale_factor(scale);
   webcursor.SetDisplayInfo(display);
 
-  HCURSOR windows_cursor_handle = webcursor.GetNativeCursor().platform();
+  HCURSOR windows_cursor_handle =
+      static_cast<ui::WinCursor*>(webcursor.GetNativeCursor().platform())
+          ->hcursor();
   EXPECT_NE(nullptr, windows_cursor_handle);
   ICONINFO windows_icon_info;
   EXPECT_TRUE(GetIconInfo(windows_cursor_handle, &windows_icon_info));

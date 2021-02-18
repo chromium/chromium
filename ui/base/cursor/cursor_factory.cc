@@ -174,7 +174,7 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
       return {"dnd-link", "hand2"};
     case mojom::CursorType::kCustom:
       // kCustom is for custom image cursors. The platform cursor will be set
-      // at WebCursor::GetPlatformCursor().
+      // at WebCursor::GetNativeCursor().
       NOTREACHED();
       FALLTHROUGH;
     case mojom::CursorType::kNull:
