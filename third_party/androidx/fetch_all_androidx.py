@@ -155,7 +155,7 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
     if not lib_dirs:
         raise Exception('No generated libraries in {}'.format(libs_dir))
 
-    data_files = ['BUILD.gn', 'additional_readme_paths.json']
+    data_files = ['BUILD.gn', 'VERSION.txt', 'additional_readme_paths.json']
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
         androidx_rel_lib_dir = os.path.relpath(abs_lib_dir, _ANDROIDX_PATH)
@@ -170,12 +170,11 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
                 continue
             data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
-    # Prepend '0' to version to avoid conflicts with previous version format.
     contents = [
         '# Copyright 2020 The Chromium Authors. All rights reserved.',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
-        '# version: cr-0' + version,
+        '# version: ' + version,
         'package: chromium/third_party/androidx',
         'description: androidx',
         'data:',
@@ -211,6 +210,13 @@ def main():
         '--ignore-vulnerabilities'
     ]
     subprocess.run(fetch_all_cmd, check=True)
+
+    # Prepend '0' to version to avoid conflicts with previous version format.
+    version = 'cr-0' + version
+
+    version_txt_path = os.path.join(_ANDROIDX_PATH, 'VERSION.txt')
+    with open(version_txt_path, 'w') as f:
+        f.write(version)
 
     yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
     _write_cipd_yaml(libs_dir, version, yaml_path)
