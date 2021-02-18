@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "sql/vfs_wrapper.h"
@@ -98,7 +99,20 @@ int FuchsiaVfsUnlock(sqlite3_file* sqlite_file, int file_lock) {
 
 int FuchsiaVfsCheckReservedLock(sqlite3_file* sqlite_file, int* result) {
   VfsFile* vfs_file = reinterpret_cast<VfsFile*>(sqlite_file);
-  return vfs_file->lock_level;
+  switch (vfs_file->lock_level) {
+    case SQLITE_LOCK_NONE:
+    case SQLITE_LOCK_SHARED:
+      *result = 0;
+      return SQLITE_OK;
+    case SQLITE_LOCK_RESERVED:
+    case SQLITE_LOCK_PENDING:
+    case SQLITE_LOCK_EXCLUSIVE:
+      *result = 1;
+      return SQLITE_OK;
+    default:
+      NOTREACHED();
+      return SQLITE_IOERR_CHECKRESERVEDLOCK;
+  }
 }
 
 }  // namespace sql
