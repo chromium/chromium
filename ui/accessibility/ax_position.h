@@ -22,16 +22,59 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_text_styles.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/gfx/utf16_indexing.h"
 
 namespace ui {
+
+namespace {
+
+// Returns the parent node of the provided child. Returns the parent node's tree
+// id and node id through the provided output parameters,|parent_tree_id| and
+// |parent_id|.
+AXNode* GetParent(AXNode* child,
+                  AXTreeID child_tree_id,
+                  AXTreeID* parent_tree_id,
+                  AXNodeID* parent_id) {
+  DCHECK(parent_tree_id);
+  DCHECK(parent_id);
+  *parent_tree_id = AXTreeIDUnknown();
+  *parent_id = kInvalidAXNodeID;
+  if (!child)
+    return nullptr;
+
+  AXNode* parent = child->parent();
+  *parent_tree_id = child_tree_id;
+
+  if (!parent) {
+    AXTreeManager* manager =
+        AXTreeManagerMap::GetInstance().GetManager(child_tree_id);
+    if (manager) {
+      parent = manager->GetParentNodeFromParentTreeAsAXNode();
+      *parent_tree_id = manager->GetParentTreeID();
+    }
+  }
+
+  if (!parent) {
+    *parent_tree_id = AXTreeIDUnknown();
+    return parent;
+  }
+
+  *parent_id = parent->id();
+  return parent;
+}
+
+}  // namespace
 
 // Defines the type of position in the accessibility tree.
 // A tree position is used when referring to a specific child of a node in the
@@ -3809,19 +3852,61 @@ class AXPosition {
   // including any text found in descendant text nodes, based on the platform's
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes.
-  virtual base::string16 GetText() const = 0;
+  base::string16 GetText() const {
+    if (IsNullPosition())
+      return base::string16();
+
+    // Special case, if a position's anchor node has only ignored descendants,
+    // i.e., it appears to be empty to assistive software, on some platforms we
+    // need to still treat it as a character and a word boundary. We achieve
+    // this by adding an embedded object character in the text representation
+    // used by this class, but we don't expose that character to assistive
+    // software that tries to retrieve the node's inner text.
+    if (IsEmptyObjectReplacedByCharacter())
+      return AXNode::kEmbeddedCharacter;
+
+    // Special case, if a position's anchor node is hosting another
+    // accessibility tree, return the text that is found in that tree's root.
+    const AXNode* anchor = GetAnchor();
+    const AXTreeManager* child_tree_manager =
+        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*anchor);
+    if (child_tree_manager) {
+      // The child node exists in a separate tree from its parent.
+      anchor = child_tree_manager->GetRootAsAXNode();
+    }
+
+    switch (g_ax_embedded_object_behavior) {
+      case AXEmbeddedObjectBehavior::kSuppressCharacter:
+        return base::UTF8ToUTF16(anchor->GetInnerText());
+      case AXEmbeddedObjectBehavior::kExposeCharacter:
+        return anchor->GetHypertext();
+    }
+  }
 
   // Determines if the anchor containing this position is a <br> or a text
   // object whose parent's anchor is an enclosing <br>.
-  virtual bool IsInLineBreak() const = 0;
+  bool IsInLineBreak() const {
+    if (IsNullPosition())
+      return false;
+    return GetAnchor()->IsLineBreak();
+  }
 
   // Determines if the anchor containing this position is a text object.
-  virtual bool IsInTextObject() const = 0;
+  bool IsInTextObject() const {
+    if (IsNullPosition())
+      return false;
+    return GetAnchor()->IsText();
+  }
 
   // Determines if the text representation of this position's anchor contains
   // only whitespace characters; <br> objects span a single '\n' character, so
   // positions inside line breaks are also considered "in whitespace".
-  virtual bool IsInWhiteSpace() const = 0;
+  bool IsInWhiteSpace() const {
+    if (IsNullPosition())
+      return false;
+    return GetAnchor()->IsLineBreak() ||
+           base::ContainsOnlyChars(GetText(), base::kWhitespaceUTF16);
+  }
 
   // Returns the length of the text that is present inside the anchor node,
   // including any text found in descendant text nodes. This is based on the
@@ -3830,11 +3915,46 @@ class AXPosition {
   //
   // Similar to "text_offset_", the length of the text is in UTF16 code units,
   // not in grapheme clusters.
-  virtual int MaxTextOffset() const = 0;
+  int MaxTextOffset() const {
+    if (IsNullPosition())
+      return INVALID_OFFSET;
+
+    // Special case: If a node has only ignored descendants, i.e., it appears to
+    // be empty to assistive software, on some platforms we need to still treat
+    // it as a character and a word boundary. We achieve this by adding an
+    // "object replacement character" in the accessibility tree's text
+    // representation, but we don't expose that character to assistive software
+    // that tries to retrieve the node's inner text or hypertext.
+    if (IsEmptyObjectReplacedByCharacter())
+      return AXNode::kEmbeddedCharacterLength;
+
+    // Special case, if a position's anchor node is hosting another
+    // accessibility tree, return the text that is found in that tree's root.
+    const AXNode* anchor = GetAnchor();
+    const AXTreeManager* child_tree_manager =
+        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*anchor);
+    if (child_tree_manager) {
+      // The child node exists in a separate tree from its parent.
+      anchor = child_tree_manager->GetRootAsAXNode();
+    }
+
+    switch (g_ax_embedded_object_behavior) {
+      case AXEmbeddedObjectBehavior::kSuppressCharacter:
+        // TODO(nektar): Switch to anchor->GetInnerTextLength() after AXPosition
+        // switches to using UTF8.
+        return int{base::UTF8ToUTF16(anchor->GetInnerText()).length()};
+      case AXEmbeddedObjectBehavior::kExposeCharacter:
+        return int{anchor->GetHypertext().length()};
+    }
+  }
 
   // Returns the accessibility role of this position's anchor node. If this is a
   // "null position", returns `ax::mojom::Role::kNone`.
-  virtual ax::mojom::Role GetRole() const = 0;
+  ax::mojom::Role GetRole() const {
+    if (IsNullPosition())
+      return ax::mojom::Role::kNone;
+    return GetAnchor()->data().role;
+  }
 
  protected:
   AXPosition()
@@ -3933,10 +4053,43 @@ class AXPosition {
   }
 
   // Abstract methods.
-  virtual void AnchorChild(int child_index,
-                           AXTreeID* tree_id,
-                           int32_t* child_id) const = 0;
-  virtual int AnchorChildCount() const = 0;
+  void AnchorChild(int child_index,
+                   AXTreeID* tree_id,
+                   int32_t* child_id) const {
+    DCHECK(tree_id);
+    DCHECK(child_id);
+    if (!GetAnchor() || child_index < 0 || child_index >= AnchorChildCount()) {
+      *tree_id = AXTreeIDUnknown();
+      *child_id = kInvalidAXNodeID;
+      return;
+    }
+
+    AXNode* child = nullptr;
+    const AXTreeManager* child_tree_manager =
+        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*GetAnchor());
+    if (child_tree_manager) {
+      // The child node exists in a separate tree from its parent.
+      child = child_tree_manager->GetRootAsAXNode();
+      *tree_id = child_tree_manager->GetTreeID();
+    } else {
+      child = GetAnchor()->children()[size_t{child_index}];
+      *tree_id = this->tree_id();
+    }
+    *child_id = child->id();
+  }
+
+  int AnchorChildCount() const {
+    if (!GetAnchor())
+      return 0;
+
+    const AXTreeManager* child_tree_manager =
+        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*GetAnchor());
+    if (child_tree_manager)
+      return 1;
+
+    return int{GetAnchor()->children().size()};
+  }
+
   // When a child is ignored, it looks for unignored nodes of that child's
   // children until there are no more descendants.
   //
@@ -3945,15 +4098,85 @@ class AXPosition {
   // ++++GenericContainer ignored
   // ++++++StaticText "Hello"
   // When we call the following method on TextField, it would return 1.
-  virtual int AnchorUnignoredChildCount() const = 0;
-  virtual int AnchorIndexInParent() const = 0;
-  virtual base::stack<AXNodeType*> GetAncestorAnchors() const = 0;
-  virtual AXNodeType* GetLowestUnignoredAncestor() const = 0;
-  virtual void AnchorParent(AXTreeID* tree_id, int32_t* parent_id) const = 0;
-  virtual AXNodeType* GetNodeInTree(AXTreeID tree_id,
-                                    AXNodeData::AXID node_id) const = 0;
-  virtual AXNodeData::AXID GetAnchorID(AXNodeType* node) const = 0;
-  virtual AXTreeID GetTreeID(AXNodeType* node) const = 0;
+  int AnchorUnignoredChildCount() const {
+    if (!GetAnchor())
+      return 0;
+
+    const AXTreeManager* child_tree_manager =
+        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*GetAnchor());
+    if (child_tree_manager) {
+      DCHECK_EQ(GetAnchor()->GetUnignoredChildCount(), 0u)
+          << "A node cannot be hosting both a child tree and other nodes as "
+             "children.";
+      return 1;  // A child tree is never ignored.
+    }
+
+    return int{GetAnchor()->GetUnignoredChildCount()};
+  }
+
+  int AnchorIndexInParent() const {
+    // If this is the root tree, the index in parent will be 0.
+    return GetAnchor() ? int{GetAnchor()->index_in_parent()} : INVALID_INDEX;
+  }
+
+  base::stack<AXNodeType*> GetAncestorAnchors() const {
+    if (!GetAnchor())
+      return base::stack<AXNode*>();
+
+    base::stack<AXNode*> anchors;
+    AXNode* current_anchor = GetAnchor();
+    AXNodeID current_anchor_id = GetAnchor()->id();
+    AXTreeID current_tree_id = tree_id();
+    AXNodeID parent_anchor_id = kInvalidAXNodeID;
+    AXTreeID parent_tree_id = AXTreeIDUnknown();
+
+    while (current_anchor) {
+      anchors.push(current_anchor);
+      current_anchor = GetParent(
+          current_anchor /*child*/, current_tree_id /*child_tree_id*/,
+          &parent_tree_id /*parent_tree_id*/, &parent_anchor_id /*parent_id*/);
+
+      current_anchor_id = parent_anchor_id;
+      current_tree_id = parent_tree_id;
+    }
+    return anchors;
+  }
+
+  AXNodeType* GetLowestUnignoredAncestor() const {
+    if (!GetAnchor())
+      return nullptr;
+    return GetAnchor()->GetLowestPlatformAncestor();
+  }
+
+  void AnchorParent(AXTreeID* tree_id, int32_t* parent_id) const {
+    DCHECK(tree_id);
+    DCHECK(parent_id);
+    *tree_id = AXTreeIDUnknown();
+    *parent_id = kInvalidAXNodeID;
+    if (!GetAnchor())
+      return;
+
+    GetParent(GetAnchor() /*child*/, this->tree_id() /*child_tree_id*/,
+              tree_id /*parent_tree_id*/, parent_id /*parent_id*/);
+  }
+
+  AXNodeType* GetNodeInTree(AXTreeID tree_id, AXNodeData::AXID node_id) const {
+    if (node_id == kInvalidAXNodeID)
+      return nullptr;
+
+    AXTreeManager* manager =
+        AXTreeManagerMap::GetInstance().GetManager(tree_id);
+    if (manager)
+      return manager->GetNodeFromTree(tree_id, node_id);
+
+    return nullptr;
+  }
+
+  AXNodeData::AXID GetAnchorID(AXNodeType* node) const { return node->id(); }
+
+  AXTreeID GetTreeID(AXNodeType* node) const {
+    return node->tree()->GetAXTreeID();
+  }
 
   // Returns the length of text (in UTF16 code points) that this anchor node
   // takes up in its parent.
@@ -3979,20 +4202,128 @@ class AXPosition {
 
   // Returns whether or not this anchor is represented in their parent with a
   // single "object replacement character".
-  virtual bool IsEmbeddedObjectInParent() const = 0;
+  bool IsEmbeddedObjectInParent() const {
+    switch (g_ax_embedded_object_behavior) {
+      case AXEmbeddedObjectBehavior::kSuppressCharacter:
+        return false;
+      case AXEmbeddedObjectBehavior::kExposeCharacter:
+        // We expose an "object replacement character" for all nodes except
+        // (A) textual nodes and (B) nodes that are invisible to platform APIs,
+        // AKA nodes that are descendants of platform leaves. In the former
+        // case, textual nodes are represented by their actual text in the text
+        // of their parent nodes, in order to maintain compatibility with how
+        // Firefox exposes text in IAccessibleText. For the latter case, an
+        // example of a platform leaf is a plain text field because all of the
+        // accessibility subtree inside the text field is not visible to
+        // platform APIs.
+        //
+        // Please note that for navigational purposes, we need to expose an
+        // "object replacement character" in empty controls, such as in an empty
+        // text field. The presence or the absence of accessible content inside
+        // a control might alter whether an "object replacement character" would
+        // be exposed in that control, in contrast to ordinary text such as in
+        // the case of a non-empty plain text field which should only have
+        // textual nodes inside it. This is because empty controls need to act
+        // as a word and character boundary. See
+        // `AXPosition::IsEmptyObjectReplacedByCharacter()` for more
+        // information.
+        return !IsNullPosition() && !GetAnchor()->IsText() &&
+               !GetAnchor()->IsChildOfLeaf();
+    }
+  }
 
   // Determines if the anchor containing this position produces a hard line
   // break in the text representation, e.g. a block level element or a <br>.
-  virtual bool IsInLineBreakingObject() const = 0;
+  bool IsInLineBreakingObject() const {
+    if (IsNullPosition())
+      return false;
+    return GetAnchor()->data().GetBoolAttribute(
+               ax::mojom::BoolAttribute::kIsLineBreakingObject) &&
+           !GetAnchor()->IsInListMarker();
+  }
 
-  virtual ax::mojom::Role GetAnchorRole() const = 0;
-  virtual ax::mojom::Role GetRole(AXNodeType* node) const = 0;
-  virtual AXNodeTextStyles GetTextStyles() const = 0;
-  virtual std::vector<int32_t> GetWordStartOffsets() const = 0;
-  virtual std::vector<int32_t> GetWordEndOffsets() const = 0;
-  virtual AXNodeData::AXID GetNextOnLineID(AXNodeData::AXID node_id) const = 0;
-  virtual AXNodeData::AXID GetPreviousOnLineID(
-      AXNodeData::AXID node_id) const = 0;
+  ax::mojom::Role GetAnchorRole() const {
+    if (IsNullPosition())
+      return ax::mojom::Role::kNone;
+    return GetRole(GetAnchor());
+  }
+
+  ax::mojom::Role GetRole(AXNodeType* node) const { return node->data().role; }
+
+  AXNodeTextStyles GetTextStyles() const {
+    // Check either the current anchor or its parent for text styles.
+    AXNodeTextStyles current_anchor_text_styles =
+        !IsNullPosition() ? GetAnchor()->data().GetTextStyles()
+                          : AXNodeTextStyles();
+    if (current_anchor_text_styles.IsUnset()) {
+      AXPositionInstance parent_position =
+          AsTreePosition()->CreateParentPosition(
+              ax::mojom::MoveDirection::kBackward);
+      if (!parent_position->IsNullPosition())
+        return parent_position->GetAnchor()->data().GetTextStyles();
+    }
+    return current_anchor_text_styles;
+  }
+
+  std::vector<int32_t> GetWordStartOffsets() const {
+    if (IsNullPosition())
+      return std::vector<int32_t>();
+    DCHECK(GetAnchor());
+
+    // Embedded object replacement characters are not represented in the
+    // "kWordStarts" attribute so we need to special case them here.
+    if (IsEmptyObjectReplacedByCharacter())
+      return {0};
+
+    return GetAnchor()->data().GetIntListAttribute(
+        ax::mojom::IntListAttribute::kWordStarts);
+  }
+
+  std::vector<int32_t> GetWordEndOffsets() const {
+    if (IsNullPosition())
+      return std::vector<int32_t>();
+    DCHECK(GetAnchor());
+
+    // Embedded object replacement characters are not represented in the
+    // "kWordEnds" attribute so we need to special case them here.
+    //
+    // Since the whole text exposed inside of an embedded object is of
+    // length 1 (the embedded object replacement character), the word end offset
+    // is positioned at 1. Because we want to treat the embedded object
+    // replacement characters as ordinary characters, it wouldn't be consistent
+    // to assume they have no length and return 0 instead of 1.
+    if (IsEmptyObjectReplacedByCharacter())
+      return {1};
+
+    return GetAnchor()->data().GetIntListAttribute(
+        ax::mojom::IntListAttribute::kWordEnds);
+  }
+
+  AXNodeData::AXID GetNextOnLineID(AXNodeData::AXID node_id) const {
+    if (IsNullPosition())
+      return kInvalidAXNodeID;
+    AXNode* node = GetNodeInTree(tree_id(), node_id);
+    int next_on_line_id;
+    if (!node ||
+        !node->data().GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
+                                      &next_on_line_id)) {
+      return kInvalidAXNodeID;
+    }
+    return static_cast<AXNodeID>(next_on_line_id);
+  }
+
+  AXNodeData::AXID GetPreviousOnLineID(AXNodeData::AXID node_id) const {
+    if (IsNullPosition())
+      return kInvalidAXNodeID;
+    AXNode* node = GetNodeInTree(tree_id(), node_id);
+    int previous_on_line_id;
+    if (!node ||
+        !node->data().GetIntAttribute(
+            ax::mojom::IntAttribute::kPreviousOnLineId, &previous_on_line_id)) {
+      return kInvalidAXNodeID;
+    }
+    return static_cast<AXNodeID>(previous_on_line_id);
+  }
 
  private:
   // Defines the relationship between positions during traversal.
@@ -4030,8 +4361,9 @@ class AXPosition {
     const bool is_last_child =
         AnchorIndexInParent() == (GetAnchorSiblingCount() - 1);
 
-    return is_last_child && GetRole(GetLowestUnignoredAncestor()) ==
-                                ax::mojom::Role::kStaticText;
+    DCHECK(GetAnchor());
+    return is_last_child &&
+           GetRole(GetAnchor()->parent()) == ax::mojom::Role::kStaticText;
   }
 
   // Uses depth-first pre-order traversal.

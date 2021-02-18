@@ -1769,8 +1769,10 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   AXNodeData text_field_data_1;
   text_field_data_1.id = 2;
   text_field_data_1.role = ax::mojom::Role::kTextField;
-  // "kIsLineBreakingObject" and the "kEditable" state are not strictly
-  // necessary but are added for completeness.
+  text_field_data_1.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
+                                     true);
+  text_field_data_1.AddState(ax::mojom::State::kEditable);
+  // "kIsLineBreakingObject" is not strictly necessary.
   text_field_data_1.AddBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   text_field_data_1.AddState(ax::mojom::State::kEditable);
@@ -1781,16 +1783,19 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   AXNodeData static_text_data_1;
   static_text_data_1.id = 3;
   static_text_data_1.role = ax::mojom::Role::kStaticText;
+  static_text_data_1.AddState(ax::mojom::State::kEditable);
   static_text_data_1.SetName(" Text field one ");
 
   AXNodeData inline_box_data_1;
   inline_box_data_1.id = 4;
   inline_box_data_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_1.AddState(ax::mojom::State::kEditable);
   inline_box_data_1.SetName(" ");
 
   AXNodeData inline_box_data_2;
   inline_box_data_2.id = 5;
   inline_box_data_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_2.AddState(ax::mojom::State::kEditable);
   inline_box_data_1.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
                                     inline_box_data_2.id);
   inline_box_data_2.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
@@ -1800,6 +1805,7 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   AXNodeData inline_box_data_3;
   inline_box_data_3.id = 6;
   inline_box_data_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_3.AddState(ax::mojom::State::kEditable);
   inline_box_data_2.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
                                     inline_box_data_3.id);
   inline_box_data_3.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
@@ -1809,11 +1815,12 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   AXNodeData text_field_data_2;
   text_field_data_2.id = 7;
   text_field_data_2.role = ax::mojom::Role::kTextField;
-  // "kIsLineBreakingObject" and the "kEditable" state are not strictly
-  // necessary but are added for completeness.
+  text_field_data_2.AddState(ax::mojom::State::kEditable);
+  text_field_data_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
+                                     true);
+  // "kIsLineBreakingObject" is not strictly necessary.
   text_field_data_2.AddBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-  text_field_data_1.AddState(ax::mojom::State::kEditable);
   // Notice that there are three lines, the first and the last one include only
   // a single space.
   text_field_data_2.SetValue(" Text field two ");
@@ -1821,21 +1828,25 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   AXNodeData static_text_data_2;
   static_text_data_2.id = 8;
   static_text_data_2.role = ax::mojom::Role::kStaticText;
+  static_text_data_2.AddState(ax::mojom::State::kEditable);
   static_text_data_2.SetName(" Text field two ");
 
   AXNodeData inline_box_data_4;
   inline_box_data_4.id = 9;
   inline_box_data_4.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_4.AddState(ax::mojom::State::kEditable);
   inline_box_data_4.SetName(" ");
 
   AXNodeData inline_box_data_5;
   inline_box_data_5.id = 10;
   inline_box_data_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_5.AddState(ax::mojom::State::kEditable);
   inline_box_data_5.SetName("Text field two");
 
   AXNodeData inline_box_data_6;
   inline_box_data_6.id = 11;
   inline_box_data_6.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_6.AddState(ax::mojom::State::kEditable);
   inline_box_data_6.SetName(" ");
 
   static_text_data_1.child_ids = {inline_box_data_1.id, inline_box_data_2.id,
