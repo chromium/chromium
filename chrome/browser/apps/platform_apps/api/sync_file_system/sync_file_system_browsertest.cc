@@ -182,7 +182,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
 
   sync_engine()->OnPrimaryAccountChanged(
       PrimaryAccountChangeEvent(PrimaryAccountChangeEvent::State(
-                                    identity_manager()->GetPrimaryAccountInfo(),
+                                    identity_manager()->GetPrimaryAccountInfo(
+                                        signin::ConsentLevel::kSync),
                                     signin::ConsentLevel::kSync),
                                 PrimaryAccountChangeEvent::State()));
   foo_created.Reply("resume");
@@ -200,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   sync_engine()->OnPrimaryAccountChanged(
       PrimaryAccountChangeEvent(PrimaryAccountChangeEvent::State(),
                                 PrimaryAccountChangeEvent::State(
-                                    identity_manager()->GetPrimaryAccountInfo(),
+                                    identity_manager()->GetPrimaryAccountInfo(
+                                        signin::ConsentLevel::kSync),
                                     signin::ConsentLevel::kSync)));
   WaitUntilIdle();
 

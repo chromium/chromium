@@ -169,7 +169,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
         IdentityManagerFactory::GetForProfile(profile());
     base::Optional<AccountInfo> primary_account =
         identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-            identity_manager->GetPrimaryAccountInfo());
+            identity_manager->GetPrimaryAccountInfo(
+                signin::ConsentLevel::kSync));
     EXPECT_TRUE(primary_account);
 
     std::string gaia_picture_url = primary_account->picture_url;

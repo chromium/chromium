@@ -42,7 +42,7 @@ base::string16 HostedDomainForPrimaryAccount(Browser* browser) {
       IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
   base::Optional<AccountInfo> account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo());
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   std::string hosted_domain = account_info.has_value()
                                   ? account_info.value().hosted_domain
                                   : std::string();

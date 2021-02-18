@@ -257,7 +257,8 @@ void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const base::string16&)> callback) {
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo());
+          identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync));
   base::string16 account_name =
       primary_account_info ? base::UTF8ToUTF16(primary_account_info->full_name)
                            : base::string16();

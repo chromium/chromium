@@ -61,7 +61,8 @@ void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
 void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // Only reacts to content area (non-primary) Gaia account sign-out event.
-  if (info.account_id != identity_manager_->GetPrimaryAccountId()) {
+  if (info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync)) {
     NotifySignedOut(info.email, /* primary_account= */ false);
   }
 }

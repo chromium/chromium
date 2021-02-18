@@ -653,7 +653,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncEnabled,
                         MAYBE_ProfileMenuClickTest_SyncEnabled) {
   ASSERT_TRUE(sync_harness()->SetupSync());
   // Check that the sync setup was successful.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount());
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   RunTest();
@@ -686,7 +687,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncError,
                         MAYBE_ProfileMenuClickTest_SyncError) {
   ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
   // Check that the setup was successful.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount());
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   RunTest();
@@ -719,7 +721,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
   ASSERT_TRUE(sync_harness()->SetupSync());
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount());
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_EQ(syncer::SyncService::TransportState::PAUSED,
             sync_service()->GetTransportState());
 
@@ -790,7 +793,8 @@ PROFILE_MENU_CLICK_TEST(
       browser()->profile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
   // Check that the setup was successful.
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccount());
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kNotRequired));
 

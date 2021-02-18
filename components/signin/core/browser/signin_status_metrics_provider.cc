@@ -61,7 +61,9 @@ void SigninStatusMetricsProvider::OnIdentityManagerCreated(
   // IdentityManager and the corresponding profile should be the only opened
   // profile.
   if (signin_status() == UNKNOWN_SIGNIN_STATUS) {
-    size_t signed_in_count = identity_manager->HasPrimaryAccount() ? 1 : 0;
+    size_t signed_in_count =
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ? 1
+                                                                         : 0;
     UpdateInitialSigninStatus(1, signed_in_count);
   }
 }

@@ -186,7 +186,8 @@ void GaiaRemoteConsentFlow::SetAccountsInCookie() {
   if (IdentityAPI::GetFactoryInstance()
           ->Get(profile_)
           ->AreExtensionsRestrictedToPrimaryAccount()) {
-    CoreAccountId primary_account_id = identity_manager->GetPrimaryAccountId();
+    CoreAccountId primary_account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
     accounts.push_back(primary_account_id);
   } else {
     auto chrome_accounts_with_refresh_tokens =

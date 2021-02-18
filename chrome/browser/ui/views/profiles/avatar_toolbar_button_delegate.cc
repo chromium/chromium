@@ -79,7 +79,8 @@ gfx::Image GetAvatarImage(Profile* profile,
       IdentityManagerFactory::GetForProfile(profile);
   if (!user_identity_image.IsEmpty() &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) &&
-      !identity_manager->HasPrimaryAccount() && entry->IsUsingDefaultAvatar()) {
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      entry->IsUsingDefaultAvatar()) {
     return user_identity_image;
   }
 
@@ -196,7 +197,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
   }
 
-  if (identity_manager->HasPrimaryAccount() &&
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
       ProfileSyncServiceFactory::IsSyncAllowed(profile_) &&
       error_controller_->HasAvatarError()) {
     const sync_ui_util::AvatarSyncErrorType error =

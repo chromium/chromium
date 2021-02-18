@@ -1660,7 +1660,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return nil;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browserState);
-  std::string username = identity_manager->GetPrimaryAccountInfo().email;
+  std::string username =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
   return username.empty() ? nil : base::SysUTF8ToNSString(username);
 }
 

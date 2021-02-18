@@ -1876,7 +1876,8 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  bool is_consented_primary_account = identity_manager->HasPrimaryAccount();
+  bool is_consented_primary_account =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
       signin::ConsentLevel::kNotRequired);
 

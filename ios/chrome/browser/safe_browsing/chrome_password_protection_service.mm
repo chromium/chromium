@@ -313,7 +313,7 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
     return AccountInfo();
   base::Optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo());
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return primary_account_info.value_or(AccountInfo());
 }
 

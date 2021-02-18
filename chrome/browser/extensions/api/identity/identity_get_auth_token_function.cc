@@ -203,7 +203,7 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForPrimaryAccount(
     const std::string& extension_gaia_id) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
   CoreAccountInfo primary_account_info =
-      identity_manager->GetPrimaryAccountInfo();
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   bool primary_account_only = IsPrimaryAccountOnly();
 
   // Detect and handle the case where the extension is using an account other
@@ -391,13 +391,14 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
   account_listening_mode_ = AccountListeningMode::kListeningTokens;
   if (IsPrimaryAccountOnly()) {
-    if (!identity_manager->HasPrimaryAccount()) {
+    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       account_listening_mode_ = AccountListeningMode::kListeningPrimaryAccount;
     } else {
       // Fixing an authentication error. Either there is no token, or it is in
       // error.
-      DCHECK_EQ(token_key_.account_info.account_id,
-                identity_manager->GetPrimaryAccountId());
+      DCHECK_EQ(
+          token_key_.account_info.account_id,
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync));
       DCHECK(!identity_manager->HasAccountWithRefreshToken(
                  token_key_.account_info.account_id) ||
              identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -739,7 +740,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   if (IsPrimaryAccountOnly()) {
     CoreAccountId primary_account_id =
         IdentityManagerFactory::GetForProfile(GetProfile())
-            ->GetPrimaryAccountId();
+            ->GetPrimaryAccountId(signin::ConsentLevel::kSync);
     if (primary_account_id != account->account_id) {
       CompleteMintTokenFlow();
       CompleteFunctionWithError(IdentityGetAuthTokenError(

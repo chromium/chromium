@@ -506,7 +506,7 @@ void ShowBrowserSignin(Browser* browser,
 
   profiles::BubbleViewMode bubble_view_mode;
   if (IdentityManagerFactory::GetForProfile(original_profile)
-          ->HasPrimaryAccount()) {
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH;
   } else {
     switch (consent_level) {
@@ -527,7 +527,7 @@ void ShowBrowserSigninOrSettings(Browser* browser,
   Profile* original_profile = browser->profile()->GetOriginalProfile();
   DCHECK(original_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
   if (IdentityManagerFactory::GetForProfile(original_profile)
-          ->HasPrimaryAccount())
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync))
     ShowSettings(browser);
   else
     ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);

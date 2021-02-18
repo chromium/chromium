@@ -74,7 +74,8 @@ GCMProfileService::IdentityObserver::IdentityObserver(
     : driver_(driver), identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
 
-  OnSyncPrimaryAccountSet(identity_manager_->GetPrimaryAccountInfo());
+  OnSyncPrimaryAccountSet(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   StartAccountTracker(std::move(url_loader_factory));
 }
 

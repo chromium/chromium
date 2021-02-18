@@ -35,7 +35,7 @@ void AccountTracker::RemoveObserver(Observer* observer) {
 
 std::vector<CoreAccountInfo> AccountTracker::GetAccounts() const {
   const CoreAccountId active_account_id =
-      identity_manager_->GetPrimaryAccountId();
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   std::vector<CoreAccountInfo> accounts;
 
   for (auto it = accounts_.begin(); it != accounts_.end(); ++it) {
@@ -63,7 +63,7 @@ void AccountTracker::OnRefreshTokenUpdatedForAccount(
                "account_id", account_info.account_id.ToString());
 
   // Ignore refresh tokens if there is no active account ID at all.
-  if (!identity_manager_->HasPrimaryAccount())
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
   DVLOG(1) << "AVAILABLE " << account_info.account_id;

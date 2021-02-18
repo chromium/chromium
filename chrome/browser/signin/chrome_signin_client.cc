@@ -311,7 +311,7 @@ void ChromeSigninClient::MaybeFetchSigninTokenHandle() {
     if (entry && entry->GetPasswordChangeDetectionToken().empty() &&
         !access_token_fetcher_) {
       auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-      if (identity_manager->HasPrimaryAccount()) {
+      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         const signin::ScopeSet scopes{GaiaConstants::kGoogleUserInfoEmail};
         access_token_fetcher_ =
             std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(

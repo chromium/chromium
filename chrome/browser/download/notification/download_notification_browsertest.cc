@@ -1048,7 +1048,7 @@ class MultiProfileDownloadNotificationTest
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    if (!identity_manager->HasPrimaryAccount())
+    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
       signin::MakePrimaryAccountAvailable(identity_manager, info.email);
   }
 

@@ -116,7 +116,7 @@ AccountInfo EnsureAccountExists(AccountTrackerService* account_tracker_service,
 
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email) {
-  DCHECK(!identity_manager->HasPrimaryAccount());
+  DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   PrimaryAccountManager* primary_account_manager =
       identity_manager->GetPrimaryAccountManager();
   DCHECK(!primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
@@ -128,8 +128,8 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
   primary_account_manager->SetSyncPrimaryAccountInfo(account_info);
 
   DCHECK(primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  DCHECK(identity_manager->HasPrimaryAccount());
-  return identity_manager->GetPrimaryAccountInfo();
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
 }
 
 CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
@@ -155,24 +155,27 @@ CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
 
 void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,
                                       const std::string& token_value) {
-  DCHECK(identity_manager->HasPrimaryAccount());
-  CoreAccountId account_id = identity_manager->GetPrimaryAccountId();
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager, account_id, token_value);
 }
 
 void SetInvalidRefreshTokenForPrimaryAccount(
     IdentityManager* identity_manager) {
-  DCHECK(identity_manager->HasPrimaryAccount());
-  CoreAccountId account_id = identity_manager->GetPrimaryAccountId();
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   SetInvalidRefreshTokenForAccount(identity_manager, account_id);
 }
 
 void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount())
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
-  CoreAccountId account_id = identity_manager->GetPrimaryAccountId();
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   RemoveRefreshTokenForAccount(identity_manager, account_id);
 }

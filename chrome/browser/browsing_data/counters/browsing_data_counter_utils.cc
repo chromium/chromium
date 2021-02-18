@@ -56,7 +56,7 @@ base::string16 FormatBytesMBOrHigher(ResultInt bytes) {
 bool ShouldShowCookieException(Profile* profile) {
   if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    return identity_manager->HasPrimaryAccount();
+    return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {

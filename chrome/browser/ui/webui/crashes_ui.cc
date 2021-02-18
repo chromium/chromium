@@ -198,7 +198,8 @@ void CrashesDOMHandler::UpdateUI() {
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   if (identity_manager) {
     is_internal = gaia::IsGoogleInternalAccountEmail(
-        identity_manager->GetPrimaryAccountInfo().email);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email);
   }
 
   // Manual uploads currently are supported only for Crashpad-using platforms

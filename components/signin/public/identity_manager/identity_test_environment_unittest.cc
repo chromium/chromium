@@ -39,7 +39,7 @@ TEST_F(IdentityTestEnvironmentTest,
       identity_test_environment->identity_manager()
           ->CreateAccessTokenFetcherForAccount(
               identity_test_environment->identity_manager()
-                  ->GetPrimaryAccountId(),
+                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync),
               "dummy_consumer", scopes, std::move(callback),
               AccessTokenFetcher::Mode::kImmediate);
 

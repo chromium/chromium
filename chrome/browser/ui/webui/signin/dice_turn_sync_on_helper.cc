@@ -219,7 +219,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
   DCHECK(delegate_);
   DCHECK(profile_);
   // Should not start syncing if the profile is already authenticated
-  DCHECK(!identity_manager_->HasPrimaryAccount());
+  DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   // Cancel any existing helper.
   AttachToProfile();

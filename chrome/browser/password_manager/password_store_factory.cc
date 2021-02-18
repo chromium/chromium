@@ -48,8 +48,11 @@ namespace {
 std::string GetSyncUsername(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
-  return identity_manager ? identity_manager->GetPrimaryAccountInfo().email
-                          : std::string();
+  return identity_manager
+             ? identity_manager
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                   .email
+             : std::string();
 }
 
 bool IsSignedIn(Profile* profile) {

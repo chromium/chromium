@@ -71,8 +71,9 @@ class FeedService::HistoryObserverImpl
   // history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override {
-    if (internal::ShouldClearFeed(identity_manager_->HasPrimaryAccount(),
-                                  deletion_info))
+    if (internal::ShouldClearFeed(
+            identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync),
+            deletion_info))
       feed_stream_->OnAllHistoryDeleted();
   }
 
@@ -133,7 +134,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   void PrefetchImage(const GURL& url) override {
     service_delegate_->PrefetchImage(url);
   }
-  bool IsSignedIn() override { return identity_manager_->HasPrimaryAccount(); }
+  bool IsSignedIn() override {
+    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  }
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);
   }

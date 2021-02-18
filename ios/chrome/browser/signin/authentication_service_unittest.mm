@@ -224,7 +224,9 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
-  EXPECT_TRUE(identity_manager()->GetPrimaryAccountInfo().email.empty());
+  EXPECT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                  .email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
   EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
@@ -243,7 +245,9 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
-  EXPECT_TRUE(identity_manager()->GetPrimaryAccountInfo().email.empty());
+  EXPECT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                  .email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
   EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());

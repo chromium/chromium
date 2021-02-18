@@ -436,7 +436,8 @@ TEST_F(AccountsMutatorTest,
   if (!accounts_mutator())
     return;
 
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   // Now try invalidating the primary account, and make sure the test
   // expectedly fails, since the primary account is not set.

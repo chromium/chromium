@@ -34,8 +34,10 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
 base::Optional<CoreAccountInfo>
 SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // UPA is equal to the primary account with sync consent if it exists.
-  if (identity_manager_->HasPrimaryAccount())
-    return identity_manager_->GetPrimaryAccountInfo();
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSync);
+  }
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();

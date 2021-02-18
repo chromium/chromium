@@ -384,7 +384,7 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
   // If the identity manager already has a primary account, this is a
   // re-auth scenario, and we need to ensure that the user signs in with the
   // same email address.
-  if (identity_manager->HasPrimaryAccount()) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     UMA_HISTOGRAM_ENUMERATION("Signin.Reauth",
                               signin_metrics::HISTOGRAM_REAUTH_SHOWN,
                               signin_metrics::HISTOGRAM_REAUTH_MAX);
@@ -675,7 +675,7 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
     }
 
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-    if (identity_manager->HasPrimaryAccount()) {
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       signin_metrics::SignoutDelete delete_metric =
           delete_profile ? signin_metrics::SignoutDelete::DELETED
                          : signin_metrics::SignoutDelete::KEEPING;
@@ -708,7 +708,7 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
 void PeopleHandler::HandlePauseSync(const base::ListValue* args) {
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  DCHECK(identity_manager->HasPrimaryAccount());
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   identity_manager->GetAccountsMutator()
       ->InvalidateRefreshTokenForPrimaryAccount(
@@ -854,7 +854,8 @@ void PeopleHandler::OnStateChanged(syncer::SyncService* sync) {
 
 void PeopleHandler::BeforeUnloadDialogCancelled() {
   // The before unload dialog is only shown during the first sync setup.
-  DCHECK(IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount());
+  DCHECK(IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
   syncer::SyncService* service = GetSyncService();
   DCHECK(service && service->IsSetupInProgress() &&
          !service->GetUserSettings()->IsFirstSetupComplete());
@@ -880,7 +881,9 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
 
   // Signout is not allowed if the user has policy (crbug.com/172204).
   if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
-    std::string username = identity_manager->GetPrimaryAccountInfo().email;
+    std::string username =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
 
     // If there is no one logged in or if the profile name is empty then the
     // domain name is empty. This happens in browser tests.
@@ -901,7 +904,7 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
       "firstSetupInProgress",
       service && !disallowed_by_policy && service->IsSetupInProgress() &&
           !service->GetUserSettings()->IsFirstSetupComplete() &&
-          identity_manager->HasPrimaryAccount());
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   const sync_ui_util::StatusLabels status_labels =
       sync_ui_util::GetStatusLabels(profile_);
@@ -928,7 +931,8 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
   sync_status->SetBoolean("disabled", !service || disallowed_by_policy);
   // NOTE: This means signed-in for *sync*. It can be false when the user is
   // signed-in to the content area or to the browser.
-  sync_status->SetBoolean("signedIn", identity_manager->HasPrimaryAccount());
+  sync_status->SetBoolean("signedIn", identity_manager->HasPrimaryAccount(
+                                          signin::ConsentLevel::kSync));
   sync_status->SetString("signedInUsername",
                          signin_ui_util::GetAuthenticatedUsername(profile_));
   sync_status->SetBoolean("hasUnrecoverableError",
@@ -1053,8 +1057,8 @@ void PeopleHandler::MaybeMarkSyncConfiguring() {
 }
 
 bool PeopleHandler::IsProfileAuthNeededOrHasErrors() {
-  return !IdentityManagerFactory::GetForProfile(profile_)
-              ->HasPrimaryAccount() ||
+  return !IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+             signin::ConsentLevel::kSync) ||
          SigninErrorControllerFactory::GetForProfile(profile_)->HasError();
 }
 

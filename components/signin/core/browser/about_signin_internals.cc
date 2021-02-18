@@ -617,7 +617,9 @@ AboutSigninInternals::SigninStatus::ToValue(
                   GetAccountConsistencyDescription(account_consistency));
   AddSectionEntry(
       basic_info, "Signin Status",
-      identity_manager->HasPrimaryAccount() ? "Signed In" : "Not Signed In");
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
+          ? "Signed In"
+          : "Not Signed In");
   signin::LoadCredentialsState load_tokens_state =
       identity_manager->GetDiagnosticsProvider()
           ->GetDetailedStateOfLoadingOfRefreshTokens();
@@ -627,8 +629,9 @@ AboutSigninInternals::SigninStatus::ToValue(
       basic_info, "Gaia cookies state",
       GetGaiaCookiesStateAsString(GetGaiaCookiesState(signin_client)));
 
-  if (identity_manager->HasPrimaryAccount()) {
-    CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo();
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     AddSectionEntry(basic_info,
                     SigninStatusFieldToLabel(signin_internals_util::ACCOUNT_ID),
                     account_info.account_id.ToString());

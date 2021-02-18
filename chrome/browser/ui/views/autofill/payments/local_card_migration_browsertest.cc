@@ -179,7 +179,7 @@ class LocalCardMigrationBrowserTest
     // stub account |user_manager::kStubUserEmail|.
     CoreAccountInfo info =
         IdentityManagerFactory::GetForProfile(browser()->profile())
-            ->GetPrimaryAccountInfo();
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     username = info.email;
 #endif
     if (username.empty())

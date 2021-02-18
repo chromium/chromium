@@ -1420,8 +1420,8 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
         signin::ScopeSet webstore_scopes;
         webstore_scopes.insert(kWebstoreOAuth2Scope);
         identity_manager_->RemoveAccessTokenFromCache(
-            identity_manager_->GetPrimaryAccountId(), webstore_scopes,
-            access_token_);
+            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+            webstore_scopes, access_token_);
         access_token_.clear();
         return true;
       }

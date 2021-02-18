@@ -110,8 +110,10 @@ std::vector<base::string16> SigninGlobalError::GetBubbleViewMessages() {
   // If the user isn't signed in, no need to display an error bubble.
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile_);
-  if (identity_manager && !identity_manager->HasPrimaryAccount())
+  if (identity_manager &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return messages;
+  }
 
   if (!error_controller_->HasError())
     return messages;

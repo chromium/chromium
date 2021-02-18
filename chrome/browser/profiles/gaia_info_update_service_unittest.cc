@@ -231,7 +231,8 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
       identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(email);
   EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kNotRequired));
-  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
   info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),

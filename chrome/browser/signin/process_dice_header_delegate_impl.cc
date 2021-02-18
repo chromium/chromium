@@ -62,7 +62,8 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
 
 bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
-  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount()) {
+  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     VLOG(1) << "Do not start sync after web sign-in [already authenticated].";
     return false;
   }

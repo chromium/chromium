@@ -155,7 +155,7 @@ void UnifiedConsentService::SetMigrationState(MigrationState migration_state) {
 void UnifiedConsentService::MigrateProfileToUnifiedConsent() {
   DCHECK_EQ(GetMigrationState(), MigrationState::kNotInitialized);
 
-  if (!identity_manager_->HasPrimaryAccount()) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     SetMigrationState(MigrationState::kCompleted);
     return;
   }

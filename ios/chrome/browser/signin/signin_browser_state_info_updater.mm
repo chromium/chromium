@@ -55,8 +55,9 @@ void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
   if (index == std::string::npos)
     return;
 
-  if (identity_manager_->HasPrimaryAccount()) {
-    CoreAccountInfo account_info = identity_manager_->GetPrimaryAccountInfo();
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    CoreAccountInfo account_info =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     cache->SetAuthInfoOfBrowserStateAtIndex(
         index, account_info.gaia, base::UTF8ToUTF16(account_info.email));
   } else {

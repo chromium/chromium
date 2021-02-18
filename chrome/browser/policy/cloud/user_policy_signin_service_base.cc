@@ -77,7 +77,7 @@ void UserPolicySigninServiceBase::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    DCHECK(!identity_manager_->HasPrimaryAccount());
+    DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
     ShutdownUserCloudPolicyManager();
   }
 }
@@ -191,8 +191,8 @@ void UserPolicySigninServiceBase::InitializeOnProfileReady(Profile* profile) {
   // (http://crbug.com/316229).
   identity_manager()->AddObserver(this);
 
-  AccountId account_id =
-      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo());
+  AccountId account_id = AccountIdFromAccountInfo(
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   if (!account_id.is_valid())
     ShutdownUserCloudPolicyManager();
   else

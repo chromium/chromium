@@ -590,7 +590,8 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
   if (IsAuthenticated()) {
     identity_manager_->GetDeviceAccountsSynchronizer()
         ->ReloadAllAccountsFromSystemWithPrimaryAccount(
-            identity_manager_->GetPrimaryAccountId());
+            identity_manager_->GetPrimaryAccountId(
+                signin::ConsentLevel::kSync));
   }
 }
 

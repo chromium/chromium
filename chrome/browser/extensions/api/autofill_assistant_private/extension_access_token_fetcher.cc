@@ -21,7 +21,8 @@ ExtensionAccessTokenFetcher::~ExtensionAccessTokenFetcher() = default;
 void ExtensionAccessTokenFetcher::FetchAccessToken(
     base::OnceCallback<void(bool, const std::string&)> callback) {
   // TODO(b/143736397): Use a more flexible logic to pick this account.
-  auto account_info = identity_manager_->GetPrimaryAccountInfo();
+  auto account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
 
   callback_ = std::move(callback);
   signin::ScopeSet scopes;

@@ -45,8 +45,11 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
   // of FakeSigninAs calls roll.
   signin::IdentityManager* identity_manager =
       identity_test_env_.identity_manager();
-  if (identity_manager->HasPrimaryAccount()) {
-    DCHECK_EQ(identity_manager->GetPrimaryAccountInfo().email, email);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    DCHECK_EQ(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email,
+        email);
   } else {
     identity_test_env_.MakePrimaryAccountAvailable(email);
   }

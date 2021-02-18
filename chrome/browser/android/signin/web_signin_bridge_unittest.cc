@@ -176,7 +176,8 @@ TEST_F(WebSigninBridgeTest, ReconcilorErrorShouldTriggerOnSigninFailed) {
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
   CoreAccountId account_id1 =
-      identity_test_env_.identity_manager()->GetPrimaryAccountId();
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSync);
   EXPECT_TRUE(
       identity_test_env_.identity_manager()
           ->HasAccountWithRefreshTokenInPersistentErrorState(account_id1));
@@ -184,7 +185,8 @@ TEST_F(WebSigninBridgeTest, ReconcilorErrorShouldTriggerOnSigninFailed) {
   EXPECT_EQ(signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR,
             account_reconcilor_->GetState());
   CoreAccountId account_id2 =
-      identity_test_env_.identity_manager()->GetPrimaryAccountId();
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSync);
   EXPECT_TRUE(
       identity_test_env_.identity_manager()
           ->HasAccountWithRefreshTokenInPersistentErrorState(account_id2));

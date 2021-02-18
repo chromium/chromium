@@ -373,7 +373,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, BasicSignin) {
 
   // Policies are applied even before the user confirms.
   EXPECT_TRUE(
-      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount());
+      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+          signin::ConsentLevel::kSync));
   WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                    base::Value(true));
 
@@ -392,7 +393,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
 
   // Policies are applied even before the user confirms.
   EXPECT_TRUE(
-      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount());
+      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+          signin::ConsentLevel::kSync));
   WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                    base::Value(true));
 
@@ -415,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
 
   // User is not signed in, policy is not applied.
   EXPECT_FALSE(
-      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount());
+      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+          signin::ConsentLevel::kSync));
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Restart a new signin flow and allow it to complete.
@@ -425,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
 
   // Policies are applied even before the user confirms.
   EXPECT_TRUE(
-      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount());
+      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+          signin::ConsentLevel::kSync));
   WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
                    base::Value(true));
 

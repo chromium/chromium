@@ -157,7 +157,8 @@ void RegisterRemoteSuggestionsProvider(ContentSuggestionsService* service,
           CreateIOSImageDecoder(), browser_state->GetSharedURLLoaderFactory()),
       std::make_unique<RemoteSuggestionsDatabase>(db_provider, database_dir),
       std::make_unique<RemoteSuggestionsStatusServiceImpl>(
-          identity_manager->HasPrimaryAccount(), prefs, pref_name),
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync),
+          prefs, pref_name),
       std::make_unique<base::OneShotTimer>());
 
   service->remote_suggestions_scheduler()->SetProvider(provider.get());

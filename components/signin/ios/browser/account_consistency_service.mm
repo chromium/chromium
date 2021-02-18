@@ -175,7 +175,7 @@ AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
   GURL url = net::GURLWithNSURL(request.URL);
   if (base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesOnUserAction) &&
       signin::IsUrlEligibleForMirrorCookie(url) &&
-      identity_manager_->HasPrimaryAccount()) {
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // CHROME_CONNECTED cookies are added asynchronously on google.com and
     // youtube.com domains when Chrome detects that the user is signed-in. By
     // continuing to fulfill the navigation once the cookie request is sent,
@@ -260,7 +260,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     case signin::GAIA_SERVICE_TYPE_ADDSESSION:
       // This situation is only possible if the all cookies have been deleted by
       // ITP restrictions and Chrome has not triggered a cookie refresh.
-      if (identity_manager_->HasPrimaryAccount()) {
+      if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         LogIOSGaiaCookiesState(GaiaCookieStateOnSignedInNavigation::
                                    kGaiaCookieAbsentOnAddSessionNavigation);
         if (base::FeatureList::IsEnabled(
@@ -372,7 +372,7 @@ AccountConsistencyService::AccountConsistencyService(
       identity_manager_(identity_manager),
       active_cookie_manager_requests_for_testing_(0) {
   identity_manager_->AddObserver(this);
-  if (identity_manager_->HasPrimaryAccount()) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AddChromeConnectedCookies();
   } else {
     RemoveAllChromeConnectedCookies(base::OnceClosure());
@@ -417,7 +417,7 @@ void AccountConsistencyService::SetGaiaCookiesIfDeleted(
   // |GetAllCookies| in the cookie manager.
   if (base::Time::Now() - last_gaia_cookie_verification_time_ <
           GetDelayThresholdToUpdateGaiaCookie() ||
-      !identity_manager_->HasPrimaryAccount()) {
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
   network::mojom::CookieManager* cookie_manager =
@@ -503,7 +503,9 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
     const GURL& url) {
   const std::string domain = GetDomainFromUrl(url);
   std::string cookie_value = signin::BuildMirrorRequestCookieIfPossible(
-      url, identity_manager_->GetPrimaryAccountInfo().gaia,
+      url,
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .gaia,
       signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
       signin::PROFILE_MODE_DEFAULT);
   if (cookie_value.empty()) {

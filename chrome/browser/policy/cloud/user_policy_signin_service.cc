@@ -47,7 +47,8 @@ UserPolicySigninService::UserPolicySigninService(
   // IdentityManager should not yet have loaded its tokens since this
   // happens in the background after PKS initialization - so this service
   // should always be created before the oauth token is available.
-  DCHECK(!identity_manager->HasPrimaryAccountWithRefreshToken());
+  DCHECK(!identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSync));
 }
 
 UserPolicySigninService::~UserPolicySigninService() {
@@ -107,9 +108,11 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     return;
   }
 
-  DCHECK(identity_manager()->HasPrimaryAccount());
-  if (!identity_manager()->HasPrimaryAccountWithRefreshToken())
+  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  if (!identity_manager()->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSync)) {
     return;
+  }
 
   // IdentityManager has a refresh token for the primary account, so initialize
   // the UserCloudPolicyManager.
@@ -119,8 +122,10 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
 void UserPolicySigninService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   // Ignore OAuth tokens or those for any account but the primary one.
-  if (account_info.account_id != identity_manager()->GetPrimaryAccountId())
+  if (account_info.account_id !=
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync)) {
     return;
+  }
 
   // ProfileOAuth2TokenService now has a refresh token for the primary account
   // so initialize the UserCloudPolicyManager.
@@ -128,7 +133,8 @@ void UserPolicySigninService::OnRefreshTokenUpdatedForAccount(
 }
 
 void UserPolicySigninService::TryInitializeForSignedInUser() {
-  DCHECK(identity_manager()->HasPrimaryAccountWithRefreshToken());
+  DCHECK(identity_manager()->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSync));
 
   // If using a TestingProfile with no UserCloudPolicyManager, skip
   // initialization.
@@ -138,7 +144,8 @@ void UserPolicySigninService::TryInitializeForSignedInUser() {
   }
 
   InitializeForSignedInUser(
-      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo()),
+      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync)),
       content::BrowserContext::GetDefaultStoragePartition(profile_)
           ->GetURLLoaderFactoryForBrowserProcess());
 }
@@ -169,7 +176,8 @@ void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
   DVLOG_IF(1, manager->IsClientRegistered())
       << "Client already registered - not fetching DMToken";
   if (!manager->IsClientRegistered()) {
-    if (!identity_manager()->HasPrimaryAccountWithRefreshToken()) {
+    if (!identity_manager()->HasPrimaryAccountWithRefreshToken(
+            signin::ConsentLevel::kSync)) {
       // No token yet - this class listens for OnRefreshTokenUpdatedForAccount()
       // and will re-attempt registration once the token is available.
       DLOG(WARNING) << "No OAuth Refresh Token - delaying policy download";
@@ -194,7 +202,8 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
       policy_manager()->core()->client(),
       enterprise_management::DeviceRegisterRequest::BROWSER));
   registration_helper_->StartRegistration(
-      identity_manager(), identity_manager()->GetPrimaryAccountId(),
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
       base::BindOnce(&UserPolicySigninService::OnRegistrationComplete,
                      base::Unretained(this)));
 }

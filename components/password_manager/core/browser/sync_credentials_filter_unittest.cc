@@ -212,7 +212,9 @@ TEST_P(CredentialsFilterTest, ReportFormLoginSuccess_NotSyncing) {
 TEST_P(CredentialsFilterTest, ShouldSave_NotSignedIn) {
   PasswordForm form = SimpleGaiaForm("user@example.org");
 
-  ASSERT_TRUE(identity_manager()->GetPrimaryAccountInfo().IsEmpty());
+  ASSERT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                  .IsEmpty());
   SetSyncingPasswords(false);
   // If kEnablePasswordsAccountStorage is enabled, then Chrome shouldn't offer
   // to save the password for the primary account. If there is no primary

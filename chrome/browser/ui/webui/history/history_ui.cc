@@ -47,7 +47,8 @@ constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
 bool IsUserSignedIn(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  return identity_manager && identity_manager->HasPrimaryAccount();
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {

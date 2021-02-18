@@ -330,7 +330,8 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, FixReauth) {
     // Make sure the profile stays signed in, but in an auth error state.
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-        identity_manager, identity_manager->GetPrimaryAccountId(),
+        identity_manager,
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_REJECTED_BY_SERVER));
@@ -465,7 +466,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
     signin::MakePrimaryAccountAvailable(
         identity_manager, base::UTF16ToUTF8(GetParam().existing_email));
 
-    ASSERT_TRUE(identity_manager->HasPrimaryAccount());
+    ASSERT_TRUE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
 }
 
@@ -665,15 +667,17 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
-  ASSERT_TRUE(identity_manager->HasPrimaryAccount() ==
-              GetParam().cred_provider_used_other_profile);
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ==
+      GetParam().cred_provider_used_other_profile);
 
   if (!GetParam().cred_provider_used_other_profile &&
       !GetParam().email_in_other_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
         identity_manager, base::UTF16ToUTF8(GetParam().email_in_other_profile));
 
-    ASSERT_TRUE(identity_manager->HasPrimaryAccount());
+    ASSERT_TRUE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
 
   CreateAndSwitchToProfile(base::UTF16ToUTF8(GetParam().current_profile));
@@ -691,14 +695,16 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
-  ASSERT_FALSE(identity_manager->HasPrimaryAccount());
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   if (!GetParam().email_in_current_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
         identity_manager,
         base::UTF16ToUTF8(GetParam().email_in_current_profile));
 
-    ASSERT_TRUE(identity_manager->HasPrimaryAccount());
+    ASSERT_TRUE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
 }
 

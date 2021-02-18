@@ -112,7 +112,8 @@ TEST_F(SigninErrorNotifierTest, NoNotificationAfterAddSupervisionEnabled) {
   service->set_signout_required_after_supervision_enabled();
 
   SetAuthError(
-      identity_test_env()->identity_manager()->GetPrimaryAccountId(),
+      identity_test_env()->identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSync),
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   EXPECT_FALSE(

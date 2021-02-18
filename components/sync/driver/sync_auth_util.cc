@@ -24,7 +24,8 @@ SyncAccountInfo DetermineAccountToUse(
     signin::IdentityManager* identity_manager) {
   return SyncAccountInfo(identity_manager->GetPrimaryAccountInfo(
                              signin::ConsentLevel::kNotRequired),
-                         /*is_primary=*/identity_manager->HasPrimaryAccount());
+                         /*is_primary=*/identity_manager->HasPrimaryAccount(
+                             signin::ConsentLevel::kSync));
 }
 
 bool IsWebSignout(const GoogleServiceAuthError& auth_error) {

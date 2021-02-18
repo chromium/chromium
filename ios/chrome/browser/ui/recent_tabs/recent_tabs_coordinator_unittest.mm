@@ -143,7 +143,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                       BOOL hasForeignSessions) {
     if (signedIn) {
       identity_test_env_.MakePrimaryAccountAvailable("test@test.com");
-    } else if (identity_test_env_.identity_manager()->HasPrimaryAccount()) {
+    } else if (identity_test_env_.identity_manager()->HasPrimaryAccount(
+                   signin::ConsentLevel::kSync)) {
       auto* account_mutator =
           identity_test_env_.identity_manager()->GetPrimaryAccountMutator();
 

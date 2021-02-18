@@ -378,7 +378,8 @@ bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
 bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
   const auto* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  return identity_manager && identity_manager->HasPrimaryAccount();
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 bool ChromeAutocompleteProviderClient::IsSyncActive() const {

@@ -186,8 +186,11 @@ std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager && identity_manager->HasPrimaryAccount())
-    return identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .email;
+  }
 
   return std::string();
 }

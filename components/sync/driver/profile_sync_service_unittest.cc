@@ -676,7 +676,7 @@ TEST_F(ProfileSyncServiceTest, RevokeAccessTokenFromTokenService) {
             service()->GetTransportState());
 
   const CoreAccountId primary_account_id =
-      identity_manager()->GetPrimaryAccountId();
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   // Make sure the expected account_id was passed to the SyncEngine.
   ASSERT_EQ(primary_account_id, engine()->authenticated_account_id());
@@ -713,7 +713,7 @@ TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient_StopSync) {
   service()->AddObserver(&observer);
 
   const CoreAccountId primary_account_id =
-      identity_manager()->GetPrimaryAccountId();
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   // Make sure the expected account_id was passed to the SyncEngine.
   ASSERT_EQ(primary_account_id, engine()->authenticated_account_id());
@@ -762,7 +762,7 @@ TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
             service()->GetTransportState());
 
   const CoreAccountId primary_account_id =
-      identity_manager()->GetPrimaryAccountId();
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   // Make sure the expected account_id was passed to the SyncEngine.
   ASSERT_EQ(primary_account_id, engine()->authenticated_account_id());
@@ -853,7 +853,7 @@ TEST_F(ProfileSyncServiceTest, CredentialErrorReturned) {
             service()->GetTransportState());
 
   const CoreAccountId primary_account_id =
-      identity_manager()->GetPrimaryAccountId();
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   // Make sure the expected account_id was passed to the SyncEngine.
   ASSERT_EQ(primary_account_id, engine()->authenticated_account_id());
@@ -908,7 +908,7 @@ TEST_F(ProfileSyncServiceTest, CredentialErrorClearsOnNewToken) {
             service()->GetTransportState());
 
   const CoreAccountId primary_account_id =
-      identity_manager()->GetPrimaryAccountId();
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   // Make sure the expected account_id was passed to the SyncEngine.
   ASSERT_EQ(primary_account_id, engine()->authenticated_account_id());
@@ -1003,7 +1003,8 @@ TEST_F(ProfileSyncServiceTest, DisableSyncOnClient) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS does not support signout.
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
@@ -1012,7 +1013,8 @@ TEST_F(ProfileSyncServiceTest, DisableSyncOnClient) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 #else
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN,
                                     SyncService::DISABLE_REASON_USER_CHOICE),

@@ -818,7 +818,7 @@ base::string16 ChromeAutofillClient::GetAccountHolderName() {
     return base::string16();
   base::Optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo());
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return primary_account_info
              ? base::UTF8ToUTF16(primary_account_info->full_name)
              : base::string16();

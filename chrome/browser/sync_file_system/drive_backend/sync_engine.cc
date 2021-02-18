@@ -270,8 +270,10 @@ void SyncEngine::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Reset();
 
-  if (!identity_manager_ || !identity_manager_->HasPrimaryAccount())
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
+  }
 
   DCHECK(drive_service_factory_);
   std::unique_ptr<drive::DriveServiceInterface> drive_service =
@@ -309,8 +311,10 @@ void SyncEngine::InitializeInternal(
 
   CoreAccountId account_id;
 
-  if (identity_manager_)
-    account_id = identity_manager_->GetPrimaryAccountId();
+  if (identity_manager_) {
+    account_id =
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+  }
   drive_service_->Initialize(account_id);
 
   drive_uploader_ = std::move(drive_uploader);
@@ -381,10 +385,12 @@ void SyncEngine::RegisterOrigin(const GURL& origin,
   if (!sync_worker_) {
     // TODO(tzik): Record |origin| and retry the registration after late
     // sign-in.  Then, return SYNC_STATUS_OK.
-    if (!identity_manager_ || !identity_manager_->HasPrimaryAccount())
+    if (!identity_manager_ ||
+        !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       std::move(callback).Run(SYNC_STATUS_AUTHENTICATION_FAILED);
-    else
+    } else {
       std::move(callback).Run(SYNC_STATUS_ABORT);
+    }
     return;
   }
 

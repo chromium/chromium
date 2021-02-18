@@ -88,7 +88,8 @@ class FullCardRequestTest : public testing::Test {
     request_ = std::make_unique<FullCardRequest>(
         &autofill_client_, payments_client_.get(), &personal_data_);
     personal_data_.SetAccountInfoForPayments(
-        autofill_client_.GetIdentityManager()->GetPrimaryAccountInfo());
+        autofill_client_.GetIdentityManager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSync));
     // Silence the warning from PaymentsClient about matching sync and Payments
     // server types.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

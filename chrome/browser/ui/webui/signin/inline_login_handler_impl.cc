@@ -269,7 +269,8 @@ void OnSyncSetupComplete(Profile* profile,
   DCHECK(signin_util::IsForceSigninEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  bool has_primary_account = identity_manager->HasPrimaryAccount();
+  bool has_primary_account =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   if (has_primary_account && !password.empty()) {
     scoped_refptr<password_manager::PasswordStore> password_store =
         PasswordStoreFactory::GetForProfile(profile,
@@ -286,7 +287,8 @@ void OnSyncSetupComplete(Profile* profile,
 
   if (has_primary_account && is_force_sign_in_with_usermanager &&
       base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
+    CoreAccountInfo primary_account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     base::Optional<AccountInfo> primary_account_info =
         identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
             primary_account);
@@ -402,7 +404,9 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
 
-  std::string primary_email = identity_manager->GetPrimaryAccountInfo().email;
+  std::string primary_email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
   if (gaia::AreEmailsSame(email_, primary_email) &&
       reason == HandlerSigninReason::UNLOCK && !password_.empty() &&
       profiles::IsLockAvailable(profile_)) {
@@ -440,7 +444,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     }
 
     identity_manager->GetAccountsCookieMutator()->AddAccountToCookie(
-        identity_manager->GetPrimaryAccountId(),
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
         gaia::GaiaSource::kPrimaryAccountManager, {});
 
     signin_metrics::LogSigninReason(
@@ -484,7 +488,7 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
   DCHECK(signin_util::IsForceSigninEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  if (identity_manager->HasPrimaryAccount()) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // Already signed in, nothing to do.
     return;
   }
@@ -785,7 +789,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
   if (reason == HandlerSigninReason::UNLOCK) {
     std::string primary_username =
         IdentityManagerFactory::GetForProfile(profile)
-            ->GetPrimaryAccountInfo()
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email;
     if (!gaia::AreEmailsSame(default_email, primary_username))
       can_offer_for = CAN_OFFER_SIGNIN_FOR_SECONDARY_ACCOUNT;

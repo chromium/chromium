@@ -542,7 +542,8 @@ CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
   // the user has disabled sync.
   // In both cases, the AccountInfo will be empty if the user is not signed in.
   return sync_service_ ? sync_service_->GetAuthenticatedAccountInfo()
-                       : identity_manager_->GetPrimaryAccountInfo();
+                       : identity_manager_->GetPrimaryAccountInfo(
+                             signin::ConsentLevel::kSync);
 }
 
 // TODO(crbug.com/903914): Clean up this function so that it's more clear what

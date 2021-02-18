@@ -159,18 +159,16 @@ class IdentityManager : public KeyedService,
   // Returns a non-empty struct if the primary account exists and was granted
   // the required consent level.
   // TODO(1046746): Update (./README.md).
-  CoreAccountInfo GetPrimaryAccountInfo(
-      ConsentLevel consent = ConsentLevel::kSync) const;
+  CoreAccountInfo GetPrimaryAccountInfo(ConsentLevel consent_level) const;
 
   // Provides access to the account ID of the user's primary account. Simple
   // convenience wrapper over GetPrimaryAccountInfo().account_id.
-  CoreAccountId GetPrimaryAccountId(
-      ConsentLevel consent = ConsentLevel::kSync) const;
+  CoreAccountId GetPrimaryAccountId(ConsentLevel consent_level) const;
 
   // Returns whether the user's primary account is available. If consent is
   // |ConsentLevel::kSync| then true implies that the user has blessed this
   // account for sync.
-  bool HasPrimaryAccount(ConsentLevel consent = ConsentLevel::kSync) const;
+  bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
   std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
@@ -223,7 +221,7 @@ class IdentityManager : public KeyedService,
 
   // Returns true if (a) the primary account exists, and (b) a refresh token
   // exists for the primary account.
-  bool HasPrimaryAccountWithRefreshToken() const;
+  bool HasPrimaryAccountWithRefreshToken(ConsentLevel consent_level) const;
 
   // Returns true if a refresh token exists for |account_id|.
   bool HasAccountWithRefreshToken(const CoreAccountId& account_id) const;

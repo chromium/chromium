@@ -129,7 +129,8 @@ bool MediaRouterContextualMenu::IsCommandIdVisible(int command_id) const {
     // in.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser_->profile());
-    return identity_manager && identity_manager->HasPrimaryAccount();
+    return identity_manager &&
+           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
   return true;
 }

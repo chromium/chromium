@@ -439,7 +439,8 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
       IdentityManagerFactory::GetForProfile(profile_);
   FireWebUIListener(
       "update-sync-state",
-      base::Value(identity_manager && identity_manager->HasPrimaryAccount()),
+      base::Value(identity_manager && identity_manager->HasPrimaryAccount(
+                                          signin::ConsentLevel::kSync)),
       base::Value(sync_service_ && sync_service_->IsSyncFeatureActive() &&
                   sync_service_->GetActiveDataTypes().Has(
                       syncer::HISTORY_DELETE_DIRECTIVES)),

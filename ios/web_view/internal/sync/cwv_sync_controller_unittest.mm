@@ -98,7 +98,8 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   EXPECT_NSEQ(sync_controller.currentIdentity.gaiaID, identity.gaiaID);
 
   CoreAccountInfo primary_account_info =
-      identity_test_environment_.identity_manager()->GetPrimaryAccountInfo();
+      identity_test_environment_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync);
   EXPECT_EQ(primary_account_info, account_info);
 
   // Ensure opt-ins for transport only sync data is flipped to true.

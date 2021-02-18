@@ -168,7 +168,8 @@ void SigninViewController::ShowSignin(profiles::BubbleViewMode mode,
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (signin_reason == signin_metrics::Reason::REASON_REAUTHENTICATION) {
-    email = identity_manager->GetPrimaryAccountInfo().email;
+    email = identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                .email;
   }
   signin_metrics::PromoAction promo_action =
       GetPromoActionForNewAccount(identity_manager);
@@ -359,9 +360,11 @@ void SigninViewController::ShowDiceEnableSyncTab(
   std::string email_to_use = email_hint;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
-  if (identity_manager->HasPrimaryAccount()) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     reason = signin_metrics::Reason::REASON_REAUTHENTICATION;
-    email_to_use = identity_manager->GetPrimaryAccountInfo().email;
+    email_to_use =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
     DCHECK(email_hint.empty() || gaia::AreEmailsSame(email_hint, email_to_use));
   }
   ShowDiceSigninTab(reason, access_point, promo_action, email_to_use);

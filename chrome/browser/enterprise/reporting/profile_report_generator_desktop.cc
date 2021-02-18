@@ -68,7 +68,8 @@ bool ProfileReportGeneratorDesktop::Init(const base::FilePath& path) {
 void ProfileReportGeneratorDesktop::GetSigninUserInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
   auto account_info =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo();
+      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync);
   if (account_info.IsEmpty())
     return;
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();

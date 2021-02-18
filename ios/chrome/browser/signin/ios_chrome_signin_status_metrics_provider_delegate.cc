@@ -38,7 +38,7 @@ IOSChromeSigninStatusMetricsProviderDelegate::GetStatusOfAllAccounts() {
   for (ChromeBrowserState* browser_state : browser_state_list) {
     auto* manager = IdentityManagerFactory::GetForBrowserState(
         browser_state->GetOriginalChromeBrowserState());
-    if (manager && manager->HasPrimaryAccount())
+    if (manager && manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
       accounts_status.num_signed_in_accounts++;
   }
 

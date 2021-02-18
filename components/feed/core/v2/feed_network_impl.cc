@@ -173,7 +173,8 @@ class FeedNetworkImpl::NetworkFetch {
   void Start(base::OnceCallback<void(RawResponse)> done_callback) {
     done_callback_ = std::move(done_callback);
 
-    if (force_signed_out_request_ || !identity_manager_->HasPrimaryAccount()) {
+    if (force_signed_out_request_ ||
+        !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       StartLoader();
       return;
     }
@@ -348,7 +349,8 @@ class FeedNetworkImpl::NetworkFetch {
       response_body = std::move(*response);
 
       if (response_info.status_code == net::HTTP_UNAUTHORIZED) {
-        CoreAccountId account_id = identity_manager_->GetPrimaryAccountId();
+        CoreAccountId account_id =
+            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
         if (!account_id.empty()) {
           identity_manager_->RemoveAccessTokenFromCache(
               account_id, GetAuthScopes(), access_token_);

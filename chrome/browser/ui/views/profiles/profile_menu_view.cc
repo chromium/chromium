@@ -225,8 +225,10 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   if (!profile->IsRegularProfile())
     return gfx::ImageSkia();
 
-  if (!IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount())
+  if (!IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     return ColoredImageForMenu(kSyncPausedCircleIcon, gfx::kGoogleGrey500);
+  }
 
   const gfx::VectorIcon* icon = nullptr;
   ui::NativeTheme::ColorId color_id;
@@ -575,7 +577,7 @@ void ProfileMenuView::BuildSyncInfo() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  if (identity_manager->HasPrimaryAccount()) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // Show sync state.
     const sync_ui_util::AvatarSyncErrorType error =
         sync_ui_util::GetAvatarSyncErrorType(browser()->profile());
@@ -670,7 +672,8 @@ void ProfileMenuView::BuildFeatureButtons() {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   const bool has_primary_account =
-      !IsGuest(profile) && identity_manager->HasPrimaryAccount();
+      !IsGuest(profile) &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // The sign-out button is always at the bottom.
   if (has_unconsented_account && !has_primary_account) {
     AddFeatureButton(

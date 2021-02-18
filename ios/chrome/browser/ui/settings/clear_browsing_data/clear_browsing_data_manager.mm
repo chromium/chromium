@@ -352,7 +352,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
   }
 
   // If not signed in, no need to continue with profile syncing.
-  if (!identityManager->HasPrimaryAccount()) {
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
 
@@ -595,7 +595,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
-  if (!identityManager->HasPrimaryAccount()) {
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
 

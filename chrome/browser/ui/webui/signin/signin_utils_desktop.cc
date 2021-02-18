@@ -62,7 +62,9 @@ bool CanOfferSignin(Profile* profile,
     // If the identity manager already has a primary account, then this is a
     // re-auth scenario.  Make sure the email just signed in corresponds to
     // the one sign in manager expects.
-    std::string current_email = identity_manager->GetPrimaryAccountInfo().email;
+    std::string current_email =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
     const bool same_email = gaia::AreEmailsSame(current_email, email);
     if (!current_email.empty() && !same_email) {
       UMA_HISTOGRAM_ENUMERATION("Signin.Reauth",

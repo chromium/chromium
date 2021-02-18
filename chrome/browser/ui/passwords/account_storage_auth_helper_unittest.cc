@@ -77,7 +77,8 @@ class AccountStorageAuthHelperTest : public ::testing::Test {
 TEST_F(AccountStorageAuthHelperTest, ShouldTriggerReauthForPrimaryAccount) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
   EXPECT_CALL(mock_signin_view_controller_,
-              ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(),
+              ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(
+                                   signin::ConsentLevel::kSync),
                                kReauthAccessPoint, _));
 
   auth_helper_.TriggerOptInReauth(kReauthAccessPoint, base::DoNothing());
@@ -86,7 +87,8 @@ TEST_F(AccountStorageAuthHelperTest, ShouldTriggerReauthForPrimaryAccount) {
 TEST_F(AccountStorageAuthHelperTest, ShouldSetOptInOnSucessfulReauth) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
   EXPECT_CALL(mock_signin_view_controller_,
-              ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(),
+              ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(
+                                   signin::ConsentLevel::kSync),
                                kReauthAccessPoint, _))
       .WillOnce([](auto, auto,
                    base::OnceCallback<void(signin::ReauthResult)> callback) {
@@ -101,7 +103,8 @@ TEST_F(AccountStorageAuthHelperTest, ShouldSetOptInOnSucessfulReauth) {
 TEST_F(AccountStorageAuthHelperTest, ShouldNotSetOptInOnFailedReauth) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
   EXPECT_CALL(mock_signin_view_controller_,
-              ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(),
+              ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(
+                                   signin::ConsentLevel::kSync),
                                kReauthAccessPoint, _))
       .WillOnce([](auto, auto,
                    base::OnceCallback<void(signin::ReauthResult)> callback) {

@@ -98,7 +98,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
 
   CoreAccountId GetAuthenticatedAccountId() {
     return IdentityManagerFactory::GetForProfile(profile())
-        ->GetPrimaryAccountInfo()
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
         .account_id;
   }
 

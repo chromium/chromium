@@ -95,7 +95,8 @@
                                          browserState:_browserState]) {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(_browserState);
-    self.shouldShowSigninPromo = !identityManager->HasPrimaryAccount();
+    self.shouldShowSigninPromo =
+        !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
 }
 

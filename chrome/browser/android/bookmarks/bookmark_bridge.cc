@@ -1042,7 +1042,8 @@ bool BookmarkBridge::IsFolderAvailable(
       IdentityManagerFactory::GetForProfile(profile_->GetOriginalProfile());
   return (folder->type() != BookmarkNode::BOOKMARK_BAR &&
           folder->type() != BookmarkNode::OTHER_NODE) ||
-         (identity_manager && identity_manager->HasPrimaryAccount());
+         (identity_manager &&
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 void BookmarkBridge::NotifyIfDoneLoading() {

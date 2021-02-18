@@ -159,9 +159,9 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
   // Control fade and resize animations.
   source->AddBoolean("anim", gfx::Animation::ShouldRenderRichAnimation());
 
-  source->AddBoolean(
-      "isUserSignedIn",
-      IdentityManagerFactory::GetForProfile(GetProfile())->HasPrimaryAccount());
+  source->AddBoolean("isUserSignedIn",
+                     IdentityManagerFactory::GetForProfile(GetProfile())
+                         ->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,

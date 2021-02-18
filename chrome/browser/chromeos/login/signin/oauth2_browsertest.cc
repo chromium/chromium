@@ -322,7 +322,8 @@ class OAuth2Test : public OobeBaseTest {
     // Check for existence of the primary account and its refresh token.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
+    CoreAccountInfo primary_account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, primary_account.email));
     EXPECT_EQ(kTestGaiaId, primary_account.gaia);
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(

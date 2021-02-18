@@ -329,11 +329,11 @@ bool IsLockAvailable(Profile* profile) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount())
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return false;
   base::Optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo());
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   std::string hosted_domain = primary_account_info.has_value()
                                   ? primary_account_info.value().hosted_domain
                                   : "";

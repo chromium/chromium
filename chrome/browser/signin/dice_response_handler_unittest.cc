@@ -632,7 +632,8 @@ TEST_F(DiceResponseHandlerTest, SignoutMainAccount) {
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   // Receive signout response for the main account.
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -657,7 +658,8 @@ TEST_F(DiceResponseHandlerTest, SignoutMainAccount) {
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           secondary_account_info.account_id));
 
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   // Check that the reconcilor was not blocked.
   EXPECT_EQ(0, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
@@ -678,7 +680,8 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
       secondary_account_info.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       main_account_info.account_id));
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   // Receive signout response for the secondary account.
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -689,7 +692,8 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
       secondary_account_info.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       main_account_info.account_id));
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 TEST_F(DiceResponseHandlerTest, SignoutWebOnly) {
@@ -706,7 +710,8 @@ TEST_F(DiceResponseHandlerTest, SignoutWebOnly) {
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   // Receive signout response.
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -715,7 +720,8 @@ TEST_F(DiceResponseHandlerTest, SignoutWebOnly) {
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // Checks that signin in progress is canceled by a signout.

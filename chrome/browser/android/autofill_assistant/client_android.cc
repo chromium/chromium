@@ -436,7 +436,7 @@ std::string ClientAndroid::GetChromeSignedInEmailAddress() const {
   CoreAccountInfo account_info =
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
-          ->GetPrimaryAccountInfo();
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   return account_info.email;
 }
 

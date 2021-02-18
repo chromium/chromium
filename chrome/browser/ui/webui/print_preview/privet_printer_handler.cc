@@ -253,7 +253,8 @@ void PrivetPrinterHandler::StartPrint(
       IdentityManagerFactory::GetForProfileIfExists(profile_);
   if (identity_manager) {
     privet_local_print_operation_->SetUsername(
-        identity_manager->GetPrimaryAccountInfo().email);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email);
   }
 
   privet_local_print_operation_->Start();

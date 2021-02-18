@@ -144,7 +144,7 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
   // If the user signed-out while this task was waiting then Shutdown() would
   // have been called, which would have invalidated this task. Since we're here
   // then the user must still be signed-in.
-  DCHECK(identity_manager()->HasPrimaryAccount());
+  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   DCHECK(!policy_manager()->IsClientRegistered());
   DCHECK(policy_manager()->core()->client());
 
@@ -156,7 +156,8 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
       policy_manager()->core()->client(),
       kCloudPolicyRegistrationType));
   registration_helper_->StartRegistration(
-      identity_manager(), identity_manager()->GetPrimaryAccountId(),
+      identity_manager(),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),
       base::BindOnce(&UserPolicySigninService::OnRegistrationDone,
                      base::Unretained(this)));
 }

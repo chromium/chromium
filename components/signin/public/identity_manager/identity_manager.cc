@@ -204,8 +204,9 @@ IdentityManager::GetExtendedAccountInfoForAccountsWithRefreshToken() const {
   return accounts;
 }
 
-bool IdentityManager::HasPrimaryAccountWithRefreshToken() const {
-  return HasAccountWithRefreshToken(GetPrimaryAccountId());
+bool IdentityManager::HasPrimaryAccountWithRefreshToken(
+    ConsentLevel consent_level) const {
+  return HasAccountWithRefreshToken(GetPrimaryAccountId(consent_level));
 }
 
 bool IdentityManager::HasAccountWithRefreshToken(
@@ -613,7 +614,7 @@ void IdentityManager::OnRefreshTokenRevokedFromSource(
 }
 
 void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
-  if (HasPrimaryAccount()) {
+  if (HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
     const CoreAccountId primary_account_id =
         GetPrimaryAccountId(ConsentLevel::kNotRequired);
     if (primary_account_id == info.account_id) {

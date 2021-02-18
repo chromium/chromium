@@ -874,8 +874,10 @@ ProfileImpl::~ProfileImpl() {
 std::string ProfileImpl::GetProfileUserName() const {
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(this);
-  if (identity_manager)
-    return identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager) {
+    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .email;
+  }
 
   return std::string();
 }
@@ -1489,7 +1491,8 @@ void ProfileImpl::SetCreationTimeForTesting(base::Time creation_time) {
 bool ProfileImpl::IsSignedIn() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(this);
-  return identity_manager && identity_manager->HasPrimaryAccount();
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 GURL ProfileImpl::GetHomePage() {

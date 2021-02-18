@@ -111,9 +111,10 @@ void AppLauncherLoginHandler::HandleShowSyncLoginUI(
   if (!signin::ShouldShowPromo(profile))
     return;
 
-  std::string username = IdentityManagerFactory::GetForProfile(profile)
-                             ->GetPrimaryAccountInfo()
-                             .email;
+  std::string username =
+      IdentityManagerFactory::GetForProfile(profile)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
   if (!username.empty())
     return;
 

@@ -423,7 +423,8 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
         IdentityManagerFactory::GetForProfile(GetProfile());
     std::vector<CoreAccountInfo> accounts =
         identity_manager->GetAccountsWithRefreshTokens();
-    CoreAccountId primary_id = identity_manager->GetPrimaryAccountId();
+    CoreAccountId primary_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
     bool fixed_auth_error = false;
     for (const auto& account_info : accounts) {
       CoreAccountId account_id = account_info.account_id;
@@ -454,7 +455,8 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
               ->Get(GetProfile())
               ->AreExtensionsRestrictedToPrimaryAccount()) {
         // Set a primary account.
-        ASSERT_FALSE(identity_manager->HasPrimaryAccount());
+        ASSERT_FALSE(
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
         signin::MakeAccountAvailable(identity_manager, "primary@example.com");
         signin::SetPrimaryAccount(identity_manager, "primary@example.com");
       } else {
@@ -577,7 +579,8 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
   // account.
   CoreAccountId SignIn(const std::string& email) {
     auto account_info = identity_test_env()->MakePrimaryAccountAvailable(email);
-    EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+    EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+        signin::ConsentLevel::kSync));
     return account_info.account_id;
   }
 
@@ -894,11 +897,13 @@ class GetAuthTokenFunctionTest
   }
 
   CoreAccountInfo GetPrimaryAccountInfo() {
-    return identity_test_env()->identity_manager()->GetPrimaryAccountInfo();
+    return identity_test_env()->identity_manager()->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSync);
   }
 
   CoreAccountId GetPrimaryAccountId() {
-    return identity_test_env()->identity_manager()->GetPrimaryAccountId();
+    return identity_test_env()->identity_manager()->GetPrimaryAccountId(
+        signin::ConsentLevel::kSync);
   }
 
   IdentityTokenCacheValue CreateToken(const std::string& token,

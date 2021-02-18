@@ -886,7 +886,8 @@ TEST_F(PrivacySandboxSettingsTest, DelayedReconciliationIdentityFailure) {
   // A perisistent authentication error for the primary account should result
   // in reconciliation.
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_test_env()->identity_manager()->GetPrimaryAccountId(),
+      identity_test_env()->identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSync),
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 

@@ -154,8 +154,9 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 #pragma mark - Public Methods
 
 - (CWVIdentity*)currentIdentity {
-  if (_identityManager->HasPrimaryAccount()) {
-    CoreAccountInfo accountInfo = _identityManager->GetPrimaryAccountInfo();
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    CoreAccountInfo accountInfo =
+        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     return [[CWVIdentity alloc]
         initWithEmail:base::SysUTF8ToNSString(accountInfo.email)
              fullName:nil
@@ -183,7 +184,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
   _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(accountId);
-  CHECK_EQ(_identityManager->GetPrimaryAccountId(), accountId);
+  CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+           accountId);
 
   autofill::prefs::SetUserOptedInWalletSyncTransport(_prefService, accountId,
                                                      /*opted_in=*/true);
@@ -259,7 +261,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 - (void)reloadAccounts {
   _identityManager->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
-          _identityManager->GetPrimaryAccountInfo().account_id);
+          _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+              .account_id);
 }
 
 @end

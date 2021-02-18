@@ -140,7 +140,8 @@ class SigninManagerTest : public testing::Test {
                            ConsentLevel::kNotRequired));
     EXPECT_EQ(account,
               identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSync));
-    EXPECT_TRUE(identity_manager()->HasPrimaryAccountWithRefreshToken());
+    EXPECT_TRUE(identity_manager()->HasPrimaryAccountWithRefreshToken(
+        signin::ConsentLevel::kSync));
     return account;
   }
 
@@ -208,7 +209,8 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountNotChangedOnSignout) {
                          ConsentLevel::kNotRequired));
   EXPECT_EQ(account,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSync));
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccountWithRefreshToken());
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSync));
 
   // Verify the primary account changed event.
   ExpectSyncPrimaryAccountSetEvent(account);
@@ -354,7 +356,8 @@ TEST_F(SigninManagerTest,
   base::RunLoop().RunUntilIdle();
 
   // Primary account is cleared, but unconsented account is not.
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));

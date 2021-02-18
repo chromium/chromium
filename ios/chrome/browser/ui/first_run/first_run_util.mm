@@ -57,7 +57,7 @@ void RecordFirstRunMetricsInternal(
     bool has_sso_accounts) {
   first_run::SignInStatus sign_in_status;
   bool user_signed_in = IdentityManagerFactory::GetForBrowserState(browserState)
-                            ->HasPrimaryAccount();
+                            ->HasPrimaryAccount(signin::ConsentLevel::kSync);
   if (user_signed_in) {
     sign_in_status = has_sso_accounts
                          ? first_run::HAS_SSO_ACCOUNT_SIGNIN_SUCCESSFUL

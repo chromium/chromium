@@ -168,8 +168,10 @@ base::string16 GetAuthenticatedUsername(Profile* profile) {
   DCHECK(profile);
   std::string user_display_name;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager->HasPrimaryAccount()) {
-    user_display_name = identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    user_display_name =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // See https://crbug.com/994798 for details.
     user_manager::User* user =
@@ -242,7 +244,8 @@ void EnableSyncFromPromo(
   Profile* profile = browser->profile();
   DCHECK(!profile->IsOffTheRecord());
 
-  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount()) {
+  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     DVLOG(1) << "There is already a primary account.";
     return;
   }

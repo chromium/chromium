@@ -338,8 +338,10 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   std::wstring gaia_id;
-  if (identity_manager->HasPrimaryAccount()) {
-    gaia_id = base::UTF8ToWide(identity_manager->GetPrimaryAccountInfo().gaia);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    gaia_id = base::UTF8ToWide(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .gaia);
 
     if (!import_when_primary_account_exists) {
       return;
@@ -358,14 +360,16 @@ bool ReauthWithCredentialProviderIfPossible(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!(profile->GetPrefs()->GetBoolean(
             prefs::kSignedInWithCredentialProvider) &&
-        identity_manager->HasPrimaryAccount() &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            identity_manager->GetPrimaryAccountId()))) {
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSync)))) {
     return false;
   }
 
-  std::wstring gaia_id =
-      base::UTF8ToWide(identity_manager->GetPrimaryAccountInfo().gaia.c_str());
+  std::wstring gaia_id = base::UTF8ToWide(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .gaia.c_str());
   return TrySigninWithCredentialProvider(profile, gaia_id, false);
 }
 
