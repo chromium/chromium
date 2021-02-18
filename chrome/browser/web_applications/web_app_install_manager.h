@@ -130,10 +130,6 @@ class WebAppInstallManager final : public InstallManager,
                              OnceInstallCallback callback,
                              const AppId& app_id,
                              InstallResultCode code);
-  // For the new USS-based system only:
-  void OnWebAppUninstalledAfterSync(std::unique_ptr<WebApp> web_app,
-                                    OnceUninstallCallback callback,
-                                    bool uninstalled);
 
   void OnLoadWebAppAndCheckManifestCompleted(
       WebAppInstallTask* task,
