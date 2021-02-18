@@ -4,10 +4,12 @@
 
 #include "content/browser/prerender/prerender_host_registry.h"
 
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/prerender/prerender_host.h"
@@ -21,13 +23,39 @@ PrerenderHostRegistry::PrerenderHostRegistry() {
   DCHECK(blink::features::IsPrerender2Enabled());
 }
 
-PrerenderHostRegistry::~PrerenderHostRegistry() = default;
+PrerenderHostRegistry::~PrerenderHostRegistry() {
+  for (Observer& obs : observers_)
+    obs.OnRegistryDestroyed();
+}
+
+void PrerenderHostRegistry::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 int PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
     WebContentsImpl& web_contents,
     const url::Origin& initiator_origin) {
   DCHECK(attributes);
+
+  // Ensure observers are notified that a trigger occurred.
+  base::ScopedClosureRunner notify_trigger(
+      base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
+                     base::Unretained(this), attributes->url));
+
+  // Don't prerender on low-end devices.
+  // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch
+  // if the memory requirements are different.
+  if (base::SysInfo::IsLowEndDevice()) {
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kLowEndDevice);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
 
   // Ignore prerendering requests for the same URL.
   const GURL prerendering_url = attributes->url;
@@ -65,9 +93,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
                         frame_tree_node_id));
 
   frame_tree_node_id_by_url_[prerendering_url] = frame_tree_node_id;
-
-  if (on_host_created_)
-    std::move(on_host_created_).Run();
 
   return frame_tree_node_id;
 }
@@ -180,16 +205,9 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
   return host_iter->second.get();
 }
 
-PrerenderHost* PrerenderHostRegistry::WaitForHostByUrlForTesting(
-    const GURL& prerendering_url) {
-  PrerenderHost* host = FindHostByUrlForTesting(prerendering_url);  // IN-TEST
-  while (!host) {
-    base::RunLoop loop;
-    on_host_created_ = loop.QuitClosure();
-    loop.Run();
-    host = FindHostByUrlForTesting(prerendering_url);  // IN-TEST
-  }
-  return host;
+void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
+  for (Observer& obs : observers_)
+    obs.OnTrigger(url);
 }
 
 }  // namespace content

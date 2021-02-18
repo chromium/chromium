@@ -61272,6 +61272,7 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PrerenderHostFinalStatus">
   <int value="0" label="kActivated"/>
   <int value="1" label="kDestroyed"/>
+  <int value="2" label="kLowEndDevice"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

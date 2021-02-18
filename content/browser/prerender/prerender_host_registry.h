@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
@@ -45,6 +46,20 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHostRegistry& operator=(const PrerenderHostRegistry&) = delete;
   PrerenderHostRegistry(PrerenderHostRegistry&&) = delete;
   PrerenderHostRegistry& operator=(PrerenderHostRegistry&&) = delete;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called once per CreateAndStartHost() call. Does not necessarily
+    // mean a host was created.
+    virtual void OnTrigger(const GURL& url) {}
+
+    // Called from the registry's destructor. The observer
+    // should drop any reference to the registry.
+    virtual void OnRegistryDestroyed() {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // For triggers.
   // Creates and starts a host. Returns the root frame tree node id of the
@@ -91,11 +106,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
-  // Waits until a prerender host for `prerendering_url` is created and returns
-  // a pointer to it.
-  PrerenderHost* WaitForHostByUrlForTesting(const GURL& prerendering_url);
-
  private:
+  void NotifyTrigger(const GURL& url);
+
   // Hosts that are not reserved for activation yet.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
@@ -107,7 +120,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   std::map<int, std::unique_ptr<PrerenderHost>>
       reserved_prerender_host_by_frame_tree_node_id_;
 
-  base::OnceClosure on_host_created_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace content

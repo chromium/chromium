@@ -43,7 +43,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   enum class FinalStatus {
     kActivated = 0,
     kDestroyed = 1,
-    kMaxValue = kDestroyed
+    kLowEndDevice = 2,
+    kMaxValue = kLowEndDevice
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

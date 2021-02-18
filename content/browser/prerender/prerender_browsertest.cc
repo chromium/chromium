@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_switches.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
@@ -57,6 +61,49 @@ std::string ToString(
   }
 }
 
+class PrerenderHostRegistryObserver : public PrerenderHostRegistry::Observer {
+ public:
+  explicit PrerenderHostRegistryObserver(PrerenderHostRegistry& registry) {
+    observation_.Observe(&registry);
+  }
+
+  // Returns immediately if `url` was ever triggered before.
+  void WaitForTrigger(const GURL& url) {
+    if (triggered_.contains(url)) {
+      return;
+    }
+    DCHECK(!waiting_.contains(url));
+    base::RunLoop loop;
+    waiting_[url] = loop.QuitClosure();
+    loop.Run();
+  }
+
+  void OnTrigger(const GURL& url) override {
+    auto iter = waiting_.find(url);
+    if (iter != waiting_.end()) {
+      auto callback = std::move(iter->second);
+      waiting_.erase(iter);
+      std::move(callback).Run();
+    } else {
+      DCHECK(!triggered_.contains(url))
+          << "this observer doesn't yet support multiple triggers";
+      triggered_.insert(url);
+    }
+  }
+
+  void OnRegistryDestroyed() override {
+    DCHECK(waiting_.empty());
+    observation_.Reset();
+  }
+
+  base::ScopedObservation<PrerenderHostRegistry,
+                          PrerenderHostRegistry::Observer>
+      observation_{this};
+
+  base::flat_map<GURL, base::OnceClosure> waiting_;
+  base::flat_set<GURL> triggered_;
+};
+
 class PrerenderBrowserTest
     : public ContentBrowserTest,
       public testing::WithParamInterface<PrerenderBrowserTestType> {
@@ -103,9 +150,18 @@ class PrerenderBrowserTest
     return *storage_partition->GetPrerenderHostRegistry();
   }
 
+  // Must only be called if the host for `prerendering_url` will be
+  // created.
   void WaitForPrerenderLoadCompletion(const GURL& prerendering_url) {
-    PrerenderHost* host =
-        GetPrerenderHostRegistry().WaitForHostByUrlForTesting(prerendering_url);
+    PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+    PrerenderHost* host = registry.FindHostByUrlForTesting(prerendering_url);
+    // Wait for the host to be created if it hasn't yet.
+    if (!host) {
+      PrerenderHostRegistryObserver observer(registry);
+      observer.WaitForTrigger(prerendering_url);
+      host = registry.FindHostByUrlForTesting(prerendering_url);
+      ASSERT_NE(host, nullptr);
+    }
     host->WaitForLoadStopForTesting();
   }
 
@@ -853,6 +909,33 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LocalStorageAccess) {
   EXPECT_EQ(prerender_value,
             EvalJs(shell()->web_contents(),
                    JsReplace("window.localStorage.getItem($1)", key)));
+}
+
+// Tests that prerendering doesn't run for low-end devices.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LowEndDevice) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Set low-end device mode.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableLowEndDeviceMode);
+
+  // Attempt to prerender.
+  PrerenderHostRegistryObserver observer(GetPrerenderHostRegistry());
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("add_prerender($1)", kPrerenderingUrl)));
+
+  // It should fail.
+  observer.WaitForTrigger(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  EXPECT_FALSE(prerender_host);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kLowEndDevice, 1);
 }
 
 }  // namespace
