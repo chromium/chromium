@@ -2861,12 +2861,13 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   bool repainted = PaintTree(benchmark_mode);
 
-  if (benchmark_mode ==
-          PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
-      // TODO(paint-dev): Separate requirement for update for repaint and full
-      // PaintArtifactCompositor update.
-      (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-       benchmark_mode != PaintBenchmarkMode::kNormal)) {
+  if (paint_artifact_compositor_ &&
+      (benchmark_mode ==
+           PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
+       // TODO(paint-dev): Separate requirement for update for repaint and full
+       // PaintArtifactCompositor update.
+       (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+        benchmark_mode != PaintBenchmarkMode::kNormal))) {
     paint_artifact_compositor_->SetNeedsUpdate();
   }
 
