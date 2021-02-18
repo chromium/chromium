@@ -258,4 +258,29 @@ TEST_F(VisibleUnitsParagraphTest, isStartOfParagraph) {
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*three, 0)));
 }
 
+TEST_F(VisibleUnitsParagraphTest,
+       endOfParagraphWithDifferentUpAndDownVisiblePositions) {
+  InsertStyleElement("span, div { display: inline-block; width: 50vw; }");
+  SetBodyContent("x<span></span><div></div>");
+
+  const Position& text_end =
+      Position::LastPositionInNode(*GetDocument().body()->firstChild());
+  const Position& before_div =
+      Position::BeforeNode(*GetDocument().QuerySelector("div"));
+  const VisiblePosition& upstream =
+      CreateVisiblePosition(before_div, TextAffinity::kUpstream);
+  const VisiblePosition& downstream =
+      CreateVisiblePosition(before_div, TextAffinity::kDownstream);
+  EXPECT_LT(upstream.DeepEquivalent(), downstream.DeepEquivalent());
+  EXPECT_EQ(text_end, upstream.DeepEquivalent());
+  EXPECT_EQ(before_div, downstream.DeepEquivalent());
+
+  // The end of paragraph of a position shouldn't precede it (bug 1179113).
+  const VisiblePosition& end_of_paragraph = EndOfParagraph(downstream);
+  EXPECT_LE(downstream.DeepEquivalent(), end_of_paragraph.DeepEquivalent());
+
+  // In in this case they are equal.
+  EXPECT_EQ(downstream.DeepEquivalent(), end_of_paragraph.DeepEquivalent());
+}
+
 }  // namespace blink
