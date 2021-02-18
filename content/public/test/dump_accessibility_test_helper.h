@@ -108,49 +108,49 @@ class DumpAccessibilityTestHelper {
       const std::vector<std::string>& expected_lines);
 
  private:
-  // Parses property filter directive, if the line is a valid property filter
-  // directive, then a new property filter is created and appneded to the list,
-  // true is returned, otherwise false.
-  bool ParsePropertyFilter(const std::string& line,
-                           std::vector<ui::AXPropertyFilter>* filters) const;
+  enum Directive {
+    // No directive.
+    kNone,
 
-  // Parses node filter directive, if the line is a valid node filter directive
-  // then a new node filter is created and appneded to the list, true is
-  // returned, otherwise false.
-  bool ParseNodeFilter(const std::string& line,
-                       std::vector<ui::AXNodeFilter>* filters) const;
+    // Instructs to not wait for document load for url defined by the
+    // directive.
+    kNoLoadExpected,
 
-  struct Directive {
-    enum Type {
-      // No directive.
-      kNone,
+    // Delays a test unitl a string defined by the directive is present
+    // in the dump.
+    kWaitFor,
 
-      // Instructs to not wait for document load for url defined by the
-      // directive.
-      kNoLoadExpected,
+    // Delays a test until a string returned by a script defined by the
+    // directive is present in the dump.
+    kExecuteAndWaitFor,
 
-      // Delays a test unitl a string defined by the directive is present
-      // in the dump.
-      kWaitFor,
+    // Indicates event recording should continue at least until a specific
+    // event has been received.
+    kRunUntil,
 
-      // Delays a test until a string returned by a script defined by the
-      // directive is present in the dump.
-      kExecuteAndWaitFor,
+    // Invokes default action on an accessible object defined by the
+    // directive.
+    kDefaultActionOn,
 
-      // Indicates event recording should continue at least until a specific
-      // event has been received.
-      kRunUntil,
+    // Property filter directives, see AXPropertyFilter.
+    kPropertyFilterAllow,
+    kPropertyFilterAllowEmpty,
+    kPropertyFilterDeny,
 
-      // Invokes default action on an accessible object defined by the
-      // directive.
-      kDefaultActionOn,
-    } type;
+    // Scripting instruction.
+    kScript,
 
-    std::string value;
+    // Node filter directives, see AXNodeFilter.
+    kNodeFilter,
   };
 
   // Parses directives from the given line.
-  Directive ParseDirective(const std::string& line) const;
+  Directive ParseDirective(const std::string& directive) const;
+
+  // Adds a given directive into a scenario.
+  void ProcessDirective(Directive directive,
+                        const std::string& value,
+                        Scenario* scenario) const;
 
   // Suffix of the expectation file corresponding to html file.
   // Overridden by each platform subclass.
