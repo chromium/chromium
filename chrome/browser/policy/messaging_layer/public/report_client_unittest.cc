@@ -110,8 +110,12 @@ class ReportClientTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_envrionment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
+  // BrowserTaskEnvironment needs to be destroyed before TestEnvironment
+  // and ScopedFeatureList, so that tasks on other threads don't run after
+  // they are destroyed.
+  content::BrowserTaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
@@ -121,9 +125,6 @@ class ReportClientTest : public testing::Test {
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a ReportQueue can be created using the ReportingClient.
