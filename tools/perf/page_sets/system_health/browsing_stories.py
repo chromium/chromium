@@ -131,12 +131,12 @@ class _ArticleBrowsingStory(_BrowsingStory):
 
 class CnnStory2020(_ArticleBrowsingStory):
   """The second top website in http://www.alexa.com/topsites/category/News"""
-  NAME = 'browse:news:cnn:2020'
+  NAME = 'browse:news:cnn:2021'
   URL = 'http://edition.cnn.com/'
   ITEM_SELECTOR = '.cd__content > h3 > a'
   ITEMS_TO_VISIT = 2
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2020
+      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2021
   ]
 
 

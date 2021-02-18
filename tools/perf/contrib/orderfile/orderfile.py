@@ -258,7 +258,7 @@ class OrderfileDebugging(_OrderfileBenchmark):
 class OrderfileMemory(system_health.MobileMemorySystemHealth):
   """Benchmark for native code memory footprint evaluation."""
   class OrderfileMemoryStorySet(story.StorySet):
-    _STORY_SET = set(['browse:news:cnn:2020', 'browse:social:facebook:2019'])
+    _STORY_SET = set(['browse:news:cnn:2021', 'browse:social:facebook:2019'])
 
     def __init__(self, platform, take_memory_measurement=True):
       super(OrderfileMemory.OrderfileMemoryStorySet, self).__init__(

@@ -3452,10 +3452,6 @@
         "name": "system_health.common_desktop/browse:media:youtubetv_watch:2020"
     },
     {
-        "duration": "52.0",
-        "name": "system_health.common_desktop/browse:news:cnn:2020"
-    },
-    {
         "duration": "51.0",
         "name": "system_health.common_desktop/browse:news:flipboard:2020"
     },
@@ -3766,10 +3762,6 @@
     {
         "duration": "68.0",
         "name": "system_health.memory_desktop/browse:media:youtubetv_watch:2020"
-    },
-    {
-        "duration": "44.0",
-        "name": "system_health.memory_desktop/browse:news:cnn:2020"
     },
     {
         "duration": "44.0",
@@ -4124,10 +4116,6 @@
         "name": "v8.browsing_desktop-future/browse:media:youtubetv_watch:2020"
     },
     {
-        "duration": "28.0",
-        "name": "v8.browsing_desktop-future/browse:news:cnn:2020"
-    },
-    {
         "duration": "73.0",
         "name": "v8.browsing_desktop-future/browse:news:flipboard:2020"
     },
@@ -4230,10 +4218,6 @@
     {
         "duration": "84.0",
         "name": "v8.browsing_desktop/browse:media:youtubetv_watch:2020"
-    },
-    {
-        "duration": "17.0",
-        "name": "v8.browsing_desktop/browse:news:cnn:2020"
     },
     {
         "duration": "62.0",

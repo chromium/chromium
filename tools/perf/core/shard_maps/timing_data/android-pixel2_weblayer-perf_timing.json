@@ -24,10 +24,6 @@
         "name": "system_health.common_mobile/background:tools:gmail:2019"
     },
     {
-        "duration": "52.0",
-        "name": "system_health.common_mobile/browse:news:cnn:2020"
-    },
-    {
         "duration": "49.0",
         "name": "system_health.common_mobile/browse:news:reddit:2019"
     },
@@ -70,10 +66,6 @@
     {
         "duration": "4.0",
         "name": "system_health.memory_mobile/background:tools:gmail:2019"
-    },
-    {
-        "duration": "52.0",
-        "name": "system_health.memory_mobile/browse:news:cnn:2020"
     },
     {
         "duration": "52.0",

@@ -48,10 +48,6 @@
         "name": "system_health.common_mobile/background:tools:gmail:2019"
     },
     {
-        "duration": "138.0",
-        "name": "system_health.common_mobile/browse:news:cnn:2020"
-    },
-    {
         "duration": "112.0",
         "name": "system_health.common_mobile/browse:news:reddit:2019"
     },

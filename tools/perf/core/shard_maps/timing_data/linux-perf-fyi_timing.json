@@ -136,10 +136,6 @@
         "name": "system_health.common_desktop/browse:media:youtubetv_watch:2020"
     },
     {
-        "duration": "45.0",
-        "name": "system_health.common_desktop/browse:news:cnn:2020"
-    },
-    {
         "duration": "61.0",
         "name": "system_health.common_desktop/browse:news:nytimes:2020"
     },

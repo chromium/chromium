@@ -56,10 +56,6 @@
         "name": "system_health.common_mobile/browse:media:youtube:2019"
     },
     {
-        "duration": "171.0",
-        "name": "system_health.common_mobile/browse:news:cnn:2020"
-    },
-    {
         "duration": "4.0",
         "name": "system_health.common_mobile/browse:news:cricbuzz:2019"
     },
@@ -349,10 +345,6 @@
     },
     {
         "duration": "2.0",
-        "name": "system_health.memory_mobile/browse:news:cnn:2020"
-    },
-    {
-        "duration": "2.0",
         "name": "system_health.memory_mobile/browse:news:cricbuzz:2019"
     },
     {
@@ -622,10 +614,6 @@
     {
         "duration": "0.0",
         "name": "v8.browsing_mobile/browse:media:youtube:2019"
-    },
-    {
-        "duration": "0.0",
-        "name": "v8.browsing_mobile/browse:news:cnn:2020"
     },
     {
         "duration": "0.0",
