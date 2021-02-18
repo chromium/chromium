@@ -271,18 +271,18 @@ bool FillStateSelectControl(const base::string16& value,
     } else {
       full_names.push_back(value);
     }
-  } else {
-    base::string16 full;
-    base::string16 abbreviation;
-    // |abbreviation| will be empty for non-US countries.
-    state_names::GetNameAndAbbreviation(value, &full, &abbreviation);
-
-    if (!full.empty())
-      full_names.push_back(std::move(full));
-
-    if (!abbreviation.empty())
-      abbreviations.push_back(std::move(abbreviation));
   }
+
+  base::string16 full;
+  base::string16 abbreviation;
+  // |abbreviation| will be empty for non-US countries.
+  state_names::GetNameAndAbbreviation(value, &full, &abbreviation);
+
+  if (!full.empty())
+    full_names.push_back(std::move(full));
+
+  if (!abbreviation.empty())
+    abbreviations.push_back(std::move(abbreviation));
 
   // Try an exact match of the abbreviation first.
   for (const auto& abbreviation : abbreviations) {

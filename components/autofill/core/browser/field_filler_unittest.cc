@@ -1747,4 +1747,27 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
   EXPECT_EQ(ASCIIToUTF16(""), field.value);
 }
 
+// Tests that Autofill uses the static states data of US as a fallback mechanism
+// for filling when |AlternativeStateNameMap| is not populated.
+TEST_F(AutofillFieldFillerTest,
+       FillStateFieldWhenAlternativeStateNameMapIsNotPopulated) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"Colorado", "Connecticut", "California"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CO"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("Colorado"), field.value);
+}
+
 }  // namespace autofill
