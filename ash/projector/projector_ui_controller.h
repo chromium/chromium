@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/projector/model/projector_ui_model.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
@@ -31,6 +33,12 @@ class ASH_EXPORT ProjectorUiController {
   virtual void OnKeyIdeaMarked();
   // Invoked when transcription is available for rendering. Virtual for testing.
   virtual void OnTranscription(const std::string& transcription, bool is_final);
+
+  ProjectorUiModel* model() { return &model_; }
+
+ private:
+  ProjectorUiModel model_;
+  views::UniqueWidgetPtr projector_bar_widget_;
 };
 
 }  // namespace ash
