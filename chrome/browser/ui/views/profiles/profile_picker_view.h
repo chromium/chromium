@@ -64,25 +64,58 @@ class ProfilePickerView : public views::WidgetDelegateView,
     kFinalizing = 3
   };
 
+  // Struct holding the data related to the sign-in profile creation flow. These
+  // variables are grouped together to simplify reasoning about state.
+  struct SignInFlow {
+    explicit SignInFlow(ProfilePickerView* observer,
+                        Profile* profile,
+                        SkColor profile_color);
+    ~SignInFlow();
+
+    // The web contents backed by `profile`. This is used for displaying the
+    // sign-in flow.
+    std::unique_ptr<content::WebContents> contents;
+
+    Profile* profile = nullptr;
+
+    // Set for the profile at the very end to avoid coloring the simple toolbar
+    // for GAIA sign-in (that uses the ThemeProvider of the current profile).
+    SkColor profile_color;
+
+    base::string16 name_for_signed_in_profile;
+    base::OnceClosure on_profile_name_available;
+
+    base::CancelableOnceClosure extended_account_info_timeout_closure;
+
+    base::ScopedObservation<signin::IdentityManager,
+                            signin::IdentityManager::Observer>
+        identity_manager_observation;
+  };
+
   // Displays the profile picker.
   void Display(ProfilePicker::EntryPoint entry_point);
   // Hides the profile picker.
   void Clear();
 
   // On system profile creation success, it initializes the view.
-  void OnSystemProfileCreated(ProfilePicker::EntryPoint entry_point,
-                              Profile* system_profile,
+  void OnSystemProfileCreated(Profile* system_profile,
                               Profile::CreateStatus status);
 
   // Creates and shows the dialog.
-  void Init(ProfilePicker::EntryPoint entry_point, Profile* system_profile);
+  void Init(Profile* system_profile);
 
   // Switches the layout to the sign-in flow (and creates a new profile)
   void SwitchToSignIn(SkColor profile_color,
                       base::OnceCallback<void(bool)> switch_finished_callback);
+  // Cancel the sign-in flow and returns back to the main picker screen (if the
+  // original EntryPoint was to open the picker).
+  void CancelSignIn();
   // On creation success for the sign-in profile, it rebuilds the view.
-  void OnProfileForSigninCreated(Profile* new_profile,
-                                 Profile::CreateStatus status);
+  void OnProfileForSigninCreated(
+      SkColor profile_color,
+      base::RepeatingCallback<void(bool)> switch_finished_callback,
+      Profile* new_profile,
+      Profile::CreateStatus status);
   // Switches the layout to the sync confirmation screen.
   void SwitchToSyncConfirmation();
 
@@ -193,6 +226,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   base::FilePath GetForceSigninProfilePath() const;
 
   ScopedKeepAlive keep_alive_;
+  ProfilePicker::EntryPoint entry_point_ =
+      ProfilePicker::EntryPoint::kOnStartup;
   State state_ = State::kNotStarted;
 
   // A mapping between accelerators and command IDs.
@@ -210,28 +245,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // the WebUI pages.
   std::unique_ptr<content::WebContents> system_profile_contents_;
 
-  // Assigned a value at the beginning of a signed-in profile creation flow,
-  // until the end of the flow (i.e. for the rest of the lifetime of this view).
-  Profile* signed_in_profile_being_created_ = nullptr;
-  // The web contents backed by `signed_in_profile_being_created_`, with the
-  // same lifetime. This is used for displaying the sign-in flow.
-  std::unique_ptr<content::WebContents> new_profile_contents_;
+  std::unique_ptr<SignInFlow> sign_in_;
 
-  // Assigned a value at the beginning of a signed-in profile creation, set for
-  // the profile at the very end to avoid coloring the simple toolbar for GAIA
-  // sign-in (that uses the ThemeProvider of the current profile).
-  SkColor profile_color_;
-
-  base::string16 name_for_signed_in_profile_;
-  base::OnceClosure on_profile_name_available_;
+  // Delay used for a timeout, may be overridden by tests.
   base::TimeDelta extended_account_info_timeout_;
-  base::CancelableOnceClosure extended_account_info_timeout_closure_;
-
-  // Not null iff switching to sign-in is in progress.
-  base::OnceCallback<void(bool)> switch_finished_callback_;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
 
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.

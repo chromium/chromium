@@ -71,6 +71,12 @@ class ProfilePicker {
       SkColor profile_color,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
+  // Cancel the sign-in flow and returns back to the main picker screen (if the
+  // original EntryPoint was to open the picker). Must only be called from
+  // within the sign-in flow. This will delete the profile previously created
+  // for the sign-in flow.
+  static void CancelSignIn();
+
   // Finishes the sign-in flow by moving to the sync confirmation screen. It
   // uses the same new profile created by `SwitchToSignIn()`.
   static void SwitchToSyncConfirmation();
