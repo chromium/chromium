@@ -240,7 +240,7 @@ base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
     case State::kIncognitoProfile:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
     case State::kGuestSession:
-      return l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
     case State::kGenericProfile:
       return l10n_util::GetStringUTF16(IDS_GENERIC_USER_AVATAR_LABEL);
     case State::kAnimatedUserIdentity:
