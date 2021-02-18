@@ -26,7 +26,6 @@
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -69,11 +68,7 @@ NotificationPlatformBridgeMacUNNotification::
     : notification_center_([notification_center retain]),
       alert_dispatcher_([alert_dispatcher retain]),
       delivered_notifications_([[NSMutableDictionary alloc] init]),
-      category_manager_(
-          notification_center,
-          l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_CLOSE),
-          l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_MORE),
-          l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_SETTINGS)) {
+      category_manager_(notification_center) {
   delegate_.reset([[UNNotificationCenterDelegate alloc]
       initWithNotificationClosedHandler:
           base::BindRepeating(&NotificationPlatformBridgeMacUNNotification::

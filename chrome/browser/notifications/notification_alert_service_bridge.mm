@@ -87,23 +87,8 @@ void DispatchGetAllNotificationsReply(
 }
 
 - (instancetype)initWithDisconnectHandler:(base::OnceClosure)onDisconect {
-  if ((self = [super init])) {
-    // Launches a new helper process and sets up a mojo connection to it. If the
-    // mojo connection disconnects we call |onDisconnect| which will destroy
-    // |this| and terminate the process if it hasn't been already.
-    _provider = content::ServiceProcessHost::Launch<
-        mac_notifications::mojom::MacNotificationProvider>(
-        content::ServiceProcessHost::Options()
-            .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-            // TODO(knollr): Set the correct flags so the helper launches via
-            // the app which has set the alert notifications style:
-            //.WithChildFlags(chrome::kChildProcessHelperAlerts)
-            .Pass());
-    _provider.set_disconnect_handler(std::move(onDisconect));
-    _provider->BindNotificationService(_service.BindNewPipeAndPassReceiver(),
-                                       _handler.BindRemote());
-  }
-  return self;
+  return [self initWithDisconnectHandler:std::move(onDisconect)
+                                provider:mojo::NullRemote()];
 }
 
 - (instancetype)
@@ -113,7 +98,25 @@ void DispatchGetAllNotificationsReply(
                              mac_notifications::mojom::MacNotificationProvider>)
                              provider {
   if ((self = [super init])) {
-    _provider.Bind(std::move(provider));
+    if (provider) {
+      // Use the passed in |provider| to setup the mojo connection. This is used
+      // in tests so we don't have to spin up a new process and can pass in a
+      // mocked service.
+      _provider.Bind(std::move(provider));
+    } else {
+      // Launches a new helper process and sets up a mojo connection to it. If
+      // the mojo connection disconnects we call |onDisconnect| which will
+      // destroy |this| and terminate the process if it hasn't been already.
+      _provider = content::ServiceProcessHost::Launch<
+          mac_notifications::mojom::MacNotificationProvider>(
+          content::ServiceProcessHost::Options()
+              .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
+              // TODO(knollr): Set the correct flags so the helper launches via
+              // the app which has set the alert notifications style:
+              //.WithChildFlags(chrome::kChildProcessHelperAlerts)
+              .Pass());
+    }
+
     _provider.set_disconnect_handler(std::move(onDisconect));
     _provider->BindNotificationService(_service.BindNewPipeAndPassReceiver(),
                                        _handler.BindRemote());

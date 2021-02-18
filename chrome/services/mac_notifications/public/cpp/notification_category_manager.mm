@@ -6,17 +6,13 @@
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 NotificationCategoryManager::NotificationCategoryManager(
-    UNUserNotificationCenter* notification_center,
-    base::string16 close_label,
-    base::string16 options_label,
-    base::string16 settings_label)
-    : notification_center_([notification_center retain]),
-      close_label_(std::move(close_label)),
-      options_label_(std::move(options_label)),
-      settings_label_(std::move(settings_label)) {}
+    UNUserNotificationCenter* notification_center)
+    : notification_center_([notification_center retain]) {}
 
 NotificationCategoryManager::~NotificationCategoryManager() = default;
 
@@ -87,7 +83,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
 
   UNNotificationAction* close_button = [UNNotificationAction
       actionWithIdentifier:notification_constants::kNotificationCloseButtonTag
-                     title:base::SysUTF16ToNSString(close_label_)
+                     title:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_CLOSE)
                    options:UNNotificationActionOptionNone];
 
   // macOS 11 shows a close button in the top-left corner.
@@ -115,7 +111,8 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
     UNNotificationAction* button = [UNNotificationAction
         actionWithIdentifier:notification_constants::
                                  kNotificationSettingsButtonTag
-                       title:base::SysUTF16ToNSString(settings_label_)
+                       title:l10n_util::GetNSString(
+                                 IDS_NOTIFICATION_BUTTON_SETTINGS)
                      options:UNNotificationActionOptionNone];
     [buttons_array addObject:button];
   }
@@ -153,7 +150,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   // This uses a private API to change the text of the actions menu title so
   // that it is consistent with the rest of the notification buttons
   if ([category respondsToSelector:@selector(actionsMenuTitle)]) {
-    [category setValue:base::SysUTF16ToNSString(options_label_)
+    [category setValue:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_MORE)
                 forKey:@"_actionsMenuTitle"];
   }
 

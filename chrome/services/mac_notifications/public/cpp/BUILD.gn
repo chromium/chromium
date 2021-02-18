@@ -2,19 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "notification_constants_mac.h",
+    "notification_constants_mac.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("cpp") {
   sources = [
     "notification_category_manager.h",
     "notification_category_manager.mm",
-    "notification_constants_mac.h",
-    "notification_constants_mac.mm",
     "notification_utils_mac.cc",
     "notification_utils_mac.h",
   ]
 
   frameworks = [ "Foundation.framework" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//ui/base",
+  ]
+
+  public_deps = [ ":constants" ]
 }
 
 source_set("test_support") {

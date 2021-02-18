@@ -22,9 +22,7 @@ class NotificationCategoryManagerTest : public testing::Test {
           [[FakeUNUserNotificationCenter alloc] init]);
       manager_ = std::make_unique<NotificationCategoryManager>(
           static_cast<UNUserNotificationCenter*>(
-              fake_notification_center_.get()),
-          base::ASCIIToUTF16("Close"), base::ASCIIToUTF16("More"),
-          base::ASCIIToUTF16("Settings"));
+              fake_notification_center_.get()));
     }
   }
 

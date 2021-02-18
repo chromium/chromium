@@ -27,10 +27,8 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
  public:
   using Buttons = std::vector<base::string16>;
 
-  NotificationCategoryManager(UNUserNotificationCenter* notification_center,
-                              base::string16 close_label,
-                              base::string16 options_label,
-                              base::string16 settings_label);
+  explicit NotificationCategoryManager(
+      UNUserNotificationCenter* notification_center);
   NotificationCategoryManager(const NotificationCategoryManager&) = delete;
   NotificationCategoryManager& operator=(const NotificationCategoryManager&) =
       delete;
@@ -67,11 +65,6 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
   base::flat_map<std::string, CategoryKey> notification_id_buttons_map_;
 
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
-
-  // Labels for common action buttons.
-  base::string16 close_label_;
-  base::string16 options_label_;
-  base::string16 settings_label_;
 };
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_CATEGORY_MANAGER_H_

@@ -27,7 +27,7 @@ mac_app_bundle("alert_notification_xpc_service") {
   deps = [
     ":common",
     "//base",
-    "//chrome/services/mac_notifications/public/cpp",
+    "//chrome/services/mac_notifications/public/cpp:constants",
     "//third_party/crashpad/crashpad/client",
   ]
 
@@ -72,6 +72,6 @@ static_library("common") {
 
   deps = [
     "//base",
-    "//chrome/services/mac_notifications/public/cpp",
+    "//chrome/services/mac_notifications/public/cpp:constants",
   ]
 }
