@@ -116,7 +116,8 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
 
   // Check if the scheme is valid for extensions. If not, return.
   if (!URLPattern::IsValidSchemeForExtensions(document_url.scheme()) &&
-      document_url.spec() != url::kAboutBlankURL) {
+      document_url.spec() != url::kAboutBlankURL &&
+      document_url.spec() != url::kAboutSrcdocURL) {
     if (error) {
       if (active_permissions().HasAPIPermission(APIPermission::kTab)) {
         *error = ErrorUtils::FormatErrorMessage(
