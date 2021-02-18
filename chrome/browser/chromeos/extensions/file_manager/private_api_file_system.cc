@@ -151,9 +151,8 @@ void NotifyCopyProgress(
   file_manager::EventRouter* event_router =
       GetEventRouterByProfileId(profile_id);
   if (event_router) {
-    event_router->OnCopyProgress(
-        operation_id, type,
-        source_url.ToGURL(), destination_url.ToGURL(), size);
+    event_router->OnCopyProgress(operation_id, type, source_url.ToGURL(),
+                                 destination_url.ToGURL(), size);
   }
 }
 
@@ -184,9 +183,8 @@ void NotifyCopyCompletion(
   file_manager::EventRouter* event_router =
       GetEventRouterByProfileId(profile_id);
   if (event_router)
-    event_router->OnCopyCompleted(
-        operation_id,
-        source_url.ToGURL(), destination_url.ToGURL(), error);
+    event_router->OnCopyCompleted(operation_id, source_url.ToGURL(),
+                                  destination_url.ToGURL(), error);
 }
 
 // Callback invoked upon completion of Copy() (regardless of succeeded or
@@ -375,8 +373,7 @@ FileManagerPrivateEnableExternalFileSchemeFunction::Run() {
 }
 
 FileManagerPrivateGrantAccessFunction::FileManagerPrivateGrantAccessFunction()
-    : chrome_details_(this) {
-}
+    : chrome_details_(this) {}
 
 ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
   using extensions::api::file_manager_private::GrantAccess::Params;
@@ -579,8 +576,8 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  using file_manager::VolumeManager;
   using file_manager::Volume;
+  using file_manager::VolumeManager;
   const ChromeExtensionFunctionDetails chrome_details(this);
   VolumeManager* const volume_manager =
       VolumeManager::Get(chrome_details.GetProfile());
@@ -687,8 +684,8 @@ FileManagerPrivateFormatVolumeFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  using file_manager::VolumeManager;
   using file_manager::Volume;
+  using file_manager::VolumeManager;
   const ChromeExtensionFunctionDetails chrome_details(this);
   VolumeManager* const volume_manager =
       VolumeManager::Get(chrome_details.GetProfile());
@@ -750,8 +747,8 @@ FileManagerPrivateRenameVolumeFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  using file_manager::VolumeManager;
   using file_manager::Volume;
+  using file_manager::VolumeManager;
   const ChromeExtensionFunctionDetails chrome_details(this);
   VolumeManager* const volume_manager =
       VolumeManager::Get(chrome_details.GetProfile());
@@ -1109,16 +1106,15 @@ void FileManagerPrivateInternalResolveIsolatedEntriesFunction::
 
 FileManagerPrivateInternalComputeChecksumFunction::
     FileManagerPrivateInternalComputeChecksumFunction()
-    : digester_(new drive::util::FileStreamMd5Digester()) {
-}
+    : digester_(new drive::util::FileStreamMd5Digester()) {}
 
 FileManagerPrivateInternalComputeChecksumFunction::
     ~FileManagerPrivateInternalComputeChecksumFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalComputeChecksumFunction::Run() {
-  using extensions::api::file_manager_private_internal::ComputeChecksum::Params;
   using drive::util::FileStreamMd5Digester;
+  using extensions::api::file_manager_private_internal::ComputeChecksum::Params;
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
