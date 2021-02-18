@@ -85,6 +85,14 @@ void ScopedClipboardWriter::WriteRTF(const std::string& rtf_data) {
   objects_[Clipboard::PortableFormat::kRtf] = parameters;
 }
 
+void ScopedClipboardWriter::WriteFilenames(const std::string& uri_list) {
+  RecordWrite(ClipboardFormatMetric::kFilenames);
+  Clipboard::ObjectMapParams parameters;
+  parameters.push_back(
+      Clipboard::ObjectMapParam(uri_list.begin(), uri_list.end()));
+  objects_[Clipboard::PortableFormat::kFilenames] = parameters;
+}
+
 void ScopedClipboardWriter::WriteBookmark(const base::string16& bookmark_title,
                                           const std::string& url) {
   if (bookmark_title.empty() || url.empty())

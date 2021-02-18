@@ -28,6 +28,8 @@ ClipboardHistoryItem ClipboardHistoryItemBuilder::Build() const {
     data.set_markup_data(markup_.value());
   if (rtf_.has_value())
     data.SetRTFData(rtf_.value());
+  if (!filenames_.empty())
+    data.set_filenames(filenames_);
   if (bookmark_title_.has_value())
     data.set_bookmark_title(bookmark_title_.value());
   if (bitmap_.has_value())
@@ -62,6 +64,9 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFormat(
       return SetMarkup("Svg");
     case ui::ClipboardInternalFormat::kRtf:
       return SetRtf("Rtf");
+    case ui::ClipboardInternalFormat::kFilenames:
+      return SetFilenames({ui::FileInfo(base::FilePath("/dir/filename"),
+                                        base::FilePath("filename"))});
     case ui::ClipboardInternalFormat::kBookmark:
       return SetBookmarkTitle("Bookmark Title");
     case ui::ClipboardInternalFormat::kBitmap:
@@ -85,6 +90,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearFormat(
       return ClearSvg();
     case ui::ClipboardInternalFormat::kRtf:
       return ClearRtf();
+    case ui::ClipboardInternalFormat::kFilenames:
+      return ClearFilenames();
     case ui::ClipboardInternalFormat::kBookmark:
       return ClearBookmarkTitle();
     case ui::ClipboardInternalFormat::kBitmap:
@@ -139,6 +146,17 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetRtf(
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearRtf() {
   rtf_ = base::nullopt;
+  return *this;
+}
+
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFilenames(
+    std::vector<ui::FileInfo> filenames) {
+  filenames_ = std::move(filenames);
+  return *this;
+}
+
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearFilenames() {
+  filenames_.clear();
   return *this;
 }
 

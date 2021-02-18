@@ -125,6 +125,7 @@ component("clipboard") {
 
   public_deps = [
     ":clipboard_types",
+    ":file_info",
     "//ui/base/data_transfer_policy",
   ]
 
@@ -254,6 +255,7 @@ source_set("clipboard_test") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:features",
     "//ui/events/platform",
     "//ui/gfx:test_support",
     "//url:url",

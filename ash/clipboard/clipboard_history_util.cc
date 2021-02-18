@@ -24,9 +24,13 @@ constexpr char kFileSystemSourcesType[] = "fs/sources";
 
 // The array of formats in order of decreasing priority.
 constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
-    ui::ClipboardInternalFormat::kBitmap,   ui::ClipboardInternalFormat::kHtml,
-    ui::ClipboardInternalFormat::kText,     ui::ClipboardInternalFormat::kRtf,
-    ui::ClipboardInternalFormat::kBookmark, ui::ClipboardInternalFormat::kWeb,
+    ui::ClipboardInternalFormat::kBitmap,
+    ui::ClipboardInternalFormat::kHtml,
+    ui::ClipboardInternalFormat::kText,
+    ui::ClipboardInternalFormat::kRtf,
+    ui::ClipboardInternalFormat::kFilenames,
+    ui::ClipboardInternalFormat::kBookmark,
+    ui::ClipboardInternalFormat::kWeb,
     ui::ClipboardInternalFormat::kCustom};
 
 }  // namespace
@@ -55,6 +59,7 @@ ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
+    case ui::ClipboardInternalFormat::kFilenames:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
       return ClipboardHistoryDisplayFormat::kText;

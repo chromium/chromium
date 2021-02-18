@@ -511,6 +511,19 @@ void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
+void ClipboardOzone::ReadFilenames(ClipboardBuffer buffer,
+                                   const DataTransferEndpoint* data_dst,
+                                   std::vector<ui::FileInfo>* result) const {
+  DCHECK(CalledOnValidThread());
+  RecordRead(ClipboardFormatMetric::kFilenames);
+
+  auto clipboard_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
+      buffer, kMimeTypeURIList);
+  std::string uri_list(clipboard_data.begin(), clipboard_data.end());
+  *result = ui::URIListToFileInfos(uri_list);
+}
+
+// TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadBookmark(const DataTransferEndpoint* data_dst,
                                   base::string16* title,
                                   std::string* url) const {
@@ -601,6 +614,12 @@ void ClipboardOzone::WriteSvg(const char* markup_data, size_t markup_len) {
 void ClipboardOzone::WriteRTF(const char* rtf_data, size_t data_len) {
   std::vector<uint8_t> data(rtf_data, rtf_data + data_len);
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeRTF});
+}
+
+void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  std::string uri_list = ui::FileInfosToURIList(filenames);
+  std::vector<uint8_t> data(uri_list.begin(), uri_list.end());
+  async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeURIList});
 }
 
 void ClipboardOzone::WriteBookmark(const char* title_data,

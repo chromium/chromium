@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static ClipboardFormatType GetType(const std::string& format_string);
 
   // Get format identifiers for various types.
+  static const ClipboardFormatType& GetFilenamesType();
   static const ClipboardFormatType& GetUrlType();
   static const ClipboardFormatType& GetPlainTextType();
   static const ClipboardFormatType& GetWebKitSmartPasteType();

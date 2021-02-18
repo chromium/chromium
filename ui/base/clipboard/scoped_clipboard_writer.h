@@ -53,6 +53,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // Adds RTF to the clipboard.
   void WriteRTF(const std::string& rtf_data);
 
+  // Adds text/uri-list filenames to the clipboard.
+  // Security Note: This function is expected to be called only by exo in
+  // Chrome OS. It should not be called by renderers or any other untrusted
+  // party since any paths written to the clipboard can be read by renderers.
+  void WriteFilenames(const std::string& uri_list);
+
   // Adds a bookmark to the clipboard.
   void WriteBookmark(const base::string16& bookmark_title,
                      const std::string& url);

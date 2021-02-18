@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -31,6 +32,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/buildflags.h"
 
@@ -206,6 +208,11 @@ class ClipboardInternal {
                           data->custom_data_data().size(), type, result);
   }
 
+  // Reads filenames from the ClipboardData.
+  const std::vector<ui::FileInfo>& ReadFilenames() const {
+    return GetData()->filenames();
+  }
+
   // Reads bookmark from the ClipboardData.
   void ReadBookmark(base::string16* title, std::string* url) const {
     if (title)
@@ -302,6 +309,11 @@ class ClipboardDataBuilder {
   static void WriteRTF(const char* rtf_data, size_t rtf_len) {
     ClipboardData* data = GetCurrentData();
     data->SetRTFData(std::string(rtf_data, rtf_len));
+  }
+
+  static void WriteFilenames(std::vector<ui::FileInfo> filenames) {
+    ClipboardData* data = GetCurrentData();
+    data->set_filenames(std::move(filenames));
   }
 
   static void WriteBookmark(const char* title_data,
@@ -439,6 +451,11 @@ bool ClipboardNonBacked::IsFormatAvailable(
   if (format == ClipboardFormatType::GetWebKitSmartPasteType())
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kWeb);
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (format == ClipboardFormatType::GetFilenamesType() &&
+      base::FeatureList::IsEnabled(features::kClipboardFilenames))
+    return clipboard_internal_->IsFormatAvailable(
+        ClipboardInternalFormat::kFilenames);
   const ClipboardData* data = clipboard_internal_->GetData();
   return data && data->custom_data_format() == format.GetName();
 }
@@ -472,6 +489,9 @@ void ClipboardNonBacked::ReadAvailableTypes(
         base::UTF8ToUTF16(ClipboardFormatType::GetRtfType().GetName()));
   if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
+                        data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 
   if (clipboard_internal_->IsFormatAvailable(
           ClipboardInternalFormat::kCustom) &&
@@ -629,6 +649,23 @@ void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
 #endif
 }
 
+void ClipboardNonBacked::ReadFilenames(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst,
+    std::vector<ui::FileInfo>* result) const {
+  DCHECK(CalledOnValidThread());
+
+  if (!clipboard_internal_->IsReadAllowed(data_dst))
+    return;
+
+  RecordRead(ClipboardFormatMetric::kFilenames);
+  *result = clipboard_internal_->ReadFilenames();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
+#endif
+}
+
 void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
                                       base::string16* title,
                                       std::string* url) const {
@@ -711,6 +748,10 @@ void ClipboardNonBacked::WriteSvg(const char* markup_data, size_t markup_len) {
 
 void ClipboardNonBacked::WriteRTF(const char* rtf_data, size_t data_len) {
   ClipboardDataBuilder::WriteRTF(rtf_data, data_len);
+}
+
+void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  ClipboardDataBuilder::WriteFilenames(std::move(filenames));
 }
 
 void ClipboardNonBacked::WriteBookmark(const char* title_data,

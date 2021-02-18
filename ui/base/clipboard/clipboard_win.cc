@@ -7,11 +7,13 @@
 
 #include "ui/base/clipboard/clipboard_win.h"
 
+#include <objidl.h>
 #include <shellapi.h>
 #include <shlobj.h>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
@@ -19,13 +21,17 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
+#include "base/win/scoped_hglobal.h"
+#include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -34,8 +40,10 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -222,6 +230,19 @@ void TrimAfterNull(StringType* result) {
     result->resize(pos);
 }
 
+bool ReadFilenamesAvailable() {
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (!base::FeatureList::IsEnabled(features::kClipboardFilenames))
+    return false;
+
+  return ::IsClipboardFormatAvailable(
+             ClipboardFormatType::GetCFHDropType().ToFormatEtc().cfFormat) ||
+         ::IsClipboardFormatAvailable(
+             ClipboardFormatType::GetFilenameType().ToFormatEtc().cfFormat) ||
+         ::IsClipboardFormatAvailable(
+             ClipboardFormatType::GetFilenameAType().ToFormatEtc().cfFormat);
+}
+
 }  // namespace
 
 // Clipboard factory method.
@@ -259,6 +280,8 @@ bool ClipboardWin::IsFormatAvailable(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  if (format == ClipboardFormatType::GetFilenameType())
+    return ReadFilenamesAvailable();
   return ::IsClipboardFormatAvailable(format.ToFormatEtc().cfFormat) != FALSE;
 }
 
@@ -291,6 +314,8 @@ void ClipboardWin::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (::IsClipboardFormatAvailable(CF_DIB))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  if (ReadFilenamesAvailable())
+    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 
   // Acquire the clipboard to read WebCustomDataType types.
   ScopedClipboard clipboard;
@@ -515,6 +540,75 @@ void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
+                                 const DataTransferEndpoint* data_dst,
+                                 std::vector<ui::FileInfo>* result) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  DCHECK(result);
+  RecordRead(ClipboardFormatMetric::kFilenames);
+
+  result->clear();
+  if (!ReadFilenamesAvailable())
+    return;
+
+  // Acquire the clipboard.
+  ScopedClipboard clipboard;
+  if (!clipboard.Acquire(GetClipboardWindow()))
+    return;
+
+  // TODO(crbug.com/1178671): Refactor similar code in clipboard_utils_win:
+  // ClipboardUtil::GetFilenames() and reuse rather than duplicate.
+  HANDLE data = ::GetClipboardData(
+      ClipboardFormatType::GetCFHDropType().ToFormatEtc().cfFormat);
+  if (data) {
+    {
+      base::win::ScopedHGlobal<HDROP> hdrop(data);
+      if (!hdrop.get())
+        return;
+
+      const int kMaxFilenameLen = 4096;
+      const unsigned num_files = DragQueryFileW(hdrop.get(), 0xffffffff, 0, 0);
+      for (unsigned int i = 0; i < num_files; ++i) {
+        wchar_t filename[kMaxFilenameLen];
+        if (!DragQueryFileW(hdrop.get(), i, filename, kMaxFilenameLen))
+          continue;
+        base::FilePath path(filename);
+        result->push_back(ui::FileInfo(path, base::FilePath()));
+      }
+    }
+    return;
+  }
+
+  data = ::GetClipboardData(
+      ClipboardFormatType::GetFilenameType().ToFormatEtc().cfFormat);
+  if (data) {
+    {
+      // filename using Unicode
+      base::win::ScopedHGlobal<wchar_t*> filename(data);
+      if (filename.get() && filename.get()[0]) {
+        base::FilePath path(filename.get());
+        result->push_back(ui::FileInfo(path, base::FilePath()));
+      }
+    }
+    return;
+  }
+
+  data = ::GetClipboardData(
+      ClipboardFormatType::GetFilenameAType().ToFormatEtc().cfFormat);
+  if (data) {
+    {
+      // filename using ASCII
+      base::win::ScopedHGlobal<char*> filename(data);
+      if (filename.get() && filename.get()[0]) {
+        base::FilePath path(base::SysNativeMBToWide(filename.get()));
+        result->push_back(ui::FileInfo(path, base::FilePath()));
+      }
+    }
+  }
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
                                 base::string16* title,
                                 std::string* url) const {
@@ -636,6 +730,13 @@ void ClipboardWin::WriteSvg(const char* markup_data, size_t markup_len) {
 
 void ClipboardWin::WriteRTF(const char* rtf_data, size_t data_len) {
   WriteData(ClipboardFormatType::GetRtfType(), rtf_data, data_len);
+}
+
+void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  STGMEDIUM storage = ClipboardUtil::CreateStorageForFileNames(filenames);
+  if (storage.tymed == TYMED_NULL)
+    return;
+  WriteToClipboard(ClipboardFormatType::GetCFHDropType(), storage.hGlobal);
 }
 
 void ClipboardWin::WriteBookmark(const char* title_data,

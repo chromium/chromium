@@ -169,6 +169,9 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
     case ui::ClipboardInternalFormat::kRtf:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kRtf);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
+    case ui::ClipboardInternalFormat::kFilenames:
+      DCHECK(!data.filenames().empty());
+      return base::UTF8ToUTF16(data.filenames()[0].display_name.value());
     case ui::ClipboardInternalFormat::kBookmark:
       return base::UTF8ToUTF16(data.bookmark_title());
     case ui::ClipboardInternalFormat::kWeb:

@@ -21,11 +21,15 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +48,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
 #include "url/origin.h"
@@ -409,6 +414,41 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
   EXPECT_EQ(url, url_result);
 }
 #endif  // !defined(OS_POSIX) || defined(OS_APPLE)
+
+#if !defined(OS_ANDROID)
+// Filenames is not implemented in ClipboardAndroid.
+TYPED_TEST(ClipboardTest, FilenamesTest) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kClipboardFilenames}, {});
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file));
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteFilenames(
+        ui::FileInfosToURIList({ui::FileInfo(file, base::FilePath())}));
+  }
+
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+
+  std::vector<base::string16> types;
+  this->clipboard().ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                       /* data_dst = */ nullptr, &types);
+  EXPECT_EQ(1u, types.size());
+  EXPECT_EQ("text/uri-list", base::UTF16ToUTF8(types[0]));
+
+  std::vector<ui::FileInfo> filenames;
+  this->clipboard().ReadFilenames(ClipboardBuffer::kCopyPaste,
+                                  /* data_dst = */ nullptr, &filenames);
+  EXPECT_EQ(1u, filenames.size());
+  EXPECT_EQ(file, filenames[0].path);
+}
+#endif  // !defined(OS_ANDROID)
 
 TYPED_TEST(ClipboardTest, MultiFormatTest) {
   base::string16 text(ASCIIToUTF16("Hi!")), text_result;

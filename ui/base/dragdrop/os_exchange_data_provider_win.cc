@@ -56,8 +56,6 @@ constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
 STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes);
 template <typename T>
 STGMEDIUM CreateStorageForString(const std::basic_string<T>& data);
-// Creates a new STGMEDIUM object to hold files.
-STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames);
 STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path);
 // Creates a File Descriptor for the creation of a file to the given URL and
 // returns a handle to it.
@@ -364,7 +362,7 @@ void OSExchangeDataProviderWin::SetFilename(const base::FilePath& path) {
 
 void OSExchangeDataProviderWin::SetFilenames(
     const std::vector<FileInfo>& filenames) {
-  STGMEDIUM storage = CreateStorageForFileNames(filenames);
+  STGMEDIUM storage = ClipboardUtil::CreateStorageForFileNames(filenames);
   if (storage.tymed == TYMED_NULL)
     return;
 
@@ -678,8 +676,10 @@ void OSExchangeDataProviderWin::SetDownloadFileInfo(
   // TODO(dcheng): Is it actually possible for filename to be empty here? I
   // think we always synthesize one in WebContentsDragWin.
   STGMEDIUM storage = kNullStorageMedium;
-  if (!download->filename.empty())
-    CreateStorageForFileNames({FileInfo(download->filename, base::FilePath())});
+  if (!download->filename.empty()) {
+    ClipboardUtil::CreateStorageForFileNames(
+        {FileInfo(download->filename, base::FilePath())});
+  }
 
   // Add CF_HDROP.
   auto info = DataObjectImpl::StoredDataInfo::TakeStorageMedium(
@@ -880,8 +880,8 @@ void DataObjectImpl::OnDownloadCompleted(const base::FilePath& file_path) {
       if (downloader)
         downloader->Stop();
       // Replace stored data.
-      STGMEDIUM storage =
-          CreateStorageForFileNames({FileInfo(file_path, base::FilePath())});
+      STGMEDIUM storage = ClipboardUtil::CreateStorageForFileNames(
+          {FileInfo(file_path, base::FilePath())});
       content = StoredDataInfo::TakeStorageMedium(
           ClipboardFormatType::GetCFHDropType().ToFormatEtc(), storage);
       content->downloader = std::move(downloader);
@@ -1082,52 +1082,6 @@ STGMEDIUM CreateStorageForString(const std::basic_string<T>& data) {
   return CreateStorageForBytes(
       data.c_str(),
       (data.size() + 1) * sizeof(typename std::basic_string<T>::value_type));
-}
-
-STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames) {
-  // CF_HDROP clipboard format consists of DROPFILES structure, a series of file
-  // names including the terminating null character and the additional null
-  // character at the tail to terminate the array.
-  // For example,
-  //| DROPFILES | FILENAME 1 | NULL | ... | FILENAME n | NULL | NULL |
-  // For more details, please refer to
-  // https://docs.microsoft.com/en-us/windows/desktop/shell/clipboard#cf_hdrop
-
-  if (filenames.empty())
-    return kNullStorageMedium;
-
-  const size_t kDropFilesHeaderSizeInBytes = sizeof(DROPFILES);
-  size_t total_bytes = kDropFilesHeaderSizeInBytes;
-  for (const auto& filename : filenames) {
-    // Allocate memory of the filename's length including the null
-    // character.
-    total_bytes += (filename.path.value().length() + 1) * sizeof(wchar_t);
-  }
-  // |data| needs to be terminated by an additional null character.
-  total_bytes += sizeof(wchar_t);
-
-  // GHND combines GMEM_MOVEABLE and GMEM_ZEROINIT, and GMEM_ZEROINIT
-  // initializes memory contents to zero.
-  HANDLE hdata = GlobalAlloc(GHND, total_bytes);
-
-  base::win::ScopedHGlobal<DROPFILES*> locked_mem(hdata);
-  DROPFILES* drop_files = locked_mem.get();
-  drop_files->pFiles = sizeof(DROPFILES);
-  drop_files->fWide = TRUE;
-
-  wchar_t* data = reinterpret_cast<wchar_t*>(
-      reinterpret_cast<BYTE*>(drop_files) + kDropFilesHeaderSizeInBytes);
-
-  size_t next_filename_offset = 0;
-  for (const auto& filename : filenames) {
-    wcscpy(data + next_filename_offset, filename.path.value().c_str());
-    // Skip the terminating null character of the filename.
-    next_filename_offset += filename.path.value().length() + 1;
-  }
-
-  STGMEDIUM storage = {
-      .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
-  return storage;
 }
 
 LPITEMIDLIST PIDLNext(LPITEMIDLIST pidl) {

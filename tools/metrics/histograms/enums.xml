@@ -11664,6 +11664,7 @@ histogram as enum -->
   <int value="6" label="CustomData"/>
   <int value="7" label="WebSmartPaste"/>
   <int value="8" label="Svg"/>
+  <int value="9" label="Filenames"/>
 </enum>
 
 <enum name="ClipboardFormatWrite">
@@ -11676,6 +11677,7 @@ histogram as enum -->
   <int value="6" label="CustomData"/>
   <int value="7" label="WebSmartPaste"/>
   <int value="8" label="Svg"/>
+  <int value="9" label="Filenames"/>
 </enum>
 
 <enum name="ClipboardHistoryDisplayFormat">

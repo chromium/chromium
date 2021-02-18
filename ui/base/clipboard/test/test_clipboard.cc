@@ -70,6 +70,8 @@ bool TestClipboard::IsFormatAvailable(
                              data_dst);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
   const DataStore& store = GetStore(buffer);
+  if (format == ClipboardFormatType::GetFilenamesType())
+    return !store.filenames.empty();
   return base::Contains(store.data, format);
 }
 
@@ -96,6 +98,9 @@ void TestClipboard::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
+                        data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 }
 
 std::vector<base::string16>
@@ -218,6 +223,16 @@ void TestClipboard::ReadCustomData(ClipboardBuffer buffer,
                                    const DataTransferEndpoint* data_dst,
                                    base::string16* result) const {}
 
+void TestClipboard::ReadFilenames(ClipboardBuffer buffer,
+                                  const DataTransferEndpoint* data_dst,
+                                  std::vector<ui::FileInfo>* result) const {
+  const DataStore& store = GetStore(buffer);
+  if (!IsReadAllowed(store.data_src.get(), data_dst))
+    return;
+
+  *result = store.filenames;
+}
+
 // TODO(crbug.com/1103215): |data_dst| should be supported.
 void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
                                  base::string16* title,
@@ -319,6 +334,10 @@ void TestClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
 void TestClipboard::WriteRTF(const char* rtf_data, size_t data_len) {
   GetDefaultStore().data[ClipboardFormatType::GetRtfType()] =
       std::string(rtf_data, data_len);
+}
+
+void TestClipboard::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  GetDefaultStore().filenames = std::move(filenames);
 }
 
 void TestClipboard::WriteBookmark(const char* title_data,

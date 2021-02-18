@@ -10,8 +10,10 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ui {
 namespace {
@@ -90,6 +92,10 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 // Tests that site bookmark URLs are accessed as text, and
 // IsFormatAvailable('text/uri-list') is only true for files.
 TEST_F(ClipboardNonBackedTest, TextURIList) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kClipboardFilenames}, {});
+  EXPECT_EQ("text/uri-list", ClipboardFormatType::GetFilenamesType().GetName());
+
   auto data = std::make_unique<ClipboardData>();
   data->set_bookmark_url("http://example.com");
   clipboard()->WriteClipboardData(std::move(data));
@@ -103,12 +109,22 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
   EXPECT_FALSE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::GetType("text/uri-list"),
-      ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
-  // TODO(crbug.com/487266): Ensure 'text/uri-list' is available when clipboard
-  // has file support with files available on the clipboard.
+  // With filenames data, available types should be 'text/uri-list'.
+  data = std::make_unique<ClipboardData>();
+  data->set_filenames({FileInfo(base::FilePath("/path"), base::FilePath())});
+  clipboard()->WriteClipboardData(std::move(data));
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+                                              ClipboardBuffer::kCopyPaste,
+                                              /*data_dst=*/nullptr));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
 }
 
 }  // namespace ui

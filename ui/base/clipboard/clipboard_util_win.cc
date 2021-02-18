@@ -33,6 +33,9 @@ namespace ui {
 
 namespace {
 
+constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
+                                          .pUnkForRelease = nullptr};
+
 bool HasData(IDataObject* data_object, const ClipboardFormatType& format) {
   FORMATETC format_etc = format.ToFormatEtc();
   return SUCCEEDED(data_object->QueryGetData(&format_etc));
@@ -582,6 +585,53 @@ bool ClipboardUtil::GetFilenames(IDataObject* data_object,
   }
 
   return false;
+}
+
+STGMEDIUM ClipboardUtil::CreateStorageForFileNames(
+    const std::vector<FileInfo>& filenames) {
+  // CF_HDROP clipboard format consists of DROPFILES structure, a series of file
+  // names including the terminating null character and the additional null
+  // character at the tail to terminate the array.
+  // For example,
+  //| DROPFILES | FILENAME 1 | NULL | ... | FILENAME n | NULL | NULL |
+  // For more details, please refer to
+  // https://docs.microsoft.com/en-us/windows/desktop/shell/clipboard#cf_hdrop
+
+  if (filenames.empty())
+    return kNullStorageMedium;
+
+  const size_t kDropFilesHeaderSizeInBytes = sizeof(DROPFILES);
+  size_t total_bytes = kDropFilesHeaderSizeInBytes;
+  for (const auto& filename : filenames) {
+    // Allocate memory of the filename's length including the null
+    // character.
+    total_bytes += (filename.path.value().length() + 1) * sizeof(wchar_t);
+  }
+  // |data| needs to be terminated by an additional null character.
+  total_bytes += sizeof(wchar_t);
+
+  // GHND combines GMEM_MOVEABLE and GMEM_ZEROINIT, and GMEM_ZEROINIT
+  // initializes memory contents to zero.
+  HANDLE hdata = GlobalAlloc(GHND, total_bytes);
+
+  base::win::ScopedHGlobal<DROPFILES*> locked_mem(hdata);
+  DROPFILES* drop_files = locked_mem.get();
+  drop_files->pFiles = sizeof(DROPFILES);
+  drop_files->fWide = TRUE;
+
+  wchar_t* data = reinterpret_cast<wchar_t*>(
+      reinterpret_cast<BYTE*>(drop_files) + kDropFilesHeaderSizeInBytes);
+
+  size_t next_filename_offset = 0;
+  for (const auto& filename : filenames) {
+    wcscpy(data + next_filename_offset, filename.path.value().c_str());
+    // Skip the terminating null character of the filename.
+    next_filename_offset += filename.path.value().length() + 1;
+  }
+
+  STGMEDIUM storage = {
+      .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
+  return storage;
 }
 
 bool ClipboardUtil::GetVirtualFilenames(

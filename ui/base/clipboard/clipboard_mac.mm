@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -17,8 +18,11 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "skia/ext/skia_utils_mac.h"
 #import "third_party/mozilla/NSPasteboard+Utils.h"
@@ -28,9 +32,11 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -85,6 +91,12 @@ bool ClipboardMac::IsFormatAvailable(
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (format == ClipboardFormatType::GetFilenamesType() &&
+      !base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
+    return false;
+  }
 
   NSPasteboard* pb = GetPasteboard();
   NSArray* types = [pb types];
@@ -146,6 +158,9 @@ void ClipboardMac::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
+                        data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 
   NSPasteboard* pb = GetPasteboard();
   if (pb && [NSImage canInitWithPasteboard:pb])
@@ -296,6 +311,22 @@ void ClipboardMac::ReadCustomData(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
+                                 const DataTransferEndpoint* data_dst,
+                                 std::vector<ui::FileInfo>* result) const {
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  RecordRead(ClipboardFormatMetric::kFilenames);
+
+  NSArray* paths = [GetPasteboard() propertyListForType:NSFilenamesPboardType];
+  for (NSString* path in paths) {
+    result->push_back(
+        ui::FileInfo(base::mac::NSStringToFilePath(path), base::FilePath()));
+  }
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardMac::ReadBookmark(const DataTransferEndpoint* data_dst,
                                 base::string16* title,
                                 std::string* url) const {
@@ -394,6 +425,15 @@ void ClipboardMac::WriteSvg(const char* markup_data, size_t markup_len) {
 
 void ClipboardMac::WriteRTF(const char* rtf_data, size_t data_len) {
   WriteData(ClipboardFormatType::GetRtfType(), rtf_data, data_len);
+}
+
+void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  NSMutableArray* paths = [NSMutableArray arrayWithCapacity:filenames.size()];
+  for (const ui::FileInfo& file : filenames) {
+    NSString* path = base::mac::FilePathToNSString(file.path);
+    [paths addObject:path];
+  }
+  [GetPasteboard() setPropertyList:paths forType:NSFilenamesPboardType];
 }
 
 void ClipboardMac::WriteBookmark(const char* title_data,

@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 class SkBitmap;
@@ -175,6 +176,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                               const DataTransferEndpoint* data_dst,
                               base::string16* result) const = 0;
 
+  // Reads filenames from the clipboard, if available.
+  virtual void ReadFilenames(ClipboardBuffer buffer,
+                             const DataTransferEndpoint* data_dst,
+                             std::vector<ui::FileInfo>* result) const = 0;
+
   // Reads a bookmark from the clipboard, if available.
   // |title| or |url| may be null.
   virtual void ReadBookmark(const DataTransferEndpoint* data_dst,
@@ -217,6 +223,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     kWebkit,
     kData,  // Arbitrary block of bytes.
     kSvg,
+    kFilenames,
   };
 
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.
@@ -227,18 +234,19 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   //
   // Key        Arguments    Type
   // -------------------------------------
-  // kBitmap    bitmap       A pointer to a SkBitmap. The caller must ensure
-  //                         the SkBitmap remains live for the duration of
-  //                         the WritePortableRepresentations call.
-  // kHtml      html         char array
-  //            url*         char array
-  // kRtf       data         byte array
-  // kBookmark  html         char array
-  //            url          char array
-  // kText      text         char array
-  // kWebkit    none         empty vector
-  // kData      format       char array
-  //            data         byte array
+  // kBitmap    bitmap        A pointer to a SkBitmap. The caller must ensure
+  //                          the SkBitmap remains live for the duration of
+  //                          the WritePortableRepresentations call.
+  // kHtml      html          char array
+  //            url*          char array
+  // kRtf       data          byte array
+  // kFilenames text/uri-list char array
+  // kBookmark  html          char array
+  //            url           char array
+  // kText      text          char array
+  // kWebkit    none          empty vector
+  // kData      format        char array
+  //            data          byte array
   using ObjectMapParam = std::vector<char>;
   using ObjectMapParams = std::vector<ObjectMapParam>;
   using ObjectMap = base::flat_map<PortableFormat, ObjectMapParams>;
@@ -296,6 +304,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WriteSvg(const char* markup_data, size_t markup_len) = 0;
 
   virtual void WriteRTF(const char* rtf_data, size_t data_len) = 0;
+
+  virtual void WriteFilenames(std::vector<ui::FileInfo> filenames) = 0;
 
   virtual void WriteBookmark(const char* title_data,
                              size_t title_len,

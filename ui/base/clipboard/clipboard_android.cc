@@ -533,6 +533,15 @@ void ClipboardAndroid::ReadCustomData(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardAndroid::ReadFilenames(ClipboardBuffer buffer,
+                                     const DataTransferEndpoint* data_dst,
+                                     std::vector<ui::FileInfo>* result) const {
+  DCHECK(CalledOnValidThread());
+  NOTIMPLEMENTED();
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardAndroid::ReadBookmark(const DataTransferEndpoint* data_dst,
                                     base::string16* title,
                                     std::string* url) const {
@@ -611,6 +620,10 @@ void ClipboardAndroid::WriteSvg(const char* markup_data, size_t markup_len) {
 }
 
 void ClipboardAndroid::WriteRTF(const char* rtf_data, size_t data_len) {
+  NOTIMPLEMENTED();
+}
+
+void ClipboardAndroid::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   NOTIMPLEMENTED();
 }
 

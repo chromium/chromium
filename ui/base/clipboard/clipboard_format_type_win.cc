@@ -169,6 +169,11 @@ ClipboardFormatType ClipboardFormatType::GetType(
 // ClipboardFormatTypes thread-safe on all platforms.
 
 // static
+const ClipboardFormatType& ClipboardFormatType::GetFilenamesType() {
+  return GetFilenameType();
+}
+
+// static
 const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_INETURLW));

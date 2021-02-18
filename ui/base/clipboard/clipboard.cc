@@ -183,6 +183,12 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
       break;
     }
 
+    case PortableFormat::kFilenames: {
+      std::string uri_list(&(params[0].front()), params[0].size());
+      WriteFilenames(ui::URIListToFileInfos(uri_list));
+      break;
+    }
+
     case PortableFormat::kData:
       WriteData(ClipboardFormatType::Deserialize(
                     std::string(&(params[0].front()), params[0].size())),
