@@ -48,6 +48,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/wm/core/window_animations.h"
@@ -126,9 +127,6 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
 };
 
 }  // namespace
-
-// static
-const char TrayBackgroundView::kViewClassName[] = "tray/TrayBackgroundView";
 
 // Used to track when the anchor widget changes position on screen so that the
 // bubble position can be updated.
@@ -262,10 +260,6 @@ void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
   } else {
     HideAnimation();
   }
-}
-
-const char* TrayBackgroundView::GetClassName() const {
-  return kViewClassName;
 }
 
 void TrayBackgroundView::AboutToRequestFocusFromTabTraversal(bool reverse) {
@@ -591,5 +585,8 @@ bool TrayBackgroundView::GetEffectiveVisibility() {
 
   return true;
 }
+
+BEGIN_METADATA(TrayBackgroundView, ActionableView)
+END_METADATA
 
 }  // namespace ash

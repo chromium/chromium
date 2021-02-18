@@ -32,9 +32,11 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
                                       public TrayBubbleView::Delegate,
                                       public VirtualKeyboardModel::Observer {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(TrayBackgroundView);
 
   explicit TrayBackgroundView(Shelf* shelf);
+  TrayBackgroundView(const TrayBackgroundView&) = delete;
+  TrayBackgroundView& operator=(const TrayBackgroundView&) = delete;
   ~TrayBackgroundView() override;
 
   // Called after the tray has been added to the widget containing it.
@@ -166,7 +168,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  const char* GetClassName() const override;
 
   // ui::ImplicitAnimationObserver:
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
@@ -216,8 +217,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBackgroundView);
 };
 
 }  // namespace ash
