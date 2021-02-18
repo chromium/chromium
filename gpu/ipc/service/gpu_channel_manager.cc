@@ -9,10 +9,13 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/traced_value.h"
@@ -848,7 +851,25 @@ void GpuChannelManager::OnContextLost(bool synthetic_loss) {
   if (gpu_driver_bug_workarounds_.exit_on_context_lost ||
       (shared_context_state_ && !shared_context_state_->GrContextIsGL())) {
     delegate_->MaybeExitOnContextLost();
+    return;
   }
+
+  // Add crash keys for context lost count and time.
+  static auto* const lost_count_crash_key = base::debug::AllocateCrashKeyString(
+      "context-lost-count", base::debug::CrashKeySize::Size32);
+  static int lost_count = 0;
+  base::debug::SetCrashKeyString(lost_count_crash_key,
+                                 base::StringPrintf("%d", ++lost_count));
+
+  static auto* const lost_time_crash_key = base::debug::AllocateCrashKeyString(
+      "context-lost-time", base::debug::CrashKeySize::Size64);
+  auto process = base::Process::Current();
+  auto lost_time = base::Time::Now() - process.CreationTime();
+  auto lost_time_string = base::StringPrintf(
+      "%d hours, %d min, %lld sec, %lld ms", lost_time.InHours(),
+      lost_time.InMinutes() % 60, lost_time.InSeconds() % 60ll,
+      lost_time.InMilliseconds() % 1000ll);
+  base::debug::SetCrashKeyString(lost_time_crash_key, lost_time_string);
 }
 
 void GpuChannelManager::ScheduleGrContextCleanup() {

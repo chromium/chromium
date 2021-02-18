@@ -1235,6 +1235,7 @@ component("base") {
       "message_loop/message_pump_android.h",
       "os_compat_android.cc",
       "os_compat_android.h",
+      "process/process_android.cc",
       "profiler/stack_sampler_android.cc",
       "threading/platform_thread_android.cc",
     ]

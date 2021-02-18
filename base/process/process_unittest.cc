@@ -128,6 +128,7 @@ MULTIPROCESS_TEST_MAIN(SleepyChildProcess) {
 TEST_F(ProcessTest, CreationTimeCurrentProcess) {
   // The current process creation time should be less than or equal to the
   // current time.
+  EXPECT_FALSE(Process::Current().CreationTime().is_null());
   EXPECT_LE(Process::Current().CreationTime(), Time::Now());
 }
 

@@ -267,15 +267,6 @@ Process Process::OpenWithExtraPrivileges(ProcessId pid) {
   return Open(pid);
 }
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_MAC) && \
-    !defined(OS_AIX)
-// static
-bool Process::CanBackgroundProcesses() {
-  return false;
-}
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_MAC) &&
-        // !defined(OS_AIX)
-
 // static
 void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
@@ -369,24 +360,6 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
 }
 
 void Process::Exited(int exit_code) const {}
-
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_MAC) && \
-    !defined(OS_AIX)
-bool Process::IsProcessBackgrounded() const {
-  // See SetProcessBackgrounded().
-  DCHECK(IsValid());
-  return false;
-}
-
-bool Process::SetProcessBackgrounded(bool value) {
-  // Not implemented for POSIX systems other than Linux and Mac. With POSIX, if
-  // we were to lower the process priority we wouldn't be able to raise it back
-  // to its initial priority.
-  NOTIMPLEMENTED();
-  return false;
-}
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_MAC) &&
-        // !defined(OS_AIX)
 
 int Process::GetPriority() const {
   DCHECK(IsValid());
