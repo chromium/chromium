@@ -876,7 +876,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      *         some adjustment to account for possible padding differences when the button
      *         visibility changes.
      */
-    private float getLocationBarWidthOffsetForOptionalButton() {
+    @VisibleForTesting
+    float getLocationBarWidthOffsetForOptionalButton() {
         float widthChange = mOptionalButton.getWidth();
 
         // When the optional button is the only visible button after the location bar and the
