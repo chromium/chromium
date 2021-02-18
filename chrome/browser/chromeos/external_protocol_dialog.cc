@@ -42,16 +42,19 @@ void OnArcHandled(const GURL& url,
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
 
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
-  base::Optional<guest_os::GuestOsRegistryService::Registration> registration =
-      guest_os::GetHandler(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
-  if (registration) {
-    new ExternalProtocolDialog(web_contents, url,
-                               base::UTF8ToUTF16(registration->Name()),
-                               initiating_origin);
-  } else {
-    new ExternalProtocolNoHandlersDialog(web_contents, url);
+  if (web_contents) {
+    base::Optional<guest_os::GuestOsRegistryService::Registration>
+        registration = guest_os::GetHandler(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+            url);
+    if (registration) {
+      new ExternalProtocolDialog(web_contents, url,
+                                 base::UTF8ToUTF16(registration->Name()),
+                                 initiating_origin);
+      return;
+    }
   }
+  new ExternalProtocolNoHandlersDialog(web_contents, url);
 }
 
 }  // namespace
