@@ -5,8 +5,6 @@
 #ifndef UI_AURA_WINDOW_TREE_HOST_OBSERVER_H_
 #define UI_AURA_WINDOW_TREE_HOST_OBSERVER_H_
 
-#include "base/containers/flat_set.h"
-#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 
@@ -44,11 +42,6 @@ class AURA_EXPORT WindowTreeHostObserver {
   // OnHostDidProcessBoundsChange().
   virtual void OnHostWillProcessBoundsChange(WindowTreeHost* host) {}
   virtual void OnHostDidProcessBoundsChange(WindowTreeHost* host) {}
-
-  virtual void OnCompositingShuttingDown(aura::WindowTreeHost* host) {}
-  virtual void OnCompositingFrameSinksToThrottleUpdated(
-      const aura::WindowTreeHost* host,
-      const base::flat_set<viz::FrameSinkId>& ids) {}
 
  protected:
   virtual ~WindowTreeHostObserver() {}

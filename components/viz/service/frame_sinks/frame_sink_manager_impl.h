@@ -141,8 +141,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
                        base::TimeDelta interval) override;
   void EndThrottling() override;
-  void Throttle(const std::vector<FrameSinkId>& ids,
-                base::TimeDelta interval) override;
 
   // SurfaceObserver implementation.
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;

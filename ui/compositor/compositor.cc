@@ -719,13 +719,6 @@ void Compositor::FrameIntervalUpdated(base::TimeDelta interval) {
   refresh_rate_ = interval.ToHz();
 }
 
-void Compositor::FrameSinksToThrottleUpdated(
-    const base::flat_set<viz::FrameSinkId>& ids) {
-  for (auto& observer : observer_list_) {
-    observer.OnFrameSinksToThrottleUpdated(ids);
-  }
-}
-
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   NOTREACHED();

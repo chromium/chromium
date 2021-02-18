@@ -100,10 +100,6 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
                base::TimeDelta interval),
               (override));
   MOCK_METHOD(void, EndThrottling, (), (override));
-  MOCK_METHOD(void,
-              Throttle,
-              (const std::vector<FrameSinkId>& ids, base::TimeDelta interval),
-              (override));
 };
 
 }  // namespace
@@ -499,9 +495,6 @@ TEST_F(HostFrameSinkManagerTest, ThrottleFramePainting) {
   host().StartThrottling(frame_sink_ids, interval);
   EXPECT_CALL(impl(), EndThrottling()).Times(1);
   host().EndThrottling();
-
-  EXPECT_CALL(impl(), Throttle(frame_sink_ids, interval));
-  host().Throttle(frame_sink_ids, interval);
   FlushHostAndVerifyExpectations();
 }
 }  // namespace viz
