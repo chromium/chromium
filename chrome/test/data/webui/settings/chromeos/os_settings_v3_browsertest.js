@@ -232,6 +232,21 @@ TEST_F(
     });
 
 // eslint-disable-next-line no-var
+var OSSettingsUserPageV3TestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsLockScreenPageV3Test {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsUserPageV3TestWithAccountManagementFlowsV2Enabled', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
+
+// eslint-disable-next-line no-var
 var OSSettingsWallpaperSubpageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -343,6 +358,7 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],
  ['TtsSubpage', 'tts_subpage_test.m.js'],
+ ['UserPage', 'user_page_tests.m.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {

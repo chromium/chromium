@@ -430,6 +430,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/timezone_selector_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/timezone_subpage_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/tts_subpage_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/user_page_tests.m.js",
       ]
     }
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
