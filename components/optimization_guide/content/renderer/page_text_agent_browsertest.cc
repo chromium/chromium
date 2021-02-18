@@ -58,16 +58,12 @@ class PageTextAgentRenderViewTest : public content::RenderViewTest {
   ~PageTextAgentRenderViewTest() override = default;
 };
 
-// TODO(crbug/1178943): Check the subframe text that was dumped.
-
 TEST_F(PageTextAgentRenderViewTest, SubframeFirstLayout) {
   // Create and get a subframe.
   LoadHTML(
       "<html><body>"
       "  <p>hello</p>"
-      "  <iframe name=sub>"
-      "    <body>world</body>"
-      "  </iframe>"
+      "  <iframe name=sub srcdoc=\"<p>world</p>\"></iframe>"
       "</body></html>");
   content::RenderFrame* subframe = content::RenderFrame::FromWebFrame(
       GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
@@ -97,9 +93,7 @@ TEST_F(PageTextAgentRenderViewTest, SubframeLoadFinished) {
   LoadHTML(
       "<html><body>"
       "  <p>hello</p>"
-      "  <iframe name=sub>"
-      "    <body>world</body>"
-      "  </iframe>"
+      "  <iframe name=sub srcdoc=\"<p>world</p>\"></iframe>"
       "</body></html>");
   content::RenderFrame* subframe = content::RenderFrame::FromWebFrame(
       GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
@@ -122,6 +116,7 @@ TEST_F(PageTextAgentRenderViewTest, SubframeLoadFinished) {
   subframe_agent.DidFinishLoad();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(consumer.on_chunks_end_called());
+  EXPECT_EQ(base::ASCIIToUTF16("world"), consumer.text());
 }
 
 TEST_F(PageTextAgentRenderViewTest, SubframeTooSmall) {
@@ -129,9 +124,7 @@ TEST_F(PageTextAgentRenderViewTest, SubframeTooSmall) {
   LoadHTML(
       "<html><body>"
       "  <p>hello</p>"
-      "  <iframe name=sub>"
-      "    <body>world</body>"
-      "  </iframe>"
+      "  <iframe name=sub srcdoc=\"<p>world</p>\"></iframe>"
       "</body></html>");
   content::RenderFrame* subframe = content::RenderFrame::FromWebFrame(
       GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
