@@ -9,6 +9,7 @@
 #include "base/scoped_observer.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -679,4 +680,12 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(authentication_service()->IsAuthenticated());
+}
+
+TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
+  // Disable sign-in.
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  // Attempt to sign in, and verify there is a crash.
+  EXPECT_CHECK_DEATH(authentication_service()->SignIn(identity(0)));
 }

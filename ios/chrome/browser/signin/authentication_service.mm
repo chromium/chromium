@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -303,6 +304,7 @@ ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
 }
 
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
+  CHECK(signin::IsSigninAllowed(pref_service_));
   DCHECK(ios::GetChromeBrowserProvider()
              ->GetChromeIdentityService()
              ->IsValidIdentity(identity));
