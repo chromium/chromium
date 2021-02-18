@@ -1726,7 +1726,7 @@
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
           'junit_tests': 'chromium_junit_tests',
-          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
+          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script_and_sizes',
         },
         'os_type': 'android',
       },
@@ -1755,6 +1755,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
       },
       'ToTAndroidASan': {
         'test_suites': {
@@ -1791,6 +1794,7 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
+          'isolated_scripts': 'chrome_sizes',
         },
         'additional_compile_targets': [
           'all',
@@ -1800,6 +1804,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
       },
       'ToTLinux': {
         'mixins': [

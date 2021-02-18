@@ -6594,6 +6594,11 @@
       'network_service_in_process_gtests',
     ],
 
+    'monochrome_public_apk_checker_isolated_script_and_sizes': [
+      'chrome_sizes',
+      'monochrome_public_apk_checker_isolated_script',
+    ],
+
     'network_service_extra_gtests': [
       'network_service_fyi_gtests',
       'network_service_in_process_gtests',
