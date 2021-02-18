@@ -182,6 +182,9 @@ crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service
 crbug.com/1178723 [ Linux ] http/tests/devtools/network/ping-response.js [ Pass Failure ]
 crbug.com/1178725 [ Linux ] http/tests/devtools/sources/snippet-overrides.js [ Pass Failure ]
 
+# Sheriff 2021-02-18
+crbug.com/1179722 [ Linux ] http/tests/devtools/console/console-string-format.js [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
