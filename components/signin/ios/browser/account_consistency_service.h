@@ -26,7 +26,6 @@ class CookieSettings;
 namespace web {
 class BrowserState;
 class WebState;
-class WebStatePolicyDecider;
 }
 
 class AccountReconcilor;
@@ -80,6 +79,7 @@ class AccountConsistencyService : public KeyedService,
   void OnBrowsingDataRemoved();
 
  private:
+  class AccountConsistencyHandler;
   friend class AccountConsistencyServiceTest;
 
   // KeyedService implementation.
@@ -138,8 +138,11 @@ class AccountConsistencyService : public KeyedService,
 
   // Handlers reacting on GAIA responses with the X-Chrome-Manage-Accounts
   // header set.
-  std::map<web::WebState*, std::unique_ptr<web::WebStatePolicyDecider>>
-      web_state_handlers_;
+  std::map<web::WebState*, std::unique_ptr<AccountConsistencyHandler>>
+      handlers_map_;
+
+  // Record whether Shutdown has been called.
+  bool is_shutdown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AccountConsistencyService);
 };

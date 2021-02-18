@@ -8,6 +8,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/prerender/prerender_service_impl.h"
+#include "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,7 +31,9 @@ PrerenderServiceFactory* PrerenderServiceFactory::GetInstance() {
 PrerenderServiceFactory::PrerenderServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PrerenderService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ios::AccountConsistencyServiceFactory::GetInstance());
+}
 
 PrerenderServiceFactory::~PrerenderServiceFactory() {}
 

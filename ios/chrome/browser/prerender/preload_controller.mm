@@ -148,6 +148,59 @@ static const size_t kMaximumCancelledWebStateDelay = 2;
 const base::Feature kPreloadDelayWebStateReset{
     "PreloadDelayWebStateReset", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Helper function to destroy a pre-rendering WebState. This is a free function
+// so that the code does not accidently try to access to PreloadController's
+// _webState ivar (which has been set to null by the time this function is
+// called).
+void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
+  // Preload appears to trigger an edge-case crash in WebKit when a restore is
+  // triggered and cancelled before it can complete.  This isn't specific to
+  // preload, but is very easy to trigger in preload.  As a speculative fix, if
+  // a preload is in restore, don't destroy it until after restore is complete.
+  // This logic should really belong in WebState itself, so any attempt to
+  // destroy a WebState during restore will trigger this logic.  Even better,
+  // this edge case crash should be fixed in WebKit:
+  //     https://bugs.webkit.org/show_bug.cgi?id=217440.
+  // The crash in WebKit appears to be related to IPC throttling.  Session
+  // restore can create a large number of IPC calls, which can then be
+  // throttled.  It seems if the WKWebView is destroyed with this backlog of
+  // IPC calls, sometimes WebKit crashes.
+  // See crbug.com/1032928 for an explanation for how to trigger this crash.
+  // Note the timer should only be called if for some reason session restoration
+  // fails to complete -- thus preventing a WebState leak.
+  static bool delay_preload_destroy_web_state =
+      base::FeatureList::IsEnabled(kPreloadDelayWebStateReset);
+
+  if (!delay_preload_destroy_web_state ||
+      !web_state->GetNavigationManager()->IsRestoreSessionInProgress()) {
+    web_state.reset();
+    return;
+  }
+
+  __block auto reset_timer = std::make_unique<base::OneShotTimer>();
+  __block std::unique_ptr<web::WebState> block_web_state = std::move(web_state);
+
+  auto reset_block = ^{
+    if (block_web_state)
+      block_web_state.reset();
+
+    if (!reset_timer)
+      return;
+
+    reset_timer->Stop();
+    reset_timer.reset();
+  };
+
+  reset_timer->Start(
+      FROM_HERE, base::TimeDelta::FromSeconds(kMaximumCancelledWebStateDelay),
+      base::BindOnce(reset_block));
+
+  block_web_state->GetNavigationManager()->AddRestoreCompletionCallback(
+      base::BindOnce(^{
+        dispatch_async(dispatch_get_main_queue(), reset_block);
+      }));
+}
+
 }  // namespace
 
 @interface PreloadController () <CRConnectionTypeObserverBridge,
@@ -385,6 +438,32 @@ const base::Feature kPreloadDelayWebStateReset{
   self.successfulPrerendersPerSessionCount++;
   [self recordReleaseMetrics];
   [self removeScheduledPrerenderRequests];
+
+  // Use the helper function to properly release the web::WebState.
+  auto webState = [self releasePrerenderContentsInternal];
+
+  // The WebState will be converted to a proper tab. Record navigations that
+  // happened during pre-rendering to the HistoryService.
+  HistoryTabHelper::FromWebState(webState.get())
+      ->SetDelayHistoryServiceNotification(false);
+
+  if (!webState->IsLoading()) {
+    [[OmniboxGeolocationController sharedInstance]
+        finishPageLoadForWebState:webState.get()
+                      loadSuccess:YES];
+  }
+
+  return webState;
+}
+
+#pragma mark - Internal
+
+// Helper function that return ownership of the internal web::WebState instance
+// disconnecting the observers attached to it for preloading, ... Needs to be
+// called before destroying the WebState or before converting it to a tab.
+- (std::unique_ptr<web::WebState>)releasePrerenderContentsInternal {
+  DCHECK(_webState);
+
   self.prerenderedURL = GURL();
   self.startTime = base::TimeTicks();
   self.loadCompleted = NO;
@@ -399,19 +478,11 @@ const base::Feature kPreloadDelayWebStateReset{
   breakpad::StopMonitoringURLsForPreloadWebState(webState.get());
   webState->SetDelegate(nullptr);
   _policyDeciderBridge.reset();
-  HistoryTabHelper::FromWebState(webState.get())
-      ->SetDelayHistoryServiceNotification(false);
 
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
               self.browserState)) {
     accountConsistencyService->RemoveWebStateHandler(webState.get());
-  }
-
-  if (!webState->IsLoading()) {
-    [[OmniboxGeolocationController sharedInstance]
-        finishPageLoadForWebState:webState.get()
-                      loadSuccess:YES];
   }
 
   return webState;
@@ -684,55 +755,8 @@ const base::Feature kPreloadDelayWebStateReset{
   UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName, reason,
                             PRERENDER_FINAL_STATUS_MAX);
 
-  _webState->RemoveObserver(_webStateObserver.get());
-  breakpad::StopMonitoringURLsForPreloadWebState(_webState.get());
-  _webState->SetDelegate(nullptr);
-
-  // Preload appears to trigger an edge-case crash in WebKit when a restore is
-  // triggered and cancelled before it can complete.  This isn't specific to
-  // preload, but is very easy to trigger in preload.  As a speculative fix, if
-  // a preload is in restore, don't destroy it until after restore is complete.
-  // This logic should really belong in WebState itself, so any attempt to
-  // destroy a WebState during restore will trigger this logic.  Even better,
-  // this edge case crash should be fixed in WebKit:
-  //     https://bugs.webkit.org/show_bug.cgi?id=217440.
-  // The crash in WebKit appears to be related to IPC throttling.  Session
-  // restore can create a large number of IPC calls, which can then be
-  // throttled.  It seems if the WKWebView is destroyed with this backlog of
-  // IPC calls, sometimes WebKit crashes.
-  // See crbug.com/1032928 for an explanation for how to trigger this crash.
-  // Note the timer should only be called if for some reason session restoration
-  // fails to complete -- thus preventing a WebState leak.
-  static bool delayPreloadDestroyWebState =
-      base::FeatureList::IsEnabled(kPreloadDelayWebStateReset);
-  if (delayPreloadDestroyWebState &&
-      _webState->GetNavigationManager()->IsRestoreSessionInProgress()) {
-    __block std::unique_ptr<web::WebState> webState = std::move(_webState);
-    __block std::unique_ptr<base::OneShotTimer> resetTimer(
-        new base::OneShotTimer());
-    auto reset_block = ^{
-      if (webState) {
-        webState.reset();
-      }
-
-      if (resetTimer) {
-        resetTimer->Stop();
-        resetTimer.reset();
-      }
-    };
-    resetTimer->Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kMaximumCancelledWebStateDelay),
-        base::BindOnce(reset_block));
-    webState->GetNavigationManager()->AddRestoreCompletionCallback(
-        base::BindOnce(^{
-          dispatch_async(dispatch_get_main_queue(), reset_block);
-        }));
-  } else {
-    _webState.reset();
-  }
-  self.prerenderedURL = GURL();
-  self.startTime = base::TimeTicks();
-  self.loadCompleted = NO;
+  // Use the helper function to properly destroy the WebState.
+  DestroyPrerenderingWebState([self releasePrerenderContentsInternal]);
 }
 
 #pragma mark - Notification Helpers

@@ -96,12 +96,15 @@ base::TimeDelta GetDelayThresholdToUpdateGaiaCookie() {
   return kDelayThresholdToUpdateGaiaCookie;
 }
 
+}  // namespace
+
 // WebStatePolicyDecider that monitors the HTTP headers on Gaia responses,
 // reacting on the X-Chrome-Manage-Accounts header and notifying its delegate.
 // It also notifies the AccountConsistencyService of domains it should add the
 // CHROME_CONNECTED cookie to.
-class AccountConsistencyHandler : public web::WebStatePolicyDecider,
-                                  public web::WebStateObserver {
+class AccountConsistencyService::AccountConsistencyHandler
+    : public web::WebStatePolicyDecider,
+      public web::WebStateObserver {
  public:
   AccountConsistencyHandler(web::WebState* web_state,
                             AccountConsistencyService* service,
@@ -110,6 +113,10 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider,
                             id<ManageAccountsDelegate> delegate);
 
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  AccountConsistencyHandler(const AccountConsistencyHandler&) = delete;
+  AccountConsistencyHandler& operator=(const AccountConsistencyHandler&) =
+      delete;
 
  private:
   // web::WebStateObserver override.
@@ -144,9 +151,8 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider,
   __weak id<ManageAccountsDelegate> delegate_;
   base::WeakPtrFactory<AccountConsistencyHandler> weak_ptr_factory_;
 };
-}  // namespace
 
-AccountConsistencyHandler::AccountConsistencyHandler(
+AccountConsistencyService::AccountConsistencyHandler::AccountConsistencyHandler(
     web::WebState* web_state,
     AccountConsistencyService* service,
     AccountReconcilor* account_reconcilor,
@@ -163,7 +169,7 @@ AccountConsistencyHandler::AccountConsistencyHandler(
 }
 
 web::WebStatePolicyDecider::PolicyDecision
-AccountConsistencyHandler::ShouldAllowRequest(
+AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
     NSURLRequest* request,
     const web::WebStatePolicyDecider::RequestInfo& request_info) {
   GURL url = net::GURLWithNSURL(request.URL);
@@ -180,7 +186,7 @@ AccountConsistencyHandler::ShouldAllowRequest(
   return PolicyDecision::Allow();
 }
 
-void AccountConsistencyHandler::ShouldAllowResponse(
+void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
     base::OnceCallback<void(PolicyDecision)> callback) {
@@ -301,18 +307,20 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   std::move(callback).Run(PolicyDecision::Cancel());
 }
 
-void AccountConsistencyHandler::MarkGaiaCookiesRestored() {
+void AccountConsistencyService::AccountConsistencyHandler::
+    MarkGaiaCookiesRestored() {
   gaia_cookies_restored_ = true;
 }
 
-void AccountConsistencyHandler::NavigateToURL(GURL url) {
+void AccountConsistencyService::AccountConsistencyHandler::NavigateToURL(
+    GURL url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
   [delegate_ onRestoreGaiaCookies];
 }
 
-void AccountConsistencyHandler::PageLoaded(
+void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   const GURL& url = web_state->GetLastCommittedURL();
@@ -346,9 +354,10 @@ void AccountConsistencyHandler::PageLoaded(
   }
 }
 
-void AccountConsistencyHandler::WebStateDestroyed(web::WebState* web_state) {}
+void AccountConsistencyService::AccountConsistencyHandler::WebStateDestroyed(
+    web::WebState* web_state) {}
 
-void AccountConsistencyHandler::WebStateDestroyed() {
+void AccountConsistencyService::AccountConsistencyHandler::WebStateDestroyed() {
   account_consistency_service_->RemoveWebStateHandler(web_state());
 }
 
@@ -370,23 +379,29 @@ AccountConsistencyService::AccountConsistencyService(
   }
 }
 
-AccountConsistencyService::~AccountConsistencyService() {
-}
+AccountConsistencyService::~AccountConsistencyService() {}
 
 void AccountConsistencyService::SetWebStateHandler(
     web::WebState* web_state,
     id<ManageAccountsDelegate> delegate) {
-  DCHECK_EQ(0u, web_state_handlers_.count(web_state));
-  web_state_handlers_[web_state].reset(new AccountConsistencyHandler(
-      web_state, this, account_reconcilor_, identity_manager_, delegate));
+  DCHECK(!is_shutdown_) << "SetWebStateHandler called after Shutdown";
+  DCHECK(handlers_map_.find(web_state) == handlers_map_.end());
+  handlers_map_.insert(std::make_pair(
+      web_state,
+      std::make_unique<AccountConsistencyHandler>(
+          web_state, this, account_reconcilor_, identity_manager_, delegate)));
 }
 
 void AccountConsistencyService::RemoveWebStateHandler(
     web::WebState* web_state) {
-  DCHECK_LT(0u, web_state_handlers_.count(web_state));
-  web_state->RemoveObserver(
-      (AccountConsistencyHandler*)web_state_handlers_[web_state].get());
-  web_state_handlers_.erase(web_state);
+  DCHECK(!is_shutdown_) << "RemoveWebStateHandler called after Shutdown";
+  auto iter = handlers_map_.find(web_state);
+  DCHECK(iter != handlers_map_.end());
+
+  std::unique_ptr<AccountConsistencyHandler> handler = std::move(iter->second);
+  handlers_map_.erase(iter);
+
+  web_state->RemoveObserver(handler.get());
 }
 
 void AccountConsistencyService::AddCookieRestoreCallback(
@@ -479,8 +494,9 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
 }
 
 void AccountConsistencyService::Shutdown() {
+  DCHECK(handlers_map_.empty()) << "Handlers not unregistered at shutdown";
   identity_manager_->RemoveObserver(this);
-  web_state_handlers_.clear();
+  is_shutdown_ = true;
 }
 
 void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
