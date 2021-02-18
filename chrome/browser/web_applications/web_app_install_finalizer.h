@@ -18,6 +18,7 @@
 
 class Profile;
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 namespace web_app {
 
@@ -57,6 +58,22 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
+  // A pair of keepalive objects, to prevent BrowserProcess and Profile*
+  // teardown.
+  class KeepAlive {
+   public:
+    explicit KeepAlive(Profile* profile);
+    KeepAlive(KeepAlive&&);
+    ~KeepAlive();
+
+    KeepAlive(const KeepAlive&) = delete;
+    KeepAlive& operator=(const KeepAlive&) = delete;
+
+   private:
+    std::unique_ptr<ScopedKeepAlive> browser_keep_alive_;
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  };
+
   void UninstallWebApp(const AppId& app_id, UninstallWebAppCallback callback);
   void UninstallWebAppOrRemoveSource(const AppId& app_id,
                                      Source::Type source,
@@ -77,11 +94,10 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                                        std::unique_ptr<WebApp> web_app,
                                        bool success);
 
-  void OnIconsDataDeletedAndWebAppUninstalled(
-      const AppId& app_id,
-      UninstallWebAppCallback callback,
-      std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
-      bool success);
+  void OnIconsDataDeletedAndWebAppUninstalled(const AppId& app_id,
+                                              UninstallWebAppCallback callback,
+                                              KeepAlive keep_alive,
+                                              bool success);
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
@@ -93,11 +109,11 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
       bool success);
   void OnUninstallOsHooks(const AppId& app_id,
                           UninstallWebAppCallback callback,
-                          std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
+                          KeepAlive keep_alive,
                           OsHooksResults os_hooks_info);
 
   WebAppRegistrar& GetWebAppRegistrar() const;
-  
+
   // Used for legacy Bookmark Apps.
   std::unique_ptr<InstallFinalizer> legacy_finalizer_;
 

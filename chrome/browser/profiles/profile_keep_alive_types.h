@@ -71,7 +71,10 @@ enum class ProfileKeepAliveOrigin {
   // A DevTools window is open.
   kDevToolsWindow = 14,
 
-  kMaxValue = kDevToolsWindow,
+  // A Web App is being uninstalled.
+  kAppUninstallation = 15,
+
+  kMaxValue = kAppUninstallation,
 };
 
 std::ostream& operator<<(std::ostream& out,
