@@ -392,7 +392,10 @@ static_library("common") {
     ]
 
     if (use_ozone) {
-      deps += [ "//ui/ozone" ]
+      deps += [
+        "//ui/events/ozone/layout",
+        "//ui/ozone",
+      ]
     }
   } else {
     sources += [
