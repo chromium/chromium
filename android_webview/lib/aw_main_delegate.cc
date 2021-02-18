@@ -212,6 +212,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     features.DisableIfNotSet(::features::kVulkan);
 
     features.DisableIfNotSet(::features::kWebPayments);
+    features.DisableIfNotSet(::features::kServiceWorkerPaymentApps);
 
     // WebView does not and should not support WebAuthN.
     features.DisableIfNotSet(::features::kWebAuth);

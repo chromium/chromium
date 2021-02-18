@@ -13,6 +13,8 @@ interface Notification : EventTarget
 
 # web payments api not enabled in webiew, crbug.com/667069
 interface PaymentAddress
+interface PaymentInstruments
+interface PaymentManager
 interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent
 interface PaymentRequest : EventTarget
 interface PaymentRequestUpdateEvent : Event
@@ -82,7 +84,9 @@ interface MediaMetadata
 interface MediaSession
 
 # notifications not yet supported in webview, crbug.com/551446
+# web payments api not enabled in webiew, crbug.com/667069
 interface ServiceWorkerRegistration : EventTarget
+    getter paymentManager
     getter pushManager
     method getNotifications
     method showNotification
