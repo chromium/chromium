@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/speech/speech_recognition_service.h"
+#include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
@@ -97,7 +97,7 @@ void SpeechRecognitionServiceTest::LaunchService() {
   // Launch the Speech Recognition service.
   auto* browser_context =
       static_cast<content::BrowserContext*>(browser()->profile());
-  auto* service = new SpeechRecognitionService(browser_context);
+  auto* service = new ChromeSpeechRecognitionService(browser_context);
 
   mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_receiver =
@@ -136,6 +136,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
           .Append(kSodaLanguagePackRelativePath));
+
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
   LaunchService();
 
   std::string buffer;
