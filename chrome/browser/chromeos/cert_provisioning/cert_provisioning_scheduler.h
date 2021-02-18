@@ -110,6 +110,7 @@ class CertProvisioningSchedulerImpl
   CreateUserCertProvisioningScheduler(Profile* profile);
   static std::unique_ptr<CertProvisioningScheduler>
   CreateDeviceCertProvisioningScheduler(
+      policy::CloudPolicyClient* cloud_policy_client,
       policy::AffiliatedInvalidationServiceProvider*
           invalidation_service_provider);
 

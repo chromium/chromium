@@ -470,11 +470,17 @@ void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected() {
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
       FROM_HERE, std::move(device_cloud_policy_initializer_));
 
-  // TODO(miersh) Move to BrowserPolicyConnectorChromeOS::Init() when
-  // CertProvisioningScheduler does not depend on SignIn Profile.
   if (!device_cert_provisioning_scheduler_) {
+    // CertProvisioningScheduler depends on the device-wide CloudPolicyClient to
+    // be available so it can only be created when the CloudPolicyManager is
+    // connected.
+    // |device_cloud_policy_manager_| and its CloudPolicyClient are guaranteed
+    // to be non-null when this observer function has been called.
+    CloudPolicyClient* cloud_policy_client =
+        device_cloud_policy_manager_->core()->client();
     device_cert_provisioning_scheduler_ = chromeos::cert_provisioning::
         CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
+            cloud_policy_client,
             affiliated_invalidation_service_provider_.get());
   }
 }

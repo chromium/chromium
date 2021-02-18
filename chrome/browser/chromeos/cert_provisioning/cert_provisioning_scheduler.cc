@@ -27,7 +27,6 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/network/network_handler.h"
@@ -52,27 +51,6 @@ void EraseByKey(Container& container, const Value& value) {
 
 const base::TimeDelta kInconsistentDataErrorRetryDelay =
     base::TimeDelta::FromSeconds(30);
-
-policy::CloudPolicyClient* GetCloudPolicyClientForDevice() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (!connector) {
-    return nullptr;
-  }
-
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
-      connector->GetDeviceCloudPolicyManager();
-  if (!policy_manager) {
-    return nullptr;
-  }
-
-  policy::CloudPolicyCore* core = policy_manager->core();
-  if (!core) {
-    return nullptr;
-  }
-
-  return core->client();
-}
 
 policy::CloudPolicyClient* GetCloudPolicyClientForUser(Profile* profile) {
   policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
@@ -125,11 +103,10 @@ CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
 // static
 std::unique_ptr<CertProvisioningScheduler>
 CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
+    policy::CloudPolicyClient* cloud_policy_client,
     policy::AffiliatedInvalidationServiceProvider*
         invalidation_service_provider) {
   PrefService* pref_service = g_browser_process->local_state();
-  policy::CloudPolicyClient* cloud_policy_client =
-      GetCloudPolicyClientForDevice();
   platform_keys::PlatformKeysService* platform_keys_service =
       GetPlatformKeysService(CertScope::kDevice, /*profile=*/nullptr);
   NetworkStateHandler* network_state_handler = GetNetworkStateHandler();
