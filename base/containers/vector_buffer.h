@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ios>
 #include <type_traits>
 #include <utility>
 
@@ -130,8 +131,9 @@ class VectorBuffer {
   static void MoveRange(T* from_begin, T* from_end, T* to) {
     CHECK(!RangesOverlap(from_begin, from_end, to))
         // TODO(crbug.com/1172816): Remove logging once root cause is found.
-        << "from_begin: " << from_begin << ", from_end: " << from_end
-        << ", to: " << to;
+        << std::hex << "from_begin: 0x" << get_uintptr(from_begin)
+        << ", from_end: 0x" << get_uintptr(from_end) << ", to: 0x"
+        << get_uintptr(to);
 
     memcpy(
         to, from_begin,
