@@ -200,10 +200,7 @@ class TestRenderViewHost
   void SimulateWasHidden() override;
   void SimulateWasShown() override;
   blink::web_pref::WebPreferences TestComputeWebPreferences() override;
-  bool CreateTestRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int proxy_route_id,
-      bool window_was_created_with_opener) override;
+  bool CreateTestRenderView() override;
 
   void TestOnUpdateStateWithFile(const base::FilePath& file_path);
 

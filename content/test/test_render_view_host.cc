@@ -255,12 +255,8 @@ TestRenderViewHost::~TestRenderViewHost() {
     ++*delete_counter_;
 }
 
-bool TestRenderViewHost::CreateTestRenderView(
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
-    int proxy_route_id,
-    bool window_was_created_with_opener) {
-  return CreateRenderView(opener_frame_token, proxy_route_id,
-                          window_was_created_with_opener);
+bool TestRenderViewHost::CreateTestRenderView() {
+  return CreateRenderView(base::nullopt, MSG_ROUTING_NONE, false);
 }
 
 bool TestRenderViewHost::CreateRenderView(

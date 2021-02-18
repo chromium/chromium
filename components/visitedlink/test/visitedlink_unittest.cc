@@ -773,8 +773,7 @@ TEST_F(VisitedLinkEventsTest, Coalescence) {
 }
 
 TEST_F(VisitedLinkEventsTest, Basics) {
-  RenderViewHostTester::For(rvh())->CreateTestRenderView(
-      base::nullopt, MSG_ROUTING_NONE, false);
+  RenderViewHostTester::For(rvh())->CreateTestRenderView();
 
   // Waiting complete rebuild the table.
   content::RunAllTasksUntilIdle();
@@ -805,8 +804,7 @@ TEST_F(VisitedLinkEventsTest, Basics) {
 }
 
 TEST_F(VisitedLinkEventsTest, TabVisibility) {
-  RenderViewHostTester::For(rvh())->CreateTestRenderView(
-      base::nullopt, MSG_ROUTING_NONE, false);
+  RenderViewHostTester::For(rvh())->CreateTestRenderView();
 
   // Waiting complete rebuild the table.
   content::RunAllTasksUntilIdle();

@@ -139,8 +139,7 @@ void TestRenderFrameHost::DidFailLoadWithError(const GURL& url,
 void TestRenderFrameHost::InitializeRenderFrameIfNeeded() {
   if (!render_view_host()->IsRenderViewLive()) {
     render_view_host()->GetProcess()->Init();
-    RenderViewHostTester::For(render_view_host())
-        ->CreateTestRenderView(base::nullopt, MSG_ROUTING_NONE, false);
+    RenderViewHostTester::For(render_view_host())->CreateTestRenderView();
   }
 }
 
