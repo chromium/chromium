@@ -17,8 +17,7 @@ ClearAllTask::ClearAllTask(FeedStream* stream) : stream_(stream) {}
 ClearAllTask::~ClearAllTask() = default;
 
 void ClearAllTask::Run() {
-  // TODO(crbug/1152592): Need to unload all models here.
-  stream_->UnloadModel(kInterestStream);
+  stream_->UnloadModels();
   stream_->GetPersistentKeyValueStore()->ClearAll(base::DoNothing());
   stream_->GetStore()->ClearAll(
       base::BindOnce(&ClearAllTask::StoreClearComplete, GetWeakPtr()));
@@ -27,9 +26,6 @@ void ClearAllTask::Run() {
 void ClearAllTask::StoreClearComplete(bool ok) {
   DLOG_IF(ERROR, !ok) << "FeedStore::ClearAll failed";
   stream_->FinishClearAll();
-  if (stream_->HasSurfaceAttached()) {
-    stream_->TriggerStreamLoad(kInterestStream);
-  }
   TaskComplete();
 }
 

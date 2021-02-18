@@ -66,10 +66,11 @@ inline std::ostream& operator<<(std::ostream& os,
 constexpr StreamType kInterestStream(StreamType::Type::kInterest);
 constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
-// This is the public access point for interacting with the Feed stream
-// contents.
+// This is the public access point for interacting with the Feed contents.
+// FeedStreamApi serves multiple streams of data, one for each StreamType.
 class FeedStreamApi {
  public:
+  // Consumes stream data for a single `StreamType` and displays it to the user.
   class SurfaceInterface : public base::CheckedObserver {
    public:
     explicit SurfaceInterface(StreamType type);
@@ -86,6 +87,7 @@ class FeedStreamApi {
     // Also called whenever the stream changes.
     virtual void StreamUpdate(const feedui::StreamUpdate&) = 0;
 
+    // Access to the xsurface data store.
     virtual void ReplaceDataStoreEntry(base::StringPiece key,
                                        base::StringPiece data) = 0;
     virtual void RemoveDataStoreEntry(base::StringPiece key) = 0;
@@ -100,6 +102,8 @@ class FeedStreamApi {
   FeedStreamApi(const FeedStreamApi&) = delete;
   FeedStreamApi& operator=(const FeedStreamApi&) = delete;
 
+  // Attach/detach a surface. Surfaces should be attached when content is
+  // required for display, and detached when content is no longer shown.
   virtual void AttachSurface(SurfaceInterface*) = 0;
   virtual void DetachSurface(SurfaceInterface*) = 0;
 
