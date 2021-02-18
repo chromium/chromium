@@ -3578,6 +3578,7 @@ ci.fyi_coverage_builder(
         short_name = "win",
     ),
     os = os.WINDOWS_DEFAULT,
+    coverage_test_types = ["overall", "unit"],
     use_clang_coverage = True,
 )
 
