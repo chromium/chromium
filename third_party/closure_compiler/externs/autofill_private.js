@@ -18,6 +18,7 @@ chrome.autofillPrivate = {};
  * @enum {string}
  */
 chrome.autofillPrivate.AddressField = {
+  HONORIFIC: 'HONORIFIC',
   FULL_NAME: 'FULL_NAME',
   COMPANY_NAME: 'COMPANY_NAME',
   ADDRESS_LINES: 'ADDRESS_LINES',
@@ -44,6 +45,7 @@ chrome.autofillPrivate.AutofillMetadata;
  * @typedef {{
  *   guid: (string|undefined),
  *   fullNames: (!Array<string>|undefined),
+ *   honorific: (string|undefined),
  *   companyName: (string|undefined),
  *   addressLines: (string|undefined),
  *   addressLevel1: (string|undefined),

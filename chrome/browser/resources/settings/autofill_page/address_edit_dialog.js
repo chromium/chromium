@@ -21,6 +21,8 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 Polymer({
   is: 'settings-address-edit-dialog',
 
@@ -60,6 +62,17 @@ Polymer({
 
     /** @private */
     canSave_: Boolean,
+
+    /**
+     * True if honorifics are enabled.
+     * @private
+     */
+    showHonorific_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('showHonorific');
+      }
+    }
   },
 
   /** @override */
@@ -108,9 +121,17 @@ Polymer({
     // Default to the last country used if no country code is provided.
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
     this.countryInfo.getAddressFormat(countryCode).then(format => {
-      this.addressWrapper_ = format.components.map(
-          component =>
-              component.row.map(c => new AddressComponentUI(this.address, c)));
+      this.addressWrapper_ = format.components.flatMap(component => {
+        // If this is the name field, add a honorific title row before the name.
+        const addHonorific = component.row[0].field ===
+                chrome.autofillPrivate.AddressField.FULL_NAME &&
+            this.showHonorific_;
+        const row = component.row.map(
+            component => new AddressComponentUI(this.address, component));
+        return addHonorific ?
+            [[this.createHonorificAddressComponentUI(this.address)], row] :
+            [row];
+      });
 
       // Flush dom before resize and savability updates.
       flush();
@@ -235,6 +256,19 @@ Polymer({
       e.preventDefault();
     }
   },
+
+  /**
+   * @param {!chrome.autofillPrivate.AddressEntry} address
+   * @returns {AddressComponentUI}
+   */
+  createHonorificAddressComponentUI(address) {
+    return new AddressComponentUI(address, {
+      field: chrome.autofillPrivate.AddressField.HONORIFIC,
+      fieldName: this.i18n('honorificLabel'),
+      isLongField: true,
+      placerholder: undefined,
+    });
+  },
 });
 
 /**
@@ -268,6 +302,8 @@ class AddressComponentUI {
   getValue_() {
     const address = this.address_;
     switch (this.component.field) {
+      case chrome.autofillPrivate.AddressField.HONORIFIC:
+        return address.honorific;
       case chrome.autofillPrivate.AddressField.FULL_NAME:
         // |fullNames| is a single item array. See crbug.com/497934 for
         // details.
@@ -301,6 +337,9 @@ class AddressComponentUI {
   setValue_(value) {
     const address = this.address_;
     switch (this.component.field) {
+      case chrome.autofillPrivate.AddressField.HONORIFIC:
+        address.honorific = value;
+        break;
       case chrome.autofillPrivate.AddressField.FULL_NAME:
         address.fullNames = [value];
         break;

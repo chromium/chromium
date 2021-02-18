@@ -889,6 +889,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"addressCountry", IDS_SETTINGS_AUTOFILL_ADDRESSES_COUNTRY},
       {"addressPhone", IDS_SETTINGS_AUTOFILL_ADDRESSES_PHONE},
       {"addressEmail", IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL},
+      {"honorificLabel", IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL},
       {"removeAddress", IDS_SETTINGS_ADDRESS_REMOVE},
       {"removeAddressConfirmationTitle",
        IDS_SETTINGS_ADDRESS_REMOVE_CONFIRMATION_TITLE},
@@ -1112,6 +1113,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showUpiIdSettings",
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillSaveAndFillVPA));
+
+  html_source->AddBoolean(
+      "showHonorific",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForHonorificPrefixes));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

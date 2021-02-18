@@ -7,6 +7,7 @@
 namespace autofillPrivate {
   // Fields used as part of an address.
   enum AddressField {
+    HONORIFIC, // Honorific fields are not expected from getAddressComponents.
     FULL_NAME,
     COMPANY_NAME,
     ADDRESS_LINES,
@@ -51,6 +52,10 @@ namespace autofillPrivate {
     DOMString? guid;
 
     DOMString[]? fullNames;
+
+    // A honorific title added to the name. E.g. "Mr.", "Dr.", "Her Royal
+    // Majesty".
+    DOMString? honorific;
 
     DOMString? companyName;
 
