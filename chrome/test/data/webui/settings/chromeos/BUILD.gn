@@ -147,6 +147,7 @@ js_modulizer("modulize") {
     "test_os_sync_browser_proxy.js",
     "test_wallpaper_browser_proxy.js",
     "tether_connection_dialog_test.js",
+    "text_to_speech_subpage_tests.js",
     "timezone_selector_test.js",
     "timezone_subpage_test.js",
     "tts_subpage_test.js",

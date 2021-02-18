@@ -420,6 +420,7 @@ TEST_F(
  ],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.m.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
+ ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.m.js'],
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],
  ['TtsSubpage', 'tts_subpage_test.m.js'],
