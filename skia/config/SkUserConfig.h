@@ -225,8 +225,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 // Staging for lowp::bilerp_clamp_8888, and for planned misc. others.
 #define SK_DISABLE_LOWP_BILERP_CLAMP_CLAMP_STAGE
 
-#define SK_SUPPORT_LEGACY_CONVEXITY_DIRECTION_CHANGE
-
 #define SK_SUPPORT_LEGACY_DRAWLOOPER
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
