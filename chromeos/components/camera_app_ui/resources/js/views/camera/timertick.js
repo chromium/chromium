@@ -6,6 +6,7 @@ import * as animate from '../../animation.js';
 import * as dom from '../../dom.js';
 import {play} from '../../sound.js';
 import * as state from '../../state.js';
+import {CanceledError} from '../../type.js';
 
 /**
  * Handler to cancel the active running timer-ticks.
@@ -31,7 +32,7 @@ export function start() {
         tickTimeout = null;
       }
       animate.cancel(tickMsg);
-      reject(new Error('cancel'));
+      reject(new CanceledError('Timer tick is canceled'));
     };
 
     let tickCounter = state.get(state.State.TIMER_10SEC) ? 10 : 3;

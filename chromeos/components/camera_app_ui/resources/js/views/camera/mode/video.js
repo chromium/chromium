@@ -16,6 +16,7 @@ import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
+  CanceledError,
   Facing,  // eslint-disable-line no-unused-vars
   PerfEvent,
   Resolution,
@@ -264,7 +265,12 @@ export class Video extends ModeBase {
     this.snapshots_ = new AsyncJobQueue();
     this.togglePaused_ = null;
     this.everPaused_ = false;
-    await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
+
+    const isSoundEnded =
+        await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
+    if (!isSoundEnded) {
+      throw new CanceledError('Recording sound is canceled');
+    }
 
     try {
       const mimeType = getVideoMimeType();

@@ -247,6 +247,20 @@ export class NotImplementedError extends Error {
 }
 
 /**
+ * Throws when an action is canceled.
+ */
+export class CanceledError extends Error {
+  /**
+   * @param {string=} message
+   * @public
+   */
+  constructor(message = 'The action is canceled') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+/**
  * The possible scheme to load untrusted context.
  * @enum {string}
  */

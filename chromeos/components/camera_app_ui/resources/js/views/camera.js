@@ -27,6 +27,7 @@ import * as sound from '../sound.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
 import {
+  CanceledError,
   Facing,
   Mode,
   Resolution,  // eslint-disable-line no-unused-vars
@@ -430,7 +431,7 @@ export class Camera extends View {
         await this.modes_.current.startCapture();
       } catch (e) {
         hasError = true;
-        if (e && e.message === 'cancel') {
+        if (e instanceof CanceledError) {
           return;
         }
         console.error(e);

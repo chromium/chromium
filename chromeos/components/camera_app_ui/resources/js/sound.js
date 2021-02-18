@@ -25,8 +25,9 @@ function getQueueFor(el) {
 /**
  * Plays a sound.
  * @param {!HTMLAudioElement} el Audio element to play.
- * @return {!Promise} Promise which will be resolved once the sound is ended or
- *     paused.
+ * @return {!Promise<boolean>} Promise which will be resolved once the sound is
+ *     stopped. The resolved value will be true if it is ended. Otherwise, it is
+ *     just paused due to cancenlation.
  */
 export function play(el) {
   cancel(el);
@@ -35,10 +36,10 @@ export function play(el) {
     el.currentTime = 0;
     await el.play();
 
-    const audioEnded = new WaitableEvent();
+    const audioStopped = new WaitableEvent();
     const events = ['ended', 'pause'];
     const onAudioStopped = () => {
-      audioEnded.signal();
+      audioStopped.signal(el.ended);
       for (const event of events) {
         el.removeEventListener(event, onAudioStopped);
       }
@@ -46,7 +47,7 @@ export function play(el) {
     for (const event of events) {
       el.addEventListener(event, onAudioStopped);
     }
-    return audioEnded.wait();
+    return audioStopped.wait();
   };
   return queue.push(job);
 }
