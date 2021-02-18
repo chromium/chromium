@@ -336,6 +336,10 @@ bool IsMagnifierPanningImprovementsEnabled() {
   return features::IsMagnifierPanningImprovementsEnabled();
 }
 
+bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
+  return features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
+}
+
 bool IsSwitchAccessTextAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
@@ -672,6 +676,10 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isMagnifierPanningImprovementsEnabled",
                           IsMagnifierPanningImprovementsEnabled());
+
+  html_source->AddBoolean(
+      "isMagnifierContinuousMouseFollowingModeSettingEnabled",
+      IsMagnifierContinuousMouseFollowingModeSettingEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }

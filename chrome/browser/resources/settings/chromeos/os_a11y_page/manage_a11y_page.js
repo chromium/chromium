@@ -174,6 +174,15 @@ Polymer({
       },
     },
 
+    /** @private */
+    isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean(
+            'isMagnifierContinuousMouseFollowingModeSettingEnabled');
+      },
+    },
+
     /**
      * Whether the user is in kiosk mode.
      * @private
