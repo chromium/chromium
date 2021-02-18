@@ -2682,6 +2682,7 @@
         },
         'mixins': [
           'femu-additional-ram',
+          'fuchsia-code-coverage',
           'isolate_profile_data',
         ],
       },

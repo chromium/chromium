@@ -349,6 +349,13 @@
       },
     },
   },
+  'fuchsia-code-coverage': {
+    '$mixin_append': {
+      'args': [
+        '--code-coverage',
+      ],
+    },
+  },
   'fuchsia_runner_logs': {
     '$mixin_append': {
       'args': [

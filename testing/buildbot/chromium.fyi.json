@@ -13766,7 +13766,8 @@
     "gtest_tests": [
       {
         "args": [
-          "--ram-size-mb=16384"
+          "--ram-size-mb=16384",
+          "--code-coverage"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13783,6 +13784,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13800,6 +13802,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13817,6 +13820,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13834,6 +13838,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13851,6 +13856,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13868,6 +13874,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13885,6 +13892,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13903,6 +13911,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13920,6 +13929,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13937,6 +13947,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13954,6 +13965,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13971,6 +13983,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -13988,6 +14001,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14005,6 +14019,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14022,6 +14037,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14041,6 +14057,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14058,6 +14075,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14076,6 +14094,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14093,6 +14112,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14110,6 +14130,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14127,6 +14148,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14144,6 +14166,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14161,6 +14184,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14178,6 +14202,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14195,6 +14220,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14212,6 +14238,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14229,6 +14256,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14245,7 +14273,8 @@
       },
       {
         "args": [
-          "--ram-size-mb=16384"
+          "--ram-size-mb=16384",
+          "--code-coverage"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14263,6 +14292,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14280,6 +14310,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14297,6 +14328,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14314,6 +14346,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14331,6 +14364,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14348,6 +14382,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14365,6 +14400,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14382,6 +14418,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14399,6 +14436,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14417,6 +14455,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14435,6 +14474,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14452,6 +14492,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14470,6 +14511,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14487,6 +14529,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14504,6 +14547,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14521,6 +14565,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14538,6 +14583,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14556,6 +14602,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14574,6 +14621,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14591,6 +14639,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14609,6 +14658,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14626,6 +14676,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14642,7 +14693,8 @@
       },
       {
         "args": [
-          "--ram-size-mb=16384"
+          "--ram-size-mb=16384",
+          "--code-coverage"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14659,6 +14711,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14675,7 +14728,8 @@
       },
       {
         "args": [
-          "--ram-size-mb=16384"
+          "--ram-size-mb=16384",
+          "--code-coverage"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14692,6 +14746,7 @@
       {
         "args": [
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
@@ -14712,6 +14767,7 @@
         "args": [
           "bin/run_angle_unittests",
           "--ram-size-mb=16384",
+          "--code-coverage",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_name": "angle_unittests",
