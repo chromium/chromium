@@ -9,13 +9,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
@@ -31,6 +34,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -94,5 +98,36 @@ public class ToolbarPhoneTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.onUrlFocusChange(false); });
         onView(allOf(
                 withId(R.id.menu_button_wrapper), withEffectiveVisibility(Visibility.VISIBLE)));
+    }
+
+    @Test
+    @MediumTest
+    public void testOptionalButtonPadding_paddingUpdatesWithMenuVisibility() {
+        mToolbar.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
+        Drawable drawable = AppCompatResources.getDrawable(
+                mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
+
+        // When menu is hidden, optional button should have no padding.
+        doReturn(false).when(mMenuButtonCoordinator).isShown();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mToolbar.updateOptionalButton(
+                    new ButtonData(false, drawable, null, R.string.share, false, null, false));
+            mToolbar.updateButtonVisibility();
+        });
+
+        int padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
+        assertEquals("Optional button's padding should be 0 when menu button is not visible", 0,
+                padding);
+
+        // However when menu is visible, optional button should have
+        // toolbar_phone_optional_button_padding padding.
+        doReturn(true).when(mMenuButtonCoordinator).isShown();
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateButtonVisibility(); });
+        padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
+        int expectedPadding = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
+                R.dimen.toolbar_phone_optional_button_padding);
+        assertEquals(
+                "Optional button should have a 12dp start padding set when menu button is visible",
+                expectedPadding, padding);
     }
 }

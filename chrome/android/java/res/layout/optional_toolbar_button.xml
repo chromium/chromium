@@ -8,5 +8,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/ToolbarButton"
     android:layout_gravity="top"
-    android:paddingStart="12dp"
+    android:paddingStart="@dimen/toolbar_phone_optional_button_padding"
     tools:ignore="ContentDescription"/>

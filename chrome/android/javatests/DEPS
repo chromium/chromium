@@ -74,4 +74,7 @@ specific_include_rules = {
   "PageInfoPopupTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
+  "ToolbarPhoneTest\.java": [
+    "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
+  ]
 }
