@@ -1008,12 +1008,16 @@ crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conform
 crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/fborender/shared_depth_stencil.html [ Failure ]
 crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
 crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fragdepth.html [ Failure ]
-crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_00.html [ RetryOnFailure ]
 crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_03.html [ Failure ]
 
 crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/fbodepthbuffer.html [ RetryOnFailure ]
 crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/fborender/recreate_depth_stencil.html [ RetryOnFailure ]
+
+crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_00.html [ RetryOnFailure ]
 crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_01.html [ RetryOnFailure ]
+crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_02.html [ RetryOnFailure ]
+crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_04.html [ RetryOnFailure ]
+crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_05.html [ RetryOnFailure ]
 crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_06.html [ RetryOnFailure ]
 crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/fborender/resize_03.html [ RetryOnFailure ]
 
