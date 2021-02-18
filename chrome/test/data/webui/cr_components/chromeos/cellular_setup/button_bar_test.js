@@ -87,6 +87,7 @@ suite('CellularSetupButtonBarTest', function() {
 
   test('default focus is on last button if all are enabled', function() {
     setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
+    buttonBar.focusDefaultButton();
 
     Polymer.dom.flush();
 
@@ -97,6 +98,7 @@ suite('CellularSetupButtonBarTest', function() {
     buttonBar.buttonState = {
       backward: cellularSetup.ButtonState.ENABLED,
     };
+    buttonBar.focusDefaultButton();
 
     Polymer.dom.flush();
 
@@ -112,6 +114,7 @@ suite('CellularSetupButtonBarTest', function() {
           forward: cellularSetup.ButtonState.DISABLED,
           tryAgain: cellularSetup.ButtonState.DISABLED,
         };
+        buttonBar.focusDefaultButton();
 
         Polymer.dom.flush();
 

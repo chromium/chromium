@@ -69,6 +69,7 @@ Polymer({
     'retry-requested': 'onRetryRequested_',
     'forward-nav-requested': 'onForwardNavRequested_',
     'cancel-requested': 'onCancelRequested_',
+    'focus-default-button': 'onFocusDefaultButton_',
   },
 
 
@@ -154,6 +155,11 @@ Polymer({
       return;
     }
     this.currentPage_.navigateForward();
+  },
+
+  /** @private */
+  onFocusDefaultButton_() {
+    this.$.buttonBar.focusDefaultButton();
   },
 
   /**

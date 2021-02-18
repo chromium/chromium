@@ -18,7 +18,6 @@ Polymer({
     buttonState: {
       type: Object,
       value: {},
-      observer: 'focusDefaultButton_',
     },
 
     /**
@@ -54,6 +53,18 @@ Polymer({
     return state === cellularSetup.ButtonState.DISABLED;
   },
 
+  focusDefaultButton() {
+    const buttons = this.shadowRoot.querySelectorAll('cr-button');
+    // Focus the first non-disabled, non-hidden button from the end.
+    for (let i = buttons.length - 1; i >= 0; i--) {
+      const button = buttons.item(i);
+      if (!button.disabled && !button.hidden) {
+        cr.ui.focusWithoutInk(button);
+        return;
+      }
+    }
+  },
+
   /** @private */
   onBackwardButtonClicked_() {
     this.fire('backward-nav-requested');
@@ -72,19 +83,6 @@ Polymer({
   /** @private */
   onForwardButtonClicked_() {
     this.fire('forward-nav-requested');
-  },
-
-  /** @private */
-  focusDefaultButton_() {
-    const buttons = this.shadowRoot.querySelectorAll('cr-button');
-    // Focus the first non-disabled, non-hidden button from the end.
-    for (let i = buttons.length - 1; i >= 0; i--) {
-      const button = buttons.item(i);
-      if (!button.disabled && !button.hidden) {
-        cr.ui.focusWithoutInk(button);
-        return;
-      }
-    }
   },
 
   /**

@@ -295,6 +295,7 @@ cr.define('cellular_setup', function() {
           break;
       }
       this.set('buttonState', buttonState);
+      this.fire('focus-default-button');
     },
 
     /** @private */
