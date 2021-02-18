@@ -504,7 +504,13 @@ void ProfileSyncService::Shutdown() {
   // All observers must be gone now: All KeyedServices should have unregistered
   // their observers already before, in their own Shutdown(), and all others
   // should have done it now when they got the shutdown notification.
+  // TODO(crbug.com/1176498): DCHECKs are disabled during automated testing on
+  // CrOS and this check failed when tested on an experimental builder. Revert
+  // https://crrev.com/c/2683949 to re-enable this DCHECK on CrOS.
+  // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+#if !defined(OS_CHROMEOS)
   DCHECK(observers_.empty());
+#endif
 
   auth_manager_.reset();
 }
