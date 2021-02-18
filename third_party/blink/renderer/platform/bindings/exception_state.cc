@@ -181,82 +181,71 @@ void ExceptionState::SetException(ExceptionCode exception_code,
   }
 }
 
-String ExceptionState::AddExceptionContext(const String& message) const {
-  if (message.IsEmpty())
-    return message;
+void ExceptionState::PushContextScope(ContextScope* scope) {
+  scope->SetParent(context_stack_top_);
+  context_stack_top_ = scope;
+}
 
-  const char* i = InterfaceName();
-  const char* p = PropertyName();
-  const auto& m = message;
+void ExceptionState::PopContextScope() {
+  DCHECK(!context_stack_top_);
+  context_stack_top_ = context_stack_top_->GetParent();
+}
 
-  if (i && p) {
-    switch (Context()) {
-      case kConstructionContext:
-        return ExceptionMessages::FailedToConstruct(i, m);
-      case kExecutionContext:
-        return ExceptionMessages::FailedToExecute(p, i, m);
-      case kGetterContext:
-        return ExceptionMessages::FailedToGet(p, i, m);
-      case kSetterContext:
-        return ExceptionMessages::FailedToSet(p, i, m);
-      case kEnumerationContext:
-        return ExceptionMessages::FailedToEnumerate(i, m);
-      case kQueryContext:
-        break;
-      case kIndexedGetterContext:
-        return ExceptionMessages::FailedToGetIndexed(i, m);
-      case kIndexedSetterContext:
-        return ExceptionMessages::FailedToSetIndexed(i, m);
-      case kIndexedDeletionContext:
-        return ExceptionMessages::FailedToDeleteIndexed(i, m);
-      case kNamedGetterContext:
-        return ExceptionMessages::FailedToGetNamed(i, m);
-      case kNamedSetterContext:
-        return ExceptionMessages::FailedToSetNamed(i, m);
-      case kNamedDeletionContext:
-        return ExceptionMessages::FailedToDeleteNamed(i, m);
-      case kUnknownContext:
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+namespace {
+
+String AddContextToMessage(const String& message,
+                           const ExceptionContext& context) {
+  const char* c = context.GetClassName();
+  const char* p = context.GetPropertyName();
+  const String& m = message;
+
+  switch (context.GetContext()) {
+    case ExceptionState::kConstructionContext:
+      return ExceptionMessages::FailedToConstruct(c, m);
+    case ExceptionState::kExecutionContext:
+      return ExceptionMessages::FailedToExecute(p, c, m);
+    case ExceptionState::kGetterContext:
+      return ExceptionMessages::FailedToGet(p, c, m);
+    case ExceptionState::kSetterContext:
+      return ExceptionMessages::FailedToSet(p, c, m);
+    case ExceptionState::kEnumerationContext:
+      return ExceptionMessages::FailedToEnumerate(c, m);
+    case ExceptionState::kQueryContext:
+      break;
+    case ExceptionState::kIndexedGetterContext:
+      return ExceptionMessages::FailedToGetIndexed(c, m);
+    case ExceptionState::kIndexedSetterContext:
+      return ExceptionMessages::FailedToSetIndexed(c, m);
+    case ExceptionState::kIndexedDeletionContext:
+      return ExceptionMessages::FailedToDeleteIndexed(c, m);
+    case ExceptionState::kNamedGetterContext:
+      return ExceptionMessages::FailedToGetNamed(c, m);
+    case ExceptionState::kNamedSetterContext:
+      return ExceptionMessages::FailedToSetNamed(c, m);
+    case ExceptionState::kNamedDeletionContext:
+      return ExceptionMessages::FailedToDeleteNamed(c, m);
+    case ExceptionState::kUnknownContext:
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
+  return m;
+}
 
-  if (i) {
-    switch (Context()) {
-      case kConstructionContext:
-        return ExceptionMessages::FailedToConstruct(i, m);
-      case kExecutionContext:
-        break;
-      case kGetterContext:
-        break;
-      case kSetterContext:
-        break;
-      case kEnumerationContext:
-        return ExceptionMessages::FailedToEnumerate(i, m);
-      case kQueryContext:
-        break;
-      case kIndexedGetterContext:
-        return ExceptionMessages::FailedToGetIndexed(i, m);
-      case kIndexedSetterContext:
-        return ExceptionMessages::FailedToSetIndexed(i, m);
-      case kIndexedDeletionContext:
-        return ExceptionMessages::FailedToDeleteIndexed(i, m);
-      case kNamedGetterContext:
-        return ExceptionMessages::FailedToGetNamed(i, m);
-      case kNamedSetterContext:
-        return ExceptionMessages::FailedToSetNamed(i, m);
-      case kNamedDeletionContext:
-        return ExceptionMessages::FailedToDeleteNamed(i, m);
-      case kUnknownContext:
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+}  // namespace
+
+String ExceptionState::AddExceptionContext(
+    const String& original_message) const {
+  if (original_message.IsEmpty())
+    return original_message;
+
+  String message = original_message;
+  for (const ContextScope* scope = context_stack_top_; scope;
+       scope = scope->GetParent()) {
+    message = AddContextToMessage(message, scope->GetContext());
   }
-
+  message = AddContextToMessage(message, main_context_);
   return message;
 }
 

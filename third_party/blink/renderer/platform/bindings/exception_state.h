@@ -81,6 +81,35 @@ class PLATFORM_EXPORT ExceptionState {
   static constexpr ContextType kUnknownContext =
       ExceptionContext::Context::kUnknown;
 
+  // ContextScope represents a stack of ExceptionContext in order to represent
+  // nested exception contexts such like an IDL dictionary in another IDL
+  // dictionary.
+  class ContextScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ContextScope(const ExceptionContext& context,
+                          ExceptionState& exception_state)
+        : exception_state_(exception_state), context_(context) {
+      exception_state_.PushContextScope(this);
+    }
+    ContextScope(const ContextScope&) = delete;
+    ContextScope& operator=(const ContextScope&) = delete;
+
+    ~ContextScope() { exception_state_.PopContextScope(); }
+
+   private:
+    void SetParent(const ContextScope* parent) { parent_ = parent; }
+    const ContextScope* GetParent() const { return parent_; }
+    const ExceptionContext& GetContext() const { return context_; }
+
+    ExceptionState& exception_state_;
+    const ContextScope* parent_ = nullptr;
+    const ExceptionContext context_;
+
+    friend class ExceptionState;
+  };
+
   // A function pointer type that creates a DOMException.
   using CreateDOMExceptionFunction =
       v8::Local<v8::Value> (*)(v8::Isolate*,
@@ -92,7 +121,10 @@ class PLATFORM_EXPORT ExceptionState {
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
   ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
-      : isolate_(isolate), context_(context) {}
+      : main_context_(context), isolate_(isolate) {}
+
+  ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
+      : main_context_(std::move(context)), isolate_(isolate) {}
 
   ExceptionState(v8::Isolate* isolate,
                  ContextType context_type,
@@ -169,28 +201,49 @@ class PLATFORM_EXPORT ExceptionState {
     return exception_.NewLocal(isolate_);
   }
 
-  ContextType Context() const { return context_.GetContext(); }
-  const char* PropertyName() const { return context_.GetPropertyName(); }
-  const char* InterfaceName() const { return context_.GetClassName(); }
+  // Returns the context of what Web API is currently being executed.
+  const ExceptionContext& GetContext() const {
+    DCHECK(!context_stack_top_);
+    return main_context_;
+  }
+
+  // Deprecated APIs to get information about where this ExceptionState has
+  // been created.
+  ContextType Context() const { return GetContext().GetContext(); }
+  const char* PropertyName() const { return GetContext().GetPropertyName(); }
+  const char* InterfaceName() const { return GetContext().GetClassName(); }
 
  protected:
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
 
  private:
+  void PushContextScope(ContextScope* scope);
+  void PopContextScope();
+
   String AddExceptionContext(const String&) const;
 
   // Since DOMException is defined in core/, we need a dependency injection in
   // order to create a DOMException in platform/.
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
 
+  // The main context represents what Web API is currently being executed.
+  // This is embedded without using ContextScope in order to avoid an overhead
+  // of ContextScope.
+  ExceptionContext main_context_;
+
+  // `context_stack_top_` points to the top of the context stack which
+  // represents additional (nested) contexts such as an IDL dictionary in a
+  // member of another IDL dictionary.  nullptr means no additional context.
+  const ContextScope* context_stack_top_ = nullptr;
+
   v8::Isolate* isolate_;
   ExceptionCode code_ = 0;
-  ExceptionContext context_;
   String message_;
   // The exception is empty when it was thrown through
   // DummyExceptionStateForTesting.
   TraceWrapperV8Reference<v8::Value> exception_;
 
+  friend class ContextScope;
   DISALLOW_COPY_AND_ASSIGN(ExceptionState);
 };
 
