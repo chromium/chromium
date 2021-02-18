@@ -110635,6 +110635,45 @@
         {}
        ]
       ],
+      "grid-aspect-ratio-015.html": [
+       "4af5fa3bfffcada3e4735c4b76c2ab312b07f69b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-aspect-ratio-016.html": [
+       "e1c92908f074830abf115d4e09e99e06487b7fc4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-aspect-ratio-017.html": [
+       "7a09957d5b738ac6b180cd08c749567f70243870",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "intrinsic-size-001.html": [
        "5b2c6049bd935c928f29c50bf4ad7afae41c4576",
        [
@@ -110767,6 +110806,58 @@
       ],
       "intrinsic-size-011.html": [
        "49bd5cebfd44c1b138ab5f79863d2d315380b8c1",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-012.html": [
+       "5040da5ca265f5bb3e624a8e8c5d5e0163934bcc",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-013.html": [
+       "48a1d12a7e4abce8d493d1d3934d990b25c5937c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-014.html": [
+       "c9308df630a25046b4375d5ef6ef3c6526ba4be4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "intrinsic-size-015.html": [
+       "c279413da1d56e99f4a809c0ce8989ce6e6e1b1d",
        [
         null,
         [
@@ -191463,6 +191554,10 @@
       "048d1730015ba9948cb19040fad877cd0effa459",
       []
      ],
+     "color-resolving-hwb-expected.txt": [
+      "4c702545c17052ddbdda669b4a8191116b9306f8",
+      []
+     ],
      "composited-filters-under-opacity-ref.html": [
       "73b420189ec8bc073e8b6a2e4bfd628653bd4a78",
       []
@@ -252260,7 +252355,7 @@
       []
      ],
      "webxr-test.js": [
-      "fe9dc3f92ec90255e20822ba1b0c32e83f20f6a7",
+      "f7e9cbd25028f18d7f0a693009e2322147af9738",
       []
      ],
      "webxr-test.js.headers": [
@@ -259024,7 +259119,7 @@
       []
      ],
      "urn-uuid.har": [
-      "d821b768a60ec15453077eadaa84b7a385525434",
+      "1708a8917b6c0cf52b9f2a1a976590b2a7f20183",
       []
      ],
      "wbn": {
@@ -259155,7 +259250,7 @@
        []
       ],
       "urn-uuid.wbn": [
-       "45db6fefbbe0954affb815a2de1f98abc8ba608e",
+       "3255787c1c578b901f1311014271540beadc291a",
        []
       ]
      }
@@ -259621,7 +259716,7 @@
      []
     ],
     "utils.js": [
-     "168d3722048cab1e0a6c01b693df7e9a93593482",
+     "9b0a022af8ecfe88b3e7ad72aa5c930d336996ae",
      []
     ],
     "vp9.mp4": [
@@ -264040,6 +264135,20 @@
       []
      ]
     },
+    "depth-sensing": {
+     "dataUnavailableTests.js": [
+      "7460af71326291923e7a5406ea4773be0953137f",
+      []
+     ],
+     "inactiveFrameTests.js": [
+      "b310f01ef871a248bdde3da0efef6b2126f13cd0",
+      []
+     ],
+     "staleViewsTests.js": [
+      "b1f11c9651d8d85e0acbb1123c35216857dfdf5b",
+      []
+     ]
+    },
     "dom-overlay": {
      "META.yml": [
       "be2b6e613a1457ca3c14dc854005353636ea23af",
@@ -264088,7 +264197,11 @@
       []
      ],
      "webxr_test_constants.js": [
-      "40643d0c6abbd91a51a7940397eed90a9e91fa8f",
+      "7dbedd92419d14c212573e1b10c305c2034aea9a",
+      []
+     ],
+     "webxr_test_constants_fake_depth.js": [
+      "36890d398ded9915ee502b0d2f1ba2fcb388b60d",
       []
      ],
      "webxr_test_constants_fake_world.js": [
@@ -264096,7 +264209,7 @@
       []
      ],
      "webxr_util.js": [
-      "8ca7918298bad1329cf9e0f39c7349070c3169ed",
+      "cf9c6ff880a16baceb8feb09a5d3aa1ed237f802",
       []
      ]
     },
@@ -436348,7 +436461,7 @@
       ]
      ],
      "subframe-from-web-bundle.tentative.html": [
-      "1e5cdd6943ebdc3b66925177fb17fd4004000680",
+      "f6f2b769d0f1230f225c8625a3982fea1bd4b15e",
       [
        null,
        {}
@@ -439843,7 +439956,7 @@
      ]
     ],
     "video-frame.any.js": [
-     "3ae10f829a0a5e248e803c0bcc258c95e8b38d21",
+     "b02badc082f3f6627941a1e73e047065c12c95a2",
      [
       "webcodecs/video-frame.any.html",
       {
@@ -439880,72 +439993,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "videoFrame-createImageBitmap.any.js": [
-     "7b08d292084ba79b64f9479df8b91a53f26d8293",
-     [
-      "webcodecs/videoFrame-createImageBitmap.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/utils.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/videoFrame-createImageBitmap.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/utils.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "videoFrame-drawImage.any.js": [
-     "bac4c8901907cbc7fd51138cd737180967249d64",
-     [
-      "webcodecs/videoFrame-drawImage.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/utils.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/videoFrame-drawImage.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/utils.js"
-        ]
-       ]
-      }
      ]
     ]
    },
@@ -447898,6 +447945,82 @@
        {}
       ]
      ]
+    },
+    "depth-sensing": {
+     "cpu": {
+      "depth_sensing_cpu_dataUnavailable.https.html": [
+       "e120f0b7dd161a01059ebf9bb773cbb706721d48",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_cpu_inactiveFrame.https.html": [
+       "92c20cecbf677900a474f0fd6694bf3c024ce4b1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_cpu_incorrectUsage.https.html": [
+       "44868d8cb0e0322efcda6bd7a935e523d8959f6c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_cpu_luminance_alpha_dataValid.https.html": [
+       "3bda9e21d7c909543e6c86639f3056081b13ee25",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_cpu_staleView.https.html": [
+       "6a411ace451f817ba20c69a3eca22b55c536a56a",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "depth_sensing_notEnabled.https.html": [
+      "23bae35493a651a6a2bd9c424d020825bdf12dcf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "gpu": {
+      "depth_sensing_gpu_dataUnavailable.https.html": [
+       "018edf7693452d69753758dc0db8e25a36d8615c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_gpu_inactiveFrame.https.html": [
+       "6116f7a0414e578e88ada99508d67f8318578b8d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_gpu_incorrectUsage.https.html": [
+       "9fc2e6a5f83fd0bb1510492e2c1e05616170c062",
+       [
+        null,
+        {}
+       ]
+      ],
+      "depth_sensing_gpu_staleView.https.html": [
+       "ecd0d479f7aac7222d512edeafef9565993add1d",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     },
     "dom-overlay": {
      "ar_dom_overlay.https.html": [

@@ -2443,6 +2443,12 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color/xyz-001.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color/hwb-003.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] virtual/system-color-compute/external/wpt/css/css-color/xyz-004.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color/xyz-004.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] virtual/system-color-compute/external/wpt/css/css-color/hwb-003.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color/hwb-002.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/hwb-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/hwb-003.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-color/hwb-003.html [ Failure ]
