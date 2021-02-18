@@ -2070,13 +2070,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScript(
+      active_web_contents, "setMediaSessionActionHandler('skipad');"));
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('skipad');"));
-  base::RunLoop().RunUntilIdle();
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPlaying);
 
   // Simulates user clicking "Skip Ad" and check the handler function is called.
   window_controller()->SkipAd();
@@ -2134,13 +2135,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScript(
+      active_web_contents, "setMediaSessionActionHandler('nexttrack');"));
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('nexttrack');"));
-  base::RunLoop().RunUntilIdle();
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPlaying);
 
   // Simulates user clicking "Next Track" and check the handler function is
   // called.
@@ -2159,13 +2161,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScript(
+      active_web_contents, "setMediaSessionActionHandler('previoustrack');"));
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(
-      active_web_contents, "setMediaSessionActionHandler('previoustrack');"));
-  base::RunLoop().RunUntilIdle();
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPlaying);
 
   // Simulates user clicking "Previous Track" and check the handler function is
   // called.
@@ -2187,7 +2190,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  base::RunLoop().RunUntilIdle();
+  WaitForPlaybackState(active_web_contents,
+                       OverlayWindowViews::PlaybackState::kPlaying);
 
   content::MediaSession::Get(active_web_contents)
       ->Stop(content::MediaSession::SuspendType::kUI);
