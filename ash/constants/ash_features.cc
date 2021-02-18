@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace chromeos {
+namespace ash {
 namespace features {
 namespace {
 
@@ -896,16 +896,13 @@ bool ShouldUseBrowserSyncConsent() {
 
 bool ShouldUseV1DeviceSync() {
   return !ShouldUseV2DeviceSync() ||
-         !base::FeatureList::IsEnabled(
-             chromeos::features::kDisableCryptAuthV1DeviceSync);
+         !base::FeatureList::IsEnabled(features::kDisableCryptAuthV1DeviceSync);
 }
 
 bool ShouldUseV2DeviceSync() {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kCryptAuthV2Enrollment) &&
-         base::FeatureList::IsEnabled(
-             chromeos::features::kCryptAuthV2DeviceSync);
+  return base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment) &&
+         base::FeatureList::IsEnabled(features::kCryptAuthV2DeviceSync);
 }
 
 }  // namespace features
-}  // namespace chromeos
+}  // namespace ash

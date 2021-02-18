@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace chromeos {
+namespace ash {
 namespace features {
 
 // All features in alphabetical order. The features should be documented
@@ -394,14 +394,14 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 // Keep alphabetized.
 
 }  // namespace features
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace features {
-using namespace ::chromeos::features;
+using namespace ::ash::features;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_CONSTANTS_ASH_FEATURES_H_

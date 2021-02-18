@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 enum class DeviceType {
   kChromebase,
@@ -23,6 +23,14 @@ COMPONENT_EXPORT(ASH_CONSTANTS) DeviceType GetDeviceType();
 // Returns true if the device is Google branded.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGoogleBrandedDevice();
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// directory migration is finished.
+namespace chromeos {
+using ::ash::DeviceType;
+using ::ash::GetDeviceType;
+using ::ash::IsGoogleBrandedDevice;
 }  // namespace chromeos
 
 #endif  // ASH_CONSTANTS_DEVICETYPE_H_

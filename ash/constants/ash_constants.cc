@@ -6,10 +6,10 @@
 
 #define FPL FILE_PATH_LITERAL
 
-namespace chromeos {
+namespace ash {
 
 const base::FilePath::CharType kDriveCacheDirname[] = FPL("GCache");
 const base::FilePath::CharType kNssCertDbPath[] = FPL(".pki/nssdb/cert9.db");
 const base::FilePath::CharType kNssKeyDbPath[] = FPL(".pki/nssdb/key4.db");
 
-}  // namespace chromeos
+}  // namespace ash

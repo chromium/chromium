@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 namespace prefs {
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -66,6 +66,14 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDeviceSystemWideTracingEnabled[];
 
 }  // namespace prefs
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// directory migration is finished.
+namespace chromeos {
+namespace prefs {
+using namespace ::ash::prefs;
+}
 }  // namespace chromeos
 
 #endif  // ASH_CONSTANTS_ASH_PREF_NAMES_H_

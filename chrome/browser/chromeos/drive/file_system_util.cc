@@ -66,7 +66,7 @@ base::FilePath GetCacheRootPath(Profile* profile) {
   base::FilePath cache_base_path;
   chrome::GetUserCacheDirectory(profile->GetPath(), &cache_base_path);
   base::FilePath cache_root_path =
-      cache_base_path.Append(chromeos::kDriveCacheDirname);
+      cache_base_path.Append(ash::kDriveCacheDirname);
   static const base::FilePath::CharType kFileCacheVersionDir[] =
       FILE_PATH_LITERAL("v1");
   return cache_root_path.Append(kFileCacheVersionDir);

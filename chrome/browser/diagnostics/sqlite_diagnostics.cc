@@ -237,7 +237,7 @@ std::unique_ptr<DiagnosticsTest> MakeSqliteNssCertDbTest() {
   return std::make_unique<SqliteIntegrityTest>(
       SqliteIntegrityTest::REMOVE_IF_CORRUPT,
       DIAGNOSTICS_SQLITE_INTEGRITY_NSS_CERT_TEST,
-      home_dir.Append(chromeos::kNssCertDbPath));
+      home_dir.Append(ash::kNssCertDbPath));
 }
 
 std::unique_ptr<DiagnosticsTest> MakeSqliteNssKeyDbTest() {
@@ -246,7 +246,7 @@ std::unique_ptr<DiagnosticsTest> MakeSqliteNssKeyDbTest() {
   return std::make_unique<SqliteIntegrityTest>(
       SqliteIntegrityTest::REMOVE_IF_CORRUPT,
       DIAGNOSTICS_SQLITE_INTEGRITY_NSS_KEY_TEST,
-      home_dir.Append(chromeos::kNssKeyDbPath));
+      home_dir.Append(ash::kNssKeyDbPath));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -4,7 +4,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 
-namespace chromeos {
+namespace ash {
 namespace prefs {
 
 // Map of strings to values used for assistive input settings.
@@ -148,4 +148,4 @@ const char kDeviceSystemWideTracingEnabled[] =
     "device_system_wide_tracing_enabled";
 
 }  // namespace prefs
-}  // namespace chromeos
+}  // namespace ash

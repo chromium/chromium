@@ -12,7 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const char kDeviceTypeKey[] = "DEVICETYPE";
@@ -56,4 +56,4 @@ bool IsGoogleBrandedDevice() {
          board[0] == "samus";
 }
 
-}  // namespace chromeos
+}  // namespace ash

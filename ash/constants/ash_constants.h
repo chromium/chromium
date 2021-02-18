@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kDriveCacheDirname[];
@@ -19,6 +19,6 @@ extern const base::FilePath::CharType kNssCertDbPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kNssKeyDbPath[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONSTANTS_ASH_CONSTANTS_H_
