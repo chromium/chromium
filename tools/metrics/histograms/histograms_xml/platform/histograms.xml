@@ -843,7 +843,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.StatefulFreeSpace" units="MB"
-    expires_after="2021-04-01">
+    expires_after="2021-10-01">
   <owner>jamescook@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
