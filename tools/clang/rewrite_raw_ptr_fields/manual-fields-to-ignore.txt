@@ -175,37 +175,6 @@ device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, con
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::e
 
 #######
-# CheckedPtr2/MTECheckedPtr-specific sections
-#######
-
-# Populated manually - these pointers are assigned invalid address (with top
-# bits sets), which CheckedPtr is unable to handle, leading to run-time crashes.
-(anonymous namespace)::TlsVectorEntry::data
-blink::(anonymous namespace)::ThreadMarker::creating_thread_
-blink::ControlKey::name_
-performance_manager::frame_priority::BoostingVoteAggregator::Edge::src_
-performance_manager::frame_priority::BoostingVoteAggregator::Edge::dst_
-
-# Populated manually - these pointers crash due to a mismatching tag.
-# Under investigation.
-blink::NGPhysicalContainerFragment::buffer_
-blink::DisplayItem::client_
-cc::FrameSequenceMetrics::throughput_ukm_reporter_
-cc::(anonymous namespace)::RasterTaskImpl::tile_tracing_id_
-content::RenderViewImpl::webview_
-mojo::core::WatcherDispatcher::last_watch_to_block_arming_
-net::IOBuffer::data_
-safe_browsing::RemoteSafeBrowsingDatabaseManager::ClientRequest::client_
-
-# Populated manually - this pointer crashes, because assigned address appears
-# unallocated.
-x11::ReadBuffer::fds
-
-#######
-# End of CheckedPtr2/MTECheckedPtr-specific sections
-#######
-
-#######
 # BackupRefPtr-specific sections
 #######
 
