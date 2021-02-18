@@ -740,10 +740,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
   SendAppleEventToOpenUrlToAppController(simple);
 
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
   content::TestNavigationObserver event_navigation_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   event_navigation_observer.Wait();
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   EXPECT_EQ(simple,
             browser()
