@@ -258,6 +258,16 @@ class MetaBuildWrapper(object):
                            'newline.')
     subp.add_argument('--json-output',
                       help='Write errors to json.output')
+    # For more info about RTS, please see
+    # //docs/testing/regression-test-selection.md
+    subp.add_argument('--use-rts',
+                      action='store_true',
+                      default=False,
+                      help='whether or not to use regression test selection')
+    subp.add_argument('--rts-target-change-recall',
+                      type=float,
+                      help='how much safety is needed when selecting tests. '
+                      '0.0 is the lowest and 1.0 is the highest')
     subp.add_argument('path',
                       help='path to generate build into')
     subp.set_defaults(func=self.CmdGen)
@@ -445,7 +455,31 @@ class MetaBuildWrapper(object):
       self.WriteFile(expectation_file, json_s)
     return 0
 
+  def RtsSelect(self):
+    exe = self.PathJoin(self.chromium_src_dir, 'testing', 'rts', 'rts-chromium')
+    if self.platform == 'win32':
+      exe += '.exe'
+
+    args = [
+       exe, 'select',
+      '-model-dir', self.PathJoin(self.chromium_src_dir, 'testing', 'rts'), \
+      '-out', self.PathJoin(self.args.path, 'gen', 'rts'),
+      '-checkout', self.chromium_src_dir,
+    ]
+    if self.args.rts_target_change_recall:
+      if (self.args.rts_target_change_recall < 0
+          or self.args.rts_target_change_recall > 1):
+        self.WriteFailureAndRaise(
+            'rts-target-change-recall must be between (0 and 1]', None)
+      args += ['-target-change-recall', str(self.args.rts_target_change_recall)]
+
+    _, _, err = self.Run(args, force_verbose=False)
+    if err:
+      self.WriteFailureAndRaise(err, None)
+
   def CmdGen(self):
+    if self.args.use_rts:
+      self.RtsSelect()
     vals = self.Lookup()
     return self.RunGNGen(vals)
 
