@@ -1292,7 +1292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.KeyboardLock.MethodCalled" enum="KeyboardLockMethods"
-    expires_after="2021-03-31">
+    expires_after="2021-09-30">
   <owner>joedow@chromium.org</owner>
   <owner>garykac@chromium.org</owner>
   <summary>
