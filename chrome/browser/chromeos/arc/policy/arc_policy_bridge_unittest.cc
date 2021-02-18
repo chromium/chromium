@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_data_snapshotd_delegate.h"
-#include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"
 #include "chrome/browser/chromeos/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
@@ -749,7 +748,6 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   auto manager = std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
       profile()->GetTestingPrefService(),
       std::make_unique<arc::data_snapshotd::ArcDataSnapshotdDelegate>(),
-      std::make_unique<arc::data_snapshotd::ArcForceInstalledAppsTracker>(),
       base::DoNothing());
   EXPECT_TRUE(arc::data_snapshotd::ArcDataSnapshotdManager::Get());
   manager->set_state_for_testing(

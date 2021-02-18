@@ -8,14 +8,17 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"
+#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -43,6 +46,13 @@ constexpr char kArcPolicyValue2[] =
     "\"installType\":\"REQUIRED\","
     "}]}";
 
+constexpr char kComplianceReportEmptyJson[] = "{}";
+constexpr char kComplianceReportNonCompliantJson[] =
+    "{\"nonComplianceDetails\":"
+    "[{\"key\":\"value\"},{\"nonComplianceReason\":1}]}";
+constexpr char kComplianceReportCompliantJson[] =
+    "{\"nonComplianceDetails\":"
+    "[{\"key\":\"value\"},{\"nonComplianceReason\":\"value\"}]}";
 }  // namespace
 
 class ArcForceInstalledAppsTrackerTest : public testing::Test {
@@ -55,16 +65,20 @@ class ArcForceInstalledAppsTrackerTest : public testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+    policy_bridge_ =
+        std::make_unique<arc::ArcPolicyBridge>(profile_.get(), &arc_bridge_);
     arc_app_test_.SetUp(profile_.get());
-    tracker_ = ArcForceInstalledAppsTracker::CreateForTesting(prefs(),
-                                                              policy_service());
+    tracker_ = ArcForceInstalledAppsTracker::CreateForTesting(
+        prefs(), policy_service(), policy_bridge_.get());
   }
 
   void TearDown() override {
     arc_app_test_.TearDown();
+
+    tracker_.reset();
+    policy_bridge_.reset();
     profile_.reset();
     policy_map_.Clear();
-    tracker_.reset();
   }
 
   void InstallPackage(const std::string& package_name) {
@@ -83,46 +97,72 @@ class ArcForceInstalledAppsTrackerTest : public testing::Test {
                      base::Value(arc_policy_value), nullptr);
   }
 
+  void ReportCompliant() { ReportCompliance(kComplianceReportCompliantJson); }
+  void ReportCompliantEmpty() { ReportCompliance(kComplianceReportEmptyJson); }
+
+  void ReportNonCompliant() {
+    ReportCompliance(kComplianceReportNonCompliantJson);
+  }
+
   policy::PolicyMap& policy_map() { return policy_map_; }
   policy::MockPolicyService* policy_service() { return &policy_service_; }
+  arc::ArcPolicyBridge* arc_policy_bridge() { return policy_bridge_.get(); }
   ArcForceInstalledAppsTracker* tracker() { return tracker_.get(); }
 
  private:
+  void ReportCompliance(const std::string& compliance_json) {
+    base::RunLoop run_loop;
+    arc_policy_bridge()->ReportCompliance(
+        compliance_json,
+        base::BindLambdaForTesting(
+            [&run_loop](const std::string& response) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
   ArcAppListPrefs* prefs() { return arc_app_test_.arc_app_list_prefs(); }
   arc::mojom::AppHost* const app_host() { return prefs(); }
 
   content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestingProfile> profile_;
   ArcAppTest arc_app_test_;
   policy::MockPolicyService policy_service_;
+  arc::ArcBridgeService arc_bridge_;
+  std::unique_ptr<arc::ArcPolicyBridge> policy_bridge_;
   std::unique_ptr<ArcForceInstalledAppsTracker> tracker_;
   policy::PolicyMap policy_map_;
 };
 
-TEST_F(ArcForceInstalledAppsTrackerTest, InvalidUpdateCallback) {
+TEST_F(ArcForceInstalledAppsTrackerTest, InvalidCallbacks) {
   EXPECT_CALL(*policy_service(), AddObserver(_, _));
   EXPECT_CALL(*policy_service(), GetPolicies(_))
       .WillOnce(ReturnRef(policy_map()));
-  tracker()->StartTracking(base::NullCallback());
+  tracker()->StartTracking(base::NullCallback(), base::NullCallback());
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
-  tracker()->StopTracking();
 }
 
 TEST_F(ArcForceInstalledAppsTrackerTest, EmptyPolicy) {
   EXPECT_CALL(*policy_service(), AddObserver(_, _));
   EXPECT_CALL(*policy_service(), GetPolicies(_))
       .WillOnce(ReturnRef(policy_map()));
+  bool is_policy_compliant = false;
   base::RunLoop run_loop;
   tracker()->StartTracking(base::BindLambdaForTesting([&run_loop](int percent) {
-    // All tracking apps are installed.
-    EXPECT_EQ(100, percent);
-    run_loop.Quit();
-  }));
+                             // All tracking apps are installed.
+                             EXPECT_EQ(100, percent);
+                             run_loop.Quit();
+                           }),
+                           base::BindLambdaForTesting([&is_policy_compliant]() {
+                             is_policy_compliant = true;
+                           }));
   run_loop.Run();
 
+  EXPECT_FALSE(is_policy_compliant);
+
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
-  tracker()->StopTracking();
+  ReportCompliantEmpty();
+  EXPECT_TRUE(is_policy_compliant);
 }
 
 TEST_F(ArcForceInstalledAppsTrackerTest, Basic) {
@@ -139,7 +179,8 @@ TEST_F(ArcForceInstalledAppsTrackerTest, Basic) {
         EXPECT_EQ(package_number * 50, percent);
         package_number++;
         closure.Run();
-      }));
+      }),
+      base::DoNothing());
 
   // Install not required package.
   InstallPackage(kFakePackageName);
@@ -150,7 +191,6 @@ TEST_F(ArcForceInstalledAppsTrackerTest, Basic) {
   run_loop.Run();
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
-  tracker()->StopTracking();
 }
 
 TEST_F(ArcForceInstalledAppsTrackerTest, AlreadyInstalledPackages) {
@@ -170,14 +210,14 @@ TEST_F(ArcForceInstalledAppsTrackerTest, AlreadyInstalledPackages) {
         EXPECT_EQ(package_number * 50, percent);
         package_number++;
         closure.Run();
-      }));
+      }),
+      base::DoNothing());
 
   InstallPackage(kBasicPackageName2);
 
   run_loop.Run();
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
-  tracker()->StopTracking();
 }
 
 // Tests the case when tracking packages list changes.
@@ -193,12 +233,14 @@ TEST_F(ArcForceInstalledAppsTrackerTest, OnPolicyUpdated) {
       base::BarrierClosure(4, run_loop.QuitClosure());
   int package_number = 0;
   int max_package_number = 2;
-  tracker()->StartTracking(base::BindLambdaForTesting(
-      [&closure, &package_number, &max_package_number](int percent) {
-        EXPECT_EQ(package_number * 100 / max_package_number, percent);
-        package_number++;
-        closure.Run();
-      }));
+  tracker()->StartTracking(
+      base::BindLambdaForTesting(
+          [&closure, &package_number, &max_package_number](int percent) {
+            EXPECT_EQ(package_number * 100 / max_package_number, percent);
+            package_number++;
+            closure.Run();
+          }),
+      base::DoNothing());
 
   InstallPackage(kBasicPackageName2);
 
@@ -217,7 +259,6 @@ TEST_F(ArcForceInstalledAppsTrackerTest, OnPolicyUpdated) {
   run_loop.Run();
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
-  tracker()->StopTracking();
 }
 
 // Tests the uninstall tracking package scenario.
@@ -235,7 +276,8 @@ TEST_F(ArcForceInstalledAppsTrackerTest, UninstalledPackages) {
         EXPECT_EQ(package_number * 100, percent);
         package_number++;
         closure.Run();
-      }));
+      }),
+      base::DoNothing());
 
   InstallPackage(kBasicPackageName);
   package_number = 0;
@@ -245,7 +287,46 @@ TEST_F(ArcForceInstalledAppsTrackerTest, UninstalledPackages) {
   run_loop.Run();
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
-  tracker()->StopTracking();
+}
+
+TEST_F(ArcForceInstalledAppsTrackerTest, PolicyCompliance) {
+  EXPECT_CALL(*policy_service(), AddObserver(_, _));
+  EXPECT_CALL(*policy_service(), GetPolicies(_))
+      .WillOnce(ReturnRef(policy_map()));
+  bool is_policy_compliant = false;
+  tracker()->StartTracking(base::DoNothing(),
+                           base::BindLambdaForTesting([&is_policy_compliant]() {
+                             is_policy_compliant = true;
+                           }));
+
+  EXPECT_FALSE(is_policy_compliant);
+
+  ReportNonCompliant();
+  EXPECT_FALSE(is_policy_compliant);
+
+  EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
+  ReportCompliant();
+  EXPECT_TRUE(is_policy_compliant);
+
+  // Report compliance second time. Ignore.
+  is_policy_compliant = false;
+  ReportCompliant();
+  EXPECT_FALSE(is_policy_compliant);
+}
+
+TEST_F(ArcForceInstalledAppsTrackerTest, PolicyCompliantOnStart) {
+  ReportCompliant();
+
+  EXPECT_CALL(*policy_service(), AddObserver(_, _));
+  EXPECT_CALL(*policy_service(), GetPolicies(_))
+      .WillOnce(ReturnRef(policy_map()));
+  EXPECT_CALL(*policy_service(), RemoveObserver(_, _));
+  base::RunLoop run_loop;
+  tracker()->StartTracking(
+      base::DoNothing(),
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+
+  run_loop.Run();
 }
 
 }  // namespace data_snapshotd

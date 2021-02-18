@@ -7,9 +7,14 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/json/json_reader.h"
+#include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -84,6 +89,32 @@ class ArcForceInstalledAppsObserver : public ArcAppListPrefs::Observer,
   base::flat_map<std::string, bool> tracking_packages_;
   // Number of installed packages among tracking packages.
   int installed_packages_num_ = 0;
+};
+
+class PolicyComplianceObserver : public arc::ArcPolicyBridge::Observer {
+ public:
+  PolicyComplianceObserver(arc::ArcPolicyBridge* arc_policy_bridge,
+                           base::OnceClosure finish_callback);
+  PolicyComplianceObserver& operator=(const PolicyComplianceObserver&) = delete;
+  PolicyComplianceObserver(const PolicyComplianceObserver&) = delete;
+
+  ~PolicyComplianceObserver() override;
+
+  // arc::ArcPolicyBridge::Observer override:
+  void OnComplianceReportReceived(
+      const base::Value* compliance_report) override;
+
+ private:
+  // Parses initial compliance report JSON.
+  void ProcessInitialComplianceReport(std::string last_report);
+
+  // Not owned singleton. Initialized in ctor.
+  arc::ArcPolicyBridge* arc_policy_bridge_ = nullptr;
+
+  // This callback is invoked once ARC is compliant with ARC policy.
+  base::OnceClosure finish_callback_;
+
+  base::WeakPtrFactory<PolicyComplianceObserver> weak_ptr_factory_{this};
 };
 
 ArcForceInstalledAppsObserver::ArcForceInstalledAppsObserver(
@@ -189,6 +220,60 @@ int ArcForceInstalledAppsObserver::CalculateInstallationProgress() {
              : installed_packages_num_ * 100 / tracking_packages_.size();
 }
 
+PolicyComplianceObserver::PolicyComplianceObserver(
+    arc::ArcPolicyBridge* arc_policy_bridge,
+    base::OnceClosure finish_callback)
+    : arc_policy_bridge_(arc_policy_bridge),
+      finish_callback_(std::move(finish_callback)) {
+  DCHECK(arc_policy_bridge);
+  arc_policy_bridge_->AddObserver(this);
+
+  // Check last compliance report.
+  auto last_report = arc_policy_bridge->get_arc_policy_compliance_report();
+  if (last_report.empty())
+    return;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PolicyComplianceObserver::ProcessInitialComplianceReport,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(last_report)));
+}
+
+PolicyComplianceObserver::~PolicyComplianceObserver() {
+  arc_policy_bridge_->RemoveObserver(this);
+}
+
+void PolicyComplianceObserver::OnComplianceReportReceived(
+    const base::Value* compliance_report) {
+  const base::Value* const details = compliance_report->FindKeyOfType(
+      "nonComplianceDetails", base::Value::Type::LIST);
+  if (!details) {
+    // ARC policy compliant.
+    if (!finish_callback_.is_null())
+      std::move(finish_callback_).Run();
+    return;
+  }
+
+  std::set<std::string> pending_app_installs;
+  for (const auto& detail : details->GetList()) {
+    const base::Value* const reason =
+        detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
+    // Not compliant with ARC policy.
+    if (reason)
+      return;
+  }
+  if (!finish_callback_.is_null())
+    std::move(finish_callback_).Run();
+}
+
+void PolicyComplianceObserver::ProcessInitialComplianceReport(
+    std::string last_report) {
+  base::Optional<base::Value> last_report_value =
+      base::JSONReader::Read(last_report);
+  if (!last_report_value.has_value())
+    return;
+  OnComplianceReportReceived(&last_report_value.value());
+}
+
 ArcForceInstalledAppsTracker::ArcForceInstalledAppsTracker() = default;
 
 ArcForceInstalledAppsTracker::~ArcForceInstalledAppsTracker() = default;
@@ -197,30 +282,38 @@ ArcForceInstalledAppsTracker::~ArcForceInstalledAppsTracker() = default;
 std::unique_ptr<ArcForceInstalledAppsTracker>
 ArcForceInstalledAppsTracker::CreateForTesting(
     ArcAppListPrefs* prefs,
-    policy::PolicyService* policy_service) {
-  return base::WrapUnique(
-      new ArcForceInstalledAppsTracker(prefs, policy_service));
+    policy::PolicyService* policy_service,
+    arc::ArcPolicyBridge* arc_policy_bridge) {
+  return base::WrapUnique(new ArcForceInstalledAppsTracker(
+      prefs, policy_service, arc_policy_bridge));
 }
 
 void ArcForceInstalledAppsTracker::StartTracking(
-    base::RepeatingCallback<void(int)> update_callback) {
-  DCHECK(!observer_);
-  Initialize();
-  observer_ = std::make_unique<ArcForceInstalledAppsObserver>(
-      prefs_, policy_service_, std::move(update_callback));
-}
+    base::RepeatingCallback<void(int)> update_callback,
+    base::OnceClosure finish_callback) {
+  DCHECK(!apps_observer_);
+  DCHECK(!policy_compliance_observer_);
 
-void ArcForceInstalledAppsTracker::StopTracking() {
-  observer_.reset();
+  Initialize();
+  apps_observer_ = std::make_unique<ArcForceInstalledAppsObserver>(
+      prefs_, policy_service_, std::move(update_callback));
+  policy_compliance_observer_ = std::make_unique<PolicyComplianceObserver>(
+      arc_policy_bridge_,
+      base::BindOnce(&ArcForceInstalledAppsTracker::OnTrackingFinished,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(finish_callback)));
 }
 
 ArcForceInstalledAppsTracker::ArcForceInstalledAppsTracker(
     ArcAppListPrefs* prefs,
-    policy::PolicyService* policy_service)
-    : prefs_(prefs), policy_service_(policy_service) {}
+    policy::PolicyService* policy_service,
+    arc::ArcPolicyBridge* arc_policy_bridge)
+    : prefs_(prefs),
+      policy_service_(policy_service),
+      arc_policy_bridge_(arc_policy_bridge) {}
 
 void ArcForceInstalledAppsTracker::Initialize() {
-  if (prefs_ && policy_service_)
+  if (prefs_ && policy_service_ && arc_policy_bridge_)
     return;
   auto* profile = GetProfile();
   DCHECK(profile);
@@ -231,6 +324,16 @@ void ArcForceInstalledAppsTracker::Initialize() {
   DCHECK(profile_policy_connector);
 
   policy_service_ = profile_policy_connector->policy_service();
+
+  arc_policy_bridge_ = arc::ArcPolicyBridge::GetForBrowserContext(profile);
+}
+
+void ArcForceInstalledAppsTracker::OnTrackingFinished(
+    base::OnceClosure finish_callback) {
+  apps_observer_.reset();
+  policy_compliance_observer_.reset();
+
+  std::move(finish_callback).Run();
 }
 
 }  // namespace data_snapshotd

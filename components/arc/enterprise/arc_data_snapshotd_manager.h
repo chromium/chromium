@@ -76,6 +76,9 @@ class ArcDataSnapshotdManager final
     // Creates a snapshot reboot notification.
     virtual std::unique_ptr<ArcSnapshotRebootNotification>
     CreateRebootNotification() = 0;
+
+    // Creates an ARC apps tracker.
+    virtual std::unique_ptr<ArcAppsTracker> CreateAppsTracker() = 0;
   };
 
   // This class operates with a snapshot related info either last or
@@ -214,7 +217,6 @@ class ArcDataSnapshotdManager final
 
   ArcDataSnapshotdManager(PrefService* local_state,
                           std::unique_ptr<Delegate> delegate,
-                          std::unique_ptr<ArcAppsTracker> apps_tracker,
                           base::OnceClosure attempt_user_exit_callback);
   ArcDataSnapshotdManager(const ArcDataSnapshotdManager&) = delete;
   ArcDataSnapshotdManager& operator=(const ArcDataSnapshotdManager&) = delete;
@@ -247,6 +249,7 @@ class ArcDataSnapshotdManager final
   void OnSnapshotSessionStopped() override;
   void OnSnapshotSessionFailed() override;
   void OnSnapshotAppInstalled(int percent) override;
+  void OnSnapshotSessionPolicyCompliant() override;
 
   static void set_snapshot_enabled_for_testing(bool enabled) {
     is_snapshot_enabled_for_testing_ = enabled;
@@ -345,7 +348,6 @@ class ArcDataSnapshotdManager final
   Snapshot snapshot_;
 
   std::unique_ptr<Delegate> delegate_;
-  std::unique_ptr<ArcAppsTracker> apps_tracker_;
   std::unique_ptr<ArcDataSnapshotdBridge> bridge_;
   std::unique_ptr<ArcDataRemoveRequestedPrefHandler>
       data_remove_requested_handler_;

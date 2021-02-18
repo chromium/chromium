@@ -318,17 +318,14 @@ ArcDataSnapshotdManager::Snapshot::Snapshot(
 ArcDataSnapshotdManager::ArcDataSnapshotdManager(
     PrefService* local_state,
     std::unique_ptr<Delegate> delegate,
-    std::unique_ptr<ArcAppsTracker> apps_tracker,
     base::OnceClosure attempt_user_exit_callback)
     : policy_service_{local_state},
       snapshot_{local_state},
       delegate_(std::move(delegate)),
-      apps_tracker_(std::move(apps_tracker)),
       attempt_user_exit_callback_(std::move(attempt_user_exit_callback)) {
   DCHECK(!g_arc_data_snapshotd_manager);
   DCHECK(local_state);
   DCHECK(delegate_);
-  DCHECK(apps_tracker_);
 
   g_arc_data_snapshotd_manager = this;
 
@@ -491,6 +488,23 @@ void ArcDataSnapshotdManager::OnSnapshotAppInstalled(int percent) {
   if (state_ != State::kMgsLaunched)
     return;
   Update(percent);
+}
+
+void ArcDataSnapshotdManager::OnSnapshotSessionPolicyCompliant() {
+  if (state_ != State::kMgsLaunched)
+    return;
+  // Stop tracking apps, since ARC is compliant with policy.
+  // That means that 100% of required apps got installed and ARC is fully
+  // prepared to be snapshotted.
+  // If the policy changes or an app gets uninstalled, the compliance with the
+  // required apps list will be fixed automatically on the next session
+  // startup.
+  session_controller_->RemoveObserver(this);
+  session_controller_.reset();
+
+  delegate_->RequestStopArcInstance(
+      base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
@@ -711,7 +725,7 @@ void ArcDataSnapshotdManager::OnKeyPairGenerated(bool success) {
     VLOG(1) << "Managed Guest Session is ready to be started with blocked UI.";
     state_ = State::kMgsToLaunch;
     session_controller_ =
-        SnapshotSessionController::Create(apps_tracker_.get());
+        SnapshotSessionController::Create(delegate_->CreateAppsTracker());
     session_controller_->AddObserver(this);
 
     // Move last to previous snapshot:
@@ -768,20 +782,6 @@ void ArcDataSnapshotdManager::Update(int percent) {
 
   EnsureDaemonStarted(base::BindOnce(&ArcDataSnapshotdManager::UpdateUi,
                                      weak_ptr_factory_.GetWeakPtr(), percent));
-
-  if (percent == 100) {
-    // Stop tracking apps, 100% of required apps got installed.
-    // The snapshot can be taken right away.
-    // If the policy changes or an app gets uninstalled, the compliance with the
-    // required apps list will be fixed automatically on the next session
-    // startup.
-    session_controller_->RemoveObserver(this);
-    session_controller_.reset();
-
-    delegate_->RequestStopArcInstance(
-        base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
@@ -847,7 +847,8 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
   }
   EnsureDaemonStopped(base::DoNothing());
 
-  session_controller_ = SnapshotSessionController::Create(apps_tracker_.get());
+  session_controller_ =
+      SnapshotSessionController::Create(delegate_->CreateAppsTracker());
   session_controller_->AddObserver(this);
 
   std::move(callback).Run();

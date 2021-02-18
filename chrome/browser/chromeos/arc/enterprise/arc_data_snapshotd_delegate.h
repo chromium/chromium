@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
+#include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/enterprise/arc_snapshot_reboot_notification.h"
 #include "components/arc/session/arc_stop_reason.h"
@@ -34,6 +35,7 @@ class ArcDataSnapshotdDelegate : public ArcDataSnapshotdManager::Delegate,
   PrefService* GetProfilePrefService() override;
   std::unique_ptr<ArcSnapshotRebootNotification> CreateRebootNotification()
       override;
+  std::unique_ptr<ArcAppsTracker> CreateAppsTracker() override;
 
   // arc::ArcSessionManagerObserver overrides:
   void OnArcSessionStopped(arc::ArcStopReason reason) override;

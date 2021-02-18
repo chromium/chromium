@@ -78,6 +78,10 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
     return std::make_unique<FakeSnapshotRebootNotification>();
   }
 
+  std::unique_ptr<ArcAppsTracker> CreateAppsTracker() override {
+    return std::make_unique<FakeAppsTracker>();
+  }
+
   bool stopped_callback_num() const { return stopped_callback_num_; }
 
  private:
@@ -88,9 +92,10 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
 
 class FakeSnapshotSessionController : public SnapshotSessionController {
  public:
-  explicit FakeSnapshotSessionController(ArcAppsTracker* apps_tracker)
-      : apps_tracker_(apps_tracker) {}
-  ~FakeSnapshotSessionController() override { apps_tracker_->StopTracking(); }
+  explicit FakeSnapshotSessionController(
+      std::unique_ptr<ArcAppsTracker> apps_tracker)
+      : apps_tracker_(std::move(apps_tracker)) {}
+  ~FakeSnapshotSessionController() override = default;
 
   void AddObserver(Observer* observer) override {
     EXPECT_FALSE(observer_);
@@ -102,9 +107,13 @@ class FakeSnapshotSessionController : public SnapshotSessionController {
   }
 
   void StartSession() {
-    apps_tracker_->StartTracking(base::BindRepeating(
-        &FakeSnapshotSessionController::NotifySnapshotAppInstalled,
-        base::Unretained(this)));
+    apps_tracker_->StartTracking(
+        base::BindRepeating(
+            &FakeSnapshotSessionController::NotifySnapshotAppInstalled,
+            base::Unretained(this)),
+        base::BindOnce(
+            &FakeSnapshotSessionController::NotifySnapshotPolicyCompliant,
+            base::Unretained(this)));
     NotifySnapshotSessionStarted();
   }
 
@@ -132,9 +141,13 @@ class FakeSnapshotSessionController : public SnapshotSessionController {
     EXPECT_TRUE(observer_);
     observer_->OnSnapshotAppInstalled(percent);
   }
+  void NotifySnapshotPolicyCompliant() {
+    EXPECT_TRUE(observer_);
+    observer_->OnSnapshotSessionPolicyCompliant();
+  }
 
+  std::unique_ptr<ArcAppsTracker> apps_tracker_;
   // Owned by manager.
-  ArcAppsTracker* const apps_tracker_;
   Observer* observer_ = nullptr;
 };
 
@@ -204,8 +217,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   ArcDataSnapshotdManager* CreateManager(
       base::OnceClosure attempt_exit_callback = base::DoNothing()) {
     manager_ = std::make_unique<ArcDataSnapshotdManager>(
-        local_state(), MakeDelegate(), MakeAppsTracker(),
-        std::move(attempt_exit_callback));
+        local_state(), MakeDelegate(), std::move(attempt_exit_callback));
     manager_->set_session_controller_for_testing(MakeSessionController());
     session_controller_->AddObserver(manager_.get());
     return manager_.get();
@@ -240,11 +252,6 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   void ExpectStartTrackingApps() {
     EXPECT_EQ(1, apps_tracker()->start_tracking_num());
     EXPECT_FALSE(apps_tracker()->update_callback().is_null());
-  }
-
-  void ExpectStopTrackingApps() {
-    EXPECT_EQ(1, apps_tracker()->stop_tracking_num());
-    EXPECT_TRUE(apps_tracker()->update_callback().is_null());
   }
 
   void LoginAsPublicSession() {
@@ -305,7 +312,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
 
   std::unique_ptr<FakeSnapshotSessionController> MakeSessionController() {
     auto session_controller =
-        std::make_unique<FakeSnapshotSessionController>(apps_tracker());
+        std::make_unique<FakeSnapshotSessionController>(MakeAppsTracker());
     session_controller_ = session_controller.get();
     return session_controller;
   }
@@ -569,15 +576,22 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotSuccess) {
   EXPECT_TRUE(manager->bridge());
 
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
+  // Installed 100% of tracking apps.
+  apps_tracker()->update_callback().Run(100 /* percent */);
+  // Need to run until idle to ensure D-Bus bridge is set up and available.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(manager->bridge());
+
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
+
   // Expect to stop ARC.
   // Expect daemon to stop once the snapshot is taken.
   ExpectStopDaemon(true /* success */);
-  // Finished ARC tracking.
-  apps_tracker()->update_callback().Run(100);
+  // Finish ARC tracking.
+  std::move(apps_tracker()->finish_callback()).Run();
   // Attempt user exit callback must be called.
   run_loop.Run();
 
-  ExpectStopTrackingApps();
   EXPECT_EQ(1, delegate()->stopped_callback_num());
 
   CheckSnapshots(1 /* expected_snapshots_number */,
@@ -603,12 +617,11 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotDataRemoval) {
   ExpectStartTrackingApps();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
   RequestArcDataRemoval();
-  // Installed 10% of tracking apps.
-  apps_tracker()->update_callback().Run(100 /* percent */);
+  // ARC snapshot is compliant with policy.
+  std::move(apps_tracker()->finish_callback()).Run();
   // Finished ARC tracking.
   run_loop.Run();
 
-  ExpectStopTrackingApps();
   EXPECT_EQ(1, delegate()->stopped_callback_num());
   CheckSnapshots(0 /* expected_snapshots_number */,
                  false /* expected_blocked_ui_mode */);
@@ -639,7 +652,6 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotMgsFailure) {
 
   // Attempt user exit callback must be called.
   run_loop.Run();
-  ExpectStopTrackingApps();
   // No ARC stop callback is called, because of invalid state.
   EXPECT_EQ(0, delegate()->stopped_callback_num());
   CheckSnapshots(0 /* expected_snapshots_number */,
