@@ -90,11 +90,10 @@ source_set("clients") {
   }
   if (is_win) {
     sources += [
-      # TODO(frankli): s/windows/win for consistency.
-      "windows/media_foundation_renderer_client.cc",
-      "windows/media_foundation_renderer_client.h",
-      "windows/media_foundation_renderer_client_factory.cc",
-      "windows/media_foundation_renderer_client_factory.h",
+      "win/media_foundation_renderer_client.cc",
+      "win/media_foundation_renderer_client.h",
+      "win/media_foundation_renderer_client_factory.cc",
+      "win/media_foundation_renderer_client_factory.h",
     ]
   }
 }

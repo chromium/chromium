@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/clients/windows/media_foundation_renderer_client.h"
+#include "media/mojo/clients/win/media_foundation_renderer_client.h"
 
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"

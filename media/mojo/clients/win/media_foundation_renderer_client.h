@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MOJO_CLIENTS_WINDOWS_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
-#define MEDIA_MOJO_CLIENTS_WINDOWS_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
+#ifndef MEDIA_MOJO_CLIENTS_WIN_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
+#define MEDIA_MOJO_CLIENTS_WIN_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -149,4 +149,4 @@ class MediaFoundationRendererClient
 
 }  // namespace media
 
-#endif  // MEDIA_MOJO_CLIENTS_WINDOWS_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
+#endif  // MEDIA_MOJO_CLIENTS_WIN_MEDIA_FOUNDATION_RENDERER_CLIENT_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/clients/windows/media_foundation_renderer_client_factory.h"
+#include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
 
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
-#include "media/mojo/clients/windows/media_foundation_renderer_client.h"
+#include "media/mojo/clients/win/media_foundation_renderer_client.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 
 namespace media {
