@@ -170,6 +170,26 @@ if (enable_chrome_android_internal) {
       "//clank/android_webview:system_webview_google_apk",
     ]
   }
+
+  generate_wrapper("run_weblayer_shell_trichrome_google") {
+    testonly = true
+    wrapper_script = "$root_out_dir/bin/run_weblayer_shell_trichrome_google"
+    executable = "//weblayer/tools/run_weblayer_shell.py"
+    executable_args = [
+      "--shell-apk-path",
+      "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
+      "--support-apk-path",
+      "@WrappedPath(apks/TrichromeLibraryGoogle.apk)",
+      "--switch-webview-to",
+      "@WrappedPath(apks/TrichromeWebViewGoogle.apk)",
+    ]
+
+    deps = [
+      ":weblayer_shell_system_webview_apk",
+      "//clank/android_webview:trichrome_webview_google_apk",
+      "//clank/java:trichrome_library_google_apk",
+    ]
+  }
 }
 
 generate_wrapper("run_weblayer_shell_webview") {
