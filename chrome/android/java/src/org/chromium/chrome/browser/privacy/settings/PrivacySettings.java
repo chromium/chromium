@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
@@ -78,7 +79,7 @@ public class PrivacySettings
             }
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)) {
+        if (PrivacySandboxBridge.isPrivacySandboxSettingsFunctional()) {
             findPreference(PREF_PRIVACY_SANDBOX)
                     .setSummary(PrivacySandboxSettingsFragment.getStatusString(getContext()));
         } else {

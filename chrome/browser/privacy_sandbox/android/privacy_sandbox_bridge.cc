@@ -7,7 +7,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxFunctional(
+static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxSettingsFunctional(
     JNIEnv* env) {
   return PrivacySandboxSettingsFactory::GetForProfile(
              ProfileManager::GetActiveUserProfile())
