@@ -360,15 +360,8 @@ struct BASE_EXPORT PartitionRoot {
     // need to allocate a bunch of system pages more around the payload:
     // - The first few system pages are the partition page in which the super
     // page metadata is stored.
-    // - We add a trailing guard page on 32-bit (on 64-bit we rely on the
-    // massive address space plus randomization instead; additionally GigaCage
-    // guarantees that the region is followed by region with a preceding guard
-    // page or inaccessible in the direct map-pool).
-    size_t ret = PartitionPageSize();
-#if !defined(PA_HAS_64_BITS_POINTERS)
-    ret += SystemPageSize();
-#endif
-    return ret;
+    // - We add a trailing guard page (one system page will suffice).
+    return PartitionPageSize() + SystemPageSize();
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t

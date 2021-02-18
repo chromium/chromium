@@ -109,7 +109,26 @@ struct BackupRefPtrImpl {
   static ALWAYS_INLINE bool IsSupportedAndNotNull(void* ptr) {
 #if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
     // This covers the nullptr case, as address 0 is never in GigaCage.
-    return IsManagedByPartitionAllocNormalBuckets(ptr);
+    bool ret = IsManagedByPartitionAllocNormalBuckets(ptr);
+
+    // There may be pointers immediately after the allocation, e.g.
+    //   CheckedPtr<T> ptr = AllocateNotFromPartitionAlloc(X * sizeof(T));
+    //   for (size_t i = 0; i < X; i++) { ptr++; }
+    // Such pointers are *not* at risk of accidentally falling into normal
+    // buckets, because:
+    // 1) On 64-bit systems, normal buckets are preceded by direct map.
+    // 2) On 32-bit systems, the guard pages and metadata of normal bucket super
+    //    pages are not considered to be part of normal buckets.
+    //
+    // This allows us to make a stronger assertion that if
+    // IsManagedByPartitionAllocNormalBuckets returns true for a valid pointer,
+    // it must be at least partition page away from the beginning of a super
+    // page.
+    if (ret) {
+      DCHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
+             PartitionPageSize());
+    }
+    return ret;
 #else
     // There is a problem on 32-bit systems, where the fake "GigaCage" has many
     // normal bucket pool regions spread throughout the address space. A pointer

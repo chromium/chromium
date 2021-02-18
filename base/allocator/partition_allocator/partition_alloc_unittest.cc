@@ -21,6 +21,7 @@
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/partition_alloc_buildflags.h"
@@ -2834,10 +2835,8 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
     size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
     ptr = root.Alloc(huge_size - kExtraAllocSize, type_name);
     expected_committed_size += aligned_size;
-    size_t surrounding_pages_size = PartitionPageSize();
-#if !defined(PA_HAS_64_BITS_POINTERS)
-    surrounding_pages_size += SystemPageSize();
-#endif
+    size_t surrounding_pages_size =
+        PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize();
     size_t alignment = PageAllocationGranularity();
 #if defined(PA_HAS_64_BITS_POINTERS)
     if (root.UsesGigaCage())

@@ -95,7 +95,6 @@ class BASE_EXPORT PartitionAddressSpace {
   // precede normal bucket pool. This is to prevent a pointer immediately past a
   // non-GigaCage allocation from falling into the normal bucket pool, thus
   // triggering BackupRefPtr mechanism and likely crashing.
-  // TODO(bartekn): Add a guard page at the end of direct map allocations.
 
   static constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
 
