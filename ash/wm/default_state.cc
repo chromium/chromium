@@ -11,6 +11,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -348,6 +349,10 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     }
   }
 
+  const WMEventType type = event->type();
+  if (type == WM_EVENT_SNAP_LEFT || type == WM_EVENT_SNAP_RIGHT)
+    HandleWindowSnapping(window_state, type);
+
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
     gfx::Rect snapped_bounds = GetSnappedWindowBoundsInParent(
         window_state->window(), event->type() == WM_EVENT_SNAP_LEFT
@@ -355,11 +360,6 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
                                     : WindowStateType::kRightSnapped);
     window_state->SetBoundsDirectAnimated(snapped_bounds);
     return;
-  }
-
-  if (event->type() == WM_EVENT_SNAP_LEFT ||
-      event->type() == WM_EVENT_SNAP_RIGHT) {
-    window_state->set_bounds_changed_by_user(true);
   }
 
   EnterToNextState(window_state, next_state_type);

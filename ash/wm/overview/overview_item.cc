@@ -922,8 +922,14 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
   if (!prepared_for_overview_)
     return;
 
-  // Do not keep the overview bounds if we're shutting down.
+  // Do not update the overview bounds if we're shutting down.
   if (!Shell::Get()->overview_controller()->InOverviewSession())
+    return;
+
+  // Do not update the overview item if the window is to be snapped into split
+  // view. It will be removed from overview soon and will update overview grid
+  // at that moment.
+  if (SplitViewController::Get(window)->IsWindowInTransitionalState(window))
     return;
 
   // The drop target will get its bounds set as opposed to its transform

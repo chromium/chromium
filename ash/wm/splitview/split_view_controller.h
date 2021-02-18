@@ -15,6 +15,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_observer.h"
+#include "ash/wm/wm_event.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -139,18 +140,31 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // See also the |DCHECK|s in |SnapWindow|.
   bool CanSnapWindow(aura::Window* window) const;
 
-  // Snaps window to left/right. It will try to remove |window| from the
-  // overview window grid first before snapping it if |window| is currently
-  // showing in the overview window grid. We'll add a finishing touch to the
-  // snap animation of |window| if split view mode is not already active, and if
-  // |window| is not minimized and has an non-identity transform. If
-  // |activate_window| is true, |window| will be activated after being snapped
-  // in splitview. Please note if |activate_window| is false, it's still
+  // Snap |window| in the split view at |snap_position|. It will send snap
+  // WMEvent to |window| and rely on WindowState to do the actual work to
+  // change window state and bounds. Note this function does not guarantee
+  // |window| can be snapped in the split view (e.g., an ARC++ window may
+  // decide to ignore the state change request), and split view state will only
+  // be updated after the window state is changed to the desired snap window
+  // state. If |activate_window| is true, |window| will be activated after being
+  // snapped in splitview. Please note if |activate_window| is false, it's still
   // possible that |window| will be activated after being snapped, see
   // |to_be_activated_window_| for details.
   void SnapWindow(aura::Window* window,
                   SnapPosition snap_position,
                   bool activate_window = false);
+
+  // This is called by WindowState::State when receiving a snap WMEvent (i.e.,
+  // WM_EVENT_SNAP_LEFT or WM_EVENT_SNAP_RIGHT). SplitViewController will decide
+  // if this window needs to be snapped in split view.
+  void OnWindowSnapWMEvent(aura::Window* window, WMEventType event_type);
+
+  // Attaches the to-be-snapped |window| to split view at |snap_position|. It
+  // will try to remove |window| from the overview window grid first if |window|
+  // is currently showing in the overview window grid. We'll add a finishing
+  // touch to the snap animation of |window| if split view mode is not already
+  // active, and if |window| is not minimized and has an non-identity transform.
+  void AttachSnappingWindow(aura::Window* window, SnapPosition snap_position);
 
   // Swaps the left and right windows. This will do nothing if one of the
   // windows is not snapped.
@@ -282,6 +296,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   class TabDraggedWindowObserver;
   class DividerSnapAnimation;
   class AutoSnapController;
+  class ToBeSnappedWindowsObserver;
 
   // Reason that a snapped window is detached from the splitview.
   enum class WindowDetachedReason {
@@ -433,12 +448,19 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewController::SnapPosition ComputeSnapPosition(
       const gfx::Point& last_location_in_screen);
 
+  // Do the split divider spawn animation. It will add a finishing touch to the
+  // |window| animation that generally accommodates snapping by dragging.
+  void DoSplitDividerSpawnAnimation(aura::Window* window);
+
   // Root window the split view is in.
   aura::Window* root_window_;
 
   // The current left/right snapped window.
   aura::Window* left_window_ = nullptr;
   aura::Window* right_window_ = nullptr;
+
+  // Observe the windows that are to be snapped in split screen.
+  std::unique_ptr<ToBeSnappedWindowsObserver> to_be_snapped_windows_observer_;
 
   // Split view divider widget. Only exist in tablet splitview mode. It's a
   // black bar stretching from one edge of the screen to the other, containing a

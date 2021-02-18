@@ -324,7 +324,8 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickCaptionTogglesMaximize) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize |
+                          aura::client::kResizeBehaviorCanResize);
 
   WindowState* window_state = WindowState::Get(window.get());
   gfx::Rect restore_bounds = window->bounds();

@@ -111,12 +111,12 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     case WM_EVENT_SNAP_LEFT:
     case WM_EVENT_SNAP_RIGHT: {
       if (window_state->CanSnap()) {
+        HandleWindowSnapping(window_state, event->type());
         // Get the desired window bounds for the snap state.
         gfx::Rect bounds = GetSnappedWindowBoundsInParent(
             window, event->type() == WM_EVENT_SNAP_LEFT
                         ? WindowStateType::kLeftSnapped
                         : WindowStateType::kRightSnapped);
-        window_state->set_bounds_changed_by_user(true);
 
         // We don't want Unminimize() to restore the pre-snapped state during
         // the transition.
