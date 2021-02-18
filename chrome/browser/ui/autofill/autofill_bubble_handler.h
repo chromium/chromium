@@ -14,6 +14,7 @@ class WebContents;
 namespace autofill {
 class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
+class OfferNotificationBubbleController;
 class SaveAddressProfileBubbleController;
 class SaveCardBubbleController;
 class SaveUPIBubble;
@@ -34,6 +35,11 @@ class AutofillBubbleHandler {
   virtual AutofillBubbleBase* ShowLocalCardMigrationBubble(
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
+      bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowOfferNotificationBubble(
+      content::WebContents* web_contents,
+      OfferNotificationBubbleController* controller,
       bool is_user_gesture) = 0;
 
   virtual SaveUPIBubble* ShowSaveUPIBubble(

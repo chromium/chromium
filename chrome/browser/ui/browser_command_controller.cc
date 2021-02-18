@@ -553,7 +553,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       BasicPrint(browser_);
       break;
 #endif  // ENABLE_PRINTING
-
+    case IDC_OFFERS_AND_REWARDS_FOR_PAGE:
+      ShowOffersAndRewardsForPage(browser_);
+      break;
     case IDC_SAVE_CREDIT_CARD_FOR_PAGE:
       SaveCreditCard(browser_);
       break;

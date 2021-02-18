@@ -34,6 +34,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
+#include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -1129,6 +1130,16 @@ void MaybeShowBookmarkBarForReadLater(Browser* browser) {
       ToggleBookmarkBar(browser);
   }
 #endif  // defined(OS_ANDROID)
+}
+
+void ShowOffersAndRewardsForPage(Browser* browser) {
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  autofill::OfferNotificationBubbleControllerImpl* controller =
+      autofill::OfferNotificationBubbleControllerImpl::FromWebContents(
+          web_contents);
+  DCHECK(controller);
+  controller->ReshowBubble();
 }
 
 void SaveCreditCard(Browser* browser) {

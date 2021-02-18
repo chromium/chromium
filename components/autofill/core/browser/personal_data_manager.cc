@@ -934,6 +934,11 @@ void PersonalDataManager::SetSyncServiceForTest(
     sync_service_->AddObserver(this);
 }
 
+void PersonalDataManager::AddOfferDataForTest(
+    std::unique_ptr<AutofillOfferData> offer_data) {
+  autofill_offer_data_.push_back(std::move(offer_data));
+}
+
 void PersonalDataManager::
     RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
         const std::string& guid) {

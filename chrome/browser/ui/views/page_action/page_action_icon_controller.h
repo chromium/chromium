@@ -31,6 +31,7 @@ class ZoomView;
 
 namespace autofill {
 class LocalCardMigrationIconView;
+class OfferNotificationIconView;
 class SaveAddressProfileIconView;
 class SavePaymentIconView;
 }  // namespace autofill
@@ -89,6 +90,7 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   autofill::LocalCardMigrationIconView* local_card_migration_icon_ = nullptr;
   ManagePasswordsIconViews* manage_passwords_icon_ = nullptr;
   FileSystemAccessIconView* file_system_access_icon_ = nullptr;
+  autofill::OfferNotificationIconView* offer_notification_icon_ = nullptr;
   PwaInstallView* pwa_install_icon_ = nullptr;
   qrcode_generator::QRCodeGeneratorIconView* qrcode_generator_icon_view_ =
       nullptr;

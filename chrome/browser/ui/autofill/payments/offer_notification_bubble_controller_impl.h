@@ -1,0 +1,76 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
+
+#include "base/macros.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
+
+namespace autofill {
+
+// Implementation of per-tab class to control the offer notification bubble and
+// Omnibox icon.
+class OfferNotificationBubbleControllerImpl
+    : public AutofillBubbleControllerBase,
+      public OfferNotificationBubbleController,
+      public content::WebContentsUserData<
+          OfferNotificationBubbleControllerImpl> {
+ public:
+  ~OfferNotificationBubbleControllerImpl() override;
+  OfferNotificationBubbleControllerImpl(
+      const OfferNotificationBubbleControllerImpl&) = delete;
+  OfferNotificationBubbleControllerImpl& operator=(
+      const OfferNotificationBubbleControllerImpl&) = delete;
+
+  // OfferBubbleController:
+  base::string16 GetWindowTitle() const override;
+  base::string16 GetOkButtonLabel() const override;
+  AutofillBubbleBase* GetOfferNotificationBubbleView() const override;
+  bool IsIconVisible() const override;
+  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+
+  // Displays an offer notification on current page. Populates the value for
+  // |origins_to_display_bubble_|, since the bubble and icon are sticky over a
+  // given set of origins.
+  // TODO(crbug.com/1093057): Pass in the credit card.
+  void ShowOfferNotificationIfApplicable(
+      const std::vector<GURL>& origins_to_display_bubble);
+
+  // Called when user clicks on omnibox icon.
+  void ReshowBubble();
+
+ protected:
+  explicit OfferNotificationBubbleControllerImpl(
+      content::WebContents* web_contents);
+
+  // AutofillBubbleControllerBase:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  PageActionIconType GetPageActionIconType() override;
+  void DoShowBubble() override;
+
+ private:
+  friend class content::WebContentsUserData<
+      OfferNotificationBubbleControllerImpl>;
+
+  // Updates the visibility of the icon as per IsIconVisible().
+  void UpdateOfferIcon();
+
+  bool is_user_gesture_ = false;
+
+  // The bubble and icon are sticky over a given set of origins. This is
+  // populated when ShowOfferNotificationIfApplicable() is called and is cleared
+  // when navigating to a origins outside of this set.
+  std::vector<GURL> origins_to_display_bubble_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_

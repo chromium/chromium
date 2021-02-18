@@ -31,6 +31,15 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
   return local_card_migration_bubble_view_.get();
 }
 
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowOfferNotificationBubble(
+    content::WebContents* web_contents,
+    OfferNotificationBubbleController* controller,
+    bool is_user_gesture) {
+  if (!offer_notification_bubble_view_)
+    offer_notification_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  return offer_notification_bubble_view_.get();
+}
+
 SaveUPIBubble* TestAutofillBubbleHandler::ShowSaveUPIBubble(
     content::WebContents* contents,
     SaveUPIBubbleController* controller) {

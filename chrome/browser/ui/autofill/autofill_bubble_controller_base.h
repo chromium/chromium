@@ -41,10 +41,10 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
     bubble_view_ = bubble_view;
   }
 
- private:
   // Remove the |bubble_view_| and hide the bubble.
   void HideBubble();
 
+ private:
   // Weak reference. Will be nullptr if no bubble is currently shown.
   AutofillBubbleBase* bubble_view_ = nullptr;
 

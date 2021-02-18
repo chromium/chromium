@@ -235,6 +235,10 @@ class PersonalDataManager : public KeyedService,
   // owned by this class and must outlive |this|.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
+  // Adds the offer data to local cache for tests. This does not affect data in
+  // the real database.
+  void AddOfferDataForTest(std::unique_ptr<AutofillOfferData> offer_data);
+
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
   virtual CreditCard* GetCreditCardByGUID(const std::string& guid);

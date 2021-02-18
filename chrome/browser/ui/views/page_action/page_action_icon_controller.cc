@@ -9,6 +9,7 @@
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
@@ -45,6 +46,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
 
   for (PageActionIconType type : params.types_enabled) {
     switch (type) {
+      case PageActionIconType::kPaymentsOfferNotification:
+        offer_notification_icon_ = new autofill::OfferNotificationIconView(
+            params.command_updater, params.icon_label_bubble_delegate,
+            params.page_action_icon_delegate);
+        page_action_icons_.push_back(offer_notification_icon_);
+        break;
       case PageActionIconType::kBookmarkStar:
         bookmark_star_icon_ =
             new StarView(params.command_updater, params.browser,
@@ -188,6 +195,8 @@ void PageActionIconController::Init(const PageActionIconParams& params,
 PageActionIconView* PageActionIconController::GetIconView(
     PageActionIconType type) {
   switch (type) {
+    case PageActionIconType::kPaymentsOfferNotification:
+      return offer_notification_icon_;
     case PageActionIconType::kBookmarkStar:
       return bookmark_star_icon_;
     case PageActionIconType::kClickToCall:

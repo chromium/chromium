@@ -36,6 +36,10 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowOfferNotificationBubble(
+      content::WebContents* contents,
+      OfferNotificationBubbleController* controller,
+      bool is_user_gesture) override;
   SaveUPIBubble* ShowSaveUPIBubble(
       content::WebContents* contents,
       SaveUPIBubbleController* controller) override;
@@ -47,6 +51,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
 
  private:
   std::unique_ptr<TestAutofillBubble> local_card_migration_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> offer_notification_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_card_bubble_view_;
   std::unique_ptr<TestSaveUPIBubble> save_upi_bubble_;
   std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;

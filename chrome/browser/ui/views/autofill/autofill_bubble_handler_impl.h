@@ -42,6 +42,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowOfferNotificationBubble(
+      content::WebContents* contents,
+      OfferNotificationBubbleController* controller,
+      bool is_user_gesture) override;
   SaveUPIBubble* ShowSaveUPIBubble(
       content::WebContents* web_contents,
       SaveUPIBubbleController* controller) override;
