@@ -62,6 +62,8 @@ source_set("internal") {
     "power_manager_provider_impl.h",
     "service_controller.cc",
     "service_controller.h",
+    "speaker_id_enrollment_controller.cc",
+    "speaker_id_enrollment_controller.h",
     "system_provider_impl.cc",
     "system_provider_impl.h",
     "util.cc",
@@ -173,6 +175,7 @@ source_set("unit_tests") {
     "network_provider_impl_unittest.cc",
     "power_manager_provider_impl_unittest.cc",
     "service_controller_unittest.cc",
+    "speaker_id_enrollment_controller_unittest.cc",
     "speech_recognition_observer_unittest.cc",
     "system_provider_impl_unittest.cc",
   ]

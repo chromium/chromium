@@ -30,6 +30,7 @@ component("cpp") {
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/libassistant/public/cpp:structs",
+    "//chromeos/services/libassistant/public/mojom",
     "//chromeos/services/network_config/public/mojom",
     "//services/audio/public/mojom",
     "//services/device/public/mojom",

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,8 +21,6 @@ class AssistantStateBase;
 }  // namespace ash
 
 namespace assistant_client {
-struct SpeakerIdEnrollmentStatus;
-struct SpeakerIdEnrollmentUpdate;
 struct VoicelessResponse;
 }  // namespace assistant_client
 
@@ -37,7 +36,10 @@ class AssistantSettingsImpl : public AssistantSettings {
                         AssistantManagerServiceImpl* assistant_manager_service);
   ~AssistantSettingsImpl() override;
 
-  bool speaker_id_enrollment_done() { return speaker_id_enrollment_done_; }
+  void Initialize(
+      mojo::PendingRemote<
+          ::chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+          enrollment_controller_remote);
 
   // AssistantSettings overrides:
   void GetSettings(const std::string& selector,
@@ -55,11 +57,8 @@ class AssistantSettingsImpl : public AssistantSettings {
   void UpdateServerDeviceSettings();
 
  private:
-  void HandleSpeakerIdEnrollmentUpdate(
-      const assistant_client::SpeakerIdEnrollmentUpdate& update);
-  void HandleStopSpeakerIdEnrollment();
   void HandleSpeakerIdEnrollmentStatusSync(
-      const assistant_client::SpeakerIdEnrollmentStatus& status);
+      libassistant::mojom::SpeakerIdEnrollmentStatusPtr status);
   void HandleDeviceAppsStatusSync(base::OnceCallback<void(bool)> callback,
                                   const std::string& settings);
 
@@ -71,10 +70,9 @@ class AssistantSettingsImpl : public AssistantSettings {
 
   ServiceContext* const context_;
   AssistantManagerServiceImpl* const assistant_manager_service_;
-  base::WeakPtr<SpeakerIdEnrollmentClient> speaker_id_enrollment_client_;
 
-  // Whether the speaker id enrollment has complete for the user.
-  bool speaker_id_enrollment_done_ = false;
+  mojo::Remote<::chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+      speaker_id_enrollment_remote_;
 
   base::WeakPtrFactory<AssistantSettingsImpl> weak_factory_{this};
 

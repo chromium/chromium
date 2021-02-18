@@ -7,6 +7,7 @@
 
 #include "chromeos/services/assistant/test_support/fake_service_controller.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -34,6 +35,8 @@ class FakeLibassistantService
   GetMediaControllerPendingReceiver();
   mojo::PendingRemote<libassistant::mojom::MediaDelegate>
   GetMediaDelegatePendingRemote();
+  mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+  GetSpeakerIdEnrollmentControllerPendingReceiver();
 
   // mojom::LibassistantService implementation:
   void Bind(
@@ -47,6 +50,8 @@ class FakeLibassistantService
           media_controller,
       mojo::PendingReceiver<libassistant::mojom::ServiceController>
           service_controller,
+      mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+          speaker_id_enrollment_controller,
       mojo::PendingRemote<libassistant::mojom::AudioOutputDelegate>
           audio_output_delegate,
       mojo::PendingRemote<libassistant::mojom::MediaDelegate> media_delegate,
@@ -61,6 +66,8 @@ class FakeLibassistantService
 
   mojo::PendingReceiver<libassistant::mojom::MediaController>
       media_controller_pending_receiver_;
+  mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+      speaker_id_enrollment_controller_pending_receiver_;
   mojo::PendingRemote<libassistant::mojom::MediaDelegate>
       media_delegate_pending_remote_;
 

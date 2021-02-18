@@ -38,6 +38,12 @@ FakeLibassistantService::GetMediaDelegatePendingRemote() {
   return std::move(media_delegate_pending_remote_);
 }
 
+mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+FakeLibassistantService::GetSpeakerIdEnrollmentControllerPendingReceiver() {
+  EXPECT_TRUE(speaker_id_enrollment_controller_pending_receiver_.is_valid());
+  return std::move(speaker_id_enrollment_controller_pending_receiver_);
+}
+
 void FakeLibassistantService::Bind(
     mojo::PendingReceiver<libassistant::mojom::AudioInputController>
         audio_input_controller,
@@ -49,6 +55,8 @@ void FakeLibassistantService::Bind(
         media_controller,
     mojo::PendingReceiver<libassistant::mojom::ServiceController>
         service_controller,
+    mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+        speaker_id_enrollment_controller,
     mojo::PendingRemote<libassistant::mojom::AudioOutputDelegate>
         audio_output_delegate,
     mojo::PendingRemote<libassistant::mojom::MediaDelegate> media_delegate,
@@ -57,6 +65,8 @@ void FakeLibassistantService::Bind(
   service_controller_.Bind(std::move(service_controller));
   media_controller_pending_receiver_ = std::move(media_controller);
   media_delegate_pending_remote_ = std::move(media_delegate);
+  speaker_id_enrollment_controller_pending_receiver_ =
+      std::move(speaker_id_enrollment_controller);
 }
 
 }  // namespace assistant

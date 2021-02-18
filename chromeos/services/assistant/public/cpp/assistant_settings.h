@@ -10,24 +10,25 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
 namespace assistant {
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) SpeakerIdEnrollmentClient
-    : public base::CheckedObserver {
+    : public ::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient {
  public:
-  // Listening for hotword.
-  virtual void OnListeningHotword() = 0;
+  SpeakerIdEnrollmentClient();
+  ~SpeakerIdEnrollmentClient() override;
 
-  // Hotword utterance detected. Processing utterance.
-  virtual void OnProcessingHotword() = 0;
+  mojo::PendingRemote<
+      ::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
+  BindNewPipeAndPassRemote();
 
-  // The enrollment completed successfully.
-  virtual void OnSpeakerIdEnrollmentDone() = 0;
-
-  // Enrollment failed.
-  virtual void OnSpeakerIdEnrollmentFailure() = 0;
+ private:
+  mojo::Receiver<::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
+      client_{this};
 };
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSettings {

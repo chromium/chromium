@@ -37,6 +37,7 @@ class DisplayController;
 class MediaController;
 class PlatformApi;
 class ServiceController;
+class SpeakerIdEnrollmentController;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
@@ -62,6 +63,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       mojo::PendingReceiver<mojom::DisplayController> display_controller,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingReceiver<mojom::ServiceController> service_controller,
+      mojo::PendingReceiver<mojom::SpeakerIdEnrollmentController>
+          speaker_id_enrollment_controller,
       mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
       mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
       mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) override;
@@ -90,6 +93,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   std::unique_ptr<ConversationStateListenerImpl> conversation_state_listener_;
   std::unique_ptr<DisplayController> display_controller_;
   std::unique_ptr<MediaController> media_controller_;
+  std::unique_ptr<SpeakerIdEnrollmentController>
+      speaker_id_enrollment_controller_;
 };
 
 }  // namespace libassistant

@@ -14,6 +14,7 @@
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -61,6 +62,11 @@ class LibassistantServiceTester {
   mojom::ServiceController& service_controller() {
     return *service_controller_.get();
   }
+  mojom::SpeakerIdEnrollmentController& speaker_id_enrollment_controller() {
+    return *speaker_id_enrollment_controller_.get();
+  }
+
+  void FlushForTesting();
 
  private:
   void BindControllers();
@@ -70,6 +76,8 @@ class LibassistantServiceTester {
   mojo::Remote<mojom::DisplayController> display_controller_;
   mojo::Remote<mojom::MediaController> media_controller_;
   mojo::Remote<mojom::ServiceController> service_controller_;
+  mojo::Remote<mojom::SpeakerIdEnrollmentController>
+      speaker_id_enrollment_controller_;
   mojo::PendingReceiver<mojom::AudioOutputDelegate>
       pending_audio_output_delegate_;
   mojo::PendingReceiver<mojom::MediaDelegate> pending_media_delegate_;

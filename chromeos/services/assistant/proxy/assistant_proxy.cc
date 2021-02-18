@@ -87,6 +87,8 @@ void AssistantProxy::BindControllers(
   mojo::PendingRemote<MediaDelegateMojom> pending_media_delegate_remote;
   mojo::PendingRemote<PlatformDelegateMojom> pending_platform_delegate_remote;
   mojo::PendingRemote<ServiceControllerMojom> pending_service_controller_remote;
+  mojo::PendingRemote<SpeakerIdEnrollmentControllerMojom>
+      pending_speaker_id_enrollment_controller_remote;
 
   mojo::PendingReceiver<MediaDelegateMojom> pending_media_delegate =
       pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
@@ -100,6 +102,8 @@ void AssistantProxy::BindControllers(
       display_controller_remote_.BindNewPipeAndPassReceiver(),
       media_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
+      pending_speaker_id_enrollment_controller_remote
+          .InitWithNewPipeAndPassReceiver(),
       std::move(pending_audio_output_delegate_remote),
       std::move(pending_media_delegate_remote),
       std::move(pending_platform_delegate_remote));
@@ -112,6 +116,8 @@ void AssistantProxy::BindControllers(
       std::move(pending_service_controller_remote));
 
   audio_input_controller_ = std::move(pending_audio_input_controller_remote);
+  speaker_id_enrollment_controller_ =
+      std::move(pending_speaker_id_enrollment_controller_remote);
   media_delegate_ = std::move(pending_media_delegate);
   platform_delegate_ = std::move(pending_platform_delegate);
 }
@@ -148,6 +154,13 @@ mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
 AssistantProxy::ExtractPlatformDelegate() {
   DCHECK(platform_delegate_.is_valid());
   return std::move(platform_delegate_);
+}
+
+mojo::PendingRemote<
+    chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+AssistantProxy::ExtractSpeakerIdEnrollmentController() {
+  DCHECK(speaker_id_enrollment_controller_.is_valid());
+  return std::move(speaker_id_enrollment_controller_);
 }
 
 ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {

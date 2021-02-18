@@ -126,8 +126,6 @@ void ChromiumHttpConnection::EnablePartialResults() {
 }
 
 void ChromiumHttpConnection::Start() {
-  VLOG(2) << "Requested to start connection";
-
   ENSURE_IN_SEQUENCE(&ChromiumHttpConnection::Start);
   DCHECK_EQ(state_, State::NEW);
   state_ = State::STARTED;
@@ -207,13 +205,10 @@ void ChromiumHttpConnection::Resume() {
 }
 
 void ChromiumHttpConnection::Close() {
-  VLOG(2) << "Requesting to close connection object";
-
   ENSURE_IN_SEQUENCE(&ChromiumHttpConnection::Close);
   if (state_ == State::DESTROYED)
     return;
 
-  VLOG(2) << "Closing connection object";
   state_ = State::DESTROYED;
   url_loader_.reset();
 
@@ -305,7 +300,7 @@ void ChromiumHttpConnection::OnComplete(bool success) {
   }
 
   const std::string message = net::ErrorToString(url_loader_->NetError());
-  VLOG(2) << "ChromiumHttpConnection completed with network error="
+  VLOG(3) << "ChromiumHttpConnection completed with network error="
           << url_loader_->NetError() << ": " << message;
   delegate_->OnNetworkError(url_loader_->NetError(), message);
 }
@@ -374,13 +369,13 @@ void ChromiumHttpConnection::OnURLLoadComplete(
   if (response_code == kResponseCodeInvalid) {
     std::string message = net::ErrorToString(url_loader_->NetError());
 
-    VLOG(2) << "ChromiumHttpConnection completed with network error="
+    VLOG(3) << "ChromiumHttpConnection completed with network error="
             << response_code << ": " << message;
     delegate_->OnNetworkError(response_code, message);
     return;
   }
 
-  VLOG(2) << "ChromiumHttpConnection completed with response_code="
+  VLOG(3) << "ChromiumHttpConnection completed with response_code="
           << response_code;
 
   delegate_->OnCompleteResponse(response_code, raw_headers, *response_body);

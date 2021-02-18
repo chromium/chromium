@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -35,9 +36,11 @@
 #include "chromeos/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -49,6 +52,7 @@ namespace chromeos {
 namespace assistant {
 
 using media_session::mojom::MediaSessionAction;
+using testing::_;
 using testing::ElementsAre;
 using testing::Invoke;
 using testing::NiceMock;
@@ -56,6 +60,7 @@ using testing::StrictMock;
 using CommunicationErrorType = AssistantManagerService::CommunicationErrorType;
 using UserInfo = AssistantManagerService::UserInfo;
 using libassistant::mojom::ServiceState;
+using libassistant::mojom::SpeakerIdEnrollmentStatus;
 
 namespace {
 
@@ -241,6 +246,12 @@ class AssistantManagerServiceImplTest : public testing::Test {
     return assistant_manager_service_.get();
   }
 
+  AssistantSettings& assistant_settings() {
+    auto* result = assistant_manager_service()->GetAssistantSettings();
+    DCHECK(result);
+    return *result;
+  }
+
   FullyInitializedAssistantState& assistant_state() { return assistant_state_; }
 
   FakeAssistantManager* fake_assistant_manager() {
@@ -387,6 +398,69 @@ class AssistantManagerServiceImplTest : public testing::Test {
   std::unique_ptr<AssistantManagerServiceImpl> assistant_manager_service_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantManagerServiceImplTest);
+};
+
+class SpeakerIdEnrollmentControllerMock
+    : public ::chromeos::libassistant::mojom::SpeakerIdEnrollmentController {
+ public:
+  SpeakerIdEnrollmentControllerMock() = default;
+  SpeakerIdEnrollmentControllerMock(const SpeakerIdEnrollmentControllerMock&) =
+      delete;
+  SpeakerIdEnrollmentControllerMock& operator=(
+      const SpeakerIdEnrollmentControllerMock&) = delete;
+  ~SpeakerIdEnrollmentControllerMock() override = default;
+
+  // ::chromeos::libassistant::mojom::SpeakerIdEnrollmentController
+  // implementation:
+  MOCK_METHOD(
+      void,
+      StartSpeakerIdEnrollment,
+      (const std::string& user_gaia_id,
+       bool skip_cloud_enrollment,
+       ::mojo::PendingRemote<libassistant::mojom::SpeakerIdEnrollmentClient>
+           client));
+  MOCK_METHOD(void, StopSpeakerIdEnrollment, ());
+  MOCK_METHOD(void,
+              GetSpeakerIdEnrollmentStatus,
+              (const std::string& user_gaia_id,
+               GetSpeakerIdEnrollmentStatusCallback callback));
+
+  void Bind(
+      mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+          pending_receiver) {
+    receiver_.Bind(std::move(pending_receiver));
+  }
+
+  void Bind(FakeLibassistantService& service) {
+    Bind(service.GetSpeakerIdEnrollmentControllerPendingReceiver());
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+ private:
+  mojo::Receiver<SpeakerIdEnrollmentController> receiver_{this};
+};
+
+class SpeakerIdEnrollmentClientMock : public SpeakerIdEnrollmentClient {
+ public:
+  SpeakerIdEnrollmentClientMock() = default;
+  SpeakerIdEnrollmentClientMock(const SpeakerIdEnrollmentClientMock&) = delete;
+  SpeakerIdEnrollmentClientMock& operator=(
+      const SpeakerIdEnrollmentClientMock&) = delete;
+  ~SpeakerIdEnrollmentClientMock() override = default;
+
+  base::WeakPtr<SpeakerIdEnrollmentClientMock> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  // SpeakerIdEnrollmentClient implementation:
+  MOCK_METHOD(void, OnListeningHotword, ());
+  MOCK_METHOD(void, OnProcessingHotword, ());
+  MOCK_METHOD(void, OnSpeakerIdEnrollmentDone, ());
+  MOCK_METHOD(void, OnSpeakerIdEnrollmentFailure, ());
+
+ private:
+  base::WeakPtrFactory<SpeakerIdEnrollmentClientMock> weak_factory_{this};
 };
 
 }  // namespace
@@ -860,6 +934,123 @@ TEST_F(AssistantManagerServiceImplTest,
       .Times(1);
   EXPECT_CALL(*assistant_manager_mock_ptr, StartAssistantInteraction).Times(1);
   assistant_manager_service()->StartVoiceInteraction();
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldStartSpeakerIdEnrollmentWhenRequested) {
+  NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  mojom_mock.Bind(mojom_libassistant_service());
+
+  EXPECT_CALL(mojom_mock, StartSpeakerIdEnrollment);
+
+  assistant_settings().StartSpeakerIdEnrollment(/*skip_cloud_enrollment=*/false,
+                                                client_mock.GetWeakPtr());
+
+  mojom_mock.FlushForTesting();
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldSendGaiaIdDuringSpeakerIdEnrollment) {
+  NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
+  fake_service_context()->set_primary_account_gaia_id("gaia user id");
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  mojom_mock.Bind(mojom_libassistant_service());
+
+  EXPECT_CALL(mojom_mock, StartSpeakerIdEnrollment("gaia user id", _, _));
+
+  assistant_settings().StartSpeakerIdEnrollment(/*skip_cloud_enrollment=*/false,
+                                                client_mock.GetWeakPtr());
+
+  mojom_mock.FlushForTesting();
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldSendSkipCloudEnrollmentDuringSpeakerIdEnrollment) {
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  mojom_mock.Bind(mojom_libassistant_service());
+
+  {
+    NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
+
+    EXPECT_CALL(mojom_mock, StartSpeakerIdEnrollment(_, true, _));
+
+    assistant_settings().StartSpeakerIdEnrollment(
+        /*skip_cloud_enrollment=*/true, client_mock.GetWeakPtr());
+    mojom_mock.FlushForTesting();
+  }
+
+  {
+    NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
+
+    EXPECT_CALL(mojom_mock, StartSpeakerIdEnrollment(_, false, _));
+
+    assistant_settings().StartSpeakerIdEnrollment(
+        /*skip_cloud_enrollment=*/false, client_mock.GetWeakPtr());
+    mojom_mock.FlushForTesting();
+  }
+}
+
+TEST_F(AssistantManagerServiceImplTest, ShouldSendStopSpeakerIdEnrollment) {
+  NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  mojom_mock.Bind(mojom_libassistant_service());
+
+  EXPECT_CALL(mojom_mock, StopSpeakerIdEnrollment);
+
+  assistant_settings().StopSpeakerIdEnrollment();
+  mojom_mock.FlushForTesting();
+}
+
+TEST_F(AssistantManagerServiceImplTest, ShouldSyncSpeakerIdEnrollmentStatus) {
+  StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  mojom_mock.Bind(mojom_libassistant_service());
+
+  EXPECT_CALL(mojom_mock, GetSpeakerIdEnrollmentStatus)
+      .WillOnce([](const std::string& user_gaia_id,
+                   SpeakerIdEnrollmentControllerMock::
+                       GetSpeakerIdEnrollmentStatusCallback callback) {
+        std::move(callback).Run(
+            SpeakerIdEnrollmentStatus::New(/*user_model_exists=*/true));
+      });
+
+  assistant_settings().SyncSpeakerIdEnrollmentStatus();
+  mojom_mock.FlushForTesting();
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldSyncSpeakerIdEnrollmentStatusWhenRunning) {
+  StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
+  StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+  mojom_mock.Bind(mojom_libassistant_service());
+
+  EXPECT_CALL(mojom_mock, GetSpeakerIdEnrollmentStatus)
+      .WillOnce([](const std::string& user_gaia_id,
+                   SpeakerIdEnrollmentControllerMock::
+                       GetSpeakerIdEnrollmentStatusCallback callback) {
+        std::move(callback).Run(
+            SpeakerIdEnrollmentStatus::New(/*user_model_exists=*/true));
+      });
+
+  StartAndWaitForRunning();
+
+  mojom_mock.FlushForTesting();
 }
 
 }  // namespace assistant

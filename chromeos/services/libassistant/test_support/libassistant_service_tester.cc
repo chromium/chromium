@@ -54,9 +54,20 @@ void LibassistantServiceTester::BindControllers() {
                 display_controller_.BindNewPipeAndPassReceiver(),
                 media_controller_.BindNewPipeAndPassReceiver(),
                 service_controller_.BindNewPipeAndPassReceiver(),
+                speaker_id_enrollment_controller_.BindNewPipeAndPassReceiver(),
                 std::move(pending_audio_output_delegate_remote),
                 std::move(pending_media_delegate_remote),
                 std::move(pending_platform_delegate_remote));
+}
+
+void LibassistantServiceTester::FlushForTesting() {
+  audio_input_controller_.FlushForTesting();
+  conversation_controller_.FlushForTesting();
+  display_controller_.FlushForTesting();
+  media_controller_.FlushForTesting();
+  service_controller_.FlushForTesting();
+  speaker_id_enrollment_controller_.FlushForTesting();
+  service_remote_.FlushForTesting();
 }
 
 }  // namespace libassistant

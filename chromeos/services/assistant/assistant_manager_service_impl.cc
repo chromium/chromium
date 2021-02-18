@@ -265,6 +265,9 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   audio_input_host_ = delegate_->CreateAudioInputHost(
       assistant_proxy_->ExtractAudioInputController());
 
+  assistant_settings_->Initialize(
+      assistant_proxy_->ExtractSpeakerIdEnrollmentController());
+
   media_host_->Initialize(&assistant_proxy_->media_controller(),
                           assistant_proxy_->ExtractMediaDelegate());
 

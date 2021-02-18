@@ -17,6 +17,7 @@ mojom("mojom") {
     "platform_delegate.mojom",
     "service.mojom",
     "service_controller.mojom",
+    "speaker_id_enrollment_controller.mojom",
     "speech_recognition_observer.mojom",
   ]
 

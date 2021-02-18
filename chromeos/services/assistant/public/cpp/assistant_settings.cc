@@ -13,6 +13,14 @@ AssistantSettings* g_instance = nullptr;
 
 }  // namespace
 
+SpeakerIdEnrollmentClient::SpeakerIdEnrollmentClient() = default;
+SpeakerIdEnrollmentClient::~SpeakerIdEnrollmentClient() = default;
+
+mojo::PendingRemote<::chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
+SpeakerIdEnrollmentClient::BindNewPipeAndPassRemote() {
+  return client_.BindNewPipeAndPassRemote();
+}
+
 // static
 AssistantSettings* AssistantSettings::Get() {
   return g_instance;

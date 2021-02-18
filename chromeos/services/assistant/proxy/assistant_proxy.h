@@ -13,6 +13,7 @@
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -79,6 +80,9 @@ class AssistantProxy {
   ExtractMediaDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
   ExtractPlatformDelegate();
+  mojo::PendingRemote<
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+  ExtractSpeakerIdEnrollmentController();
 
  private:
   using AudioInputControllerMojom =
@@ -96,6 +100,8 @@ class AssistantProxy {
       chromeos::libassistant::mojom::LibassistantService;
   using ServiceControllerMojom =
       chromeos::libassistant::mojom::ServiceController;
+  using SpeakerIdEnrollmentControllerMojom =
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentController;
 
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner();
 
@@ -121,10 +127,12 @@ class AssistantProxy {
 
   // Will be unbound after they are extracted.
   mojo::PendingRemote<AudioInputControllerMojom> audio_input_controller_;
-  mojo::PendingReceiver<MediaDelegateMojom> media_delegate_;
-  mojo::PendingReceiver<PlatformDelegateMojom> platform_delegate_;
   mojo::PendingReceiver<AudioOutputDelegateMojom>
       pending_audio_output_delegate_receiver_;
+  mojo::PendingReceiver<MediaDelegateMojom> media_delegate_;
+  mojo::PendingReceiver<PlatformDelegateMojom> platform_delegate_;
+  mojo::PendingRemote<SpeakerIdEnrollmentControllerMojom>
+      speaker_id_enrollment_controller_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.
