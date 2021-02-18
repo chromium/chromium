@@ -416,6 +416,15 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
                       << ": QueueFormatChangedEvent failed: " << PrintHr(hr);
           return;
         }
+      } else {
+        // GetMediaType() calls {audio,video}_decoder_config(), which is
+        // required by DemuxerStream when kConfigChanged happens.
+        ComPtr<IMFMediaType> media_type;
+        hr = GetMediaType(&media_type);
+        if (FAILED(hr)) {
+          DLOG(ERROR) << __func__ << ": GetMediaType failed: " << PrintHr(hr);
+          return;
+        }
       }
     } else if (status == DemuxerStream::Status::kError) {
       DVLOG_FUNC(2) << "Stream read error";
