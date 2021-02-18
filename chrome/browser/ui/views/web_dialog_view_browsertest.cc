@@ -145,13 +145,14 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
 #define MAYBE_SizeWindow SizeWindow
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
-  bool should_check_position = true;
+  bool centered_in_window = false;
 #if defined(OS_MAC)
-  // On macOS 11, for reasons not yet known, the window ends up at a different
-  // position than we expect. The size is still correct.
-  // TODO(https://crbug.com/1101398): Remove this hack.
+  // On macOS 11 (and presumably later) the new mechanism for sheets, which are
+  // used for window modals like this dialog, always centers them within the
+  // parent window regardless of the requested origin. The size is still
+  // honored.
   if (base::mac::IsAtLeastOS11())
-    should_check_position = false;
+    centered_in_window = true;
 #endif
 
   // TestWebDialogView should quit current message loop on size change.
@@ -165,10 +166,13 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   set_bounds.set_height(300);
 
   auto check_bounds = [&](const gfx::Rect& set, const gfx::Rect& actual) {
-    if (should_check_position)
+    if (centered_in_window) {
+      gfx::Rect expected = browser()->window()->GetBounds();
+      expected.ClampToCenteredSize(set.size());
+      EXPECT_EQ(expected, actual);
+    } else {
       EXPECT_EQ(set, actual);
-    else
-      EXPECT_EQ(set.size(), actual.size());
+    }
   };
 
   // WebDialogView ignores the WebContents* |source| argument to
