@@ -719,7 +719,8 @@ public class IntentHandler {
         Intent fakeIntent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
         fakeIntent.setComponent(getFakeComponentName(appContext.getPackageName()));
-        return PendingIntent.getActivity(appContext, 0, fakeIntent, 0);
+        return PendingIntent.getActivity(
+                appContext, 0, fakeIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     /**
