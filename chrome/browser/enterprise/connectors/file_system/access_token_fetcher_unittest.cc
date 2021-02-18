@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/file_system/box_access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 
 #include <memory>
 
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/os_crypt/os_crypt.h"
+#include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -17,36 +18,50 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+constexpr char kTokenEndpoint[] = "https://boxtokenendpoint.com/";
+
+}  // namespace
+
 TEST(SetGetFileSystemOAuth2Token, Box) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   PrefService* prefs = profile.GetPrefs();
 
-  SetFileSystemOAuth2Tokens(prefs, "box", "testAToken", "testRToken");
-  EXPECT_TRUE(prefs->HasPrefPath(kFileSystemBoxAccessTokenPref));
-  EXPECT_TRUE(prefs->HasPrefPath(kFileSystemBoxRefreshTokenPref));
-  EXPECT_EQ(prefs->GetString(kFileSystemBoxAccessTokenPref), "testAToken");
-  EXPECT_EQ(prefs->GetString(kFileSystemBoxRefreshTokenPref), "testRToken");
+  OSCryptMocker::SetUp();
+
+  ASSERT_TRUE(
+      SetFileSystemOAuth2Tokens(prefs, "box", "testAToken", "testRToken"));
+
+  std::string atoken;
+  std::string rtoken;
+  ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs, "box", &atoken, &rtoken));
+  EXPECT_EQ(atoken, "testAToken");
+  EXPECT_EQ(rtoken, "testRToken");
+
+  OSCryptMocker::TearDown();
 }
 
-class BoxAccessTokenFetcherForTest : public BoxAccessTokenFetcher {
+class AccessTokenFetcherForTest : public AccessTokenFetcher {
  public:
-  using BoxAccessTokenFetcher::BoxAccessTokenFetcher;
-  using BoxAccessTokenFetcher::GetAccessTokenURL;
-  using BoxAccessTokenFetcher::OnGetTokenFailure;
-  using BoxAccessTokenFetcher::OnGetTokenSuccess;
+  using AccessTokenFetcher::AccessTokenFetcher;
+  using AccessTokenFetcher::GetAccessTokenURL;
+  using AccessTokenFetcher::OnGetTokenFailure;
+  using AccessTokenFetcher::OnGetTokenSuccess;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(BoxAccessTokenFetcherForTest);
+  DISALLOW_COPY_AND_ASSIGN(AccessTokenFetcherForTest);
 };
 
-class BoxAccessTokenFetcherTest : public testing::Test {
+class AccessTokenFetcherTest : public testing::Test {
  protected:
   void SetUp() override {
-    fetcher_ = std::make_unique<BoxAccessTokenFetcherForTest>(
+    fetcher_ = std::make_unique<AccessTokenFetcherForTest>(
         url_loader_factory_.GetSafeWeakWrapper(),  // dummy; not for unit tests.
-        "refresh token", "",  // use existing refresh token to get access token.
-        base::BindOnce(&BoxAccessTokenFetcherTest::OnResponse,
+        "box", GURL(kTokenEndpoint), "refresh token",
+        "",  // use existing refresh token to get access token.
+        base::BindOnce(&AccessTokenFetcherTest::OnResponse,
                        factory_.GetWeakPtr()));
   }
 
@@ -70,20 +85,20 @@ class BoxAccessTokenFetcherTest : public testing::Test {
     return builder.build();
   }
 
-  std::unique_ptr<BoxAccessTokenFetcherForTest> fetcher_;
+  std::unique_ptr<AccessTokenFetcherForTest> fetcher_;
   bool fetch_success_ = false;
   std::string access_token_fetched_ = "defaultAToken";
   std::string refresh_token_fetched_ = "defaultRToken";
 
   network::TestURLLoaderFactory url_loader_factory_;
-  base::WeakPtrFactory<BoxAccessTokenFetcherTest> factory_{this};
+  base::WeakPtrFactory<AccessTokenFetcherTest> factory_{this};
 };
 
-TEST_F(BoxAccessTokenFetcherTest, URL) {
-  ASSERT_EQ(fetcher_->GetAccessTokenURL(), kFileSystemBoxEndpointOAuth2Token);
+TEST_F(AccessTokenFetcherTest, URL) {
+  ASSERT_EQ(fetcher_->GetAccessTokenURL(), kTokenEndpoint);
 }
 
-TEST_F(BoxAccessTokenFetcherTest, Success) {
+TEST_F(AccessTokenFetcherTest, Success) {
   auto token_response = MakeTokenResponse("goodAToken", "goodRToken");
   fetcher_->OnGetTokenSuccess(token_response);
   ASSERT_TRUE(fetch_success_);
@@ -91,7 +106,7 @@ TEST_F(BoxAccessTokenFetcherTest, Success) {
   ASSERT_EQ(refresh_token_fetched_, "goodRToken");
 }
 
-TEST_F(BoxAccessTokenFetcherTest, Failure) {
+TEST_F(AccessTokenFetcherTest, Failure) {
   auto error = GoogleServiceAuthError::FromConnectionError(1);
   fetcher_->OnGetTokenFailure(error);
   ASSERT_FALSE(fetch_success_);

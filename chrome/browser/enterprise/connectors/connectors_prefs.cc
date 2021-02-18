@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 
 #include "components/prefs/pref_registry_simple.h"
 
@@ -28,11 +35,25 @@ const char kOnBulkDataEntryScopePref[] =
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
 
-const char kFileSystemBoxAccessTokenPref[] =
-    "enterprise_connectors.file_system.box.access_token";
+namespace {
 
-const char kFileSystemBoxRefreshTokenPref[] =
-    "enterprise_connectors.file_system.box.refresh_token";
+void RegisterFileSystemPrefs(PrefRegistrySimple* registry) {
+  std::vector<std::string> all_service_providers =
+      GetServiceProviderConfig()->GetServiceProviderNames();
+  std::vector<std::string> fs_service_providers;
+  std::copy_if(all_service_providers.begin(), all_service_providers.end(),
+               std::back_inserter(fs_service_providers), [](const auto& name) {
+                 const ServiceProviderConfig::ServiceProvider* provider =
+                     GetServiceProviderConfig()->GetServiceProvider(name);
+                 return !provider->fs_home_url().empty();
+               });
+
+  for (const auto& name : fs_service_providers) {
+    RegisterFileSystemPrefsForServiceProvider(registry, name);
+  }
+}
+
+}  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kSendDownloadToCloudPref);
@@ -44,9 +65,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
-  registry->RegisterStringPref(kFileSystemBoxAccessTokenPref, std::string());
-  registry->RegisterStringPref(kFileSystemBoxRefreshTokenPref, std::string());
-  // TODO(1157641) store folder_id in profile pref to handle indexing latency.
+
+  RegisterFileSystemPrefs(registry);
 }
 
 }  // namespace enterprise_connectors

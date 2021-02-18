@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -36,16 +37,14 @@ class FileSystemSigninDialogDelegate
   ~FileSystemSigninDialogDelegate() override;
 
   static void ShowDialog(content::WebContents* web_contents,
-                         const std::string& client_id,
-                         const std::string& client_secret,
-                         const std::vector<std::string>& scopes,
+                         const std::string& service_provider,
+                         const FileSystemSettings& settings,
                          AuthorizationCompletedCallback callback);
 
  private:
   FileSystemSigninDialogDelegate(content::BrowserContext* browser_context,
-                                 const std::string& client_id,
-                                 const std::string& client_secret,
-                                 const std::vector<std::string>& scopes,
+                                 const std::string& service_provider,
+                                 const FileSystemSettings& settings,
                                  AuthorizationCompletedCallback callback);
 
   // ChromeWebModalDialogManagerDelegate:
@@ -73,9 +72,8 @@ class FileSystemSigninDialogDelegate
                         const std::string& access_token,
                         const std::string& refresh_token);
 
-  std::string client_id_;
-  std::string client_secret_;
-  std::vector<std::string> scopes_;
+  const std::string service_provider_;
+  const FileSystemSettings settings_;
   std::unique_ptr<views::WebView> web_view_;
   std::unique_ptr<OAuth2AccessTokenFetcherImpl> token_fetcher_;
   AuthorizationCompletedCallback callback_;

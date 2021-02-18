@@ -7,8 +7,6 @@
 
 namespace enterprise_connectors {
 extern const char kFileSystemBoxEndpointApi[];
-extern const char kFileSystemBoxEndpointOAuth2Authorization[];
-extern const char kFileSystemBoxEndpointOAuth2Token[];
 extern const char kFileSystemBoxEndpointWholeFileUpload[];
 }  // namespace enterprise_connectors
 

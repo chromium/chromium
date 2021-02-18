@@ -55,6 +55,8 @@ class ServiceProviderConfig {
     }
     const std::string& fs_token_endpoint() const { return fs_token_endpoint_; }
     size_t fs_max_direct_size() const { return fs_max_direct_size_; }
+    const std::string& fs_client_id() const { return fs_client_id_; }
+    const std::string& fs_client_secret() const { return fs_client_secret_; }
     const std::vector<std::string>& fs_scopes() const { return fs_scopes_; }
     const std::vector<std::string>& fs_disable() const { return fs_disable_; }
 
@@ -71,6 +73,8 @@ class ServiceProviderConfig {
     std::string fs_authorization_endpoint_;
     std::string fs_token_endpoint_;
     size_t fs_max_direct_size_;
+    std::string fs_client_id_;
+    std::string fs_client_secret_;
     std::vector<std::string> fs_scopes_;
     std::vector<std::string> fs_disable_;
   };
@@ -78,6 +82,9 @@ class ServiceProviderConfig {
   explicit ServiceProviderConfig(const std::string& config);
   ServiceProviderConfig(ServiceProviderConfig&&);
   ~ServiceProviderConfig();
+
+  // Returns the names of all registered service providers.
+  std::vector<std::string> GetServiceProviderNames() const;
 
   // Returns the matching service provider, or nullptr if it can't be found.
   const ServiceProvider* GetServiceProvider(

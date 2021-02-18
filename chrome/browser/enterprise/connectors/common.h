@@ -95,7 +95,9 @@ struct ReportingSettings {
 
 struct FileSystemSettings {
   FileSystemSettings();
+  FileSystemSettings(const FileSystemSettings&);
   FileSystemSettings(FileSystemSettings&&);
+  FileSystemSettings& operator=(const FileSystemSettings&);
   FileSystemSettings& operator=(FileSystemSettings&&);
   ~FileSystemSettings();
 
