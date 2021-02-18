@@ -129,6 +129,14 @@ class ServiceControllerProxy : public ServiceController {
     inner_service_controller_->DisconnectFromEndpoint(client, endpoint_id);
   }
 
+  void Stop() override {
+    if (!inner_service_controller_)
+      return;
+    // TODO(crbug/1176249): This stops the service controller for all Cores that
+    // share this inner_service_controller_.
+    inner_service_controller_->Stop();
+  }
+
  private:
   // This is intentionally a reference to the unique_ptr owned by
   // NearbyConnections. During the shutdown flow, NearbyConnection will clean up
