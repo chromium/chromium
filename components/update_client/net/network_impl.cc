@@ -157,8 +157,12 @@ void NetworkFetcherImpl::DownloadToFile(
   resource_request->url = url;
   resource_request->method = "GET";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  if (!cookie_predicate_.Run(url) || !network::IsUrlPotentiallyTrustworthy(url))
+  if (!cookie_predicate_.Run(url) ||
+      !network::IsUrlPotentiallyTrustworthy(url)) {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  } else {
+    resource_request->site_for_cookies = net::SiteForCookies::FromUrl(url);
+  }
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->SetRetryOptions(

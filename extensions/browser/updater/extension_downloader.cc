@@ -600,6 +600,8 @@ void ExtensionDownloader::CreateManifestLoader() {
     // Non-webstore sources may require HTTP auth.
     resource_request->credentials_mode =
         network::mojom::CredentialsMode::kInclude;
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(active_request->full_url());
   }
 
   manifest_loader_ = network::SimpleURLLoader::Create(
@@ -1178,6 +1180,9 @@ void ExtensionDownloader::CreateExtensionLoader() {
   if (fetch->credentials != ExtensionFetch::CREDENTIALS_COOKIES || !is_secure) {
     extension_loader_resource_request_->credentials_mode =
         network::mojom::CredentialsMode::kOmit;
+  } else {
+    extension_loader_resource_request_->site_for_cookies =
+        net::SiteForCookies::FromUrl(fetch->url);
   }
 
   if (fetch->credentials == ExtensionFetch::CREDENTIALS_OAUTH2_TOKEN &&
