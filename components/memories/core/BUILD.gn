@@ -10,12 +10,14 @@ static_library("core") {
     "memories_features.h",
     "memories_service.cc",
     "memories_service.h",
+    "visit_data.h",
   ]
 
   deps = [
     ":mojo_bindings",
     "//base",
     "//components/keyed_service/core",
+    "//url",
   ]
 }
 

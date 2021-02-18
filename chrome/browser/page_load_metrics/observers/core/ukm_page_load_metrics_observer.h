@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/memories/core/visit_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/site_instance_process_assignment.h"
@@ -289,21 +290,12 @@ class UkmPageLoadMetricsObserver
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 
-  // This data is collected during the page lifetime and is meant to be sent to
-  // both UKM and History in OnComplete(). The recording is delayed until then
-  // to ensure that History has a visit entry ready for this navigation.
-  struct MemoriesSignals {
-    // True if the user has cut or copied the omnibox URL to the clipboard for
-    // this page load.
-    bool omnibox_url_copied = false;
-
-    // True if the page was in a tab group when the navigation was committed.
-    bool is_existing_part_of_tab_group = false;
-
-    // True if the page was NOT part of a tab group when the navigation
-    // committed, and IS part of a tab group at the end of the page lifetime.
-    bool is_placed_in_tab_group = false;
-  } memories_signals_;
+  // Collected by this observer during the page lifetime. Shipped to UKM and
+  // History. Also save the URL and commit timestamp to align with History.
+  GURL committed_url_;
+  // Meant to correspond with the timestamp recorded in HistoryService.
+  base::Time committed_history_timestamp_;
+  memories::VisitContextSignals memories_signals_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

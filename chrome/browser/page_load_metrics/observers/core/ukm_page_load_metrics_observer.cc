@@ -24,6 +24,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/memories/content/memories_service_factory.h"
+#include "components/memories/core/memories_service.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
@@ -277,6 +279,13 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
 
   memories_signals_.is_existing_part_of_tab_group =
       IsPageInTabGroup(navigation_handle->GetWebContents());
+
+  // Save these at commit time to align with what's recorded in History.
+  committed_url_ = navigation_handle->GetWebContents()->GetLastCommittedURL();
+  committed_history_timestamp_ = navigation_handle->GetWebContents()
+                                     ->GetController()
+                                     .GetLastCommittedEntry()
+                                     ->GetTimestamp();
 
   return CONTINUE_OBSERVING;
 }
@@ -1044,10 +1053,20 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
   // we can be sure that the visit row already exists.
+  //
+  // Please note: We don't record everything in |memories_signals_| into UKM,
+  // because some of these signals are already recorded elsewhere.
   builder.SetOmniboxUrlCopied(memories_signals_.omnibox_url_copied);
   builder.SetIsExistingPartOfTabGroup(
       memories_signals_.is_existing_part_of_tab_group);
   builder.SetIsPlacedInTabGroup(memories_signals_.is_placed_in_tab_group);
+
+  // Forward the finished structure to the MemoriesService for local recording.
+  memories::MemoriesService* service =
+      MemoriesServiceFactory::GetForBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext());
+  service->AddVisit(committed_url_, committed_history_timestamp_,
+                    memories_signals_);
 }
 
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
@@ -1136,13 +1155,14 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
 
   // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
   // to int64_t.
-  int64_t page_end_reason = GetDelegate().GetPageEndReason();
-  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
+  memories_signals_.page_end_reason = GetDelegate().GetPageEndReason();
+  if (memories_signals_.page_end_reason ==
+          page_load_metrics::PageEndReason::END_NONE &&
       app_entered_background) {
-    page_end_reason =
+    memories_signals_.page_end_reason =
         page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND;
   }
-  builder.SetNavigation_PageEndReason3(page_end_reason);
+  builder.SetNavigation_PageEndReason3(memories_signals_.page_end_reason);
   bool is_user_initiated_navigation =
       // All browser initiated page loads are user-initiated.
       GetDelegate().GetUserInitiatedInfo().browser_initiated ||
