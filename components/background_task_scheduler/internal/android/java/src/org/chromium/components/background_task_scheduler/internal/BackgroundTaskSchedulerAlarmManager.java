@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -64,8 +65,9 @@ public class BackgroundTaskSchedulerAlarmManager implements BackgroundTaskSchedu
     static PendingIntent createPendingIntentFromTaskId(Context context, int taskId) {
         Intent intent = new Intent(context, BackgroundTaskBroadcastReceiver.class)
                                 .putExtra(BACKGROUND_TASK_ID_KEY, taskId);
-        return PendingIntent.getBroadcast(
-                context, taskId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, taskId, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     @Override

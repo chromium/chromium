@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -48,7 +49,9 @@ public class BackgroundTaskSchedulerAlarmManagerTest {
                         .putExtra(BackgroundTaskSchedulerAlarmManager.BACKGROUND_TASK_ID_KEY,
                                 TaskIds.TEST);
         assertEquals(PendingIntent.getBroadcast(ContextUtils.getApplicationContext(), TaskIds.TEST,
-                             intent, PendingIntent.FLAG_CANCEL_CURRENT),
+                             intent,
+                             PendingIntent.FLAG_CANCEL_CURRENT
+                                     | IntentUtils.getPendingIntentMutabilityFlag(false)),
                 pendingIntent);
     }
 }
