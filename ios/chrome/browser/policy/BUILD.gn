@@ -55,6 +55,7 @@ source_set("policy") {
     "//components/signin/public/base",
     "//components/strings:components_strings_grit",
     "//components/translate/core/browser:translate_pref_names",
+    "//components/unified_consent:unified_consent",
     "//components/variations",
     "//components/variations/service",
     "//components/version_info:version_info",

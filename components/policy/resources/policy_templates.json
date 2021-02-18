@@ -19302,7 +19302,7 @@
       'owners': ['file://base/metrics/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:69-', 'chrome_os:69-', 'android:70-'],
+      'supported_on': ['chrome.*:69-', 'chrome_os:69-', 'android:70-', 'ios:90-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

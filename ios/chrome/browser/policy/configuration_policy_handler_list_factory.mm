@@ -24,6 +24,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_policy_handler.h"
 #include "components/translate/core/browser/translate_pref_names.h"
+#include "components/unified_consent/pref_names.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
@@ -94,6 +95,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kURLAllowlist,
     policy::policy_prefs::kUrlAllowlist,
     base::Value::Type::LIST},
+  { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
+    unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

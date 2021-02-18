@@ -96,6 +96,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ImproveChromeItemType,
   ImproveChromeManagedItemType,
   BetterSearchAndBrowsingItemType,
+  BetterSearchAndBrowsingManagedItemType,
   ItemTypePasswordLeakCheckSwitch,
   SignInDisabledItemType,
 };
@@ -600,6 +601,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         base::mac::ObjCCast<SyncSwitchItem>(item).on =
             self.anonymizedDataCollectionPreference.value;
         break;
+      case BetterSearchAndBrowsingManagedItemType:
+        base::mac::ObjCCast<TableViewInfoButtonItem>(item).statusText =
+            self.anonymizedDataCollectionPreference.value
+                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+        break;
       case ItemTypePasswordLeakCheckSwitch:
         [self updateLeakCheckItem];
         break;
@@ -718,16 +725,32 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                         dataType:0];
       [items addObject:improveChromeItem];
     }
-    SyncSwitchItem* betterSearchAndBrowsingItemType = [self
-        switchItemWithItemType:BetterSearchAndBrowsingItemType
-                  textStringID:
-                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
-                detailStringID:
-                    IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL
-                      dataType:0];
-    betterSearchAndBrowsingItemType.accessibilityIdentifier =
-        kBetterSearchAndBrowsingItemAccessibilityID;
-    [items addObject:betterSearchAndBrowsingItemType];
+    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
+        self.userPrefService->IsManagedPreference(
+            unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)) {
+      TableViewInfoButtonItem* betterSearchAndBrowsingItem = [self
+          TableViewInfoButtonItemType:BetterSearchAndBrowsingManagedItemType
+                         textStringID:
+                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
+                       detailStringID:
+                           IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL
+                               status:self.anonymizedDataCollectionPreference];
+      betterSearchAndBrowsingItem.accessibilityIdentifier =
+          kBetterSearchAndBrowsingItemAccessibilityID;
+      [items addObject:betterSearchAndBrowsingItem];
+    } else {
+      SyncSwitchItem* betterSearchAndBrowsingItem = [self
+          switchItemWithItemType:BetterSearchAndBrowsingItemType
+                    textStringID:
+                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
+                  detailStringID:
+                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL
+                        dataType:0];
+      betterSearchAndBrowsingItem.accessibilityIdentifier =
+          kBetterSearchAndBrowsingItemAccessibilityID;
+      [items addObject:betterSearchAndBrowsingItem];
+    }
+
     _nonPersonalizedItems = items;
   }
   return _nonPersonalizedItems;
@@ -937,6 +960,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case RestartAuthenticationFlowErrorItemType:
     case ReauthDialogAsSyncIsInAuthErrorItemType:
     case SafeBrowsingManagedItemType:
+    case BetterSearchAndBrowsingManagedItemType:
     case ShowPassphraseDialogErrorItemType:
     case SyncNeedsTrustedVaultKeyErrorItemType:
     case SyncDisabledByAdministratorErrorItemType:
@@ -986,6 +1010,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case ImproveChromeItemType:
     case ImproveChromeManagedItemType:
     case BetterSearchAndBrowsingItemType:
+    case BetterSearchAndBrowsingManagedItemType:
     case SyncChromeDataItemType:
     case SignInDisabledItemType:
       break;
