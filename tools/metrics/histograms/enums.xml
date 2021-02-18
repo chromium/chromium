@@ -44105,6 +44105,7 @@ from previous Chrome versions.
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
+  <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
@@ -44192,6 +44193,7 @@ from previous Chrome versions.
   <int value="-1032884201" label="HeavyAdPrivacyMitigations:enabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
+  <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
   <int value="-1028733699" label="MacViewsWebUIDialogs:disabled"/>
   <int value="-1028251580" label="GamepadPollingInterval:disabled"/>

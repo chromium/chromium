@@ -945,6 +945,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "detected-source-language-option",
+    "owners": [ "cuianthony", "chrome-language" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "device-discovery-notifications",
     "owners": [ "thestig", "gavinwill" ],
     "expiry_milestone": 89

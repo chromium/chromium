@@ -280,10 +280,17 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
             kSourceLangUnknown);
     can_translate = false;
   }
-  // Translation of unknown source language pages is supported on desktop
-  // platforms, but not mobile.
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  if (source_language == translate::kUnknownLanguageCode) {
+  // Translation of unknown source language pages is supported on Desktop
+  // platforms, experimentally supported on Android and not supported on iOS.
+  bool unknown_source_supported = true;
+#if defined(OS_ANDROID)
+  unknown_source_supported =
+      base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption);
+#elif defined(OS_IOS)
+  unknown_source_supported = false;
+#endif
+  if (!unknown_source_supported &&
+      source_language == translate::kUnknownLanguageCode) {
     if (!menuLogging)
       return false;
     TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
@@ -291,7 +298,6 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
             kSourceLangUnknown);
     can_translate = false;
   }
-#endif
 
   std::unique_ptr<TranslatePrefs> translate_prefs(
       translate_client_->GetTranslatePrefs());
@@ -404,7 +410,7 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
 
   if (source_lang == target_lang) {
     // If the languages are the same, try the translation using the unknown
-    // language code on Desktop. Android and iOS don't support unknown source
+    // language code on Desktop. iOS doesn't support unknown source
     // language, so this silently falls back to 'auto' when making the
     // translation request. The source and target languages should only be equal
     // if the translation was manually triggered by the user. Rather than show
@@ -412,7 +418,11 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
     // page with multiple languages we often detect same language, but the
     // Translation service is able to translate the various languages using it's
     // own language detection.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+    // Experiment in place for supporting unknown language code on Android.
+#if defined(OS_ANDROID)
+    if (base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
+      source_lang = translate::kUnknownLanguageCode;
+#elif !defined(OS_IOS)
     source_lang = translate::kUnknownLanguageCode;
 #endif
     TranslateBrowserMetrics::ReportInitiationStatus(

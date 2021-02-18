@@ -113,9 +113,12 @@
     Undo
   </message>
 
-  <!-- Translate Combobox Text -->
-  <message name="IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE" desc="This text is added to source language combobox dropdown menu for source language not supported or detected.">
+  <!-- Desktop and Android resources -->
+  <message name="IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE" desc="Text to use in the translate bubble UI when the source language is unknown or undetected. Used in place of a language name, so should be capitalized as such (e.g. &quot;Unknown&quot; for English, &quot;sconosciuto&quot; for Italian)" meaning="Noun to use in place of a language name in part of a translate bubble message.">
     Unknown
+  </message>
+  <message name="IDS_TRANSLATE_DETECTED_LANGUAGE" desc="Text to use in the translate infobar and translate bubble when the source language is unknown or undetected. The user can select this as an option for the page source language in a translation. Used in place of a language name, so should be capitalized as such (e.g. &quot;Detected Language&quot; for English, &quot;lingua rilevata&quot; for Italian)" meaning="Noun to select from a list of languages, and to use in place of a language name in part of a translate UI message.">
+    Detected Language
   </message>
 
 </grit-part>

@@ -18,18 +18,12 @@ SourceLanguageComboboxModel::SourceLanguageComboboxModel(
 
 SourceLanguageComboboxModel::~SourceLanguageComboboxModel() {}
 
-// Adds "Unknown" to top of dropdown menu.
 int SourceLanguageComboboxModel::GetItemCount() const {
-  return model_->GetNumberOfLanguages() + 1;
+  return model_->GetNumberOfSourceLanguages();
 }
-// Indexing increased by one due to additional option "Unknown".
+
 base::string16 SourceLanguageComboboxModel::GetItemAt(int index) const {
-  if (index == 0) {
-    return base::string16(
-        l10n_util::GetStringUTF16(IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE));
-  } else {
-    return model_->GetLanguageNameAt(index - 1);
-  }
+  return model_->GetSourceLanguageNameAt(index);
 }
 
 int SourceLanguageComboboxModel::GetDefaultIndex() const {

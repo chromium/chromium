@@ -40,6 +40,8 @@ const base::Feature kTranslateAssistContent{"TranslateAssistContent",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kTranslateIntent{"TranslateIntent",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDetectedSourceLanguageOption{
+    "DetectedSourceLanguageOption", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Params:
 const char kBackoffThresholdKey[] = "backoff_threshold";

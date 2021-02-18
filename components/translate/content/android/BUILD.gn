@@ -26,6 +26,7 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/translate/TranslateFeatureList.java",
     "java/src/org/chromium/components/translate/TranslateMenu.java",
     "java/src/org/chromium/components/translate/TranslateMenuHelper.java",
     "java/src/org/chromium/components/translate/TranslateOptions.java",
@@ -36,25 +37,35 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 static_library("android") {
   sources = [
+    "translate_feature_list.cc",
     "translate_utils.cc",
     "translate_utils.h",
   ]
 
   deps = [
+    ":jni_headers",
     "//base",
+    "//components/language/core/common",
     "//components/metrics",
     "//components/translate/core/browser",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/translate/TranslateFeatureList.java" ]
 }
 
 java_cpp_enum("translate_android_enums") {

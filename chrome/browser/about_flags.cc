@@ -7110,6 +7110,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux | kOsCrOS,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
 
+    {"detected-source-language-option",
+     flag_descriptions::kDetectedSourceLanguageOptionName,
+     flag_descriptions::kDetectedSourceLanguageOptionDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(language::kDetectedSourceLanguageOption)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

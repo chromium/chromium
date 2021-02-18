@@ -58,14 +58,18 @@ public final class TranslateMenu {
     /**
      * Build overflow menu item list.
      */
-    static List<MenuItem> getOverflowMenu(boolean isIncognito) {
+    static List<MenuItem> getOverflowMenu(boolean isIncognito, boolean isSourceLangUnknown) {
         List<MenuItem> menu = new ArrayList<MenuItem>();
         menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_MORE_LANGUAGE, true));
-        if (!isIncognito) {
+        // The "Always translate" and "Never translate" language options are hidden when the
+        // source language is unknown.
+        if (!isIncognito && !isSourceLangUnknown) {
             // "Always translate" does nothing in incognito mode, so just hide it.
             menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_ALWAYS_TRANSLATE, false));
         }
-        menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_NEVER_LANGUAGE, false));
+        if (!isSourceLangUnknown) {
+            menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_NEVER_LANGUAGE, false));
+        }
         menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_NEVER_SITE, false));
         menu.add(new MenuItem(ITEM_CHECKBOX_OPTION, ID_OVERFLOW_NOT_THIS_LANGUAGE, false));
         return menu;

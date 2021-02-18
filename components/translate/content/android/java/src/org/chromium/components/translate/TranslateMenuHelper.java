@@ -36,6 +36,7 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
     private View mAnchorView;
     private ListPopupWindow mPopup;
     private boolean mIsIncognito;
+    private boolean mIsSourceLangUnknown;
 
     /**
      * Interface for receiving the click event of menu item.
@@ -47,12 +48,13 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
     }
 
     public TranslateMenuHelper(Context context, View anchorView, TranslateOptions options,
-            TranslateMenuListener itemListener, boolean isIncognito) {
+            TranslateMenuListener itemListener, boolean isIncognito, boolean isSourceLangUnknown) {
         mContextWrapper = new ContextThemeWrapper(context, R.style.OverflowMenuThemeOverlay);
         mAnchorView = anchorView;
         mOptions = options;
         mMenuListener = itemListener;
         mIsIncognito = isIncognito;
+        mIsSourceLangUnknown = isSourceLangUnknown;
     }
 
     /**
@@ -62,9 +64,18 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
         List<TranslateMenu.MenuItem> menuList = new ArrayList<TranslateMenu.MenuItem>();
         if (menuType == TranslateMenu.MENU_OVERFLOW) {
             // TODO(googleo): Add language short list above static menu after its data is ready.
-            menuList.addAll(TranslateMenu.getOverflowMenu(mIsIncognito));
+            menuList.addAll(TranslateMenu.getOverflowMenu(mIsIncognito, mIsSourceLangUnknown));
         } else {
+            // "Detected Language" option is added to the top of the languages list if the feature
+            // is enabled. This option is only used in the source language menu.
+            boolean should_skip_detected_source_language_option =
+                    TranslateFeatureList.isEnabled(
+                            TranslateFeatureList.DETECTED_SOURCE_LANGUAGE_OPTION)
+                    && menuType == TranslateMenu.MENU_TARGET_LANGUAGE;
             for (int i = 0; i < mOptions.allLanguages().size(); ++i) {
+                if (i == 0 && should_skip_detected_source_language_option) {
+                    continue;
+                }
                 String code = mOptions.allLanguages().get(i).mLanguageCode;
                 // Avoid source language in the source language list.
                 if (menuType == TranslateMenu.MENU_SOURCE_LANGUAGE
@@ -76,7 +87,9 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
                         && code.equals(mOptions.targetLanguageCode())) {
                     continue;
                 }
-                menuList.add(new TranslateMenu.MenuItem(TranslateMenu.ITEM_LANGUAGE, i, code));
+                // Subtract 1 from item IDs if skipping the "Detected Language" option.
+                int itemID = should_skip_detected_source_language_option ? i - 1 : i;
+                menuList.add(new TranslateMenu.MenuItem(TranslateMenu.ITEM_LANGUAGE, itemID, code));
             }
         }
         return menuList;

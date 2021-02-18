@@ -34,8 +34,11 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   void SetViewState(TranslateBubbleModel::ViewState view_state) override;
   void ShowError(translate::TranslateErrors::Type error_type) override;
   void GoBackFromAdvanced() override;
-  int GetNumberOfLanguages() const override;
-  base::string16 GetLanguageNameAt(int index) const override;
+  int GetNumberOfSourceLanguages() const override;
+  int GetNumberOfTargetLanguages() const override;
+  base::string16 GetSourceLanguageNameAt(int index) const override;
+  base::string16 GetTargetLanguageNameAt(int index) const override;
+  std::string GetOriginalLanguageCode() const override;
   int GetOriginalLanguageIndex() const override;
   void UpdateOriginalLanguageIndex(int index) override;
   int GetTargetLanguageIndex() const override;

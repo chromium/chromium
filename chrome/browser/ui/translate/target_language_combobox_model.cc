@@ -18,11 +18,11 @@ TargetLanguageComboboxModel::TargetLanguageComboboxModel(
 TargetLanguageComboboxModel::~TargetLanguageComboboxModel() {}
 
 int TargetLanguageComboboxModel::GetItemCount() const {
-  return model_->GetNumberOfLanguages();
+  return model_->GetNumberOfTargetLanguages();
 }
 
 base::string16 TargetLanguageComboboxModel::GetItemAt(int index) const {
-  return model_->GetLanguageNameAt(index);
+  return model_->GetTargetLanguageNameAt(index);
 }
 
 int TargetLanguageComboboxModel::GetDefaultIndex() const {

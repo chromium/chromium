@@ -52,11 +52,20 @@ class TranslateBubbleModel {
   // Goes back from the 'Advanced' view state.
   virtual void GoBackFromAdvanced() = 0;
 
-  // Returns the number of languages supported.
-  virtual int GetNumberOfLanguages() const = 0;
+  // Returns the number of source languages supported.
+  virtual int GetNumberOfSourceLanguages() const = 0;
 
-  // Returns the displayable name for the language at |index|.
-  virtual base::string16 GetLanguageNameAt(int index) const = 0;
+  // Returns the number of target languages supported.
+  virtual int GetNumberOfTargetLanguages() const = 0;
+
+  // Returns the displayable name for the source language at |index|.
+  virtual base::string16 GetSourceLanguageNameAt(int index) const = 0;
+
+  // Returns the displayable name for the target language at |index|.
+  virtual base::string16 GetTargetLanguageNameAt(int index) const = 0;
+
+  // Returns the original language code.
+  virtual std::string GetOriginalLanguageCode() const = 0;
 
   // Returns the original language index.
   virtual int GetOriginalLanguageIndex() const = 0;

@@ -9,6 +9,10 @@
 #include "base/i18n/string_compare.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "components/language/core/common/language_experiments.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -91,7 +95,17 @@ TranslateUIDelegate::TranslateUIDelegate(
       TranslateDownloadManager::GetInstance()->application_locale();
   std::unique_ptr<icu::Collator> collator = CreateCollator(locale);
 
-  languages_.reserve(language_codes.size());
+  // Reserve additional space for unknown language option on Android if feature
+  // is enabled, and on Desktop always.
+  std::vector<std::string>::size_type languages_size = language_codes.size();
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
+    languages_size += 1;
+#elif !defined(OS_IOS)
+  languages_size += 1;
+#endif
+  languages_.reserve(languages_size);
+
   for (std::string& language_code : language_codes) {
     base::string16 language_name =
         l10n_util::GetDisplayNameForLocale(language_code, locale, true);
@@ -123,6 +137,27 @@ TranslateUIDelegate::TranslateUIDelegate(
         // the language codes.
         return lhs.first < rhs.first;
       });
+
+  // Add unknown language option to the front of the list on Android if feature
+  // is enabled, and on Desktop always.
+  bool add_unknown_language_option = true;
+#if defined(OS_IOS)
+  add_unknown_language_option = false;
+#elif defined(OS_ANDROID)
+  if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
+    add_unknown_language_option = false;
+#endif
+  if (add_unknown_language_option) {
+    //  Experiment in place to replace the "Unknown" string with "Detected
+    //  Language".
+    base::string16 unknown_language_string =
+        base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption)
+            ? l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE)
+            : l10n_util::GetStringUTF16(IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE);
+    languages_.emplace_back("und", unknown_language_string);
+    std::rotate(languages_.rbegin(), languages_.rbegin() + 1,
+                languages_.rend());
+  }
 
   for (std::vector<LanguageNamePair>::const_iterator iter = languages_.begin();
        iter != languages_.end(); ++iter) {

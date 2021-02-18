@@ -1089,13 +1089,17 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   translate_manager_->GetLanguageState()->LanguageDetermined(
       translate::kUnknownLanguageCode, true);
 
-  // Translation of unknown source language pages is supported on desktop
-  // platforms, but not mobile.
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
-#else
-  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  // Translation of unknown source language pages is not supported on iOS.
+  // Experiment in place for supporting it on Android.
+  bool unknown_source_supported = true;
+#if defined(OS_ANDROID)
+  if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
+    unknown_source_supported = false;
+#elif defined(OS_IOS)
+  unknown_source_supported = false;
 #endif
+  EXPECT_EQ(translate_manager_->CanManuallyTranslate(),
+            unknown_source_supported);
 }
 
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {

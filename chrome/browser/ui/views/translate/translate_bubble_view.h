@@ -132,6 +132,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            OptionsMenuRespectsBlocklistSite);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
+                           MenuOptionsHiddenOnUnknownSource);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            OptionsMenuNeverTranslateSite);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateLanguageMenuItem);
