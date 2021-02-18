@@ -63,6 +63,7 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
                                NativePixmapCallback callback) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool use_swiftshader,
       bool allow_protected_memory,
       bool enforce_protected_memory) override;
 #endif

@@ -277,8 +277,11 @@ GLOzone* GbmSurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
 
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
-GbmSurfaceFactory::CreateVulkanImplementation(bool allow_protected_memory,
+GbmSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
+                                              bool allow_protected_memory,
                                               bool enforce_protected_memory) {
+  DCHECK(!use_swiftshader)
+      << "Vulkan Swiftshader is not supported on this platform.";
   return std::make_unique<ui::VulkanImplementationGbm>();
 }
 

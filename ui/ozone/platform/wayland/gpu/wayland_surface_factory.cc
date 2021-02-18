@@ -164,9 +164,10 @@ GLOzone* WaylandSurfaceFactory::GetGLOzone(
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 WaylandSurfaceFactory::CreateVulkanImplementation(
+    bool use_swiftshader,
     bool allow_protected_memory,
     bool enforce_protected_memory) {
-  return std::make_unique<VulkanImplementationWayland>();
+  return std::make_unique<VulkanImplementationWayland>(use_swiftshader);
 }
 #endif
 

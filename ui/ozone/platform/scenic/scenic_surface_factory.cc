@@ -243,6 +243,7 @@ void ScenicSurfaceFactory::CreateNativePixmapAsync(
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 ScenicSurfaceFactory::CreateVulkanImplementation(
+    bool use_swiftshader,
     bool allow_protected_memory,
     bool enforce_protected_memory) {
   return std::make_unique<ui::VulkanImplementationScenic>(

@@ -34,8 +34,12 @@ bool InitializeVulkanFunctionPointers(
 
 }  // namespace
 
-VulkanImplementationWayland::VulkanImplementationWayland()
-    : gpu::VulkanImplementation(false /* use_swiftshader */) {}
+VulkanImplementationWayland::VulkanImplementationWayland(bool use_swiftshader)
+    : gpu::VulkanImplementation(use_swiftshader) {
+  // TODO(crbug.com/1179137): Implement the support.
+  if (use_swiftshader)
+    NOTIMPLEMENTED_LOG_ONCE() << "This platform does not support Swiftshader.";
+}
 
 VulkanImplementationWayland::~VulkanImplementationWayland() {}
 

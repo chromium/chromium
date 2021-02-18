@@ -28,6 +28,7 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
   GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool use_swiftshader,
       bool allow_protected_memory,
       bool enforce_protected_memory) override;
 #endif
