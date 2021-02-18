@@ -246,6 +246,14 @@ Polymer({
             'runBatteryChargeTestText')
   },
 
+  /** @protected */
+  getRunTestsAdditionalMessage() {
+    return this.batteryChargeStatus_.batteryState ===
+            chromeos.diagnostics.mojom.BatteryState.kFull ?
+        loadTimeData.getString('batteryChargeTestFullMessage') :
+        '';
+  },
+
   /**
    * Use the current battery percentage to determine which icon to show the
    * user. Each icon covers a range of 6 or 7 percentage values.

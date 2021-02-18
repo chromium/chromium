@@ -38,6 +38,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"batteryChargeRoutineText", IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT},
       {"batteryDischargeRoutineText",
        IDS_DIAGNOSTICS_BATTERY_DISCHARGE_ROUTINE_TEXT},
+      {"batteryChargeTestFullMessage", IDS_DIAGNOSTICS_BATTERY_FULL_MESSAGE},
       {"batteryChargingStatusText", IDS_DIAGNOSTICS_BATTERY_CHARGING},
       {"batteryChipText", IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT},
       {"batteryDischargingStatusText", IDS_DIAGNOSTICS_BATTERY_DISCHARGING},

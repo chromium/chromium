@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './routine_result_list.js';
@@ -94,6 +95,12 @@ Polymer({
 
     /** @type {string} */
     runTestsButtonText: {
+      type: String,
+      value: '',
+    },
+
+    /** @type {string} */
+    additionalMessage: {
       type: String,
       value: '',
     },
@@ -328,8 +335,24 @@ Polymer({
    * @protected
    * @return {boolean}
    */
+  isRunTestsButtonDisabled_() {
+    return this.isTestRunning || this.additionalMessage != '';
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
   shouldHideReportList_() {
     return this.routines.length < 2;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isAdditionalMessageHidden_() {
+    return this.additionalMessage == '';
   },
 
   /** @override */

@@ -1,4 +1,8 @@
 <style include="diagnostics-shared">
+  #additionalMessage {
+    @apply --diagnostics-routine-additional-message-font;
+  }
+
   .learn-more-button {
     background-color: rgba(var(--google-blue-600), .06);
     border-radius: 5px;
@@ -10,6 +14,13 @@
   #learnMoreText {
     color: var(--google-blue-600);
     cursor: pointer;
+  }
+
+  #messageIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    fill: var(--google-grey-700);
+    margin-inline-end: 8px;
   }
 
   .result-list {
@@ -63,6 +74,12 @@
           [[i18n('learnMoreShort')]]
         </span>
       </span>
+      <div hidden$=[[isAdditionalMessageHidden_(additionalMessage)]]>
+        <iron-icon id="messageIcon" icon="diagnostics:warning"></iron-icon>
+        <span id="additionalMessage">
+          [[additionalMessage]]
+        </span>
+      </div>
     </div>
     <div>
       <cr-button id="toggleReportButton" on-click="onToggleReportClicked_"
@@ -73,7 +90,8 @@
           hidden$="[[isRunTestsButtonHidden_(isTestRunning,
               executionStatus_)]]"
           on-click="onRunTestsClicked_"
-          disabled="[[isTestRunning]]">
+          disabled="[[isRunTestsButtonDisabled_(isTestRunning, 
+                                                additionalMessage)]]">
         [[runTestsButtonText]]
       </cr-button>
       <cr-button id="stopTestsButton"

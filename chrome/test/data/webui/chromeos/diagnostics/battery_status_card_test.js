@@ -173,6 +173,18 @@ export function batteryStatusCardTestSuite() {
           assertEquals(
               routineSectionElement.routines[0],
               chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge);
+
+          batteryStatusElement.onBatteryChargeStatusUpdated(
+              fakeBatteryChargeStatus[3]);
+          return flushTasks();
+        })
+        .then(() => {
+          const routineSectionElement = getRoutineSection();
+
+          assertEquals(
+              routineSectionElement.additionalMessage,
+              loadTimeData.getString('batteryChargeTestFullMessage'));
+          assertTrue(isRunTestsButtonDisabled());
         });
   });
 

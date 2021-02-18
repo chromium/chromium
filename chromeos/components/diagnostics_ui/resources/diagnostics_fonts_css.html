@@ -6,6 +6,7 @@
       --diagnostics-data-point-font-family: Roboto, sans-serif;
       --diagnostics-overview-font-family: Roboto, sans-serif;
       --diagnostics-text-badge-font-family: Roboto, sans-serif;
+      --diagnostics-routine-additional-message-font-family: Roboto, sans-serif;
       --diagnostics-routine-name-font-family: Roboto, sans-serif;
 
       --diagnostics-default-font-size: 14px;
@@ -17,6 +18,7 @@
       --diagnostics-chart-tick-font-size: 12px;
       --diagnostics-chart-legend-font-size: 12px;
       --diagnostics-text-badge-font-size: 11px;
+      --diagnostics-routine-additional-message-font-size: 13px;
       --diagnostics-routine-name-font-size: 13px;
 
       --diagnostics-default-font-weight: 500;
@@ -24,12 +26,14 @@
       --diagnostics-data-point-title-font-weight: 400;
       --diagnostics-data-point-subtitle-font-weight: 450;
       --diagnostics-overview-font-weight: 400;
+      --diagnostics-routine-additional-message-font-weight: 400;
 
       --diagnostics-default-text-color: var(--google-grey-900);
       --diagnostics-header-text-color: var(--google-grey-900);
       --diagnostics-overview-text-color: var(--google-grey-900);
       --diagnostics-data-point-title-color: var(--google-grey-900);
       --diagnostics-data-point-subtitle-color: var(--google-grey-700);
+      --diagnostics-routine-additional-message-color: var(--google-grey-900);
       --diagnostics-routine-name-color: var(--google-grey-900);
 
       --diagnostics-default-font: {
@@ -81,6 +85,12 @@
       --diagnostics-routine-name-font: {
           font-family: var(--diagnostics-routine-name-font-family);
           font-size: var(--diagnostics-routine-name-font-size);
+      };
+      --diagnostics-routine-additional-message-font: {
+          color: var(--diagnostics-routine-additional-message-color);
+          font-family: var(--diagnostics-routine-additional-message-font-family);
+          font-size: var(--diagnostics-routine-additional-message-font-size);
+          font-weight: var(--diagnostics-routine-additional-message-font-weight);
       };
     }
   </style>

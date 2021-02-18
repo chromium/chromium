@@ -41,6 +41,8 @@
     is-power-routine="true"
     run-tests-button-text="[[getRunTestsButtonText_(
       batteryChargeStatus_.powerAdapterStatus
-    )]]">
+    )]]"
+    additional-message="[[getRunTestsAdditionalMessage(
+      batteryChargeStatus_.batteryState)]]">
   </routine-section>
 </diagnostics-card>
