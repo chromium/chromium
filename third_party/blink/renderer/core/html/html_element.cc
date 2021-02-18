@@ -714,6 +714,11 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
   if (params.name == html_names::kHiddenAttr && !params.new_value.IsNull()) {
     if (AdjustedFocusedElementInTreeScope() == this)
       blur();
+  } else if (params.name == html_names::kSpellcheckAttr) {
+    if (GetDocument().GetFrame()) {
+      GetDocument().GetFrame()->GetSpellChecker().RespondToChangedEnablement(
+          *this, IsSpellCheckingEnabled());
+    }
   } else if (params.name == html_names::kContenteditableAttr) {
     if (GetDocument().GetFrame()) {
       GetDocument()

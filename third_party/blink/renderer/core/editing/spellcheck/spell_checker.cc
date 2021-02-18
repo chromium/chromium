@@ -540,6 +540,14 @@ void SpellChecker::RespondToChangedContents() {
   idle_spell_check_controller_->SetNeedsInvocation();
 }
 
+void SpellChecker::RespondToChangedEnablement(const HTMLElement& element,
+                                              bool enabled) {
+  if (enabled)
+    idle_spell_check_controller_->SetNeedsInvocation();
+  else
+    RemoveSpellingAndGrammarMarkers(element);
+}
+
 void SpellChecker::RemoveSpellingMarkers() {
   GetFrame().GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::Misspelling());
