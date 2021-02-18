@@ -558,7 +558,15 @@ void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
 }
 
 void WindowTreeHost::OnCompositingShuttingDown(ui::Compositor* compositor) {
+  for (auto& observer : observers_)
+    observer.OnCompositingShuttingDown(this);
   compositor->RemoveObserver(this);
+}
+
+void WindowTreeHost::OnFrameSinksToThrottleUpdated(
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  for (auto& observer : observers_)
+    observer.OnCompositingFrameSinksToThrottleUpdated(this, ids);
 }
 
 }  // namespace aura

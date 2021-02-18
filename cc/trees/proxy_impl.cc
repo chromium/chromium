@@ -250,6 +250,11 @@ bool ProxyImpl::IsInSynchronousComposite() const {
   return false;
 }
 
+void ProxyImpl::FrameSinksToThrottleUpdated(
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  NOTREACHED();
+}
+
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion,
     LayerTreeHost* layer_tree_host,

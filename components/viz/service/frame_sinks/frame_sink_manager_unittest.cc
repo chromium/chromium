@@ -468,6 +468,75 @@ TEST_F(FrameSinkManagerTest, ThrottleBeginFrame) {
                                         client_d->frame_sink_id());
 }
 
+// Verifies the the begin frames are throttled properly for the requested frame
+// sinks and their children.
+TEST_F(FrameSinkManagerTest, Throttle) {
+  // root -> A -> B
+  //      -> C -> D
+  auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto client_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+  auto client_c = CreateCompositorFrameSinkSupport(kFrameSinkIdC);
+  auto client_d = CreateCompositorFrameSinkSupport(kFrameSinkIdD);
+
+  // Set up the hierarchy.
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_a->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                      client_b->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_c->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_c->frame_sink_id(),
+                                      client_d->frame_sink_id());
+
+  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
+
+  std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
+                               kFrameSinkIdC, kFrameSinkIdD};
+
+  // By default, a CompositorFrameSinkSupport shouldn't have its
+  // |begin_frame_interval| set.
+  for (auto& id : ids) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
+              base::TimeDelta());
+  }
+
+  manager_.Throttle({kFrameSinkIdRoot}, interval);
+  for (auto& id : ids) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id), interval);
+  }
+
+  manager_.Throttle({}, base::TimeDelta());
+  for (auto& id : ids) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
+              base::TimeDelta());
+  }
+
+  manager_.Throttle({kFrameSinkIdB, kFrameSinkIdC}, interval);
+  for (auto& id : {kFrameSinkIdB, kFrameSinkIdC, kFrameSinkIdD}) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id), interval);
+  }
+  for (auto& id : {kFrameSinkIdA, kFrameSinkIdRoot}) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
+              base::TimeDelta());
+  }
+
+  manager_.Throttle({}, base::TimeDelta());
+  for (auto& id : ids) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
+              base::TimeDelta());
+  }
+
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_a->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                        client_b->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_c->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_c->frame_sink_id(),
+                                        client_d->frame_sink_id());
+}
+
 namespace {
 
 enum RegisterOrder { REGISTER_HIERARCHY_FIRST, REGISTER_CLIENTS_FIRST };

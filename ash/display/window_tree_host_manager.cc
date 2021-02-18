@@ -13,6 +13,7 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/root_window_transformers.h"
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/host/root_window_transformer.h"
@@ -595,6 +596,8 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
 }
 
 void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
+  Shell::Get()->frame_throttling_controller()->RemoveObservation(
+      host_to_delete->AsWindowTreeHost());
   ClearDisplayPropertiesOnHost(host_to_delete);
   aura::Window* root_being_deleted = GetWindow(host_to_delete);
   RootWindowController* controller =
@@ -868,6 +871,8 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   AshWindowTreeHost* ash_host =
       AshWindowTreeHost::Create(params_with_bounds).release();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
+  DCHECK(Shell::Get()->frame_throttling_controller());
+  Shell::Get()->frame_throttling_controller()->AddObservation(host);
   DCHECK(!host->has_input_method());
   if (!input_method_) {  // Singleton input method instance for Ash.
     input_method_ = ui::CreateInputMethod(this, host->GetAcceleratedWidget());
