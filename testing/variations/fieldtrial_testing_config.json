@@ -2646,6 +2646,21 @@
             ]
         }
     ],
+    "DexFixer": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DexFixer"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiceMultilogin": [
         {
             "platforms": [
