@@ -188,7 +188,8 @@ id<GREYMatcher> NoBookmarksLabel() {
 // account while the dialog is still opened.
 // TODO(crbug.com/1166148) This test needs to be moved back into
 // accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
-- (void)testRemovePrimaryAccountWhileSignOutConfirmation {
+// TODO(crbug.com/1179458): Re-enable.
+- (void)DISABLED_testRemovePrimaryAccountWhileSignOutConfirmation {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -250,7 +251,8 @@ id<GREYMatcher> NoBookmarksLabel() {
 // URL.
 // TODO(crbug.com/1166148) This test needs to be moved back into
 // accounts_table_egtest.mm once kSimplifySignOutIOS is removed.
-- (void)testRemoveInterrupSignOutConfirmation {
+// TODO(crbug.com/1179458): Re-enable.
+- (void)DISABLED_testRemoveInterrupSignOutConfirmation {
   if (@available(iOS 13, *)) {
     // TODO(crbug.com/1179231) Enable the test for iOS 13.
     EARL_GREY_TEST_DISABLED(@"Fails on iOS 13.");
