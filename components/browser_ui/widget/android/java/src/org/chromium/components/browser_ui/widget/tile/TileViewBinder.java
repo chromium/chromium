@@ -1,14 +1,14 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.chrome.browser.suggestions.tile;
+package org.chromium.components.browser_ui.widget.tile;
 
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

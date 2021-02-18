@@ -2723,9 +2723,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_REMOVE_ALL" desc="Context menu option to clear the list of recently closed tabs">
         Remove all
       </message>
-      <message name="IDS_ACCESSIBILITY_NTP_OFFLINE_BADGE" desc="Content description for the badge that indicates offline availability of a most visited item or content suggestion on the new tab page.">
-        Available offline
-      </message>
       <message name="IDS_NTP_LEARN_MORE_ABOUT_SUGGESTED_CONTENT" desc="Text in the footer of the New Tab Page. Part of the text is a link to a help center page where the user can learn more about suggested content.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph> about suggested content
       </message>

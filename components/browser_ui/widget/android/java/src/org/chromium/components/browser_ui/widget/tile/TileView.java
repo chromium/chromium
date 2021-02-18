@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.suggestions.tile;
+package org.chromium.components.browser_ui.widget.tile;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.R;
 
 /**
  * The view for a tile with icon and text.
@@ -22,7 +22,7 @@ public class TileView extends FrameLayout {
     private ImageView mBadgeView;
     private TextView mTitleView;
     private Runnable mOnFocusViaSelectionListener;
-    protected ImageView mIconView;
+    private ImageView mIconView;
 
     /**
      * Constructor for inflating from XML.
@@ -48,7 +48,8 @@ public class TileView extends FrameLayout {
      * @param icon The icon to display on the tile.
      * @param titleLines The number of text lines to use for the tile title.
      */
-    void initialize(String title, boolean showOfflineBadge, Drawable icon, int titleLines) {
+    protected void initialize(
+            String title, boolean showOfflineBadge, Drawable icon, int titleLines) {
         setOfflineBadgeVisibility(showOfflineBadge);
         setIconDrawable(icon);
         setTitle(title, titleLines);
@@ -62,7 +63,7 @@ public class TileView extends FrameLayout {
     }
 
     /** Shows or hides the offline badge to reflect the offline availability. */
-    void setOfflineBadgeVisibility(boolean showOfflineBadge) {
+    protected void setOfflineBadgeVisibility(boolean showOfflineBadge) {
         mBadgeView.setVisibility(showOfflineBadge ? VISIBLE : GONE);
     }
 
@@ -70,6 +71,17 @@ public class TileView extends FrameLayout {
     public void setTitle(String title, int titleLines) {
         mTitleView.setLines(titleLines);
         mTitleView.setText(title);
+    }
+
+    /**
+     * Returns the ImageView for the icon.
+     * This method is only to allow legacy code to continue to work. New code should not use this
+     * method.
+     * TODO(crbug.com/1179455): Clean up all usages and remove this method.
+     */
+    @Deprecated
+    public ImageView getIconView() {
+        return mIconView;
     }
 
     /** Specify the handler that will be invoked when this tile is highlighted by the user. */

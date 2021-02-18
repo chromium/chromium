@@ -114,8 +114,8 @@ public class TileRenderer {
 
         for (Tile tile : sectionTiles) {
             SuggestionsTileView tileView = oldTileViews.get(tile.getData());
-            if (tileView == null || tileView.mIconView == null
-                    || tileView.mIconView.getDrawable() == null
+            if (tileView == null || tileView.getIconView() == null
+                    || tileView.getIconView().getDrawable() == null
                     || tile.getSource() == TileSource.EXPLORE) {
                 tileView = buildTileView(tile, parent, setupDelegate);
             }

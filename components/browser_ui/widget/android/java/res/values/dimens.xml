@@ -102,4 +102,27 @@
   <!-- Query tile container dimensions -->
   <dimen name="tile_grid_inter_tile_padding">12dp</dimen>
 
+    <!-- Tile view dimensions -->
+    <dimen name="tile_view_bg_corner_radius">2dp</dimen>
+    <dimen name="tile_view_width">80dp</dimen>
+    <dimen name="tile_view_width_condensed">64dp</dimen>
+    <dimen name="tile_view_min_height">86dp</dimen>
+    <dimen name="tile_view_icon_size">48dp</dimen>
+    <dimen name="tile_view_icon_size_modern">24dp</dimen>
+    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <dimen tools:ignore="PxUsage" name="tile_view_icon_min_size">24px</dimen>
+    <dimen name="tile_view_icon_corner_radius">4dp</dimen>
+    <dimen name="tile_view_icon_text_size">20dp</dimen>
+    <dimen name="tile_view_monogram_size_modern">26dp</dimen>
+    <dimen name="tile_view_icon_margin_top_modern">19dp</dimen>
+    <dimen name="tile_view_monogram_margin_top_modern">18dp</dimen>
+    <dimen name="tile_view_icon_background_margin_top_modern">7dp</dimen>
+    <dimen name="tile_view_offline_badge_size_modern">16dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_top_modern">7dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_end_modern">9dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_top_modern_condensed">6dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_end_modern_condensed">7dp</dimen>
+    <dimen name="tile_view_padding">4dp</dimen>
+    <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
+
 </resources>
