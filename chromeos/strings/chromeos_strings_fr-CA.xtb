@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution)</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Service de méthode d'entrée Chrome OS</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
-<translation id="1980044825731880088">Vitesse du processeur</translation>
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2008685064673031089">Recherche de numéros premiers</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">La vitesse du processeur est actuellement limitée afin d'économiser la pile ou de faire baisser la température</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
@@ -231,7 +228,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6137767437444130246">Certificat utilisateur</translation>
 <translation id="6146993107019042706">Pour terminer cette opération, entrez votre nouveau mot de passe</translation>

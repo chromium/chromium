@@ -41,13 +41,6 @@
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1258753120186372309">Sváteční logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Seznam četby</translation>
-<translation id="1265432434921422324">Izolovaný prostor k ochraně soukromí je trvalá iniciativa pro zachování otevřeného webu, která vás bude pomáhat chránit před sledováním.
-
-Weby v současné době k poskytování důležitých služeb, jako je zobrazování relevantních reklam nebo měření výkonnosti webu, využívají mnoho technologií, jako například soubory cookie třetích stran.
-
-Izolovaný prostor k ochraně soukromí zachovává zdravé prostředí otevřeného webu, protože přináší lepší možnosti, jak tyto služby poskytovat i bez narušení webů, a zároveň zabraňuje tomu, abyste byli na webu tajně sledováni.
-
-Izolovaný prostor k ochraně soukromí se stále aktivně vyvíjí a je dostupný jen ve vybraných oblastech. Prozatím mohou weby Izolovaný prostor k ochraně soukromí vyzkoušet, i když budou dál používat aktuální technologie, jako jsou soubory cookie třetích stran.</translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1285310382777185058">Změna jazyka</translation>
@@ -654,7 +647,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5581519193887989363">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK1" />nastavení<ph name="END_LINK1" />.</translation>
 <translation id="5599455543593328020">Anonymní režim</translation>
 <translation id="5599941490345670218">Asistent Google může na webech provádět různé akce za vás</translation>
-<translation id="5606787249466187650">Prozkoumat izolovaný prostor k ochraně soukromí</translation>
 <translation id="5620163320393916465">Nemáte žádná uložená hesla</translation>
 <translation id="5620928963363755975">Stažené soubory a stránky můžete najít pomocí tlačítka Další možnosti</translation>
 <translation id="562289928968387744">Spravovat reakce</translation>

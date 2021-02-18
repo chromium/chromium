@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Neveljavna koda PUK.</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (št. niti: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Podajalnik dokumentov (enostransko)</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Storitev načina vnosa v okolju OS Chrome</translation>
 <translation id="1947737735496445907">Natisnjeno</translation>
 <translation id="1979103255016296513">Rok za spremembo gesla je potekel</translation>
-<translation id="1980044825731880088">Hitrost CPE-ja</translation>
 <translation id="1999615961760456652">Prestrezni portal</translation>
 <translation id="2008685064673031089">Začetno iskanje</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Baterija je polna</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">Hitrost CPE-ja je trenutno omejena zaradi ohranjanja energije baterije ali znižanja temperature.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Povezava ni vzpostavljena</translation>
 <translation id="3749289110408117711">Ime datoteke</translation>
@@ -231,7 +228,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6104112872696127344">Optično branje je preklicano</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>

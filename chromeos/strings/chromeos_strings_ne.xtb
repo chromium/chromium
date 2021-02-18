@@ -33,7 +33,6 @@
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड)</translation>
 <translation id="1641857168437328880">डकुमेन्ट फिडर (एकतर्फी)</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Chrome OS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
-<translation id="1980044825731880088">CPU को गति</translation>
 <translation id="1999615961760456652">क्याप्टिभ पोर्टल</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
 <translation id="2080070583977670716">थप सेटिङहरू</translation>
@@ -107,7 +105,6 @@
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
-<translation id="3712633734921637892">ब्याट्री लामो समयसम्म टिक्ने बनाउन वा यसको तापक्रम घटाउन CPU को गति हाल सीमित पारिएको छ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
 <translation id="3748026146096797577">जोडिएको छैन</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
@@ -228,7 +225,6 @@
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
 <translation id="6137767437444130246">प्रयोगकर्ताको प्रमाणपत्र</translation>
 <translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>

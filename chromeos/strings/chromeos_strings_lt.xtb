@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Netinkamas PUK.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (gijų: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">„Chrome“ OS įvesties metodo paslauga</translation>
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
-<translation id="1980044825731880088">Centrinio procesoriaus sparta</translation>
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
 <translation id="2008685064673031089">Pagrindinė paieška</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
-<translation id="3712633734921637892">Centrinio procesoriaus sparta šiuo metu apribota siekiant apsaugot akumuliatorių ar sumažinti temperatūrą</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
@@ -231,7 +228,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Prisijungęs</translation>
 <translation id="6137767437444130246">Naudotojo sertifikatas</translation>
 <translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>

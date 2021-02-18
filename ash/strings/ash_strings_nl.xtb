@@ -66,7 +66,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1426410128494586442">Ja</translation>
 <translation id="144853431011121127">Meldingen van je telefoon krijgen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Taalinstellingen weergeven</translation>
-<translation id="1460620680449458626">Volume is gedempt.</translation>
+<translation id="1460620680449458626">Volume staat uit.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="147310119694673958">Telefoonbatterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Zwevend toegankelijkheidsmenu</translation>
@@ -157,7 +157,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2277103315734023688">Vooruit zoeken</translation>
 <translation id="2292698582925480719">Weergaveschaal</translation>
 <translation id="229397294990920565">Mobiele data uitschakelen…</translation>
-<translation id="2295777434187870477">Microfoon is ingeschakeld. Als je deze uitzet, wordt de invoer gedempt.</translation>
+<translation id="2295777434187870477">Microfoon staat aan. Als je deze uitzet, wordt geen geluid waargenomen.</translation>
 <translation id="2298170939937364391">'Vergrootglas voor volledig scherm' is ingeschakeld. Druk nog een keer op Ctrl+Zoeken+M om dit uit te schakelen.</translation>
 <translation id="2301480084224169662"><ph name="DESC_TEXT" />: Klik op het dialoogvenster om het resultaat in de Assistent te bekijken.</translation>
 <translation id="2302092602801625023">Dit account wordt beheerd door Family Link</translation>
@@ -263,7 +263,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="320207200541803018">Timer instellen</translation>
 <translation id="3203405173652969239">'Toegang via schakelaar' ingeschakeld</translation>
 <translation id="3207953481422525583">Gebruikersinstellingen</translation>
-<translation id="3217205077783620295">Volume staat aan. Als je het uitzet, wordt de audio gedempt.</translation>
+<translation id="3217205077783620295">Volume staat aan. Als je het uitzet, hoor je geen audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andere meldingen</translation>
 <translation id="3236488194889173876">Geen mobiel netwerk beschikbaar</translation>
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
@@ -565,7 +565,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5909862606227538307">Inactief bureau.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
-<translation id="5920710855273935292">Microfoon is gedempt.</translation>
+<translation id="5920710855273935292">Microfoon staat uit.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is ingeschakeld.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
 <translation id="595202126637698455">Bijhouden van prestaties ingeschakeld</translation>
@@ -685,7 +685,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6910714959251846841">Deze update vereist een powerwash van je apparaat. Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6945221475159498467">Selecteren</translation>
-<translation id="6961121602502368900">Telefoon dempen is niet beschikbaar in je werkprofiel</translation>
+<translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Aan de slag</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
@@ -950,7 +950,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="9084606467167974638">Positie van menu wijzigen</translation>
 <translation id="9089416786594320554">Invoermethoden</translation>
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
-<translation id="9098969848082897657">Telefoon dempen</translation>
+<translation id="9098969848082897657">Geluid van telefoon uitzetten</translation>
 <translation id="9099154003160514616">Lacros-update beschikbaar</translation>
 <translation id="9133335900048457298">Kan geen beschermde content opnemen</translation>
 <translation id="9151726767154816831">Opnieuw opstarten en de functie Powerwash gebruiken om bij te werken</translation>

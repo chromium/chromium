@@ -136,7 +136,7 @@
 <translation id="4950364064308314478">Kiezer voor lokale datum en tijd weergeven</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> geselecteerd</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> geselecteerd</translation>
-<translation id="4992066212339426712">Dempen opheffen</translation>
+<translation id="4992066212339426712">Geluid aanzetten</translation>
 <translation id="49969490063480558">Geef een adresgedeelte op na '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is onvolledig.</translation>
 <translation id="5022314756875057021">rijgroep</translation>
 <translation id="5034860022980953847">voortgangsindicator</translation>
@@ -159,7 +159,7 @@
 <translation id="5468998798572797635">volledig scherm sluiten</translation>
 <translation id="5516424706154626233">datumkiezer</translation>
 <translation id="5537725057119320332">Cast</translation>
-<translation id="5546461542133609677">dempen opheffen</translation>
+<translation id="5546461542133609677">geluid aanzetten</translation>
 <translation id="5608153257855394627">markeren</translation>
 <translation id="561939826962581046">tijd</translation>
 <translation id="5630795885300617244">Dubbeltik links of rechts om 10 seconden over te slaan</translation>
@@ -167,7 +167,7 @@
 <translation id="5643186887447432888">knop</translation>
 <translation id="5677946354068040947">meer opties</translation>
 <translation id="576709008726043716">inleiding</translation>
-<translation id="57838592816432529">Dempen</translation>
+<translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5787939484346677755">uitgevouwen, er zijn opties voor automatisch aanvullen beschikbaar.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
@@ -210,7 +210,7 @@
 <translation id="6820355525329141109">Kan plug-in niet laden.</translation>
 <translation id="6820615603175220800">bibliografiereferentie</translation>
 <translation id="6831465880655513317">Kleurenwiel met tweedimensionale schuifregelaar om verzadiging en lichtheid te selecteren</translation>
-<translation id="6843725295806269523">dempen</translation>
+<translation id="6843725295806269523">geluid uitzetten</translation>
 <translation id="6885760532393684712">directory</translation>
 <translation id="689129560213475294">colofon</translation>
 <translation id="6934078000481955284">blok met geciteerde tekst</translation>

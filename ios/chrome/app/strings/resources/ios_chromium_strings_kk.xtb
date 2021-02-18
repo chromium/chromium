@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">Chromium Canary-де қолдау көрсетілмейді.</translation>
 <translation id="3639997914391704523">Google есептік жазбаңызбен кіргенде, Chromium сіздің құпия сөздеріңізді тексере алады.</translation>
 <translation id="3805899903892079518">Chromium сурет пен бейнелерге кіре алмайды. "iOS параметрлері &gt; Құпиялылық &gt; Фотосуреттер" арқылы рұқсат беру қажет.</translation>
+<translation id="3946918322491238254">Осы құрылғыдағы бетбелгілерді, тарихты, құпия сөздерді және басқа параметрлерді көре аласыз. Егер өзгерістер енгізсеңіз, олар сіздің есептік жазбаңызбен синхрондалмайды.</translation>
 <translation id="4099085513035183040">Chromium (бета нұсқасы) браузерінде қолдау көрсетілмейді.</translation>
 <translation id="4166206055865952171">Chromium браузерін әдепкі браузер ету</translation>
 <translation id="4555020257205549924">Бұл функция қосылған кезде, Chromium басқа тілдерде жазылған беттерді Google Translate арқылы аударуды ұсынады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">Ешқандай құпия сөз сақталмаған. Құпия сөздер сақталған кезде, Chromium оларды тексере алады.</translation>
 <translation id="5308226104666789935">Chromium жаңа нұсқалардың бар-жоғын тексере алмайды.</translation>
 <translation id="5521125884468363740">Chromium браузерін кез келген жерде пайдаланғанда, қойындыларды көру үшін есептік жазбаға кіріп, синхрондауды қосыңыз.</translation>
+<translation id="5544795779875591523">Chromium деректерін осы құрылғыдан өшіру керек пе әлде сақтау керек пе?</translation>
 <translation id="5573014823074921752">Chromium кеңесі. Қосымша қойынды опциялары үшін экранның төменгі не жоғарғы жағындағы құралдар тақтасындағы "Қойындыларды көрсету" түймесін түртіп, ұстап тұрыңыз.</translation>
 <translation id="5700709190537129682">Chromium құпия сөздеріңізді тексере алмайды.</translation>
 <translation id="5777187867430702742">Chromium беті</translation>
@@ -78,8 +80,10 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Барлық құқықтар қорғалған.</translation>
 <translation id="8663480472502753423">Chromium-дi жаңартып тұрады.</translation>
 <translation id="8776843108004031667">Бұл есептік жазба және кез келген сақталмаған дерек Chromium браузерінен өшіріледі.</translation>
+<translation id="894437814105052438">Сіз есептік жазбадан шыққанда, Chromium жаңа деректерді Google есептік жазбаңызбен синхрондамайды. Бұған дейін синхрондалған деректер есептік жазбаңызда қалады.</translation>
 <translation id="9022552996538154597">Chromium жүйесіне кіру</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="921174536258924340">Chromium барлық құпия сөзді тексере алмады. Ертең қайталап көріңіз немесе <ph name="BEGIN_LINK" />құпия сөздерді Google есептік жазбасында тексеріңіз<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">Сіздің есептік жазбаңызды <ph name="HOSTED_DOMAIN" /> басқарады, сондықтан Chromium деректеріңіз бұл құрылғыдан өшіріледі.</translation>
 </translationbundle>

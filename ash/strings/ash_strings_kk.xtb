@@ -11,6 +11,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> қосылды</translation>
 <translation id="1047017786576569492">экранның бір бөлігі</translation>
 <translation id="1047773237499189053">Жаңа функция қолжетімді. Толығырақ ақпарат алу үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
+<translation id="1052916631016577720">Элементті сканерлеу</translation>
 <translation id="1056775291175587022">Желі табылмады</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Ұялы құрылғының MAC мекенжайы: <ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">Assistant жүктелуде...</translation>
 <translation id="4356930093361201197">жоғары контраст режимі</translation>
 <translation id="4371348193907997655">Трансляция параметрлері</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигнал күші <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
 <translation id="4378551569595875038">Қосылуда…</translation>
 <translation id="4379531060876907730">Стилус құралдары</translation>
 <translation id="4389184120735010762">Бекітілген ұлғайтқышқа арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">Бұл монитор <ph name="DEVICE_TYPE" /> құрылғысымен үйлеспейді (мониторға қолдау көрсетілмейді).</translation>
 <translation id="6043994281159824495">Қазір шығу</translation>
 <translation id="6047696787498798094">Басқа пайдаланушыға ауысқан кезде, экран бөлісілмейді. Жалғастыруды қалайсыз ба?</translation>
+<translation id="6050368268239407309">Презентация құралдары</translation>
 <translation id="6054305421211936131">Смарт картамен кіру</translation>
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>

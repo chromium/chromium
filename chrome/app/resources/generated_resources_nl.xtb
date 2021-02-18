@@ -1529,7 +1529,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Invoerinstellingen wijzigen</translation>
 <translation id="2693176596243495071">Er is een onbekende fout opgetreden. Probeer het later opnieuw of neem contact op met je beheerder als het probleem blijft optreden.</translation>
-<translation id="2695749433451188613">Internetafdrukprotocol (HTTPS)</translation>
 <translation id="2699911226086014512">Bewerking met pincode mislukt met code <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Inloggen, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Leeslijst</translation>
@@ -1791,7 +1790,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2966216232069818096">Laat de Assistent informatie op het scherm gebruiken om je te helpen</translation>
 <translation id="2966937470348689686">Android-voorkeuren beheren</translation>
 <translation id="2972581237482394796">&amp;Opnieuw</translation>
-<translation id="2973324205039581528">Geluid van site dempen</translation>
+<translation id="2973324205039581528">Geluid van site uitzetten</translation>
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
 <translation id="2979520980928493164">Zorg dat Chrome beter functioneert</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
@@ -1984,7 +1983,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome raadt je aan dit wachtwoord nu te checken}other{Chrome raadt je aan deze wachtwoorden nu te checken}}</translation>
 <translation id="3201422919974259695">Hier worden de beschikbare USB-apparaten weergegeven.</translation>
 <translation id="3202131003361292969">Pad</translation>
-<translation id="3202173864863109533">De audio van dit tabblad wordt gedempt.</translation>
+<translation id="3202173864863109533">De audio van dit tabblad wordt uitgezet.</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Nu controleren</translation>
 <translation id="3208703785962634733">Niet bevestigd</translation>
@@ -2007,7 +2006,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3239373508713281971">Tijdslimiet verwijderd voor <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Selecteer de hoofddirectory van de extensie die je wilt inpakken. Als je een extensie wilt updaten, selecteer je ook het privésleutelbestand om dit opnieuw te gebruiken.</translation>
 <translation id="3242905690080165035">Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regio's. Voorlopig kunnen sites Privacy Sandbox uitproberen en tegelijkertijd gebruik blijven maken van huidige webtechnologieën, zoals cookies van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="3244294424315804309">Geluid blijven dempen</translation>
+<translation id="3244294424315804309">Geluid blijft uit</translation>
 <translation id="3246107497225150582">{0,plural, =1{Apparaat binnen een dag updaten}other{Apparaat binnen # dagen updaten}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrijk. Neem nu even de tijd om <ph name="BEGIN_LINK" />je extensies te controleren<ph name="END_LINK" />.</translation>
@@ -2266,7 +2265,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3528498924003805721">Snelkoppelingsdoelen</translation>
 <translation id="3532273508346491126">Synchronisatiebeheer</translation>
 <translation id="3532521178906420528">Verbinding met netwerk maken...</translation>
-<translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio gedempt</translation>
+<translation id="353316712352074340"><ph name="WINDOW_TITLE" />: audio uitgezet</translation>
 <translation id="3537881477201137177">Dit kan later in Instellingen worden aangepast</translation>
 <translation id="3538066758857505094">Fout bij verwijderen van Linux. Probeer het opnieuw.</translation>
 <translation id="354060433403403521">Netspanningsadapter</translation>
@@ -2325,7 +2324,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3599221874935822507">Verhoogd</translation>
 <translation id="3599863153486145794">Hiermee wordt de geschiedenis van alle ingelogde apparaten gewist. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3600051066689725006">Informatie over webverzoek</translation>
-<translation id="3600792891314830896">Sites dempen die geluid afspelen</translation>
+<translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
 <translation id="360180734785106144">je nieuwe functies aan te bieden zodra deze beschikbaar komen</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3602870520245633055">Afdrukken en scannen</translation>
@@ -2732,7 +2731,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4021909830315618592">Buildgegevens kopiëren</translation>
 <translation id="4022426551683927403">Toevoegen &amp;aan woordenboek</translation>
 <translation id="4023146161712577481">Apparaatconfiguratie bepalen.</translation>
-<translation id="4025039777635956441">Geluid van geselecteerde site dempen</translation>
+<translation id="4025039777635956441">Geluid van geselecteerde site uitzetten</translation>
 <translation id="4027804175521224372">(Dit kan handiger: <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Invoermethoden toevoegen</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
@@ -3283,7 +3282,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4676595058027112862">Telefoonhub, meer informatie</translation>
 <translation id="4677772697204437347">GPU-geheugen</translation>
 <translation id="467823995058589466">Camera staat uit</translation>
-<translation id="4680105648806843642">Het geluid is gedempt op deze pagina</translation>
+<translation id="4680105648806843642">Het geluid is uitgezet op deze pagina</translation>
 <translation id="4681453295291708042">'Dichtbij delen' uitschakelen</translation>
 <translation id="4681930562518940301">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
 <translation id="4682551433947286597">Achtergronden worden weergegeven op het inlogscherm.</translation>
@@ -3330,7 +3329,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4742334355511750246">Geen toestemming om afbeeldingen weer te geven</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Meer informatie over hoe je apps updatet<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{Geluid van site dempen opheffen}other{Geluid van sites dempen opheffen}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{Geluid van site aanzetten}other{Geluid van sites aanzetten}}</translation>
 <translation id="4746351372139058112">Berichten</translation>
 <translation id="4750394297954878236">Suggesties</translation>
 <translation id="475088594373173692">Eerste gebruiker</translation>
@@ -3520,7 +3519,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4972164225939028131">Onjuist wachtwoord</translation>
 <translation id="4972737347717125191">Sites kunnen vragen of ze apparaten en gegevens voor virtual reality mogen gebruiken</translation>
 <translation id="4973307593867026061">Printers toevoegen</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{Geluid van site dempen}other{Geluid van sites dempen}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{Geluid van site uitzetten}other{Geluid van sites uitzetten}}</translation>
 <translation id="4974733135013075877">Afsluiten en kinderslot</translation>
 <translation id="4976009197147810135">Verticaal splitsen</translation>
 <translation id="4977942889532008999">Toegang bevestigen</translation>
@@ -4203,7 +4202,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5781092003150880845">Synchroniseren als <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Opdrachten verzenden naar <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Vertalen...</translation>
-<translation id="57838592816432529">Dempen</translation>
+<translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5785583009707899920">Chrome-bestandshulpprogramma's</translation>
 <translation id="5787146423283493983">Sleutelovereenkomst</translation>
 <translation id="5787420647064736989">Apparaatnaam</translation>
@@ -5237,7 +5236,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6977877318519394148">Rosetta installeren</translation>
 <translation id="6978121630131642226">Zoekmachines</translation>
 <translation id="6979044105893951891">Beheerde gastsessies starten en beëindigen</translation>
-<translation id="6979440798594660689">Dempen (standaard)</translation>
+<translation id="6979440798594660689">Geluid uitzetten (standaard)</translation>
 <translation id="6979737339423435258">Alles</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6983507711977005608">Verbinding verbreken met netwerk voor instant-tethering</translation>
@@ -5327,7 +5326,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7075513071073410194">PKCS nr. 1 MD5 met RSA-encryptie</translation>
 <translation id="7075625805486468288">HTTPS/SSL-certificaten en -instellingen beheren</translation>
 <translation id="7076293881109082629">Inloggen</translation>
-<translation id="7076878155205969899">Geluid dempen</translation>
+<translation id="7076878155205969899">Geluid uitzetten</translation>
 <translation id="7077829361966535409">De inlogpagina kan niet worden geladen met de huidige proxyinstellingen. <ph name="GAIA_RELOAD_LINK_START" />Probeer opnieuw in te loggen<ph name="GAIA_RELOAD_LINK_END" /> of gebruik andere <ph name="PROXY_SETTINGS_LINK_START" />proxyinstellingen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netwerken</translation>
 <translation id="7078386829626602215">Geen apparaat gedetecteerd <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -6096,7 +6095,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7946586320617670168">Herkomst moet zijn beveiligd</translation>
 <translation id="794676567536738329">Rechten bevestigen</translation>
 <translation id="7947962633355574091">Adres van video k&amp;opiëren</translation>
-<translation id="7950040156882184764">Internetafdrukprotocol (HTTP)</translation>
 <translation id="7951265006188088697">Ga voor het toevoegen of beheren van Google Pay-betaalmethoden naar je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
 <translation id="795282463722894016">Herstellen voltooid</translation>
@@ -6469,7 +6467,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8368859634510605990">Alle bookmarks &amp;openen</translation>
 <translation id="8370294614544004647">Slaapstand als de laptop wordt gesloten</translation>
 <translation id="8371695176452482769">Begin nu te spreken</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{Geluid van site dempen}other{Geluid van sites dempen}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{Geluid van site uitzetten}other{Geluid van sites uitzetten}}</translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8373652277231415614">Gedeelde directory's voor Crostini</translation>
 <translation id="8376384591331888629">Inclusief cookies van derden op deze site</translation>
@@ -7203,7 +7201,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9180281769944411366">Dit proces kan enkele minuten duren. De Linux-container wordt gestart.</translation>
 <translation id="9180380851667544951">Site kan je scherm delen</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
-<translation id="9185818139207739329">Proeffuncties van Privacy Sandbox aanzetten</translation>
 <translation id="9186963452600581158">Inloggen met het Google-account van een kind</translation>
 <translation id="9188732951356337132">Verzend gebruiks- en diagnostische gegevens. Dit apparaat verzendt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt ingeschakeld voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. <ph name="BEGIN_LINK2" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Je Android-telefoon gebruiken als beveiligingssleutel</translation>

@@ -41,13 +41,6 @@
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1258753120186372309">Google'i Doodle'i vigurlogo: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Lugemisloend</translation>
-<translation id="1265432434921422324">Privaatsuse liivakast on käimasolev initsiatiiv säilitada avatud veebi, mis aitab teid jälgimismehhanismide eest kaitsta.
-
-Praegu kasutavad veebisaidid mitmeid tehnoloogiaid (nt kolmandate osapoolte küpsisefailid), et pakkuda olulisi funktsioone, nagu asjakohaste reklaamide näitamine ja saidi toimivuse mõõtmine.
-
-Privaatsuse liivakast säilitab avatud veebi elujõulisuse, luues paremaid võimalusi nende teenuste pakkumiseks ilma saite rikkumata. Samas takistatakse teie salajast jälgimist veebis.
-
-Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirkondades. Praegu võivad saidid privaatsuse liivakasti proovida, kasutades jätkuvalt ka muid veebitehnoloogiaid, nagu kolmandate osapoolte küpsisefailid.</translation>
 <translation id="1266864766717917324">Üksust <ph name="CONTENT_TYPE" /> ei õnnestunud jagada</translation>
 <translation id="1283039547216852943">Laiendamiseks puudutage</translation>
 <translation id="1285310382777185058">Keele muutmine</translation>
@@ -654,7 +647,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5581519193887989363">Jaotises <ph name="BEGIN_LINK1" />Seaded<ph name="END_LINK1" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="5599455543593328020">Inkognito režiim</translation>
 <translation id="5599941490345670218">Google'i assistent saab veebisaitidel teie eest toiminguid teha</translation>
-<translation id="5606787249466187650">Avastage privaatsuse liivakasti</translation>
 <translation id="5620163320393916465">Salvestatud paroole ei ole</translation>
 <translation id="5620928963363755975">Leidke oma failid ja lehed jaotisest Allalaadimised, kasutades nuppu Rohkem valikuid</translation>
 <translation id="562289928968387744">Reaktsioonide haldamine</translation>

@@ -30,7 +30,7 @@
 <translation id="3472200483164753384">Non disponible dans Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
-<translation id="3946918322491238254">Vos favoris, votre historique, vos mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées dans votre compte.</translation>
+<translation id="3946918322491238254">Vos favoris, votre historique, vos mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
 <translation id="4099085513035183040">Non disponible dans la version bêta de Chromium</translation>
 <translation id="4166206055865952171">Définir Chromium comme votre navigateur par défaut</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -42,7 +42,7 @@
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5308226104666789935">Chromium ne parvient pas à rechercher les mises à jour</translation>
 <translation id="5521125884468363740">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
-<translation id="5544795779875591523">Voulez-vous effacer ou conserver les données Chromium de cet appareil ?</translation>
+<translation id="5544795779875591523">Indiquez si vous voulez effacer ou conserver les données Chromium de cet appareil.</translation>
 <translation id="5573014823074921752">Astuce Chromium : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
 <translation id="5700709190537129682">Chromium ne parvient pas à vérifier vos mots de passe</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
@@ -79,10 +79,10 @@
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8663480472502753423">Garder Chromium à jour</translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
-<translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium cesse de synchroniser vos données dans votre compte Google. Les données déjà enregistrées ne sont pas effacées.</translation>
+<translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="921174536258924340">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
-<translation id="994708389219151914">Votre appareil étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil.</translation>
+<translation id="994708389219151914">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil.</translation>
 </translationbundle>

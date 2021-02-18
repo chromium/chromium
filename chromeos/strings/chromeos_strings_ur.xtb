@@ -33,7 +33,6 @@
 <translation id="150962533380566081">‏غلط PUK۔</translation>
 <translation id="1510238584712386396">لانچر</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز)</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">‏Chrome OS اندراج کے طریقہ کی سروس</translation>
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
 <translation id="1979103255016296513">پاس ورڈ تبدیل کرنے میں تاخیر ہو گئی ہے</translation>
-<translation id="1980044825731880088">‏CPU کی رفتار</translation>
 <translation id="1999615961760456652">کیپٹو پورٹل</translation>
 <translation id="2008685064673031089">پرائم تلاش</translation>
 <translation id="2080070583977670716">مزید ترتیبات</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
-<translation id="3712633734921637892">‏بیٹری بچانے یا درجۂ حرارت کم کرنے کیلئے، فی الوقت CPU کی رفتار محدود ہے</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> جائزے)</translation>
 <translation id="3748026146096797577">منسلک نہیں ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
@@ -230,7 +227,6 @@
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
-<translation id="6114428539405324828">‎<ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6122191549521593678">آن لائن</translation>
 <translation id="6137767437444130246">صارف کا سرٹیفیکیٹ</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>

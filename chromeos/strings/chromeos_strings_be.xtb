@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Няправільны PUK-код.</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (ланцужкоў: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Прылада для падачы дакументаў (адным бокам)</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1662989795263954667">Спынена: скончылася чарніла</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Сэрвіс метадаў уводу Chrome OS</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1979103255016296513">Пратэрмінавана змена пароля</translation>
-<translation id="1980044825731880088">Хуткасць ЦП</translation>
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
 <translation id="2008685064673031089">Пошук простых лікаў</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (праверка)</translation>
-<translation id="3712633734921637892">Хуткасць ЦП зараз абмежавана для захавання зараду акумулятара або зніжэння тэмпературы</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
@@ -231,7 +228,6 @@
 <translation id="6104112872696127344">Сканіраванне скасавана</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6108689792487843350">Шлюз недаступны</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> ГГц / <ph name="MAX" /> ГГц</translation>
 <translation id="6122191549521593678">У інтэрнэце</translation>
 <translation id="6137767437444130246">Сертыфікат карыстальніка</translation>
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>

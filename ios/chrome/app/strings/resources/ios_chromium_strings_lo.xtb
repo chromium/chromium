@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">ບໍ່ຮອງຮັບໃນ Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້.</translation>
 <translation id="3805899903892079518">Chromium ບໍ່​ມີ​ການ​ເຂົ້າ​ເຖິງ​ຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
+<translation id="3946918322491238254">ທ່ານຍັງສາມາດເຫັນບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນທັງໝົດຂອງທ່ານໄດ້ໃນອຸປະກອນນີ້. ຖ້າທ່ານເຮັດການປ່ຽນແປງ, ພວກມັນຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີຂອງທ່ານ.</translation>
 <translation id="4099085513035183040">ບໍ່ຮອງຮັບໃນ Chromium Beta</translation>
 <translation id="4166206055865952171">ເຮັດໃຫ້ Chromium ເປັນໂປຣແກຣມເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="4555020257205549924">ເມື່ອຄຸນສົມບັດນີ້ເປີດຢູ່, Chromium ຈະສະເໜີແປໜ້າຕ່າງໆທີ່ຂຽນເປັນພາສາອື່ນ ໂດຍໃຊ້ Google ແປພາສາ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5308226104666789935">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="5521125884468363740">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="5544795779875591523">ເລືອກວ່າຈະລຶບຂໍ້ມູນ Chromium ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ຮັກສາມັນໄວ້ບໍ?</translation>
 <translation id="5573014823074921752">ເຄັດລັບກ່ຽວກັບ Chromium. ສຳລັບຕົວເລືອກແຖບເພີ່ມເຕີມ, ກະລຸນາແຕະປຸ່ມສະແດງແຖບໃນແຖບເຄື່ອງມືຄ້າງໄວ້ ເຊິ່ງຢູ່ລຸ່ມສຸດ ຫຼື ເທິງສຸດຂອງໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="5700709190537129682">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
 <translation id="5777187867430702742">ໜ້າ Chromium</translation>
@@ -77,8 +79,10 @@
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
 <translation id="8776843108004031667">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chromium.</translation>
+<translation id="894437814105052438">ເມື່ອທ່ານອອກຈາກລະບົບ, Chromium ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
 <translation id="9022552996538154597">ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium</translation>
 <translation id="9089354809943900324">Chromium ຫຼ້າສະໄໝແລ້ວ</translation>
 <translation id="921174536258924340">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">ຜູ້ຂຽນ Chromium</translation>
+<translation id="994708389219151914">ບັນຊີຂອງທ່ານຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ສະນັ້ນ ຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 </translationbundle>

@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> bashkëbisedime)</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Shërbimi i metodës së hyrjes së Chrome OS</translation>
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1979103255016296513">Afati i ndryshimit të fjalëkalimit ka kaluar</translation>
-<translation id="1980044825731880088">Shpejtësia e njësisë CPU</translation>
 <translation id="1999615961760456652">Portal izolues</translation>
 <translation id="2008685064673031089">Kërkimi kryesor</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">Shpejtësia e CPU-së aktualisht është e kufizuar për të kursyer baterinë ose për të reduktuar temperaturën</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
@@ -230,7 +227,6 @@
 <translation id="6104112872696127344">Skanimi është anuluar</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6108689792487843350">Porta e kalimit është e paarritshme</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Në linjë</translation>
 <translation id="6137767437444130246">Certifikata e përdoruesit</translation>
 <translation id="6146993107019042706">Për të përfunduar, fut fjalëkalimin e ri</translation>

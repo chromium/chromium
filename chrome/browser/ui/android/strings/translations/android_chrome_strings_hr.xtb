@@ -41,13 +41,6 @@
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
 <translation id="1258753120186372309">Googleov doodle logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Popis za čitanje</translation>
-<translation id="1265432434921422324">Privacy Sandbox aktualna je inicijativa za očuvanje otvorenog weba kojom vam se želi pružiti zaštita od mehanizama za praćenje.
-
-Web-lokacije se danas oslanjanju na brojne tehnologije, poput kolačića trećih strana, da bi važne funkcije, poput prikazivanja relevantnih oglasa i mjerenja izvedbe web-lokacije, mogle funkcionirati.
-
-Privacy Sandbox čuva vitalnost otvorenog weba stvarajući bolje načine izvođenja tih usluga, bez narušavanja funkcioniranja web-lokacija, istovremeno sprječavajući da vas se tajno prati na webu.
-
-Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određenim regijama. Web-lokacije trenutačno mogu isprobati Privacy Sandbox dok se istovremeno još uvijek koriste aktualnim web-tehnologijama, npr. kolačićima trećih strana.</translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
 <translation id="1285310382777185058">Promjena jezika</translation>
@@ -200,7 +193,7 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 
 <ph name="BEGIN_LIST_ITEM1" />Oglašivači mogu saznati kada tisuće korisnika dijele sličan interes, poput publike na koncertu, i odabrati oglase za publiku, umjesto za pojedinca.<ph name="END_LIST_ITEM1" />
 
-<ph name="BEGIN_LIST_ITEM2" />Oglašivači mogu proučavati učinkovitost oglasa, a da vas se ne prati na raznim web-lokacijama.<ph name="END_LIST_ITEM2" /></translation>
+<ph name="BEGIN_LIST_ITEM2" />Oglašivači mogu steći uvid u učinkovitost oglasa na način koji ne uključuje praćenje korisnika na raznim web-lokacijama.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="234265804618409743">Kamera se ne može otvoriti. Nešto nije u redu.</translation>
 <translation id="2345671828921229300">Za pretraživanje dodirnite i držite riječ</translation>
 <translation id="2349710944427398404">Ukupna količina podataka koju Chrome upotrebljava, uključujući račune, oznake i spremljene postavke.</translation>
@@ -653,7 +646,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5581519193887989363">Uvijek možete odabrati u <ph name="BEGIN_LINK1" />postavkama<ph name="END_LINK1" /> što će se sinkronizirati.</translation>
 <translation id="5599455543593328020">Anonimni način</translation>
 <translation id="5599941490345670218">Google Assistant može dovršiti radnje na web-lokacijama za vas</translation>
-<translation id="5606787249466187650">Istražite testno okruženje privatnosti</translation>
 <translation id="5620163320393916465">Nema spremljenih zaporki</translation>
 <translation id="5620928963363755975">Pronađite svoje datoteke i stranice u Preuzimanjima pomoću gumba Više opcija</translation>
 <translation id="562289928968387744">Upravljanje reakcijama</translation>

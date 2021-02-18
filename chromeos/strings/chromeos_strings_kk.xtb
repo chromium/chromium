@@ -33,7 +33,6 @@
 <translation id="150962533380566081">PUK коды жарамсыз.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> тізбек)</translation>
 <translation id="1641857168437328880">Құжат беруші (бір жақты)</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Chrome OS енгізу әдісі қызметі</translation>
 <translation id="1947737735496445907">Басып шығарылған</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
-<translation id="1980044825731880088">Орталық процессор жылдамдығы</translation>
 <translation id="1999615961760456652">Адаптивті портал</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
@@ -107,7 +105,7 @@
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
-<translation id="3712633734921637892">Батарея зарядын үнемдеу немесе температураны төмендету үшін ағымдағы уақытта орталық процессор жылдамдығы шектелді.</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> пікір)</translation>
 <translation id="3748026146096797577">Қосылмаған</translation>
 <translation id="3749289110408117711">Файл атауы</translation>
@@ -124,6 +122,7 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
+<translation id="4155551848414053977">Сканеріңіз қосылып тұруы керек және желі немесе тікелей қосылым арқылы қолжетімді болуы тиіс.</translation>
 <translation id="4170700058716978431">СӘТСІЗ АЯҚТАЛДЫ</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
@@ -228,7 +227,6 @@
 <translation id="6104112872696127344">Сканерлеу тоқтатылды.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />ГГц/<ph name="MAX" />ГГц</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6137767437444130246">Пайдаланушы сертификаты</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
@@ -236,6 +234,7 @@
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6189418609903030344">Пайдаланған сайын, батарея сыйымдылығы азая береді.</translation>
 <translation id="6191293864534840972">Атау серверлері форматы дұрыс емес.</translation>
+<translation id="6223752125779001553">Сканерлер жоқ</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тексерісінен бас тартылды.</translation>
 <translation id="6325525973963619867">Қате шықты</translation>

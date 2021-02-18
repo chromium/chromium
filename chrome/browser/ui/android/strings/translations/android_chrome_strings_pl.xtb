@@ -41,13 +41,6 @@
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Do przeczytania</translation>
-<translation id="1265432434921422324">Piaskownica prywatności to trwająca inicjatywa, która pomaga chronić Cię przed mechanizmami śledzącymi.
-
-W przypadku ważnych usług, takich jak wyświetlanie trafnych reklam czy pomiar wydajności strony, witryny polegają dziś na wielu technologiach, takich jak pliki cookie innych firm.
-
-Piaskownica prywatności zachowuje najważniejsze funkcje otwartej sieci, tworząc lepsze metody świadczenia tych usług – nie uszkadzając stron i jednocześnie chroniąc użytkownika przed ukradkowym śledzeniem w witrynach.
-
-Piaskownica prywatności jest ciągle opracowywana i jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
 <translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
 <translation id="1285310382777185058">Zmień język</translation>
@@ -654,7 +647,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5581519193887989363">W <ph name="BEGIN_LINK1" />ustawieniach<ph name="END_LINK1" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="5599455543593328020">Tryb incognito</translation>
 <translation id="5599941490345670218">Asystent Google może wykonywać za Ciebie działania na różnych stronach internetowych</translation>
-<translation id="5606787249466187650">Odkryj Piaskownicę prywatności</translation>
 <translation id="5620163320393916465">Brak zapisanych haseł</translation>
 <translation id="5620928963363755975">Znajdź pliki i strony w Pobranych plikach, używając przycisku Więcej opcji</translation>
 <translation id="562289928968387744">Zarządzaj reakcjami</translation>

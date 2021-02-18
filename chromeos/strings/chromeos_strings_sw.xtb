@@ -33,7 +33,6 @@
 <translation id="150962533380566081">PUK si sahihi.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Mashine ya kuingiza hati (Upande mmoja)</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Huduma ya Mbinu ya Kuingiza Data kwenye Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="1947737735496445907">Imechapishwa</translation>
 <translation id="1979103255016296513">Muda wa kubadilisha nenosiri umeisha</translation>
-<translation id="1980044825731880088">Kasi ya CPU</translation>
 <translation id="1999615961760456652">Ukurasa wa Mwanzo</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Betri imejaa</translation>
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">Kasi ya kiini cha kompyuta (CPU) imepunguzwa kwa sasa ili kuhifadhi betri au kupunguza halijoto</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (Maoni <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Haujaunganishwa</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
@@ -230,7 +227,6 @@
 <translation id="6104112872696127344">Uchanganuzi umeghairiwa</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>
-<translation id="6114428539405324828">GHz <ph name="CURRENT" /> / GHz <ph name="MAX" /></translation>
 <translation id="6122191549521593678">Mtandaoni</translation>
 <translation id="6137767437444130246">Cheti cha mtumiaji</translation>
 <translation id="6146993107019042706">Ili ukamilishe, weka nenosiri jipya</translation>

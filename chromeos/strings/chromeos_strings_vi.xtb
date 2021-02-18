@@ -33,7 +33,6 @@
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1621067168122174824">Chạy quá trình Kiểm tra sạc</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng)</translation>
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
 <translation id="1644574205037202324">Lịch sử</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
-<translation id="1980044825731880088">Tốc độ CPU</translation>
 <translation id="1999615961760456652">Trang xác thực</translation>
 <translation id="2008685064673031089">Tìm kiếm quan trọng</translation>
 <translation id="2080070583977670716">Cài đặt khác</translation>
@@ -107,7 +105,7 @@
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
-<translation id="3712633734921637892">Tốc độ CPU đang bị hạn chế để tiết kiệm pin hoặc giảm nhiệt độ</translation>
+<translation id="3689839747745352263">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3748026146096797577">Chưa được kết nối</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
@@ -124,6 +122,7 @@
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
+<translation id="4155551848414053977">Hãy đảm bảo máy quét đã bật và ở trạng thái sẵn sàng thông qua mạng của bạn hoặc một đường kết nối trực tiếp</translation>
 <translation id="4170700058716978431">KHÔNG THÀNH CÔNG</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
@@ -229,7 +228,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6104112872696127344">Đã hủy quá trình quét</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Trực tuyến</translation>
 <translation id="6137767437444130246">Chứng chỉ người dùng</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
@@ -237,6 +235,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6189418609903030344">Dung lượng pin sụt giảm theo mức sử dụng</translation>
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
+<translation id="6223752125779001553">Không có máy quét nào</translation>
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>

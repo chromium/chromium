@@ -41,13 +41,6 @@
 <translation id="124678866338384709">Cierra la pestaña actual</translation>
 <translation id="1258753120186372309">Doodles de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
-<translation id="1265432434921422324">La zona de pruebas de privacidad es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.
-
-A día de hoy, los sitios web dependen de varias tecnologías (por ejemplo, las cookies de terceros) para ofrecer servicios importantes, como mostrar anuncios relevantes o medir el rendimiento de un sitio web.
-
-La zona de pruebas de privacidad conserva la vitalidad de la Web abierta creando mejores formas de ofrecer estos servicios, sin inutilizar los sitios e impidiendo que se te hagan seguimientos ocultos en la Web.
-
-La zona de pruebas de privacidad sigue en desarrollo y está disponible en ciertas regiones. Por ahora, los sitios pueden usar la zona de pruebas de privacidad y seguir utilizando tecnologías web actuales, como las cookies de terceros.</translation>
 <translation id="1266864766717917324">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toca para ampliar</translation>
 <translation id="1285310382777185058">Cambiar idioma</translation>
@@ -654,7 +647,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5581519193887989363">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK1" />ajustes<ph name="END_LINK1" />.</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
 <translation id="5599941490345670218">El Asistente de Google puede completar acciones en tu nombre en sitios web</translation>
-<translation id="5606787249466187650">Explora la zona de pruebas de privacidad</translation>
 <translation id="5620163320393916465">No hay ninguna contraseña guardada</translation>
 <translation id="5620928963363755975">Encuentra tus archivos y páginas en la sección Descargas con el botón Más opciones</translation>
 <translation id="562289928968387744">Gestionar reacciones</translation>

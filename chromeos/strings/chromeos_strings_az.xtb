@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Yanlış PUK.</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu)</translation>
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Chrome OS Daxiletmə Metodu Xidməti</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
 <translation id="1979103255016296513">Parol dəyişikliyinin gecikməsi</translation>
-<translation id="1980044825731880088">CPU Sürəti</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2008685064673031089">Əsas axtarış</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
-<translation id="3712633734921637892">CPU sürəti hazırda enerjiyə qənaət etmək və ya temperaturu azaltmaq üçün məhdudlaşdırılıb</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
@@ -230,7 +227,6 @@
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6137767437444130246">İstifadəçi sertifikatı</translation>
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>

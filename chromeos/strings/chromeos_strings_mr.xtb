@@ -33,7 +33,6 @@
 <translation id="150962533380566081">चुकीची PUK.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड)</translation>
 <translation id="1641857168437328880">दस्तऐवज फीडर (एक बाजू असलेले)</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Chrome OS इनपुट पद्धत सेवा</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
 <translation id="1979103255016296513">पासवर्ड बदलण्याची मुदत संपली आहे</translation>
-<translation id="1980044825731880088">सीपीयू चा वेग</translation>
 <translation id="1999615961760456652">कॅप्टिव्ह पोर्टल</translation>
 <translation id="2008685064673031089">प्राइम शोध</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
-<translation id="3712633734921637892">बॅटरीची क्षमता वाढवण्यासाठी किंवा तापमान कमी करण्यासाठी सीपीयूचा वेग सध्या मर्यादित केला आहे</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
@@ -231,7 +228,6 @@
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>

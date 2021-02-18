@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1621067168122174824">Spustit test nabití</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />)</translation>
 <translation id="1641857168437328880">Podavač dokumentů (jednostranných)</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
-<translation id="1980044825731880088">Rychlost procesoru</translation>
 <translation id="1999615961760456652">Captive portál</translation>
 <translation id="2008685064673031089">Vyhledávání prvočísel</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">Rychlost procesoru je momentálně omezena za účelem udržení stavu baterie nebo snížení teploty</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
@@ -231,7 +228,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Certifikát uživatele</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>

@@ -33,7 +33,6 @@
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan)</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Perkhidmatan Kaedah Input OS Chrome</translation>
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
-<translation id="1980044825731880088">Kelajuan CPU</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
 <translation id="2080070583977670716">Lagi tetapan</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">Pada masa ini kelajuan CPU dihadkan untuk menjimatkan bateri atau mengurangkan suhu</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Disambung</translation>
 <translation id="3749289110408117711">Nama fail</translation>
@@ -231,7 +228,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6104112872696127344">Pengimbasan telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6122191549521593678">Dalam talian</translation>
 <translation id="6137767437444130246">Sijil pengguna</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan proses ini, masukkan kata laluan baharu anda</translation>

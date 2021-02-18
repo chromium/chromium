@@ -33,7 +33,6 @@
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads)</translation>
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Invoermethodeservice voor Chrome OS</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
-<translation id="1980044825731880088">CPU-snelheid</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
-<translation id="3712633734921637892">De CPU-snelheid is momenteel beperkt om de batterij te sparen of de temperatuur te verlagen</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Niet verbonden</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
@@ -231,7 +228,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6104112872696127344">Scannen is geannuleerd</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
 <translation id="6108689792487843350">Gateway is onbereikbaar</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>

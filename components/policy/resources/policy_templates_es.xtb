@@ -1451,7 +1451,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Las URL deben tener una estructura de HTTPS (por ejemplo, https://example.com).
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">Si se establece esta política, se especifica una lista de aplicaciones web que se instalan de forma silenciosa, sin intervención del usuario, y este no puede desinstalarlas ni desactivarlas.
+<translation id="2972531017545674240">Si se establece esta política, se especifica una lista de aplicaciones web que se instalan de forma silenciosa y sin intervención del usuario, quien no puede desinstalarlas ni desactivarlas.
 
       Cada elemento de la lista es un objeto con un elemento obligatorio:
       <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
@@ -1461,12 +1461,12 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una ventana nueva)
 
       - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (True: si quieres crear accesos directos del escritorio
+      (True si quieres crear accesos directos del escritorio
       de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
 
       - <ph name="FALLBACK_APP_NAME_LABEL" />
       (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      tienes permitido anular el nombre de la aplicación si no es una
+      te permite anular el nombre de la aplicación si no es una
       aplicación web progresiva (PWA), o el nombre de la aplicación instalado
       temporalmente si es una PWA, pero se requiere autenticación para que la
       instalación pueda completarse)

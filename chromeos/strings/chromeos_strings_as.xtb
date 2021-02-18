@@ -33,7 +33,6 @@
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড)</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
@@ -48,7 +47,6 @@
 <translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি সেৱা</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
-<translation id="1980044825731880088">চিপিইউৰ গতি</translation>
 <translation id="1999615961760456652">কেপ্টিভ প’ৰ্টেল</translation>
 <translation id="2008685064673031089">প্ৰাইম সন্ধান</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
@@ -108,7 +106,6 @@
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
-<translation id="3712633734921637892">বেটাৰী সংৰক্ষণ কৰিবলৈ অথবা তাপমান কমাবলৈ বৰ্তমান CPUৰ গতিবেগ সীমিত কৰা হৈছে</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> টা পৰ্যালোচনা)</translation>
 <translation id="3748026146096797577">সংযোগ কৰা হোৱা নাই</translation>
 <translation id="3749289110408117711">ফাইলৰ নাম</translation>
@@ -231,7 +228,6 @@
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> গিগাহাৰ্টজ / <ph name="MAX" /> গিগাহাৰ্টজ</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6137767437444130246">ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
@@ -241,6 +237,7 @@
 <translation id="6191293864534840972">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ বিকৃত</translation>
 <translation id="6223752125779001553">কোনো স্কেনাৰ নাই</translation>
 <translation id="6232017090690406397">বেটাৰী</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
 <translation id="6325525973963619867">বিফল হৈছে</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="641081527798843608">বিষয়ৰ মিল</translation>

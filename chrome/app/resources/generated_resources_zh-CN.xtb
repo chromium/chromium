@@ -1521,7 +1521,6 @@
 <translation id="2691385045260836588">型号</translation>
 <translation id="2691440343905273290">更改输入设置</translation>
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
-<translation id="2695749433451188613">互联网打印协议 (HTTPS)</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">读取列表</translation>
@@ -1926,7 +1925,7 @@
 <translation id="3139925690611372679">默认的黄色头像</translation>
 <translation id="3141318088920353606">正在听取…</translation>
 <translation id="3141917231319778873">“<ph name="DEVICE_NAME" />”不支持指定的请求。</translation>
-<translation id="3142562627629111859">新建群组</translation>
+<translation id="3142562627629111859">新建组</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="3143754809889689516">从头播放</translation>
 <translation id="3144647712221361880">以其他身份打开链接</translation>
@@ -5241,7 +5240,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活动日志</translation>
 <translation id="6997707937646349884">在您的设备上：</translation>
 <translation id="6998793565256476099">注册设备以进行视频会议</translation>
-<translation id="6999956497249459195">新建群组</translation>
+<translation id="6999956497249459195">新建组</translation>
 <translation id="7000206553895739324">“<ph name="PRINTER_NAME" />”已建立连接但需要配置</translation>
 <translation id="7000347579424117903">必须以 Ctrl 键、Alt 键或搜索键开头</translation>
 <translation id="7001036685275644873">正在备份 Linux 应用和文件</translation>
@@ -6080,7 +6079,6 @@
 <translation id="7946586320617670168">来源必须是安全的</translation>
 <translation id="794676567536738329">确认权限</translation>
 <translation id="7947962633355574091">复制视频地址(&amp;O)</translation>
-<translation id="7950040156882184764">互联网打印协议 (HTTP)</translation>
 <translation id="7951265006188088697">要添加或管理 Google Pay 付款方式，请访问 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="795282463722894016">恢复完成</translation>

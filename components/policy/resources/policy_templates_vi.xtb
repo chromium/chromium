@@ -1446,6 +1446,27 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Các URL phải có giao thức HTTPS, ví dụ: "https://example.com".
 
       Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2972531017545674240">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách những ứng dụng web tự động cài đặt mà không cần sự can thiệp của người dùng, cũng như chỉ định những người dùng không thể gỡ cài đặt hay tắt đi.
+
+      Mỗi mục trong danh sách của chính sách này là một đối tượng chứa một thành phần bắt buộc:
+      <ph name="URL_LABEL" /> (URL của ứng dụng web sẽ cài đặt)
+
+      và 3 thành phần không bắt buộc:
+      – <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (về cách mở ứng dụng web – mặc định là một thẻ mới)
+
+      – <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (là Bật nếu bạn muốn tạo lối tắt trên màn hình <ph name="LINUX_OS_NAME" /> và
+      <ph name="MS_WIN_NAME" />).
+
+      – <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" /> phiên bản 90,
+      bạn có thể ghi đè tên ứng dụng nếu tên đó không phải là một
+      Ứng dụng web tiến bộ (PWA) hoặc ghi đè tên ứng dụng tạm thời
+      được cài đặt nếu tên đó là một Ứng dụng web tiến bộ nhưng cần được xác thực trước khi
+      hoàn tất quá trình cài đặt.)
+
+      Xem <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> để biết cách ghim ứng dụng vào kệ <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Cài đặt hành vi cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ</translation>
 <translation id="2985927503455169394">Sử dụng chế độ mặc định của trải nghiệm làm quen với Trợ lý</translation>
 <translation id="2987155890997901449">Bật ARC</translation>
