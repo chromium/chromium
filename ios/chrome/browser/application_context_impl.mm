@@ -123,6 +123,10 @@ void SetLastSessionExitedCleanly(PrefService* local_state, bool clean) {
   local_state->SetBoolean(prefs::kLastSessionExitedCleanly, clean);
 }
 
+// If enabled, keep logging and reporting UMA while chrome is backgrounded.
+const base::Feature kUmaBackgroundSessions{"IOSUMABackgroundSessions",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 ApplicationContextImpl::ApplicationContextImpl(
@@ -283,8 +287,11 @@ void ApplicationContextImpl::OnAppEnterBackground() {
 
   // Tell the metrics services they were cleanly shutdown.
   metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service && local_state)
-    metrics_service->OnAppEnterBackground();
+  if (metrics_service && local_state) {
+    const bool keep_reporting =
+        base::FeatureList::IsEnabled(kUmaBackgroundSessions);
+    metrics_service->OnAppEnterBackground(keep_reporting);
+  }
   ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
   if (ukm_service)
     ukm_service->OnAppEnterBackground();
