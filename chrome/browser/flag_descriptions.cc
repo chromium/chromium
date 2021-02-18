@@ -2602,10 +2602,6 @@ const char kWebXrIncubationsName[] = "WebXR Incubations";
 const char kWebXrIncubationsDescription[] =
     "Enables experimental features for WebXR.";
 
-const char kWebXrMultiGpuName[] = "WebXR Multi GPU Support";
-const char kWebXrMultiGpuDescription[] =
-    "Improves WebXR support for computers with more than one GPU.";
-
 const char kWindowNamingName[] = "Window Naming";
 const char kWindowNamingDescription[] =
     "Whether the window naming UI is enabled.";

@@ -1510,9 +1510,6 @@ extern const char kWebXrRuntimeChoiceOpenXR[];
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 
-extern const char kWebXrMultiGpuName[];
-extern const char kWebXrMultiGpuDescription[];
-
 extern const char kWindowNamingName[];
 extern const char kWindowNamingDescription[];
 

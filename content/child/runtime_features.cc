@@ -394,7 +394,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kWebAppManifestDisplayOverride},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
-          {"WebXRMultiGpu", blink::features::kWebXrMultiGpu},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

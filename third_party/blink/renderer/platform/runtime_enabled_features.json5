@@ -2330,12 +2330,6 @@
       status: "experimental",
     },
     {
-      name: "WebXRMultiGpu",
-      depends_on: ["WebXR"],
-      // Enabled when blink::features::kWebXrMultiGpu is enabled.
-      status: "stable",
-    },
-    {
       name: "WebXRPlaneDetection",
       depends_on: ["WebXRARModule"],
       status: "experimental",

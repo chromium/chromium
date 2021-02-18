@@ -716,10 +716,6 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowser[] = "browser";
 const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
     "browser_and_renderer";
 
-// Improves support for WebXR on computers with multiple GPUs.
-const base::Feature kWebXrMultiGpu{"WebXRMultiGpu",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Disabling this will cause parkable strings to never be compressed.
 // This is useful for headless mode + virtual time. Since virtual time advances
 // quickly, strings may be parked too eagerly in that mode.

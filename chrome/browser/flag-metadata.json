@@ -5225,11 +5225,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "webxr-multi-gpu",
-    "owners": [ "//third_party/blink/renderer/modules/xr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "webxr-runtime",
     "owners": [ "//third_party/blink/renderer/modules/xr/OWNERS", "xr-dev@chromium.org" ],
     // This flag allows QA and Developers to force running on a particular

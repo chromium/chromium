@@ -667,11 +667,6 @@ ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
   if (xr_compatible_)
     return ScriptPromise::CastUndefined(script_state);
 
-  if (!RuntimeEnabledFeatures::WebXRMultiGpuEnabled()) {
-    xr_compatible_ = true;
-    return ScriptPromise::CastUndefined(script_state);
-  }
-
   // If there's a request currently in progress, return the same promise.
   if (make_xr_compatible_resolver_)
     return make_xr_compatible_resolver_->Promise();
@@ -727,9 +722,6 @@ XRSystem* WebGLRenderingContextBase::GetXrSystemFromHost(
 
 bool WebGLRenderingContextBase::MakeXrCompatibleSync(
     CanvasRenderingContextHost* host) {
-  if (!RuntimeEnabledFeatures::WebXRMultiGpuEnabled())
-    return true;
-
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
       device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable;
 
