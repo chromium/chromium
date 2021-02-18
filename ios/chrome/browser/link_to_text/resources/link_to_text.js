@@ -39,12 +39,15 @@ const utils = goog.require(
       selectionRect.height = domRect.height;
     }
 
+    const canonicalLinkNode = document.querySelector('link[rel=\'canonical\']');
+
     const response = utils.generateFragment(selection);
     return {
       status: response.status,
       fragment: response.fragment,
       selectedText: selectedText,
-      selectionRect: selectionRect
+      selectionRect: selectionRect,
+      canonicalUrl: canonicalLinkNode && canonicalLinkNode.getAttribute('href')
     };
   }
 })();

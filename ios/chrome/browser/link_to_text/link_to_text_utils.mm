@@ -82,6 +82,19 @@ base::Optional<CGRect> ParseRect(const base::Value* value) {
                     widthValue->GetDouble(), heightValue->GetDouble());
 }
 
+base::Optional<GURL> ParseURL(const std::string* url_value) {
+  if (!url_value) {
+    return base::nullopt;
+  }
+
+  GURL url(*url_value);
+  if (!url.is_empty() && url.is_valid()) {
+    return url;
+  }
+
+  return base::nullopt;
+}
+
 CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state) {
   if (CGRectEqualToRect(web_view_rect, CGRectZero) || !web_state) {
     return web_view_rect;

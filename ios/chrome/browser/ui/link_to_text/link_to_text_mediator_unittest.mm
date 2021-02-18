@@ -147,6 +147,10 @@ class LinkToTextMediatorTest : public PlatformTest {
     return response_value;
   }
 
+  void SetCanonicalUrl(base::Value* value, const std::string& canonical_url) {
+    value->SetStringKey("canonicalUrl", canonical_url);
+  }
+
   std::unique_ptr<base::Value> CreateErrorResponse(
       LinkGenerationOutcome outcome) {
     std::unique_ptr<base::Value> response_value =
@@ -513,4 +517,76 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   ValidateLinkGeneratedErrorUkm(error);
   histogram_tester.ExpectTotalCount(
       "SharedHighlights.LinkGenerated.Error.TimeToGenerate", 1);
+}
+
+// Tests that a canonical URL is being used as base for the generated link when
+// the current page is HTTPS.
+TEST_F(LinkToTextMediatorTest, WithHttpsAndCanonicalUrl) {
+  CGFloat zoom = 1;
+  CGRect selection_rect = CGRectMake(100, 150, 250, 250);
+
+  std::unique_ptr<base::Value> fake_response =
+      CreateSuccessResponse(kTestQuote, selection_rect);
+  std::string canonical_url = "https://www.example.com/";
+  SetCanonicalUrl(fake_response.get(), canonical_url);
+  SetLinkToTextResponse(std::move(fake_response), zoom);
+
+  __block BOOL callback_invoked = NO;
+
+  [[mocked_consumer_ expect]
+      generatedPayload:[OCMArg checkWithBlock:^BOOL(
+                                   LinkToTextPayload* payload) {
+        // Validate that the generated URL is based on the canonical URL.
+        EXPECT_TRUE(payload.URL.is_valid());
+        EXPECT_TRUE(GURL(canonical_url).EqualsIgnoringRef(payload.URL));
+        callback_invoked = YES;
+        return YES;
+      }]];
+
+  [mediator_ handleLinkToTextSelection];
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^BOOL {
+    base::RunLoop().RunUntilIdle();
+    return callback_invoked;
+  }));
+
+  [mocked_consumer_ verify];
+}
+
+// Tests that a canonical URL is not being used as base for the generated link
+// when the current page is not HTTPS.
+TEST_F(LinkToTextMediatorTest, NotHttpsAndCanonicalUrl) {
+  CGFloat zoom = 1;
+  CGRect selection_rect = CGRectMake(100, 150, 250, 250);
+
+  // Set WebState's URL to something not HTTPS.
+  GURL new_base_url("http://chromium.org");
+  web_state_->SetCurrentURL(new_base_url);
+
+  std::unique_ptr<base::Value> fake_response =
+      CreateSuccessResponse(kTestQuote, selection_rect);
+  std::string canonical_url = "https://www.example.com/";
+  SetCanonicalUrl(fake_response.get(), canonical_url);
+  SetLinkToTextResponse(std::move(fake_response), zoom);
+
+  __block BOOL callback_invoked = NO;
+
+  [[mocked_consumer_ expect]
+      generatedPayload:[OCMArg checkWithBlock:^BOOL(
+                                   LinkToTextPayload* payload) {
+        // Validate that the generated URL is not based on the canonical URL.
+        EXPECT_TRUE(payload.URL.is_valid());
+        EXPECT_TRUE(new_base_url.EqualsIgnoringRef(payload.URL));
+        callback_invoked = YES;
+        return YES;
+      }]];
+
+  [mediator_ handleLinkToTextSelection];
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^BOOL {
+    base::RunLoop().RunUntilIdle();
+    return callback_invoked;
+  }));
+
+  [mocked_consumer_ verify];
 }

@@ -42,6 +42,10 @@ shared_highlighting::LinkGenerationError OutcomeToError(
 // returned.
 base::Optional<CGRect> ParseRect(const base::Value* value);
 
+// Attempts to parse the given |url_value| into a GURL instance. If |url_value|
+// is empty or invalid, an empty base::Optional instance will be returned.
+base::Optional<GURL> ParseURL(const std::string* url_value);
+
 // Converts a given |web_view_rect| into its browser coordinates counterpart.
 // Uses the given |web_state| to do the conversion.
 CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state);

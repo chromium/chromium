@@ -77,6 +77,22 @@ TEST_F(LinkToTextUtilsTest, ParseRect) {
   EXPECT_FALSE(ParseRect(&copied_value).has_value());
 }
 
+// Tests for the ParseURL utility function.
+TEST_F(LinkToTextUtilsTest, ParseURL) {
+  EXPECT_FALSE(ParseURL(nil).has_value());
+
+  std::string empty_str = "";
+  EXPECT_FALSE(ParseURL(&empty_str).has_value());
+
+  std::string invalid_url_str = "abcd";
+  EXPECT_FALSE(ParseURL(&invalid_url_str).has_value());
+
+  std::string valid_url_str = "https://www.example.com/";
+  base::Optional<GURL> valid_url = ParseURL(&valid_url_str);
+  EXPECT_TRUE(valid_url.has_value());
+  EXPECT_EQ(GURL(valid_url_str).spec(), valid_url.value().spec());
+}
+
 // Tests that IsLinkGenerationTimeout returns the right values based on
 // different input values.
 TEST_F(LinkToTextUtilsTest, IsLinkGenerationTimeout) {
