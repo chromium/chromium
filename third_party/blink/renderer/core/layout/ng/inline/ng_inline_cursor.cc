@@ -71,7 +71,13 @@ bool IsLastBRInPage(const LayoutObject& layout_object) {
 bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
   switch (item.Type()) {
     case NGFragmentItem::kBox:
-      if (item.BoxFragment()) {
+      if (auto* box_fragment = item.BoxFragment()) {
+        if (box_fragment->IsInlineBox()) {
+          // We ignore inline box to avoid to call |PositionForPointInChild()|
+          // with empty inline box, e.g. <div>ab<b></b></div>.
+          // // All/LayoutViewHitTestTest.EmptySpan needs this.
+          return true;
+        }
         // Skip pseudo element ::before/::after
         // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
         return !item.GetLayoutObject()->NonPseudoNode();

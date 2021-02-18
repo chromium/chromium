@@ -177,6 +177,38 @@ INSTANTIATE_TEST_SUITE_P(
         HitTestConfig{true, mojom::EditingBehavior::kEditingAndroidBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingChromeOSBehavior}));
 
+TEST_P(LayoutViewHitTestTest, EmptySpan) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 50px; }"
+      "b { border: solid 5px green; }");
+  SetBodyInnerHTML("<div id=target>AB<b></b></div>");
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild());
+  const auto after_ab =
+      PositionWithAffinity(Position(ab, 2), TextAffinity::kUpstream);
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(10, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(after_ab, HitTest(20, 5));
+  EXPECT_EQ(after_ab, HitTest(25, 5));
+  EXPECT_EQ(after_ab, HitTest(30, 5));
+  EXPECT_EQ(after_ab, HitTest(35, 5));
+  EXPECT_EQ(after_ab, HitTest(40, 5));
+  EXPECT_EQ(after_ab, HitTest(45, 5));
+  EXPECT_EQ(after_ab, HitTest(50, 5));
+  EXPECT_EQ(after_ab, HitTest(55, 5));
+}
+
 // http://crbug.com/1171070
 // See also, FloatLeft*, DOM order of "float" should not affect hit testing.
 TEST_P(LayoutViewHitTestTest, FloatLeftLeft) {
