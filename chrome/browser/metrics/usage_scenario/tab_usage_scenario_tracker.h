@@ -41,6 +41,8 @@ class TabUsageScenarioTracker : public TabStatsObserver,
                                            bool is_fullscreen) override;
   void OnMainFrameNavigationCommitted(
       content::WebContents* web_contents) override;
+  void OnVideoStartedPlaying(content::WebContents* web_contents) override;
+  void OnVideoStoppedPlaying(content::WebContents* web_contents) override;
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
@@ -60,8 +62,11 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   UsageScenarioDataStoreImpl* usage_scenario_data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Keep track of the visible web-contents.
+  // Keep track of the visible WebContents.
   base::flat_set<content::WebContents*> visible_contents_;
+
+  // Keep track of the WebContents currently playing video.
+  base::flat_set<content::WebContents*> contents_playing_video_;
 
   // Indicates if there's a media currently playing fullscreen.
   bool media_playing_fullscreen_ = false;

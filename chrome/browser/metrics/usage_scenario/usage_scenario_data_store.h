@@ -53,6 +53,8 @@ class UsageScenarioDataStore {
     base::TimeDelta time_playing_video_full_screen_single_monitor;
     // The time spent with at least one opened WebRTC connection.
     base::TimeDelta time_with_open_webrtc_connection;
+    // The time spent playing video in at least one visible tab.
+    base::TimeDelta time_playing_video_in_visible_tab;
 
     // The SourceID that has been visible for the longest period of time for the
     // origin that has been visible for the longest period of time during the
@@ -112,6 +114,14 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnWebRTCConnectionOpened();
   void OnWebRTCConnectionClosed();
 
+  // Should be called when a video starts in a visible tab or when a non visible
+  // tab playing video becomes visible.
+  void OnVideoStartsInVisibleTab();
+
+  // Should be called when a video stops in a visible tab or when a visible
+  // tab playing video becomes non visible.
+  void OnVideoStopsInVisibleTab();
+
   void OnUkmSourceBecameVisible(const ukm::SourceId& source,
                                 const url::Origin& origin);
   void OnUkmSourceBecameHidden(const ukm::SourceId& source,
@@ -163,6 +173,13 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   // |webrtc_connection_count| to increase to 1. Reset to |now| when an interval
   // ends (when ResetIntervalData is called).
   base::TimeTicks has_opened_webrtc_connection_since_;
+
+  // The number of visible tabs playing at least one video.
+  uint16_t visible_tabs_playing_video_ = 0;
+
+  // Timestamp grabbed when |visible_tabs_playing_video_| increase to 1. Reset
+  // to |now| when an interval ends (when ResetIntervalData is called).
+  base::TimeTicks playing_video_in_active_tab_since_;
 
   // The application start time.
   const base::TimeTicks start_time_;

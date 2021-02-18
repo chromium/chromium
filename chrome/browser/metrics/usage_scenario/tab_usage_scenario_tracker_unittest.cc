@@ -161,4 +161,54 @@ TEST_F(TabUsageScenarioTrackerTest, FullScreenVideoSingleMonitor) {
             kInterval);
 }
 
+TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {
+  // Create 2 tabs, one visible and one hidden.
+  auto contents1 = CreateWebContents();
+  auto contents2 = CreateWebContents();
+  tab_usage_scenario_tracker_->OnTabAddedForTesting(
+      contents1.get(), content::Visibility::VISIBLE);
+  tab_usage_scenario_tracker_->OnTabAddedForTesting(
+      contents1.get(), content::Visibility::HIDDEN);
+
+  // Pretend that |content1| is playing a video while being visible.
+  tab_usage_scenario_tracker_->OnVideoStartedPlaying(contents1.get());
+
+  static constexpr base::TimeDelta kInterval = base::TimeDelta::FromMinutes(2);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Grab the interval data and ensure that the time playing a video in the
+  // visible tab is properly recorded.
+  UsageScenarioDataStore::IntervalData interval_data =
+      usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, kInterval);
+
+  // Start a video in the hidden tab, while another one is still playing in the
+  // visible tab, this shouldn't change anything.
+  tab_usage_scenario_tracker_->OnVideoStartedPlaying(contents2.get());
+  task_environment()->FastForwardBy(kInterval);
+  interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, kInterval);
+
+  // Stop the video playing in the visible tab.
+  tab_usage_scenario_tracker_->OnVideoStoppedPlaying(contents1.get());
+  task_environment()->FastForwardBy(kInterval);
+  interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, base::TimeDelta());
+
+  // There's still a video playing in the second tab, make it visible and ensure
+  // that things are reported properly.
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(
+      contents2.get(), content::Visibility::VISIBLE);
+  task_environment()->FastForwardBy(kInterval);
+  interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, kInterval);
+
+  // Mark the tab as playing video for only half of the interval.
+  task_environment()->FastForwardBy(kInterval);
+  tab_usage_scenario_tracker_->OnVideoStoppedPlaying(contents2.get());
+  task_environment()->FastForwardBy(kInterval);
+  interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, base::TimeDelta());
+}
+
 }  // namespace metrics

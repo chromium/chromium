@@ -12236,6 +12236,11 @@ be describing additional metrics about the same event.
       The number of tabs that have been closed during the interval.
     </summary>
   </metric>
+  <metric name="TimePlayingVideoInVisibleTab">
+    <summary>
+      The time spent playing video in at least one visible tab, in seconds.
+    </summary>
+  </metric>
   <metric name="TimeWithOpenWebRTCConnectionSeconds">
     <summary>
       The time spent with at least one opened WebRTC connection, in seconds.

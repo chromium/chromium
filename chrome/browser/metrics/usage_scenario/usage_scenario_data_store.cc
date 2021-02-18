@@ -52,6 +52,10 @@ UsageScenarioDataStoreImpl::ResetIntervalData() {
     has_opened_webrtc_connection_since_ = now;
   }
 
+  if (!playing_video_in_active_tab_since_.is_null()) {
+    playing_video_in_active_tab_since_ = now;
+  }
+
   return ret;
 }
 
@@ -136,6 +140,22 @@ void UsageScenarioDataStoreImpl::OnWebRTCConnectionClosed() {
   }
 }
 
+void UsageScenarioDataStoreImpl::OnVideoStartsInVisibleTab() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ++visible_tabs_playing_video_;
+  DCHECK_GE(current_visible_window_count_, visible_tabs_playing_video_);
+  if (visible_tabs_playing_video_ == 1)
+    playing_video_in_active_tab_since_ = base::TimeTicks::Now();
+}
+
+void UsageScenarioDataStoreImpl::OnVideoStopsInVisibleTab() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(visible_tabs_playing_video_, 0U);
+  --visible_tabs_playing_video_;
+  if (visible_tabs_playing_video_ == 0)
+    playing_video_in_active_tab_since_ = base::TimeTicks();
+}
+
 void UsageScenarioDataStoreImpl::OnUkmSourceBecameVisible(
     const ukm::SourceId& source,
     const url::Origin& origin) {
@@ -172,6 +192,11 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
   if (!has_opened_webrtc_connection_since_.is_null()) {
     interval_data_.time_with_open_webrtc_connection +=
         now - has_opened_webrtc_connection_since_;
+  }
+
+  if (!playing_video_in_active_tab_since_.is_null()) {
+    interval_data_.time_playing_video_in_visible_tab +=
+        now - playing_video_in_active_tab_since_;
   }
 
   base::TimeDelta origin_visible_for_longest_time_duration;

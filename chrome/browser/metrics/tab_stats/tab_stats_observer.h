@@ -52,6 +52,15 @@ class TabStatsObserver : public base::CheckedObserver {
   virtual void OnMediaEffectivelyFullscreenChanged(
       content::WebContents* web_contents,
       bool is_fullscreen) {}
+
+  // Called whenever a tab starts playing video. If this tab has multiple video
+  // players this will only be called when the first one starts.
+  virtual void OnVideoStartedPlaying(content::WebContents* web_contents) {}
+
+  // Called whenever a tab stops playing video. If this tab has multiple video
+  // players this will only be called when there's no more player playing a
+  // video.
+  virtual void OnVideoStoppedPlaying(content::WebContents* web_contents) {}
 };
 
 }  // namespace metrics

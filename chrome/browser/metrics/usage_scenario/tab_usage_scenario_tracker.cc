@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/usage_scenario/tab_usage_scenario_tracker.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -74,7 +75,15 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
     if (visible_contents_.insert(web_contents).second) {
       usage_scenario_data_store_->OnWindowVisible();
     }
+    // If this tab is playing video then record that it became visible.
+    if (base::Contains(contents_playing_video_, web_contents)) {
+      usage_scenario_data_store_->OnVideoStartsInVisibleTab();
+    }
   } else {
+    // If this tab is playing video then record that it became non visible.
+    if (base::Contains(contents_playing_video_, web_contents)) {
+      usage_scenario_data_store_->OnVideoStopsInVisibleTab();
+    }
     visible_contents_.erase(web_contents);
     usage_scenario_data_store_->OnWindowHidden();
   }
@@ -100,6 +109,24 @@ void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
       usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
     }
   }
+}
+
+void TabUsageScenarioTracker::OnVideoStartedPlaying(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!base::Contains(contents_playing_video_, web_contents));
+  contents_playing_video_.insert(web_contents);
+  if (base::Contains(visible_contents_, web_contents))
+    usage_scenario_data_store_->OnVideoStartsInVisibleTab();
+}
+
+void TabUsageScenarioTracker::OnVideoStoppedPlaying(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(base::Contains(contents_playing_video_, web_contents));
+  contents_playing_video_.erase(web_contents);
+  if (base::Contains(visible_contents_, web_contents))
+    usage_scenario_data_store_->OnVideoStopsInVisibleTab();
 }
 
 void TabUsageScenarioTracker::OnDisplayAdded(const display::Display& unused) {

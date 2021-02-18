@@ -414,3 +414,30 @@ TEST_F(UsageScenarioDataStoreTest, VisibleSourceIDsMultipleOrigins) {
   EXPECT_EQ(5 * kShortDelay,
             data.source_id_for_longest_visible_origin_duration);
 }
+
+TEST_F(UsageScenarioDataStoreTest, PlayingVideoInVisibleTab) {
+  data_store()->OnTabAdded();
+  data_store()->OnTabAdded();
+  data_store()->OnWindowVisible();
+
+  data_store()->OnVideoStartsInVisibleTab();
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnWindowVisible();
+  data_store()->OnVideoStartsInVisibleTab();
+  task_environment_.FastForwardBy(kShortDelay);
+
+  auto data = ResetIntervalData();
+  EXPECT_EQ(2 * kShortDelay, data.time_playing_video_in_visible_tab);
+
+  data_store()->OnWindowHidden();
+  data_store()->OnVideoStopsInVisibleTab();
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(kShortDelay, data.time_playing_video_in_visible_tab);
+
+  data_store()->OnWindowHidden();
+  data_store()->OnVideoStopsInVisibleTab();
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(base::TimeDelta(), data.time_playing_video_in_visible_tab);
+}

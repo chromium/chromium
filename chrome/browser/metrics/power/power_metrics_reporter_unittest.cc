@@ -136,6 +136,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   fake_interval_data.source_id_for_longest_visible_origin = ++fake_value;
   fake_interval_data.source_id_for_longest_visible_origin_duration =
       base::TimeDelta::FromSeconds(++fake_value);
+  fake_interval_data.time_playing_video_in_visible_tab =
+      base::TimeDelta::FromSeconds(++fake_value);
 
   const int kExpectedIntervalLengthSeconds = 120;
   task_environment_.FastForwardBy(
@@ -207,6 +209,10 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kTimeWithOpenWebRTCConnectionSecondsName,
       ukm::GetExponentialBucketMinForUserTiming(
           fake_interval_data.time_with_open_webrtc_connection.InSeconds()));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kTimePlayingVideoInVisibleTabName,
+      ukm::GetExponentialBucketMinForUserTiming(
+          fake_interval_data.time_playing_video_in_visible_tab.InSeconds()));
   test_ukm_recorder_.ExpectEntryMetric(entries[0],
                                        UkmEntry::kIntervalDurationSecondsName,
                                        kExpectedIntervalLengthSeconds);

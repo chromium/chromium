@@ -84,6 +84,9 @@ void PowerMetricsReporter::ReportUKMs(
       usage_metrics.max_visible_window_count, 1.05));
   builder.SetTabClosed(ukm::GetExponentialBucketMinForCounts1000(
       usage_metrics.tabs_closed_during_interval));
+  builder.SetTimePlayingVideoInVisibleTab(
+      ukm::GetExponentialBucketMinForUserTiming(
+          usage_metrics.time_playing_video_in_visible_tab.InSeconds()));
   builder.SetTopLevelNavigationEvents(ukm::GetExponentialBucketMinForCounts1000(
       usage_metrics.top_level_navigation_count));
   builder.SetUserInteractionCount(ukm::GetExponentialBucketMinForCounts1000(

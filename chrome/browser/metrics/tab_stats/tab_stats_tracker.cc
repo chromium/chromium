@@ -230,8 +230,12 @@ void TabStatsTracker::AddObserverAndSetInitialState(
   BrowserList* browser_list = BrowserList::GetInstance();
   for (Browser* browser : *browser_list) {
     observer->OnWindowAdded();
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i)
-      observer->OnTabAdded(browser->tab_strip_model()->GetWebContentsAt(i));
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      auto* wc = browser->tab_strip_model()->GetWebContentsAt(i);
+      observer->OnTabAdded(wc);
+      if (wc->GetCurrentlyPlayingVideoCount())
+        observer->OnVideoStartedPlaying(wc);
+    }
   }
 }
 
@@ -328,12 +332,43 @@ class TabStatsTracker::WebContentsUsageObserver
     }
   }
 
+  void MediaStartedPlaying(
+      const content::WebContentsObserver::MediaPlayerInfo& media_type,
+      const content::MediaPlayerId& id) override {
+    if (!media_type.has_video)
+      return;
+    video_playing_count_++;
+    if (video_playing_count_ == 1) {
+      for (TabStatsObserver& tab_stats_observer :
+           tab_stats_tracker_->tab_stats_observers_) {
+        tab_stats_observer.OnVideoStartedPlaying(web_contents());
+      }
+    }
+  }
+
+  void MediaStoppedPlaying(
+      const content::WebContentsObserver::MediaPlayerInfo& media_type,
+      const content::MediaPlayerId& id,
+      content::WebContentsObserver::MediaStoppedReason reason) override {
+    if (!media_type.has_video)
+      return;
+    video_playing_count_--;
+    if (video_playing_count_ == 0) {
+      for (TabStatsObserver& tab_stats_observer :
+           tab_stats_tracker_->tab_stats_observers_) {
+        tab_stats_observer.OnVideoStoppedPlaying(web_contents());
+      }
+    }
+  }
+
  private:
   TabStatsTracker* tab_stats_tracker_;
   // The last navigation time associated with this tab.
   base::TimeTicks navigation_time_ = base::TimeTicks::Now();
   // Updated when a navigation is finished.
   ukm::SourceId ukm_source_id_ = 0;
+  // The number of video currently playing in this tab.
+  size_t video_playing_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsUsageObserver);
 };
