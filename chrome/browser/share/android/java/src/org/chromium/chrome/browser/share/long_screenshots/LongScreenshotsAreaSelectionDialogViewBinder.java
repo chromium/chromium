@@ -26,6 +26,16 @@ class LongScreenshotsAreaSelectionDialogViewBinder {
             ImageButton view = (ImageButton) parent.findViewById(R.id.done_button);
             view.setOnClickListener(
                     model.get(LongScreenshotsAreaSelectionDialogProperties.DONE_BUTTON_CALLBACK));
+        } else if (LongScreenshotsAreaSelectionDialogProperties.DOWN_BUTTON_CALLBACK.equals(
+                           propertyKey)) {
+            ImageButton view = (ImageButton) parent.findViewById(R.id.down_button);
+            view.setOnClickListener(
+                    model.get(LongScreenshotsAreaSelectionDialogProperties.DOWN_BUTTON_CALLBACK));
+        } else if (LongScreenshotsAreaSelectionDialogProperties.UP_BUTTON_CALLBACK.equals(
+                           propertyKey)) {
+            ImageButton view = (ImageButton) parent.findViewById(R.id.up_button);
+            view.setOnClickListener(
+                    model.get(LongScreenshotsAreaSelectionDialogProperties.UP_BUTTON_CALLBACK));
         }
     }
 }

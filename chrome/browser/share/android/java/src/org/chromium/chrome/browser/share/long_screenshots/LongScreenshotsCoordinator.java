@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -21,25 +25,55 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  */
 public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     private Activity mActivity;
+    private EntryManager mEntryManager;
     private LongScreenshotsMediator mMediator;
 
     /**
-     * Constructs a new ScreenshotCoordinator which may launch the editor, or a fallback.
+     * Private internal method to construct a LongScreenshotsCoordinator. Other users of this class
+     * should instead you LongScreenshotsCoordinator.create(...).
      *
      * @param activity The parent activity.
      * @param tab The Tab which contains the content to share.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
+     * @param manager The {@link EntryManager} to retrieve bitmaps of the current tab.
+     * @param mediator The {@link LongScreenshotsMediator} The mediator that controls the long
+     * screenshots dialog behavior.
+     * @param shouldWarmupCompositor If the PaintPreview compositor should be warmed up.
      */
-    public LongScreenshotsCoordinator(Activity activity, Tab tab,
+    private LongScreenshotsCoordinator(Activity activity, Tab tab,
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            BottomSheetController sheetController,
+            ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
+            @Nullable LongScreenshotsMediator mediator, boolean shouldWarmupCompositor) {
+        super(activity, tab, chromeOptionShareCallback, sheetController, imageEditorModuleProvider);
+        mActivity = activity;
+        mEntryManager = manager == null ? new EntryManager(mActivity, mTab) : manager;
+        mMediator = mediator;
+
+        if (shouldWarmupCompositor) {
+            PaintPreviewCompositorUtils.warmupCompositor();
+        }
+    }
+
+    /** Public interface used to create a {@link LongScreenshotsCoordinator}. */
+    public static LongScreenshotsCoordinator create(Activity activity, Tab tab,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        super(activity, tab, chromeOptionShareCallback, sheetController, imageEditorModuleProvider);
-        mActivity = activity;
+        return new LongScreenshotsCoordinator(activity, tab, chromeOptionShareCallback,
+                sheetController, imageEditorModuleProvider, null, null, true);
+    }
 
-        PaintPreviewCompositorUtils.warmupCompositor();
+    /** Called by tests to create a {@link LongScreenshotsCoordinator}. */
+    public static LongScreenshotsCoordinator createForTests(Activity activity, Tab tab,
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            BottomSheetController sheetController,
+            ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
+            LongScreenshotsMediator mediator) {
+        return new LongScreenshotsCoordinator(activity, tab, chromeOptionShareCallback,
+                sheetController, imageEditorModuleProvider, manager, mediator, false);
     }
 
     /**
@@ -48,20 +82,26 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      */
     @Override
     public void captureScreenshot() {
-        EntryManager entryManager = new EntryManager(mActivity, mTab);
-
-        LongScreenshotsEntry entry = entryManager.generateInitialEntry();
+        LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
         entry.setListener(new LongScreenshotsEntry.EntryListener() {
             @Override
             public void onResult(@EntryStatus int status) {
                 if (status == EntryStatus.BITMAP_GENERATED) {
                     mScreenshot = entry.getBitmap();
-                    mMediator = new LongScreenshotsMediator(mActivity, entryManager);
-                    mMediator.showAreaSelectionDialog();
+
+                    if (mMediator == null) {
+                        mMediator = new LongScreenshotsMediator(mActivity, mEntryManager);
+                    }
+                    mMediator.showAreaSelectionDialog(mScreenshot);
                 } else {
                     // TODO(tgupta/kmilka): Handle the error case correctly.
                 }
             }
         });
+    }
+
+    @VisibleForTesting
+    public Bitmap getScreenshot() {
+        return mScreenshot;
     }
 }

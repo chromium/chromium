@@ -550,6 +550,8 @@ chrome_java_resources = [
   "java/res/drawable-xxxhdpi/verify_checkmark.png",
   "java/res/drawable/accessibility_tab_switcher_divider.xml",
   "java/res/drawable/account_picker_background.xml",
+  "java/res/drawable/arrow_down.xml",
+  "java/res/drawable/arrow_up.xml",
   "java/res/drawable/bg_white_dialog.xml",
   "java/res/drawable/bookmark_title_bar_shadow.xml",
   "java/res/drawable/bookmark_widget_list_selector.xml",

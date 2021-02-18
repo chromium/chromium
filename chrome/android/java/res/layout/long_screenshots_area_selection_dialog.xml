@@ -50,17 +50,56 @@
             app:tint="@color/default_icon_color_tint_list"
             style="@style/ToolbarButton" />
 
-      </RelativeLayout>
+    </RelativeLayout>
 
-      <View
-          android:id="@+id/divider"
-          android:background="@color/divider_line_bg_color"
-          android:layout_height="1dp"
-          android:layout_width="match_parent"/>
+    <View
+        android:id="@+id/divider"
+        android:background="@color/divider_line_bg_color"
+        android:layout_above="@id/footer"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"/>
 
-      <FrameLayout
-          android:id="@+id/bitmap_container"
-          android:layout_width="match_parent"
-          android:layout_height="fill_parent" />
+    <FrameLayout
+        android:id="@+id/bitmap_container"
+        android:background="@color/black_alpha_65"
+        android:layout_above="@id/divider"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <ImageView
+            android:id="@+id/screenshot_image"
+            android:alpha="1"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/modern_white"
+            android:contentDescription="@string/sharing_long_screenshot"
+            android:padding="1dp"/>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/down_button"
+            android:contentDescription="@string/close"
+            android:src="@drawable/arrow_down"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_height="@dimen/long_screenshots_button_size"
+            android:layout_width="@dimen/long_screenshots_button_size"
+            android:layout_marginBottom="10dp"
+            style="@style/ToolbarButton" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/up_button"
+            android:contentDescription="@string/close"
+            android:src="@drawable/arrow_up"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_height="@dimen/long_screenshots_button_size"
+            android:layout_width="@dimen/long_screenshots_button_size"
+            android:layout_marginTop="10dp"
+            style="@style/ToolbarButton" />
+
+    </FrameLayout>
 
 </RelativeLayout>

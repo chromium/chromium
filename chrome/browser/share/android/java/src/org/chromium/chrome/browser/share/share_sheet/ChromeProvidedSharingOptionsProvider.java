@@ -300,7 +300,7 @@ class ChromeProvidedSharingOptionsProvider {
                 mActivity.getResources().getString(R.string.sharing_long_screenshot), (view) -> {
                     RecordUserAction.record("SharingHubAndroid.LongScreenshotSelected");
                     recordTimeToShare(mShareStartTime);
-                    mScreenshotCoordinator = new LongScreenshotsCoordinator(mActivity,
+                    mScreenshotCoordinator = LongScreenshotsCoordinator.create(mActivity,
                             mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController,
                             mImageEditorModuleProvider);
                     // Capture a screenshot once the bottom sheet is fully hidden. The

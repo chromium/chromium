@@ -114,7 +114,8 @@ public class LongScreenshotsEntry {
         return mRect.bottom;
     }
 
-    private void updateStatus(@EntryStatus int status) {
+    @VisibleForTesting
+    public void updateStatus(@EntryStatus int status) {
         mCurrentStatus = status;
         if (mEntryListener != null) {
             mEntryListener.onResult(mCurrentStatus);

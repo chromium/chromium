@@ -6,11 +6,17 @@ package org.chromium.chrome.browser.share.long_screenshots;
 
 import static org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsAreaSelectionDialogProperties.CLOSE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsAreaSelectionDialogProperties.DONE_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsAreaSelectionDialogProperties.DOWN_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsAreaSelectionDialogProperties.UP_BUTTON_CALLBACK;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -27,18 +33,22 @@ public class LongScreenshotsMediator {
     private PropertyModel mModel;
     private final Activity mActivity;
     private final EntryManager mEntryManager;
+    private Bitmap mInitialBitmap;
 
     public LongScreenshotsMediator(Activity activity, EntryManager entryManager) {
         mActivity = activity;
         mEntryManager = entryManager;
     }
 
-    public void showAreaSelectionDialog() {
+    public void showAreaSelectionDialog(Bitmap bitmap) {
+        mInitialBitmap = bitmap;
         View view = mActivity.getLayoutInflater().inflate(
                 R.layout.long_screenshots_area_selection_dialog, null);
         mModel = LongScreenshotsAreaSelectionDialogProperties.defaultModelBuilder()
                          .with(DONE_BUTTON_CALLBACK, this::areaSelectionDone)
                          .with(CLOSE_BUTTON_CALLBACK, this::areaSelectionClose)
+                         .with(DOWN_BUTTON_CALLBACK, this::areaSelectionDown)
+                         .with(UP_BUTTON_CALLBACK, this::areaSelectionUp)
                          .build();
 
         PropertyModelChangeProcessor.create(
@@ -48,6 +58,9 @@ public class LongScreenshotsMediator {
         mDialog.addContentView(view,
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT));
+
+        ImageView imageView = view.findViewById(R.id.screenshot_image);
+        imageView.setImageBitmap(mInitialBitmap);
 
         mDialog.show();
     }
@@ -60,5 +73,14 @@ public class LongScreenshotsMediator {
     public void areaSelectionClose(View view) {
         // TODO(1163193): Delete all bitmaps.
         mDialog.cancel();
+    }
+
+    public void areaSelectionDown(View view) {}
+
+    public void areaSelectionUp(View view) {}
+
+    @VisibleForTesting
+    public Dialog getDialog() {
+        return mDialog;
     }
 }
