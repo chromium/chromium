@@ -1787,11 +1787,13 @@ void TabDragController::CompleteDrag() {
                                : source_context_->GetTabStripModel();
     ui::ListSelectionModel selection;
     int index = model->GetIndexOfWebContents(drag_data_[1].contents);
-    DCHECK_NE(-1, index);
-    selection.AddIndexToSelection(index);
-    selection.set_active(index);
-    selection.set_anchor(index);
-    model->SetSelectionFromModel(selection);
+    // The tabs in the group may have been closed during the drag.
+    if (index != TabStripModel::kNoTab) {
+      selection.AddIndexToSelection(index);
+      selection.set_active(index);
+      selection.set_anchor(index);
+      model->SetSelectionFromModel(selection);
+    }
   }
 }
 
