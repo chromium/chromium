@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -14,5 +16,8 @@ const base::Feature kRefactoredNTP{"RefactoredNTP",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsRefactoredNTP() {
-  return base::FeatureList::IsEnabled(kRefactoredNTP);
+  // This feature is dependent on the DiscoverFeed being enabled, only having
+  // kRefactoredNTP enabled can lead to unexpected behavior.
+  return base::FeatureList::IsEnabled(kRefactoredNTP) &&
+         IsDiscoverFeedEnabled();
 }

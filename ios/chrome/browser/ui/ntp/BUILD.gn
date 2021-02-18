@@ -260,5 +260,6 @@ source_set("feature_flags") {
     "new_tab_page_feature.h",
     "new_tab_page_feature.mm",
   ]
+  deps = [ "//ios/chrome/browser/ui/content_suggestions:feature_flags" ]
   public_deps = [ "//base" ]
 }
