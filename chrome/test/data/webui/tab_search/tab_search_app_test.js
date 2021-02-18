@@ -257,42 +257,23 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [5, 6, 3, 4]);
   });
 
-  test('Verify initial tab render time is logged correctly', async () => {
-    // |metricNames| tracks thow many times recordTime() has been called for
-    // a metric.
-    const metricNames = {};
-    chrome.metricsPrivate.recordTime = (...args) => {
-      if ( args[0] in metricNames ) {
-        metricNames[args[0]] += 1;
-      } else {
-        metricNames[args[0]] = 1;
-      }
-    };
-
+  test('Verify visibilitychange triggers data fetch', async () => {
     await setupTest(sampleData());
-    await testProxy.whenCalled('showUI');
-    await waitAfterNextRender(tabSearchApp);
+    assertEquals(1, testProxy.getCallCount('getProfileData'));
 
-    // Make sure that tab data has been received.
-    verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
-
-    // Ensure that |chrome.metricsPrivate.recordTime()| has been called
-    // once for InitialTabsRenderTime after initial tab data has been
-    // recieved.
-    assertEquals(1, metricNames['Tabs.TabSearch.WebUI.InitialTabsRenderTime']);
-
-    // Force a change to filtered tab data that would result in a
-    // re-render.
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
-    searchField.setValue('bing');
+    // When hidden visibilitychange should not trigger the data callback.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
     await flushTasks();
-    await waitAfterNextRender(tabSearchApp);
-    verifyTabIds(queryRows(), [ 2 ]);
+    assertEquals(1, testProxy.getCallCount('getProfileData'));
 
-    // |chrome.metricsPrivate.recordTime()| should still have only been
-    // called once for InitialTabsRenderTime.
-    assertEquals(1, metricNames['Tabs.TabSearch.WebUI.InitialTabsRenderTime']);
+    // When visible visibilitychange should trigger the data callback.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    assertEquals(2, testProxy.getCallCount('getProfileData'));
   });
 
   test('Verify tab switch is logged correctly', async () => {

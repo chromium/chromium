@@ -6,6 +6,7 @@
 
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/browser/visibility.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
@@ -50,7 +51,13 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
           contents_wrapper_->web_contents()))) {
   DCHECK(!contents_wrapper_->GetHost());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  contents_wrapper_->ReloadWebContents();
+
+  // Ensure the WebContents is in a visible state after being added to the
+  // Views bubble so the correct lifecycle hooks are triggered.
+  DCHECK_NE(content::Visibility::VISIBLE,
+            contents_wrapper_->web_contents()->GetVisibility());
+  contents_wrapper_->web_contents()->WasShown();
+
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_margins(gfx::Insets());
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -66,6 +73,7 @@ void WebUIBubbleDialogView::ClearContentsWrapper() {
   DCHECK_EQ(this, contents_wrapper_->GetHost().get());
   DCHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents());
   web_view_->SetWebContents(nullptr);
+  contents_wrapper_->web_contents()->WasHidden();
   contents_wrapper_->SetHost(nullptr);
   contents_wrapper_ = nullptr;
 }

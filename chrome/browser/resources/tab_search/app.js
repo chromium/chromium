@@ -40,9 +40,10 @@ export class TabSearchAppElement extends PolymerElement {
         value: '',
       },
 
-      /** @private {?Array<!TabData>}*/
+      /** @private {!Array<!TabData>}*/
       openTabs_: {
         type: Array,
+        value: [],
       },
 
       /** @private {!Array<!TabData>} */
@@ -101,6 +102,14 @@ export class TabSearchAppElement extends PolymerElement {
 
     /** @private {!Array<number>} */
     this.listenerIds_ = [];
+
+    /** @private {!Function} */
+    this.visibilityChangedListener_ = () => {
+      // Refresh Tab Search's tab data when transitioning into a visible state.
+      if (document.visibilityState === 'visible') {
+        this.updateTabs_();
+      }
+    };
   }
 
   /** @override */
@@ -126,6 +135,14 @@ export class TabSearchAppElement extends PolymerElement {
         }
       ],
     });
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
+    document.addEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
@@ -135,28 +152,21 @@ export class TabSearchAppElement extends PolymerElement {
         callbackRouter.tabsRemoved.addListener(
             tabIds => this.onTabsRemoved_(tabIds)));
 
-    // The infinite-list only triggers a dom-change event after it is ready
-    // and observes a change on the list items.
-    listenOnce(this.$.tabsList, 'dom-change', () => {
-      // Push showUI() to the event loop to allow reflow to occur following
-      // the DOM update.
-      setTimeout(() => {
-        this.apiProxy_.showUI();
-
-        // Record the first time it takes for the initial list of tabs to
-        // render.
-        chrome.metricsPrivate.recordTime(
-            'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
-            Math.round(window.performance.now()));
-      }, 0);
-    });
-    this.updateTabs_();
+    // If added in a visible state update current tabs.
+    if (document.visibilityState === 'visible') {
+      this.updateTabs_();
+    }
   }
 
   /** @override */
   disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+
+    document.removeEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   /** @private */
@@ -166,6 +176,14 @@ export class TabSearchAppElement extends PolymerElement {
       chrome.metricsPrivate.recordTime(
           'Tabs.TabSearch.WebUI.TabListDataReceived',
           Math.round(Date.now() - getTabsStartTimestamp));
+
+      // The infinite-list only triggers a dom-change event after it is ready
+      // and observes a change on the list items.
+      listenOnce(this.$.tabsList, 'dom-change', () => {
+        // Push showUI() to the event loop to allow reflow to occur following
+        // the DOM update.
+        setTimeout(() => this.apiProxy_.showUI(), 0);
+      });
 
       this.openTabsChanged_(profileData.windows);
     });
@@ -192,7 +210,7 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onTabsRemoved_(tabIds) {
-    if (!this.openTabs_) {
+    if (this.openTabs_.length === 0) {
       return;
     }
 
@@ -224,7 +242,7 @@ export class TabSearchAppElement extends PolymerElement {
   onSearchChanged_(e) {
     this.searchText_ = e.detail;
 
-    this.updateFilteredTabs_(this.openTabs_ || []);
+    this.updateFilteredTabs_(this.openTabs_);
     // Reset the selected item whenever a search query is provided.
     /** @type {!InfiniteList} */ (this.$.tabsList).selected =
         this.filteredOpenTabs_.length > 0 ? 0 : NO_SELECTION;

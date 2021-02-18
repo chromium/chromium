@@ -18,6 +18,13 @@ bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
+content::WebContents::CreateParams GetWebContentsCreateParams(
+    content::BrowserContext* browser_context) {
+  content::WebContents::CreateParams create_params(browser_context);
+  create_params.initially_hidden = true;
+  return create_params;
+}
+
 }  // namespace
 
 bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
@@ -31,7 +38,7 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     int task_manager_string_id,
     bool enable_extension_apis)
     : web_contents_(content::WebContents::Create(
-          content::WebContents::CreateParams(browser_context))) {
+          GetWebContentsCreateParams(browser_context))) {
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
 

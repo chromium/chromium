@@ -99,6 +99,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
       set_contents_wrapper(std::make_unique<BubbleContentsWrapperT<T>>(
           webui_url_, profile_, task_manager_string_id_,
           enable_extension_apis_));
+      contents_wrapper()->ReloadWebContents();
     }
 
     DCHECK(!contents_wrapper()->GetHost());

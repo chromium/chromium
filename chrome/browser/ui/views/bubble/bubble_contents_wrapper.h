@@ -97,8 +97,6 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
         webui_url_(webui_url) {}
 
   void ReloadWebContents() override {
-    // Lie to WebContents so it starts rendering and eventually calls ShowUI().
-    web_contents()->WasShown();
     web_contents()->GetController().LoadURL(webui_url_, content::Referrer(),
                                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                             std::string());

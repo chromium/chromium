@@ -14,7 +14,9 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 
 class TabSearchUIBrowserTest : public InProcessBrowserTest {
  public:
@@ -146,7 +148,12 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
                                            ->template GetAs<TabSearchUI>()
                                            ->page_handler_for_testing();
   ASSERT_NE(nullptr, page_handler);
+  content::WindowedNotificationObserver close_observer(
+      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
+      content::Source<content::WebContents>(tab_contents));
   page_handler->CloseTab(tab_id);
+  tab_contents->DispatchBeforeUnload(false /* auto_cancel */);
+  close_observer.Wait();
   ASSERT_EQ(4, tab_strip_model->GetTabCount());
 
   // Check to make sure the browser tab hosting Tab Search has been closed but

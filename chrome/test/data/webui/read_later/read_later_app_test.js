@@ -241,4 +241,22 @@ suite('ReadLaterAppTest', () => {
       assertTrue(!!readLaterItem.shadowRoot.querySelector('.favicon'));
     });
   });
+
+  test('Verify visibilitychange triggers data fetch', async () => {
+    assertEquals(1, testProxy.getCallCount('getReadLaterEntries'));
+
+    // When hidden visibilitychange should not trigger the data callback.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    assertEquals(1, testProxy.getCallCount('getReadLaterEntries'));
+
+    // When visible visibilitychange should trigger the data callback.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    assertEquals(2, testProxy.getCallCount('getReadLaterEntries'));
+  });
 });

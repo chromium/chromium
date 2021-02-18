@@ -31,11 +31,17 @@ export class ReadLaterAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {?Array<!readLater.mojom.ReadLaterEntry>} */
-      unreadItems_: Array,
+      /** @private {!Array<!readLater.mojom.ReadLaterEntry>} */
+      unreadItems_: {
+        type: Array,
+        value: [],
+      },
 
-      /** @private {?Array<!readLater.mojom.ReadLaterEntry>} */
-      readItems_: Array,
+      /** @private {!Array<!readLater.mojom.ReadLaterEntry>} */
+      readItems_: {
+        type: Array,
+        value: [],
+      },
     };
   }
 
@@ -46,50 +52,65 @@ export class ReadLaterAppElement extends PolymerElement {
 
     /** @private {?number} */
     this.listenerId_ = null;
-  }
 
-  /** @override */
-  ready() {
-    super.ready();
-
-    listenOnce(this.$.readLaterList, 'dom-change', () => {
-      // Push ShowUI() callback to the event queue to allow deferred rendering
-      // to take place.
-      setTimeout(() => {
-        this.apiProxy_.showUI();
-
-        // Record the first time it takes for the initial list of entries to
-        // render.
-        chrome.metricsPrivate.recordTime(
-            'ReadingList.WebUI.InitialEntriesRenderTime',
-            Math.round(window.performance.now()));
-      }, 0);
-    });
-
-    // Fetch the latest read later entry data.
-    const getEntriesStartTimestamp = Date.now();
-    this.apiProxy_.getReadLaterEntries().then(({entries}) => {
-      chrome.metricsPrivate.recordTime(
-          'ReadingList.WebUI.ReadingListDataReceived',
-          Math.round(Date.now() - getEntriesStartTimestamp));
-      this.updateItems_(entries);
-    });
+    /** @private {!Function} */
+    this.visibilityChangedListener_ = () => {
+      // Refresh Read Later's list data when transitioning into a visible state.
+      if (document.visibilityState === 'visible') {
+        this.updateReadLaterEntries_();
+      }
+    };
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
+
+    document.addEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
+
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerId_ = callbackRouter.itemsChanged.addListener(
         entries => this.updateItems_(entries));
+
+    // If added in a visible state update current read later items.
+    if (document.visibilityState === 'visible') {
+      this.updateReadLaterEntries_();
+    }
   }
 
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
+
     this.apiProxy_.getCallbackRouter().removeListener(
         /** @type {number} */ (this.listenerId_));
     this.listenerId_ = null;
+
+    document.removeEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
+  }
+
+  /**
+   * Fetches the latest read later entries from the browser.
+   * @private
+   */
+  async updateReadLaterEntries_() {
+    const getEntriesStartTimestamp = Date.now();
+
+    const {entries} = await this.apiProxy_.getReadLaterEntries();
+
+    chrome.metricsPrivate.recordTime(
+        'ReadingList.WebUI.ReadingListDataReceived',
+        Math.round(Date.now() - getEntriesStartTimestamp));
+
+    listenOnce(this.$.readLaterList, 'dom-change', () => {
+      // Push ShowUI() callback to the event queue to allow deferred rendering
+      // to take place.
+      setTimeout(() => this.apiProxy_.showUI(), 0);
+    });
+
+    this.updateItems_(entries);
   }
 
   /**
@@ -116,8 +137,7 @@ export class ReadLaterAppElement extends PolymerElement {
    * @private
    */
   isReadingListEmpty_() {
-    return (this.unreadItems_ === undefined || !this.unreadItems_.length) &&
-        (this.readItems_ === undefined || !this.readItems_.length);
+    return this.unreadItems_.length === 0 && this.readItems_.length === 0;
   }
 
   /**
