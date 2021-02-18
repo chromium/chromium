@@ -455,6 +455,10 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   void UpdateTextureSizeFromTarget(GLenum target);
   void UpdateTextureSizeFromClientID(GLuint client_id);
 
+  // Some operations like binding a VAO will update the element array buffer
+  // binding without an explicit glBindBuffer.
+  void UpdateCurrentlyBoundElementArrayBuffer();
+
   error::Error BindTexImage2DCHROMIUMImpl(GLenum target,
                                           GLenum internalformat,
                                           GLint image_id);

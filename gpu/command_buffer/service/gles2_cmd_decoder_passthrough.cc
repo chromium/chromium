@@ -2855,6 +2855,21 @@ void GLES2DecoderPassthroughImpl::UpdateTextureSizeFromClientID(
   }
 }
 
+void GLES2DecoderPassthroughImpl::UpdateCurrentlyBoundElementArrayBuffer() {
+  GLint service_element_array_buffer = 0;
+  api_->glGetIntegervFn(GL_ELEMENT_ARRAY_BUFFER_BINDING,
+                        &service_element_array_buffer);
+
+  GLuint client_element_array_buffer = 0;
+  if (service_element_array_buffer != 0) {
+    GetClientID(&resources_->buffer_id_map,
+                static_cast<GLuint>(service_element_array_buffer),
+                &client_element_array_buffer);
+  }
+
+  bound_buffers_[GL_ELEMENT_ARRAY_BUFFER] = client_element_array_buffer;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleSetActiveURLCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
