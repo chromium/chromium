@@ -322,6 +322,11 @@ void IntentPickerBubbleView::AppButtonPressed(size_t index,
                                               const ui::Event& event) {
   SetSelectedAppIndex(index, &event);
   RequestFocus();
+  if ((event.IsMouseEvent() && event.AsMouseEvent()->GetClickCount() == 2) ||
+      (event.IsGestureEvent() &&
+       event.AsGestureEvent()->details().tap_count() == 2)) {
+    AcceptDialog();
+  }
 }
 
 void IntentPickerBubbleView::ArrowButtonPressed(size_t index) {
