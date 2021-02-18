@@ -149,6 +149,8 @@ void ExtensionHost::Close() {
       extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
       content::Source<BrowserContext>(browser_context_),
       content::Details<ExtensionHost>(this));
+  for (auto& observer : observer_list_)
+    observer.OnExtensionHostShouldClose(this);
 }
 
 void ExtensionHost::AddObserver(ExtensionHostObserver* observer) {

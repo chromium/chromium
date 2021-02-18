@@ -281,12 +281,6 @@ ProcessManager::ProcessManager(BrowserContext* context,
         base::BindOnce(&ProcessManager::MaybeCreateStartupBackgroundHosts,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                 content::Source<BrowserContext>(context));
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-                 content::Source<BrowserContext>(context));
   content::DevToolsAgentHost::AddObserver(this);
 }
 
@@ -559,7 +553,7 @@ void ProcessManager::OnSuspendAck(const std::string& extension_id) {
       base::TimeDelta::FromMilliseconds(g_event_page_suspending_time_msec));
 }
 
-void ProcessManager::OnNetworkRequestStarted(
+void ProcessManager::NetworkRequestStarted(
     content::RenderFrameHost* render_frame_host,
     uint64_t request_id) {
   ExtensionHost* host = GetBackgroundHostForExtension(
@@ -576,7 +570,7 @@ void ProcessManager::OnNetworkRequestStarted(
   host->OnNetworkRequestStarted(request_id);
 }
 
-void ProcessManager::OnNetworkRequestDone(
+void ProcessManager::NetworkRequestDone(
     content::RenderFrameHost* render_frame_host,
     uint64_t request_id) {
   auto result = pending_network_requests_.find(request_id);
@@ -622,9 +616,9 @@ void ProcessManager::CloseBackgroundHosts() {
   // callbacks to modify the |background_hosts_| set.
   ExtensionHostSet hosts_copy = background_hosts_;
   for (auto* host : hosts_copy) {
-    // Deleting the host will cause a NOTIFICATION_EXTENSION_HOST_DESTROYED
-    // which will cause the removal of the host from the |background_hosts_| set
-    // in the Observe() method below.
+    // Deleting the host will cause a OnExtensionHostDestroyed which will cause
+    // the removal of the host from the |background_hosts_| set in the
+    // OnExtensionHostDestroyed() method below.
     delete host;
     DCHECK_EQ(0u, background_hosts_.count(host));
   }
@@ -647,33 +641,6 @@ void ProcessManager::SetEventPageSuspendingTimeForTesting(
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private
-
-void ProcessManager::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  TRACE_EVENT0("browser,startup", "ProcessManager::Observe");
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED: {
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      if (background_hosts_.erase(host)) {
-        // Note: |host->extension()| may be null at this point.
-        ClearBackgroundPageData(host->extension_id());
-        background_page_data_[host->extension_id()].since_suspended.reset(
-            new base::ElapsedTimer());
-      }
-      break;
-    }
-    case extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE: {
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      if (host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
-        CloseBackgroundHost(host);
-      }
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-}
 
 void ProcessManager::OnExtensionLoaded(BrowserContext* browser_context,
                                        const Extension* extension) {
@@ -706,6 +673,7 @@ void ProcessManager::CreateStartupBackgroundHosts() {
 void ProcessManager::OnBackgroundHostCreated(ExtensionHost* host) {
   DCHECK_EQ(browser_context_, host->browser_context());
   background_hosts_.insert(host);
+  host->AddObserver(this);
 
   if (BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
     std::unique_ptr<base::ElapsedTimer> since_suspended = std::move(
@@ -1018,6 +986,24 @@ void ProcessManager::RenderProcessExited(
     DCHECK(all_extension_workers_.GetAllForExtension(extension_id).empty());
 #endif
   worker_process_to_extension_ids_.erase(iter);
+}
+
+void ProcessManager::OnExtensionHostDestroyed(ExtensionHost* host) {
+  TRACE_EVENT0("browser,startup", "ProcessManager::OnExtensionHostDestroyed");
+  host->RemoveObserver(this);
+
+  DCHECK(background_hosts_.find(host) != background_hosts_.end());
+  background_hosts_.erase(host);
+  // Note: |host->extension()| may be null at this point.
+  ClearBackgroundPageData(host->extension_id());
+  background_page_data_[host->extension_id()].since_suspended =
+      std::make_unique<base::ElapsedTimer>();
+}
+
+void ProcessManager::OnExtensionHostShouldClose(ExtensionHost* host) {
+  TRACE_EVENT0("browser,startup", "ProcessManager::OnExtensionHostShouldClose");
+  DCHECK(host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+  CloseBackgroundHost(host);
 }
 
 void ProcessManager::UnregisterServiceWorker(const WorkerId& worker_id) {

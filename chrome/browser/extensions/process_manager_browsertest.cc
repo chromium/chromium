@@ -717,18 +717,18 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   const auto activity =
       std::make_pair(Activity::NETWORK, base::NumberToString(kRequestId));
 
-  pm->OnNetworkRequestStarted(frame_host, kRequestId);
+  pm->NetworkRequestStarted(frame_host, kRequestId);
   EXPECT_EQ(baseline_keepalive + 1, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(1u,
             pm->GetLazyKeepaliveActivities(extension.get()).count(activity));
-  pm->OnNetworkRequestDone(frame_host, kRequestId);
+  pm->NetworkRequestDone(frame_host, kRequestId);
   EXPECT_EQ(baseline_keepalive, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(0u,
             pm->GetLazyKeepaliveActivities(extension.get()).count(activity));
 
   // Simulate only a request completion for this ID and ensure it doesn't result
   // in keepalive decrement.
-  pm->OnNetworkRequestDone(frame_host, 2);
+  pm->NetworkRequestDone(frame_host, 2);
   EXPECT_EQ(baseline_keepalive, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(baseline_activities_count,
             pm->GetLazyKeepaliveActivities(extension.get()).size());
