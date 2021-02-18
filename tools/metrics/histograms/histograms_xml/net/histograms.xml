@@ -1653,8 +1653,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.HttpJob.PrefilterBytesRead" units="bytes"
-    expires_after="M85">
+    expires_after="M95">
   <owner>jkarlin@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
   <summary>
     Total prefilter (e.g., before decompression) bytes read for an HttpJob
     request.

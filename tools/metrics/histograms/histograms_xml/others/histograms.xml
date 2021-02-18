@@ -18517,7 +18517,7 @@ regressions. -->
 </histogram>
 
 <histogram base="true" name="WebFont.HttpCacheStatus" enum="HttpCachePattern"
-    expires_after="2020-11-08">
+    expires_after="2021-11-08">
   <owner>yaoxia@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
