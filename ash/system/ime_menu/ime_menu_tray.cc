@@ -273,6 +273,10 @@ class ImeMenuListView : public ImeListView {
     void TransitionToMainView(bool restore_focus) override {}
     void CloseBubble() override {}
 
+    gfx::Insets GetInsetsForDetailedView() const override {
+      return gfx::Insets();
+    }
+
    private:
     DISALLOW_COPY_AND_ASSIGN(Delegate);
   };

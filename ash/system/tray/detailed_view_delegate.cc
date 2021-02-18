@@ -103,6 +103,10 @@ base::Optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
   return base::nullopt;
 }
 
+gfx::Insets DetailedViewDelegate::GetInsetsForDetailedView() const {
+  return kUnifiedDetailedViewPadding;
+}
+
 bool DetailedViewDelegate::IsOverflowIndicatorEnabled() const {
   return false;
 }
