@@ -34,6 +34,7 @@ js_modulizer("modulize") {
   input_files = [
     "add_users_tests.js",
     "ambient_mode_page_test.js",
+    "ambient_mode_photos_page_test.js",
     "apps_page_test.js",
     "app_management/app_detail_view_test.js",
     "app_management/app_item_test.js",
