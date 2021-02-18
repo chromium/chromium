@@ -39,6 +39,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* key,
   proto.set_key(domain);
   proto.set_merchant(domain);
   proto.set_merchant_cart_url(merchant_url);
+  proto.set_timestamp(base::Time::Now().ToDoubleT());
   return proto;
 }
 
@@ -187,8 +188,8 @@ TEST_F(CartHandlerTest, TestDisableFakeData) {
   auto dummy_cart2 = chrome_cart::mojom::MerchantCart::New();
   dummy_cart2->merchant = kMockMerchantB;
   dummy_cart2->cart_url = GURL(kMockMerchantURLB);
-  carts.push_back(std::move(dummy_cart1));
   carts.push_back(std::move(dummy_cart2));
+  carts.push_back(std::move(dummy_cart1));
 
   handler_->GetMerchantCarts(base::BindOnce(
       &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
