@@ -82,6 +82,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"
+    expires_after="2021-08-10">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    The time from the activity creation point to the moment Chrome appears
+    ready. The intent is to reflect Clank's perceived cold start performance
+    regardless of different launch paths. The recorded value is the minimum of
+    'Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed' and
+    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metric values.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
     expires_after="2021-06-27">
   <owner>yashard@chromium.org</owner>

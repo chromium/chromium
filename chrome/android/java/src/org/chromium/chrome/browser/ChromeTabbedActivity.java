@@ -1582,7 +1582,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     return getToolbarManager() == null
                             ? null
                             : getToolbarManager().getProgressBarCoordinator();
-                }, getActivityTabStartupMetricsTracker()::recordVisibleContent);
+                }, getActivityTabStartupMetricsTracker()::pagePreviewRendered);
     }
 
     @Override
