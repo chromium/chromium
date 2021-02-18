@@ -128,8 +128,7 @@ crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/service
 crbug.com/357427 http/tests/workers/terminate-during-sync-operation-file.html [ Slow ]
 crbug.com/357427 http/tests/workers/terminate-during-sync-operation-filesystem.html [ Slow ]
 crbug.com/402379 [ Debug ] storage/indexeddb/cursor-continue-validity.html [ Slow ]
-crbug.com/402379 [ Debug ] storage/indexeddb/mozilla/indexes.html [ Slow ]
-crbug.com/402379 [ Release Win ] storage/indexeddb/mozilla/indexes.html [ Slow ]
+crbug.com/402379 storage/indexeddb/mozilla/indexes.html [ Slow ]
 
 crbug.com/504703 inspector-protocol/debugger/debugger-step-into-dedicated-worker.js [ Slow ]
 
