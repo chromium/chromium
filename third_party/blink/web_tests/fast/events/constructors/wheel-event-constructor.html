@@ -95,7 +95,7 @@ shouldBeEqualToNumber("new WheelEvent('eventType', { detail: {valueOf: function 
     shouldBeEqualToNumber("new WheelEvent('eventType', { " + attr + ": 2147483647 })." + attr, 2147483647);
     shouldBeEqualToNumber("new WheelEvent('eventType', { " + attr + ": -2147483648 })." + attr, -2147483648);
     shouldBeEqualToNumber("new WheelEvent('eventType', { " + attr + ": 123.45 })." + attr, 123);
-    shouldBeEqualToNumber("new WheelEvent('eventType', { " + attr + ": -123.45 })." + attr, -123);
+    shouldBeEqualToNumber("new WheelEvent('eventType', { " + attr + ": -123.45 })." + attr, -124);
     shouldThrow("new WheelEvent('eventType', { " + attr + ": NaN })." + attr);
 
     // Non-numeric values.

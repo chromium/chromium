@@ -44,7 +44,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(std::numeric_limits<int>::min() * 1.0,
                         std::numeric_limits<int>::min() * 1.0),
         std::make_tuple(std::numeric_limits<int>::min() * 1.0 - 1.55,
-                        std::numeric_limits<int>::min() * 1.0 - 1.0),
+                        std::numeric_limits<int>::min() * 1.0 - 2.0),
         std::make_tuple(std::numeric_limits<int>::max() * 1.0,
                         std::numeric_limits<int>::max() * 1.0),
         std::make_tuple(std::numeric_limits<int>::max() * 1.0 + 1.55,

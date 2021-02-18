@@ -494,14 +494,14 @@ int MouseEvent::layerX() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
 
-  return clampTo<int, double>(layer_location_.X());
+  return clampTo<int, double>(std::floor(layer_location_.X()));
 }
 
 int MouseEvent::layerY() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
 
-  return clampTo<int, double>(layer_location_.Y());
+  return clampTo<int, double>(std::floor(layer_location_.Y()));
 }
 
 double MouseEvent::offsetX() const {
