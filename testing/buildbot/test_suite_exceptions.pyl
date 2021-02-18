@@ -732,6 +732,10 @@
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # https://crbug.com/1018780
       'android-lollipop-arm-rel', # https://crbug.com/1060245
+
+      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
+      'android-marshmallow-arm64-rel',
+      'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
       'Android CFI': {
@@ -766,11 +770,6 @@
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
       },
-      'android-marshmallow-arm64-rel': {
-        'swarming': {
-          'shards': 25,
-        },
-      },
       'android-marshmallow-arm64-rel-swarming': {
         'swarming': {
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
@@ -790,13 +789,6 @@
             },
           ],
         },
-        # TODD(crbug.com/1127110): Remove experimental once it works fine.
-        'experiment_percentage': 100,
-      },
-      'android-marshmallow-x86-rel-non-cq': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
-        ],
       },
       'android-pie-arm64-rel': {
         'args': [
