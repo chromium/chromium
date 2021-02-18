@@ -75911,6 +75911,19 @@
        {}
       ]
      ],
+     "table-as-item-narrow-content-2.html": [
+      "96af10770f2de07a9adae7603eaa0cd0ebad0121",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "table-as-item-narrow-content.html": [
       "31cf112518198044d485b4ba5ff477773c29487c",
       [
@@ -75937,13 +75950,39 @@
        {}
       ]
      ],
-     "table-as-item-specified-width.html": [
-      "a4b370eb254dd84eaa90fcc4a658d101b681655c",
+     "table-as-item-specified-height.html": [
+      "f8f3740fcd413fa253207ee4fbe74b5afac7b68a",
       [
        null,
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-specified-width.html": [
+      "2d6850fdd73c9ccaf439fd6b547472880d95cb8c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-as-item-stretch-cross-size-2.html": [
+      "04e5b1e342e7cf61fbfec5ef6e82d9ca25909472",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -245494,7 +245533,7 @@
      []
     ],
     "permissions.idl": [
-     "dfc934f9ce399edb7ff8be0b293316b5f7bbeb32",
+     "2f7fc1ed83d680908e9854ba15b6e42d1f167c4f",
      []
     ],
     "picture-in-picture.idl": [
@@ -249823,7 +249862,7 @@
       []
      ],
      "focus-page-with-autofocus.html": [
-      "8c56e73782a814fcc131d061ea766851f7333c2b",
+      "d498ef633553a7a69799f4d011bbe7c2e403ea20",
       []
      ],
      "focus-page-with-button.html": [
@@ -254548,7 +254587,7 @@
        []
       ],
       "fetch-event-test-worker.js": [
-       "0a52a8201ea96d50d3fa6ee302f6aa90b4435da6",
+       "ba8204b9bb8ae94906bb4b0964c999a6c38fc207",
        []
       ],
       "fetch-event-within-sw-worker.js": [
@@ -318622,7 +318661,7 @@
       ]
      ],
      "Event-dispatch-redispatch.html": [
-      "7869aa00de846f807b52ab1c93377f67b693aa43",
+      "cf861ca17744c24b507e3fdf1e4a8c4e28485fd8",
       [
        null,
        {
@@ -417608,7 +417647,7 @@
       ]
      ],
      "fetch-event.https.html": [
-      "48f71e46cb22136958f63aedd3ff16758a5de581",
+      "cdd24c5f1a2ea1a92394db8a57c316b23ca93d2d",
       [
        null,
        {
