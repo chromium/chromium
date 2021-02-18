@@ -109,7 +109,7 @@ base::Time PasswordCheckManager::GetLastCheckTimestamp() {
 }
 
 int PasswordCheckManager::GetCompromisedCredentialsCount() const {
-  return insecure_credentials_manager_.GetCompromisedCredentials().size();
+  return insecure_credentials_manager_.GetInsecureCredentials().size();
 }
 
 int PasswordCheckManager::GetSavedPasswordsCount() const {
@@ -119,7 +119,7 @@ int PasswordCheckManager::GetSavedPasswordsCount() const {
 std::vector<CompromisedCredentialForUI>
 PasswordCheckManager::GetCompromisedCredentials() const {
   std::vector<CredentialWithPassword> credentials =
-      insecure_credentials_manager_.GetCompromisedCredentials();
+      insecure_credentials_manager_.GetInsecureCredentials();
   std::vector<CompromisedCredentialForUI> ui_credentials;
   ui_credentials.reserve(credentials.size());
   for (const auto& credential : credentials) {
@@ -175,7 +175,7 @@ void PasswordCheckManager::OnSavedPasswordsChanged(
   }
 }
 
-void PasswordCheckManager::OnCompromisedCredentialsChanged(
+void PasswordCheckManager::OnInsecureCredentialsChanged(
     password_manager::InsecureCredentialsManager::CredentialsView credentials) {
   if (AreScriptsRefreshed()) {
     FulfillPrecondition(kKnownCredentialsFetched);
@@ -216,7 +216,7 @@ void PasswordCheckManager::OnCredentialDone(
   }
   if (is_leaked) {
     // TODO(crbug.com/1092444): Trigger single-credential update.
-    insecure_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveInsecureCredential(credential);
   }
 }
 

@@ -157,7 +157,7 @@ class PasswordCheckManager
       override;
 
   // InsecureCredentialsManager::Observer
-  void OnCompromisedCredentialsChanged(
+  void OnInsecureCredentialsChanged(
       password_manager::InsecureCredentialsManager::CredentialsView credentials)
       override;
 

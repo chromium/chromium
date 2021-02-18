@@ -256,7 +256,7 @@ std::vector<api::passwords_private::InsecureCredential>
 PasswordCheckDelegate::GetCompromisedCredentials() {
   std::vector<CompromisedCredentialAndType>
       ordered_compromised_credential_and_types = OrderCompromisedCredentials(
-          insecure_credentials_manager_.GetCompromisedCredentials());
+          insecure_credentials_manager_.GetInsecureCredentials());
 
   std::vector<api::passwords_private::InsecureCredential>
       compromised_credentials;
@@ -439,7 +439,7 @@ void PasswordCheckDelegate::OnSavedPasswordsChanged(SavedPasswordsView) {
   NotifyPasswordCheckStatusChanged();
 }
 
-void PasswordCheckDelegate::OnCompromisedCredentialsChanged(
+void PasswordCheckDelegate::OnInsecureCredentialsChanged(
     InsecureCredentialsView credentials) {
   if (auto* event_router =
           PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
@@ -472,7 +472,7 @@ void PasswordCheckDelegate::OnCredentialDone(
     const LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
   if (is_leaked) {
-    insecure_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveInsecureCredential(credential);
   }
 
   // Update the progress in case there is one.

@@ -283,7 +283,7 @@ class SafetyCheckHandler
                         password_manager::IsLeaked is_leaked) override;
 
   // InsecureCredentialsManager::Observer implementation.
-  void OnCompromisedCredentialsChanged(
+  void OnInsecureCredentialsChanged(
       password_manager::InsecureCredentialsManager::CredentialsView credentials)
       override;
 

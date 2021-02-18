@@ -71,8 +71,8 @@ constexpr InsecureCredentialTypeFlags UnsetWeakCredentialTypeFlag(
       ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential)));
 }
 
-// Checks that |flag| contains at least one of compromised types.
-constexpr bool IsCompromised(const InsecureCredentialTypeFlags& flag) {
+// Checks that |flag| contains at least one of insecure types.
+constexpr bool IsInsecure(const InsecureCredentialTypeFlags& flag) {
   return (flag & (InsecureCredentialTypeFlags::kCredentialLeaked |
                   InsecureCredentialTypeFlags::kCredentialPhished)) !=
          InsecureCredentialTypeFlags::kSecure;
@@ -146,13 +146,12 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   using CredentialsView = base::span<const CredentialWithPassword>;
 
   // Observer interface. Clients can implement this to get notified about
-  // changes to the list of compromised and weak credentials. Clients can
-  // register and de-register themselves, and are expected to do so before the
-  // provider gets out of scope.
+  // changes to the list of insecure and weak credentials. Clients can register
+  // and de-register themselves, and are expected to do so before the provider
+  // gets out of scope.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnCompromisedCredentialsChanged(
-        CredentialsView credentials) = 0;
+    virtual void OnInsecureCredentialsChanged(CredentialsView credentials) = 0;
     virtual void OnWeakCredentialsChanged() {}
   };
 
@@ -169,8 +168,8 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   void StartWeakCheck(base::OnceClosure on_check_done = base::DoNothing());
 
   // Marks all saved credentials which have same username & password as
-  // compromised.
-  void SaveCompromisedCredential(const LeakCheckCredential& credential);
+  // insecure.
+  void SaveInsecureCredential(const LeakCheckCredential& credential);
 
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
@@ -181,8 +180,8 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   // the remove succeeded.
   bool RemoveCredential(const CredentialView& credential);
 
-  // Returns a vector of currently compromised credentials.
-  std::vector<CredentialWithPassword> GetCompromisedCredentials() const;
+  // Returns a vector of currently insecure credentials.
+  std::vector<CredentialWithPassword> GetInsecureCredentials() const;
 
   // Returns a vector of currently weak credentials.
   std::vector<CredentialWithPassword> GetWeakCredentials() const;
@@ -201,8 +200,8 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
       std::map<CredentialView, CredentialMetadata, PasswordCredentialLess>;
 
   // Recomputes the insecure credentials by making use of information stored in
-  // `compromised_credentials_`, `weak_passwords_` and `presenter_`.
-  // This does not invoke either `NotifyCompromisedCredentialsChanged` or
+  // `insecure_credentials_`, `weak_passwords_` and `presenter_`.
+  // This does not invoke either `NotifyInsecureCredentialsChanged` or
   // `NotifyWeakCredentialsChanged`, so that it can be used more generally.
   void UpdateInsecureCredentials();
 
@@ -220,8 +219,8 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   void OnSavedPasswordsChanged(
       SavedPasswordsPresenter::SavedPasswordsView passwords) override;
 
-  // Notifies observers when compromised credentials have changed.
-  void NotifyCompromisedCredentialsChanged();
+  // Notifies observers when insecure credentials have changed.
+  void NotifyInsecureCredentialsChanged();
 
   // Notifies observers when weak credentials have changed.
   void NotifyWeakCredentialsChanged();
@@ -238,7 +237,7 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   scoped_refptr<PasswordStore> profile_store_;
   scoped_refptr<PasswordStore> account_store_;
 
-  // The reader used to read the compromised credentials from the password
+  // The reader used to read the insecure credentials from the password
   // stores.
   InsecureCredentialsReader insecure_credentials_reader_;
 

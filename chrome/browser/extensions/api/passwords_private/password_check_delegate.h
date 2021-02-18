@@ -96,9 +96,9 @@ class PasswordCheckDelegate
       override;
 
   // password_manager::InsecureCredentialsManager::Observer:
-  // Invokes PasswordsPrivateEventRouter::OnCompromisedCredentialsChanged if
+  // Invokes PasswordsPrivateEventRouter::OnInsecureCredentialsChanged if
   // a valid pointer can be obtained.
-  void OnCompromisedCredentialsChanged(
+  void OnInsecureCredentialsChanged(
       password_manager::InsecureCredentialsManager::CredentialsView credentials)
       override;
 

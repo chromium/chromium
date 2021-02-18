@@ -148,7 +148,7 @@ base::Time IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
 
 std::vector<CredentialWithPassword>
 IOSChromePasswordCheckManager::GetCompromisedCredentials() const {
-  return insecure_credentials_manager_.GetCompromisedCredentials();
+  return insecure_credentials_manager_.GetInsecureCredentials();
 }
 
 password_manager::SavedPasswordsPresenter::SavedPasswordsView
@@ -206,7 +206,7 @@ void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
   }
 }
 
-void IOSChromePasswordCheckManager::OnCompromisedCredentialsChanged(
+void IOSChromePasswordCheckManager::OnInsecureCredentialsChanged(
     InsecureCredentialsView credentials) {
   for (auto& observer : observers_) {
     observer.CompromisedCredentialsChanged(credentials);
@@ -244,7 +244,7 @@ void IOSChromePasswordCheckManager::OnCredentialDone(
     const LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
   if (is_leaked) {
-    insecure_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveInsecureCredential(credential);
   }
 }
 

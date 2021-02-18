@@ -1000,7 +1000,7 @@ void SafetyCheckHandler::OnCredentialDone(
   }
 }
 
-void SafetyCheckHandler::OnCompromisedCredentialsChanged(
+void SafetyCheckHandler::OnInsecureCredentialsChanged(
     password_manager::InsecureCredentialsManager::CredentialsView credentials) {
   extensions::api::passwords_private::PasswordCheckStatus status =
       passwords_delegate_->GetPasswordCheckStatus();
