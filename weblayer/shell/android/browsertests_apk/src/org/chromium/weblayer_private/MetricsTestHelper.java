@@ -69,23 +69,31 @@ class MetricsTestHelper {
     }
 
     @CalledByNative
-    private static void createProfile(String name) {
+    private static void createProfile(String name, boolean incognito) {
         Context appContext = ContextUtils.getApplicationContext();
         WebLayer weblayer = WebLayer.loadSync(appContext);
 
-        String nameOrNull = null;
-        if (!TextUtils.isEmpty(name)) nameOrNull = name;
-        weblayer.getProfile(nameOrNull);
+        if (incognito) {
+            String nameOrNull = null;
+            if (!TextUtils.isEmpty(name)) nameOrNull = name;
+            weblayer.getIncognitoProfile(nameOrNull);
+        } else {
+            weblayer.getProfile(name);
+        }
     }
 
     @CalledByNative
-    private static void destroyProfile(String name) {
+    private static void destroyProfile(String name, boolean incognito) {
         Context appContext = ContextUtils.getApplicationContext();
         WebLayer weblayer = WebLayer.loadSync(appContext);
 
-        String nameOrNull = null;
-        if (!TextUtils.isEmpty(name)) nameOrNull = name;
-        weblayer.getProfile(nameOrNull).destroy();
+        if (incognito) {
+            String nameOrNull = null;
+            if (!TextUtils.isEmpty(name)) nameOrNull = name;
+            weblayer.getIncognitoProfile(nameOrNull).destroy();
+        } else {
+            weblayer.getProfile(name).destroy();
+        }
     }
 
     @CalledByNative
