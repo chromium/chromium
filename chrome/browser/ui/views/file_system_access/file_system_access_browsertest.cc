@@ -10,9 +10,9 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
-#include "chrome/browser/file_system_access/origin_scoped_file_system_access_permission_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -579,8 +579,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // Even after triggering the timer in the permission context.
-  static_cast<OriginScopedFileSystemAccessPermissionContext*>(
-      FileSystemAccessPermissionContextFactory::GetForProfile(profile))
+  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
       ->TriggerTimersForTesting();
   EXPECT_EQ("granted",
             content::EvalJs(third_party_iframe,
@@ -596,8 +595,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // But after triggering the timer in the permission context ...
-  static_cast<OriginScopedFileSystemAccessPermissionContext*>(
-      FileSystemAccessPermissionContextFactory::GetForProfile(profile))
+  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
       ->TriggerTimersForTesting();
 
   // ... permission should have been revoked.
@@ -704,8 +702,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // But after triggering the timer in the permission context ...
-  static_cast<OriginScopedFileSystemAccessPermissionContext*>(
-      FileSystemAccessPermissionContextFactory::GetForProfile(profile))
+  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
       ->TriggerTimersForTesting();
 
   // ... permission should have been revoked.

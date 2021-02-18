@@ -532,8 +532,6 @@ static_library("browser") {
     "file_system_access/file_system_access_permission_request_manager.h",
     "file_system_access/file_system_access_tab_helper.cc",
     "file_system_access/file_system_access_tab_helper.h",
-    "file_system_access/origin_scoped_file_system_access_permission_context.cc",
-    "file_system_access/origin_scoped_file_system_access_permission_context.h",
     "file_util_service.cc",
     "file_util_service.h",
     "flag_descriptions.cc",
