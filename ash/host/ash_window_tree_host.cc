@@ -76,7 +76,9 @@ std::unique_ptr<AshWindowTreeHost> AshWindowTreeHost::Create(
         init_params.initial_bounds, init_params.mirroring_delegate);
   }
   return std::make_unique<AshWindowTreeHostPlatform>(
-      ui::PlatformWindowInitProperties{init_params.initial_bounds});
+      ui::PlatformWindowInitProperties{
+          init_params.initial_bounds,
+          switches::IsCompositingBasedThrottlingEnabled()});
 }
 
 }  // namespace ash

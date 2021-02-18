@@ -41,6 +41,7 @@ ASH_PUBLIC_EXPORT extern const char kAshSideVolumeButtonPosition[];
 ASH_PUBLIC_EXPORT extern const char kAshTouchHud[];
 ASH_PUBLIC_EXPORT extern const char kAuraLegacyPowerButton[];
 ASH_PUBLIC_EXPORT extern const char kEnableDimShelf[];
+ASH_PUBLIC_EXPORT extern const char kEnableCompositingBasedThrottling[];
 ASH_PUBLIC_EXPORT extern const char kForceTabletPowerButton[];
 ASH_PUBLIC_EXPORT extern const char kFrameThrottleFps[];
 ASH_PUBLIC_EXPORT extern const char kHasInternalStylus[];
@@ -52,6 +53,7 @@ ASH_PUBLIC_EXPORT extern const char kForceInTabletPhysicalState[];
 ASH_PUBLIC_EXPORT base::Optional<base::TimeDelta> ContextualNudgesInterval();
 ASH_PUBLIC_EXPORT bool ContextualNudgesResetShownCount();
 ASH_PUBLIC_EXPORT bool IsUsingShelfAutoDim();
+ASH_PUBLIC_EXPORT bool IsCompositingBasedThrottlingEnabled();
 ASH_PUBLIC_EXPORT bool ShouldClearFastInkBuffer();
 
 }  // namespace switches

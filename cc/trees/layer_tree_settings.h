@@ -196,6 +196,12 @@ class CC_EXPORT LayerTreeSettings {
   // When enabled, enforces new interoperable semantics for 3D transforms.
   // See crbug.com/1008483.
   bool enable_transform_interop = false;
+
+  // Enables ThrottleDecider which produces a list of FrameSinkIds that are
+  // candidates for throttling.
+  // LayerTreeHostSingleThreadClient::FrameSinksToThrottleUpdated() will be
+  // called with candidates.
+  bool enable_compositing_based_throttling = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

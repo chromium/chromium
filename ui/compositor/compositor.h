@@ -148,7 +148,8 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              bool enable_pixel_canvas,
              bool use_external_begin_frame_control = false,
-             bool force_software_compositor = false);
+             bool force_software_compositor = false,
+             bool enable_compositing_based_throttling = false);
   ~Compositor() override;
 
   ui::ContextFactory* context_factory() { return context_factory_; }

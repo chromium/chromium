@@ -394,9 +394,11 @@ void WindowTreeHost::DestroyDispatcher() {
   //window()->RemoveOrDestroyChildren();
 }
 
-void WindowTreeHost::CreateCompositor(const viz::FrameSinkId& frame_sink_id,
-                                      bool force_software_compositor,
-                                      bool use_external_begin_frame_control) {
+void WindowTreeHost::CreateCompositor(
+    const viz::FrameSinkId& frame_sink_id,
+    bool force_software_compositor,
+    bool use_external_begin_frame_control,
+    bool enable_compositing_based_throttling) {
   Env* env = Env::GetInstance();
   ui::ContextFactory* context_factory = env->context_factory();
   DCHECK(context_factory);
@@ -405,7 +407,7 @@ void WindowTreeHost::CreateCompositor(const viz::FrameSinkId& frame_sink_id,
                                  : context_factory->AllocateFrameSinkId(),
       context_factory, base::ThreadTaskRunnerHandle::Get(),
       ui::IsPixelCanvasRecordingEnabled(), use_external_begin_frame_control,
-      force_software_compositor);
+      force_software_compositor, enable_compositing_based_throttling);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   compositor_->AddObserver(this);
 #endif

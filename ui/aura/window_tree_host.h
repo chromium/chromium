@@ -270,7 +270,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void CreateCompositor(
       const viz::FrameSinkId& frame_sink_id = viz::FrameSinkId(),
       bool force_software_compositor = false,
-      bool use_external_begin_frame_control = false);
+      bool use_external_begin_frame_control = false,
+      bool enable_compositing_based_throttling = false);
 
   void InitCompositor();
   void OnAcceleratedWidgetAvailable();

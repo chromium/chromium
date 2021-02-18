@@ -57,7 +57,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowInitProperties();
 
   // Initializes properties with the specified |bounds|.
-  explicit PlatformWindowInitProperties(const gfx::Rect& bounds);
+  explicit PlatformWindowInitProperties(
+      const gfx::Rect& bounds,
+      bool enable_compositing_based_throttling = false);
 
   PlatformWindowInitProperties(PlatformWindowInitProperties&& props);
 
@@ -105,6 +107,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   X11ExtensionDelegate* x11_extension_delegate = nullptr;
 #endif
+
+  bool enable_compositing_based_throttling = false;
 };
 
 }  // namespace ui
