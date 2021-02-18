@@ -112,14 +112,14 @@ export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} fr
 export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.m.js';
-export {updateArcSupported, updateSelectedAppId} from './os_apps_page/app_management_page/actions.m.js';
+export {addApp, changeApp, removeApp, updateArcSupported, updateSelectedAppId} from './os_apps_page/app_management_page/actions.m.js';
 export {BrowserProxy} from './os_apps_page/app_management_page/browser_proxy.m.js';
 export {ArcPermissionType, Bool, PageType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './os_apps_page/app_management_page/constants.m.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.m.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js';
-export {reduceAction} from './os_apps_page/app_management_page/reducers.m.js';
+export {AppState, reduceAction} from './os_apps_page/app_management_page/reducers.m.js';
 export {AppManagementStore} from './os_apps_page/app_management_page/store.m.js';
-export {convertOptionalBoolToBool, createEmptyState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.m.js';
+export {convertOptionalBoolToBool, createEmptyState, createInitialState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.m.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
 export {routes} from './os_route.m.js';

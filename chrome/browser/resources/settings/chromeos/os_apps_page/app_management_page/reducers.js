@@ -14,7 +14,7 @@
  */
 
 cr.define('app_management', function() {
-  const AppState = {};
+  /* #export */ const AppState = {};
 
   /**
    * @param {AppMap} apps

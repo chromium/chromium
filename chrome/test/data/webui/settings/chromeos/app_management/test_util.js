@@ -15,7 +15,7 @@
  * @param {Object=} optConfig
  * @return {!App}
  */
-function createApp(id, config) {
+/* #export */ function createApp(id, config) {
   return app_management.FakePageHandler.createApp(id, config);
 }
 
