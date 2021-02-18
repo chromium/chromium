@@ -13,6 +13,7 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
                                 Node* dirty_node) {
   DCHECK(dirty_node);
   DCHECK(dirty_node->isConnected());
+  AssertRootNodeInvariants();
 
   if (!common_ancestor) {
     // This is either first dirty node in which case we are using it as a
@@ -53,11 +54,6 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
   }
   root_node_ = common_ancestor;
   root_type_ = RootType::kCommonRoot;
-}
-
-void StyleTraversalRoot::ChildrenRemoved(ContainerNode& parent) {
-  if (root_node_ && !root_node_->isConnected())
-    RootRemoved(parent);
 }
 
 }  // namespace blink

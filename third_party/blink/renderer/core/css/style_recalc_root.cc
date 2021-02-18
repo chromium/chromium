@@ -30,6 +30,10 @@ Element& StyleRecalcRoot::RootElement() const {
 ContainerNode* StyleRecalcRoot::Parent(const Node& node) const {
   return node.GetStyleRecalcParent();
 }
+
+bool StyleRecalcRoot::IsChildDirty(const Node& node) const {
+  return node.ChildNeedsStyleRecalc();
+}
 #endif  // DCHECK_IS_ON()
 
 bool StyleRecalcRoot::IsDirty(const Node& node) const {
@@ -63,9 +67,25 @@ base::Optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
   return base::nullopt;
 }
 
+bool IsFlatTreeConnected(const Node& root) {
+  if (!root.isConnected())
+    return false;
+  // If the recalc root is removed from the flat tree because its assigned slot
+  // is removed from the flat tree, the recalc flags will be cleared in
+  // DetachLayoutTree() with performing_reattach=false. We use that to decide if
+  // the root node is no longer part of the flat tree.
+  return root.IsDirtyForStyleRecalc() || root.ChildNeedsStyleRecalc();
+}
+
 }  // namespace
 
-void StyleRecalcRoot::RootRemoved(ContainerNode& parent) {
+void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
+  if (!GetRootNode())
+    return;
+  if (GetRootNode()->IsDocumentNode())
+    return;
+  if (IsFlatTreeConnected(*GetRootNode()))
+    return;
   // We are notified with the light tree parent of the node(s) which were
   // removed from the DOM. If 'parent' is a shadow host, there are elements in
   // its shadow tree which are marked child-dirty which needs to be cleared in
@@ -94,18 +114,8 @@ void StyleRecalcRoot::RemovedFromFlatTree(const Node& node) {
     return;
   if (GetRootNode()->IsDocumentNode())
     return;
-  // If the recalc root is the removed node, or if it's a descendant of the root
-  // node, the recalc flags will be cleared in DetachLayoutTree() since
-  // performing_reattach=false. If that's the case, call RootRemoved() below to
-  // make sure we don't have a recalc root outside the flat tree, which is not
-  // allowed with FlatTreeStyleRecalc enabled.
-  if (GetRootNode()->NeedsStyleRecalc() ||
-      GetRootNode()->GetForceReattachLayoutTree() ||
-      GetRootNode()->ChildNeedsStyleRecalc()) {
-    return;
-  }
   DCHECK(node.parentElement());
-  RootRemoved(*node.parentElement());
+  SubtreeModified(*node.parentElement());
 }
 
 }  // namespace blink
