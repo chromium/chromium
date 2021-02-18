@@ -4169,6 +4169,11 @@ void RenderProcessHost::SetRunRendererInProcess(bool value) {
 }
 
 // static
+void RenderProcessHost::ShutDownInProcessRenderer() {
+  RenderProcessHostImpl::ShutDownInProcessRenderer();
+}
+
+// static
 RenderProcessHost::iterator RenderProcessHost::AllHostsIterator() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return iterator(&GetAllHosts());

@@ -600,6 +600,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // modifies the current process' command line.
   static void SetRunRendererInProcess(bool value);
 
+  // This forces a renderer that is running "in process" to shut down.
+  static void ShutDownInProcessRenderer();
+
   // Allows iteration over all the RenderProcessHosts in the browser. Note
   // that each host may not be active, and therefore may have nullptr channels.
   static iterator AllHostsIterator();

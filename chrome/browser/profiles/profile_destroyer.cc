@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -14,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_process_host.h"
 
@@ -93,6 +95,14 @@ void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
   DCHECK(profile->IsRegularProfile());
   TRACE_EVENT1("shutdown", "ProfileDestroyer::DestroyRegularProfileNow",
                "profile", static_cast<void*>(profile));
+
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
+      content::RenderProcessHost::run_renderer_in_process()) {
+    // With DestroyProfileOnBrowserClose and --single-process, we need to clean
+    // up the RPH first. Single-process mode does not support multiple Profiles,
+    // so this will not interfere with other Profiles.
+    content::RenderProcessHost::ShutDownInProcessRenderer();
+  }
 
 #if DCHECK_IS_ON()
   // Save the raw pointers of profile and off-the-record profile for DCHECKing
