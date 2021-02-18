@@ -811,6 +811,17 @@ class AutofillSelectWithStatesTest
         std::unique_ptr<Source>(
             new TestdataSource(true, file_path.AsUTF8Unsafe())),
         std::unique_ptr<Storage>(new NullStorage), "en-US");
+
+    test::PopulateAlternativeStateNameMapForTesting(
+        "US", "California",
+        {{.canonical_name = "California",
+          .abbreviations = {"CA"},
+          .alternative_names = {}}});
+    test::PopulateAlternativeStateNameMapForTesting(
+        "US", "North Carolina",
+        {{.canonical_name = "North Carolina",
+          .abbreviations = {"NC"},
+          .alternative_names = {}}});
     // Make sure the normalizer is done initializing its member(s) in
     // background task(s).
     task_environment_.RunUntilIdle();

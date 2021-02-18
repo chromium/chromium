@@ -2996,6 +2996,11 @@ TEST_P(AutofillManagerStructuredProfileTest, FillCreditCardForm_SplitName) {
 // Test that only filled selection boxes are counted for the type filling limit.
 TEST_P(AutofillManagerStructuredProfileTest,
        OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
+  test::PopulateAlternativeStateNameMapForTesting(
+      "US", "Tennessee",
+      {{.canonical_name = "Tennessee",
+        .abbreviations = {"TN"},
+        .alternative_names = {}}});
   // Set up our form data.
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
