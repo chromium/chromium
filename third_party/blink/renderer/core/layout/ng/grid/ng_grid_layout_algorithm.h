@@ -229,9 +229,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridLayoutAlgorithmTrackCollection* row_track_collection,
       NGGridPlacement* grid_placement) const;
 
-  // Sets specified track lists on |track_collection|.
-  void SetSpecifiedTracks(wtf_size_t auto_repetitions,
-                          NGGridBlockTrackCollection* track_collection) const;
   // Ensure coverage in block collection after grid items have been placed.
   void EnsureTrackCoverageForGridItems(
       const GridItems& grid_items,

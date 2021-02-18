@@ -157,28 +157,30 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
 void NGGridBlockTrackCollection::SetSpecifiedTracks(
     const NGGridTrackList* explicit_tracks,
     const NGGridTrackList* implicit_tracks,
+    wtf_size_t start_offset,
     wtf_size_t auto_repeat_count) {
   DCHECK_NE(nullptr, explicit_tracks);
   DCHECK_NE(nullptr, implicit_tracks);
   // The implicit track list should have only one repeater, if any.
   DCHECK_LE(implicit_tracks->RepeaterCount(), 1u);
-  DCHECK_NE(NGGridTrackCollectionBase::kInvalidRangeIndex, auto_repeat_count);
+  DCHECK_NE(kInvalidRangeIndex, auto_repeat_count);
+
   explicit_tracks_ = explicit_tracks;
   implicit_tracks_ = implicit_tracks;
   auto_repeat_count_ = auto_repeat_count;
 
   const wtf_size_t repeater_count = explicit_tracks_->RepeaterCount();
-  wtf_size_t total_track_count = 0;
+  wtf_size_t current_repeater_start_line = start_offset;
 
   for (wtf_size_t i = 0; i < repeater_count; ++i) {
     wtf_size_t repeater_track_count =
         explicit_tracks_->RepeatCount(i, auto_repeat_count_) *
         explicit_tracks_->RepeatSize(i);
-    if (repeater_track_count != 0) {
-      starting_tracks_.push_back(total_track_count);
-      ending_tracks_.push_back(total_track_count + repeater_track_count);
-    }
-    total_track_count += repeater_track_count;
+    DCHECK_NE(repeater_track_count, 0u);
+
+    start_lines_.push_back(current_repeater_start_line);
+    current_repeater_start_line += repeater_track_count;
+    end_lines_.push_back(current_repeater_start_line);
   }
 }
 
@@ -187,128 +189,158 @@ void NGGridBlockTrackCollection::EnsureTrackCoverage(wtf_size_t track_number,
   DCHECK_NE(kInvalidRangeIndex, track_number);
   DCHECK_NE(kInvalidRangeIndex, span_length);
   track_indices_need_sort_ = true;
-  starting_tracks_.push_back(track_number);
-  ending_tracks_.push_back(track_number + span_length);
+  start_lines_.push_back(track_number);
+  end_lines_.push_back(track_number + span_length);
 }
 
-void NGGridBlockTrackCollection::FinalizeRanges() {
-  ranges_.clear();
-
+void NGGridBlockTrackCollection::FinalizeRanges(wtf_size_t start_offset) {
   // Sort start and ending tracks from low to high.
   if (track_indices_need_sort_) {
-    std::stable_sort(starting_tracks_.begin(), starting_tracks_.end());
-    std::stable_sort(ending_tracks_.begin(), ending_tracks_.end());
+    std::sort(start_lines_.begin(), start_lines_.end());
+    std::sort(end_lines_.begin(), end_lines_.end());
   }
+  ranges_.clear();
 
-  wtf_size_t current_range_track_start = 0u;
-
-  // Indices into the starting and ending track vectors.
-  wtf_size_t starting_tracks_index = 0u;
-  wtf_size_t ending_tracks_index = 0u;
-
-  wtf_size_t repeater_index = kInvalidRangeIndex;
-  wtf_size_t repeater_track_start = kInvalidRangeIndex;
-  wtf_size_t next_repeater_track_start = 0u;
-  wtf_size_t current_repeater_track_count = 0u;
-
-  wtf_size_t total_repeater_count = explicit_tracks_->RepeaterCount();
-  wtf_size_t open_items_or_repeaters = 0u;
   bool is_in_auto_fit_range = false;
+  wtf_size_t current_range_start = 0u;
+  wtf_size_t open_items_or_repeaters = 0u;
+  wtf_size_t current_explicit_grid_line = start_offset;
+  wtf_size_t current_explicit_repeater_index = kInvalidRangeIndex;
+  wtf_size_t explicit_repeater_count = explicit_tracks_->RepeaterCount();
+
+  // If the explicit grid is not empty, |start_offset| is the translated index
+  // of the first track in |explicit_tracks_|; otherwise, the next repeater
+  // does not exist, fallback to |kInvalidRangeIndex|.
+  wtf_size_t next_explicit_repeater_start =
+      explicit_repeater_count ? start_offset : kInvalidRangeIndex;
+
+  // Index of the start/end line we are currently processing.
+  wtf_size_t start_line_index = 0u;
+  wtf_size_t end_line_index = 0u;
 
   while (true) {
     // Identify starting tracks index.
-    while (starting_tracks_index < starting_tracks_.size() &&
-           current_range_track_start >=
-               starting_tracks_[starting_tracks_index]) {
-      ++starting_tracks_index;
+    while (start_line_index < start_lines_.size() &&
+           current_range_start >= start_lines_[start_line_index]) {
+      ++start_line_index;
       ++open_items_or_repeaters;
     }
 
     // Identify ending tracks index.
-    while (ending_tracks_index < ending_tracks_.size() &&
-           current_range_track_start >= ending_tracks_[ending_tracks_index]) {
-      ++ending_tracks_index;
+    while (end_line_index < end_lines_.size() &&
+           current_range_start >= end_lines_[end_line_index]) {
+      ++end_line_index;
       --open_items_or_repeaters;
       DCHECK_GE(open_items_or_repeaters, 0u);
     }
 
     // Identify ending tracks index.
-    if (ending_tracks_index >= ending_tracks_.size()) {
+    if (end_line_index >= end_lines_.size()) {
+#if DCHECK_IS_ON()
       DCHECK_EQ(open_items_or_repeaters, 0u);
+      // If we exhausted the end indices, then we must have already exhausted
+      // the repeaters, or are located at the end of the last repeater.
+      if (current_explicit_repeater_index != kInvalidRangeIndex) {
+        DCHECK_EQ(current_explicit_repeater_index, explicit_repeater_count - 1);
+        DCHECK_EQ(current_range_start, next_explicit_repeater_start);
+      }
+#endif
       break;
     }
 
     // Determine the next starting and ending track index.
-    wtf_size_t next_starting_track = kInvalidRangeIndex;
-    if (starting_tracks_index < starting_tracks_.size())
-      next_starting_track = starting_tracks_[starting_tracks_index];
-    wtf_size_t next_ending_track = ending_tracks_[ending_tracks_index];
+    wtf_size_t next_start_line = (start_line_index < start_lines_.size())
+                                     ? start_lines_[start_line_index]
+                                     : kInvalidRangeIndex;
+    wtf_size_t next_end_line = end_lines_[end_line_index];
 
-    // Move |next_repeater_track_start| to the start of the next repeater, if
-    // needed.
-    while (current_range_track_start == next_repeater_track_start) {
-      if (++repeater_index == total_repeater_count) {
-        repeater_index = kInvalidRangeIndex;
-        repeater_track_start = next_repeater_track_start;
+    // Move to the start of the next explicit repeater.
+    while (current_range_start == next_explicit_repeater_start) {
+      current_explicit_grid_line = next_explicit_repeater_start;
+
+      // No next repeater, break and use implicit grid tracks.
+      if (++current_explicit_repeater_index == explicit_repeater_count) {
+        current_explicit_repeater_index = kInvalidRangeIndex;
         is_in_auto_fit_range = false;
         break;
       }
 
-      is_in_auto_fit_range = explicit_tracks_->RepeatType(repeater_index) ==
-                             NGGridTrackRepeater::RepeatType::kAutoFit;
-      current_repeater_track_count =
-          explicit_tracks_->RepeatCount(repeater_index, auto_repeat_count_) *
-          explicit_tracks_->RepeatSize(repeater_index);
-      repeater_track_start = next_repeater_track_start;
-      next_repeater_track_start += current_repeater_track_count;
+      is_in_auto_fit_range =
+          explicit_tracks_->RepeatType(current_explicit_repeater_index) ==
+          NGGridTrackRepeater::RepeatType::kAutoFit;
+      next_explicit_repeater_start +=
+          explicit_tracks_->RepeatSize(current_explicit_repeater_index) *
+          explicit_tracks_->RepeatCount(current_explicit_repeater_index,
+                                        auto_repeat_count_);
     }
 
     // Determine track number and count of the range.
     Range range;
-    range.starting_track_number = current_range_track_start;
-    DCHECK(next_starting_track != kInvalidRangeIndex ||
-           next_ending_track < next_starting_track);
-    range.track_count = std::min(next_ending_track, next_starting_track) -
-                        current_range_track_start;
+    range.starting_track_number = current_range_start;
+    DCHECK(next_start_line != kInvalidRangeIndex ||
+           next_end_line < next_start_line);
+    range.track_count =
+        std::min(next_start_line, next_end_line) - current_range_start;
+    DCHECK_GT(range.track_count, 0u);
 
     // Compute repeater index and offset.
-    if (repeater_index == kInvalidRangeIndex) {
-      range.SetIsImplicit();
-      if (implicit_tracks_->RepeaterCount() == 0) {
-        // No specified implicit tracks, use auto tracks.
-        range.repeater_index = kInvalidRangeIndex;
-        range.repeater_offset = 0;
-      } else {
-        // Use implicit tracks.
-        range.repeater_index = 0;
-        range.repeater_offset =
-            current_range_track_start - repeater_track_start;
-      }
+    if (current_explicit_repeater_index != kInvalidRangeIndex) {
+      // This range is contained within a repeater of the explicit grid; at this
+      // point, |current_explicit_grid_line| should be set to the start line of
+      // such repeater.
+      range.repeater_index = current_explicit_repeater_index;
+      range.repeater_offset =
+          (current_range_start - current_explicit_grid_line) %
+          explicit_tracks_->RepeatSize(current_explicit_repeater_index);
     } else {
-      range.repeater_index = repeater_index;
-      range.repeater_offset = current_range_track_start - repeater_track_start;
+      range.SetIsImplicit();
+      if (implicit_tracks_->RepeaterCount() == 0u) {
+        // No specified implicit grid tracks, use 'auto'.
+        range.repeater_index = kInvalidRangeIndex;
+        range.repeater_offset = 0u;
+      } else {
+        // Otherwise, use the only repeater for implicit grid tracks.
+        // There are 2 scenarios we want to cover here:
+        //   1. At this point, we should not have reached any explicit repeater,
+        //   since |current_explicit_grid_line| was initialized as the start
+        //   line of the first explicit repeater (e.g. |start_offset|), it can
+        //   be used to determine the offset of ranges preceding the explicit
+        //   grid; the last implicit grid track before the explicit grid
+        //   receives the last specified size, and so on backwards.
+        //
+        //   2. This range is located after any repeater in |explicit_tracks_|,
+        //   meaning it was defined with indices beyond the explicit grid.
+        //   We should have set |current_explicit_grid_line| to the last line
+        //   of the explicit grid at this point, use it to compute the offset of
+        //   following implicit tracks; the first track after the explicit grid
+        //   receives the first specified size, and so on forwards.
+        //
+        // Note that for both scenarios we can use the following formula:
+        //   (current_range_start - current_explicit_grid_line) %
+        //   implicit_repeater_size
+        // The expression below is equivalent, but uses some modular arithmetic
+        // properties to avoid |wtf_size_t| underflow in scenario 1.
+        range.repeater_index = 0u;
+        wtf_size_t implicit_repeater_size = implicit_tracks_->RepeatSize(0u);
+        range.repeater_offset =
+            (current_range_start + implicit_repeater_size -
+             current_explicit_grid_line % implicit_repeater_size) %
+            implicit_repeater_size;
+      }
     }
 
     if (is_in_auto_fit_range && open_items_or_repeaters == 1u)
       range.SetIsCollapsed();
-
-    current_range_track_start += range.track_count;
-    ranges_.push_back(range);
+    current_range_start += range.track_count;
+    ranges_.emplace_back(std::move(range));
   }
 
-#if DCHECK_IS_ON()
-  while (repeater_index != kInvalidRangeIndex &&
-         repeater_index < total_repeater_count - 1u) {
-    ++repeater_index;
-    DCHECK_EQ(0u, explicit_tracks_->RepeatSize(repeater_index));
-  }
-#endif
-  DCHECK_EQ(starting_tracks_index, starting_tracks_.size());
-  DCHECK_EQ(ending_tracks_index, starting_tracks_.size());
-  DCHECK(repeater_index == total_repeater_count - 1u ||
-         repeater_index == kInvalidRangeIndex);
-  starting_tracks_.clear();
-  ending_tracks_.clear();
+  // We must have exhausted all start and end indices.
+  DCHECK_EQ(start_line_index, start_lines_.size());
+  DCHECK_EQ(end_line_index, start_lines_.size());
+
+  start_lines_.clear();
+  end_lines_.clear();
 }
 
 bool NGGridBlockTrackCollection::IsRangeImplicit(wtf_size_t range_index) const {
@@ -343,15 +375,15 @@ String NGGridBlockTrackCollection::ToString() const {
     }
 
     builder.Append("], [Starting: {");
-    for (wtf_size_t i = 0; i < starting_tracks_.size(); ++i) {
-      builder.AppendNumber<wtf_size_t>(starting_tracks_[i]);
-      if (i + 1 != starting_tracks_.size())
+    for (wtf_size_t i = 0; i < start_lines_.size(); ++i) {
+      builder.AppendNumber<wtf_size_t>(start_lines_[i]);
+      if (i + 1 != start_lines_.size())
         builder.Append(", ");
     }
     builder.Append("} ], [Ending: {");
-    for (wtf_size_t i = 0; i < ending_tracks_.size(); ++i) {
-      builder.AppendNumber<wtf_size_t>(ending_tracks_[i]);
-      if (i + 1 != ending_tracks_.size())
+    for (wtf_size_t i = 0; i < end_lines_.size(); ++i) {
+      builder.AppendNumber<wtf_size_t>(end_lines_[i]);
+      if (i + 1 != end_lines_.size())
         builder.Append(", ");
     }
     builder.Append("} ] ");
@@ -535,14 +567,15 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     sets_.emplace_back(block_track_range.track_count,
                        block_track_range.IsCollapsed());
   } else {
-    wtf_size_t repeater_size =
+    wtf_size_t current_repeater_size =
         specified_track_list.RepeatSize(block_track_range.repeater_index);
+    DCHECK_LT(block_track_range.repeater_offset, current_repeater_size);
 
     // The number of different set elements in this range is the number of track
     // definitions from |NGGridBlockTrackCollection| range's repeater clamped by
     // the range's total track count if it's less than the repeater's size.
     new_range.set_count =
-        std::min(repeater_size, block_track_range.track_count);
+        std::min(current_repeater_size, block_track_range.track_count);
     DCHECK_GT(new_range.set_count, 0u);
 
     // The following two variables help compute how many tracks a set element
@@ -553,17 +586,19 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     // 1. |floor_set_track_count| is the number of times we would return to the
     // range's repeater offset, meaning that every definition in the repeater's
     // track list appears at least that many times within the range.
-    wtf_size_t floor_set_track_count = new_range.track_count / repeater_size;
+    wtf_size_t floor_set_track_count =
+        new_range.track_count / current_repeater_size;
     // 2. The remaining track count would not complete another iteration over
     // the entire repeater; this means that the first |remaining_track_count|
     // definitions appear one more time in the range.
-    wtf_size_t remaining_track_count = new_range.track_count % repeater_size;
+    wtf_size_t remaining_track_count =
+        new_range.track_count % current_repeater_size;
 
     for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
       wtf_size_t set_track_count =
           floor_set_track_count + ((i < remaining_track_count) ? 1 : 0);
       wtf_size_t set_repeater_offset =
-          (block_track_range.repeater_offset + i) % repeater_size;
+          (block_track_range.repeater_offset + i) % current_repeater_size;
       const GridTrackSize& set_track_size =
           specified_track_list.RepeatTrackSize(block_track_range.repeater_index,
                                                set_repeater_offset);

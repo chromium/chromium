@@ -107,13 +107,14 @@ class CORE_EXPORT NGGridBlockTrackCollection
   // Sets the specified, implicit tracks, along with a given auto repeat value.
   void SetSpecifiedTracks(const NGGridTrackList* explicit_tracks,
                           const NGGridTrackList* implicit_tracks,
+                          wtf_size_t start_offset,
                           wtf_size_t auto_repeat_count);
   // Ensures that after FinalizeRanges is called, a range will start at the
   // |track_number|, and a range will end at |track_number| + |span_length|
   void EnsureTrackCoverage(wtf_size_t track_number, wtf_size_t span_length);
   // Build the collection of ranges based on information provided by
   // SetSpecifiedTracks and EnsureTrackCoverage.
-  void FinalizeRanges();
+  void FinalizeRanges(wtf_size_t start_offset);
 
   bool IsRangeImplicit(wtf_size_t range_index) const;
   const Range& RangeAtRangeIndex(wtf_size_t range_index) const;
@@ -148,8 +149,8 @@ class CORE_EXPORT NGGridBlockTrackCollection
 
   // Starting and ending tracks mark where ranges will start and end.
   // Once the ranges have been built in FinalizeRanges, these are cleared.
-  Vector<wtf_size_t> starting_tracks_;
-  Vector<wtf_size_t> ending_tracks_;
+  Vector<wtf_size_t> start_lines_;
+  Vector<wtf_size_t> end_lines_;
   Vector<Range> ranges_;
 };
 

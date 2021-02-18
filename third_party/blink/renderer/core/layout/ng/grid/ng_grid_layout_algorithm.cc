@@ -855,18 +855,34 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
   DCHECK(column_track_collection);
   DCHECK(row_track_collection);
   DCHECK(grid_placement);
+  const ComputedStyle& grid_style = Style();
 
-  SetSpecifiedTracks(grid_placement->AutoRepetitions(kForColumns),
-                     column_track_collection);
-  SetSpecifiedTracks(grid_placement->AutoRepetitions(kForRows),
-                     row_track_collection);
+  auto BuildBlockTrackCollection =
+      [&](NGGridBlockTrackCollection* track_collection) {
+        const GridTrackSizingDirection track_direction =
+            track_collection->Direction();
+        const wtf_size_t start_offset =
+            grid_placement->StartOffset(track_direction);
+
+        const NGGridTrackList& template_track_list =
+            (track_direction == kForColumns)
+                ? grid_style.GridTemplateColumns().NGTrackList()
+                : grid_style.GridTemplateRows().NGTrackList();
+        const NGGridTrackList& auto_track_list =
+            (track_direction == kForColumns)
+                ? grid_style.GridAutoColumns().NGTrackList()
+                : grid_style.GridAutoRows().NGTrackList();
+
+        track_collection->SetSpecifiedTracks(
+            &template_track_list, &auto_track_list, start_offset,
+            grid_placement->AutoRepetitions(track_collection->Direction()));
+        EnsureTrackCoverageForGridItems(*grid_items, track_collection);
+        track_collection->FinalizeRanges(start_offset);
+      };
 
   grid_placement->RunAutoPlacementAlgorithm(grid_items);
-  EnsureTrackCoverageForGridItems(*grid_items, column_track_collection);
-  EnsureTrackCoverageForGridItems(*grid_items, row_track_collection);
-
-  column_track_collection->FinalizeRanges();
-  row_track_collection->FinalizeRanges();
+  BuildBlockTrackCollection(column_track_collection);
+  BuildBlockTrackCollection(row_track_collection);
 }
 
 void NGGridLayoutAlgorithm::BuildAlgorithmTrackCollections(
@@ -893,24 +909,6 @@ void NGGridLayoutAlgorithm::BuildAlgorithmTrackCollections(
   *row_track_collection = NGGridLayoutAlgorithmTrackCollection(
       row_block_track_collection,
       child_percentage_size_.block_size == kIndefiniteSize);
-}
-
-void NGGridLayoutAlgorithm::SetSpecifiedTracks(
-    wtf_size_t auto_repetitions,
-    NGGridBlockTrackCollection* track_collection) const {
-  DCHECK(track_collection);
-  const ComputedStyle& grid_style = Style();
-
-  const NGGridTrackList& template_track_list =
-      track_collection->IsForColumns()
-          ? grid_style.GridTemplateColumns().NGTrackList()
-          : grid_style.GridTemplateRows().NGTrackList();
-  const NGGridTrackList& auto_track_list =
-      track_collection->IsForColumns()
-          ? grid_style.GridAutoColumns().NGTrackList()
-          : grid_style.GridAutoRows().NGTrackList();
-  track_collection->SetSpecifiedTracks(&template_track_list, &auto_track_list,
-                                       auto_repetitions);
 }
 
 void NGGridLayoutAlgorithm::EnsureTrackCoverageForGridItems(
