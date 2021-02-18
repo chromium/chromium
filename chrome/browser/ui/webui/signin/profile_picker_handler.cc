@@ -25,10 +25,12 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -598,13 +600,14 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(
   Browser* browser = chrome::FindAnyBrowser(profile, false);
   DCHECK(browser);
   DCHECK(browser->window());
-  if (open_settings) {
-    chrome::ShowSettingsSubPage(browser, chrome::kManageProfileSubPage);
-  }
 
   if (new_profile) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchNewProfile);
-  } else if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+    ProfilePicker::Hide();
+    return;
+  }
+
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchGuestProfile);
   } else {
     RecordProfilePickerAction(
@@ -612,6 +615,22 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(
             ? ProfilePickerAction::kLaunchExistingProfileCustomizeSettings
             : ProfilePickerAction::kLaunchExistingProfile);
   }
+
+  if (open_settings) {
+    // User clicked 'Edit' from the profile card menu.
+    chrome::ShowSettingsSubPage(browser, chrome::kManageProfileSubPage);
+  } else {
+    // Opens a target url upon user selecting a pre-existing profile. For
+    // new profiles the chrome welcome page is displayed.
+    GURL target_page_url = ProfilePicker::GetOnSelectProfileTargetUrl();
+    if (!target_page_url.is_empty()) {
+      NavigateParams params(
+          GetSingletonTabNavigateParams(browser, target_page_url));
+      params.path_behavior = NavigateParams::RESPECT;
+      ShowSingletonTabOverwritingNTP(browser, std::move(params));
+    }
+  }
+
   ProfilePicker::Hide();
 }
 

@@ -233,11 +233,20 @@ class SimpleBackButton : public ToolbarButton {
 }  // namespace
 
 // static
-void ProfilePicker::Show(EntryPoint entry_point) {
+void ProfilePicker::Show(EntryPoint entry_point,
+                         const GURL& on_select_profile_target_url) {
   if (!g_profile_picker_view)
-    g_profile_picker_view = new ProfilePickerView();
+    g_profile_picker_view = new ProfilePickerView(on_select_profile_target_url);
 
   g_profile_picker_view->Display(entry_point);
+}
+
+// static
+GURL ProfilePicker::GetOnSelectProfileTargetUrl() {
+  if (g_profile_picker_view) {
+    return g_profile_picker_view->GetOnSelectProfileTargetUrl();
+  }
+  return GURL();
 }
 
 // static
@@ -351,10 +360,11 @@ ProfilePickerView::GetThemeProviderForProfileBeingCreated() const {
   return &ThemeService::GetThemeProviderForProfile(sign_in_->profile);
 }
 
-ProfilePickerView::ProfilePickerView()
+ProfilePickerView::ProfilePickerView(const GURL& on_select_profile_target_url)
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
                   KeepAliveRestartOption::DISABLED),
-      extended_account_info_timeout_(kExtendedAccountInfoTimeout) {
+      extended_account_info_timeout_(kExtendedAccountInfoTimeout),
+      on_select_profile_target_url_(on_select_profile_target_url) {
   // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PRODUCT_NAME);
@@ -1126,6 +1136,10 @@ void ProfilePickerView::DisplayErrorMessage() {
 
 base::FilePath ProfilePickerView::GetForceSigninProfilePath() const {
   return dialog_host_.GetForceSigninProfilePath();
+}
+
+GURL ProfilePickerView::GetOnSelectProfileTargetUrl() const {
+  return on_select_profile_target_url_;
 }
 
 BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)

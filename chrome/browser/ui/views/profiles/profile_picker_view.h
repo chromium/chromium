@@ -54,7 +54,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   friend class ProfilePicker;
 
   // To display the Profile picker, use ProfilePicker::Show().
-  ProfilePickerView();
+  explicit ProfilePickerView(const GURL& on_select_profile_target_url);
   ~ProfilePickerView() override;
 
   enum State {
@@ -225,6 +225,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // signin.
   base::FilePath GetForceSigninProfilePath() const;
 
+  // Getter of the target page  url. If not empty and is valid, it opens on
+  // profile selection instead of the new tab page.
+  GURL GetOnSelectProfileTargetUrl() const;
+
   ScopedKeepAlive keep_alive_;
   ProfilePicker::EntryPoint entry_point_ =
       ProfilePicker::EntryPoint::kOnStartup;
@@ -256,6 +260,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
   UserManagerProfileDialogHost dialog_host_;
+
+  // A target page  url that opens on profile selection instead of the new tab
+  // page.
+  GURL on_select_profile_target_url_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };
