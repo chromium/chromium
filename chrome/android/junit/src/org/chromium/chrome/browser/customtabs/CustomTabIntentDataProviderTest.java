@@ -32,6 +32,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -239,7 +240,8 @@ public class CustomTabIntentDataProviderTest {
                 Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ALPHA_8));
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, BUTTON_DESCRIPTION);
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
-                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+                PendingIntent.getBroadcast(context, 0, new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true)));
         bundle.putBoolean(CustomButtonParams.SHOW_ON_TOOLBAR, true);
         return bundle;
     }
@@ -249,7 +251,8 @@ public class CustomTabIntentDataProviderTest {
         Bundle bundle = new Bundle();
         bundle.putString(CustomTabsIntent.KEY_MENU_ITEM_TITLE, "title");
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
-                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+                PendingIntent.getBroadcast(context, 0, new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true)));
         return bundle;
     }
 

@@ -70,6 +70,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -328,8 +329,8 @@ public class CustomTabActivityTest {
 
     private Bundle makeBottomBarBundle(int id, Bitmap icon, String description) {
         Bundle bundle = new Bundle();
-        PendingIntent pi = PendingIntent.getBroadcast(
-                InstrumentationRegistry.getTargetContext(), 0, new Intent(), 0);
+        PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
 
         bundle.putInt(CustomTabsIntent.KEY_ID, sIdToIncrement++);
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, description);
@@ -967,13 +968,15 @@ public class CustomTabActivityTest {
         Assert.assertTrue(IntentHandler.wasIntentSenderChrome(intent));
 
         ArrayList<Bundle> toolbarItems = new ArrayList<>(2);
-        final PendingIntent pi1 = PendingIntent.getBroadcast(
-                InstrumentationRegistry.getTargetContext(), 0, new Intent(), 0);
+        final PendingIntent pi1 =
+                PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                        new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         final OnFinishedForTest onFinished1 = new OnFinishedForTest(pi1);
         toolbarItems.add(CustomTabsTestUtils.makeToolbarItemBundle(
                 expectedIcon1, "Good test", pi1, sIdToIncrement++));
-        final PendingIntent pi2 = PendingIntent.getBroadcast(
-                InstrumentationRegistry.getTargetContext(), 1, new Intent(), 0);
+        final PendingIntent pi2 =
+                PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 1,
+                        new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         Assert.assertThat(pi2, not(equalTo(pi1)));
         final OnFinishedForTest onFinished2 = new OnFinishedForTest(pi2);
         toolbarItems.add(CustomTabsTestUtils.makeToolbarItemBundle(
@@ -1114,8 +1117,8 @@ public class CustomTabActivityTest {
         remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_email_googblue_36dp);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS, new int[] {R.id.icon});
-        PendingIntent pi2 = PendingIntent.getBroadcast(
-                InstrumentationRegistry.getTargetContext(), 0, new Intent(), 0);
+        PendingIntent pi2 = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(),
+                0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_PENDINGINTENT, pi2);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         mScreenShooter.shoot("Remote Views");

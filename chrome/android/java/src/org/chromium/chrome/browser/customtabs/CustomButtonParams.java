@@ -246,8 +246,9 @@ public class CustomButtonParams {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
         String description = context.getResources().getString(R.string.share);
         Intent shareIntent = new Intent(context, CustomTabsShareBroadcastReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, shareIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(true));
 
         TintedDrawable drawable =
                 TintedDrawable.constructTintedDrawable(context, R.drawable.ic_share_white_24dp);

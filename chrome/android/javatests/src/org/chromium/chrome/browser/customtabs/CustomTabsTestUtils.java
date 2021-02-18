@@ -25,6 +25,7 @@ import androidx.browser.customtabs.CustomTabsSession;
 
 import org.junit.Assert;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -218,7 +219,9 @@ public class CustomTabsTestUtils {
     public static PendingIntent addMenuEntriesToIntent(
             Intent customTabIntent, int numEntries, Intent callbackIntent, String menuTitle) {
         PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
-                callbackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                callbackIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(true));
         ArrayList<Bundle> menuItems = new ArrayList<>();
         for (int i = 0; i < numEntries; i++) {
             Bundle bundle = new Bundle();
