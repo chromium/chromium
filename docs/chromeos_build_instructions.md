@@ -10,6 +10,8 @@ build configurations:
   workstation.
 - Otherwise, Chrome's full integration can be covered by building for a real
   Chrome OS device or VM using [Simple Chrome](#Chromium-OS-Device-Simple-Chrome).
+- Use `is_chromeos_device` in GN and `BUILDFLAG(IS_CHROMEOS_DEVICE)` in C++ code
+  to differentiate between these two modes.
 
 [TOC]
 
