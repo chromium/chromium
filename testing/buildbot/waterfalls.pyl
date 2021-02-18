@@ -5132,6 +5132,7 @@
       },
       'Mac10.15 Tests': {
         'mixins': [
+            'isolate_profile_data',
             'mac_10.15',
         ],
         'test_suites': {
