@@ -349,6 +349,15 @@ class V8DetailedMemoryProcessData {
     shared_v8_bytes_used_ = shared_v8_bytes_used;
   }
 
+  // Returns the number of bytes used by Blink heaps corresponding to V8
+  // isolates at the last measurement in this process that are shared between
+  // all frames.
+  uint64_t blink_bytes_used() const { return blink_bytes_used_; }
+
+  void set_blink_bytes_used(uint64_t blink_bytes_used) {
+    blink_bytes_used_ = blink_bytes_used;
+  }
+
   // Returns process data for the given node, or nullptr if no measurement has
   // been taken. The returned pointer must only be accessed on the graph
   // sequence and may go invalid at any time after leaving the calling scope.
@@ -356,8 +365,13 @@ class V8DetailedMemoryProcessData {
       const ProcessNode* node);
 
  private:
+  friend class WebMemoryTestHarness;
+
+  static V8DetailedMemoryProcessData* GetOrCreateForTesting(
+      const ProcessNode* node);
   uint64_t detached_v8_bytes_used_ = 0;
   uint64_t shared_v8_bytes_used_ = 0;
+  uint64_t blink_bytes_used_ = 0;
 };
 
 class V8DetailedMemoryObserver : public base::CheckedObserver {

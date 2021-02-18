@@ -24,6 +24,9 @@ struct PerIsolateV8MemoryUsage {
   // to any particular V8 context.
   uint64 shared_bytes_used;
 
+  // Bytes used on the Blink heap corresponding to this V8 isolate.
+  uint64 blink_bytes_used;
+
   // The V8 memory usage by individual V8 contexts in this process.
   array<PerContextV8MemoryUsage> contexts;
 };

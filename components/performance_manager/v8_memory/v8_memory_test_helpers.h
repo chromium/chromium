@@ -301,6 +301,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                 Bytes bytes,
                                 WorkerNodeImpl* parent);
 
+  void SetBlinkMemory(Bytes bytes);
+
   ProcessNode* process_node() const { return process_.get(); }
 
  private:

@@ -342,6 +342,11 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
   return workers_.back().get();
 }
 
+void WebMemoryTestHarness::SetBlinkMemory(Bytes bytes) {
+  V8DetailedMemoryProcessData::GetOrCreateForTesting(process_node())
+      ->set_blink_bytes_used(*bytes);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Free functions
 

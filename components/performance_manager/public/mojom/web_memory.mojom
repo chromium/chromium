@@ -84,4 +84,7 @@ struct WebMemoryMeasurement {
 
   // Memory that is not associated with any particular V8 context.
   WebMemoryUsage? shared_memory;
+
+  // Memory used by Blink.
+  WebMemoryUsage? blink_memory;
 };

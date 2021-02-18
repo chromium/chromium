@@ -39,6 +39,19 @@ using performance_manager::mojom::blink::WebMemoryUsagePtr;
 
 namespace blink {
 
+namespace {
+
+// String constants used for building the result.
+constexpr const char* kCrossOriginUrl = "cross-origin-url";
+constexpr const char* kMemoryTypeDom = "DOM";
+constexpr const char* kMemoryTypeJavaScript = "JavaScript";
+constexpr const char* kMemoryTypeShared = "Shared";
+constexpr const char* kScopeCrossOriginAggregated = "cross-origin-aggregated";
+constexpr const char* kScopeDedicatedWorker = "DedicatedWorker";
+constexpr const char* kScopeWindow = "Window";
+
+}  // anonymous namespace
+
 MeasureMemoryController::MeasureMemoryController(
     base::PassKey<MeasureMemoryController>,
     v8::Isolate* isolate,
@@ -174,11 +187,11 @@ WTF::AtomicString ConvertScope(WebMemoryAttribution::Scope scope) {
   using Scope = WebMemoryAttribution::Scope;
   switch (scope) {
     case Scope::kDedicatedWorker:
-      return "DedicatedWorker";
+      return kScopeDedicatedWorker;
     case Scope::kWindow:
-      return "Window";
+      return kScopeWindow;
     case Scope::kCrossOriginAggregated:
-      return "cross-origin-aggregated";
+      return kScopeCrossOriginAggregated;
   }
 }
 
@@ -199,7 +212,7 @@ MemoryAttribution* ConvertAttribution(
   if (attribution->url) {
     result->setUrl(attribution->url);
   } else {
-    result->setUrl("cross-origin-url");
+    result->setUrl(kCrossOriginUrl);
   }
   result->setScope(ConvertScope(attribution->scope));
   result->setContainer(ConvertContainer(attribution));
@@ -216,7 +229,7 @@ MemoryBreakdownEntry* ConvertBreakdown(
     attribution.push_back(ConvertAttribution(entry));
   }
   result->setAttribution(attribution);
-  result->setTypes({});
+  result->setTypes({WTF::AtomicString(kMemoryTypeJavaScript)});
   return result;
 }
 
@@ -249,8 +262,10 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
       breakdown.push_back(ConvertBreakdown(entry));
   }
   // Add breakdowns for memory that isn't attributed to an execution context.
+  breakdown.push_back(CreateUnattributedBreakdown(measurement->shared_memory,
+                                                  kMemoryTypeShared));
   breakdown.push_back(
-      CreateUnattributedBreakdown(measurement->shared_memory, "Shared"));
+      CreateUnattributedBreakdown(measurement->blink_memory, kMemoryTypeDom));
   // TODO(1085129): Report memory usage of detached frames once implemented.
   // Add an empty breakdown entry as required by the spec.
   // See https://github.com/WICG/performance-measure-memory/issues/10.

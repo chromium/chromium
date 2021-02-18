@@ -401,6 +401,36 @@ WebMemoryAggregator::WebMemoryAggregator(const FrameNode* requesting_node)
 
 WebMemoryAggregator::~WebMemoryAggregator() = default;
 
+namespace {
+
+// Returns v8_browsing_memory / v8_process_memory where
+// - v8_browsing_memory is the total V8 memory usage of all frames of the given
+//   |browsing_instance_id| in the given |process_node|.
+// - v8_process_memory is the total V8 memory usage of all frames in the given
+//   |process_node|.
+double GetBrowsingInstanceV8BytesFraction(const ProcessNode* process_node,
+                                          int32_t browsing_instance_id) {
+  uint64_t bytes_used = 0;
+  uint64_t total_bytes_used = 0;
+  process_node->VisitFrameNodes(base::BindRepeating(
+      [](base::Optional<int32_t> browsing_instance_id, uint64_t* bytes_used,
+         uint64_t* total_bytes_used, const FrameNode* frame_node) {
+        const auto* data =
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
+        if (data) {
+          if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
+            *bytes_used += data->v8_bytes_used();
+          }
+          *total_bytes_used += data->v8_bytes_used();
+        }
+        return true;
+      },
+      browsing_instance_id, &bytes_used, &total_bytes_used));
+  return static_cast<double>(bytes_used) / total_bytes_used;
+}
+
+}  // anonymous namespace
+
 mojom::WebMemoryMeasurementPtr
 WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -436,12 +466,22 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   auto* process_data =
       V8DetailedMemoryProcessData::ForProcessNode(requesting_process_node_);
   if (process_data) {
-    aggregation_result->detached_memory = mojom::WebMemoryUsage::New();
-    aggregation_result->detached_memory->bytes =
-        process_data->detached_v8_bytes_used();
+    // Shared memory is shared between browsing context groups in the process.
+    // We cannot attribute it to a single browsing context group, so we report
+    // it as is.
     aggregation_result->shared_memory = mojom::WebMemoryUsage::New();
     aggregation_result->shared_memory->bytes =
         process_data->shared_v8_bytes_used();
+    // As we don't have precise attribution for detached and Blink memory,
+    // we approximate it using V8 memory.
+    double browsing_instance_factor = GetBrowsingInstanceV8BytesFraction(
+        requesting_process_node_, browsing_instance_id_);
+    aggregation_result->detached_memory = mojom::WebMemoryUsage::New();
+    aggregation_result->detached_memory->bytes = static_cast<uint64_t>(
+        process_data->detached_v8_bytes_used() * browsing_instance_factor);
+    aggregation_result->blink_memory = mojom::WebMemoryUsage::New();
+    aggregation_result->blink_memory->bytes = static_cast<uint64_t>(
+        process_data->blink_bytes_used() * browsing_instance_factor);
   }
   return aggregation_result;
 }

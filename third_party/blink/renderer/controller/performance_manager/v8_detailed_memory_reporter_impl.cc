@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "v8/include/v8.h"
@@ -51,8 +52,15 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
       const std::vector<std::pair<v8::Local<v8::Context>, size_t>>&
           context_sizes_in_bytes,
       size_t unattributed_size_in_bytes) override {
+    DCHECK(IsMainThread());
     mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage =
         mojom::blink::PerIsolateV8MemoryUsage::New();
+    // This function and V8ProcessMemoryReporter::StartMeasurements both
+    // run on the main thread of the renderer. This means that the Blink
+    // heap given by ThreadState::Current() is attached to the main V8
+    // isolate given by v8::Isolate::GetCurrent().
+    size_t blink_bytes_used = ThreadState::Current()->GetUsedSizeInBytes();
+    isolate_memory_usage->blink_bytes_used = blink_bytes_used;
     for (const auto& context_and_size : context_sizes_in_bytes) {
       const v8::Local<v8::Context>& context = context_and_size.first;
       const size_t size = context_and_size.second;
@@ -128,6 +136,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
         result_(mojom::blink::PerProcessV8MemoryUsage::New()) {}
 
   void StartMeasurements(V8DetailedMemoryReporterImpl::Mode mode) {
+    DCHECK(IsMainThread());
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     // 1. Start measurement of the main V8 isolate.
     if (!isolate) {

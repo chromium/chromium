@@ -607,6 +607,51 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossProcessCallers) {
   }
 }
 
+TEST_F(WebMemoryAggregatorTest, BlinkMemory) {
+  FrameNodeImpl* a_com = AddFrameNode("https://a.com/", Bytes{10});
+  SetBlinkMemory(Bytes{1000});
+  {
+    WebMemoryAggregator aggregator(a_com);
+    auto expected_result =
+        CreateExpectedMemoryMeasurement({ExpectedMemoryBreakdown(
+            10, AttributionScope::kWindow, "https://a.com/")});
+    expected_result->blink_memory = mojom::WebMemoryUsage::New();
+    expected_result->blink_memory->bytes = 1000;
+    expected_result->shared_memory = mojom::WebMemoryUsage::New();
+    expected_result->shared_memory->bytes = 0;
+    expected_result->detached_memory = mojom::WebMemoryUsage::New();
+    expected_result->detached_memory->bytes = 0;
+    auto result = aggregator.AggregateMeasureMemoryResult();
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
+  }
+}
+
+TEST_F(WebMemoryAggregatorTest, BlinkMemoryMultipleBrowsingInstances) {
+  FrameNodeImpl* a_com = AddFrameNode("https://a.com/", Bytes{10});
+  AddCrossBrowsingInstanceFrameNode("https://b.com/", Bytes{30});
+
+  SetBlinkMemory(Bytes{1000});
+  {
+    WebMemoryAggregator aggregator(a_com);
+    auto expected_result =
+        CreateExpectedMemoryMeasurement({ExpectedMemoryBreakdown(
+            10, AttributionScope::kWindow, "https://a.com/")});
+    expected_result->blink_memory = mojom::WebMemoryUsage::New();
+    // We know Blink memory for both a.com and b.com because they share
+    // the same process. We use V8 memory of a.com to estimate its part
+    // of Blink memory: 10 / (10 + 30).
+    expected_result->blink_memory->bytes = 1000 * 10 / (10 + 30);
+    expected_result->shared_memory = mojom::WebMemoryUsage::New();
+    expected_result->shared_memory->bytes = 0;
+    expected_result->detached_memory = mojom::WebMemoryUsage::New();
+    expected_result->detached_memory->bytes = 0;
+    auto result = aggregator.AggregateMeasureMemoryResult();
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
+  }
+}
+
 }  // namespace v8_memory
 
 }  // namespace performance_manager

@@ -47,6 +47,7 @@ using ::testing::StrictMock;
 
 constexpr uint64_t kDetachedBytes = 0xDEED;
 constexpr uint64_t kSharedBytes = 0xABBA;
+constexpr uint64_t kBlinkBytes = 0x1001;
 
 namespace {
 
@@ -164,6 +165,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, InstantiateOnEmptyGraph) {
   auto data = NewPerProcessV8MemoryUsage(1);
   data->isolates[0]->detached_bytes_used = kDetachedBytes;
   data->isolates[0]->shared_bytes_used = kSharedBytes;
+  data->isolates[0]->blink_bytes_used = kBlinkBytes;
   ExpectBindAndRespondToQuery(&mock_reporter, std::move(data));
 
   // Create a process node and validate that it gets a request.
@@ -184,6 +186,9 @@ TEST_F(V8DetailedMemoryDecoratorTest, InstantiateOnEmptyGraph) {
   EXPECT_EQ(kSharedBytes,
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_bytes_used());
+  EXPECT_EQ(kBlinkBytes,
+            V8DetailedMemoryProcessData::ForProcessNode(process.get())
+                ->blink_bytes_used());
 }
 
 TEST_F(V8DetailedMemoryDecoratorTest, InstantiateOnNonEmptyGraph) {
