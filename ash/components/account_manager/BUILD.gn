@@ -34,7 +34,7 @@ component("account_manager") {
     "//services/network/public/cpp:cpp",
   ]
 
-  defines = [ "IS_ACCOUNT_MANAGER_IMPL" ]
+  defines = [ "IS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
 }
 
 source_set("unit_tests") {

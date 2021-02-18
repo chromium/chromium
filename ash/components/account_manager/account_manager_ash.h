@@ -25,7 +25,7 @@ namespace crosapi {
 // Implements the |crosapi::mojom::AccountManager| interface in ash-chrome.
 // It enables lacros-chrome to interact with accounts stored in the Chrome OS
 // Account Manager.
-class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
+class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
     : public mojom::AccountManager,
       public ash::AccountManager::Observer {
  public:

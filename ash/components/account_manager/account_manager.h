@@ -37,7 +37,7 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
+class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
  public:
   // A dummy token stored against Active Directory accounts in Account Manager.
   // Accounts stored in Account Manager must have a token associated with them.

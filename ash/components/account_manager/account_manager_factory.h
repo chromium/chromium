@@ -25,7 +25,7 @@ namespace ash {
 // Once multi signin has been removed and multi profile on ChromeOS takes its
 // place, remove this class and make |AccountManager| a part of
 // |g_browser_process|.
-class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFactory {
+class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerFactory {
  public:
   AccountManagerFactory();
   AccountManagerFactory(const AccountManagerFactory&) = delete;

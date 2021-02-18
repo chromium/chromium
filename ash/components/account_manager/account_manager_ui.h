@@ -13,7 +13,7 @@ namespace ash {
 
 // This interface is used by `AccountManagerFacadeImpl` to show system UI
 // (system dialogs, OS Settings etc.)
-class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerUI {
+class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerUI {
  public:
   AccountManagerUI();
   AccountManagerUI(const AccountManagerUI&) = delete;
