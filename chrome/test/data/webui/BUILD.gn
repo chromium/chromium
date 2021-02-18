@@ -155,7 +155,6 @@ if (include_js_tests) {
         "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
-        "nearby_share/shared/nearby_shared_browsertest.js",
         "set_time_dialog_browsertest.js",
 
         # TODO(https://crbug.com/1045266): Migrate a11y tests to Polymer3.
