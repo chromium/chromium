@@ -697,7 +697,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _isBeingDismissed = YES;
   void (^popAccountsTableViewController)() = ^() {
     [base::mac::ObjCCastStrict<SettingsNavigationController>(
-        self.navigationController) popViewControllerOrCloseSettingsAnimated:NO];
+        self.navigationController)
+        popViewControllerOrCloseSettingsAnimated:YES];
   };
   if (self.presentedViewController) {
     // If |self| is presenting a view controller (like |_alertCoordinator|,
