@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -293,13 +294,6 @@ void ProfilePicker::HideDialog() {
 }
 
 // static
-void ProfilePicker::DisplayErrorMessage() {
-  if (g_profile_picker_view) {
-    g_profile_picker_view->DisplayErrorMessage();
-  }
-}
-
-// static
 base::FilePath ProfilePicker::GetForceSigninProfilePath() {
   if (g_profile_picker_view) {
     return g_profile_picker_view->GetForceSigninProfilePath();
@@ -366,6 +360,71 @@ void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
         timeout);
   }
 }
+
+// ProfilePickerForceSigninDialog
+// -------------------------------------------------------------
+
+// static
+void ProfilePickerForceSigninDialog::ShowUnlockDialog(
+    content::BrowserContext* browser_context,
+    const std::string& email) {
+  ShowUnlockDialogWithProfilePath(browser_context, email, base::FilePath());
+}
+
+// static
+void ProfilePickerForceSigninDialog::ShowUnlockDialogWithProfilePath(
+    content::BrowserContext* browser_context,
+    const std::string& email,
+    const base::FilePath& profile_path) {
+  // This method should only be called if the profile picker is already showing.
+  if (!ProfilePicker::IsActive())
+    return;
+  // Load the re-auth URL, prepopulated with the user's email address.
+  // Add the index of the profile to the URL so that the inline login page
+  // knows which profile to load and update the credentials.
+  GURL url = signin::GetEmbeddedReauthURLWithEmail(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::Reason::REASON_UNLOCK, email);
+  ProfilePicker::ShowDialog(browser_context, url, profile_path);
+}
+
+// static
+void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
+    content::BrowserContext* browser_context,
+    const base::FilePath& profile_path) {
+  if (!ProfilePicker::IsActive())
+    return;
+
+  GURL url = signin::GetEmbeddedPromoURL(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, true);
+
+  ProfilePicker::ShowDialog(browser_context, url, profile_path);
+}
+
+void ProfilePickerForceSigninDialog::ShowDialogAndDisplayErrorMessage(
+    content::BrowserContext* browser_context) {
+  if (!ProfilePicker::IsActive())
+    return;
+
+  GURL url(chrome::kChromeUISigninErrorURL);
+  ProfilePicker::ShowDialog(browser_context, url, base::FilePath());
+  return;
+}
+
+// static
+void ProfilePickerForceSigninDialog::DisplayErrorMessage() {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->DisplayErrorMessage();
+  }
+}
+
+// static
+void ProfilePickerForceSigninDialog::HideDialog() {
+  ProfilePicker::HideDialog();
+}
+
+// ProfilePickerView ----------------------------------------------------------
 
 const ui::ThemeProvider*
 ProfilePickerView::GetThemeProviderForProfileBeingCreated() const {
@@ -604,7 +663,7 @@ void ProfilePickerView::OnProfileForSigninCreated(
   theme_service->UseDefaultTheme();
   if (signin_util::IsForceSigninEnabled()) {
     // Show the embedded sign-in flow if the force signin is enabled.
-    UserManagerProfileDialog::ShowForceSigninDialog(
+    ProfilePickerForceSigninDialog::ShowForceSigninDialog(
         web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
     return;
   }

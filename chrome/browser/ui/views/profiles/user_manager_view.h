@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/user_manager.h"
-#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -21,7 +21,6 @@
 
 class ScopedKeepAlive;
 class UserManagerView;
-class UserManagerProfileDialogDelegate;
 
 namespace base {
 class FilePath;
@@ -75,7 +74,6 @@ class UserManagerView : public views::DialogDelegateView {
   base::FilePath GetSigninProfilePath() const;
 
  private:
-  friend class UserManagerProfileDialogDelegate;
   friend std::default_delete<UserManagerView>;
 
   ~UserManagerView() override;
@@ -95,7 +93,7 @@ class UserManagerView : public views::DialogDelegateView {
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   base::Time user_manager_started_showing_;
 
-  UserManagerProfileDialogHost dialog_host_;
+  ProfilePickerForceSigninDialogHost dialog_host_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_VIEW_H_

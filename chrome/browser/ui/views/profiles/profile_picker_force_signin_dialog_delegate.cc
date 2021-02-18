@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_delegate.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_delegate.h"
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/modal_dialog_host.h"
@@ -17,9 +18,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
-
-UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
-    UserManagerProfileDialogHost* host,
+ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
+    ProfilePickerForceSigninDialogHost* host,
     std::unique_ptr<views::WebView> web_view,
     const GURL& url)
     : host_(host) {
@@ -50,18 +50,20 @@ UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
   chrome::RecordDialogCreation(chrome::DialogIdentifier::USER_MANAGER_PROFILE);
 }
 
-UserManagerProfileDialogDelegate::~UserManagerProfileDialogDelegate() = default;
+ProfilePickerForceSigninDialogDelegate::
+    ~ProfilePickerForceSigninDialogDelegate() = default;
 
-gfx::Size UserManagerProfileDialogDelegate::CalculatePreferredSize() const {
-  return gfx::Size(UserManagerProfileDialog::kDialogWidth,
-                   UserManagerProfileDialog::kDialogHeight);
+gfx::Size ProfilePickerForceSigninDialogDelegate::CalculatePreferredSize()
+    const {
+  return gfx::Size(ProfilePickerForceSigninDialog::kDialogWidth,
+                   ProfilePickerForceSigninDialog::kDialogHeight);
 }
 
-void UserManagerProfileDialogDelegate::DisplayErrorMessage() {
+void ProfilePickerForceSigninDialogDelegate::DisplayErrorMessage() {
   web_view_->LoadInitialURL(GURL(chrome::kChromeUISigninErrorURL));
 }
 
-bool UserManagerProfileDialogDelegate::HandleContextMenu(
+bool ProfilePickerForceSigninDialogDelegate::HandleContextMenu(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
   // Prevents the context menu from being shown. While the signin page could do
@@ -73,51 +75,52 @@ bool UserManagerProfileDialogDelegate::HandleContextMenu(
 }
 
 web_modal::WebContentsModalDialogHost*
-UserManagerProfileDialogDelegate::GetWebContentsModalDialogHost() {
+ProfilePickerForceSigninDialogDelegate::GetWebContentsModalDialogHost() {
   return this;
 }
 
-gfx::NativeView UserManagerProfileDialogDelegate::GetHostView() const {
+gfx::NativeView ProfilePickerForceSigninDialogDelegate::GetHostView() const {
   return GetWidget()->GetNativeView();
 }
 
-gfx::Point UserManagerProfileDialogDelegate::GetDialogPosition(
+gfx::Point ProfilePickerForceSigninDialogDelegate::GetDialogPosition(
     const gfx::Size& size) {
   gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
   return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2),
                     std::max(0, (widget_size.height() - size.height()) / 2));
 }
 
-gfx::Size UserManagerProfileDialogDelegate::GetMaximumDialogSize() {
+gfx::Size ProfilePickerForceSigninDialogDelegate::GetMaximumDialogSize() {
   return GetWidget()->GetWindowBoundsInScreen().size();
 }
 
-void UserManagerProfileDialogDelegate::AddObserver(
+void ProfilePickerForceSigninDialogDelegate::AddObserver(
     web_modal::ModalDialogHostObserver* observer) {}
 
-void UserManagerProfileDialogDelegate::RemoveObserver(
+void ProfilePickerForceSigninDialogDelegate::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
 
-void UserManagerProfileDialogDelegate::DeleteDelegate() {
+void ProfilePickerForceSigninDialogDelegate::DeleteDelegate() {
   OnDialogDestroyed();
   delete this;
 }
 
-views::View* UserManagerProfileDialogDelegate::GetInitiallyFocusedView() {
+views::View* ProfilePickerForceSigninDialogDelegate::GetInitiallyFocusedView() {
   return static_cast<views::View*>(web_view_);
 }
 
-void UserManagerProfileDialogDelegate::CloseDialog() {
+void ProfilePickerForceSigninDialogDelegate::CloseDialog() {
   OnDialogDestroyed();
   GetWidget()->Close();
 }
 
-void UserManagerProfileDialogDelegate::OnDialogDestroyed() {
+void ProfilePickerForceSigninDialogDelegate::OnDialogDestroyed() {
   if (host_) {
     host_->OnDialogDestroyed();
     host_ = nullptr;
   }
 }
 
-BEGIN_METADATA(UserManagerProfileDialogDelegate, views::DialogDelegateView)
+BEGIN_METADATA(ProfilePickerForceSigninDialogDelegate,
+               views::DialogDelegateView)
 END_METADATA

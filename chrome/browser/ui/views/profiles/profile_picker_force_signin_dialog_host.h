@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_
 
 #include "base/files/file_path.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
-class UserManagerProfileDialogDelegate;
+class ProfilePickerForceSigninDialogDelegate;
 
 namespace content {
 class BrowserContext;
 }
 
 // Class encapsulating logic for views willing to host
-// UserManagerProfileDialogDelegate.
-class UserManagerProfileDialogHost {
+// ProfilePickerForceSigninDialogDelegate.
+class ProfilePickerForceSigninDialogHost {
  public:
-  UserManagerProfileDialogHost();
+  ProfilePickerForceSigninDialogHost();
 
-  UserManagerProfileDialogHost(const UserManagerProfileDialogHost&) = delete;
-  UserManagerProfileDialogHost& operator=(const UserManagerProfileDialogHost&) =
-      delete;
+  ProfilePickerForceSigninDialogHost(
+      const ProfilePickerForceSigninDialogHost&) = delete;
+  ProfilePickerForceSigninDialogHost& operator=(
+      const ProfilePickerForceSigninDialogHost&) = delete;
 
   // Shows a dialog where the user can auth the profile or see the auth error
   // message. If a dialog is already shown, this destroys the current dialog and
@@ -46,16 +47,16 @@ class UserManagerProfileDialogHost {
   base::FilePath GetForceSigninProfilePath() const;
 
  private:
-  friend class UserManagerProfileDialogDelegate;
+  friend class ProfilePickerForceSigninDialogDelegate;
 
   // Resets delegate_ to nullptr when delegate_ is no longer alive.
   void OnDialogDestroyed();
 
   // Owned by the view hierarchy.
-  UserManagerProfileDialogDelegate* delegate_ = nullptr;
+  ProfilePickerForceSigninDialogDelegate* delegate_ = nullptr;
 
   // The path of profile that is being force signed in.
   base::FilePath force_signin_profile_path_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_

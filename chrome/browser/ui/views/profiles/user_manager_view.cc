@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_manager.h"
-#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_delegate.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_delegate.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -242,7 +242,7 @@ void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
 
 // static
 void UserManagerProfileDialog::DisplayErrorMessage() {
-  ProfilePicker::DisplayErrorMessage();
+  ProfilePickerForceSigninDialog::DisplayErrorMessage();
 
   if (g_user_manager_view) {
     g_user_manager_view->DisplayErrorMessage();

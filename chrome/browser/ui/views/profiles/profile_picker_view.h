@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -49,6 +49,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 
   const ui::ThemeProvider* GetThemeProviderForProfileBeingCreated() const;
+
+  // Displays sign in error message that is created by Chrome but not GAIA
+  // without browser window. If the dialog is not currently shown, this does
+  // nothing.
+  void DisplayErrorMessage();
 
  private:
   friend class ProfilePicker;
@@ -216,11 +221,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Hides the dialog if it is showing.
   void HideDialog();
 
-  // Displays sign in error message that is created by Chrome but not GAIA
-  // without browser window. If the dialog is not currently shown, this does
-  // nothing.
-  void DisplayErrorMessage();
-
   // Getter of the path of profile which is selected in profile picker for force
   // signin.
   base::FilePath GetForceSigninProfilePath() const;
@@ -259,7 +259,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   base::TimeTicks creation_time_on_startup_;
 
   // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
-  UserManagerProfileDialogHost dialog_host_;
+  ProfilePickerForceSigninDialogHost dialog_host_;
 
   // A target page  url that opens on profile selection instead of the new tab
   // page.

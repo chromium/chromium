@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -309,11 +308,11 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
       LoginUIServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())->GetOriginalProfile())
           ->SetProfileBlockingErrorMessage();
-      UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
+      ProfilePickerForceSigninDialog::ShowDialogAndDisplayErrorMessage(
           web_ui()->GetWebContents()->GetBrowserContext());
     } else {
-      // Fresh sign in via user manager without existing email address.
-      UserManagerProfileDialog::ShowForceSigninDialog(
+      // Fresh sign in via profile picker without existing email address.
+      ProfilePickerForceSigninDialog::ShowForceSigninDialog(
           web_ui()->GetWebContents()->GetBrowserContext(), *profile_path);
     }
     return;

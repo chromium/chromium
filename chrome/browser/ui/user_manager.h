@@ -53,9 +53,13 @@ class UserManager {
   DISALLOW_IMPLICIT_CONSTRUCTORS(UserManager);
 };
 
+// Deprecated. User ProfilePickerForceSigninDialog instead.
 // Dialog that will be displayed when a profile is selected in UserManager.
 class UserManagerProfileDialog {
- public:
+ private:
+  friend class UserManagerScreenHandler;
+  friend class SigninCreateProfileHandler;
+
   // Dimensions of the reauth dialog displaying the password-separated signin
   // flow.
   static constexpr int kDialogHeight = 512;

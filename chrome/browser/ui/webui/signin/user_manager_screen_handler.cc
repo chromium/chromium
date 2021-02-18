@@ -183,15 +183,6 @@ void HandleLogRemoveUserWarningShown(const base::ListValue* args) {
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER_SHOW_WARNING);
 }
 
-void DisplayErrorMessage(const base::string16 error_message,
-                         content::WebUI* web_ui) {
-  LoginUIServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui)->GetOriginalProfile())
-      ->DisplayLoginResult(nullptr, error_message, base::string16());
-  UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
-      web_ui->GetWebContents()->GetBrowserContext());
-}
-
 void RecordAuthenticatedLaunchUserEvent(
     const AuthenticatedLaunchUserEvent& event) {
   UMA_HISTOGRAM_ENUMERATION(kAuthenticatedLaunchUserEventMetricsName, event,
@@ -380,9 +371,14 @@ void UserManagerScreenHandler::HandleAuthenticatedLaunchUser(
     // the system profile to avoid profile creation.
     RecordAuthenticatedLaunchUserEvent(
         AuthenticatedLaunchUserEvent::SUPERVISED_PROFILE_BLOCKED_WARNING);
-    DisplayErrorMessage(
-        l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_NOT_ALLOWED_BY_POLICY),
-        web_ui());
+    LoginUIServiceFactory::GetForProfile(
+        Profile::FromWebUI(web_ui())->GetOriginalProfile())
+        ->DisplayLoginResult(nullptr,
+                             l10n_util::GetStringUTF16(
+                                 IDS_SUPERVISED_USER_NOT_ALLOWED_BY_POLICY),
+                             base::string16());
+    UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
+        web_ui()->GetWebContents()->GetBrowserContext());
   } else if (entry->IsSigninRequired() && signin_util::IsForceSigninEnabled() &&
              entry->GetActiveTime() != base::Time()) {
     // If force-sign-in is enabled, do not allow users to sign in to a

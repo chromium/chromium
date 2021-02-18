@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_
 
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/ui_base_types.h"
@@ -15,7 +15,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;
-class UserManagerProfileDialogHost;
+class ProfilePickerForceSigninDialogHost;
 
 namespace views {
 class WebView;
@@ -31,21 +31,22 @@ namespace web_modal {
 class ModalDialogHostObserver;
 }
 
-class UserManagerProfileDialogDelegate
+class ProfilePickerForceSigninDialogDelegate
     : public views::DialogDelegateView,
       public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
  public:
-  METADATA_HEADER(UserManagerProfileDialogDelegate);
-  UserManagerProfileDialogDelegate(UserManagerProfileDialogHost* host,
-                                   std::unique_ptr<views::WebView> web_view,
-                                   const GURL& url);
-  UserManagerProfileDialogDelegate(const UserManagerProfileDialogDelegate&) =
-      delete;
-  UserManagerProfileDialogDelegate& operator=(
-      const UserManagerProfileDialogDelegate&) = delete;
-  ~UserManagerProfileDialogDelegate() override;
+  METADATA_HEADER(ProfilePickerForceSigninDialogDelegate);
+  ProfilePickerForceSigninDialogDelegate(
+      ProfilePickerForceSigninDialogHost* host,
+      std::unique_ptr<views::WebView> web_view,
+      const GURL& url);
+  ProfilePickerForceSigninDialogDelegate(
+      const ProfilePickerForceSigninDialogDelegate&) = delete;
+  ProfilePickerForceSigninDialogDelegate& operator=(
+      const ProfilePickerForceSigninDialogDelegate&) = delete;
+  ~ProfilePickerForceSigninDialogDelegate() override;
 
   void CloseDialog();
 
@@ -69,7 +70,7 @@ class UserManagerProfileDialogDelegate
 
  private:
   // Before its destruction, tells its parent container to reset its reference
-  // to the UserManagerProfileDialogDelegate.
+  // to the ProfilePickerForceSigninDialogDelegate.
   void OnDialogDestroyed();
 
   // views::DialogDelegate:
@@ -77,8 +78,8 @@ class UserManagerProfileDialogDelegate
   void DeleteDelegate() override;
   views::View* GetInitiallyFocusedView() override;
 
-  UserManagerProfileDialogHost* host_;  // Not owned.
-  views::WebView* web_view_;  // Owned by the view hierarchy.
+  ProfilePickerForceSigninDialogHost* host_;  // Not owned.
+  views::WebView* web_view_;                  // Owned by the view hierarchy.
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_

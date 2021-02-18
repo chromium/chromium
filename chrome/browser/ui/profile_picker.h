@@ -100,11 +100,6 @@ class ProfilePicker {
   // Hides the dialog if it is showing.
   static void HideDialog();
 
-  // Displays sign in error message that is created by Chrome but not GAIA
-  // without browser window. If the dialog is not currently shown, this does
-  // nothing.
-  static void DisplayErrorMessage();
-
   // Getter of the path of profile which is selected in profile picker for force
   // signin.
   static base::FilePath GetForceSigninProfilePath();
@@ -146,6 +141,44 @@ class ProfilePicker {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProfilePicker);
+};
+
+// Dialog that will be displayed when a locked profile is selected in the
+// ProfilePicker when force-signin is enabled.
+class ProfilePickerForceSigninDialog {
+ public:
+  // Dimensions of the reauth dialog displaying the password-separated signin
+  // flow.
+  static constexpr int kDialogHeight = 512;
+  static constexpr int kDialogWidth = 448;
+
+  // Shows a dialog where the user can re-authenticate the profile with the
+  // given |email|. This is called from the profile picker when a profile is
+  // locked and the user's password is detected to have been changed.
+  static void ShowUnlockDialog(content::BrowserContext* browser_context,
+                               const std::string& email);
+
+  // Shows a reauth dialog with profile path so that the sign in error message
+  // can be displayed without browser window.
+  static void ShowUnlockDialogWithProfilePath(
+      content::BrowserContext* browser_context,
+      const std::string& email,
+      const base::FilePath& profile_path);
+
+  // Shows a dialog where the user logs into their profile for the first time
+  // via the profile picker, when force signin is enabled.
+  static void ShowForceSigninDialog(content::BrowserContext* browser_context,
+                                    const base::FilePath& profile_path);
+
+  // Show the dialog and display local sign in error message without browser.
+  static void ShowDialogAndDisplayErrorMessage(
+      content::BrowserContext* browser_context);
+
+  // Display local sign in error message without browser.
+  static void DisplayErrorMessage();
+
+  // Hides the dialog if it is showing.
+  static void HideDialog();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILE_PICKER_H_

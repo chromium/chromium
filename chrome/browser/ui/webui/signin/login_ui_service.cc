@@ -19,7 +19,7 @@
 #include "chrome/common/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 LoginUIService::LoginUIService(Profile* profile)
@@ -106,8 +106,9 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   if (!error_message.empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
-    } else if (profile_->GetPath() == UserManager::GetSigninProfilePath()) {
-      UserManagerProfileDialog::DisplayErrorMessage();
+    } else if (profile_->GetPath() ==
+               ProfilePicker::GetForceSigninProfilePath()) {
+      ProfilePickerForceSigninDialog::DisplayErrorMessage();
     } else {
       LOG(ERROR) << "Unable to show Login error message: " << error_message;
     }
