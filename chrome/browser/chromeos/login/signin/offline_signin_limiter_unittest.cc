@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter.h"
+#include "chrome/browser/chromeos/login/signin/offline_signin_limiter.h"
 
 #include <memory>
 #include <utility>
@@ -16,7 +16,7 @@
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager_factory.h"
-#include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter_factory.h"
+#include "chrome/browser/chromeos/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -41,12 +41,13 @@ namespace {
 
 const char kTestGaiaUser[] = "user@example.com";
 const char kTestSAMLUser[] = "user@saml.example.com";
-}
 
-class SAMLOfflineSigninLimiterTest : public testing::Test {
+}  // namespace
+
+class OfflineSigninLimiterTest : public testing::Test {
  protected:
-  SAMLOfflineSigninLimiterTest();
-  ~SAMLOfflineSigninLimiterTest() override;
+  OfflineSigninLimiterTest();
+  ~OfflineSigninLimiterTest() override;
 
   // testing::Test:
   void SetUp() override;
@@ -77,15 +78,15 @@ class SAMLOfflineSigninLimiterTest : public testing::Test {
   base::SimpleTestClock clock_;
   base::MockOneShotTimer* timer_;  // Not owned.
 
-  SAMLOfflineSigninLimiter* limiter_;  // Owned.
+  OfflineSigninLimiter* limiter_;  // Owned.
   base::PowerMonitorTestSource* power_source_;
 
   TestingPrefServiceSimple testing_local_state_;
 
-  DISALLOW_COPY_AND_ASSIGN(SAMLOfflineSigninLimiterTest);
+  DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiterTest);
 };
 
-SAMLOfflineSigninLimiterTest::SAMLOfflineSigninLimiterTest()
+OfflineSigninLimiterTest::OfflineSigninLimiterTest()
     : user_manager_(new MockUserManager),
       user_manager_enabler_(base::WrapUnique(user_manager_)),
       timer_(nullptr),
@@ -95,7 +96,7 @@ SAMLOfflineSigninLimiterTest::SAMLOfflineSigninLimiterTest()
   base::PowerMonitor::Initialize(std::move(power_source));
 }
 
-SAMLOfflineSigninLimiterTest::~SAMLOfflineSigninLimiterTest() {
+OfflineSigninLimiterTest::~OfflineSigninLimiterTest() {
   DestroyLimiter();
   Mock::VerifyAndClearExpectations(user_manager_);
   EXPECT_CALL(*user_manager_, Shutdown()).Times(1);
@@ -107,7 +108,7 @@ SAMLOfflineSigninLimiterTest::~SAMLOfflineSigninLimiterTest() {
   base::PowerMonitor::ShutdownForTesting();
 }
 
-void SAMLOfflineSigninLimiterTest::DestroyLimiter() {
+void OfflineSigninLimiterTest::DestroyLimiter() {
   if (limiter_) {
     limiter_->Shutdown();
     delete limiter_;
@@ -116,27 +117,27 @@ void SAMLOfflineSigninLimiterTest::DestroyLimiter() {
   }
 }
 
-void SAMLOfflineSigninLimiterTest::CreateLimiter() {
+void OfflineSigninLimiterTest::CreateLimiter() {
   DestroyLimiter();
-  limiter_ = new SAMLOfflineSigninLimiter(profile_.get(), &clock_);
+  limiter_ = new OfflineSigninLimiter(profile_.get(), &clock_);
   auto timer = std::make_unique<base::MockOneShotTimer>();
   timer_ = timer.get();
   limiter_->SetTimerForTesting(std::move(timer));
 }
 
-void SAMLOfflineSigninLimiterTest::SetUpUserManager() {
+void OfflineSigninLimiterTest::SetUpUserManager() {
   EXPECT_CALL(*user_manager_, GetLocalState())
       .WillRepeatedly(Return(GetTestingLocalState()));
 }
 
-void SAMLOfflineSigninLimiterTest::SetUp() {
+void OfflineSigninLimiterTest::SetUp() {
   profile_.reset(new TestingProfile);
 
-  SAMLOfflineSigninLimiterFactory::SetClockForTesting(&clock_);
+  OfflineSigninLimiterFactory::SetClockForTesting(&clock_);
   clock_.Advance(base::TimeDelta::FromHours(1));
 }
 
-void SAMLOfflineSigninLimiterTest::AddGaiaUser() {
+void OfflineSigninLimiterTest::AddGaiaUser() {
   user_manager_->AddUser(test_gaia_account_id_);
   profile_->set_profile_name(kTestGaiaUser);
 
@@ -144,7 +145,7 @@ void SAMLOfflineSigninLimiterTest::AddGaiaUser() {
   SetUpUserManager();
 }
 
-void SAMLOfflineSigninLimiterTest::AddSAMLUser() {
+void OfflineSigninLimiterTest::AddSAMLUser() {
   user_manager_->AddPublicAccountWithSAML(test_saml_account_id_);
   profile_->set_profile_name(kTestSAMLUser);
 
@@ -152,15 +153,15 @@ void SAMLOfflineSigninLimiterTest::AddSAMLUser() {
   SetUpUserManager();
 }
 
-TestingPrefServiceSimple* SAMLOfflineSigninLimiterTest::GetTestingLocalState() {
+TestingPrefServiceSimple* OfflineSigninLimiterTest::GetTestingLocalState() {
   return &testing_local_state_;
 }
 
-void SAMLOfflineSigninLimiterTest::TearDown() {
-  SAMLOfflineSigninLimiterFactory::SetClockForTesting(nullptr);
+void OfflineSigninLimiterTest::TearDown() {
+  OfflineSigninLimiterFactory::SetClockForTesting(nullptr);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLDefaultLimit) {
+TEST_F(OfflineSigninLimiterTest, NoSAMLDefaultLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -205,7 +206,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLDefaultLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLNoLimit) {
+TEST_F(OfflineSigninLimiterTest, NoSAMLNoLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -254,7 +255,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLNoLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLZeroLimit) {
+TEST_F(OfflineSigninLimiterTest, NoSAMLZeroLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -303,7 +304,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLZeroLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLSetLimitWhileLoggedIn) {
+TEST_F(OfflineSigninLimiterTest, NoSAMLSetLimitWhileLoggedIn) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -339,7 +340,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLSetLimitWhileLoggedIn) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLRemoveLimitWhileLoggedIn) {
+TEST_F(OfflineSigninLimiterTest, NoSAMLRemoveLimitWhileLoggedIn) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -372,7 +373,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLRemoveLimitWhileLoggedIn) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLLogInWithExpiredLimit) {
+TEST_F(OfflineSigninLimiterTest, NoSAMLLogInWithExpiredLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -402,7 +403,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoSAMLLogInWithExpiredLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLDefaultLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -487,7 +488,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLDefaultLimit) {
   timer_->Fire();
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLNoLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -560,7 +561,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLNoLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLZeroLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLZeroLimit) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -587,7 +588,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLZeroLimit) {
   EXPECT_EQ(clock_.Now(), last_gaia_signin_time);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLSetLimitWhileLoggedIn) {
+TEST_F(OfflineSigninLimiterTest, SAMLSetLimitWhileLoggedIn) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -624,7 +625,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLSetLimitWhileLoggedIn) {
   prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, 0);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLRemoveLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLRemoveLimit) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -657,7 +658,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLRemoveLimit) {
       .Times(0);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLLogInWithExpiredLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLLogInWithExpiredLimit) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -686,7 +687,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLLogInWithExpiredLimit) {
   EXPECT_TRUE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLLogInOfflineWithExpiredLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithExpiredLimit) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -716,7 +717,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLLogInOfflineWithExpiredLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLLimitExpiredWhileSuspended) {
+TEST_F(OfflineSigninLimiterTest, SAMLLimitExpiredWhileSuspended) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -749,7 +750,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLLimitExpiredWhileSuspended) {
   power_source_->GenerateResumeEvent();
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
+TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -775,7 +776,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaDefaultLimit) {
+TEST_F(OfflineSigninLimiterTest, NoGaiaDefaultLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -796,7 +797,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaDefaultLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaNoLimit) {
+TEST_F(OfflineSigninLimiterTest, NoGaiaNoLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -820,7 +821,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaNoLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
+TEST_F(OfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -869,7 +870,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaSetLimitWhileLoggedIn) {
+TEST_F(OfflineSigninLimiterTest, NoGaiaSetLimitWhileLoggedIn) {
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -911,7 +912,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, NoGaiaSetLimitWhileLoggedIn) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaDefaultLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -981,7 +982,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaDefaultLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaNoLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1054,7 +1055,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaNoLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaZeroLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaZeroLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1081,7 +1082,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaZeroLimit) {
   EXPECT_EQ(clock_.Now(), last_gaia_signin_time);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaSetLimitWhileLoggedIn) {
+TEST_F(OfflineSigninLimiterTest, GaiaSetLimitWhileLoggedIn) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1118,7 +1119,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaSetLimitWhileLoggedIn) {
   prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 0);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaRemoveLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaRemoveLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1155,7 +1156,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaRemoveLimit) {
       .Times(0);
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaLogInWithExpiredLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaLogInWithExpiredLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1185,7 +1186,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaLogInWithExpiredLimit) {
   EXPECT_TRUE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1219,7 +1220,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
+TEST_F(OfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1253,7 +1254,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
   power_source_->GenerateResumeEvent();
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
+TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 
@@ -1278,7 +1279,7 @@ TEST_F(SAMLOfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-TEST_F(SAMLOfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
+TEST_F(OfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
   AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
 

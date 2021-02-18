@@ -11,11 +11,12 @@
 namespace {
 
 // The value -1 means that online authentication will not be enforced by
-// `SAMLOfflineSigninLimiter` so the user will be allowed to use offline
+// `OfflineSigninLimiter` so the user will be allowed to use offline
 // authentication until a different reason than this policy enforces an online
 // login.
-const int kDefaultGaiaOfflineSigninTimeLimitDays = -1;
-const int kDefaultSAMLOfflineSigninTimeLimit = 14 * 24 * 60 * 60;  // 14 days.
+constexpr int kDefaultGaiaOfflineSigninTimeLimitDays = -1;
+constexpr int kDefaultSAMLOfflineSigninTimeLimit =
+    base::TimeDelta::FromDays(14).InSeconds();
 
 // In-session password-change feature (includes password expiry notifications).
 const bool kDefaultSamlInSessionPasswordChangeEnabled = false;

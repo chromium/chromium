@@ -63,12 +63,12 @@
 #include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_verifier_factory.h"
-#include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter.h"
-#include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter_factory.h"
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/session/user_session_initializer.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager_factory.h"
+#include "chrome/browser/chromeos/login/signin/offline_signin_limiter.h"
+#include "chrome/browser/chromeos/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/chromeos/login/signin/token_handle_fetcher.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/input_events_blocker.h"
@@ -1621,10 +1621,10 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
       }
     }
 
-    SAMLOfflineSigninLimiter* saml_offline_signin_limiter =
-        SAMLOfflineSigninLimiterFactory::GetForProfile(profile);
-    if (saml_offline_signin_limiter)
-      saml_offline_signin_limiter->SignedIn(user_context_.GetAuthFlow());
+    OfflineSigninLimiter* offline_signin_limiter =
+        OfflineSigninLimiterFactory::GetForProfile(profile);
+    if (offline_signin_limiter)
+      offline_signin_limiter->SignedIn(user_context_.GetAuthFlow());
   }
 
   profile->OnLogin();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter.h"
+#include "chrome/browser/chromeos/login/signin/offline_signin_limiter.h"
 
 #include <string>
 #include <utility>
@@ -37,9 +37,9 @@ constexpr int kSAMLOfflineSigninTimeLimitNotSet = -1;
 // policy's definition.
 constexpr int kGaiaOfflineSigninTimeLimitDaysNotSet = -1;
 
-}
+}  // namespace
 
-void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
+void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   PrefService* prefs = profile_->GetPrefs();
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
@@ -92,11 +92,11 @@ void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kSAMLOfflineSigninTimeLimit,
-      base::BindRepeating(&SAMLOfflineSigninLimiter::UpdateLimit,
+      base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kGaiaOfflineSigninTimeLimitDays,
-      base::BindRepeating(&SAMLOfflineSigninLimiter::UpdateLimit,
+      base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
                           base::Unretained(this)));
   // Start listening to power state.
   base::PowerMonitor::AddObserver(this);
@@ -112,33 +112,32 @@ void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   UpdateLimit();
 }
 
-void SAMLOfflineSigninLimiter::SetTimerForTesting(
+void OfflineSigninLimiter::SetTimerForTesting(
     std::unique_ptr<base::OneShotTimer> timer) {
   offline_signin_limit_timer_ = std::move(timer);
 }
 
-void SAMLOfflineSigninLimiter::Shutdown() {
+void OfflineSigninLimiter::Shutdown() {
   offline_signin_limit_timer_->Stop();
   pref_change_registrar_.RemoveAll();
 }
 
-void SAMLOfflineSigninLimiter::OnResume() {
+void OfflineSigninLimiter::OnResume() {
   UpdateLimit();
 }
 
-void SAMLOfflineSigninLimiter::OnSessionStateChanged() {
+void OfflineSigninLimiter::OnSessionStateChanged() {
   if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
     UpdateLimit();
   }
 }
 
-SAMLOfflineSigninLimiter::SAMLOfflineSigninLimiter(Profile* profile,
-                                                   base::Clock* clock)
+OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile, base::Clock* clock)
     : profile_(profile),
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
       offline_signin_limit_timer_(std::make_unique<base::OneShotTimer>()) {}
 
-SAMLOfflineSigninLimiter::~SAMLOfflineSigninLimiter() {
+OfflineSigninLimiter::~OfflineSigninLimiter() {
   base::PowerMonitor::RemoveObserver(this);
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager) {
@@ -146,7 +145,7 @@ SAMLOfflineSigninLimiter::~SAMLOfflineSigninLimiter() {
   }
 }
 
-void SAMLOfflineSigninLimiter::UpdateLimit() {
+void OfflineSigninLimiter::UpdateLimit() {
   // Stop the `offline_signin_limit_timer_`.
   offline_signin_limit_timer_->Stop();
 
@@ -204,10 +203,10 @@ void SAMLOfflineSigninLimiter::UpdateLimit() {
   // `OneShotTimer`.
   offline_signin_limit_timer_->Start(
       FROM_HERE, offline_signin_time_limit - time_since_last_gaia_signin, this,
-      &SAMLOfflineSigninLimiter::ForceOnlineLogin);
+      &OfflineSigninLimiter::ForceOnlineLogin);
 }
 
-void SAMLOfflineSigninLimiter::ForceOnlineLogin() {
+void OfflineSigninLimiter::ForceOnlineLogin() {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
@@ -228,7 +227,7 @@ void SAMLOfflineSigninLimiter::ForceOnlineLogin() {
   offline_signin_limit_timer_->Stop();
 }
 
-void SAMLOfflineSigninLimiter::UpdateOnlineSigninData(
+void OfflineSigninLimiter::UpdateOnlineSigninData(
     base::Time time,
     base::Optional<base::TimeDelta> limit) {
   const user_manager::User* user =

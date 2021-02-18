@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SAML_SAML_OFFLINE_SIGNIN_LIMITER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_SAML_SAML_OFFLINE_SIGNIN_LIMITER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_H_
+#define CHROME_BROWSER_CHROMEOS_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_H_
 
 #include <memory>
 
@@ -28,12 +28,9 @@ namespace chromeos {
 // Gaia without SAML or with SAML can use offline authentication against a
 // cached password before being forced to go through online authentication
 // against GAIA again.
-// TODO(b/179637649): Change `SAMLOfflineSigninLimiter` class name since the
-// class becomes applied to non-SAML users too.
-class SAMLOfflineSigninLimiter
-    : public KeyedService,
-      public base::PowerObserver,
-      public session_manager::SessionManagerObserver {
+class OfflineSigninLimiter : public KeyedService,
+                             public base::PowerObserver,
+                             public session_manager::SessionManagerObserver {
  public:
   // Called when the user successfully authenticates. `auth_flow` indicates
   // the type of authentication flow that the user went through.
@@ -52,13 +49,13 @@ class SAMLOfflineSigninLimiter
   void OnSessionStateChanged() override;
 
  private:
-  friend class SAMLOfflineSigninLimiterFactory;
-  friend class SAMLOfflineSigninLimiterTest;
+  friend class OfflineSigninLimiterFactory;
+  friend class OfflineSigninLimiterTest;
 
   // `profile` and `clock` must remain valid until Shutdown() is called. If
   // `clock` is NULL, the shared base::DefaultClock instance will be used.
-  SAMLOfflineSigninLimiter(Profile* profile, base::Clock* clock);
-  ~SAMLOfflineSigninLimiter() override;
+  OfflineSigninLimiter(Profile* profile, base::Clock* clock);
+  ~OfflineSigninLimiter() override;
 
   // Recalculates the amount of time remaining until online login should be
   // forced and sets the `offline_signin_limit_timer_` accordingly. If the limit
@@ -80,9 +77,9 @@ class SAMLOfflineSigninLimiter
 
   std::unique_ptr<base::OneShotTimer> offline_signin_limit_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(SAMLOfflineSigninLimiter);
+  DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SAML_SAML_OFFLINE_SIGNIN_LIMITER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_H_

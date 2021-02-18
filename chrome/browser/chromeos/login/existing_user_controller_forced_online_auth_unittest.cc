@@ -175,7 +175,7 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest, SamlOnlineAuthSingleUser) {
   EXPECT_TRUE(is_force_online_flag_set());
 }
 
-// Verfies that `SAMLOfflineSigninLimiter` does affect SAML and non SAML user.
+// Verfies that `OfflineSigninLimiter` does affect SAML and non SAML user.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,
        OfflineLimiteOutOfSessionSAMLAndNonSAML) {
   const base::Time now = base::DefaultClock::GetInstance()->Now();
