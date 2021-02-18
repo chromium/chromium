@@ -1085,6 +1085,10 @@ void WizardController::OnHidDetectionScreenExit(
   if (result == HIDDetectionScreen::Result::START_DEMO) {
     LoginDisplayHost::default_host()->StartDemoAppLaunch();
     return;
+  } else if ((result == HIDDetectionScreen::Result::SKIP ||
+              result == HIDDetectionScreen::Result::SKIPPED_FOR_TESTS) &&
+             current_screen_) {
+    return;
   }
 
   AdvanceToScreenAfterHIDDetection(OobeScreen::SCREEN_UNKNOWN);
