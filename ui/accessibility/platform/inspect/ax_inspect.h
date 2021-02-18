@@ -21,8 +21,9 @@ struct AX_EXPORT AXTreeSelector {
     ActiveTab = 1 << 0,
     Chrome = 1 << 1,
     Chromium = 1 << 2,
-    Firefox = 1 << 3,
-    Safari = 1 << 4,
+    Edge = 1 << 3,
+    Firefox = 1 << 4,
+    Safari = 1 << 5,
   };
   int types{None};
   std::string pattern;

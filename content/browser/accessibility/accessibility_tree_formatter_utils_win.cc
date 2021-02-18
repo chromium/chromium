@@ -22,6 +22,7 @@ namespace {
 
 const wchar_t kChromeTitle[] = L"Google Chrome";
 const wchar_t kChromiumTitle[] = L"Chromium";
+const wchar_t kEdgeTitle[] = L"Edge";
 const wchar_t kFirefoxTitle[] = L"Firefox";
 
 struct PlatformConstantToNameEntry {
@@ -727,6 +728,8 @@ CONTENT_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector) {
     info.title = kChromeTitle;
   } else if (selector.types & ui::AXTreeSelector::Chromium) {
     info.title = kChromiumTitle;
+  } else if (selector.types & ui::AXTreeSelector::Edge) {
+    info.title = kEdgeTitle;
   } else if (selector.types & ui::AXTreeSelector::Firefox) {
     info.title = kFirefoxTitle;
   } else {
