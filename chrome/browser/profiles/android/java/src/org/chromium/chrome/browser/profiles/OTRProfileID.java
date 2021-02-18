@@ -81,6 +81,13 @@ public class OTRProfileID {
         return this.equals(primaryId);
     }
 
+    /**
+     * @return The OTRProfileID of the primary off-the-record profile.
+     */
+    public static OTRProfileID getPrimaryOTRProfileID() {
+        return OTRProfileIDJni.get().getPrimaryID();
+    }
+
     @Override
     public String toString() {
         return String.format("OTRProfileID{%s}", mProfileID);
