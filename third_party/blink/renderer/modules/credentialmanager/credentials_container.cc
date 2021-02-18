@@ -88,6 +88,7 @@ using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
 using payments::mojom::blink::PaymentCredentialCreationStatus;
+using payments::mojom::blink::PaymentCredentialIconDownloadStatus;
 using payments::mojom::blink::PaymentCredentialInstrument;
 
 constexpr char kCryptotokenOrigin[] =
@@ -673,13 +674,7 @@ void OnPaymentCredentialCreationComplete(
     PaymentCredentialCreationStatus status) {
   auto* resolver = scoped_resolver->Release();
 
-  if (status == PaymentCredentialCreationStatus::FAILED_TO_DOWNLOAD_ICON) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError,
-        "Unable to download payment instrument icon."));
-    return;
-  } else if (status ==
-             PaymentCredentialCreationStatus::FAILED_TO_STORE_INSTRUMENT) {
+  if (status == PaymentCredentialCreationStatus::FAILED_TO_STORE_INSTRUMENT) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "Failed to store payment instrument."));
@@ -744,6 +739,30 @@ void OnMakePublicKeyCredentialForPaymentComplete(
     resolver->Reject(CredentialManagerErrorToDOMException(
         mojo::ConvertTo<CredentialManagerError>(status)));
   }
+}
+
+void DidDownloadPaymentCredentialIcon(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    mojom::blink::PublicKeyCredentialCreationOptionsPtr mojo_options,
+    const PaymentCredentialCreationOptions* options,
+    PaymentCredentialIconDownloadStatus status) {
+  auto* resolver = scoped_resolver->Release();
+  if (status == PaymentCredentialIconDownloadStatus::FAILED_TO_DOWNLOAD_ICON) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNetworkError,
+        "Unable to download payment instrument icon."));
+    return;
+  } else {
+    DCHECK(status == PaymentCredentialIconDownloadStatus::SUCCESS);
+  }
+
+  auto* authenticator =
+      CredentialManagerProxy::From(resolver->GetScriptState())->Authenticator();
+  authenticator->MakeCredential(
+      std::move(mojo_options),
+      WTF::Bind(&OnMakePublicKeyCredentialForPaymentComplete,
+                WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
+                WrapPersistent(options)));
 }
 
 void CreatePublicKeyCredentialForPaymentCredential(
@@ -867,13 +886,15 @@ void CreatePublicKeyCredentialForPaymentCredential(
 
   mojo_options->is_payment_credential_creation = true;
 
-  auto* authenticator =
-      CredentialManagerProxy::From(resolver->GetScriptState())->Authenticator();
-  authenticator->MakeCredential(
-      std::move(mojo_options),
-      WTF::Bind(&OnMakePublicKeyCredentialForPaymentComplete,
+  // Download instrument icon before creating the credential.
+  auto* payment_credential_remote =
+      CredentialManagerProxy::From(resolver->GetScriptState())
+          ->PaymentCredential();
+  payment_credential_remote->DownloadFavicon(
+      KURL(options->instrument()->icon()),
+      WTF::Bind(&DidDownloadPaymentCredentialIcon,
                 WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
-                WrapPersistent(options)));
+                WTF::Passed(std::move(mojo_options)), WrapPersistent(options)));
 }
 
 }  // namespace

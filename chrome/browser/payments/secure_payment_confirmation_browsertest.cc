@@ -511,6 +511,40 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+
+  EXPECT_EQ(
+      "a JavaScript error: \"NetworkError: Unable to download payment "
+      "instrument icon.\"\n",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "createCredentialAndReturnItsIdentifier($1)",
+              https_server()->GetURL("a.com", "/nonexistent.png").spec()))
+          .error);
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+
+  // Get the instrument icon from an insecure http server.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  std::string icon_url =
+      embedded_test_server()->GetURL("a.com", "/icon.png").spec();
+
+  EXPECT_EQ(
+      "a JavaScript error: \"SecurityError: 'instrument.icon' should be a "
+      "secure URL\"\n",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                             icon_url))
+          .error);
+}
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace
