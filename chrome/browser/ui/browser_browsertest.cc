@@ -10,6 +10,11 @@
 #include <memory>
 #include <string>
 
+#include "base/test/bind.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -109,6 +114,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -2886,4 +2892,152 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveBrowserChangedUserAction) {
   base::UserActionTester user_action_tester;
   BrowserList::SetLastActive(browser());
   EXPECT_EQ(user_action_tester.GetActionCount("ActiveBrowserChanged"), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       SameDocumentNavigationWithNothingCommittedAfterCrash) {
+  // The test sets this closure before each navigation to /sometimes-slow in
+  // order to control the response for that navigation.
+  content::SlowHttpResponse::GotRequestCallback got_slow_request;
+
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/sometimes-slow")
+          return nullptr;
+        DCHECK(got_slow_request)
+            << "Set `got_slow_request` before each navigation request.";
+        return std::make_unique<content::SlowHttpResponse>(
+            std::move(got_slow_request));
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url1 = embedded_test_server()->GetURL("/sometimes-slow");
+  GURL url2 = embedded_test_server()->GetURL("/sometimes-slow#foo");
+
+  WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Successfully navigate to `url1`.
+  got_slow_request = content::SlowHttpResponse::FinishResponseImmediately();
+  EXPECT_TRUE(NavigateToURL(wc, url1));
+
+  // Kill the renderer for the tab.
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+    content::RenderFrameDeletedObserver crash_observer(wc->GetMainFrame());
+    wc->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
+
+  // Bring the process back to life for the current RenderFrameHost, though with
+  // a speculative RenderFrameHost navigating back to `url1`.
+  {
+    content::NavigationController::LoadURLParams params(url1);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+
+    base::RunLoop loop;
+    got_slow_request =
+        base::BindLambdaForTesting([&](base::OnceClosure start_response,
+                                       base::OnceClosure finish_response) {
+          // Never starts the response, but informs the test the request has
+          // been received.
+          loop.Quit();
+        });
+    wc->GetController().LoadURLWithParams(params);
+    loop.Run();
+  }
+  // The navigation has not completed, but the renderer has come alive.
+  EXPECT_TRUE(wc->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL().spec(), "");
+
+  // Now try to navigate to `url2`. We're currently trying to load `url1` since
+  // the above navigation will be delayed. Going to `url2` should be a
+  // same-document navigation according to the urls alone. But it can't be since
+  // the current frame host does not actually have a document loaded.
+  content::NavigationHandleCommitObserver nav_observer(wc, url2);
+  {
+    content::NavigationController::LoadURLParams params(url2);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+
+    got_slow_request = content::SlowHttpResponse::FinishResponseImmediately();
+    wc->GetController().LoadURLWithParams(params);
+  }
+  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(nav_observer.has_committed());
+  EXPECT_FALSE(nav_observer.was_same_document());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserTest,
+    SameDocumentHistoryNavigationWithNothingCommittedAfterCrash) {
+  content::SlowHttpResponse::GotRequestCallback got_slow_request;
+
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/sometimes-slow")
+          return nullptr;
+        DCHECK(got_slow_request)
+            << "Set `got_slow_request` before each navigation request.";
+        return std::make_unique<content::SlowHttpResponse>(
+            std::move(got_slow_request));
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url1 = embedded_test_server()->GetURL("/sometimes-slow");
+  GURL url2 = embedded_test_server()->GetURL("/sometimes-slow#foo");
+
+  content::WebContents* wc =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Successfully navigate to `url1`, then do a same-document navigation to
+  // `url2`.
+  got_slow_request = content::SlowHttpResponse::FinishResponseImmediately();
+  EXPECT_TRUE(NavigateToURL(wc, url1));
+  EXPECT_TRUE(NavigateToURL(wc, url2));
+
+  // Kill the renderer for the tab.
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+    content::RenderFrameDeletedObserver crash_observer(wc->GetMainFrame());
+    wc->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
+
+  // Bring the process back to life for the current RenderFrameHost, though with
+  // a speculative RenderFrameHost navigating back to `url1`.
+  {
+    content::NavigationController::LoadURLParams params(url1);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+
+    base::RunLoop loop;
+    got_slow_request =
+        base::BindLambdaForTesting([&](base::OnceClosure start_response,
+                                       base::OnceClosure finish_response) {
+          // Never starts the response, but informs the test the request has
+          // been received.
+          loop.Quit();
+        });
+    wc->GetController().LoadURLWithParams(params);
+    loop.Run();
+  }
+  // The navigation has not completed, but the renderer has come alive.
+  EXPECT_TRUE(wc->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL().spec(), "");
+
+  content::NavigationHandleCommitObserver back_observer(wc, url1);
+  // Now try to go back. We're currently at `url2` since the above navigation
+  // will be blocked. Going back to `url1` should be a same-document history
+  // navigation according to the NavigationEntry. But it can't be since the
+  // current frame host does not actually have a document loaded.
+  got_slow_request = content::SlowHttpResponse::FinishResponseImmediately();
+  wc->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(back_observer.has_committed());
+  EXPECT_FALSE(back_observer.was_same_document());
 }

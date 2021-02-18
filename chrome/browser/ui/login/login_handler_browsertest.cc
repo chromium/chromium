@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -63,8 +64,8 @@ namespace {
 // code.
 class SlowAuthResponse : public content::SlowHttpResponse {
  public:
-  explicit SlowAuthResponse(const std::string& relative_url)
-      : content::SlowHttpResponse(relative_url) {}
+  explicit SlowAuthResponse(GotRequestCallback got_request)
+      : content::SlowHttpResponse(std::move(got_request)) {}
   ~SlowAuthResponse() override = default;
 
   SlowAuthResponse(const SlowAuthResponse& other) = delete;
@@ -89,19 +90,6 @@ class SlowAuthResponse : public content::SlowHttpResponse {
     response->append("HTTP/1.1 401 Unauthorized\r\n");
   }
 };
-
-// This request handler returns a WWW-Authenticate header along with a slow
-// response body. It is used to exercise a race in how auth requests are
-// dispatched to extensions (https://crbug.com/1034468).
-std::unique_ptr<net::test_server::HttpResponse> HandleBasicAuthSlowResponse(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<SlowAuthResponse> response =
-      std::make_unique<SlowAuthResponse>(request.relative_url);
-  if (!response->IsHandledUrl()) {
-    return nullptr;
-  }
-  return response;
-}
 
 // This helper function sets |notification_fired| to true if called. It's used
 // as an observer callback for notifications that are not expected to fire.
@@ -2243,8 +2231,26 @@ INSTANTIATE_TEST_SUITE_P(
 // request when auth is required. Regression test for https://crbug.com/1034468.
 IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
                        OnAuthRequiredNotifiedOnce) {
-  embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating(&HandleBasicAuthSlowResponse));
+  const char kSlowResponse[] = "/slow-response";
+
+  // Once the request has been made, this will be set with a closure to finish
+  // the slow response.
+  base::OnceClosure finish_slow_response;
+
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kSlowResponse)
+          return nullptr;
+        auto response = std::make_unique<SlowAuthResponse>(
+            base::BindLambdaForTesting([&](base::OnceClosure start_response,
+                                           base::OnceClosure finish_response) {
+              // The response is started immediately, but we delay finishing it.
+              std::move(start_response).Run();
+              finish_slow_response = std::move(finish_response);
+            }));
+        return response;
+      }));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Load an extension that logs to the console each time onAuthRequired is
@@ -2263,8 +2269,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   NavigationController* controller = &contents->GetController();
   WindowedAuthNeededObserver auth_needed_waiter(controller);
-  GURL test_page =
-      embedded_test_server()->GetURL(SlowAuthResponse::kSlowResponseUrl);
+  GURL test_page = embedded_test_server()->GetURL(kSlowResponse);
   ui_test_utils::NavigateToURL(browser(), test_page);
 
   console_observer.Wait();
@@ -2272,14 +2277,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
   EXPECT_EQ(base::ASCIIToUTF16("onAuthRequired " + test_page.spec()),
             console_observer.messages()[0].message);
 
-  // Trigger a background request to end the response that prompted for basic
-  // auth.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      embedded_test_server()->GetURL(SlowAuthResponse::kSlowResponseHostName,
-                                     SlowAuthResponse::kFinishSlowResponseUrl),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // End the response that prompted for basic auth.
+  std::move(finish_slow_response).Run();
 
   // If https://crbug.com/1034468 regresses, the test may hang here. In that
   // bug, extensions were getting notified of each auth request twice, and the

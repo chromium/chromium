@@ -7,23 +7,40 @@
 
 #include <string>
 
+#include "base/memory/ref_counted.h"
+#include "base/sequenced_task_runner.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace content {
 
-// An HTTP response that won't complete until a |kFinishSlowResponseUrl| request
-// is received, used to simulate a slow response.
+// An HTTP response that may not complete ever.
 class SlowHttpResponse : public net::test_server::HttpResponse {
  public:
   // Test URLs.
-  static const char kSlowResponseHostName[];
   static const char kSlowResponseUrl[];
   static const char kFinishSlowResponseUrl[];
   static const int kFirstResponsePartSize;
   static const int kSecondResponsePartSize;
 
-  explicit SlowHttpResponse(const std::string& url);
+  // Callback run once the request has been received that allows the test to
+  // start and then later finish the response at the time of its choosing. It
+  // need not run either callback, but `start_response` must be run before
+  // `finish_response`.
+  using GotRequestCallback =
+      base::OnceCallback<void(base::OnceClosure start_response,
+                              base::OnceClosure finish_response)>;
+
+  // Helper to make a `got_request` callback for when the SlowHttpResponse
+  // should actually finish immediately.
+  static GotRequestCallback FinishResponseImmediately();
+  // Helper to make a `got_request` callback for when the SlowHttpResponse
+  // should not reply at all.
+  static GotRequestCallback NoResponse();
+
+  // If `url` is `kSlowResponseUrl` this constructs an HttpResponse that will
+  // not complete until the closure given to `got_request_callback` is run.
+  explicit SlowHttpResponse(GotRequestCallback got_request);
   ~SlowHttpResponse() override;
 
   SlowHttpResponse(const SlowHttpResponse&) = delete;
@@ -46,11 +63,9 @@ class SlowHttpResponse : public net::test_server::HttpResponse {
   void SendResponse(const net::test_server::SendBytesCallback& send,
                     net::test_server::SendCompleteCallback done) override;
 
- protected:
-  const std::string& url() { return url_; }
-
  private:
-  std::string url_;
+  scoped_refptr<base::SequencedTaskRunner> main_thread_;
+  GotRequestCallback got_request_;
 };
 
 }  // namespace content
