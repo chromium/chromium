@@ -222,7 +222,8 @@ public class NavigationHandlerTest {
     @SmallTest
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink() {
         Tab oldTab = currentTab();
-        TabCreator tabCreator = mActivityTestRule.getActivity().getTabCreator(false);
+        TabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.getActivity().getTabCreator(false));
         Tab newTab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return tabCreator.createNewTab(
                     new LoadUrlParams(UrlConstants.RECENT_TABS_URL, PageTransition.LINK),

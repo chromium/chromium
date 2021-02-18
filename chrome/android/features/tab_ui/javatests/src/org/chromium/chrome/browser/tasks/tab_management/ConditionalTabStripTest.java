@@ -699,7 +699,8 @@ public class ConditionalTabStripTest {
 
     private void createBlankPageWithLaunchType(ChromeTabbedActivity cta, boolean isIncognito,
             @TabLaunchType int type) throws ExecutionException {
-        TabCreator tabCreator = cta.getTabCreator(isIncognito);
+        TabCreator tabCreator =
+                TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(isIncognito));
         LoadUrlParams loadUrlParams = new LoadUrlParams(UrlConstants.CHROME_BLANK_URL);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> tabCreator.createNewTab(loadUrlParams, type, null));

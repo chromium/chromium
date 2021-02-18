@@ -23,6 +23,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManagerSupplier.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",

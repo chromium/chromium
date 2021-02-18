@@ -151,6 +151,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManagerSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorProfileSupplier;
@@ -255,6 +256,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Used to access the {@link TabModelSelector} from {@link WindowAndroid}. */
     private final UnownedUserDataSupplier<TabModelSelector> mTabModelSelectorSupplier =
             new TabModelSelectorSupplier();
+    /** Used to access the {@link TabCreatorManager} from {@link WindowAndroid}. */
+    private final UnownedUserDataSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
+            new TabCreatorManagerSupplier();
 
     protected TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
@@ -262,8 +266,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new ObservableSupplierImpl<>();
     private TabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private TabCreator mRegularTabCreator;
-    private TabCreator mIncognitoTabCreator;
 
     private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier =
             new ObservableSupplierImpl<>();
@@ -416,6 +418,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private void setupUnownedUserDataSuppliers() {
         mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        mTabCreatorManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
     }
 
     protected RootUiCoordinator createRootUiCoordinator() {
@@ -703,8 +706,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         getStatusBarColorController().setTabModelSelector(tabModelSelector);
 
         Pair<? extends TabCreator, ? extends TabCreator> tabCreators = createTabCreators();
-        mRegularTabCreator = tabCreators.first;
-        mIncognitoTabCreator = tabCreators.second;
+        mTabCreatorManagerSupplier.set(
+                incognito -> incognito ? tabCreators.second : tabCreators.first);
 
         OfflinePageUtils.observeTabModelSelector(this, tabModelSelector);
         if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
@@ -1740,7 +1743,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             throw new IllegalStateException(
                     "Attempting to access TabCreator before initialization");
         }
-        return incognito ? mIncognitoTabCreator : mRegularTabCreator;
+        return mTabCreatorManagerSupplier.get().getTabCreator(incognito);
     }
 
     /**

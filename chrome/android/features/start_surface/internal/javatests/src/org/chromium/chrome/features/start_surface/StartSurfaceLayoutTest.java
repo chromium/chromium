@@ -1987,12 +1987,13 @@ public class StartSurfaceLayoutTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID)
     public void testTabGroupNotFormDuringRestore() throws Exception {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(mUrl);
         Tab parentTab = cta.getTabModelSelector().getCurrentTab();
 
         // Create a tab whose parent tab is parentTab.
-        TabCreator tabCreator = cta.getTabCreator(false);
+        TabCreator tabCreator =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
         LoadUrlParams loadUrlParams = new LoadUrlParams(mUrl);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -2005,25 +2006,28 @@ public class StartSurfaceLayoutTest {
         finishActivity(cta);
         CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, true);
         mActivityTestRule.startMainActivityOnBlankPage();
-        cta = mActivityTestRule.getActivity();
-        assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
+        final ChromeTabbedActivity ctaRestarted = mActivityTestRule.getActivity();
+        assertTrue(ctaRestarted.getTabModelSelector()
+                           .getTabModelFilterProvider()
+                           .getCurrentTabModelFilter()
                            instanceof TabGroupModelFilter);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 3);
+        enterTabSwitcher(ctaRestarted);
+        verifyTabSwitcherCardCount(ctaRestarted, 3);
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void verifyTabGroupStateAfterReparenting() throws Exception {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                            instanceof TabGroupModelFilter);
         mActivityTestRule.loadUrl(mUrl);
         Tab parentTab = cta.getTabModelSelector().getCurrentTab();
 
         // Create a tab whose parent tab is parentTab.
-        TabCreator tabCreator = cta.getTabCreator(false);
+        TabCreator tabCreator =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
         LoadUrlParams loadUrlParams = new LoadUrlParams(mUrl);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -2040,12 +2044,12 @@ public class StartSurfaceLayoutTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(true));
-        cta = ActivityUtils.waitForActivity(
+        final ChromeTabbedActivity ctaNightMode = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class);
-        assertTrue(ColorUtils.inNightMode(cta));
-        CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
+        assertTrue(ColorUtils.inNightMode(ctaNightMode));
+        CriteriaHelper.pollUiThread(ctaNightMode.getTabModelSelector()::isTabStateInitialized);
+        enterTabSwitcher(ctaNightMode);
+        verifyTabSwitcherCardCount(ctaNightMode, 2);
     }
 
     @Test

@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,6 +22,8 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegateImpl;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManagerSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -96,8 +97,6 @@ final class SigninBridge {
             // bottom sheet.
             return;
         }
-
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
         // To close the current regular tab after the user clicks on "Continue" in the incognito
         // interstitial.
         final Supplier<TabModelSelector> tabModelSelectorSupplier =
@@ -107,10 +106,13 @@ final class SigninBridge {
                 tabModelSelectorSupplier.get().getModel(/*incognito=*/false);
         // To create a new incognito tab after after the user clicks on "Continue" in the incognito
         // interstitial.
-        // TODO(crbug/1155795): Remove the ChromeActivity usage in this call
-        final TabCreator incognitoTabCreator = activity.getTabCreator(/*incognito=*/true);
+        final Supplier<TabCreatorManager> tabCreatorManagerSupplier =
+                TabCreatorManagerSupplier.from(windowAndroid);
+        assert tabCreatorManagerSupplier.hasValue() : "No TabCreatorManager available.";
+        final TabCreator incognitoTabCreator =
+                tabCreatorManagerSupplier.get().getTabCreator(/*incognito=*/true);
         AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
-                activity, bottomSheetController,
+                windowAndroid.getActivity().get(), bottomSheetController,
                 new AccountPickerDelegateImpl(windowAndroid,
                         TabModelUtils.getCurrentTab(regularTabModel), new WebSigninBridge.Factory(),
                         continueUrl),
