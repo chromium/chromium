@@ -82,6 +82,8 @@ void XRDepthManager::ProcessDepthInformation(
 XRCPUDepthInformation* XRDepthManager::GetCpuDepthInformation(
     const XRFrame* xr_frame,
     ExceptionState& exception_state) {
+  DVLOG(2) << __func__;
+
   if (usage_ != device::mojom::XRDepthUsage::kCPUOptimized) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidUsageMode);
@@ -102,6 +104,8 @@ XRCPUDepthInformation* XRDepthManager::GetCpuDepthInformation(
 XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
     const XRFrame* xr_frame,
     ExceptionState& exception_state) {
+  DVLOG(2) << __func__;
+
   if (usage_ != device::mojom::XRDepthUsage::kGPUOptimized) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidUsageMode);

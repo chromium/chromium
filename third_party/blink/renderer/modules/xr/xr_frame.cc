@@ -162,24 +162,29 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
   DVLOG(2) << __func__;
 
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+    DVLOG(2) << __func__ << ": depth sensing is not enabled on a session";
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         XRSession::kDepthSensingFeatureNotSupported);
+    return nullptr;
   }
 
   if (!is_active_) {
+    DVLOG(2) << __func__ << ": frame is not active";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
     return nullptr;
   }
 
   if (!is_animation_frame_) {
+    DVLOG(2) << __func__ << ": frame is not animating";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNonAnimationFrame);
     return nullptr;
   }
 
   if (this != view->frame()) {
+    DVLOG(2) << __func__ << ": view did not originate from the frame";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidView);
     return nullptr;

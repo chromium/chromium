@@ -337,6 +337,7 @@ class MockRuntime {
     'dom-overlay': vrMojom.XRSessionFeature.DOM_OVERLAY,
     'light-estimation': vrMojom.XRSessionFeature.LIGHT_ESTIMATION,
     'anchors': vrMojom.XRSessionFeature.ANCHORS,
+    'depth-sensing': vrMojom.XRSessionFeature.DEPTH,
   };
 
   static sessionModeToMojoMap = {
@@ -387,6 +388,9 @@ class MockRuntime {
     // Anchor creation callback (initially null, can be set by tests).
     this.anchor_creation_callback_ = null;
 
+    this.depthSensingData_ = null;
+    this.depthSensingDataDirty_ = false;
+
     let supportedModes = [];
     if (fakeDeviceInit.supportedModes) {
       supportedModes = fakeDeviceInit.supportedModes.slice();
@@ -431,6 +435,10 @@ class MockRuntime {
 
     if (fakeDeviceInit.world) {
       this.world_ = fakeDeviceInit.world;
+    }
+
+    if (fakeDeviceInit.depthSensingData) {
+      this.setDepthSensingData(fakeDeviceInit.depthSensingData);
     }
 
     this.defaultFramebufferScale_ = default_framebuffer_scale;
@@ -675,6 +683,32 @@ class MockRuntime {
     }
   }
 
+  setDepthSensingData(depthSensingData) {
+    for(const key of ["depthData", "normDepthBufferFromNormView", "rawValueToMeters", "width", "height"]) {
+      if(!(key in depthSensingData)) {
+        throw new TypeError("Required key not present. Key: " + key);
+      }
+    }
+
+    if(depthSensingData.depthData != null) {
+      // Create new object w/ properties based on the depthSensingData, but
+      // convert the FakeXRRigidTransformInit into a transformation matrix object.
+      this.depthSensingData_ = Object.assign({},
+        depthSensingData, {
+          normDepthBufferFromNormView: composeGFXTransform(depthSensingData.normDepthBufferFromNormView),
+        });
+    } else {
+      throw new TypeError("`depthData` is not set");
+    }
+
+    this.depthSensingDataDirty_ = true;
+  }
+
+  clearDepthSensingData() {
+    this.depthSensingData_ = null;
+    this.depthSensingDataDirty_ = true;
+  }
+
   // Helper methods
   getNonImmersiveDisplayInfo() {
     const displayInfo = this.getImmersiveDisplayInfo();
@@ -856,6 +890,8 @@ class MockRuntime {
         this._calculateHitTestResults(frameData);
 
         this._calculateAnchorInformation(frameData);
+
+        this._calculateDepthInformation(frameData);
 
         this._injectAdditionalFrameData(options, frameData);
 
@@ -1119,6 +1155,8 @@ class MockRuntime {
           }
         }
 
+        this.enabledFeatures_ = enabled_features;
+
         return Promise.resolve({
           session: {
             submitFrameSink: submit_frame_sink,
@@ -1129,7 +1167,12 @@ class MockRuntime {
             deviceConfig: {
               usesInputEventing: false,
               defaultFramebufferScale: this.defaultFramebufferScale_,
-              supportsViewportScaling: true
+              supportsViewportScaling: true,
+              depthConfiguration:
+                enabled_features.includes(vrMojom.XRSessionFeature.DEPTH) ? {
+                  depthUsage: vrMojom.XRDepthUsage.kCPUOptimized,
+                  depthDataFormat: vrMojom.XRDepthDataFormat.kLuminanceAlpha,
+                } : null,
             },
             enviromentBlendMode: this.enviromentBlendMode_,
             interactionMode: this.interactionMode_
@@ -1142,8 +1185,16 @@ class MockRuntime {
   }
 
   runtimeSupportsSession(options) {
+    let result = this.supportedModes_.includes(options.mode);
+
+    if (options.requiredFeatures.includes(vrMojom.XRSessionFeature.DEPTH)
+    || options.optionalFeatures.includes(vrMojom.XRSessionFeature.DEPTH)) {
+      result &= options.depthOptions.usagePreferences.includes(vrMojom.XRDepthUsage.kCPUOptimized);
+      result &= options.depthOptions.dataFormatPreferences.includes(vrMojom.XRDepthDataFormat.kLuminanceAlpha);
+    }
+
     return Promise.resolve({
-      supportsSession: this.supportedModes_.includes(options.mode)
+      supportsSession: result,
     });
   }
 
@@ -1197,6 +1248,43 @@ class MockRuntime {
         frameData.anchorsData.updatedAnchorsData.push(anchorData);
       }
     }
+  }
+
+  // Private functions - depth sensing implementation:
+
+  // Modifies passed in frameData to add anchor information.
+  _calculateDepthInformation(frameData) {
+    if (!this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
+      return;
+    }
+
+    if (!this.enabledFeatures_.includes(vrMojom.XRSessionFeature.DEPTH)) {
+      return;
+    }
+
+    // If we don't have a current depth data, we'll return null
+    // (i.e. no data is not a valid data, so it cannot be "StillValid").
+    if (this.depthSensingData_ == null) {
+      frameData.depthData = null;
+      return;
+    }
+
+    if(!this.depthSensingDataDirty_) {
+      frameData.depthData = { dataStillValid: {}};
+      return;
+    }
+
+    frameData.depthData = {
+      updatedDepthData: {
+        timeDelta: frameData.timeDelta,
+        normTextureFromNormView: this.depthSensingData_.normDepthBufferFromNormView,
+        rawValueToMeters: this.depthSensingData_.rawValueToMeters,
+        size: { width: this.depthSensingData_.width, height: this.depthSensingData_.height },
+        pixelData: { bytes: this.depthSensingData_.depthData }
+      }
+    };
+
+    this.depthSensingDataDirty_ = false;
   }
 
   // Private functions - hit test implementation:

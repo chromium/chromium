@@ -313,8 +313,17 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
 }
 
 XRDepthManager* XRSession::CreateDepthManagerIfEnabled(
+    const XRSessionFeatureSet& feature_set,
     const device::mojom::blink::XRSessionDeviceConfig& device_config) {
+  DVLOG(2) << __func__;
+
+  if (!base::Contains(feature_set, device::mojom::XRSessionFeature::DEPTH)) {
+    return nullptr;
+  }
+
   if (!device_config.depth_configuration) {
+    DCHECK(false) << "The session reports that depth sensing is supported but "
+                     "did not report depth sensing API configuration!";
     return nullptr;
   }
 
@@ -340,7 +349,8 @@ XRSession::XRSession(
       plane_manager_(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
-      depth_manager_(CreateDepthManagerIfEnabled(*device_config)),
+      depth_manager_(
+          CreateDepthManagerIfEnabled(enabled_features_, *device_config)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       input_receiver_(this, xr->GetExecutionContext()),

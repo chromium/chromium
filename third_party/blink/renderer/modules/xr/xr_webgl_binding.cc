@@ -177,21 +177,27 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRFrame* frame, XRView* view) {
 XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
     XRView* view,
     ExceptionState& exception_state) {
+  DVLOG(1) << __func__;
+
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+    DVLOG(2) << __func__ << ": depth sensing is not enabled on a session";
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         XRSession::kDepthSensingFeatureNotSupported);
+    return nullptr;
   }
 
   XRFrame* frame = view->frame();
 
   if (!frame->IsActive()) {
+    DVLOG(2) << __func__ << ": frame is not active";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       XRFrame::kInactiveFrame);
     return nullptr;
   }
 
   if (!frame->IsAnimationFrame()) {
+    DVLOG(2) << __func__ << ": frame is not animating";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       XRFrame::kNonAnimationFrame);
     return nullptr;

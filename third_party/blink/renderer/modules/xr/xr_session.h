@@ -465,6 +465,7 @@ class XRSession final
   // Helper, creates an instance of depth manager if depth sensing API is
   // enabled in the session configuration.
   XRDepthManager* CreateDepthManagerIfEnabled(
+      const XRSessionFeatureSet& feature_set,
       const device::mojom::blink::XRSessionDeviceConfig& device_config);
 
   const Member<XRSystem> xr_;

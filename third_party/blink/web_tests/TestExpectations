@@ -5684,6 +5684,12 @@ crbug.com/1178018 [ Win7 ] external/wpt/webaudio/the-audio-api/the-mediaelementa
 # Sheriff 2021-02-16
 crbug.com/1178899 http/tests/devtools/console/console-log-syntax-error.js [ Pass Failure ]
 
+# Expected to fail - Chrome's WebXR Depth Sensing API implementation does not currently support `gpu-optimized` usage mode.
+crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_dataUnavailable.https.html [ Failure ]
+crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_inactiveFrame.https.html [ Failure ]
+crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_incorrectUsage.https.html [ Failure ]
+crbug.com/1179461 external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_staleView.https.html [ Failure ]
+
 # Sheriff 2021-02-17
 crbug.com/1179117 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
 crbug.com/1179249 [ Mac10.13 ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
