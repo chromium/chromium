@@ -1,9 +1,8 @@
+# Note: don't add new owners here. Only content/OWNERS review public changes to
+# ensure consistency and that the public API guidelines are followed closely.
+
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
-
-# Network Service. These files will be moved into services/network.
-per-file network*=file://services/network/OWNERS
-
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 per-file *_mojom_traits*.*=set noparent
