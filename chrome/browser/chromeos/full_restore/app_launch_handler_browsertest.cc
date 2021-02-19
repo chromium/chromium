@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -42,6 +43,7 @@ constexpr char kAppId[] = "mldnpnnoiloahfhddhobgjeophloidmo";
 constexpr int32_t kId = 100;
 
 // Test values for a test WindowInfo object.
+constexpr int kActivationIndex = 2;
 constexpr int kDeskId = 5;
 constexpr gfx::Rect kRestoreBounds(100, 100);
 constexpr gfx::Rect kCurrentBounds(200, 200);
@@ -69,9 +71,16 @@ void CreateAndSaveWindowInfo(int desk_id,
   ::full_restore::SaveWindowInfo(window_info);
 }
 
+void SaveWindowInfo(aura::Window* window) {
+  ::full_restore::WindowInfo window_info;
+  window_info.window = window;
+  window_info.activation_index = kActivationIndex;
+  ::full_restore::SaveWindowInfo(window_info);
+}
+
 }  // namespace
 
-class AppLaunchHandlerBrowserTest : public InProcessBrowserTest {
+class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
  public:
   AppLaunchHandlerBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
@@ -109,7 +118,14 @@ class AppLaunchHandlerBrowserTest : public InProcessBrowserTest {
     return false;
   }
 
-  Profile* profile() { return browser()->profile(); }
+  void SaveChromeAppLaunchInfo(const std::string& app_id) {
+    ::full_restore::SaveAppLaunchInfo(
+        profile()->GetPath(),
+        std::make_unique<::full_restore::AppLaunchInfo>(
+            app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+            WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+            std::vector<base::FilePath>{}, nullptr));
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -388,6 +404,115 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   EXPECT_EQ(kRestoreBounds, *stored_window_info->restore_bounds);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
+}
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
+  ::full_restore::SetActiveProfilePath(profile()->GetPath());
+
+  // Create the restore data.
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("launch", "Launched");
+  ASSERT_TRUE(extension);
+  SaveChromeAppLaunchInfo(extension->id());
+
+  extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);
+  ASSERT_TRUE(app_window);
+
+  auto* window = app_window->GetNativeWindow();
+  SaveWindowInfo(window);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Read from the restore data.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  // Verify the restore window id.
+  app_window = CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window);
+
+  window = app_window->GetNativeWindow();
+  ASSERT_TRUE(window);
+  int restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+  EXPECT_NE(0, restore_window_id);
+
+  auto window_info = ::full_restore::GetWindowInfo(window);
+  ASSERT_TRUE(window_info);
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(kActivationIndex, window_info->activation_index.value());
+
+  EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));
+
+  // Close the window.
+  CloseAppWindow(app_window);
+  ASSERT_FALSE(::full_restore::GetWindowInfo(restore_window_id));
+}
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
+                       RestoreMultipleChromeAppWindows) {
+  ::full_restore::SetActiveProfilePath(profile()->GetPath());
+
+  // Create the restore data, 2 windows for 1 chrome app.
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("launch", "Launched");
+  ASSERT_TRUE(extension);
+  const std::string& app_id = extension->id();
+  SaveChromeAppLaunchInfo(app_id);
+
+  extensions::AppWindow* app_window1 = CreateAppWindow(profile(), extension);
+  ASSERT_TRUE(app_window1);
+  auto* window1 = app_window1->GetNativeWindow();
+  SaveWindowInfo(window1);
+
+  SaveChromeAppLaunchInfo(app_id);
+
+  extensions::AppWindow* app_window2 = CreateAppWindow(profile(), extension);
+  ASSERT_TRUE(app_window2);
+  auto* window2 = app_window2->GetNativeWindow();
+  SaveWindowInfo(window2);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Read from the restore data.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  // Verify the restore window id;
+  app_window1 = CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window1);
+  window1 = app_window1->GetNativeWindow();
+  ASSERT_TRUE(window1);
+  EXPECT_NE(0, window1->GetProperty(::full_restore::kRestoreWindowIdKey));
+
+  auto window_info = ::full_restore::GetWindowInfo(window1);
+  ASSERT_TRUE(window_info);
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+
+  app_window2 = CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window2);
+  window2 = app_window2->GetNativeWindow();
+  ASSERT_TRUE(window2);
+  EXPECT_NE(0, window2->GetProperty(::full_restore::kRestoreWindowIdKey));
+
+  window_info = ::full_restore::GetWindowInfo(window2);
+  ASSERT_TRUE(window_info);
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+
+  // Create a new window, verity the restore window id is 0.
+  auto* app_window = CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window);
+  auto* window = app_window->GetNativeWindow();
+  ASSERT_TRUE(window);
+  EXPECT_EQ(0, window->GetProperty(::full_restore::kRestoreWindowIdKey));
+
+  // Close the window.
+  CloseAppWindow(app_window1);
+  CloseAppWindow(app_window2);
 }
 
 class AppLaunchHandlerNoBrowserBrowserTest
