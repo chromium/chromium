@@ -272,6 +272,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
         metrics::UnsentLogStoreMetrics::kRecordLastUnsentLogMetadataMetrics);
 
     features.DisableIfNotSet(::features::kPeriodicBackgroundSync);
+
+    // TODO(crbug.com/921655): Add support for User Agent Client hints on
+    // WebView.
+    features.DisableIfNotSet(::features::kUserAgentClientHint);
   }
 
   android_webview::RegisterPathProvider();
