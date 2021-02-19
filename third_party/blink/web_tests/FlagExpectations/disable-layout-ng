@@ -74,6 +74,7 @@ crbug.com/1162704 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-015.htm
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-025.html [ Failure ]
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-026.html [ Failure ]
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-015.html [ Failure ]
+crbug.com/1173843 external/wpt/css/css-flexbox/frameset-crash.html [ Skip ]
 
 ### external/wpt/css/css-fonts/
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-1.html [ Failure ]

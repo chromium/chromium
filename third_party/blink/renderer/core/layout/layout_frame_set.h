@@ -159,7 +159,10 @@ class LayoutFrameSet final : public LayoutBox {
   }
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
     NOT_DESTROYED();
-    return MinMaxSizes();
+    MinMaxSizes sizes;
+    LayoutUnit scrollbar_thickness = ComputeLogicalScrollbars().InlineSum();
+    sizes += BorderAndPaddingLogicalWidth() + scrollbar_thickness;
+    return sizes;
   }
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
