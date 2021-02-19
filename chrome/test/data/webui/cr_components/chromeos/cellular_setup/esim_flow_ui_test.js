@@ -140,12 +140,20 @@ suite('CrComponentsEsimFlowUiTest', function() {
   }
 
   function assertActivationCodePage(forwardButtonShouldBeEnabled) {
+    if (!forwardButtonShouldBeEnabled) {
+      // In the initial state, input should be cleared.
+      assertEquals(activationCodePage.$$('#activationCode').value, '');
+    }
     assertSelectedPage(
         cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled);
   }
 
   function assertConfirmationCodePage(forwardButtonShouldBeEnabled) {
+    if (!forwardButtonShouldBeEnabled) {
+      // In the initial state, input should be cleared.
+      assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
+    }
     assertSelectedPage(
         cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled);
@@ -252,7 +260,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should now be at the activation code page.
       assertActivationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
-      assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
       assertEquals(
           activationCodePage.$$('#activationCode').value, 'ACTIVATION_CODE');
 
@@ -415,7 +422,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
           assertEquals(
               activationCodePage.$$('#activationCode').value,
               'ACTIVATION_CODE');
-          assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
 
           assertTrue(eSimPage.attemptBackwardNavigation());
           await flushAsync();
@@ -497,7 +503,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
           assertProfileDiscoveryPage();
           assertEquals(eSimPage.forwardButtonLabel, 'Next');
-          confirmationCodePage.$$('#confirmationCode').value = '';
 
           // Navigating backwards should return false since we're at the
           // beginning.

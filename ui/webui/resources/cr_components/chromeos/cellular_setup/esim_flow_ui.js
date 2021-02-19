@@ -16,8 +16,13 @@ cr.define('cellular_setup', function() {
   /* #export */ const ESimUiState = {
     PROFILE_SEARCH: 'profile-search',
     ACTIVATION_CODE_ENTRY: 'activation-code-entry',
+    ACTIVATION_CODE_ENTRY_READY: 'activation-code-entry-ready',
+    ACTIVATION_CODE_ENTRY_INSTALLING: 'activation-code-entry-installing',
     CONFIRMATION_CODE_ENTRY: 'confirmation-code-entry',
+    CONFIRMATION_CODE_ENTRY_READY: 'confirmation-code-entry-ready',
+    CONFIRMATION_CODE_ENTRY_INSTALLING: 'confirmation-code-entry-installing',
     PROFILE_SELECTION: 'profile-selection',
+    PROFILE_SELECTION_INSTALLING: 'profile-selection-installing',
     SETUP_FINISH: 'setup-finish',
   };
 
@@ -55,28 +60,17 @@ cr.define('cellular_setup', function() {
 
       /**
        * Element name of the current selected sub-page.
-       * @type {!cellular_setup.ESimPageName}
+       * This is set in updateSelectedPage_ on initialization.
+       * @type {?cellular_setup.ESimPageName}
        * @private
        */
-      selectedESimPageName_: {
-        type: String,
-        value: ESimPageName.PROFILE_LOADING,
-      },
+      selectedESimPageName_: String,
 
       /**
        * Whether error state should be shown for the current page.
        * @private {boolean}
        */
       showError_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Whether a loading indicator should be shown for the current page.
-       * @private {boolean}
-       */
-      showPageLoadingIndicator_: {
         type: Boolean,
         value: false,
       },
@@ -188,12 +182,6 @@ cr.define('cellular_setup', function() {
      *     response
      */
     handleProfileInstallResponse_(response) {
-      this.showPageLoadingIndicator_ = false;
-      // This will be moved to updateButtonBarState_ once we add intermediate
-      // states.
-      this.set('buttonState.forward', cellularSetup.ButtonState.ENABLED);
-      this.set('buttonState.backward', cellularSetup.ButtonState.ENABLED);
-
       if (response.result ===
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode) {
@@ -204,7 +192,14 @@ cr.define('cellular_setup', function() {
           chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
       if (response.result ===
               chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure &&
-          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY) {
+          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING) {
+        this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY_READY;
+        return;
+      }
+      if (response.result ===
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorInvalidActivationCode) {
+        this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
         return;
       }
       if (response.result ===
@@ -216,25 +211,31 @@ cr.define('cellular_setup', function() {
     },
 
     /** @private */
-    onStateChanged_(oldState, newState) {
-      this.updateSelectedPage_();
+    onStateChanged_(newState, oldState) {
       this.updateButtonBarState_();
-      this.initializePageState_(oldState, newState);
+      this.updateSelectedPage_();
+      this.initializePageState_(newState, oldState);
     },
 
     /** @private */
     updateSelectedPage_() {
+      const oldSelectedESimPageName = this.selectedESimPageName_;
       switch (this.state_) {
         case ESimUiState.PROFILE_SEARCH:
           this.selectedESimPageName_ = ESimPageName.PROFILE_LOADING;
           break;
         case ESimUiState.ACTIVATION_CODE_ENTRY:
+        case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
+        case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
           this.selectedESimPageName_ = ESimPageName.ACTIVATION_CODE;
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
+        case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
+        case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
           this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE;
           break;
         case ESimUiState.PROFILE_SELECTION:
+        case ESimUiState.PROFILE_SELECTION_INSTALLING:
           this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY;
           break;
         case ESimUiState.SETUP_FINISH:
@@ -244,32 +245,51 @@ cr.define('cellular_setup', function() {
           assertNotReached();
           break;
       }
+      // If there is a page change, fire focus event.
+      if (oldSelectedESimPageName !== this.selectedESimPageName_) {
+        this.fire('focus-default-button');
+      }
     },
 
     /** @private */
     updateButtonBarState_() {
       let buttonState;
+      const cancelButtonStateIfEnabled =
+          this.delegate.shouldShowCancelButton() ?
+          cellularSetup.ButtonState.ENABLED :
+          undefined;
       switch (this.state_) {
         case ESimUiState.PROFILE_SEARCH:
         case ESimUiState.ACTIVATION_CODE_ENTRY:
           this.forwardButtonLabel = this.i18n('next');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
-            cancel: this.delegate.shouldShowCancelButton() ?
-                cellularSetup.ButtonState.ENABLED :
-                undefined,
-            forward: this.activationCode_ ? cellularSetup.ButtonState.ENABLED :
-                                            cellularSetup.ButtonState.DISABLED,
+            cancel: cancelButtonStateIfEnabled,
+            forward: cellularSetup.ButtonState.DISABLED,
+          };
+          break;
+        case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
+          this.forwardButtonLabel = this.i18n('next');
+          buttonState = {
+            backward: cellularSetup.ButtonState.ENABLED,
+            cancel: cancelButtonStateIfEnabled,
+            forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
           this.forwardButtonLabel = this.i18n('confirm');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
-            cancel: this.delegate.shouldShowCancelButton() ?
-                cellularSetup.ButtonState.ENABLED :
-                undefined,
+            cancel: cancelButtonStateIfEnabled,
             forward: cellularSetup.ButtonState.DISABLED,
+          };
+          break;
+        case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
+          this.forwardButtonLabel = this.i18n('confirm');
+          buttonState = {
+            backward: cellularSetup.ButtonState.ENABLED,
+            cancel: cancelButtonStateIfEnabled,
+            forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
         case ESimUiState.PROFILE_SELECTION:
@@ -278,10 +298,17 @@ cr.define('cellular_setup', function() {
               this.i18n('skipDiscovery');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
-            cancel: this.delegate.shouldShowCancelButton() ?
-                cellularSetup.ButtonState.ENABLED :
-                undefined,
+            cancel: cancelButtonStateIfEnabled,
             forward: cellularSetup.ButtonState.ENABLED,
+          };
+          break;
+        case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
+        case ESimUiState.PROFILE_SELECTION_INSTALLING:
+        case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
+          buttonState = {
+            backward: cellularSetup.ButtonState.DISABLED,
+            cancel: cancelButtonStateIfEnabled,
+            forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
         case ESimUiState.SETUP_FINISH:
@@ -295,14 +322,16 @@ cr.define('cellular_setup', function() {
           break;
       }
       this.set('buttonState', buttonState);
-      this.fire('focus-default-button');
     },
 
     /** @private */
-    initializePageState_(oldState, newState) {
-      this.confirmationCode_ = '';
+    initializePageState_(newState, oldState) {
+      if (newState === ESimUiState.CONFIRMATION_CODE_ENTRY &&
+          oldState !== ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
+        this.confirmationCode_ = '';
+      }
       if (newState === ESimUiState.ACTIVATION_CODE_ENTRY &&
-          oldState !== ESimUiState.CONFIRMATION_CODE_ENTRY) {
+          oldState !== ESimUiState.ACTIVATION_CODE_ENTRY_READY) {
         this.activationCode_ = '';
       }
     },
@@ -312,13 +341,14 @@ cr.define('cellular_setup', function() {
       // initializePageState_() may cause this observer to fire and update the
       // buttonState when we're not on the activation code page. Check we're on
       // the activation code page before proceeding.
-      if (this.state_ !== ESimUiState.ACTIVATION_CODE_ENTRY) {
+      if (this.state_ !== ESimUiState.ACTIVATION_CODE_ENTRY &&
+          this.state_ !== ESimUiState.ACTIVATION_CODE_ENTRY_READY) {
+        // TODO(crbug.com/1093185): Disable input when installing.
         return;
       }
-      this.set(
-          'buttonState.forward',
-          event.detail.activationCode ? cellularSetup.ButtonState.ENABLED :
-                                        cellularSetup.ButtonState.DISABLED);
+      this.state_ = event.detail.activationCode ?
+          ESimUiState.ACTIVATION_CODE_ENTRY_READY :
+          ESimUiState.ACTIVATION_CODE_ENTRY;
     },
 
     /** @private */
@@ -327,6 +357,7 @@ cr.define('cellular_setup', function() {
       // buttonState when we're not on the profile selection page. Check we're
       // on the profile selection page before proceeding.
       if (this.state_ !== ESimUiState.PROFILE_SELECTION) {
+        // TODO(crbug.com/1093185): Disable selection when installing.
         return;
       }
       this.forwardButtonLabel = this.selectedProfile_ ?
@@ -339,28 +370,25 @@ cr.define('cellular_setup', function() {
       // initializePageState_() may cause this observer to fire and update the
       // buttonState when we're not on the confirmation code page. Check we're
       // on the confirmation code page before proceeding.
-      if (this.state_ !== ESimUiState.CONFIRMATION_CODE_ENTRY) {
+      if (this.state_ !== ESimUiState.CONFIRMATION_CODE_ENTRY &&
+          this.state_ !== ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
+        // TODO(crbug.com/1093185): Disable input when installing.
         return;
       }
-      this.set(
-          'buttonState.forward',
-          this.confirmationCode_ ? cellularSetup.ButtonState.ENABLED :
-                                   cellularSetup.ButtonState.DISABLED);
+      this.state_ = this.confirmationCode_ ?
+          ESimUiState.CONFIRMATION_CODE_ENTRY_READY :
+          ESimUiState.CONFIRMATION_CODE_ENTRY;
     },
 
     /** SubflowBehavior override */
     navigateForward() {
       this.showError_ = false;
-      this.showPageLoadingIndicator_ = true;
-      // This will be moved to updateButtonBarState_ once we add intermediate
-      // states.
-      this.set('buttonState.forward', cellularSetup.ButtonState.DISABLED);
-      this.set('buttonState.backward', cellularSetup.ButtonState.DISABLED);
 
       switch (this.state_) {
-        case ESimUiState.ACTIVATION_CODE_ENTRY:
+        case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
           // Assume installing the profile doesn't require a confirmation
           // code, send an empty string.
+          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING;
           this.euicc_
               .installProfileFromActivationCode(
                   this.activationCode_, /*confirmationCode=*/ '')
@@ -368,16 +396,17 @@ cr.define('cellular_setup', function() {
           break;
         case ESimUiState.PROFILE_SELECTION:
           if (this.selectedProfile_) {
+            this.state_ = ESimUiState.PROFILE_SELECTION_INSTALLING;
             // Assume installing the profile doesn't require a confirmation
             // code, send an empty string.
             this.selectedProfile_.installProfile('').then(
                 this.handleProfileInstallResponse_.bind(this));
           } else {
-            this.showPageLoadingIndicator_ = false;
             this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
           }
           break;
-        case ESimUiState.CONFIRMATION_CODE_ENTRY:
+        case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
+          this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING;
           if (this.selectedProfile_) {
             this.selectedProfile_.installProfile(this.confirmationCode_)
                 .then(this.handleProfileInstallResponse_.bind(this));
@@ -402,15 +431,16 @@ cr.define('cellular_setup', function() {
      * SubflowBehavior override
      */
     attemptBackwardNavigation() {
-      if (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY &&
+      if ((this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY ||
+           this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY) &&
           this.pendingProfiles_.length > 1) {
         this.state_ = ESimUiState.PROFILE_SELECTION;
         return true;
-      } else if (this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY) {
+      } else if (
+          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY ||
+          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
         if (this.activationCode_) {
-          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
-        } else if (this.pendingProfiles_.length === 0) {
-          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
         } else if (this.pendingProfiles_.length > 1) {
           this.state_ = ESimUiState.PROFILE_SELECTION;
         } else {
@@ -431,6 +461,13 @@ cr.define('cellular_setup', function() {
       hasActivePSimNetwork().then((hasActive) => {
         this.hasActivePSimNetwork_ = hasActive;
       });
+    },
+
+    /** @private */
+    isInstallingProfile_() {
+      return this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING ||
+          this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING ||
+          this.state_ === ESimUiState.PROFILE_SELECTION_INSTALLING;
     },
 
     /**
