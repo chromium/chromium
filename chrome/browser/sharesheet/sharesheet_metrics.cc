@@ -29,4 +29,8 @@ void SharesheetMetrics::RecordSharesheetFormFactor(FormFactor form_factor) {
   base::UmaHistogramEnumeration("ChromeOS.Sharesheet.FormFactor", form_factor);
 }
 
+void SharesheetMetrics::RecordSharesheetLaunchSource(LaunchSource source) {
+  base::UmaHistogramEnumeration("ChromeOS.Sharesheet.LaunchSource", source);
+}
+
 }  // namespace sharesheet

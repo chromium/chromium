@@ -31,6 +31,16 @@ class SharesheetMetrics {
     kMaxValue = kClamshell,
   };
 
+  // The source from which the sharesheet was launched from.
+  // This enum is for recording histograms and must be treated as append-only.
+  enum class LaunchSource {
+    kUnknown = 0,
+    kFilesAppShareButton = 1,
+    kFilesAppContextMenu = 2,
+    kWebShare = 3,
+    kMaxValue = kWebShare,
+  };
+
   SharesheetMetrics();
 
   static void RecordSharesheetActionMetrics(UserAction action);
@@ -38,6 +48,8 @@ class SharesheetMetrics {
   static void RecordSharesheetAppCount(int app_count);
 
   static void RecordSharesheetFormFactor(FormFactor form_factor);
+
+  static void RecordSharesheetLaunchSource(LaunchSource source);
 };
 
 }  // namespace sharesheet

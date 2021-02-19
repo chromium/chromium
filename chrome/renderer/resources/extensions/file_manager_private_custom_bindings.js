@@ -347,11 +347,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       });
 
   apiFunctions.setHandleRequest(
-      'invokeSharesheet', function(entries, callback) {
+      'invokeSharesheet', function(entries, launchSource, callback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
-        fileManagerPrivateInternal.invokeSharesheet(urls, callback);
+        fileManagerPrivateInternal.invokeSharesheet(
+            urls, launchSource, callback);
       });
 
   apiFunctions.setHandleRequest(

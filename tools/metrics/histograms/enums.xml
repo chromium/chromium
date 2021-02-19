@@ -10506,6 +10506,14 @@ histogram as enum -->
   <int value="1" label="Clamshell form factor"/>
 </enum>
 
+<enum name="ChromeOSSharesheetLaunchSource">
+  <summary>The source from which sharesheet is invoked.</summary>
+  <int value="0" label="Invoked from an unknown source"/>
+  <int value="1" label="Invoked from the share button in the Files app"/>
+  <int value="2" label="Invoked from the context menu in the Files app"/>
+  <int value="3" label="Invoked through WebShare"/>
+</enum>
+
 <enum name="ChromeOSUICommands">
 <!-- Please put in checks to ensure Command IDs are stable before adding them to this enum. -->
 

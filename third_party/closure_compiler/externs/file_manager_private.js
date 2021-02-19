@@ -284,6 +284,13 @@ chrome.fileManagerPrivate.CrostiniEventType = {
       'drop_failed_plugin_vm_directory_not_shared',
 };
 
+/** @enum {string} */
+chrome.fileManagerPrivate.SharesheetLaunchSource = {
+  CONTEXT_MENU: 'context_menu',
+  SHARESHEET_BUTTON: 'sharesheet_button',
+  UNKNOWN: 'unknown',
+};
+
 /**
  * @typedef {{
  *   taskId: string,
@@ -1195,9 +1202,11 @@ chrome.fileManagerPrivate.sharesheetHasTargets = function(entries, callback) {};
  * Invoke Sharesheet for selected files. If not possible, then returns
  * an error via chrome.runtime.lastError. |entries| Array of selected entries.
  * @param {!Array<!Entry>} entries
+ * @param {chrome.fileManagerPrivate.SharesheetLaunchSource} launchSource
  * @param {function()} callback
  */
-chrome.fileManagerPrivate.invokeSharesheet = function(entries, callback) {};
+chrome.fileManagerPrivate.invokeSharesheet = function(
+    entries, launchSource, callback) {};
 
 /**
  * Adds or removes a list of entries to temporary holding space. Any entries

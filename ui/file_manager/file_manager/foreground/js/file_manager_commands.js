@@ -76,6 +76,7 @@ const CommandUtil = {};
 CommandUtil.SharingActionElementId = {
   CONTEXT_MENU: 'file-list',
   SHARE_BUTTON: 'share-menu-button',
+  SHARE_SHEET: 'sharesheet-button',
 };
 
 /**
@@ -95,6 +96,28 @@ CommandUtil.getSharingActionSource = event => {
     default: {
       console.error('Unrecognized event.target.id for sharing action "%s"', id);
       return FileTasks.SharingActionSourceForUMA.UNKNOWN;
+    }
+  }
+};
+
+/**
+ * Helper function that for the given event returns the launch source of the
+ * sharesheet. If the source cannot be determined, this function returns
+ * chrome.fileManagerPrivate.SharesheetLaunchSource.UNKNOWN.
+ * @param {!Event} event The event that triggered the sharesheet.
+ * @return {!chrome.fileManagerPrivate.SharesheetLaunchSource}
+ */
+CommandUtil.getSharesheetLaunchSource = event => {
+  const id = event.target.id;
+  switch (id) {
+    case CommandUtil.SharingActionElementId.CONTEXT_MENU:
+      return chrome.fileManagerPrivate.SharesheetLaunchSource.CONTEXT_MENU;
+    case CommandUtil.SharingActionElementId.SHARE_SHEET:
+      return chrome.fileManagerPrivate.SharesheetLaunchSource.SHARESHEET_BUTTON;
+    default: {
+      console.error(
+          'Unrecognized event.target.id for sharesheet launch"%s"', id);
+      return chrome.fileManagerPrivate.SharesheetLaunchSource.UNKNOWN;
     }
   }
 };
@@ -1768,7 +1791,8 @@ CommandHandler.COMMANDS_['show-submenu'] = new class extends FilesCommand {
 CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {
   execute(event, fileManager) {
     const entries = fileManager.selectionHandler.selection.entries;
-    chrome.fileManagerPrivate.invokeSharesheet(entries, () => {
+    const launchSource = CommandUtil.getSharesheetLaunchSource(event);
+    chrome.fileManagerPrivate.invokeSharesheet(entries, launchSource, () => {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
         return;

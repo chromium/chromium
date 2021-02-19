@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -56,11 +57,13 @@ class SharesheetService : public KeyedService {
   // Drive hosted document, only drive share action will be shown.
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
-                  sharesheet::CloseCallback close_callback);
+                  SharesheetMetrics::LaunchSource source,
+                  CloseCallback close_callback);
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
-                  sharesheet::CloseCallback close_callback);
+                  SharesheetMetrics::LaunchSource source,
+                  CloseCallback close_callback);
   void OnBubbleClosed(gfx::NativeWindow native_window,
                       const base::string16& active_action);
   void OnTargetSelected(gfx::NativeWindow native_window,
@@ -101,13 +104,13 @@ class SharesheetService : public KeyedService {
 
   void OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                         apps::mojom::IntentPtr intent,
-                        sharesheet::CloseCallback close_callback,
+                        CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
 
   void ShowBubbleWithDelegate(SharesheetServiceDelegate* delegate,
                               apps::mojom::IntentPtr intent,
                               bool contains_hosted_document,
-                              sharesheet::CloseCallback close_callback);
+                              CloseCallback close_callback);
 
   void RecordActionMetrics(const base::string16& target_name);
 

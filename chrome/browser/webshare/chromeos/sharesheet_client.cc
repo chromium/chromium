@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
@@ -238,8 +239,10 @@ void SharesheetClient::ShowSharesheet(
       file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
                          : apps_util::CreateShareIntentFromFiles(
                                profile, file_paths, content_types, text, title);
-  sharesheet_service->ShowBubble(web_contents, std::move(intent),
-                                 std::move(close_callback));
+  sharesheet_service->ShowBubble(
+      web_contents, std::move(intent),
+      sharesheet::SharesheetMetrics::LaunchSource::kWebShare,
+      std::move(close_callback));
 }
 
 SharesheetClient::SharesheetCallback&

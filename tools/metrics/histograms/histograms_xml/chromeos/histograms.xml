@@ -1147,6 +1147,13 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
 </histogram>
 
+<histogram name="ChromeOS.Sharesheet.LaunchSource"
+    enum="ChromeOSSharesheetLaunchSource" expires_after="M95">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>Records the source from which the Sharesheet is invoked.</summary>
+</histogram>
+
 <histogram name="ChromeOS.Sharesheet.UserAction"
     enum="ChromeOSSharesheetAction" expires_after="M95">
   <owner>dominickn@chromium.org</owner>

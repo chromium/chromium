@@ -282,6 +282,12 @@ enum ProviderSource {
   network
 };
 
+enum SharesheetLaunchSource {
+  context_menu,
+  sharesheet_button,
+  unknown
+};
+
 // A file task represents an action that the file manager can perform over the
 // currently selected files. See
 // chrome/browser/chromeos/extensions/file_manager/file_tasks.h for details
@@ -1396,10 +1402,12 @@ interface Functions {
 
   // Invoke Sharesheet for selected files.
   // |entries| Array of selected entries.
+  // |launchSource| Source from which sharesheet was invoked.
   // |callback|
   [nocompile]
   static void invokeSharesheet([instanceof=Entry] object[] entries,
-                                     SimpleCallback callback);
+                               SharesheetLaunchSource launchSource,
+                               SimpleCallback callback);
 
   // Adds or removes a list of entries to temporary holding space. Any entries
   // whose current holding space state matches the intended state will be

@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/sharesheet/share_action.h"
-#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/common/chrome_features.h"
@@ -53,17 +52,21 @@ SharesheetService::~SharesheetService() = default;
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
+                                   SharesheetMetrics::LaunchSource source,
                                    CloseCallback close_callback) {
   ShowBubble(web_contents, std::move(intent),
-             /*contains_hosted_document=*/false, std::move(close_callback));
+             /*contains_hosted_document=*/false, source,
+             std::move(close_callback));
 }
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
                                    bool contains_hosted_document,
+                                   SharesheetMetrics::LaunchSource source,
                                    CloseCallback close_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
+  SharesheetMetrics::RecordSharesheetLaunchSource(source);
   auto* sharesheet_service_delegate =
       GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
   ShowBubbleWithDelegate(sharesheet_service_delegate, std::move(intent),

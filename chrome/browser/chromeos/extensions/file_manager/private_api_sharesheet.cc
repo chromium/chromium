@@ -25,6 +25,25 @@
 
 using storage::FileSystemURL;
 
+namespace {
+
+using extensions::api::file_manager_private::SharesheetLaunchSource;
+
+sharesheet::SharesheetMetrics::LaunchSource GetLaunchSource(
+    SharesheetLaunchSource launch_source) {
+  switch (launch_source) {
+    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_SHARESHEET_BUTTON):
+      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppShareButton;
+    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_CONTEXT_MENU):
+      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppContextMenu;
+    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_UNKNOWN):
+    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_NONE):
+      return sharesheet::SharesheetMetrics::LaunchSource::kUnknown;
+  }
+}
+
+}  // namespace
+
 namespace extensions {
 
 FileManagerPrivateInternalSharesheetHasTargetsFunction::
@@ -199,12 +218,13 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
       file_system_urls_,
       base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
                          OnMimeTypesCollected,
-                     this));
+                     this, GetLaunchSource(params->launch_source)));
 
   return RespondLater();
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
+    sharesheet::SharesheetMetrics::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types) {
   // On button press show sharesheet bubble.
   auto* profile = chrome_details_.GetProfile();
@@ -226,7 +246,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
           file_system_urls_[0], chrome_details_.GetProfile(),
           base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
                              OnDrivePropertyCollected,
-                         this, std::move(mime_types)));
+                         this, launch_source, std::move(mime_types)));
       return;
     }
   }
@@ -234,12 +254,13 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
       apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
-      contains_hosted_document_, base::NullCallback());
+      contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::
     OnDrivePropertyCollected(
+        sharesheet::SharesheetMetrics::LaunchSource launch_source,
         std::unique_ptr<std::vector<std::string>> mime_types,
         std::unique_ptr<api::file_manager_private::EntryProperties> properties,
         base::File::Error error) {
@@ -257,10 +278,12 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
       std::vector<base::FilePath>{file_system_urls_[0].path()},
       base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
                          OnIsDirectoryCollected,
-                     this, std::move(mime_types), std::move(properties)));
+                     this, launch_source, std::move(mime_types),
+                     std::move(properties)));
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
+    sharesheet::SharesheetMetrics::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types,
     std::unique_ptr<api::file_manager_private::EntryProperties> properties,
     std::unique_ptr<std::set<base::FilePath>> path_directory_set) {
@@ -283,7 +306,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
       GetSenderWebContents(),
       apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
                                                 share_url, is_directory),
-      contains_hosted_document_, base::NullCallback());
+      contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }
 
