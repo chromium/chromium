@@ -3,32 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":os_files_page",
-    ":smb_shares_page",
-  ]
-}
-
-js_library("smb_shares_page") {
-  deps = [
-    "..:os_route",
-    "../..:router",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/cr_components/chromeos/smb_shares:smb_browser_proxy",
-  ]
-}
-
-js_library("os_files_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-  ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -57,8 +33,6 @@ js_library("smb_shares_page.m") {
   ]
   extra_deps = [ ":smb_shares_page_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
