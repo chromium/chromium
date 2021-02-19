@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/nearby/src/cpp/platform/public/future.h"
+#include "third_party/nearby/src/cpp/platform/public/logging.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
@@ -169,13 +170,9 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
       mojo::PendingReceiver<sharing::mojom::IncomingMessagesListener>
           pending_receiver,
       api::WebRtcSignalingMessenger::OnSignalingMessageCallback callback) {
-    auto receiver = mojo::MakeSelfOwnedReceiver(
+    mojo::MakeSelfOwnedReceiver(
         std::make_unique<IncomingMessageListener>(std::move(callback)),
         std::move(pending_receiver), task_runner_);
-    receiver->set_connection_error_handler(base::BindOnce(
-        [](mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
-               messenger) { messenger->StopReceivingMessages(); },
-        messenger_));
   }
 
   // api::WebRtcSignalingMessenger:
@@ -185,9 +182,11 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
         pending_remote;
     mojo::PendingReceiver<sharing::mojom::IncomingMessagesListener>
         pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
+    // NOTE: this is a Sync mojo call that waits until Fast-Path ready is
+    // received on the Instant Messaging (Tachyon) stream before returning.
     if (!messenger_->StartReceivingMessages(self_id_, CreateLocationHint(),
-                                            std::move(pending_remote),
-                                            &success) ||
+                                            std::move(pending_remote), &success,
+                                            &pending_session_remote_) ||
         !success) {
       receiving_messages_ = false;
       return false;
@@ -210,7 +209,14 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   void StopReceivingMessages() override {
     if (receiving_messages_) {
       receiving_messages_ = false;
-      messenger_->StopReceivingMessages();
+      if (pending_session_remote_) {
+        mojo::Remote<sharing::mojom::ReceiveMessagesSession> session(
+            std::move(pending_session_remote_));
+        // This is a one-way message so it is safe to bind, send, and forget.
+        // When the Remote goes out of scope it will close the pipe and cause
+        // the other side to clean up the ReceiveMessagesExpress instance.
+        session->StopReceivingMessages();
+      }
     }
   }
 
@@ -218,6 +224,8 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   bool receiving_messages_ = false;
   std::string self_id_;
   connections::LocationHint location_hint_;
+  mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
+      pending_session_remote_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<WebRtcSignalingMessengerImpl> weak_ptr_factory_{this};

@@ -84,7 +84,6 @@ class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
                    incoming_messages_listener,
                StartReceivingMessagesCallback callback),
               (override));
-  MOCK_METHOD(void, StopReceivingMessages, (), (override));
 
   mojo::Receiver<network::mojom::P2PSocketManager> socket_manager_{this};
   mojo::Receiver<network::mojom::MdnsResponder> mdns_responder_{this};

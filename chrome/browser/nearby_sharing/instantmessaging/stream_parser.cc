@@ -78,7 +78,6 @@ void StreamParser::DelegateMessage(
     switch (response.body_case()) {
       case chrome_browser_nearby_sharing_instantmessaging::
           ReceiveMessagesResponse::kFastPathReady:
-        NS_LOG(INFO) << __func__ << ": received kFastPathReady";
         if (fastpath_ready_callback_) {
           std::move(fastpath_ready_callback_).Run();
         }

@@ -38,6 +38,16 @@ class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
               (override));
 };
 
+class FakeReceiveMessagesSession
+    : public sharing::mojom::ReceiveMessagesSession {
+ public:
+  void StopReceivingMessages() override { was_stop_called_ = true; }
+  bool was_stop_called() const { return was_stop_called_; }
+
+ private:
+  bool was_stop_called_ = false;
+};
+
 class WebRtcMediumTest : public ::testing::Test {
  public:
   WebRtcMediumTest()
@@ -90,7 +100,7 @@ class WebRtcMediumTest : public ::testing::Test {
     return location_hint;
   }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<sharing::MockWebRtcDependencies> mojo_impl_;
 
@@ -98,6 +108,13 @@ class WebRtcMediumTest : public ::testing::Test {
   mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
+
+  FakeReceiveMessagesSession fake_session_;
+  mojo::Receiver<sharing::mojom::ReceiveMessagesSession> fake_session_receiver_{
+      &fake_session_};
+  mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
+      receive_messages_pending_remote_{
+          fake_session_receiver_.BindNewPipeAndPassRemote()};
 
   WebRtcMedium webrtc_medium_;
 };
@@ -192,8 +209,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
       .WillOnce(testing::Invoke(
-          [&message](
-              const std::string& self_id,
+          [&](const std::string& self_id,
               sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
@@ -203,7 +219,8 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
             EXPECT_EQ(
                 sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
                 location_hint->format);
-            std::move(callback).Run(/*success=*/true);
+            std::move(callback).Run(
+                /*success=*/true, std::move(receive_messages_pending_remote_));
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
             remote->OnMessage(std::string(message));
@@ -245,17 +262,12 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
                 sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
                 location_hint->format);
 
-            std::move(callback).Run(/*success=*/true);
+            std::move(callback).Run(
+                /*success=*/true, std::move(receive_messages_pending_remote_));
 
             remote.Bind(std::move(listener));
             remote->OnMessage(std::string(message));
           }));
-  EXPECT_CALL(GetMockWebRtcDependencies(), StopReceivingMessages())
-      .WillRepeatedly(testing::Invoke([&]() {
-        if (remote.is_bound()) {
-          remote.reset();
-        }
-      }));
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
       GetMedium().GetSignalingMessenger(from, GetUnknownLocationHint());
@@ -274,6 +286,7 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
   // Run mojo disconnect handlers.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(remote.is_bound());
+  EXPECT_TRUE(fake_session_.was_stop_called());
 }
 
 TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
@@ -284,8 +297,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
       .WillOnce(testing::Invoke(
-          [&message](
-              const std::string& self_id,
+          [&](const std::string& self_id,
               sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
@@ -295,7 +307,8 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
             EXPECT_EQ(sharing::mojom::LocationStandardFormat::E164_CALLING,
                       location_hint->format);
 
-            std::move(callback).Run(/*success=*/true);
+            std::move(callback).Run(
+                /*success=*/true, std::move(receive_messages_pending_remote_));
 
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
@@ -313,13 +326,20 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
   }));
   loop.Run();
 
+  // Create a second receiver sessions to return
+  FakeReceiveMessagesSession fake_session_2;
+  mojo::Receiver<sharing::mojom::ReceiveMessagesSession>
+      fake_session_receiver_2(&fake_session_2);
+  mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
+      receive_messages_pending_remote_2(
+          fake_session_receiver_2.BindNewPipeAndPassRemote());
+
   message = ByteArray("message_2");
   EXPECT_CALL(GetMockWebRtcDependencies(),
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
       .WillOnce(testing::Invoke(
-          [&message](
-              const std::string& self_id,
+          [&](const std::string& self_id,
               sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
                   listener,
@@ -329,7 +349,8 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
             EXPECT_EQ(sharing::mojom::LocationStandardFormat::E164_CALLING,
                       location_hint->format);
 
-            std::move(callback).Run(/*success=*/true);
+            std::move(callback).Run(
+                /*success=*/true, std::move(receive_messages_pending_remote_2));
 
             mojo::Remote<sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
