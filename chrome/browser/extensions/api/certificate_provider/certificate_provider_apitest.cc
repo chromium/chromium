@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -192,12 +194,11 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
     base::Value autoselect_policy(base::Value::Type::LIST);
     autoselect_policy.Append(autoselect_pattern);
 
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kAutoSelectCertificateForUrls,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, std::move(autoselect_policy),
-               nullptr);
-    provider_.UpdateChromePolicy(policy);
+    policy_map_.Set(policy::key::kAutoSelectCertificateForUrls,
+                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                    policy::POLICY_SOURCE_CLOUD, std::move(autoselect_policy),
+                    nullptr);
+    provider_.UpdateChromePolicy(policy_map_);
 
     content::RunAllPendingInMessageLoop();
 
@@ -264,6 +265,7 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   chromeos::CertificateProviderService* cert_provider_service_ = nullptr;
+  policy::PolicyMap policy_map_;
 
  private:
   const char* const kClientCertUrl = "/client-cert";
@@ -684,7 +686,21 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 
 // Tests the RSA MD5/SHA-1 signature algorithm. Note that TLS 1.1 is used in
 // order to make this algorithm employed.
+// TODO(cthomp): The SSLVersionMin policy will be removed in M-91, making these
+// algorithms unsupported.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
+  // This test requires the SSLVersionMin policy is set to allow TLS 1.0.
+  base::Value ssl_policy("tls1");  // TLS 1.0
+  policy_map_.Set(policy::key::kSSLVersionMin, policy::POLICY_LEVEL_MANDATORY,
+                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                  std::move(ssl_policy), nullptr);
+  EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map_));
+
+  // Wait for the updated SSL configuration to be sent to the network service,
+  // to avoid a race.
+  g_browser_process->system_network_context_manager()
+      ->FlushSSLConfigManagerForTesting();
+
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
   ExecuteJavascript("supportedAlgorithms = ['RSASSA_PKCS1_v1_5_MD5_SHA1'];");
   ExecuteJavascript("registerForSignatureRequests();");
@@ -696,8 +712,22 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
 
 // Tests the RSA MD5/SHA-1 signature algorithm using the legacy version of the
 // API. Note that TLS 1.1 is used in order to make this algorithm employed.
+// TODO(cthomp): The SSLVersionMin policy will be removed in M-91, making these
+// algorithms unsupported.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        LegacyRsaMd5Sha1) {
+  // This test requires the SSLVersionMin policy is set to allow TLS 1.0.
+  base::Value ssl_policy("tls1");  // TLS 1.0
+  policy_map_.Set(policy::key::kSSLVersionMin, policy::POLICY_LEVEL_MANDATORY,
+                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                  std::move(ssl_policy), nullptr);
+  EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map_));
+
+  // Wait for the updated SSL configuration to be sent to the network service,
+  // to avoid a race.
+  g_browser_process->system_network_context_manager()
+      ->FlushSSLConfigManagerForTesting();
+
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
   ExecuteJavascript("supportedLegacyHashes = ['MD5_SHA1'];");
   ExecuteJavascript("registerAsLegacyCertificateProvider();");
@@ -819,8 +849,22 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // Tests that the RSA MD5/SHA-1 signature algorithm is used in case of TLS 1.1,
 // even when there are other algorithms specified (which are stronger but aren't
 // supported on TLS 1.1).
+// TODO(cthomp): The SSLVersionMin policy will be removed in M-91, making these
+// algorithms unsupported.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        RsaMd5Sha1AndOthers) {
+  // This test requires the SSLVersionMin policy is set to allow TLS 1.0.
+  base::Value ssl_policy("tls1");  // TLS 1.0
+  policy_map_.Set(policy::key::kSSLVersionMin, policy::POLICY_LEVEL_MANDATORY,
+                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                  std::move(ssl_policy), nullptr);
+  EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map_));
+
+  // Wait for the updated SSL configuration to be sent to the network service,
+  // to avoid a race.
+  g_browser_process->system_network_context_manager()
+      ->FlushSSLConfigManagerForTesting();
+
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
   ExecuteJavascript(
       "supportedAlgorithms = ['RSASSA_PKCS1_v1_5_SHA512', "

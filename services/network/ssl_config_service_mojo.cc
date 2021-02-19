@@ -7,7 +7,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "services/network/legacy_tls_config_distributor.h"
 #include "services/network/ssl_config_type_converter.h"
 
 namespace network {
@@ -35,10 +34,8 @@ bool IsSubdomain(const base::StringPiece hostname,
 SSLConfigServiceMojo::SSLConfigServiceMojo(
     mojom::SSLConfigPtr initial_config,
     mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver,
-    CRLSetDistributor* crl_set_distributor,
-    LegacyTLSConfigDistributor* legacy_tls_config_distributor)
+    CRLSetDistributor* crl_set_distributor)
     : crl_set_distributor_(crl_set_distributor),
-      legacy_tls_config_distributor_(legacy_tls_config_distributor),
       client_cert_pooling_policy_(
           initial_config ? initial_config->client_cert_pooling_policy
                          : std::vector<std::string>()) {
@@ -52,14 +49,10 @@ SSLConfigServiceMojo::SSLConfigServiceMojo(
 
   crl_set_distributor_->AddObserver(this);
   cert_verifier_config_.crl_set = crl_set_distributor_->crl_set();
-
-  legacy_tls_config_distributor_->AddObserver(this);
-  legacy_tls_config_ = legacy_tls_config_distributor_->config();
 }
 
 SSLConfigServiceMojo::~SSLConfigServiceMojo() {
   crl_set_distributor_->RemoveObserver(this);
-  legacy_tls_config_distributor_->RemoveObserver(this);
 }
 
 void SSLConfigServiceMojo::SetCertVerifierForConfiguring(
@@ -118,24 +111,10 @@ bool SSLConfigServiceMojo::CanShareConnectionWithClientCerts(
   return false;
 }
 
-bool SSLConfigServiceMojo::ShouldSuppressLegacyTLSWarning(
-    const std::string& hostname) const {
-  // If the config is not yet loaded, we err on the side of not showing warnings
-  // for any sites.
-  if (!legacy_tls_config_)
-    return true;
-  return legacy_tls_config_->ShouldSuppressLegacyTLSWarning(hostname);
-}
-
 void SSLConfigServiceMojo::OnNewCRLSet(scoped_refptr<net::CRLSet> crl_set) {
   cert_verifier_config_.crl_set = crl_set;
   if (cert_verifier_)
     cert_verifier_->SetConfig(cert_verifier_config_);
-}
-
-void SSLConfigServiceMojo::OnNewLegacyTLSConfig(
-    scoped_refptr<network::LegacyTLSExperimentConfig> config) {
-  legacy_tls_config_ = config;
 }
 
 }  // namespace network

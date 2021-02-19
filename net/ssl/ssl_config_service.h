@@ -93,12 +93,6 @@ class NET_EXPORT SSLConfigService {
   virtual bool CanShareConnectionWithClientCerts(
       const std::string& hostname) const = 0;
 
-  // Returns true if connections to |hostname| should not trigger legacy TLS
-  // warnings. This allows implementations to override the warnings for specific
-  // sites.
-  virtual bool ShouldSuppressLegacyTLSWarning(
-      const std::string& hostname) const = 0;
-
   // Add an observer of this service.
   void AddObserver(Observer* observer);
 

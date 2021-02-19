@@ -9,7 +9,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/ssl/tls_deprecation_config.h"
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/web_contents.h"
@@ -57,8 +56,6 @@ class SecurityStatePageLoadMetricsObserverTest
 };
 
 TEST_F(SecurityStatePageLoadMetricsObserverTest, LegacyTLSMetrics) {
-  InitializeEmptyLegacyTLSConfig();
-
   auto navigation =
       CreateLegacyTLSNavigation(GURL(kLegacyTLSURL), web_contents());
   navigation->Commit();
@@ -82,35 +79,7 @@ TEST_F(SecurityStatePageLoadMetricsObserverTest, LegacyTLSMetrics) {
   EXPECT_LE(kMinForegroundTime.InMilliseconds(), samples.front().min);
 }
 
-TEST_F(SecurityStatePageLoadMetricsObserverTest, LegacyTLSControlSiteMetrics) {
-  InitializeLegacyTLSConfigWithControl();
-
-  auto navigation =
-      CreateLegacyTLSNavigation(GURL(kLegacyTLSURL), web_contents());
-  navigation->Commit();
-
-  tester()->histogram_tester().ExpectBucketCount("Security.LegacyTLS.OnCommit",
-                                                 false, 1);
-
-  const base::TimeDelta kMinForegroundTime =
-      base::TimeDelta::FromMilliseconds(10);
-  AdvancePageDuration(kMinForegroundTime);
-
-  navigation->Reload(web_contents());
-
-  tester()->histogram_tester().ExpectBucketCount(
-      "Security.PageEndReason.LegacyTLS_NotTriggered",
-      page_load_metrics::END_RELOAD, 1);
-
-  auto samples = tester()->histogram_tester().GetAllSamples(
-      "Security.TimeOnPage2.LegacyTLS_NotTriggered");
-  EXPECT_EQ(1u, samples.size());
-  EXPECT_LE(kMinForegroundTime.InMilliseconds(), samples.front().min);
-}
-
 TEST_F(SecurityStatePageLoadMetricsObserverTest, LegacyTLSGoodSiteMetrics) {
-  InitializeEmptyLegacyTLSConfig();
-
   auto navigation =
       CreateNonlegacyTLSNavigation(GURL("https://good.test"), web_contents());
   navigation->Commit();

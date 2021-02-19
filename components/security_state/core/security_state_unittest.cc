@@ -388,19 +388,14 @@ TEST(SecurityStateTest, SslCertificateValid) {
 TEST(SecurityStateTest, LegacyTLSWarningStatus) {
   const struct {
     bool connection_used_legacy_tls;
-    bool should_suppress_legacy_tls_warning;
     bool expected_legacy_tls_warning_status;
   } kTestCases[] = {
-      {true, false, true},
-      {true, true, false},
-      {false, false, false},
-      {false, true, false},
+      {true, true},
+      {false, false},
   };
   for (auto testcase : kTestCases) {
     auto state = VisibleSecurityState();
     state.connection_used_legacy_tls = testcase.connection_used_legacy_tls;
-    state.should_suppress_legacy_tls_warning =
-        testcase.should_suppress_legacy_tls_warning;
     EXPECT_EQ(testcase.expected_legacy_tls_warning_status,
               GetLegacyTLSWarningStatus(state));
   }

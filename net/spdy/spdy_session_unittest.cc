@@ -6887,11 +6887,6 @@ class TestSSLConfigService : public SSLConfigService {
     return false;
   }
 
-  bool ShouldSuppressLegacyTLSWarning(
-      const std::string& hostname) const override {
-    return false;
-  }
-
   void SetDomainsForPooling(const std::vector<std::string>& domains) {
     domains_for_pooling_ = domains;
   }

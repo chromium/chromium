@@ -11,9 +11,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_config_service.h"
 #include "services/network/crl_set_distributor.h"
-#include "services/network/legacy_tls_config_distributor.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
-#include "services/network/public/proto/tls_deprecation_config.pb.h"
 
 namespace network {
 
@@ -22,8 +20,7 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
     : public mojom::SSLConfigClient,
       public net::SSLConfigService,
-      public CRLSetDistributor::Observer,
-      public LegacyTLSConfigDistributor::Observer {
+      public CRLSetDistributor::Observer {
  public:
   // If |ssl_config_client_receiver| is not provided, just sticks with the
   // initial configuration.
@@ -31,8 +28,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   SSLConfigServiceMojo(
       mojom::SSLConfigPtr initial_config,
       mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver,
-      CRLSetDistributor* crl_set_distributor,
-      LegacyTLSConfigDistributor* legacy_tls_config_distributor);
+      CRLSetDistributor* crl_set_distributor);
   ~SSLConfigServiceMojo() override;
 
   // Sets |cert_verifier| to be configured by certificate-related settings
@@ -48,15 +44,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   net::SSLContextConfig GetSSLContextConfig() override;
   bool CanShareConnectionWithClientCerts(
       const std::string& hostname) const override;
-  bool ShouldSuppressLegacyTLSWarning(
-      const std::string& hostname) const override;
 
   // CRLSetDistributor::Observer implementation:
   void OnNewCRLSet(scoped_refptr<net::CRLSet> crl_set) override;
-
-  // LegacyTLSConfigDistributor::Observer implementation:
-  void OnNewLegacyTLSConfig(
-      scoped_refptr<LegacyTLSExperimentConfig> config) override;
 
  private:
   mojo::Receiver<mojom::SSLConfigClient> receiver_{this};
@@ -66,11 +56,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
 
   net::CertVerifier* cert_verifier_;
   CRLSetDistributor* crl_set_distributor_;
-
-  // Provides an optional LegacyTLSExperimentConfig structure that can be used
-  // check if legacy TLS warnings should apply based on the URL.
-  scoped_refptr<LegacyTLSExperimentConfig> legacy_tls_config_;
-  LegacyTLSConfigDistributor* legacy_tls_config_distributor_;
 
   // The list of domains and subdomains from enterprise policy where connection
   // coalescing is allowed when client certs are in use if the hosts being

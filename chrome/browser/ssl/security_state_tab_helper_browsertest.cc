@@ -31,7 +31,6 @@
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ssl/tls_deprecation_config.h"
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1780,7 +1779,6 @@ class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
 IN_PROC_BROWSER_TEST_F(
     BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
     DidChangeVisibleSecurityStateObserverObsoleteTLSSettings) {
-  InitializeEmptyLegacyTLSConfig();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1810,28 +1808,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(std::string::npos, explanation.recommendations[1].find("GCM"));
 }
 
-// Tests that a connection with legacy TLS version (TLS 1.0/1.1) is not
-// downgraded to SecurityLevel WARNING if no config proto is set (i.e., so we
-// don't accidentally show the warning on control sites, see crbug.com/1011089).
-IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
-                       LegacyTLSNoProto) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(tab);
-
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
-
-  EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_TRUE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
-  EXPECT_EQ(security_state::SECURE, helper->GetSecurityLevel());
-}
 
 // Tests that a connection with legacy TLS versions (TLS 1.0/1.1) gets
 // downgraded to SecurityLevel WARNING and |connection_used_legacy_tls| is set.
 IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
                        LegacyTLSDowngradesSecurityLevel) {
-  // Set an empty config (otherwise all sites are treated as control).
-  InitializeEmptyLegacyTLSConfig();
 
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* helper = SecurityStateTabHelper::FromWebContents(tab);
@@ -1839,32 +1820,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
   ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
 
   EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_FALSE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
-// Tests that a site in the set of control sites does not get downgraded to
-// SecurityLevel::WARNING even if it was loaded over TLS 1.0/1.1.
-IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
-                       LegacyTLSControlSiteNotDowngraded) {
-  // Set up new experiment config proto.
-  InitializeLegacyTLSConfigWithControl();
-
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(web_contents);
-
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
-
-  EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_TRUE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
-  EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
-
-  // Reset the config to be empty.
-  InitializeEmptyLegacyTLSConfig();
-  ASSERT_FALSE(ShouldSuppressLegacyTLSWarning(GURL(kLegacyTLSURL)));
-}
 
 // Tests that the SSLVersionMin policy can disable the Legacy TLS security
 // warning.
@@ -1882,46 +1840,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
   ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
 
   EXPECT_FALSE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_FALSE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
   EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
 
   g_browser_process->local_state()->SetString(prefs::kSSLVersionMin,
                                               original_pref);
 }
 
-// Tests that a page has consistent security state despite the config proto
-// getting loaded during the page visit lifetime (see crbug.com/1011089).
-IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
-                       LegacyTLSDelayedConfigLoad) {
-  // Navigate to an affected page before the config proto has been set.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(web_contents);
-
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
-
-  EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_TRUE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
-  EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
-
-  // Set the config proto.
-  InitializeEmptyLegacyTLSConfig();
-
-  // Security state for the current page should not change.
-  EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_TRUE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
-  EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
-
-  // Refreshing the page should update the page's security state to now show a
-  // warning.
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
-  EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_FALSE(
-      helper->GetVisibleSecurityState()->should_suppress_legacy_tls_warning);
-  EXPECT_EQ(helper->GetSecurityLevel(), security_state::WARNING);
-}
 
 // Tests that the Not Secure chip does not show for error pages on http:// URLs.
 // Regression test for https://crbug.com/760647.
@@ -2236,13 +2160,6 @@ class SignedExchangeSecurityStateTest
 };
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
-  // Initialize an empty config for the legacy TLS experiment. Without a config,
-  // all sites are treated as control. This test specifically enables the legacy
-  // TLS experiment as a regression test for https://crbug.com/1041773, in which
-  // the legacy TLS experiment code incorrectly labeled SXGs as using a
-  // deprecated TLS version.
-  InitializeEmptyLegacyTLSConfig();
-
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2269,13 +2186,6 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
                        SecurityLevelIsSecureAfterPrefetch) {
-  // Initialize an empty config for the legacy TLS experiment. Without a config,
-  // all sites are treated as control. This test specifically enables the legacy
-  // TLS experiment as a regression test for https://crbug.com/1041773, in which
-  // the legacy TLS experiment code incorrectly labeled SXGs as using a
-  // deprecated TLS version.
-  InitializeEmptyLegacyTLSConfig();
-
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 

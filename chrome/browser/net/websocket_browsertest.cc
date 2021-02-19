@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -217,7 +218,15 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SecureWebSocketSplitRecords) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_SecureWebSocketSplitRecords DISABLED_SecureWebSocketSplitRecords
+#else
+#define MAYBE_SecureWebSocketSplitRecords SecureWebSocketSplitRecords
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
+                       MAYBE_SecureWebSocketSplitRecords) {
   // Launch a secure WebSocket server.
   ASSERT_TRUE(wss_server_.Start());
 
@@ -273,7 +282,15 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPSURL) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_WebSocketBasicAuthInHTTPSURL DISABLED_WebSocketBasicAuthInHTTPSURL
+#else
+#define MAYBE_WebSocketBasicAuthInHTTPSURL WebSocketBasicAuthInHTTPSURL
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
+                       MAYBE_WebSocketBasicAuthInHTTPSURL) {
   // Launch a basic-auth-protected secure WebSocket server.
   wss_server_.set_websocket_basic_auth(true);
   ASSERT_TRUE(wss_server_.Start());
@@ -349,7 +366,14 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
 // HTTPS connection limits should not be applied to wss:. This is only tested
 // for secure connections here because the unencrypted case is tested in the
 // Blink layout tests, and browser tests are expensive to run.
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_SSLConnectionLimit DISABLED_SSLConnectionLimit
+#else
+#define MAYBE_SSLConnectionLimit SSLConnectionLimit
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_SSLConnectionLimit) {
   ASSERT_TRUE(wss_server_.Start());
 
   NavigateToHTTPS("multiple-connections.html");
@@ -358,7 +382,14 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
 }
 
 // Regression test for crbug.com/903553005
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_WebSocketAppliesHSTS DISABLED_WebSocketAppliesHSTS
+#else
+#define MAYBE_WebSocketAppliesHSTS WebSocketAppliesHSTS
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);

@@ -166,8 +166,7 @@ SecurityLevel GetSecurityLevel(
   // Downgrade the security level for pages loaded over legacy TLS versions.
   if (base::FeatureList::IsEnabled(
           security_state::features::kLegacyTLSWarnings) &&
-      visible_security_state.connection_used_legacy_tls &&
-      !visible_security_state.should_suppress_legacy_tls_warning) {
+      visible_security_state.connection_used_legacy_tls) {
     return WARNING;
   }
 
@@ -246,7 +245,6 @@ VisibleSecurityState::VisibleSecurityState()
       is_devtools(false),
       is_reader_mode(false),
       connection_used_legacy_tls(false),
-      should_suppress_legacy_tls_warning(false),
       should_treat_displayed_mixed_forms_as_secure(false) {}
 
 VisibleSecurityState::VisibleSecurityState(const VisibleSecurityState& other) =
@@ -282,14 +280,13 @@ std::string GetSafetyTipHistogramName(const std::string& prefix,
 
 bool GetLegacyTLSWarningStatus(
     const VisibleSecurityState& visible_security_state) {
-  return visible_security_state.connection_used_legacy_tls &&
-         !visible_security_state.should_suppress_legacy_tls_warning;
+  return visible_security_state.connection_used_legacy_tls;
 }
 
 std::string GetLegacyTLSHistogramName(
     const std::string& prefix,
     const VisibleSecurityState& visible_security_state) {
-  if (GetLegacyTLSWarningStatus(visible_security_state)) {
+  if (visible_security_state.connection_used_legacy_tls) {
     return prefix + "." + "LegacyTLS_Triggered";
   } else {
     return prefix + "." + "LegacyTLS_NotTriggered";
