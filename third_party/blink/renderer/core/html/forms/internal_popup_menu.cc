@@ -78,18 +78,20 @@ ScrollbarPart ScrollbarPartFromPseudoId(PseudoId id) {
   return kNoPart;
 }
 
-const ComputedStyle* StyleForHoveredScrollbarPart(HTMLSelectElement& element,
-                                                  const ComputedStyle* style,
-                                                  Scrollbar* scrollbar,
-                                                  PseudoId target_id) {
+scoped_refptr<const ComputedStyle> StyleForHoveredScrollbarPart(
+    HTMLSelectElement& element,
+    const ComputedStyle* style,
+    Scrollbar* scrollbar,
+    PseudoId target_id) {
   ScrollbarPart part = ScrollbarPartFromPseudoId(target_id);
   if (part == kNoPart)
     return nullptr;
   scrollbar->SetHoveredPart(part);
-  const ComputedStyle* part_style = element.UncachedStyleForPseudoElement(
-      PseudoElementStyleRequest(target_id, To<CustomScrollbar>(scrollbar),
-                                part),
-      style);
+  scoped_refptr<const ComputedStyle> part_style =
+      element.UncachedStyleForPseudoElement(
+          PseudoElementStyleRequest(target_id, To<CustomScrollbar>(scrollbar),
+                                    part),
+          style);
   return part_style;
 }
 
@@ -293,9 +295,10 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
     }
     // For Pseudo-class styles, Style should be calculated via that status.
     if (temp_scrollbar) {
-      const ComputedStyle* part_style = StyleForHoveredScrollbarPart(
-          owner_element, owner_element.GetComputedStyle(), temp_scrollbar,
-          target.first);
+      scoped_refptr<const ComputedStyle> part_style =
+          StyleForHoveredScrollbarPart(owner_element,
+                                       owner_element.GetComputedStyle(),
+                                       temp_scrollbar, target.first);
       if (part_style) {
         AppendOwnerElementPseudoStyles(target.second + ":hover", data,
                                        *part_style);

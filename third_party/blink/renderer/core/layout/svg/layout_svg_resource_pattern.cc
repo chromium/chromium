@@ -52,12 +52,6 @@ LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
       attributes_wrapper_(MakeGarbageCollected<PatternAttributesWrapper>()),
       pattern_map_(MakeGarbageCollected<PatternMap>()) {}
 
-void LayoutSVGResourcePattern::Trace(Visitor* visitor) const {
-  visitor->Trace(attributes_wrapper_);
-  visitor->Trace(pattern_map_);
-  LayoutSVGResourcePaintServer::Trace(visitor);
-}
-
 void LayoutSVGResourcePattern::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
   pattern_map_->clear();

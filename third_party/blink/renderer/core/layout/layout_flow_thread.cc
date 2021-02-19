@@ -40,11 +40,6 @@ LayoutFlowThread::LayoutFlowThread(bool needs_paint_layer)
       page_logical_size_changed_(false),
       needs_paint_layer_(needs_paint_layer) {}
 
-void LayoutFlowThread::Trace(Visitor* visitor) const {
-  visitor->Trace(multi_column_set_list_);
-  LayoutBlockFlow::Trace(visitor);
-}
-
 LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     const LayoutObject& descendant,
     AncestorSearchConstraint constraint) {
@@ -263,7 +258,7 @@ void LayoutFlowThread::GenerateColumnSetIntervalTree() {
   // manually managing the tree nodes lifecycle.
   multi_column_set_interval_tree_.Clear();
   multi_column_set_interval_tree_.InitIfNeeded();
-  for (const auto& column_set : multi_column_set_list_)
+  for (auto* column_set : multi_column_set_list_)
     multi_column_set_interval_tree_.Add(
         MultiColumnSetIntervalTree::CreateInterval(
             column_set->LogicalTopInFlowThread(),
@@ -288,7 +283,7 @@ LayoutRect LayoutFlowThread::FragmentsBoundingBox(
   DCHECK(!column_sets_invalidated_);
 
   LayoutRect result;
-  for (const auto& column_set : multi_column_set_list_)
+  for (auto* column_set : multi_column_set_list_)
     result.Unite(column_set->FragmentsBoundingBox(layer_bounding_box));
 
   return result;

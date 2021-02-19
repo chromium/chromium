@@ -139,7 +139,7 @@ void NGOffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   unsigned text_content_offset = container_unit->TextContentStart();
   unsigned offset_to_collapse = space_offset - text_content_offset;
 
-  HeapVector<NGOffsetMappingUnit, 3> new_units;
+  Vector<NGOffsetMappingUnit, 3> new_units;
   if (offset_to_collapse) {
     new_units.emplace_back(NGOffsetMappingUnitType::kIdentity, layout_object,
                            dom_offset, dom_offset + offset_to_collapse,
@@ -216,7 +216,7 @@ void NGOffsetMappingBuilder::SetDestinationString(String string) {
   destination_string_ = string;
 }
 
-NGOffsetMapping* NGOffsetMappingBuilder::Build() {
+std::unique_ptr<NGOffsetMapping> NGOffsetMappingBuilder::Build() {
   // All mapping units are already built. Scan them to build mapping ranges.
   for (unsigned range_start = 0; range_start < mapping_units_.size();) {
     const LayoutObject& layout_object =
@@ -239,7 +239,7 @@ NGOffsetMapping* NGOffsetMappingBuilder::Build() {
     range_start = range_end;
   }
 
-  return MakeGarbageCollected<NGOffsetMapping>(
+  return std::make_unique<NGOffsetMapping>(
       std::move(mapping_units_), std::move(unit_ranges_), destination_string_);
 }
 

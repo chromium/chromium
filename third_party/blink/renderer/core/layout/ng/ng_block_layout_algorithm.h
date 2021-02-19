@@ -63,12 +63,12 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   void SetBoxType(NGPhysicalFragment::NGBoxType type);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
 
  private:
-  NOINLINE const NGLayoutResult* LayoutWithInlineChildLayoutContext(
-      const NGLayoutInputNode& first_child);
-  NOINLINE const NGLayoutResult* LayoutWithItemsBuilder(
+  NOINLINE scoped_refptr<const NGLayoutResult>
+  LayoutWithInlineChildLayoutContext(const NGLayoutInputNode& first_child);
+  NOINLINE scoped_refptr<const NGLayoutResult> LayoutWithItemsBuilder(
       const NGInlineNode& first_child,
       NGInlineChildLayoutContext* context);
 
@@ -76,15 +76,16 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // discovered in the first pass. This happens when we run out of space in a
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
   // such as orphans, widows, break-before:avoid or break-after:avoid.
-  NOINLINE const NGLayoutResult* RelayoutAndBreakEarlier(const NGEarlyBreak&);
+  NOINLINE scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
+      const NGEarlyBreak&);
 
-  NOINLINE const NGLayoutResult* RelayoutIgnoringLineClamp();
+  NOINLINE scoped_refptr<const NGLayoutResult> RelayoutIgnoringLineClamp();
 
-  inline const NGLayoutResult* Layout(
+  inline scoped_refptr<const NGLayoutResult> Layout(
       NGInlineChildLayoutContext* inline_child_layout_context);
 
-  const NGLayoutResult* FinishLayout(NGPreviousInflowPosition*,
-                                     NGInlineChildLayoutContext*);
+  scoped_refptr<const NGLayoutResult> FinishLayout(NGPreviousInflowPosition*,
+                                                   NGInlineChildLayoutContext*);
 
   // Return the BFC block offset of this block.
   LayoutUnit BfcBlockOffset() const {
@@ -154,7 +155,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   bool TryReuseFragmentsFromCache(
       NGInlineNode child,
       NGPreviousInflowPosition*,
-      const NGInlineBreakToken** inline_break_token_out);
+      scoped_refptr<const NGInlineBreakToken>* inline_break_token_out);
 
   void HandleOutOfFlowPositioned(const NGPreviousInflowPosition&, NGBlockNode);
   void HandleFloat(const NGPreviousInflowPosition&,
@@ -185,7 +186,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   // Performs the actual layout of a new formatting context. This may be called
   // multiple times from HandleNewFormattingContext.
-  const NGLayoutResult* LayoutNewFormattingContext(
+  scoped_refptr<const NGLayoutResult> LayoutNewFormattingContext(
       NGLayoutInputNode child,
       const NGBreakToken* child_break_token,
       const NGInflowChildData&,
@@ -201,18 +202,18 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGBreakToken* child_break_token,
       NGPreviousInflowPosition*,
       NGInlineChildLayoutContext*,
-      const NGInlineBreakToken** previous_inline_break_token);
+      scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
 
   NGLayoutResult::EStatus FinishInflow(
       NGLayoutInputNode child,
       const NGBreakToken* child_break_token,
       const NGConstraintSpace&,
       bool has_clearance_past_adjoining_floats,
-      const NGLayoutResult*,
+      scoped_refptr<const NGLayoutResult>,
       NGInflowChildData*,
       NGPreviousInflowPosition*,
       NGInlineChildLayoutContext*,
-      const NGInlineBreakToken** previous_inline_break_token);
+      scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
 
   // Performs any final adjustments for table-cells.
   void FinalizeForTableCell(LayoutUnit unconstrained_intrinsic_block_size);
@@ -360,7 +361,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   LogicalSize child_percentage_size_;
   LogicalSize replaced_child_percentage_size_;
 
-  const NGLayoutResult* previous_result_ = nullptr;
+  scoped_refptr<const NGLayoutResult> previous_result_;
 
   // Intrinsic block size based on child layout and containment.
   LayoutUnit intrinsic_block_size_;

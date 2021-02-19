@@ -39,20 +39,23 @@ class LayoutObject;
 
 struct SameSizeAsInlineBox : DisplayItemClient {
   ~SameSizeAsInlineBox() override = default;
-  UntracedMember<void*> untraced_members[1];
-  Member<void*> members[3];
+  void* a[4];
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
+#if DCHECK_IS_ON()
+  bool f;
+#endif
 };
 
 ASSERT_SIZE(InlineBox, SameSizeAsInlineBox);
 
-void InlineBox::Trace(Visitor* visitor) const {
-  visitor->Trace(next_);
-  visitor->Trace(prev_);
-  visitor->Trace(parent_);
+#if DCHECK_IS_ON()
+InlineBox::~InlineBox() {
+  if (!has_bad_parent_ && parent_)
+    parent_->SetHasBadChildList();
 }
+#endif
 
 DISABLE_CFI_PERF
 void InlineBox::Destroy() {
@@ -64,11 +67,22 @@ void InlineBox::Destroy() {
     // TODO(crbug.com/619630): Make this fast.
     line_layout_item_.SlowSetPaintingLayerNeedsRepaint();
   }
+
+  delete this;
 }
 
 void InlineBox::Remove(MarkLineBoxes mark_line_boxes) {
   if (Parent())
     Parent()->RemoveChild(this, mark_line_boxes);
+}
+
+void* InlineBox::operator new(size_t sz) {
+  return WTF::Partitions::LayoutPartition()->Alloc(
+      sz, WTF_HEAP_PROFILER_TYPE_NAME(InlineBox));
+}
+
+void InlineBox::operator delete(void* ptr) {
+  WTF::Partitions::LayoutPartition()->Free(ptr);
 }
 
 const char* InlineBox::BoxName() const {

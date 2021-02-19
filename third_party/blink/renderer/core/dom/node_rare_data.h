@@ -107,7 +107,8 @@ class GC_PLUGIN_IGNORE(
 class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.")
     NodeRenderingData final : public NodeData {
  public:
-  NodeRenderingData(LayoutObject*, const ComputedStyle* computed_style);
+  NodeRenderingData(LayoutObject*,
+                    scoped_refptr<const ComputedStyle> computed_style);
   NodeRenderingData(const NodeRenderingData&) = delete;
   NodeRenderingData& operator=(const NodeRenderingData&) = delete;
 
@@ -117,17 +118,21 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.")
     layout_object_ = layout_object;
   }
 
-  const ComputedStyle* GetComputedStyle() const { return computed_style_; }
-  void SetComputedStyle(const ComputedStyle* computed_style);
+  const ComputedStyle* GetComputedStyle() const {
+    return computed_style_.get();
+  }
+  void SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style);
 
   static NodeRenderingData& SharedEmptyData();
   bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
 
-  void TraceAfterDispatch(Visitor* visitor) const;
+  void TraceAfterDispatch(Visitor* visitor) const {
+    NodeData::TraceAfterDispatch(visitor);
+  }
 
  private:
-  Member<LayoutObject> layout_object_;
-  Member<const ComputedStyle> computed_style_;
+  LayoutObject* layout_object_;
+  scoped_refptr<const ComputedStyle> computed_style_;
 };
 
 class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData

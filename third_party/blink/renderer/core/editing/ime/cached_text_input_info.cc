@@ -181,7 +181,6 @@ unsigned CachedTextInputInfo::RangeLength(const EphemeralRange& range) const {
 
 void CachedTextInputInfo::Trace(Visitor* visitor) const {
   visitor->Trace(container_);
-  visitor->Trace(layout_object_);
   visitor->Trace(composition_);
   visitor->Trace(offset_map_);
   visitor->Trace(selection_);

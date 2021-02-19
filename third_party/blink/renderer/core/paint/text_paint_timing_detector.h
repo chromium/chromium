@@ -187,9 +187,8 @@ class CORE_EXPORT TextRecordsManager {
   // Once LayoutObject* is destroyed, |visible_objects_| and
   // |invisible_objects_| must immediately clear the corresponding record from
   // themselves.
-  HeapHashMap<Member<const LayoutObject>, std::unique_ptr<TextRecord>>
-      visible_objects_;
-  HeapHashSet<Member<const LayoutObject>> invisible_objects_;
+  HashMap<const LayoutObject*, std::unique_ptr<TextRecord>> visible_objects_;
+  HashSet<const LayoutObject*> invisible_objects_;
 
   Deque<base::WeakPtr<TextRecord>> texts_queued_for_paint_time_;
   // These are text records created to notify Element Timing of texts which are

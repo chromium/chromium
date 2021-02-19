@@ -16,7 +16,8 @@ class NGFragmentationTest : public NGBaseLayoutAlgorithmTest,
  protected:
   NGFragmentationTest() : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
+  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
+      Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},

@@ -30,12 +30,12 @@ bool IsSourceMoreSpecificThanEdge(EBorderStyle source_style,
     return true;
 
   EBorderStyle edge_border_style =
-      NGTableBorders::BorderStyle(edge.style, edge.edge_side);
+      NGTableBorders::BorderStyle(edge.style.get(), edge.edge_side);
   if (edge_border_style == EBorderStyle::kHidden)
     return false;
 
   LayoutUnit edge_width =
-      NGTableBorders::BorderWidth(edge.style, edge.edge_side);
+      NGTableBorders::BorderWidth(edge.style.get(), edge.edge_side);
   if (source_width < edge_width)
     return false;
   if (source_width > edge_width)
@@ -177,15 +177,15 @@ class ColgroupBordersMarker {
 
 }  // namespace
 
-const NGTableBorders* NGTableBorders::ComputeTableBorders(
+scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
     const NGBlockNode& table) {
   const ComputedStyle& table_style = table.Style();
   NGBoxStrut intrinsic_borders(LayoutUnit(table_style.BorderStartWidth()),
                                LayoutUnit(table_style.BorderEndWidth()),
                                LayoutUnit(table_style.BorderBeforeWidth()),
                                LayoutUnit(table_style.BorderAfterWidth()));
-  NGTableBorders* table_borders =
-      MakeGarbageCollected<NGTableBorders>(table_style, intrinsic_borders);
+  scoped_refptr<NGTableBorders> table_borders =
+      base::MakeRefCounted<NGTableBorders>(table_style, intrinsic_borders);
 
   if (table_style.BorderCollapse() != EBorderCollapse::kCollapse)
     return table_borders;
@@ -303,14 +303,16 @@ const NGTableBorders* NGTableBorders::ComputeTableBorders(
   // COL borders have precedence over COLGROUP borders.
   // We have to traverse COL first, then COLGROUP.
   ColBordersMarker col_borders_marker(table_row_count, ++box_order,
-                                      table_writing_direction, *table_borders);
+                                      table_writing_direction,
+                                      *table_borders.get());
   VisitLayoutNGTableColumn(
-      const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
+      const_cast<Vector<NGBlockNode>&>(grouped_children.columns),
       table_column_count, &col_borders_marker);
-  ColgroupBordersMarker colgroup_borders_marker(
-      table_row_count, ++box_order, table_writing_direction, *table_borders);
+  ColgroupBordersMarker colgroup_borders_marker(table_row_count, ++box_order,
+                                                table_writing_direction,
+                                                *table_borders.get());
   VisitLayoutNGTableColumn(
-      const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
+      const_cast<Vector<NGBlockNode>&>(grouped_children.columns),
       table_column_count, &colgroup_borders_marker);
 
   // Mark table borders.

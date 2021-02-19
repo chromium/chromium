@@ -64,7 +64,7 @@ class CORE_EXPORT CanvasFontCache final
   LinkedHashSet<String> font_lru_list_;
   std::unique_ptr<FontCachePurgePreventer> main_cache_purge_preventer_;
   Member<Document> document_;
-  Member<ComputedStyle> default_font_style_;
+  scoped_refptr<ComputedStyle> default_font_style_;
   bool pruning_scheduled_;
 };
 

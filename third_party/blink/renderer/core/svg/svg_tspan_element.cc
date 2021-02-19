@@ -30,7 +30,7 @@ SVGTSpanElement::SVGTSpanElement(Document& document)
 
 LayoutObject* SVGTSpanElement::CreateLayoutObject(const ComputedStyle&,
                                                   LegacyLayout) {
-  return MakeGarbageCollected<LayoutSVGTSpan>(this);
+  return new LayoutSVGTSpan(this);
 }
 
 bool SVGTSpanElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {

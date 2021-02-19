@@ -120,7 +120,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
     if (const auto* table_column_geometries =
             physical_fragment.TableColumnGeometries())
-      container_builder_.SetTableColumnGeometries(table_column_geometries);
+      container_builder_.SetTableColumnGeometries(*table_column_geometries);
 
     if (const auto* table_collapsed_borders =
             physical_fragment.TableCollapsedBorders())
@@ -169,7 +169,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   previous_physical_container_size_ = physical_fragment.Size();
 }
 
-const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
   // Since simplified layout's |Layout()| function deals with laying out
   // children, we can early out if we are display-locked.
   if (Node().ChildLayoutBlockedByDisplayLock())
@@ -193,7 +193,7 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
     }
 
     // Add the (potentially updated) layout result.
-    const NGLayoutResult* result =
+    scoped_refptr<const NGLayoutResult> result =
         NGBlockNode(To<LayoutBox>(child_fragment.GetMutableLayoutObject()))
             .SimplifiedLayout(child_fragment);
 
@@ -250,11 +250,11 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-NOINLINE const NGLayoutResult*
+NOINLINE scoped_refptr<const NGLayoutResult>
 NGSimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
   NGFragmentItemsBuilder items_builder(writing_direction_);
   container_builder_.SetItemsBuilder(&items_builder);
-  const NGLayoutResult* result = Layout();
+  scoped_refptr<const NGLayoutResult> result = Layout();
   // Ensure stack-allocated |NGFragmentItemsBuilder| is not used anymore.
   // TODO(kojii): Revisit when the storage of |NGFragmentItemsBuilder| is
   // finalized.

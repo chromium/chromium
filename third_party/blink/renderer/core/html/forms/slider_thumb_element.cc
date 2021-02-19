@@ -287,12 +287,13 @@ const AtomicString& SliderThumbElement::ShadowPseudoId() const {
   }
 }
 
-ComputedStyle* SliderThumbElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle> SliderThumbElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& host_style = host->ComputedStyleRef();
-  ComputedStyle* style = OriginalStyleForLayoutObject(style_recalc_context);
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
 
   if (host_style.EffectiveAppearance() == kSliderVerticalPart)
     style->SetEffectiveAppearance(kSliderThumbVerticalPart);

@@ -29,11 +29,6 @@ LayoutButton::LayoutButton(Element* element)
 
 LayoutButton::~LayoutButton() = default;
 
-void LayoutButton::Trace(Visitor* visitor) const {
-  visitor->Trace(inner_);
-  LayoutFlexibleBox::Trace(visitor);
-}
-
 void LayoutButton::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {
   NOT_DESTROYED();

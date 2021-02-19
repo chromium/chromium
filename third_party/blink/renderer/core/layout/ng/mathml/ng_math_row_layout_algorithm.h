@@ -26,26 +26,21 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
     ChildWithOffsetAndMargins(const NGBlockNode& child,
                               const NGBoxStrut& margins,
                               LogicalOffset offset,
-                              const NGPhysicalFragment* fragment)
+                              scoped_refptr<const NGPhysicalFragment> fragment)
         : child(child),
           margins(margins),
           offset(offset),
           fragment(std::move(fragment)) {}
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(child);
-      visitor->Trace(fragment);
-    }
-
     NGBlockNode child;
     NGBoxStrut margins;
     LogicalOffset offset;
-    Member<const NGPhysicalFragment> fragment;
+    scoped_refptr<const NGPhysicalFragment> fragment;
   };
-  typedef HeapVector<ChildWithOffsetAndMargins, 4> ChildrenVector;
+  typedef Vector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 
  private:
-  const NGLayoutResult* Layout() final;
+  scoped_refptr<const NGLayoutResult> Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const final;
 
@@ -55,8 +50,5 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGMathRowLayoutAlgorithm::ChildWithOffsetAndMargins)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_ROW_LAYOUT_ALGORITHM_H_

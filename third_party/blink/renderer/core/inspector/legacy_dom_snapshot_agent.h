@@ -79,7 +79,7 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
                                          VectorStringHashTraits,
                                          VectorStringHashTraits>;
   using CSSPropertyFilter = Vector<std::pair<String, CSSPropertyID>>;
-  using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
+  using PaintOrderMap = WTF::HashMap<PaintLayer*, int>;
 
   // State of current snapshot.
   std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>> dom_nodes_;
@@ -93,7 +93,7 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
   std::unique_ptr<ComputedStylesMap> computed_styles_map_;
   std::unique_ptr<CSSPropertyFilter> css_property_filter_;
   // Maps a PaintLayer to its paint order index.
-  PaintOrderMap* paint_order_map_ = nullptr;
+  std::unique_ptr<PaintOrderMap> paint_order_map_;
   // Maps a backend node id to the url of the script (if any) that generates
   // the corresponding node.
   OriginUrlMap* origin_url_map_;

@@ -28,10 +28,6 @@ SnapCoordinator::SnapCoordinator() : snap_containers_() {}
 
 SnapCoordinator::~SnapCoordinator() = default;
 
-void SnapCoordinator::Trace(Visitor* visitor) const {
-  visitor->Trace(snap_containers_);
-}
-
 // Returns the layout box's next ancestor that can be a snap container.
 // The origin may be either a snap area or a snap container.
 LayoutBox* FindSnapContainer(const LayoutBox& origin_box) {
@@ -102,12 +98,12 @@ void SnapCoordinator::AddSnapContainer(LayoutBox& snap_container) {
   SnapAreaSet* snap_areas = ancestor_snap_container->SnapAreas();
   if (!snap_areas)
     return;
-  HeapVector<Member<LayoutBox>> snap_areas_to_reassign;
-  for (const auto& snap_area : *snap_areas) {
+  Vector<LayoutBox*> snap_areas_to_reassign;
+  for (auto* snap_area : *snap_areas) {
     if (FindSnapContainer(*snap_area) == &snap_container)
       snap_areas_to_reassign.push_back(snap_area);
   }
-  for (const auto& snap_area : snap_areas_to_reassign)
+  for (auto* snap_area : snap_areas_to_reassign)
     snap_area->SetSnapContainer(&snap_container);
 
   // The new snap container will not have attached its ScrollableArea yet, so we
@@ -199,7 +195,7 @@ void SnapCoordinator::SnapAreaDidChange(LayoutBox& snap_area,
 }
 
 void SnapCoordinator::ResnapAllContainersIfNeeded() {
-  for (const auto& container : snap_containers_) {
+  for (const auto* container : snap_containers_) {
     if (!container->GetScrollableArea()->NeedsResnap())
       continue;
 
@@ -224,7 +220,7 @@ void SnapCoordinator::ResnapAllContainersIfNeeded() {
 }
 
 void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
-  for (const auto& container : snap_containers_) {
+  for (auto* container : snap_containers_) {
     if (container->GetScrollableArea()->SnapContainerDataNeedsUpdate())
       UpdateSnapContainerData(*container);
   }
@@ -392,14 +388,14 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
 #ifndef NDEBUG
 
 void SnapCoordinator::ShowSnapAreaMap() {
-  for (const auto& container : snap_containers_)
+  for (auto* const container : snap_containers_)
     ShowSnapAreasFor(container);
 }
 
 void SnapCoordinator::ShowSnapAreasFor(const LayoutBox* container) {
   LOG(INFO) << *container->GetNode();
   if (SnapAreaSet* snap_areas = container->SnapAreas()) {
-    for (const auto& snap_area : *snap_areas) {
+    for (auto* const snap_area : *snap_areas) {
       LOG(INFO) << "    " << *snap_area->GetNode();
     }
   }

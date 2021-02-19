@@ -136,8 +136,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   if (child.IsLayoutNGCustom())
     builder.SetCustomLayoutData(std::move(constraint_data_));
   auto space = builder.ToConstraintSpace();
-  auto* result =
-      To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
+  auto result = To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
 
   NGBoxFragment fragment(parent_space.GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));

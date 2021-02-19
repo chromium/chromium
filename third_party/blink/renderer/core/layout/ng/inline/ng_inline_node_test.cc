@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -38,8 +37,8 @@ class NGInlineNodeForTest : public NGInlineNode {
   using NGInlineNode::NGInlineNode;
 
   std::string Text() const { return Data().text_content.Utf8(); }
-  HeapVector<NGInlineItem>& Items() { return MutableData()->items; }
-  static HeapVector<NGInlineItem>& Items(NGInlineNodeData& data) {
+  Vector<NGInlineItem>& Items() { return MutableData()->items; }
+  static Vector<NGInlineItem>& Items(NGInlineNodeData& data) {
     return data.items;
   }
 
@@ -118,7 +117,7 @@ class NGInlineNodeTest : public NGLayoutTest {
     return data->text_content;
   }
 
-  HeapVector<NGInlineItem>& Items() {
+  Vector<NGInlineItem>& Items() {
     NGInlineNodeData* data = layout_block_flow_->GetNGInlineNodeData();
     CHECK(data);
     return NGInlineNodeForTest::Items(*data);
@@ -153,8 +152,8 @@ class NGInlineNodeTest : public NGLayoutTest {
     EXPECT_FALSE(expected);
   }
 
-  Persistent<LayoutNGBlockFlow> layout_block_flow_;
-  Persistent<LayoutObject> layout_object_;
+  LayoutNGBlockFlow* layout_block_flow_ = nullptr;
+  LayoutObject* layout_object_ = nullptr;
   FontCachePurgePreventer purge_preventer_;
 };
 
@@ -179,7 +178,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesText) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
   EXPECT_FALSE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[1], kOpenTag, 6u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 12u);
@@ -194,7 +193,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesBR) {
   node.CollectInlines();
   EXPECT_EQ("Hello\nWorld", node.Text());
   EXPECT_FALSE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 5u);
   TEST_ITEM_TYPE_OFFSET(items[1], kControl, 5u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 11u);
@@ -214,7 +213,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesFloat) {
   node.CollectInlines();
   EXPECT_EQ(u8"abc\uFFFCghi\uFFFCmno", node.Text())
       << "floats are appeared as an object replacement character";
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(5u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
   TEST_ITEM_TYPE_OFFSET(items[1], kFloating, 3u, 4u);
@@ -232,7 +231,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesInlineBlock) {
   node.CollectInlines();
   EXPECT_EQ(u8"abc\uFFFCjkl", node.Text())
       << "inline-block is appeared as an object replacement character";
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
   TEST_ITEM_TYPE_OFFSET(items[1], kAtomicInline, 3u, 4u);
@@ -267,7 +266,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesRtlWithSpan) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 2u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kOpenTag, 2u, 2u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kText, 2u, 3u, 1u);
@@ -283,7 +282,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedText) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 7u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kText, 7u, 9u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kOpenTag, 9u, 9u, 1u);
@@ -299,7 +298,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
   EXPECT_TRUE(node.IsBidiEnabled());
   node.SegmentText();
   EXPECT_TRUE(node.IsBidiEnabled());
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[0], kText, 0u, 7u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[1], kText, 7u, 9u, 1u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[2], kOpenTag, 9u, 9u, 1u);
@@ -313,7 +312,7 @@ TEST_F(NGInlineNodeTest, SegmentASCII) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.Append("Hello", layout_object_);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 5u, TextDirection::kLtr);
 }
@@ -323,7 +322,7 @@ TEST_F(NGInlineNodeTest, SegmentHebrew) {
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
   ASSERT_EQ(1u, node.Items().size());
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 5u, TextDirection::kRtl);
 }
@@ -332,7 +331,7 @@ TEST_F(NGInlineNodeTest, SegmentSplit1To2) {
   NGInlineNodeForTest node = CreateInlineNode();
   node.Append(u"Hello \u05E2\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(2u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 11u, TextDirection::kRtl);
@@ -344,7 +343,7 @@ TEST_F(NGInlineNodeTest, SegmentSplit3To4) {
   node.Append(u"lo \u05E2", layout_object_);
   node.Append(u"\u05D1\u05E8\u05D9\u05EA", layout_object_);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(4u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 3u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 3u, 6u, TextDirection::kLtr);
@@ -359,7 +358,7 @@ TEST_F(NGInlineNodeTest, SegmentBidiOverride) {
   node.Append("ABC", layout_object_);
   node.Append(kPopDirectionalFormattingCharacter);
   node.SegmentText();
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(4u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 7u, TextDirection::kRtl);
@@ -385,7 +384,7 @@ static NGInlineNodeForTest CreateBidiIsolateNode(NGInlineNodeForTest node,
 TEST_F(NGInlineNodeTest, SegmentBidiIsolate) {
   NGInlineNodeForTest node = CreateInlineNode();
   node = CreateBidiIsolateNode(node, layout_object_);
-  HeapVector<NGInlineItem>& items = node.Items();
+  Vector<NGInlineItem>& items = node.Items();
   EXPECT_EQ(9u, items.size());
   TEST_ITEM_OFFSET_DIR(items[0], 0u, 6u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(items[1], 6u, 7u, TextDirection::kLtr);
@@ -1378,7 +1377,7 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafe) {
   auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   ASSERT_TRUE(data);
-  const auto& items = data->items;
+  const Vector<NGInlineItem>& items = data->items;
 
   // We shape "AV" together, which usually has kerning between "A" and "V", then
   // split the |ShapeResult| to two |NGInlineItem|s. The |NGInlineItem| for "V"
@@ -1407,7 +1406,7 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
   auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
   const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
   ASSERT_TRUE(data);
-  const auto& items = data->items;
+  const Vector<NGInlineItem>& items = data->items;
   const NGInlineItem& item_v = items[4];
   EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
   EXPECT_EQ(

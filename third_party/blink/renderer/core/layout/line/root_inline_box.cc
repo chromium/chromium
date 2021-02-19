@@ -40,21 +40,14 @@ namespace blink {
 
 struct SameSizeAsRootInlineBox : public InlineFlowBox {
   unsigned unsigned_variable;
-  void* pointers[2];
-  UntracedMember<void*> members[1];
+  void* pointers[3];
   LayoutUnit layout_variables[6];
 };
 
 ASSERT_SIZE(RootInlineBox, SameSizeAsRootInlineBox);
 
-typedef HeapHashMap<Member<const RootInlineBox>, Member<EllipsisBox>>
-    EllipsisBoxMap;
-
-EllipsisBoxMap& GetEllipsisBoxMap() {
-  DEFINE_STATIC_LOCAL(Persistent<EllipsisBoxMap>, ellipsis_box_map,
-                      (MakeGarbageCollected<EllipsisBoxMap>()));
-  return *ellipsis_box_map;
-}
+typedef WTF::HashMap<const RootInlineBox*, EllipsisBox*> EllipsisBoxMap;
+static EllipsisBoxMap* g_ellipsis_box_map = nullptr;
 
 RootInlineBox::RootInlineBox(LineLayoutItem block)
     : InlineFlowBox(block), line_break_pos_(0), line_break_obj_(nullptr) {
@@ -68,7 +61,7 @@ void RootInlineBox::Destroy() {
 
 void RootInlineBox::DetachEllipsisBox() {
   if (HasEllipsisBox()) {
-    EllipsisBox* box = GetEllipsisBoxMap().Take(this);
+    EllipsisBox* box = g_ellipsis_box_map->Take(this);
     box->SetParent(nullptr);
     box->Destroy();
     SetHasEllipsisBox(false);
@@ -127,11 +120,13 @@ LayoutUnit RootInlineBox::PlaceEllipsis(const AtomicString& ellipsis_str,
   // Create an ellipsis box if we don't already have one. If we already have one
   // we're just here to blank out (truncate) the text boxes.
   if (!*found_box) {
-    EllipsisBox* ellipsis_box = MakeGarbageCollected<EllipsisBox>(
+    EllipsisBox* ellipsis_box = new EllipsisBox(
         GetLineLayoutItem(), ellipsis_str, this, ellipsis_width,
         LogicalHeight(), Location(), !PrevRootBox(), IsHorizontal());
 
-    GetEllipsisBoxMap().insert(this, ellipsis_box);
+    if (!g_ellipsis_box_map)
+      g_ellipsis_box_map = new EllipsisBoxMap();
+    g_ellipsis_box_map->insert(this, ellipsis_box);
     SetHasEllipsisBox(true);
   }
 
@@ -514,7 +509,7 @@ void RootInlineBox::SetLineBreakInfo(LineLayoutItem obj,
 EllipsisBox* RootInlineBox::GetEllipsisBox() const {
   if (!HasEllipsisBox())
     return nullptr;
-  return GetEllipsisBoxMap().at(this);
+  return g_ellipsis_box_map->at(this);
 }
 
 void RootInlineBox::RemoveLineBoxFromLayoutObject() {
@@ -755,7 +750,7 @@ bool RootInlineBox::IncludeLeadingForBox(InlineBox* box) const {
 }
 
 void RootInlineBox::CollectLeafBoxesInLogicalOrder(
-    HeapVector<Member<InlineBox>>& leaf_boxes_in_logical_order,
+    Vector<InlineBox*>& leaf_boxes_in_logical_order,
     CustomInlineBoxRangeReverse custom_reverse_implementation) const {
   InlineBox* leaf = FirstLeafChild();
 
@@ -786,24 +781,22 @@ void RootInlineBox::CollectLeafBoxesInLogicalOrder(
   if (!(min_level % 2))
     ++min_level;
 
-  HeapVector<Member<InlineBox>>::iterator end =
-      leaf_boxes_in_logical_order.end();
+  Vector<InlineBox*>::iterator end = leaf_boxes_in_logical_order.end();
   while (min_level <= max_level) {
-    HeapVector<Member<InlineBox>>::iterator it =
-        leaf_boxes_in_logical_order.begin();
+    Vector<InlineBox*>::iterator it = leaf_boxes_in_logical_order.begin();
     while (it != end) {
       while (it != end) {
         if ((*it)->BidiLevel() >= min_level)
           break;
         ++it;
       }
-      HeapVector<Member<InlineBox>>::iterator first = it;
+      Vector<InlineBox*>::iterator first = it;
       while (it != end) {
         if ((*it)->BidiLevel() < min_level)
           break;
         ++it;
       }
-      HeapVector<Member<InlineBox>>::iterator last = it;
+      Vector<InlineBox*>::iterator last = it;
       if (custom_reverse_implementation)
         (*custom_reverse_implementation)(first, last);
       else
@@ -814,7 +807,7 @@ void RootInlineBox::CollectLeafBoxesInLogicalOrder(
 }
 
 const InlineBox* RootInlineBox::GetLogicalStartNonPseudoBox() const {
-  HeapVector<Member<InlineBox>> leaf_boxes_in_logical_order;
+  Vector<InlineBox*> leaf_boxes_in_logical_order;
   CollectLeafBoxesInLogicalOrder(leaf_boxes_in_logical_order);
   for (InlineBox* box : leaf_boxes_in_logical_order) {
     if (box->GetLineLayoutItem().NonPseudoNode())
@@ -824,7 +817,7 @@ const InlineBox* RootInlineBox::GetLogicalStartNonPseudoBox() const {
 }
 
 const InlineBox* RootInlineBox::GetLogicalEndNonPseudoBox() const {
-  HeapVector<Member<InlineBox>> leaf_boxes_in_logical_order;
+  Vector<InlineBox*> leaf_boxes_in_logical_order;
   CollectLeafBoxesInLogicalOrder(leaf_boxes_in_logical_order);
   for (wtf_size_t i = leaf_boxes_in_logical_order.size(); i > 0; --i) {
     if (leaf_boxes_in_logical_order[i - 1]

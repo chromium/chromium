@@ -35,7 +35,6 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
  public:
   explicit LayoutSVGImage(SVGImageElement*);
   ~LayoutSVGImage() override;
-  void Trace(Visitor*) const override;
 
   void SetNeedsBoundariesUpdate() override { NOT_DESTROYED(); }
   void SetNeedsTransformUpdate() override {
@@ -106,7 +105,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   bool transform_uses_reference_box_ : 1;
   AffineTransform local_transform_;
   FloatRect object_bounding_box_;
-  Member<LayoutImageResource> image_resource_;
+  Persistent<LayoutImageResource> image_resource_;
 };
 
 template <>

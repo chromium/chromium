@@ -1007,7 +1007,7 @@ void SVGElement::CollectStyleForAnimatedPresentationAttributes(
   }
 }
 
-ComputedStyle* SVGElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   SVGElement* corresponding_element = CorrespondingElement();
   if (!corresponding_element) {

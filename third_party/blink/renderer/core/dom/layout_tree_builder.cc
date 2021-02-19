@@ -117,7 +117,7 @@ LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded() {
   if (style_ == context_.parent->Style())
     return nullptr;
 
-  ComputedStyle* wrapper_style =
+  scoped_refptr<ComputedStyle> wrapper_style =
       ComputedStyle::CreateInheritedDisplayContentsStyleIfNeeded(
           *style_, context_.parent->StyleRef());
   if (!wrapper_style)

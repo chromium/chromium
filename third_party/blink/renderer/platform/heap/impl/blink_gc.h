@@ -41,7 +41,6 @@ using MovableReference = const void*;
   H(HashTable)            \
   H(Node)                 \
   H(CSSValue)             \
-  H(LayoutObject)         \
   H(LargeObject)
 
 class PLATFORM_EXPORT WorklistTaskId {

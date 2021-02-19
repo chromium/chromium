@@ -89,7 +89,7 @@ class LayoutTreeBuilder {
 
   NodeType* node_;
   Node::AttachContext& context_;
-  const ComputedStyle* style_;
+  scoped_refptr<const ComputedStyle> style_;
 };
 
 class LayoutTreeBuilderForElement : public LayoutTreeBuilder<Element> {

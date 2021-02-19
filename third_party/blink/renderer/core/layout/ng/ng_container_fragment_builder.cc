@@ -25,11 +25,6 @@ bool IsInlineContainerForNode(const NGBlockNode& node,
 
 }  // namespace
 
-void NGContainerFragmentBuilder::ChildWithOffset::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(fragment);
-}
-
 void NGContainerFragmentBuilder::ReplaceChild(
     wtf_size_t index,
     const NGPhysicalContainerFragment& new_child,
@@ -145,7 +140,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
 }
 
 void NGContainerFragmentBuilder::AddChildInternal(
-    const NGPhysicalFragment* child,
+    scoped_refptr<const NGPhysicalFragment> child,
     const LogicalOffset& child_offset) {
   // In order to know where list-markers are within the children list (for the
   // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
@@ -219,7 +214,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowDescendant(
 }
 
 void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
-    HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates) {
+    Vector<NGLogicalOutOfFlowPositionedNode>* candidates) {
   DCHECK(candidates->IsEmpty());
   std::swap(oof_positioned_candidates_, *candidates);
 
@@ -258,7 +253,7 @@ void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
 }
 
 void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
-    HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants) {
+    Vector<NGLogicalOutOfFlowPositionedNode>* descendants) {
   DCHECK(descendants->IsEmpty());
   DCHECK(!has_oof_candidate_that_needs_block_offset_adjustment_);
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
@@ -327,7 +322,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
     const NGPhysicalContainerFragment* containing_block_fragment =
-        descendant.containing_block_fragment;
+        descendant.containing_block_fragment.get();
     if (!containing_block_fragment)
       containing_block_fragment = box_fragment;
 

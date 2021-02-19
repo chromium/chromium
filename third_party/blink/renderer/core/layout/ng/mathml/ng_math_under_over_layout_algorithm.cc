@@ -182,7 +182,7 @@ void NGMathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,
   }
 }
 
-const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLScript(Node()));
 
@@ -216,7 +216,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
 
   auto base_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), base);
-  auto* base_layout_result = base.Layout(base_space);
+  auto base_layout_result = base.Layout(base_space);
   auto base_margins =
       ComputeMarginsFor(base_space, base.Style(), ConstraintSpace());
 
@@ -230,7 +230,8 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   if (over) {
     auto over_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), over);
-    const NGLayoutResult* over_layout_result = over.Layout(over_space);
+    scoped_refptr<const NGLayoutResult> over_layout_result =
+        over.Layout(over_space);
     NGBoxStrut over_margins =
         ComputeMarginsFor(over_space, over.Style(), ConstraintSpace());
     NGBoxFragment over_fragment(
@@ -278,7 +279,8 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   if (under) {
     auto under_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), under);
-    const NGLayoutResult* under_layout_result = under.Layout(under_space);
+    scoped_refptr<const NGLayoutResult> under_layout_result =
+        under.Layout(under_space);
     NGBoxStrut under_margins =
         ComputeMarginsFor(under_space, under.Style(), ConstraintSpace());
     NGBoxFragment under_fragment(

@@ -28,7 +28,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
 
  public:
   NGLineBoxFragmentBuilder(NGInlineNode node,
-                           const ComputedStyle* style,
+                           scoped_refptr<const ComputedStyle> style,
                            const NGConstraintSpace* space,
                            WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(
@@ -68,8 +68,8 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
 
   // Set the break token for the fragment to build.
   // Is nullptr if we didn't break.
-  void SetBreakToken(const NGInlineBreakToken* break_token) {
-    break_token_ = break_token;
+  void SetBreakToken(scoped_refptr<NGInlineBreakToken> break_token) {
+    break_token_ = std::move(break_token);
   }
 
   void AddChild(const NGPhysicalContainerFragment&, const LogicalOffset&);
@@ -80,7 +80,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   void PropagateChildrenData(NGLogicalLineItems&);
 
   // Creates the fragment. Can only be called once.
-  const NGLayoutResult* ToLineBoxFragment();
+  scoped_refptr<const NGLayoutResult> ToLineBoxFragment();
 
  private:
   FontHeight metrics_ = FontHeight::Empty();

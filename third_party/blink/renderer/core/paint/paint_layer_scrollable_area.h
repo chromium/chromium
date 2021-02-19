@@ -69,16 +69,15 @@ class PaintLayer;
 class ScrollingCoordinator;
 class SubtreeLayoutScope;
 
-struct CORE_EXPORT PaintLayerScrollableAreaRareData final
-    : public GarbageCollected<PaintLayerScrollableAreaRareData> {
+struct CORE_EXPORT PaintLayerScrollableAreaRareData {
+  USING_FAST_MALLOC(PaintLayerScrollableAreaRareData);
+
  public:
   PaintLayerScrollableAreaRareData();
   PaintLayerScrollableAreaRareData(const PaintLayerScrollableAreaRareData&) =
       delete;
   PaintLayerScrollableAreaRareData& operator=(
       const PaintLayerScrollableAreaRareData&) = delete;
-
-  void Trace(Visitor* visitor) const;
 
   StickyConstraintsMap sticky_constraints_map_;
   base::Optional<cc::SnapContainerData> snap_container_data_;
@@ -144,7 +143,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     // previously "deleted" scrollbar will be restored, rather than constructing
     // a new one.
    public:
-    explicit ScrollbarManager(PaintLayerScrollableArea& scrollable_area)
+    ScrollbarManager(PaintLayerScrollableArea& scrollable_area)
         : scrollable_area_(scrollable_area),
           h_bar_is_attached_(0),
           v_bar_is_attached_(0) {}
@@ -194,7 +193,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     STACK_ALLOCATED();
 
    public:
-    explicit PreventRelayoutScope(SubtreeLayoutScope&);
+    PreventRelayoutScope(SubtreeLayoutScope&);
     ~PreventRelayoutScope();
 
     static bool RelayoutIsPrevented() { return count_; }
@@ -538,7 +537,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return EnsureRareData().sticky_constraints_map_;
   }
   StickyPositionScrollingConstraints* GetStickyConstraints(PaintLayer*);
-  void AddStickyConstraints(PaintLayer*, StickyPositionScrollingConstraints*);
+  void AddStickyConstraints(PaintLayer*, StickyPositionScrollingConstraints);
 
   void InvalidateAllStickyConstraints();
   void InvalidateStickyConstraintsFor(PaintLayer*);
@@ -671,15 +670,15 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   ScrollingCoordinator* GetScrollingCoordinator() const;
 
-  PaintLayerScrollableAreaRareData* RareData() { return rare_data_; }
+  PaintLayerScrollableAreaRareData* RareData() { return rare_data_.get(); }
   const PaintLayerScrollableAreaRareData* RareData() const {
-    return rare_data_;
+    return rare_data_.get();
   }
 
   PaintLayerScrollableAreaRareData& EnsureRareData() {
     if (!rare_data_)
-      rare_data_ = MakeGarbageCollected<PaintLayerScrollableAreaRareData>();
-    return *rare_data_;
+      rare_data_ = std::make_unique<PaintLayerScrollableAreaRareData>();
+    return *rare_data_.get();
   }
 
   IntRect CornerRect() const;
@@ -696,7 +695,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
   // be set to nullptr by the Dispose method.
-  Member<PaintLayer> layer_;
+  PaintLayer* layer_;
 
   // Keeps track of whether the layer is currently resizing, so events can cause
   // resizing to start and stop.
@@ -757,14 +756,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   ScrollOffset last_committed_scroll_offset_;
 
   // LayoutObject to hold our custom scroll corner.
-  Member<LayoutCustomScrollbarPart> scroll_corner_;
+  LayoutCustomScrollbarPart* scroll_corner_;
 
   // LayoutObject to hold our custom resizer.
-  Member<LayoutCustomScrollbarPart> resizer_;
+  LayoutCustomScrollbarPart* resizer_;
 
   ScrollAnchor scroll_anchor_;
 
-  Member<PaintLayerScrollableAreaRareData> rare_data_;
+  std::unique_ptr<PaintLayerScrollableAreaRareData> rare_data_;
 
   // MainThreadScrollingReason due to the properties of the LayoutObject
   uint32_t non_composited_main_thread_scrolling_reasons_;
@@ -779,7 +778,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     DISALLOW_NEW();
 
    public:
-    explicit ScrollingBackgroundDisplayItemClient(
+    ScrollingBackgroundDisplayItemClient(
         const PaintLayerScrollableArea& scrollable_area)
         : scrollable_area_(&scrollable_area) {}
 
@@ -796,7 +795,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     DISALLOW_NEW();
 
    public:
-    explicit ScrollCornerDisplayItemClient(
+    ScrollCornerDisplayItemClient(
         const PaintLayerScrollableArea& scrollable_area)
         : scrollable_area_(&scrollable_area) {}
 

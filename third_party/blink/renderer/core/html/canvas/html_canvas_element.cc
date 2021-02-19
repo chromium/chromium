@@ -193,7 +193,7 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(const ComputedStyle& style,
       context_->SetIsBeingDisplayed(style.Visibility() ==
                                     EVisibility::kVisible);
     }
-    return MakeGarbageCollected<LayoutHTMLCanvas>(this);
+    return new LayoutHTMLCanvas(this);
   }
   return HTMLElement::CreateLayoutObject(style, legacy);
 }

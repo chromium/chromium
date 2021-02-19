@@ -49,10 +49,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   const NGTableBorders* GetCachedTableBorders() const {
     NOT_DESTROYED();
-    return cached_table_borders_;
+    return cached_table_borders_.get();
   }
 
-  void SetCachedTableBorders(const NGTableBorders*);
+  void SetCachedTableBorders(scoped_refptr<const NGTableBorders>);
 
   const NGTableTypes::Columns* GetCachedTableColumnConstraints();
 
@@ -125,8 +125,6 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
     NOT_DESTROYED();
     return false;
   }
-
-  void Trace(Visitor*) const override;
 
   // LayoutBlock methods end.
 
@@ -233,7 +231,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   void InvalidateCachedTableBorders();
 
   // Table borders are cached because computing collapsed borders is expensive.
-  Member<const NGTableBorders> cached_table_borders_;
+  scoped_refptr<const NGTableBorders> cached_table_borders_;
 
   // Table columns do not depend on any outside data (e.g. NGConstraintSpace).
   // They are cached because computing them is expensive.

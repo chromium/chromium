@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
@@ -95,13 +94,13 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
   // These are updated by updateStyleAndLayoutIfNeeded().
   Color color_;
   PhysicalRect local_rect_;
-  UntracedMember<LayoutBlock> layout_block_;
+  LayoutBlock* layout_block_ = nullptr;
 
   // This is set to the previous value of layout_block_ during
   // UpdateStyleAndLayoutIfNeeded() if it hasn't been set since the last paint
   // invalidation. It is used during InvalidatePaint() to invalidate the caret
   // in the previous layout block.
-  UntracedMember<const LayoutBlock> previous_layout_block_;
+  const LayoutBlock* previous_layout_block_ = nullptr;
 
   bool needs_paint_invalidation_ = false;
   bool is_visible_if_active_ = true;

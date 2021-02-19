@@ -54,14 +54,8 @@ LayoutGrid::LayoutGrid(Element* element)
 
 LayoutGrid::~LayoutGrid() = default;
 
-void LayoutGrid::Trace(Visitor* visitor) const {
-  visitor->Trace(column_of_positioned_item_);
-  visitor->Trace(row_of_positioned_item_);
-  LayoutBlock::Trace(visitor);
-}
-
 LayoutGrid* LayoutGrid::CreateAnonymous(Document* document) {
-  LayoutGrid* layout_grid = MakeGarbageCollected<LayoutGrid>(nullptr);
+  LayoutGrid* layout_grid = new LayoutGrid(nullptr);
   layout_grid->SetDocumentForAnonymous(document);
   return layout_grid;
 }
@@ -871,8 +865,8 @@ void LayoutGrid::PlaceItemsOnGrid(
   DCHECK(!grid.HasGridItems());
   PopulateExplicitGridAndOrderIterator(grid);
 
-  HeapVector<Member<LayoutBox>> auto_major_axis_auto_grid_items;
-  HeapVector<Member<LayoutBox>> specified_major_axis_auto_grid_items;
+  Vector<LayoutBox*> auto_major_axis_auto_grid_items;
+  Vector<LayoutBox*> specified_major_axis_auto_grid_items;
 #if DCHECK_IS_ON()
   DCHECK(!grid.HasAnyGridItemPaintOrder());
 #endif
@@ -1082,7 +1076,7 @@ LayoutGrid::CreateEmptyGridAreaAtSpecifiedPositionsOutsideGrid(
 
 void LayoutGrid::PlaceSpecifiedMajorAxisItemsOnGrid(
     Grid& grid,
-    const HeapVector<Member<LayoutBox>>& auto_grid_items) const {
+    const Vector<LayoutBox*>& auto_grid_items) const {
   NOT_DESTROYED();
   bool is_for_columns = AutoPlacementMajorAxisDirection() == kForColumns;
   bool is_grid_auto_flow_dense = StyleRef().IsGridAutoFlowAlgorithmDense();
@@ -1095,7 +1089,7 @@ void LayoutGrid::PlaceSpecifiedMajorAxisItemsOnGrid(
           WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
       minor_axis_cursors;
 
-  for (const auto& auto_grid_item : auto_grid_items) {
+  for (auto* const auto_grid_item : auto_grid_items) {
     GridSpan major_axis_positions =
         grid.GridItemSpan(*auto_grid_item, AutoPlacementMajorAxisDirection());
     DCHECK(major_axis_positions.IsTranslatedDefinite());
@@ -1128,12 +1122,12 @@ void LayoutGrid::PlaceSpecifiedMajorAxisItemsOnGrid(
 
 void LayoutGrid::PlaceAutoMajorAxisItemsOnGrid(
     Grid& grid,
-    const HeapVector<Member<LayoutBox>>& auto_grid_items) const {
+    const Vector<LayoutBox*>& auto_grid_items) const {
   NOT_DESTROYED();
   std::pair<size_t, size_t> auto_placement_cursor = std::make_pair(0, 0);
   bool is_grid_auto_flow_dense = StyleRef().IsGridAutoFlowAlgorithmDense();
 
-  for (const auto& auto_grid_item : auto_grid_items) {
+  for (auto* const auto_grid_item : auto_grid_items) {
     PlaceAutoMajorAxisItemOnGrid(grid, *auto_grid_item, auto_placement_cursor);
 
     // If grid-auto-flow is dense, reset auto-placement cursor.
@@ -1444,7 +1438,7 @@ void LayoutGrid::LayoutPositionedObjects(bool relayout_children,
   if (!positioned_descendants)
     return;
 
-  for (const auto& child : *positioned_descendants) {
+  for (auto* child : *positioned_descendants) {
     LayoutUnit column_breadth =
         GridAreaBreadthForOutOfFlowChild(*child, kForColumns);
     LayoutUnit row_breadth = GridAreaBreadthForOutOfFlowChild(*child, kForRows);

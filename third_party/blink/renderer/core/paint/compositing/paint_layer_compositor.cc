@@ -319,7 +319,7 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
 
   PaintLayer* update_root = RootLayer();
 
-  HeapVector<Member<PaintLayer>> layers_needing_paint_invalidation;
+  Vector<PaintLayer*> layers_needing_paint_invalidation;
 
   if (update_type >= kCompositingUpdateAfterCompositingInputChange) {
     CompositingRequirementsUpdater(*layout_view_)
@@ -364,7 +364,7 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
     }
   }
 
-  for (auto& layer : layers_needing_paint_invalidation) {
+  for (auto* layer : layers_needing_paint_invalidation) {
     PaintInvalidationOnCompositingChange(layer);
   }
 }
@@ -588,11 +588,6 @@ DocumentLifecycle& PaintLayerCompositor::Lifecycle() const {
 
 bool PaintLayerCompositor::IsMainFrame() const {
   return layout_view_->GetFrame()->IsMainFrame();
-}
-
-void PaintLayerCompositor::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_view_);
-  visitor->Trace(compositing_inputs_root_);
 }
 
 }  // namespace blink

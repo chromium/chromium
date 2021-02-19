@@ -17,7 +17,7 @@ NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
       natural_size_(PhysicalSize(Node().GetLayoutBox()->IntrinsicSize())
                         .ConvertToLogical(Style().GetWritingMode())) {}
 
-const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   // Set this as a legacy root so that legacy painters are used.
   container_builder_.SetIsLegacyLayoutRoot();

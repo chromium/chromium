@@ -81,7 +81,7 @@ bool AXProgressIndicator::MinValueForRange(float* out_value) const {
 }
 
 HTMLProgressElement* AXProgressIndicator::GetProgressElement() const {
-  return To<LayoutProgress>(layout_object_.Get())->ProgressElement();
+  return To<LayoutProgress>(layout_object_)->ProgressElement();
 }
 
 }  // namespace blink

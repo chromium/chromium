@@ -38,7 +38,7 @@ class LayoutTableCellDeathTest : public RenderingTest,
 
   void SetUp() override {
     RenderingTest::SetUp();
-    ComputedStyle* style = ComputedStyle::Create();
+    auto style = ComputedStyle::Create();
     style->SetDisplay(EDisplay::kTableCell);
     cell_ = LayoutTableCell::CreateAnonymous(&GetDocument(), std::move(style),
                                              LegacyLayout::kAuto);
@@ -49,7 +49,7 @@ class LayoutTableCellDeathTest : public RenderingTest,
     RenderingTest::TearDown();
   }
 
-  Persistent<LayoutTableCell> cell_;
+  LayoutTableCell* cell_;
 };
 
 TEST_F(LayoutTableCellDeathTest, CanSetColumn) {

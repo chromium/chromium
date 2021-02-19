@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -256,17 +255,12 @@ struct NGTableGroupedChildren {
 
  public:
   explicit NGTableGroupedChildren(const NGBlockNode& table);
-  void Trace(Visitor*) const;
 
-  HeapVector<NGBlockNode> captions;  // CAPTION
-  HeapVector<NGBlockNode> columns;   // COLGROUP, COL
+  Vector<NGBlockNode> captions;  // CAPTION
+  Vector<NGBlockNode> columns;   // COLGROUP, COL
 
   NGBlockNode header;          // first THEAD
-
-  // These cannot be modified except in ctor to ensure
-  // NGTableGroupedChildrenIterator works correctly.
-  HeapVector<NGBlockNode> bodies;  // TBODY/multiple THEAD/TFOOT
-
+  Vector<NGBlockNode> bodies;  // TBODY/multiple THEAD/TFOOT
   NGBlockNode footer;          // first TFOOT
 
   // Default iterators iterate over tbody-like (THEAD/TBODY/TFOOT) elements.
@@ -277,8 +271,6 @@ struct NGTableGroupedChildren {
 // Iterates table's sections in order:
 // thead, tbody, tfoot
 class NGTableGroupedChildrenIterator {
-  STACK_ALLOCATED();
-
   enum CurrentSection { kNone, kHead, kBody, kFoot, kEnd };
 
  public:
@@ -296,12 +288,8 @@ class NGTableGroupedChildrenIterator {
  private:
   void AdvanceToNonEmptySection();
   const NGTableGroupedChildren& grouped_children_;
+  Vector<NGBlockNode>::const_iterator body_iterator_;
   CurrentSection current_section_{kNone};
-
-  // |body_vector_| can be modified only in ctor and
-  // |AdvanceToNonEmptySection()|.
-  const HeapVector<NGBlockNode>* body_vector_ = nullptr;
-  wtf_size_t position_ = 0;
 };
 
 }  // namespace blink

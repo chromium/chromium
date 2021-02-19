@@ -227,7 +227,8 @@ void ForceLogicalHeight(LayoutObject& layout_object, const Length& height) {
   if (layout_object.StyleRef().LogicalHeight() == height)
     return;
 
-  ComputedStyle* new_style = ComputedStyle::Clone(layout_object.StyleRef());
+  scoped_refptr<ComputedStyle> new_style =
+      ComputedStyle::Clone(layout_object.StyleRef());
   new_style->SetLogicalHeight(height);
   layout_object.SetModifiedStyleOutsideStyleRecalc(
       std::move(new_style), LayoutObject::ApplyStyleChanges::kNo);

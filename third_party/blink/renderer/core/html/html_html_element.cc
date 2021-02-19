@@ -119,9 +119,10 @@ bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,
          layout_style.Direction() != propagated_style.Direction();
 }
 
-ComputedStyle* CreateLayoutStyle(const ComputedStyle& style,
-                                 const ComputedStyle& propagated_style) {
-  ComputedStyle* layout_style = ComputedStyle::Clone(style);
+scoped_refptr<ComputedStyle> CreateLayoutStyle(
+    const ComputedStyle& style,
+    const ComputedStyle& propagated_style) {
+  scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Clone(style);
   layout_style->SetDirection(propagated_style.Direction());
   layout_style->SetWritingMode(propagated_style.GetWritingMode());
   return layout_style;
@@ -129,8 +130,8 @@ ComputedStyle* CreateLayoutStyle(const ComputedStyle& style,
 
 }  // namespace
 
-const ComputedStyle* HTMLHtmlElement::LayoutStyleForElement(
-    const ComputedStyle* style) {
+scoped_refptr<const ComputedStyle> HTMLHtmlElement::LayoutStyleForElement(
+    scoped_refptr<const ComputedStyle> style) {
   DCHECK(style);
   DCHECK(GetDocument().InStyleRecalc());
   if (const Element* body_element = GetDocument().body()) {
@@ -165,7 +166,7 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
 }
 
 void HTMLHtmlElement::AttachLayoutTree(AttachContext& context) {
-  const ComputedStyle* original_style = GetComputedStyle();
+  scoped_refptr<const ComputedStyle> original_style = GetComputedStyle();
   if (original_style)
     SetComputedStyle(LayoutStyleForElement(original_style));
 

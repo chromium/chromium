@@ -73,7 +73,7 @@ enum ShouldIncludeScrollbarGutter {
   kIncludeScrollbarGutter
 };
 
-using SnapAreaSet = HeapHashSet<Member<LayoutBox>>;
+using SnapAreaSet = HashSet<LayoutBox*>;
 
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
  public:
@@ -85,7 +85,7 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   // For spanners, the spanner placeholder that lays us out within the multicol
   // container.
-  Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
+  LayoutMultiColumnSpannerPlaceholder* spanner_placeholder_;
 
   LayoutUnit override_logical_width_;
   LayoutUnit override_logical_height_;
@@ -103,12 +103,19 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   LayoutUnit pagination_strut_;
 
-  Member<LayoutBlock> percent_height_container_;
+  LayoutBlock* percent_height_container_;
   // For snap area, the owning snap container.
-  Member<LayoutBox> snap_container_;
+  LayoutBox* snap_container_;
   // For snap container, the descendant snap areas that contribute snap
   // points.
-  SnapAreaSet snap_areas_;
+  std::unique_ptr<SnapAreaSet> snap_areas_;
+
+  SnapAreaSet& EnsureSnapAreas() {
+    if (!snap_areas_)
+      snap_areas_ = std::make_unique<SnapAreaSet>();
+
+    return *snap_areas_;
+  }
 
   // Used by BoxPaintInvalidator. Stores the previous content rect after the
   // last paint invalidation. It's valid if has_previous_content_box_rect_ is
@@ -219,7 +226,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  public:
   explicit LayoutBox(ContainerNode*);
-  void Trace(Visitor*) const override;
 
   PaintLayerType LayerTypeRequired() const override;
 
@@ -1172,14 +1178,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void InvalidateItems(const NGLayoutResult&);
 
-  void SetCachedLayoutResult(const NGLayoutResult*);
+  void SetCachedLayoutResult(scoped_refptr<const NGLayoutResult>);
 
   // Store one layout result (with its physical fragment) at the specified
   // index, and delete all entries following it.
-  void AddLayoutResult(const NGLayoutResult*, wtf_size_t index);
-  void AddLayoutResult(const NGLayoutResult*);
-  void ReplaceLayoutResult(const NGLayoutResult*, wtf_size_t index);
-  void ReplaceLayoutResult(const NGLayoutResult*,
+  void AddLayoutResult(scoped_refptr<const NGLayoutResult>, wtf_size_t index);
+  void AddLayoutResult(scoped_refptr<const NGLayoutResult>);
+  void ReplaceLayoutResult(scoped_refptr<const NGLayoutResult>,
+                           wtf_size_t index);
+  void ReplaceLayoutResult(scoped_refptr<const NGLayoutResult>,
                            const NGPhysicalBoxFragment& old_fragment);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
@@ -1198,14 +1205,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // |out_cache_status| indicates what type of layout pass is required.
   //
   // TODO(ikilpatrick): Move this function into NGBlockNode.
-  const NGLayoutResult* CachedLayoutResult(
+  scoped_refptr<const NGLayoutResult> CachedLayoutResult(
       const NGConstraintSpace&,
       const NGBreakToken*,
       const NGEarlyBreak*,
       base::Optional<NGFragmentGeometry>* initial_fragment_geometry,
       NGLayoutCacheStatus* out_cache_status);
 
-  using NGLayoutResultList = HeapVector<Member<const NGLayoutResult>, 1>;
+  using NGLayoutResultList = Vector<scoped_refptr<const NGLayoutResult>, 1>;
   class NGPhysicalFragmentList {
     STACK_ALLOCATED();
 
@@ -2327,7 +2334,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   MinMaxSizes intrinsic_logical_widths_;
   LayoutUnit intrinsic_logical_widths_percentage_resolution_block_size_;
 
-  Member<const NGLayoutResult> measure_result_;
+  scoped_refptr<const NGLayoutResult> measure_result_;
   NGLayoutResultList layout_results_;
 
   // LayoutBoxUtils is used for the LayoutNG code querying protected methods on
@@ -2353,16 +2360,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // laid out.
   const BoxLayoutExtraInput* extra_input_ = nullptr;
 
-  // The inline box containing this LayoutBox, for atomic inline elements.
-  // Valid only when !IsInLayoutNGInlineFormattingContext().
-  Member<InlineBox> inline_box_wrapper_;
+  union {
+    // The inline box containing this LayoutBox, for atomic inline elements.
+    // Valid only when !IsInLayoutNGInlineFormattingContext().
+    InlineBox* inline_box_wrapper_;
+    // The index of the first fragment item associated with this object in
+    // |NGFragmentItems::Items()|. Zero means there are no such item.
+    // Valid only when IsInLayoutNGInlineFormattingContext().
+    wtf_size_t first_fragment_item_index_;
+  };
 
-  // The index of the first fragment item associated with this object in
-  // |NGFragmentItems::Items()|. Zero means there are no such item.
-  // Valid only when IsInLayoutNGInlineFormattingContext().
-  wtf_size_t first_fragment_item_index_ = 0u;
-
-  Member<LayoutBoxRareData> rare_data_;
+  Persistent<LayoutBoxRareData> rare_data_;
 };
 
 template <>

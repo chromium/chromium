@@ -67,7 +67,6 @@ class LayoutFrameSet final : public LayoutBox {
  public:
   LayoutFrameSet(HTMLFrameSetElement*);
   ~LayoutFrameSet() override;
-  void Trace(Visitor*) const override;
 
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();

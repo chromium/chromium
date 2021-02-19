@@ -160,7 +160,7 @@ const PropertySpecificKeyframeVector& ConstructEffectAndGetKeyframes(
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
-  auto* style = document->GetStyleResolver().StyleForElement(
+  auto style = document->GetStyleResolver().StyleForElement(
       element, StyleRecalcContext());
 
   // Snapshot should update first time after construction
@@ -635,7 +635,7 @@ TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateBasic) {
       KeyframesAtZeroAndOne(CSSPropertyID::kOpacity, "0", "1");
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
-  auto* style = GetDocument().GetStyleResolver().StyleForElement(
+  auto style = GetDocument().GetStyleResolver().StyleForElement(
       element, StyleRecalcContext());
 
   const CompositorKeyframeValue* value;
@@ -672,7 +672,7 @@ TEST_F(AnimationKeyframeEffectModel,
   auto* effect =
       MakeGarbageCollected<StringKeyframeEffectModel>(opacity_keyframes);
 
-  auto* style = GetDocument().GetStyleResolver().StyleForElement(
+  auto style = GetDocument().GetStyleResolver().StyleForElement(
       element, StyleRecalcContext());
 
   EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(

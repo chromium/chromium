@@ -43,11 +43,6 @@ LayoutImageResource::LayoutImageResource()
 
 LayoutImageResource::~LayoutImageResource() = default;
 
-void LayoutImageResource::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_object_);
-  visitor->Trace(cached_image_);
-}
-
 void LayoutImageResource::Initialize(LayoutObject* layout_object) {
   DCHECK(!layout_object_);
   DCHECK(layout_object);
@@ -126,7 +121,7 @@ FloatSize LayoutImageResource::ImageSize(float multiplier) const {
   }
   if (layout_object_ && layout_object_->IsLayoutImage() && size.Width() &&
       size.Height())
-    size.Scale(To<LayoutImage>(layout_object_.Get())->ImageDevicePixelRatio());
+    size.Scale(To<LayoutImage>(layout_object_)->ImageDevicePixelRatio());
   return size;
 }
 

@@ -31,8 +31,6 @@ namespace {
 
 // NGTableCollapsedEdge represents collapsed border edge for painting.
 class NGTableCollapsedEdge {
-  STACK_ALLOCATED();
-
  public:
   NGTableCollapsedEdge(const NGTableBorders& borders, wtf_size_t edge_index)
       : borders_(borders) {
@@ -605,7 +603,7 @@ void NGTableRowPainter::PaintColumnsBackground(
     if (!child.fragment->IsTableNGCell())
       continue;
     wtf_size_t cell_column =
-        To<NGPhysicalBoxFragment>(child.fragment.Get())->TableCellColumnIndex();
+        To<NGPhysicalBoxFragment>(child.fragment)->TableCellColumnIndex();
     // if cell is in the column, generate column physical rect
     for (current_column = smallest_viable_column;
          current_column < column_geometries.size(); ++current_column) {

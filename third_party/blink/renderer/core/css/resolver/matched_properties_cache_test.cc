@@ -79,7 +79,7 @@ using TestCache = MatchedPropertiesCacheTestCache;
 
 class MatchedPropertiesCacheTest : public PageTestBase {
  public:
-  ComputedStyle* CreateStyle() {
+  scoped_refptr<ComputedStyle> CreateStyle() {
     return StyleResolver::InitialStyleForElement(GetDocument());
   }
 };
@@ -108,8 +108,8 @@ TEST_F(MatchedPropertiesCacheTest, Miss) {
   TestCache cache(GetDocument());
   TestKey key("color:red", 1, GetDocument());
 
-  ComputedStyle* style = CreateStyle();
-  ComputedStyle* parent = CreateStyle();
+  auto style = CreateStyle();
+  auto parent = CreateStyle();
 
   EXPECT_FALSE(cache.Find(key, *style, *parent));
 }
@@ -118,8 +118,8 @@ TEST_F(MatchedPropertiesCacheTest, Hit) {
   TestCache cache(GetDocument());
   TestKey key("color:red", 1, GetDocument());
 
-  ComputedStyle* style = CreateStyle();
-  ComputedStyle* parent = CreateStyle();
+  auto style = CreateStyle();
+  auto parent = CreateStyle();
 
   cache.Add(key, *style, *parent);
   EXPECT_TRUE(cache.Find(key, *style, *parent));
@@ -128,8 +128,8 @@ TEST_F(MatchedPropertiesCacheTest, Hit) {
 TEST_F(MatchedPropertiesCacheTest, HitOnlyForAddedEntry) {
   TestCache cache(GetDocument());
 
-  ComputedStyle* style = CreateStyle();
-  ComputedStyle* parent = CreateStyle();
+  auto style = CreateStyle();
+  auto parent = CreateStyle();
 
   TestKey key1("color:red", 1, GetDocument());
   TestKey key2("display:block", 2, GetDocument());
@@ -143,9 +143,9 @@ TEST_F(MatchedPropertiesCacheTest, HitOnlyForAddedEntry) {
 TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
   TestCache cache(GetDocument());
 
-  ComputedStyle* style = CreateStyle();
-  ComputedStyle* parent = CreateStyle();
-  ComputedStyle* ensured_parent = CreateStyle();
+  auto style = CreateStyle();
+  auto parent = CreateStyle();
+  auto ensured_parent = CreateStyle();
   ensured_parent->SetIsEnsuredInDisplayNone();
 
   TestKey key1("display:block", 1, GetDocument());
@@ -162,9 +162,9 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
 TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
   TestCache cache(GetDocument());
 
-  ComputedStyle* style = CreateStyle();
-  ComputedStyle* parent = CreateStyle();
-  ComputedStyle* ensured_style = CreateStyle();
+  auto style = CreateStyle();
+  auto parent = CreateStyle();
+  auto ensured_style = CreateStyle();
   ensured_style->SetIsEnsuredOutsideFlatTree();
 
   TestKey key1("display:block", 1, GetDocument());
@@ -181,10 +181,10 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
 TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
   TestCache cache(GetDocument());
 
-  ComputedStyle* parent = CreateStyle();
-  ComputedStyle* parent_none = CreateStyle();
-  ComputedStyle* style = CreateStyle();
-  ComputedStyle* style_flat = CreateStyle();
+  auto parent = CreateStyle();
+  auto parent_none = CreateStyle();
+  auto style = CreateStyle();
+  auto style_flat = CreateStyle();
   parent_none->SetIsEnsuredInDisplayNone();
   style_flat->SetIsEnsuredOutsideFlatTree();
 
@@ -200,10 +200,10 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
 TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
   TestCache cache(GetDocument());
 
-  auto* parent_a = CreateStyle();
-  auto* parent_b = CreateStyle();
-  auto* style_a = CreateStyle();
-  auto* style_b = CreateStyle();
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
   parent_a->SetWritingMode(WritingMode::kHorizontalTb);
   parent_b->SetWritingMode(WritingMode::kVerticalRl);
 
@@ -218,10 +218,10 @@ TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
 TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
   TestCache cache(GetDocument());
 
-  auto* parent_a = CreateStyle();
-  auto* parent_b = CreateStyle();
-  auto* style_a = CreateStyle();
-  auto* style_b = CreateStyle();
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
   parent_a->SetDirection(TextDirection::kLtr);
   parent_b->SetDirection(TextDirection::kRtl);
 
@@ -236,10 +236,10 @@ TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
 TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
   TestCache cache(GetDocument());
 
-  auto* parent_a = CreateStyle();
-  auto* parent_b = CreateStyle();
-  auto* style_a = CreateStyle();
-  auto* style_b = CreateStyle();
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
   parent_a->SetVariableData("--x", CreateVariableData("1px"), true);
   parent_b->SetVariableData("--x", CreateVariableData("2px"), true);
   style_a->SetHasVariableReferenceFromNonInheritedProperty();
@@ -256,10 +256,10 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
 TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
   TestCache cache(GetDocument());
 
-  auto* parent_a = CreateStyle();
-  auto* parent_b = CreateStyle();
-  auto* style_a = CreateStyle();
-  auto* style_b = CreateStyle();
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
   style_a->SetHasVariableReferenceFromNonInheritedProperty();
   style_b->SetHasVariableReferenceFromNonInheritedProperty();
 
@@ -275,10 +275,10 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
 TEST_F(MatchedPropertiesCacheTest, NoVariableDependency) {
   TestCache cache(GetDocument());
 
-  auto* parent_a = CreateStyle();
-  auto* parent_b = CreateStyle();
-  auto* style_a = CreateStyle();
-  auto* style_b = CreateStyle();
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
   parent_a->SetVariableData("--x", CreateVariableData("1px"), true);
   parent_b->SetVariableData("--x", CreateVariableData("2px"), true);
 

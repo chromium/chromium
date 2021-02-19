@@ -246,13 +246,13 @@ Length ViewportStyleResolver::ViewportLengthValue(CSSPropertyID id) {
   LocalFrameView* view = document_->GetFrame()->View();
   DCHECK(view);
 
-  CSSToLengthConversionData::FontSizes font_sizes(initial_style_,
-                                                  initial_style_);
+  CSSToLengthConversionData::FontSizes font_sizes(initial_style_.get(),
+                                                  initial_style_.get());
   CSSToLengthConversionData::ViewportSize viewport_size(
       view->InitialViewportWidth(), view->InitialViewportHeight());
 
   Length result = primitive_value->ConvertToLength(CSSToLengthConversionData(
-      initial_style_, font_sizes, viewport_size, 1.0f));
+      initial_style_.get(), font_sizes, viewport_size, 1.0f));
 
   if (result.IsFixed() && document_->GetPage()) {
     float scaled_value =
@@ -325,7 +325,6 @@ void ViewportStyleResolver::UpdateViewport(
 void ViewportStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(property_set_);
-  visitor->Trace(initial_style_);
 }
 
 }  // namespace blink

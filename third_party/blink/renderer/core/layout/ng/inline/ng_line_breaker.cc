@@ -113,10 +113,9 @@ inline void RemoveLastItem(NGLineInfo* line_info) {
 // padding, border, or margin.
 // The inline-end size from all of these ancestors contribute to the "used
 // size" of the float, and may cause the float to be pushed down.
-LayoutUnit ComputeFloatAncestorInlineEndSize(
-    const NGConstraintSpace& space,
-    const HeapVector<NGInlineItem>& items,
-    wtf_size_t item_index) {
+LayoutUnit ComputeFloatAncestorInlineEndSize(const NGConstraintSpace& space,
+                                             const Vector<NGInlineItem>& items,
+                                             wtf_size_t item_index) {
   LayoutUnit inline_end_size;
   for (const NGInlineItem *cur = items.begin() + item_index, *end = items.end();
        cur != end; ++cur) {
@@ -498,7 +497,7 @@ void NGLineBreaker::BreakLine(
     LayoutUnit percentage_resolution_block_size_for_min_max,
     NGLineInfo* line_info) {
   DCHECK(!line_info->IsLastLine());
-  const HeapVector<NGInlineItem>& items = Items();
+  const Vector<NGInlineItem>& items = Items();
   state_ = LineBreakState::kContinue;
   trailing_whitespace_ = WhitespaceState::kLeading;
   while (state_ != LineBreakState::kDone) {
@@ -616,7 +615,7 @@ bool NGLineBreaker::ShouldForceCanBreakAfter(
     return false;
   // This kObjectReplacementCharacter can be any objects, such as a floating or
   // an OOF object. Check if it's really an atomic inline.
-  const HeapVector<NGInlineItem>& items = Items();
+  const Vector<NGInlineItem>& items = Items();
   for (const NGInlineItem* item = std::next(item_result.item);
        item != items.end(); ++item) {
     DCHECK_EQ(item->StartOffset(), item_result.EndOffset());
@@ -1414,7 +1413,7 @@ void NGLineBreaker::HandleControlItem(const NGInlineItem& item,
     // This is not a defined behavior, but legacy/WebKit do this for preserved
     // newlines and <br>s. Gecko does this only for preserved newlines (but
     // not for <br>s).
-    const HeapVector<NGInlineItem>& items = Items();
+    const Vector<NGInlineItem>& items = Items();
     while (item_index_ < items.size()) {
       const NGInlineItem& next_item = items[item_index_];
       if (next_item.Type() == NGInlineItem::kCloseTag) {
@@ -1734,15 +1733,15 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     return;
   }
 
-  NGPositionedFloat* positioned_float =
+  NGPositionedFloat positioned_float =
       PositionFloat(&unpositioned_float, exclusion_space_);
 
   if (constraint_space_.HasBlockFragmentation()) {
-    if (positioned_float->need_break_before) {
+    if (positioned_float.need_break_before) {
       // We broke before the float, and there's no fragment. Create a break
       // token and propagate it all the way to the block container layout
       // algorithm. The float will start in the next fragmentainer.
-      auto* break_before = NGBlockBreakToken::CreateBreakBefore(
+      auto break_before = NGBlockBreakToken::CreateBreakBefore(
           unpositioned_float.node, /* is_forced_break */ false);
       RemoveLastItem(line_info);
       PropagateBreakToken(break_before);
@@ -1751,9 +1750,9 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     // If we broke inside the float, we also need to propagate a break token to
     // the block container. Layout of the float will resume in the next
     // fragmentainer.
-    if (const NGBreakToken* token =
-            positioned_float->layout_result->PhysicalFragment().BreakToken())
-      PropagateBreakToken(To<NGBlockBreakToken>(token));
+    if (scoped_refptr<const NGBreakToken> token =
+            positioned_float.layout_result->PhysicalFragment().BreakToken())
+      PropagateBreakToken(std::move(To<NGBlockBreakToken>(token.get())));
   }
 
   item_result->positioned_float = positioned_float;
@@ -1974,7 +1973,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
           }
           continue;
         }
-        const ComputedStyle* was_current_style = current_style_;
+        scoped_refptr<const ComputedStyle> was_current_style = current_style_;
         SetCurrentStyle(*item.Style());
         const NGInlineItemResult item_result_before = *item_result;
         BreakText(item_result, item, *item.TextShapeResult(),
@@ -2063,7 +2062,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
 // Rewind to |new_end| on overflow. If trailable items follow at |new_end|, they
 // are included (not rewound).
 void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
-  const HeapVector<NGInlineItem>& items = Items();
+  const Vector<NGInlineItem>& items = Items();
   const NGInlineItemResults& item_results = line_info->Results();
   DCHECK_LT(new_end, item_results.size());
 
@@ -2229,7 +2228,7 @@ void NGLineBreaker::Rewind(unsigned new_end, NGLineInfo* line_info) {
     //   [7] kCloseTag 13-13 <i>
     // Note: We can have multiple empty |LayoutText| by ::first-letter, nested
     // <q>, Text.splitText(), etc.
-    const HeapVector<NGInlineItem>& items = Items();
+    const Vector<NGInlineItem>& items = Items();
     while (item_index_ < items.size() &&
            items[item_index_].Type() == NGInlineItem::kText &&
            !items[item_index_].Length())
@@ -2292,7 +2291,7 @@ const ComputedStyle& NGLineBreaker::ComputeCurrentStyle(
 }
 
 void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
-  if (&style == current_style_) {
+  if (&style == current_style_.get()) {
 #if DCHECK_IS_ON()
     // Check that cache fields are already setup correctly.
     DCHECK_EQ(auto_wrap_, style.AutoWrap());
@@ -2361,7 +2360,7 @@ void NGLineBreaker::MoveToNextOf(const NGInlineItem& item) {
   offset_ = item.EndOffset();
   item_index_++;
 #if DCHECK_IS_ON()
-  const HeapVector<NGInlineItem>& items = Items();
+  const Vector<NGInlineItem>& items = Items();
   if (item_index_ < items.size()) {
     items[item_index_].AssertOffset(offset_);
   } else {
@@ -2378,25 +2377,27 @@ void NGLineBreaker::MoveToNextOf(const NGInlineItemResult& item_result) {
     item_index_++;
 }
 
-const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
+scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
     const NGLineInfo& line_info) const {
   DCHECK(current_style_);
-  const HeapVector<NGInlineItem>& items = Items();
+  const Vector<NGInlineItem>& items = Items();
   DCHECK_LE(item_index_, items.size());
   if (item_index_ >= items.size())
     return nullptr;
   return NGInlineBreakToken::Create(
-      node_, current_style_, item_index_, offset_,
-      ((is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
-       (line_info.UseFirstLineStyle() ? NGInlineBreakToken::kUseFirstLineStyle
-                                      : 0) |
-       (cloned_box_decorations_count_
-            ? NGInlineBreakToken::kHasClonedBoxDecorations
-            : 0)));
+      node_, current_style_.get(), item_index_, offset_,
+      (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
+          (line_info.UseFirstLineStyle()
+               ? NGInlineBreakToken::kUseFirstLineStyle
+               : 0) |
+          (cloned_box_decorations_count_
+               ? NGInlineBreakToken::kHasClonedBoxDecorations
+               : 0));
 }
 
-void NGLineBreaker::PropagateBreakToken(const NGBlockBreakToken* token) {
-  propagated_break_tokens_.push_back(token);
+void NGLineBreaker::PropagateBreakToken(
+    scoped_refptr<const NGBlockBreakToken> token) {
+  propagated_break_tokens_.push_back(std::move(token));
 }
 
 }  // namespace blink

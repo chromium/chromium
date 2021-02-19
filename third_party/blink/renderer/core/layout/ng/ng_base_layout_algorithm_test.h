@@ -33,20 +33,21 @@ class NGBaseLayoutAlgorithmTest
   // RunBlockLayoutAlgorithmForElement.
   void AdvanceToLayoutPhase();
 
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(
+  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
       NGBlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
 
-  std::pair<const NGPhysicalBoxFragment*, NGConstraintSpace>
+  std::pair<scoped_refptr<const NGPhysicalBoxFragment>, NGConstraintSpace>
   RunBlockLayoutAlgorithmForElement(Element* element);
 
-  const NGPhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
+  scoped_refptr<const NGPhysicalBoxFragment> RunFieldsetLayoutAlgorithm(
       NGBlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
 
-  const NGPhysicalBoxFragment* GetBoxFragmentByElementId(const char*);
+  scoped_refptr<const NGPhysicalBoxFragment> GetBoxFragmentByElementId(
+      const char*);
 
   static const NGPhysicalBoxFragment* CurrentFragmentFor(
       const LayoutNGBlockFlow*);

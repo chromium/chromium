@@ -180,7 +180,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
   unsigned UnclampedActualColumnCount() const;
 
-  const UntracedMember<const LayoutMultiColumnSet> column_set_;
+  const LayoutMultiColumnSet* const column_set_;
 
   LayoutUnit logical_top_;
   LayoutUnit logical_top_in_flow_thread_;
@@ -243,7 +243,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroupList {
   void Shrink(wtf_size_t size) { groups_.Shrink(size); }
 
  private:
-  UntracedMember<LayoutMultiColumnSet> column_set_;
+  LayoutMultiColumnSet& column_set_;
 
   Vector<MultiColumnFragmentainerGroup, 1> groups_;
 };

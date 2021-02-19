@@ -31,23 +31,6 @@
 
 namespace blink {
 
-void PaintInvalidatorContext::ParentContextAccessor::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(tree_walk_);
-}
-
-void PaintInvalidatorContext::Trace(Visitor* visitor) const {
-  visitor->Trace(parent_context_accessor_);
-  visitor->Trace(directly_composited_container);
-  visitor->Trace(directly_composited_container_for_stacked_contents);
-  visitor->Trace(painting_layer);
-  visitor->Trace(fragment_data);
-}
-
-void PaintInvalidator::Trace(Visitor* visitor) const {
-  visitor->Trace(pending_delayed_paint_invalidations_);
-}
-
 const PaintInvalidatorContext*
 PaintInvalidatorContext::ParentContextAccessor::ParentContext() const {
   return tree_walk_ ? &tree_walk_->ContextAt(parent_context_index_)
@@ -411,7 +394,7 @@ bool PaintInvalidator::InvalidatePaint(
 }
 
 void PaintInvalidator::ProcessPendingDelayedPaintInvalidations() {
-  for (const auto& target : pending_delayed_paint_invalidations_)
+  for (auto* target : pending_delayed_paint_invalidations_)
     target->GetMutableForPainting().SetShouldDelayFullPaintInvalidation();
 }
 

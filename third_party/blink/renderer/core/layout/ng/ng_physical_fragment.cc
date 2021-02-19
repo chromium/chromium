@@ -24,12 +24,12 @@
 namespace blink {
 namespace {
 
-struct SameSizeAsNGPhysicalFragment : GarbageCollected<NGPhysicalFragment> {
+struct SameSizeAsNGPhysicalFragment
+    : RefCounted<const NGPhysicalFragment, NGPhysicalFragmentTraits> {
   // |flags_for_free_maybe| is used to support an additional increase in size
   // needed for DCHECK and 32-bit builds.
-  void* pointer;  // vtable for Trace()
   unsigned flags_for_free_maybe;
-  Member<void*> layout_object;
+  void* layout_object;
   PhysicalSize size;
   unsigned flags;
 };
@@ -183,7 +183,7 @@ class FragmentTreeDumper {
       if (!descendant->IsLayoutNGObject()) {
         if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
           if (const auto* positioned_descendants = block->PositionedObjects()) {
-            for (const auto& positioned_object : *positioned_descendants) {
+            for (const auto* positioned_object : *positioned_descendants) {
               if (positioned_object->IsLayoutNGObject())
                 AppendNGRootInLegacySubtree(*positioned_object, indent);
               else
@@ -316,7 +316,7 @@ NGPhysicalFragment::NGPhysicalFragment(LayoutObject* layout_object,
     : has_floating_descendants_for_paint_(false),
       has_layout_overflow_(false),
       has_inflow_bounds_(false),
-      const_has_rare_data_(false),
+      has_rare_data_(false),
       layout_object_(layout_object),
       size_(size),
       type_(type),
@@ -345,7 +345,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       has_propagated_descendants_(other.has_propagated_descendants_),
       has_hanging_(other.has_hanging_),
       is_inline_formatting_context_(other.is_inline_formatting_context_),
-      const_has_fragment_items_(other.const_has_fragment_items_),
+      has_fragment_items_(other.has_fragment_items_),
       include_border_top_(other.include_border_top_),
       include_border_right_(other.include_border_right_),
       include_border_bottom_(other.include_border_bottom_),
@@ -354,7 +354,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       has_borders_(other.has_borders_),
       has_padding_(other.has_padding_),
       has_inflow_bounds_(other.has_inflow_bounds_),
-      const_has_rare_data_(other.const_has_rare_data_),
+      has_rare_data_(other.has_rare_data_),
       is_first_for_node_(other.is_first_for_node_),
       layout_object_(other.layout_object_),
       size_(other.size_),
@@ -536,8 +536,8 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   }
 }
 
-const HeapVector<NGInlineItem>&
-NGPhysicalFragment::InlineItemsOfContainingBlock() const {
+const Vector<NGInlineItem>& NGPhysicalFragment::InlineItemsOfContainingBlock()
+    const {
   DCHECK(IsInline());
   DCHECK(GetLayoutObject());
   LayoutBlockFlow* block_flow = GetLayoutObject()->ContainingNGBlockFlow();
@@ -671,10 +671,6 @@ void NGPhysicalFragment::ShowFragmentTree(const LayoutObject& root) {
   LOG(INFO) << "\n" << DumpFragmentTree(root, dump_flags).Utf8();
 }
 #endif
-
-void NGPhysicalFragment::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_object_);
-}
 
 PhysicalRect NGPhysicalFragmentWithOffset::RectInContainerBox() const {
   return {offset_to_container_box, fragment->Size()};

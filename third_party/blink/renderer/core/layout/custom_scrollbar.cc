@@ -67,7 +67,6 @@ int CustomScrollbar::HypotheticalScrollbarThickness(
 }
 
 void CustomScrollbar::Trace(Visitor* visitor) const {
-  visitor->Trace(parts_);
   Scrollbar::Trace(visitor);
 }
 
@@ -127,9 +126,9 @@ void CustomScrollbar::SetPressedPart(ScrollbarPart part,
   PositionScrollbarParts();
 }
 
-const ComputedStyle* CustomScrollbar::GetScrollbarPseudoElementStyle(
-    ScrollbarPart part_type,
-    PseudoId pseudo_id) {
+scoped_refptr<const ComputedStyle>
+CustomScrollbar::GetScrollbarPseudoElementStyle(ScrollbarPart part_type,
+                                                PseudoId pseudo_id) {
   Element* element = StyleSource();
   DCHECK(element);
   Document& document = element->GetDocument();
@@ -146,8 +145,9 @@ const ComputedStyle* CustomScrollbar::GetScrollbarPseudoElementStyle(
   if (!element->GetLayoutObject())
     return nullptr;
   const ComputedStyle* source_style = element->GetLayoutObject()->Style();
-  const ComputedStyle* part_style = element->UncachedStyleForPseudoElement(
-      PseudoElementStyleRequest(pseudo_id, this, part_type), source_style);
+  scoped_refptr<const ComputedStyle> part_style =
+      element->UncachedStyleForPseudoElement(
+          PseudoElementStyleRequest(pseudo_id, this, part_type), source_style);
   if (!part_style)
     return nullptr;
   return source_style->AddCachedPseudoElementStyle(std::move(part_style));
@@ -233,8 +233,9 @@ void CustomScrollbar::UpdateScrollbarPart(ScrollbarPart part_type) {
   if (part_type == kNoPart)
     return;
 
-  const ComputedStyle* part_style = GetScrollbarPseudoElementStyle(
-      part_type, PseudoForScrollbarPart(part_type));
+  scoped_refptr<const ComputedStyle> part_style =
+      GetScrollbarPseudoElementStyle(part_type,
+                                     PseudoForScrollbarPart(part_type));
   bool need_layout_object =
       part_style && part_style->Display() != EDisplay::kNone;
 

@@ -119,7 +119,8 @@ Color HighlightThemeBackgroundColor(const Document& document,
   }
 }
 
-const ComputedStyle* HighlightPseudoStyle(Node* node, PseudoId pseudo) {
+scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
+                                                        PseudoId pseudo) {
   if (!node)
     return nullptr;
 
@@ -176,7 +177,8 @@ Color HighlightColor(const Document& document,
     }
   }
 
-  const ComputedStyle* pseudo_style = HighlightPseudoStyle(node, pseudo);
+  scoped_refptr<const ComputedStyle> pseudo_style =
+      HighlightPseudoStyle(node, pseudo);
 
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   if (pseudo_style) {
@@ -205,7 +207,8 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
   }
 
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  if (const ComputedStyle* pseudo_style = HighlightPseudoStyle(node, pseudo)) {
+  if (scoped_refptr<const ComputedStyle> pseudo_style =
+          HighlightPseudoStyle(node, pseudo)) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
       Color highlight_color =
@@ -296,7 +299,8 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
         document, style, node, pseudo, global_paint_flags);
   }
 
-  if (const ComputedStyle* pseudo_style = HighlightPseudoStyle(node, pseudo)) {
+  if (scoped_refptr<const ComputedStyle> pseudo_style =
+          HighlightPseudoStyle(node, pseudo)) {
     highlight_style.stroke_color =
         uses_text_as_clip ? Color::kBlack
                           : pseudo_style->VisitedDependentColor(

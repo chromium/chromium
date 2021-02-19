@@ -35,16 +35,17 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   NGBlockNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
 
-  const NGLayoutResult* Layout(const NGConstraintSpace& constraint_space,
-                               const NGBlockBreakToken* break_token = nullptr,
-                               const NGEarlyBreak* = nullptr) const;
+  scoped_refptr<const NGLayoutResult> Layout(
+      const NGConstraintSpace& constraint_space,
+      const NGBlockBreakToken* break_token = nullptr,
+      const NGEarlyBreak* = nullptr) const;
 
   // This method is just for use within the |NGSimplifiedLayoutAlgorithm|.
   //
   // If layout is dirty, it will perform layout using the previous constraint
   // space used to generate the |NGLayoutResult|.
   // Otherwise it will simply return the previous layout result generated.
-  const NGLayoutResult* SimplifiedLayout(
+  scoped_refptr<const NGLayoutResult> SimplifiedLayout(
       const NGPhysicalFragment& previous_fragment) const;
 
   // This method is just for use within the |NGOutOfFlowLayoutPart|.
@@ -59,7 +60,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   //
   // If the containing-block size hasn't changed, and we are layout-clean we
   // can reuse the previous layout result.
-  const NGLayoutResult* CachedLayoutResultForOutOfFlowPositioned(
+  scoped_refptr<const NGLayoutResult> CachedLayoutResultForOutOfFlowPositioned(
       LogicalSize container_content_size) const;
 
   NGLayoutInputNode NextSibling() const;
@@ -155,7 +156,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   bool HasIndex() const;
 
   // Layout an atomic inline; e.g., inline block.
-  const NGLayoutResult* LayoutAtomicInline(
+  scoped_refptr<const NGLayoutResult> LayoutAtomicInline(
       const NGConstraintSpace& parent_constraint_space,
       const ComputedStyle& parent_style,
       bool use_first_line_style,
@@ -173,12 +174,12 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // Add a column layout result to a list. Columns are essentially
   // LayoutObject-less, but we still need to keep the fragments generated
   // somewhere.
-  void AddColumnResult(const NGLayoutResult*,
+  void AddColumnResult(scoped_refptr<const NGLayoutResult>,
                        const NGBlockBreakToken* incoming_break_token) const;
   // Add a column layout result to this node.
-  void AddColumnResult(const NGLayoutResult*) const;
+  void AddColumnResult(scoped_refptr<const NGLayoutResult>) const;
   // Replace an existing column layout result with a new one.
-  void ReplaceColumnResult(const NGLayoutResult*,
+  void ReplaceColumnResult(scoped_refptr<const NGLayoutResult>,
                            const NGPhysicalBoxFragment& old_fragment) const;
 
   static bool CanUseNewLayout(const LayoutBox&);
@@ -189,7 +190,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   }
 
   bool HasLineIfEmpty() const {
-    if (const auto* block = DynamicTo<LayoutBlock>(box_.Get()))
+    if (const auto* block = DynamicTo<LayoutBlock>(box_))
       return block->HasLineIfEmpty();
     return false;
   }
@@ -201,17 +202,19 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   // Runs layout on the underlying LayoutObject and creates a fragment for the
   // resulting geometry.
-  const NGLayoutResult* RunLegacyLayout(const NGConstraintSpace&) const;
+  scoped_refptr<const NGLayoutResult> RunLegacyLayout(
+      const NGConstraintSpace&) const;
 
-  const NGLayoutResult* RunSimplifiedLayout(const NGLayoutAlgorithmParams&,
-                                            const NGLayoutResult&) const;
+  scoped_refptr<const NGLayoutResult> RunSimplifiedLayout(
+      const NGLayoutAlgorithmParams&,
+      const NGLayoutResult&) const;
 
   // If this node is a LayoutNGMixin, the caller must pass the layout object for
   // this node cast to a LayoutBlockFlow as the first argument.
   void FinishLayout(LayoutBlockFlow*,
                     const NGConstraintSpace&,
                     const NGBlockBreakToken*,
-                    const NGLayoutResult*) const;
+                    scoped_refptr<const NGLayoutResult>) const;
 
   // After we run the layout algorithm, this function copies back the geometry
   // data to the layout box.
@@ -255,7 +258,5 @@ struct DowncastTraits<NGBlockNode> {
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGBlockNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_NODE_H_

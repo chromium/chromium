@@ -15,11 +15,6 @@ LayoutNGTableColumn::LayoutNGTableColumn(Element* element)
   UpdateFromElement();
 }
 
-void LayoutNGTableColumn::Trace(Visitor* visitor) const {
-  visitor->Trace(children_);
-  LayoutBox::Trace(visitor);
-}
-
 void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
                                          const ComputedStyle* old_style) {
   NOT_DESTROYED();

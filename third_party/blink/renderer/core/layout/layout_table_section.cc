@@ -45,11 +45,6 @@
 
 namespace blink {
 
-void LayoutTableSection::TableGridRow::Trace(Visitor* visitor) const {
-  visitor->Trace(grid_cells);
-  visitor->Trace(row);
-}
-
 void LayoutTableSection::TableGridRow::
     SetRowLogicalHeightToRowStyleLogicalHeight() {
   DCHECK(row);
@@ -110,12 +105,6 @@ LayoutTableSection::LayoutTableSection(Element* element)
 
 LayoutTableSection::~LayoutTableSection() = default;
 
-void LayoutTableSection::Trace(Visitor* visitor) const {
-  visitor->Trace(grid_);
-  visitor->Trace(visually_overflowing_cells_);
-  LayoutTableBoxComponent::Trace(visitor);
-}
-
 void LayoutTableSection::StyleDidChange(StyleDifference diff,
                                         const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -125,7 +114,7 @@ void LayoutTableSection::StyleDidChange(StyleDifference diff,
 
   // Legacy tables cannot handle relative/sticky sections.
   if (StyleRef().HasInFlowPosition()) {
-    ComputedStyle* new_style = ComputedStyle::Clone(StyleRef());
+    scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
     new_style->SetPosition(EPosition::kStatic);
     SetModifiedStyleOutsideStyleRecalc(new_style,
                                        LayoutObject::ApplyStyleChanges::kNo);
@@ -158,12 +147,6 @@ void LayoutTableSection::WillBeRemovedFromTree() {
   // Preventively invalidate our cells as we may be re-inserted into
   // a new table which would require us to rebuild our structure.
   SetNeedsCellRecalc();
-}
-
-void LayoutTableSection::EnsureCols(unsigned row_index, unsigned num_cols) {
-  NOT_DESTROYED();
-  if (num_cols > NumCols(row_index))
-    grid_[row_index].grid_cells.Grow(num_cols);
 }
 
 void LayoutTableSection::AddChild(LayoutObject* child,
@@ -233,7 +216,7 @@ void LayoutTableSection::AddChild(LayoutObject* child,
 }
 
 static inline void CheckThatVectorIsDOMOrdered(
-    const HeapVector<Member<LayoutTableCell>, 1>& cells) {
+    const Vector<LayoutTableCell*, 1>& cells) {
 #ifndef NDEBUG
   // This function should be called on a non-empty vector.
   DCHECK_GT(cells.size(), 0u);
@@ -913,7 +896,7 @@ int LayoutTableSection::CalcRowLogicalHeight() {
     for (auto& grid_cell : grid_[r].grid_cells) {
       if (grid_cell.InColSpan())
         continue;
-      for (const auto& cell : grid_cell.Cells()) {
+      for (auto* cell : grid_cell.Cells()) {
         // For row spanning cells, we only handle them for the first row they
         // span. This ensures we take their baseline into account.
         if (cell->RowIndex() != r)
@@ -1637,7 +1620,7 @@ void LayoutTableSection::DirtiedRowsAndEffectiveColumns(
     unsigned smallest_row = rows.Start();
     for (unsigned c = columns.Start(); c < std::min(columns.End(), n_cols);
          ++c) {
-      for (const auto& cell : GridCellAt(rows.Start(), c).Cells()) {
+      for (const auto* cell : GridCellAt(rows.Start(), c).Cells()) {
         smallest_row = std::min(smallest_row, cell->RowIndex());
         if (!smallest_row)
           break;

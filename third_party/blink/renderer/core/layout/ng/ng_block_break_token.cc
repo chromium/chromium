@@ -6,8 +6,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
-#include "third_party/blink/renderer/platform/heap/impl/heap.h"
-#include "third_party/blink/renderer/platform/heap/impl/member.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -23,15 +21,17 @@ ASSERT_SIZE(NGBlockBreakToken, SameSizeAsNGBlockBreakToken);
 
 }  // namespace
 
-NGBlockBreakToken* NGBlockBreakToken::Create(
+scoped_refptr<NGBlockBreakToken> NGBlockBreakToken::Create(
     const NGBoxFragmentBuilder& builder) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
-  return MakeGarbageCollected<NGBlockBreakToken>(
-      AdditionalBytes(builder.child_break_tokens_.size() *
-                      sizeof(Member<NGBreakToken>)),
-      PassKey(), builder);
+  void* data = ::WTF::Partitions::FastMalloc(
+      sizeof(NGBlockBreakToken) +
+          builder.child_break_tokens_.size() * sizeof(NGBreakToken*),
+      ::WTF::GetStringWithTypeName<NGBlockBreakToken>());
+  new (data) NGBlockBreakToken(PassKey(), builder);
+  return base::AdoptRef(static_cast<NGBlockBreakToken*>(data));
 }
 
 NGBlockBreakToken::NGBlockBreakToken(PassKey key,
@@ -39,17 +39,19 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key,
     : NGBreakToken(kBlockBreakToken, builder.node_),
       consumed_block_size_(builder.consumed_block_size_),
       sequence_number_(builder.sequence_number_),
-      const_num_children_(builder.child_break_tokens_.size()) {
+      num_children_(builder.child_break_tokens_.size()) {
   break_appeal_ = builder.break_appeal_;
   has_seen_all_children_ = builder.has_seen_all_children_;
   is_caused_by_column_spanner_ = builder.FoundColumnSpanner();
   is_at_block_end_ = builder.is_at_block_end_;
-  for (wtf_size_t i = 0; i < builder.child_break_tokens_.size(); ++i)
-    child_break_tokens_[i] = builder.child_break_tokens_[i];
+  for (wtf_size_t i = 0; i < builder.child_break_tokens_.size(); ++i) {
+    child_break_tokens_[i] = builder.child_break_tokens_[i].get();
+    child_break_tokens_[i]->AddRef();
+  }
 }
 
 NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGLayoutInputNode node)
-    : NGBreakToken(kBlockBreakToken, node), const_num_children_(0) {}
+    : NGBreakToken(kBlockBreakToken, node), num_children_(0) {}
 
 const NGInlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
     const NGLayoutInputNode& node) const {
@@ -89,13 +91,5 @@ String NGBlockBreakToken::ToString() const {
 }
 
 #endif  // DCHECK_IS_ON()
-
-void NGBlockBreakToken::Trace(Visitor* visitor) const {
-  // Looking up |ChildBreakTokens()| in Trace() here is safe because
-  // |const_num_children_| is const.
-  for (auto& child : ChildBreakTokens())
-    visitor->Trace(child);
-  NGBreakToken::Trace(visitor);
-}
 
 }  // namespace blink

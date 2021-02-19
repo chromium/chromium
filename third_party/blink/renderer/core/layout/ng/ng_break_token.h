@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
@@ -28,8 +30,12 @@ namespace blink {
 // NGPhysicalFragment* fragment2 = node->Layout(space, fragment->BreakToken());
 //
 // The break token should encapsulate enough information to "resume" the layout.
-class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
+class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
+  USING_FAST_MALLOC(NGBreakToken);
+
  public:
+  virtual ~NGBreakToken() = default;
+
   enum NGBreakTokenType {
     kBlockBreakToken = NGLayoutInputNode::kBlock,
     kInlineBreakToken = NGLayoutInputNode::kInline
@@ -55,8 +61,6 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   void ShowBreakTokenTree() const;
 #endif
 
-  virtual void Trace(Visitor*) const;
-
  protected:
   NGBreakToken(NGBreakTokenType type,
                NGLayoutInputNode node)
@@ -75,9 +79,10 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
  private:
   // Because |NGLayoutInputNode| has a pointer and 1 bit flag, and it's fast to
   // re-construct, keep |LayoutBox| to save the memory consumed by alignment.
-  Member<LayoutBox> box_;
+  LayoutBox* box_;
 
   unsigned type_ : 1;
+  unsigned status_ : 1;
 
  protected:
   // The following bitfields are only to be used by NGInlineBreakToken (it's
@@ -110,7 +115,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   unsigned has_seen_all_children_ : 1;
 };
 
-typedef HeapVector<Member<const NGBreakToken>> NGBreakTokenVector;
+typedef Vector<scoped_refptr<const NGBreakToken>> NGBreakTokenVector;
 
 }  // namespace blink
 

@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_STATE_H_
 
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -121,7 +120,7 @@ class LayoutState {
   bool containing_block_logical_width_changed_ : 1;
   bool pagination_state_changed_ : 1;
 
-  UntracedMember<LayoutFlowThread> flow_thread_;
+  LayoutFlowThread* flow_thread_;
 
   LayoutState* next_;
 
@@ -139,7 +138,7 @@ class LayoutState {
 
   AtomicString input_page_name_;
 
-  const UntracedMember<LayoutObject> layout_object_;
+  LayoutObject* const layout_object_;
 };
 
 }  // namespace blink

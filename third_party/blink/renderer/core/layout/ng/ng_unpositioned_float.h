@@ -43,7 +43,7 @@ struct CORE_EXPORT NGUnpositionedFloat final {
         parent_style(parent_style) {}
 
   NGBlockNode node;
-  const NGBlockBreakToken* token = nullptr;
+  scoped_refptr<const NGBlockBreakToken> token;
 
   const LogicalSize available_size;
   const LogicalSize percentage_size;
@@ -54,7 +54,7 @@ struct CORE_EXPORT NGUnpositionedFloat final {
 
   // layout_result and margins are used as a cache when measuring the
   // inline_size of a float in an inline context.
-  const NGLayoutResult* layout_result = nullptr;
+  scoped_refptr<const NGLayoutResult> layout_result;
   NGBoxStrut margins;
 
   bool IsLineLeft(TextDirection cb_direction) const {

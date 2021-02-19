@@ -15,10 +15,8 @@ namespace blink {
 class NGLayoutResult;
 
 // Contains the information necessary for copying back data to a FloatingObject.
-struct CORE_EXPORT NGPositionedFloat
-    : public GarbageCollected<NGPositionedFloat> {
- public:
-  NGPositionedFloat(const NGLayoutResult* layout_result,
+struct CORE_EXPORT NGPositionedFloat {
+  NGPositionedFloat(scoped_refptr<const NGLayoutResult> layout_result,
                     const NGBfcOffset& bfc_offset,
                     bool need_break_before = false)
       : layout_result(layout_result),
@@ -29,15 +27,11 @@ struct CORE_EXPORT NGPositionedFloat
   NGPositionedFloat& operator=(NGPositionedFloat&&) = default;
   NGPositionedFloat& operator=(const NGPositionedFloat&) = default;
 
-  void Trace(Visitor*) const;
-
-  Member<const NGLayoutResult> layout_result;
+  scoped_refptr<const NGLayoutResult> layout_result;
   NGBfcOffset bfc_offset;
   bool need_break_before = false;
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGPositionedFloat)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_POSITIONED_FLOAT_H_

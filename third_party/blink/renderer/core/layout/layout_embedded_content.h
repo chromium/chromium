@@ -42,6 +42,7 @@ class WebPluginContainerImpl;
 class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
  public:
   explicit LayoutEmbeddedContent(HTMLFrameOwnerElement*);
+  ~LayoutEmbeddedContent() override;
 
   bool ContentDocumentContainsGraphicsLayer() const;
 
@@ -49,6 +50,12 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
+
+  void AddRef() {
+    NOT_DESTROYED();
+    ++ref_count_;
+  }
+  void Release();
 
   // LayoutEmbeddedContent::ChildFrameView returns the LocalFrameView associated
   // with the current Node, if Node is HTMLFrameOwnerElement. This is different
@@ -99,12 +106,15 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   CompositingReasons AdditionalCompositingReasons() const override;
 
   void WillBeDestroyed() final;
+  void DeleteThis() final;
 
   bool NodeAtPointOverEmbeddedContentView(
       HitTestResult&,
       const HitTestLocation&,
       const PhysicalOffset& accumulated_offset,
       HitTestAction);
+
+  int ref_count_;
 };
 
 template <>

@@ -35,19 +35,17 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
  public:
   struct ChildWithOffset {
     DISALLOW_NEW();
-    ChildWithOffset(LogicalOffset offset, const NGPhysicalFragment* fragment)
+    ChildWithOffset(LogicalOffset offset,
+                    scoped_refptr<const NGPhysicalFragment> fragment)
         : offset(offset), fragment(std::move(fragment)) {}
-
-    void Trace(Visitor*) const;
 
     // We store logical offsets (instead of the final physical), as we can't
     // convert into the physical coordinate space until we know our final size.
     LogicalOffset offset;
-    Member<const NGPhysicalFragment> fragment;
+    scoped_refptr<const NGPhysicalFragment> fragment;
   };
-
-  using ChildrenVector = HeapVector<ChildWithOffset, 4>;
-  using MulticolCollection = HeapHashSet<Member<LayoutBox>>;
+  typedef Vector<ChildWithOffset, 4> ChildrenVector;
+  using MulticolCollection = HashSet<LayoutBox*>;
 
   LayoutUnit BfcLineOffset() const { return bfc_line_offset_; }
   void SetBfcLineOffset(LayoutUnit bfc_line_offset) {
@@ -139,10 +137,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void AddMulticolWithPendingOOFs(const NGBlockNode& multicol);
 
   void SwapOutOfFlowPositionedCandidates(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);
+      Vector<NGLogicalOutOfFlowPositionedNode>* candidates);
 
   void SwapOutOfFlowFragmentainerDescendants(
-      HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants);
+      Vector<NGLogicalOutOfFlowPositionedNode>* descendants);
 
   void SwapMulticolsWithPendingOOFs(
       MulticolCollection* multicols_with_pending_oofs);
@@ -161,7 +159,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     return !multicols_with_pending_oofs_.IsEmpty();
   }
 
-  HeapVector<NGLogicalOutOfFlowPositionedNode>*
+  Vector<NGLogicalOutOfFlowPositionedNode>*
   MutableOutOfFlowPositionedCandidates() {
     return &oof_positioned_candidates_;
   }
@@ -241,7 +239,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   friend class NGPhysicalContainerFragment;
 
   NGContainerFragmentBuilder(NGLayoutInputNode node,
-                             const ComputedStyle* style,
+                             scoped_refptr<const ComputedStyle> style,
                              const NGConstraintSpace* space,
                              WritingDirectionMode writing_direction)
       : NGFragmentBuilder(std::move(style), writing_direction),
@@ -254,7 +252,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
                           const LogicalOffset& child_offset,
                           const LayoutInline* inline_container = nullptr);
 
-  void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
+  void AddChildInternal(scoped_refptr<const NGPhysicalFragment>,
+                        const LogicalOffset&);
 
   NGLayoutInputNode node_;
   const NGConstraintSpace* space_;
@@ -264,10 +263,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   NGMarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
 
-  HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_candidates_;
-  HeapVector<NGLogicalOutOfFlowPositionedNode>
+  Vector<NGLogicalOutOfFlowPositionedNode> oof_positioned_candidates_;
+  Vector<NGLogicalOutOfFlowPositionedNode>
       oof_positioned_fragmentainer_descendants_;
-  HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
+  Vector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
 
   MulticolCollection multicols_with_pending_oofs_;
 
@@ -278,9 +277,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.
   NGBreakTokenVector child_break_tokens_;
-  const NGInlineBreakToken* last_inline_break_token_ = nullptr;
+  scoped_refptr<const NGInlineBreakToken> last_inline_break_token_;
 
-  const NGEarlyBreak* early_break_ = nullptr;
+  scoped_refptr<const NGEarlyBreak> early_break_;
   NGBreakAppeal break_appeal_ = kBreakAppealLastResort;
 
   // See NGLayoutResult::AnnotationOverflow().

@@ -33,7 +33,7 @@ MinMaxSizesResult NGTableSectionLayoutAlgorithm::ComputeMinMaxSizes(
 // |  +--------------------+  |
 // |       vspacing           |
 // +--------------------------+
-const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   wtf_size_t section_index = ConstraintSpace().TableSectionIndex();
 
@@ -58,7 +58,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         {container_builder_.InlineSize(), kIndefiniteSize});
     row_space_builder.SetTableRowData(&table_data, row_index);
     NGConstraintSpace row_space = row_space_builder.ToConstraintSpace();
-    const NGLayoutResult* row_result = row.Layout(row_space);
+    scoped_refptr<const NGLayoutResult> row_result = row.Layout(row_space);
     if (is_first_row) {
       const NGPhysicalBoxFragment& physical_fragment =
           To<NGPhysicalBoxFragment>(row_result->PhysicalFragment());

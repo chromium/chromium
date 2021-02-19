@@ -14,30 +14,22 @@ FragmentData::RareData::RareData() : unique_id(NewUniqueObjectId()) {}
 
 FragmentData::RareData::~RareData() = default;
 
-void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
-  if (layer && layer != new_layer)
-    layer->Destroy();
-  layer = new_layer;
-}
-
-void FragmentData::RareData::Trace(Visitor* visitor) const {
-  visitor->Trace(layer);
-  visitor->Trace(next_fragment_);
-}
-
-void FragmentData::ClearNextFragment() {
+void FragmentData::DestroyTail() {
   if (!rare_data_)
     return;
   // Take next_fragment_ which clears it in this fragment.
-  FragmentData* next = rare_data_->next_fragment_.Release();
+  std::unique_ptr<FragmentData> next = std::move(rare_data_->next_fragment_);
   while (next && next->rare_data_) {
-    next = next->rare_data_->next_fragment_.Release();
+    // Take next_fragment_ which clears it in that fragment, and the assignment
+    // deletes the previous |next|.
+    next = std::move(next->rare_data_->next_fragment_);
   }
+  // The last |next| will be deleted on return.
 }
 
 FragmentData& FragmentData::EnsureNextFragment() {
   if (!NextFragment())
-    EnsureRareData().next_fragment_ = MakeGarbageCollected<FragmentData>();
+    EnsureRareData().next_fragment_ = std::make_unique<FragmentData>();
   return *rare_data_->next_fragment_;
 }
 
@@ -56,13 +48,13 @@ const FragmentData& FragmentData::LastFragment() const {
 
 FragmentData::RareData& FragmentData::EnsureRareData() {
   if (!rare_data_)
-    rare_data_ = MakeGarbageCollected<RareData>();
+    rare_data_ = std::make_unique<RareData>();
   return *rare_data_;
 }
 
-void FragmentData::SetLayer(PaintLayer* layer) {
+void FragmentData::SetLayer(std::unique_ptr<PaintLayer> layer) {
   if (rare_data_ || layer)
-    EnsureRareData().SetLayer(layer);
+    EnsureRareData().layer = std::move(layer);
 }
 
 const TransformPaintPropertyNodeOrAlias& FragmentData::PreTransform() const {

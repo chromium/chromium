@@ -143,8 +143,6 @@ class CompositingRequirementsUpdater::OverlapMap {
 };
 
 class CompositingRequirementsUpdater::RecursionData {
-  STACK_ALLOCATED();
-
  public:
   explicit RecursionData(PaintLayer* compositing_ancestor)
       : compositing_ancestor_(compositing_ancestor),
@@ -231,7 +229,7 @@ void CompositingRequirementsUpdater::Update(
   // of them dynamically, we are requiring a full tree walk. This
   // should be removed as soon as proper overlap testing based on
   // scrolling and animation bounds is implemented (crbug.com/252472).
-  HeapVector<Member<PaintLayer>> unclipped_descendants;
+  Vector<PaintLayer*> unclipped_descendants;
   IntRect absolute_descendant_bounding_box;
   UpdateRecursive(nullptr, root, overlap_test_request_map, recursion_data,
                   saw3d_transform, unclipped_descendants,
@@ -243,7 +241,7 @@ static void CheckSubtreeHasNoCompositing(PaintLayer* layer) {
   if (layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock())
     return;
 
-  PaintLayerPaintOrderIterator iterator(layer, kAllChildren);
+  PaintLayerPaintOrderIterator iterator(*layer, kAllChildren);
   while (PaintLayer* cur_layer = iterator.Next()) {
     DCHECK(cur_layer->GetCompositingState() == kNotComposited);
     DCHECK(!cur_layer->DirectCompositingReasons() ||
@@ -259,7 +257,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     OverlapMap& overlap_map,
     RecursionData& current_recursion_data,
     bool& descendant_has3d_transform,
-    HeapVector<Member<PaintLayer>>& unclipped_descendants,
+    Vector<PaintLayer*>& unclipped_descendants,
     IntRect& absolute_descendant_bounding_box,
     CompositingReasonsStats& compositing_reasons_stats) {
   PaintLayerCompositor* compositor = layout_view_.Compositor();
@@ -402,7 +400,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
 #if DCHECK_IS_ON()
-  PaintLayerListMutationDetector mutation_checker(layer);
+  PaintLayerListMutationDetector mutation_checker(*layer);
 #endif
 
   bool any_descendant_has3d_transform = false;
@@ -437,7 +435,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       recursion_blocked_by_display_lock || skip_children_ignoring_display_lock;
 
   if (!skip_children) {
-    PaintLayerPaintOrderIterator iterator(layer, kNegativeZOrderChildren);
+    PaintLayerPaintOrderIterator iterator(*layer, kNegativeZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       IntRect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,
@@ -487,7 +485,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
   if (!skip_children) {
-    PaintLayerPaintOrderIterator iterator(layer,
+    PaintLayerPaintOrderIterator iterator(*layer,
                                           kNormalFlowAndPositiveZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       IntRect absolute_child_descendant_bounding_box;

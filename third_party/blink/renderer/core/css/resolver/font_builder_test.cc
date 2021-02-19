@@ -45,11 +45,11 @@ class FontBuilderAdditiveTest : public FontBuilderTest,
                                 public testing::TestWithParam<FunctionPair> {};
 
 TEST_F(FontBuilderInitTest, InitialFontSizeNotScaled) {
-  ComputedStyle* initial = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> initial = ComputedStyle::Create();
 
   FontBuilder builder(&GetDocument());
   builder.SetInitial(1.0f);  // FIXME: Remove unused param.
-  builder.CreateFont(*initial, initial);
+  builder.CreateFont(*initial, initial.get());
 
   EXPECT_EQ(16.0f, initial->GetFontDescription().ComputedSize());
 }
@@ -68,15 +68,15 @@ TEST_P(FontBuilderAdditiveTest, OnlySetValueIsModified) {
   FontDescription parent_description;
   funcs.set_base_value(parent_description);
 
-  ComputedStyle* parent_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> parent_style = ComputedStyle::Create();
   parent_style->SetFontDescription(parent_description);
 
-  ComputedStyle* style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->InheritFrom(*parent_style);
 
   FontBuilder font_builder(&GetDocument());
   funcs.set_value(font_builder);
-  font_builder.CreateFont(*style, parent_style);
+  font_builder.CreateFont(*style, parent_style.get());
 
   FontDescription output_description = style->GetFontDescription();
 

@@ -66,14 +66,14 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   ~StyleResolver();
   void Dispose();
 
-  ComputedStyle* StyleForElement(
+  scoped_refptr<ComputedStyle> StyleForElement(
       Element*,
       const StyleRecalcContext&,
       const ComputedStyle* parent_style = nullptr,
       const ComputedStyle* layout_parent_style = nullptr,
       RuleMatchingBehavior = kMatchAllRules);
 
-  static ComputedStyle* InitialStyleForElement(Document&);
+  static scoped_refptr<ComputedStyle> InitialStyleForElement(Document&);
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
       Element&,
@@ -83,17 +83,18 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
-  ComputedStyle* PseudoStyleForElement(
+  scoped_refptr<ComputedStyle> PseudoStyleForElement(
       Element*,
       const StyleRecalcContext&,
       const PseudoElementStyleRequest&,
       const ComputedStyle* parent_style,
       const ComputedStyle* layout_parent_style);
 
-  const ComputedStyle* StyleForPage(int page_index,
-                                    const AtomicString& page_name);
-  const ComputedStyle* StyleForText(Text*);
-  ComputedStyle* StyleForViewport();
+  scoped_refptr<const ComputedStyle> StyleForPage(
+      uint32_t page_index,
+      const AtomicString& page_name);
+  scoped_refptr<const ComputedStyle> StyleForText(Text*);
+  scoped_refptr<ComputedStyle> StyleForViewport();
 
   // TODO(esprehn): StyleResolver should probably not contain tree walking
   // state, instead we should pass a context object during recalcStyle.
@@ -146,15 +147,16 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                       const CSSPropertyName&,
                                       const CSSValue&);
 
-  ComputedStyle* StyleForInterpolations(Element& element,
-                                        ActiveInterpolationsMap& animations);
+  scoped_refptr<ComputedStyle> StyleForInterpolations(
+      Element& element,
+      ActiveInterpolationsMap& animations);
 
   // When updating transitions, the "before change style" is the style from
   // the previous style change with the addition of all declarative animations
   // ticked to the current time. Ticking the animations is required to ensure
   // smooth retargeting of transitions.
   // https://drafts.csswg.org/css-transitions-1/#before-change-style
-  ComputedStyle* BeforeChangeStyleForTransitionUpdate(
+  scoped_refptr<ComputedStyle> BeforeChangeStyleForTransitionUpdate(
       Element& element,
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);

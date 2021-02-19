@@ -84,7 +84,7 @@ class NGLengthUtilsTest : public testing::Test {
         constraint_space, *style_, border_padding, length, content_size);
   }
 
-  Persistent<ComputedStyle> style_;
+  scoped_refptr<ComputedStyle> style_;
 };
 
 class NGLengthUtilsTestWithNode : public NGLayoutTest {
@@ -122,7 +122,7 @@ class NGLengthUtilsTestWithNode : public NGLayoutTest {
         constraint_space, *style_, border_padding, content_size, inline_size);
   }
 
-  Persistent<ComputedStyle> style_;
+  scoped_refptr<ComputedStyle> style_;
 };
 
 TEST_F(NGLengthUtilsTest, TestResolveInlineLength) {

@@ -24,4 +24,17 @@ TEST(StyleRetainScopeTest, Current) {
   EXPECT_EQ(StyleRetainScope::Current(), nullptr);
 }
 
+TEST(StyleRetainScopeTest, Retain) {
+  scoped_refptr<const ComputedStyle> style = ComputedStyle::Create();
+  EXPECT_TRUE(style->HasOneRef());
+  {
+    StyleRetainScope scope;
+    scope.Retain(*style);
+
+    EXPECT_FALSE(style->HasOneRef());
+    EXPECT_TRUE(style->HasAtLeastOneRef());
+  }
+  EXPECT_TRUE(style->HasOneRef());
+}
+
 }  // namespace blink

@@ -101,9 +101,9 @@ LayoutObject* SVGAElement::CreateLayoutObject(const ComputedStyle&,
                                               LegacyLayout) {
   auto* svg_element = DynamicTo<SVGElement>(parentNode());
   if (svg_element && svg_element->IsTextContent())
-    return MakeGarbageCollected<LayoutSVGInline>(this);
+    return new LayoutSVGInline(this);
 
-  return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
+  return new LayoutSVGTransformableContainer(this);
 }
 
 void SVGAElement::DefaultEventHandler(Event& event) {

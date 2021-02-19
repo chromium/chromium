@@ -530,7 +530,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
 
   // Map the <canvas> font into the text style. If the font uses keywords like
   // larger/smaller, these will work relative to the canvas.
-  ComputedStyle* font_style;
+  scoped_refptr<ComputedStyle> font_style;
   const ComputedStyle* computed_style = canvas()->EnsureComputedStyle();
   if (computed_style) {
     auto i = fonts_resolved_using_current_style_.find(new_font);
@@ -555,7 +555,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
 
       font_style->SetFontDescription(element_font_description);
       canvas()->GetDocument().GetStyleEngine().ComputeFont(
-          *canvas(), font_style, *parsed_style);
+          *canvas(), font_style.get(), *parsed_style);
 
       // We need to reset Computed and Adjusted size so we skip zoom and
       // minimum font size.

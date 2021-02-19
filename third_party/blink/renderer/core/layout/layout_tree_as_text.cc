@@ -680,11 +680,10 @@ static void Write(WTF::TextStream& ts,
     Write(ts, layer.GetLayoutObject(), indent + 1, behavior);
 }
 
-static HeapVector<Member<PaintLayer>> ChildLayers(
-    const PaintLayer* layer,
-    PaintLayerIteration which_children) {
-  HeapVector<Member<PaintLayer>> vector;
-  PaintLayerPaintOrderIterator it(layer, which_children);
+static Vector<PaintLayer*> ChildLayers(const PaintLayer* layer,
+                                       PaintLayerIteration which_children) {
+  Vector<PaintLayer*> vector;
+  PaintLayerPaintOrderIterator it(*layer, which_children);
   while (PaintLayer* child = it.Next())
     vector.push_back(child);
   return vector;
@@ -751,7 +750,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " negative z-order list(" << neg_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto& child_layer : neg_list) {
+    for (auto* child_layer : neg_list) {
       WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
                   marked_layer);
     }
@@ -773,7 +772,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " normal flow list(" << normal_flow_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto& child_layer : normal_flow_list) {
+    for (auto* child_layer : normal_flow_list) {
       WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
                   marked_layer);
     }
@@ -787,7 +786,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " positive z-order list(" << pos_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto& child_layer : pos_list) {
+    for (auto* child_layer : pos_list) {
       WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
                   marked_layer);
     }

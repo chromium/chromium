@@ -46,24 +46,17 @@
 namespace blink {
 
 struct SameSizeAsInlineFlowBox : public InlineBox {
-  void* pointers[1];
-  Member<void*> members[4];
+  void* pointers[5];
   uint32_t bitfields : 23;
 };
 
 ASSERT_SIZE(InlineFlowBox, SameSizeAsInlineFlowBox);
 
-void InlineFlowBox::Trace(Visitor* visitor) const {
-  visitor->Trace(first_child_);
-  visitor->Trace(last_child_);
-  visitor->Trace(prev_line_box_);
-  visitor->Trace(next_line_box_);
-  InlineBox::Trace(visitor);
-}
-
 #if DCHECK_IS_ON()
-void InlineFlowBox::Destroy() {
-  InlineBox::Destroy();
+InlineFlowBox::~InlineFlowBox() {
+  if (!has_bad_child_list_)
+    for (InlineBox* child = FirstChild(); child; child = child->NextOnLine())
+      child->SetHasBadParent();
 }
 #endif
 

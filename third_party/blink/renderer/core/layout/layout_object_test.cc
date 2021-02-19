@@ -724,6 +724,7 @@ TEST_F(LayoutObjectTest, VisualRect) {
   class MockLayoutObject : public LayoutObject {
    public:
     MockLayoutObject() : LayoutObject(nullptr) {}
+    ~MockLayoutObject() override { SetBeingDestroyedForTesting(); }
     MOCK_CONST_METHOD0(VisualRectRespectsVisibility, bool());
 
    private:
@@ -737,20 +738,19 @@ TEST_F(LayoutObjectTest, VisualRect) {
     }
   };
 
-  MockLayoutObject* mock_object = MakeGarbageCollected<MockLayoutObject>();
-  ComputedStyle* style = ComputedStyle::Create();
-  mock_object->SetStyle(style);
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
+  MockLayoutObject mock_object;
+  auto style = ComputedStyle::Create();
+  mock_object.SetStyle(style.get());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
 
   style->SetVisibility(EVisibility::kHidden);
-  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
+  EXPECT_CALL(mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(true));
-  EXPECT_TRUE(mock_object->LocalVisualRect().IsEmpty());
-  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
+  EXPECT_TRUE(mock_object.LocalVisualRect().IsEmpty());
+  EXPECT_CALL(mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(false));
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-  mock_object->SetDestroyedForTesting();
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
 }
 
 TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {

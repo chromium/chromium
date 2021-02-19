@@ -106,7 +106,7 @@ void LayoutGeometryMap::MapToAncestor(
       }
     }
 
-    if (in_fixed && IsA<LayoutView>(current_step.layout_object_.Get())) {
+    if (in_fixed && IsA<LayoutView>(current_step.layout_object_)) {
       transform_state.Move(current_step.offset_for_fixed_position_);
       in_fixed = false;
     }
@@ -120,7 +120,7 @@ void LayoutGeometryMap::MapToAncestor(
       const LayoutGeometryMapStep& current_step = mapping_[i];
       if (current_step.flags_ & (kContainsFixedPosition | kIsFixedPosition))
         break;
-      if (IsA<LayoutView>(current_step.layout_object_.Get())) {
+      if (IsA<LayoutView>(current_step.layout_object_)) {
         transform_state.Move(current_step.offset_for_fixed_position_);
         break;
       }

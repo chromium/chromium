@@ -65,10 +65,10 @@ class CORE_EXPORT NGLineBreaker {
   bool IsFinished() const { return item_index_ >= Items().size(); }
 
   // Create an NGInlineBreakToken for the last line returned by NextLine().
-  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&) const;
+  scoped_refptr<NGInlineBreakToken> CreateBreakToken(const NGLineInfo&) const;
 
-  void PropagateBreakToken(const NGBlockBreakToken*);
-  HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
+  void PropagateBreakToken(scoped_refptr<const NGBlockBreakToken>);
+  Vector<scoped_refptr<const NGBlockBreakToken>>& PropagatedBreakTokens() {
     return propagated_break_tokens_;
   }
 
@@ -101,7 +101,7 @@ class CORE_EXPORT NGLineBreaker {
 
  private:
   const String& Text() const { return text_content_; }
-  const HeapVector<NGInlineItem>& Items() const { return items_data_.items; }
+  const Vector<NGInlineItem>& Items() const { return items_data_.items; }
 
   String TextContentForLineBreak() const;
 
@@ -287,8 +287,8 @@ class CORE_EXPORT NGLineBreaker {
 
   const NGConstraintSpace& constraint_space_;
   NGExclusionSpace* exclusion_space_;
-  const NGInlineBreakToken* break_token_;
-  const ComputedStyle* current_style_ = nullptr;
+  scoped_refptr<const NGInlineBreakToken> break_token_;
+  scoped_refptr<const ComputedStyle> current_style_;
 
   LazyLineBreakIterator break_iterator_;
   HarfBuzzShaper shaper_;
@@ -326,7 +326,7 @@ class CORE_EXPORT NGLineBreaker {
   // if 'unicode-bidi: plaintext'.
   TextDirection base_direction_;
 
-  HeapVector<Member<const NGBlockBreakToken>> propagated_break_tokens_;
+  Vector<scoped_refptr<const NGBlockBreakToken>> propagated_break_tokens_;
 
   // Fields for `box-decoration-break: clone`.
   unsigned cloned_box_decorations_count_ = 0;

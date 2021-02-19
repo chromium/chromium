@@ -108,8 +108,8 @@ void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
 
 InlineTextBox* LayoutSVGInlineText::CreateTextBox(int start, uint16_t length) {
   NOT_DESTROYED();
-  InlineTextBox* box = MakeGarbageCollected<SVGInlineTextBox>(
-      LineLayoutItem(this), start, length);
+  InlineTextBox* box =
+      new SVGInlineTextBox(LineLayoutItem(this), start, length);
   box->SetHasVirtualLogicalHeight();
   return box;
 }
@@ -381,7 +381,7 @@ void LayoutSVGInlineText::UpdateMetricsList(
     // If BiDi override is in effect, use the specified direction.
     if (bidi_override && !StyleRef().IsLeftToRightDirection())
       direction = WTF::unicode::kRightToLeft;
-    bidi_runs.AddRun(MakeGarbageCollected<BidiCharacterRun>(
+    bidi_runs.AddRun(new BidiCharacterRun(
         status.context->Override(), status.context->Level(), 0,
         run.CharactersLength(), direction, status.context->Dir()));
   } else {
@@ -403,7 +403,7 @@ void LayoutSVGInlineText::UpdateMetricsList(
     AddMetricsFromRun(sub_run, last_character_was_white_space);
   }
 
-  bidi_resolver.Runs().ClearRuns();
+  bidi_resolver.Runs().DeleteRuns();
 }
 
 void LayoutSVGInlineText::UpdateScaledFont() {

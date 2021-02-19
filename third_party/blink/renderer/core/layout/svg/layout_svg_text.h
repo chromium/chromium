@@ -33,7 +33,6 @@ class LayoutSVGText final : public LayoutSVGBlock {
  public:
   explicit LayoutSVGText(SVGTextElement*);
   ~LayoutSVGText() override;
-  void Trace(Visitor*) const override;
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
@@ -64,7 +63,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
     NOT_DESTROYED();
     return needs_reordering_;
   }
-  const HeapVector<Member<LayoutSVGInlineText>>& DescendantTextNodes() const {
+  const Vector<LayoutSVGInlineText*>& DescendantTextNodes() const {
     NOT_DESTROYED();
     return descendant_text_nodes_;
   }
@@ -114,7 +113,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
   bool needs_reordering_ : 1;
   bool needs_positioning_values_update_ : 1;
   bool needs_text_metrics_update_ : 1;
-  HeapVector<Member<LayoutSVGInlineText>> descendant_text_nodes_;
+  Vector<LayoutSVGInlineText*> descendant_text_nodes_;
 };
 
 template <>

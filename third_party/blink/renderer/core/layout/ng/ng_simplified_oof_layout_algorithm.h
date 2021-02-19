@@ -28,13 +28,13 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
                                  const NGPhysicalBoxFragment&,
                                  bool is_new_fragment);
 
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override {
     NOTREACHED();
     return MinMaxSizesResult();
   }
 
-  void AppendOutOfFlowResult(const NGLayoutResult* child);
+  void AppendOutOfFlowResult(scoped_refptr<const NGLayoutResult> child);
 
  private:
   void AddChildFragment(const NGLink& old_fragment);
@@ -42,7 +42,7 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
   const WritingDirectionMode writing_direction_;
   PhysicalSize previous_physical_container_size_;
 
-  HeapVector<Member<const NGLayoutResult>> remaining_oof_results_;
+  Vector<scoped_refptr<const NGLayoutResult>> remaining_oof_results_;
   base::span<const NGLink> children_;
   base::span<const NGLink>::iterator iterator_;
 };

@@ -151,7 +151,7 @@ void NGMathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
   DCHECK(*denominator);
 }
 
-const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGMathFractionLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode numerator = nullptr;
@@ -160,13 +160,13 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
 
   auto numerator_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), numerator);
-  const NGLayoutResult* numerator_layout_result =
+  scoped_refptr<const NGLayoutResult> numerator_layout_result =
       numerator.Layout(numerator_space);
   auto numerator_margins =
       ComputeMarginsFor(numerator_space, numerator.Style(), ConstraintSpace());
   auto denominator_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), denominator);
-  const NGLayoutResult* denominator_layout_result =
+  scoped_refptr<const NGLayoutResult> denominator_layout_result =
       denominator.Layout(denominator_space);
   auto denominator_margins = ComputeMarginsFor(
       denominator_space, denominator.Style(), ConstraintSpace());

@@ -24,8 +24,6 @@ struct SVGContainerLayoutInfo {
 // with additional state related to the children of the container. Used by
 // <svg>, <g> etc.
 class SVGContentContainer {
-  DISALLOW_NEW();
-
  public:
   void Layout(const SVGContainerLayoutInfo&);
   bool HitTest(HitTestResult&, const HitTestLocation&, HitTestAction) const;
@@ -38,8 +36,6 @@ class SVGContentContainer {
 
   LayoutObjectChildList& Children() { return children_; }
   const LayoutObjectChildList& Children() const { return children_; }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(children_); }
 
  private:
   LayoutObjectChildList children_;

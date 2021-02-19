@@ -45,10 +45,10 @@ class TransformState;
 // Can be used while walking the layout tree to cache data about offsets and
 // transforms.
 class CORE_EXPORT LayoutGeometryMap {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
-  explicit LayoutGeometryMap(MapCoordinatesFlags = 0);
+  LayoutGeometryMap(MapCoordinatesFlags = 0);
   LayoutGeometryMap(const LayoutGeometryMap&) = delete;
   LayoutGeometryMap& operator=(const LayoutGeometryMap&) = delete;
   ~LayoutGeometryMap();
@@ -117,7 +117,7 @@ class CORE_EXPORT LayoutGeometryMap {
   bool IsTopmostLayoutView(const LayoutObject*) const;
 #endif
 
-  typedef HeapVector<LayoutGeometryMapStep, 32> LayoutGeometryMapSteps;
+  typedef Vector<LayoutGeometryMapStep, 32> LayoutGeometryMapSteps;
 
   wtf_size_t insertion_position_;
   int non_uniform_steps_count_;

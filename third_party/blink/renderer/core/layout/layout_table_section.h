@@ -108,7 +108,6 @@ class CORE_EXPORT LayoutTableSection final
  public:
   explicit LayoutTableSection(Element*);
   ~LayoutTableSection() override;
-  void Trace(Visitor*) const override;
 
   LayoutTableRow* FirstRow() const;
   LayoutTableRow* LastRow() const;
@@ -133,7 +132,7 @@ class CORE_EXPORT LayoutTableSection final
     return To<LayoutTable>(Parent());
   }
 
-  typedef HeapVector<Member<LayoutTableCell>, 2> SpanningLayoutTableCells;
+  typedef Vector<LayoutTableCell*, 2> SpanningLayoutTableCells;
 
   struct SpanningRowsHeight {
     STACK_ALLOCATED();
@@ -266,8 +265,7 @@ class CORE_EXPORT LayoutTableSection final
                                       CellSpan& rows,
                                       CellSpan& columns) const;
 
-  const HeapHashSet<Member<const LayoutTableCell>>& VisuallyOverflowingCells()
-      const {
+  const HashSet<const LayoutTableCell*>& VisuallyOverflowingCells() const {
     NOT_DESTROYED();
     return visually_overflowing_cells_;
   }
@@ -373,24 +371,6 @@ class CORE_EXPORT LayoutTableSection final
   LayoutNGTableRowInterface* LastRowInterface() const final;
 
   // LayoutNGTableSectionInterface methods end.
-
-  // This is made public just to set VectorTraits.
-  struct TableGridRow {
-    DISALLOW_NEW();
-
-   public:
-    void Trace(Visitor*) const;
-
-    inline void SetRowLogicalHeightToRowStyleLogicalHeight();
-    inline void UpdateLogicalHeightForCell(const LayoutTableCell*);
-
-    // The index is effective column index.
-    HeapVector<TableGridCell> grid_cells;
-    Member<LayoutTableRow> row;
-    LayoutUnit baseline = LayoutUnit(-1);
-    Length logical_height;
-  };
-
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   bool NodeAtPoint(HitTestResult&,
@@ -425,7 +405,11 @@ class CORE_EXPORT LayoutTableSection final
       grid_.Grow(num_rows);
   }
 
-  void EnsureCols(unsigned row_index, unsigned num_cols);
+  void EnsureCols(unsigned row_index, unsigned num_cols) {
+    NOT_DESTROYED();
+    if (num_cols > NumCols(row_index))
+      grid_[row_index].grid_cells.Grow(num_cols);
+  }
 
   bool RowHasOnlySpanningCells(unsigned);
   unsigned CalcRowHeightHavingOnlySpanningCells(unsigned,
@@ -502,8 +486,22 @@ class CORE_EXPORT LayoutTableSection final
 
   bool GroupShouldRepeat() const;
 
+  struct TableGridRow {
+    DISALLOW_NEW();
+
+   public:
+    inline void SetRowLogicalHeightToRowStyleLogicalHeight();
+    inline void UpdateLogicalHeightForCell(const LayoutTableCell*);
+
+    // The index is effective column index.
+    Vector<TableGridCell> grid_cells;
+    LayoutTableRow* row = nullptr;
+    LayoutUnit baseline = LayoutUnit(-1);
+    Length logical_height;
+  };
+
   // The representation of the rows and their grid cells.
-  HeapVector<TableGridRow> grid_;
+  Vector<TableGridRow> grid_;
 
   // The logical offset of each row from the top of the section.
   //
@@ -542,7 +540,7 @@ class CORE_EXPORT LayoutTableSection final
   // This HashSet holds the overflowing cells for the partial paint path. If we
   // have too many overflowing cells, it will be empty and force_full_paint_
   // will be set to save memory. See ComputeVisualOverflowFromDescendants().
-  HeapHashSet<Member<const LayoutTableCell>> visually_overflowing_cells_;
+  HashSet<const LayoutTableCell*> visually_overflowing_cells_;
   bool force_full_paint_;
 
   // This boolean tracks if we have cells overlapping due to rowspan / colspan
@@ -571,16 +569,5 @@ struct DowncastTraits<LayoutTableSection> {
 };
 
 }  // namespace blink
-
-namespace WTF {
-
-template <>
-struct VectorTraits<blink::LayoutTableSection::TableGridRow>
-    : VectorTraitsBase<blink::LayoutTableSection::TableGridRow> {
-  STATIC_ONLY(VectorTraits);
-  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-};
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_SECTION_H_

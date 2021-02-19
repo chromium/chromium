@@ -44,7 +44,7 @@ DetailsMarkerControl::DetailsMarkerControl(Document& document)
 LayoutObject* DetailsMarkerControl::CreateLayoutObject(const ComputedStyle&,
                                                        LegacyLayout) {
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByDetailsMarker);
-  return MakeGarbageCollected<LayoutDetailsMarker>(this);
+  return new LayoutDetailsMarker(this);
 }
 
 bool DetailsMarkerControl::LayoutObjectIsNeeded(

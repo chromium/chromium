@@ -31,14 +31,14 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      ComputedStyle* parent_style = ComputedStyle::Create();
-      ComputedStyle* style = ComputedStyle::Create();
+      auto parent_style = ComputedStyle::Create();
+      auto style = ComputedStyle::Create();
       // This test assumes that initial 'writing-mode' is not 'vertical-lr'.
       ASSERT_NE(WritingMode::kVerticalLr, style->GetWritingMode());
       style->SetWritingMode(WritingMode::kVerticalLr);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               parent_style, parent_style);
+                               parent_style.get(), parent_style.get());
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
@@ -63,14 +63,14 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      ComputedStyle* parent_style = ComputedStyle::Create();
-      ComputedStyle* style = ComputedStyle::Create();
+      auto parent_style = ComputedStyle::Create();
+      auto style = ComputedStyle::Create();
       // This test assumes that initial 'text-orientation' is not 'upright'.
       ASSERT_NE(ETextOrientation::kUpright, style->GetTextOrientation());
       style->SetTextOrientation(ETextOrientation::kUpright);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               parent_style, parent_style);
+                               parent_style.get(), parent_style.get());
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
@@ -82,10 +82,10 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 }
 
 TEST_F(StyleBuilderTest, HasExplicitInheritance) {
-  ComputedStyle* parent_style = ComputedStyle::Create();
-  ComputedStyle* style = ComputedStyle::Create();
-  StyleResolverState state(GetDocument(), *GetDocument().body(), parent_style,
-                           parent_style);
+  auto parent_style = ComputedStyle::Create();
+  auto style = ComputedStyle::Create();
+  StyleResolverState state(GetDocument(), *GetDocument().body(),
+                           parent_style.get(), parent_style.get());
   state.SetStyle(style);
   EXPECT_FALSE(style->HasExplicitInheritance());
 

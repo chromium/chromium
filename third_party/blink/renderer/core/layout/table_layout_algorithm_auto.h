@@ -90,7 +90,7 @@ class TableLayoutAlgorithmAuto final : public TableLayoutAlgorithm {
   };
 
   Vector<Layout, 4> layout_struct_;
-  Vector<UntracedMember<LayoutTableCell>, 4> span_cells_;
+  Vector<LayoutTableCell*, 4> span_cells_;
   bool has_percent_ : 1;
   mutable bool effective_logical_width_dirty_ : 1;
   LayoutUnit scaled_width_from_percent_columns_;

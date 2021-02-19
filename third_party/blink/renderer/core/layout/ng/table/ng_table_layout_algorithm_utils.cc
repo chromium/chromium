@@ -226,7 +226,8 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         table_writing_direction);
     const NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
         cell, colspan_cell_tabulator->CurrentColumn(), cell_borders);
-    const NGLayoutResult* layout_result = cell.Layout(cell_constraint_space);
+    scoped_refptr<const NGLayoutResult> layout_result =
+        cell.Layout(cell_constraint_space);
     const NGBoxFragment fragment(
         table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
@@ -375,7 +376,7 @@ class ColumnConstraintsBuilder {
 
 // Computes constraints specified on column elements.
 void ComputeColumnElementConstraints(
-    const HeapVector<NGBlockNode>& columns,
+    const Vector<NGBlockNode>& columns,
     bool is_fixed_layout,
     NGTableTypes::Columns* column_constraints) {
   ColumnConstraintsBuilder constraints_builder(column_constraints,

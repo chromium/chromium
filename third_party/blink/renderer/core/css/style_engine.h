@@ -369,7 +369,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                const ActiveStyleSheetVector& new_style_sheets);
 
   void VisionDeficiencyChanged();
-  void ApplyVisionDeficiencyStyle(ComputedStyle* layout_view_style);
+  void ApplyVisionDeficiencyStyle(
+      scoped_refptr<ComputedStyle> layout_view_style);
 
   void CollectMatchingUserRules(ElementRuleCollector&) const;
 

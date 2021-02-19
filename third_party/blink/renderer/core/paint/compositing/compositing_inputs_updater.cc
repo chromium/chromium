@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -414,18 +413,18 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
     const AncestorInfo& info) {
   if (layer->IsRootLayer()) {
     layer->UpdateAncestorDependentCompositingInputs(
-        MakeGarbageCollected<PaintLayer::AncestorDependentCompositingInputs>());
+        PaintLayer::AncestorDependentCompositingInputs());
     return;
   }
 
-  PaintLayer::AncestorDependentCompositingInputs* properties =
-      MakeGarbageCollected<PaintLayer::AncestorDependentCompositingInputs>();
+  PaintLayer::AncestorDependentCompositingInputs properties;
   LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
 
   if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
     // The final value for |unclipped_absolute_bounding_box| needs to be
     // in absolute, unscrolled space, without any scroll applied.
-    properties->unclipped_absolute_bounding_box =
+
+    properties.unclipped_absolute_bounding_box =
         EnclosingIntRect(geometry_map_->AbsoluteRect(
             layer->LocalBoundingBoxForCompositingOverlapTest()));
 
@@ -439,7 +438,7 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
     // bounds during overlap testing without having a dependency on the scroll
     // offset at the time these properties are calculated.
     if (affected_by_scroll) {
-      properties->unclipped_absolute_bounding_box.Move(
+      properties.unclipped_absolute_bounding_box.Move(
           RoundedIntSize(root_layer_->GetScrollableArea()->GetScrollOffset()));
     }
 
@@ -469,26 +468,26 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
           RoundedIntSize(-root_layer_->GetScrollableArea()->GetScrollOffset()));
     }
 
-    properties->clipped_absolute_bounding_box =
-        properties->unclipped_absolute_bounding_box;
-    properties->clipped_absolute_bounding_box.Intersect(snapped_clip_rect);
+    properties.clipped_absolute_bounding_box =
+        properties.unclipped_absolute_bounding_box;
+    properties.clipped_absolute_bounding_box.Intersect(snapped_clip_rect);
   }
 
   const PaintLayer* parent = layer->Parent();
-  properties->opacity_ancestor =
+  properties.opacity_ancestor =
       parent->IsTransparent() ? parent : parent->OpacityAncestor();
-  properties->transform_ancestor =
+  properties.transform_ancestor =
       parent->Transform() ? parent : parent->TransformAncestor();
-  properties->filter_ancestor =
+  properties.filter_ancestor =
       parent->HasFilterInducingProperty() ? parent : parent->FilterAncestor();
-  properties->clip_path_ancestor = parent->GetLayoutObject().HasClipPath()
-                                       ? parent
-                                       : parent->ClipPathAncestor();
-  properties->mask_ancestor =
+  properties.clip_path_ancestor = parent->GetLayoutObject().HasClipPath()
+                                      ? parent
+                                      : parent->ClipPathAncestor();
+  properties.mask_ancestor =
       parent->GetLayoutObject().HasMask() ? parent : parent->MaskAncestor();
 
   EPosition position = layout_object.StyleRef().GetPosition();
-  properties->nearest_fixed_position_layer =
+  properties.nearest_fixed_position_layer =
       position == EPosition::kFixed ? layer
                                     : parent->NearestFixedPositionLayer();
 
@@ -497,15 +496,15 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
     clip_chain_parent = info.clip_chain_parent_for_absolute;
   else if (position == EPosition::kFixed)
     clip_chain_parent = info.clip_chain_parent_for_fixed;
-  properties->clipping_container =
+  properties.clipping_container =
       ClippingContainerFromClipChainParent(clip_chain_parent);
-  properties->clip_parent = info.escape_clip_to;
+  properties.clip_parent = info.escape_clip_to;
 
-  properties->ancestor_scrolling_layer = info.scrolling_ancestor;
+  properties.ancestor_scrolling_layer = info.scrolling_ancestor;
   if (info.needs_reparent_scroll && layout_object.IsStacked())
-    properties->scroll_parent = info.scrolling_ancestor;
+    properties.scroll_parent = info.scrolling_ancestor;
 
-  properties->nearest_contained_layout_layer =
+  properties.nearest_contained_layout_layer =
       info.nearest_contained_layout_layer;
 
   layer->UpdateAncestorDependentCompositingInputs(properties);

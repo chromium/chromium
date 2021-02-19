@@ -50,7 +50,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                   NGLogicalLineItems* line_box,
                   NGExclusionSpace*);
 
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override {
     NOTREACHED();
@@ -59,9 +59,9 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
  private:
   unsigned PositionLeadingFloats(NGExclusionSpace*, NGPositionedFloatVector*);
-  NGPositionedFloat* PositionFloat(LayoutUnit origin_block_bfc_offset,
-                                   LayoutObject* floating_object,
-                                   NGExclusionSpace*) const;
+  NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
+                                  LayoutObject* floating_object,
+                                  NGExclusionSpace*) const;
 
   void PrepareBoxStates(const NGLineInfo&, const NGInlineBreakToken*);
   void RebuildBoxStates(const NGLineInfo&,

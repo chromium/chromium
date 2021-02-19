@@ -82,10 +82,6 @@
 
 namespace blink {
 
-namespace {
-std::atomic_int g_initial_style_invalidation_count{1};
-}  // namespace
-
 struct SameSizeAsBorderValue {
   StyleColor color_;
   unsigned bitfield_;
@@ -111,16 +107,15 @@ struct SameSizeAsComputedStyleBase {
   unsigned bitfields[5];
 };
 
-struct SameSizeAsComputedStyle
-    : public GarbageCollected<SameSizeAsComputedStyle>,
-      public SameSizeAsComputedStyleBase {
+struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,
+                                 public RefCounted<SameSizeAsComputedStyle> {
   SameSizeAsComputedStyle() {
-    base::debug::Alias(&members);
+    base::debug::Alias(&own_ptrs);
     base::debug::Alias(&data_ref_svg_style);
   }
 
  private:
-  Member<void*> members[1];
+  void* own_ptrs[1];
   void* data_ref_svg_style;
 };
 
@@ -130,53 +125,38 @@ struct SameSizeAsComputedStyle
 // ComputedStyle.
 ASSERT_SIZE(ComputedStyle, SameSizeAsComputedStyle);
 
-ComputedStyle* ComputedStyle::Create() {
-  return MakeGarbageCollected<ComputedStyle>(PassKey(), InitialStyle());
+scoped_refptr<ComputedStyle> ComputedStyle::Create() {
+  return base::AdoptRef(new ComputedStyle(PassKey(), InitialStyle()));
 }
 
-ComputedStyle* ComputedStyle::CreateInitialStyle() {
-  ComputedStyle* style = MakeGarbageCollected<ComputedStyle>(PassKey());
-  return style;
+scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyle() {
+  return base::AdoptRef(new ComputedStyle(PassKey()));
 }
 
-const ComputedStyle& ComputedStyle::InitialStyle() {
-  // Use ThreadSpecific to create a ComputedStyle for each thread as this can be
-  // called on a Worker thread.
-  // TODO(crbug.com/1115000): Move the this singleton to a per document/worker
-  // global scope.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<ComputedStyle>>,
-                                  initial_style, ());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<int>,
-                                  last_initial_style_invalidation_count, ());
-  if (!*initial_style) {
-    *initial_style = ComputedStyle::CreateInitialStyle();
-  }
-  int invalidation_count =
-      g_initial_style_invalidation_count.load(std::memory_order_relaxed);
-  if (invalidation_count != *last_initial_style_invalidation_count) {
-    *last_initial_style_invalidation_count = invalidation_count;
-    (*initial_style)
-        ->SetTapHighlightColor(
-            ComputedStyleInitialValues::InitialTapHighlightColor());
-  }
-  return **initial_style;
+ComputedStyle& ComputedStyle::MutableInitialStyle() {
+  LEAK_SANITIZER_DISABLED_SCOPE;
+  DEFINE_STATIC_REF(ComputedStyle, initial_style,
+                    (ComputedStyle::CreateInitialStyle()));
+  return *initial_style;
 }
 
 void ComputedStyle::InvalidateInitialStyle() {
-  g_initial_style_invalidation_count.fetch_add(1, std::memory_order_relaxed);
+  MutableInitialStyle().SetTapHighlightColor(
+      ComputedStyleInitialValues::InitialTapHighlightColor());
 }
 
-ComputedStyle* ComputedStyle::CreateAnonymousStyleWithDisplay(
+scoped_refptr<ComputedStyle> ComputedStyle::CreateAnonymousStyleWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
-  ComputedStyle* new_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Create();
   new_style->InheritFrom(parent_style);
   new_style->SetUnicodeBidi(parent_style.GetUnicodeBidi());
   new_style->SetDisplay(display);
   return new_style;
 }
 
-ComputedStyle* ComputedStyle::CreateInheritedDisplayContentsStyleIfNeeded(
+scoped_refptr<ComputedStyle>
+ComputedStyle::CreateInheritedDisplayContentsStyleIfNeeded(
     const ComputedStyle& parent_style,
     const ComputedStyle& layout_parent_style) {
   if (parent_style.InheritedEqual(layout_parent_style))
@@ -185,25 +165,24 @@ ComputedStyle* ComputedStyle::CreateInheritedDisplayContentsStyleIfNeeded(
                                                         EDisplay::kInline);
 }
 
-ComputedStyle* ComputedStyle::Clone(const ComputedStyle& other) {
-  return MakeGarbageCollected<ComputedStyle>(PassKey(), other);
+scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
+  return base::AdoptRef(new ComputedStyle(PassKey(), other));
 }
 
-ALWAYS_INLINE ComputedStyle::ComputedStyle() : ComputedStyleBase() {
+ALWAYS_INLINE ComputedStyle::ComputedStyle()
+    : ComputedStyleBase(), RefCounted<ComputedStyle>() {
   svg_style_.Init();
 }
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& o)
-    : ComputedStyleBase(o), svg_style_(o.svg_style_) {}
+    : ComputedStyleBase(o),
+      RefCounted<ComputedStyle>(),
+      svg_style_(o.svg_style_) {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key) : ComputedStyle() {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key, const ComputedStyle& o)
     : ComputedStyle(o) {}
-
-void ComputedStyle::Trace(Visitor* visitor) const {
-  visitor->Trace(cached_pseudo_element_styles_);
-}
 
 static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
                                      const ComputedStyle& new_style) {
@@ -531,7 +510,7 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
 
   for (const auto& pseudo_style : *cached_pseudo_element_styles_) {
     if (pseudo_style->StyleType() == pid)
-      return pseudo_style;
+      return pseudo_style.get();
   }
 
   return nullptr;
@@ -552,16 +531,14 @@ bool ComputedStyle::CachedPseudoElementStylesDependOnFontMetrics() const {
 }
 
 const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
-    const ComputedStyle* pseudo) const {
+    scoped_refptr<const ComputedStyle> pseudo) const {
   DCHECK(pseudo);
   DCHECK_GT(pseudo->StyleType(), kPseudoIdNone);
 
-  const ComputedStyle* result = pseudo;
+  const ComputedStyle* result = pseudo.get();
 
-  if (!cached_pseudo_element_styles_) {
-    cached_pseudo_element_styles_ =
-        MakeGarbageCollected<PseudoElementStyleCache>();
-  }
+  if (!cached_pseudo_element_styles_)
+    cached_pseudo_element_styles_ = std::make_unique<PseudoElementStyleCache>();
 
   cached_pseudo_element_styles_->push_back(std::move(pseudo));
 

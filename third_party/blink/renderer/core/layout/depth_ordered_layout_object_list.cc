@@ -10,69 +10,50 @@
 
 namespace blink {
 
-class DepthOrderedLayoutObjectListData
-    : public GarbageCollected<DepthOrderedLayoutObjectListData> {
- public:
-  DepthOrderedLayoutObjectListData() = default;
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(ordered_objects_);
-    visitor->Trace(objects_);
-  }
-
-  HeapVector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth>&
-  ordered_objects() {
-    return ordered_objects_;
-  }
-  HeapHashSet<Member<LayoutObject>>& objects() { return objects_; }
-
- private:
+struct DepthOrderedLayoutObjectListData {
   // LayoutObjects sorted by depth (deepest first). This structure is only
   // populated at the beginning of enumerations. See ordered().
-  HeapVector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth>
-      ordered_objects_;
+  Vector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth> ordered_objects_;
 
   // Outside of layout, LayoutObjects can be added and removed as needed such
   // as when style was changed or destroyed. They're kept in this hashset to
   // keep those operations fast.
-  HeapHashSet<Member<LayoutObject>> objects_;
+  HashSet<LayoutObject*> objects_;
 };
 
 DepthOrderedLayoutObjectList::DepthOrderedLayoutObjectList()
-    : data_(MakeGarbageCollected<DepthOrderedLayoutObjectListData>()) {}
+    : data_(new DepthOrderedLayoutObjectListData) {}
 
-DepthOrderedLayoutObjectList::~DepthOrderedLayoutObjectList() = default;
+DepthOrderedLayoutObjectList::~DepthOrderedLayoutObjectList() {
+  delete data_;
+}
 
 int DepthOrderedLayoutObjectList::size() const {
-  return data_->objects().size();
+  return data_->objects_.size();
 }
 
 bool DepthOrderedLayoutObjectList::IsEmpty() const {
-  return data_->objects().IsEmpty();
+  return data_->objects_.IsEmpty();
 }
 
 void DepthOrderedLayoutObjectList::Add(LayoutObject& object) {
   DCHECK(!object.GetFrameView()->IsInPerformLayout());
-  data_->objects().insert(&object);
-  data_->ordered_objects().clear();
+  data_->objects_.insert(&object);
+  data_->ordered_objects_.clear();
 }
 
 void DepthOrderedLayoutObjectList::Remove(LayoutObject& object) {
-  auto it = data_->objects().find(&object);
-  if (it == data_->objects().end())
+  auto it = data_->objects_.find(&object);
+  if (it == data_->objects_.end())
     return;
   DCHECK(!object.GetFrameView()->IsInPerformLayout());
-  data_->objects().erase(it);
-  data_->ordered_objects().clear();
+  data_->objects_.erase(it);
+  data_->ordered_objects_.clear();
 }
 
 void DepthOrderedLayoutObjectList::Clear() {
-  data_->objects().clear();
-  data_->ordered_objects().clear();
-}
-
-void DepthOrderedLayoutObjectList::LayoutObjectWithDepth::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(object);
+  data_->objects_.clear();
+  data_->ordered_objects_.clear();
 }
 
 unsigned DepthOrderedLayoutObjectList::LayoutObjectWithDepth::DetermineDepth(
@@ -84,27 +65,18 @@ unsigned DepthOrderedLayoutObjectList::LayoutObjectWithDepth::DetermineDepth(
   return depth;
 }
 
-const HeapHashSet<Member<LayoutObject>>&
-DepthOrderedLayoutObjectList::Unordered() const {
-  return data_->objects();
+const HashSet<LayoutObject*>& DepthOrderedLayoutObjectList::Unordered() const {
+  return data_->objects_;
 }
 
-const HeapVector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth>&
+const Vector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth>&
 DepthOrderedLayoutObjectList::Ordered() {
-  if (data_->objects().IsEmpty() || !data_->ordered_objects().IsEmpty())
-    return data_->ordered_objects();
+  if (data_->objects_.IsEmpty() || !data_->ordered_objects_.IsEmpty())
+    return data_->ordered_objects_;
 
-  data_->ordered_objects().clear();
-  for (auto layout_object : data_->objects()) {
-    data_->ordered_objects().push_back(
-        DepthOrderedLayoutObjectList::LayoutObjectWithDepth(layout_object));
-  }
-  std::sort(data_->ordered_objects().begin(), data_->ordered_objects().end());
-  return data_->ordered_objects();
-}
-
-void DepthOrderedLayoutObjectList::Trace(Visitor* visitor) const {
-  visitor->Trace(data_);
+  CopyToVector(data_->objects_, data_->ordered_objects_);
+  std::sort(data_->ordered_objects_.begin(), data_->ordered_objects_.end());
+  return data_->ordered_objects_;
 }
 
 }  // namespace blink

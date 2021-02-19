@@ -41,10 +41,10 @@ void CheckIsLast(const NGFragmentItem& item) {
 NGFragmentItems::NGFragmentItems(NGFragmentItemsBuilder* builder)
     : text_content_(std::move(builder->text_content_)),
       first_line_text_content_(std::move(builder->first_line_text_content_)),
-      const_size_(builder->items_.size()),
+      size_(builder->items_.size()),
       size_of_earlier_fragments_(0) {
   NGFragmentItemsBuilder::ItemWithOffsetList& source_items = builder->items_;
-  for (wtf_size_t i = 0; i < const_size_; ++i) {
+  for (wtf_size_t i = 0; i < size_; ++i) {
     // Call the move constructor to move without |AddRef|. Items in
     // |NGFragmentItemsBuilder| are not used after |this| was constructed.
     new (&items_[i]) NGFragmentItem(std::move(source_items[i].item));
@@ -54,9 +54,9 @@ NGFragmentItems::NGFragmentItems(NGFragmentItemsBuilder* builder)
 NGFragmentItems::NGFragmentItems(const NGFragmentItems& other)
     : text_content_(other.text_content_),
       first_line_text_content_(other.first_line_text_content_),
-      const_size_(other.const_size_),
+      size_(other.size_),
       size_of_earlier_fragments_(other.size_of_earlier_fragments_) {
-  for (wtf_size_t i = 0; i < const_size_; ++i) {
+  for (wtf_size_t i = 0; i < size_; ++i) {
     const auto& other_item = other.items_[i];
     new (&items_[i]) NGFragmentItem(other_item);
 
@@ -70,7 +70,7 @@ NGFragmentItems::NGFragmentItems(const NGFragmentItems& other)
 }
 
 NGFragmentItems::~NGFragmentItems() {
-  for (unsigned i = 0; i < const_size_; ++i)
+  for (unsigned i = 0; i < size_; ++i)
     items_[i].~NGFragmentItem();
 }
 
@@ -80,7 +80,7 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 }
 
 void NGFragmentItems::FinalizeAfterLayout(
-    const HeapVector<Member<const NGLayoutResult>, 1>& results) {
+    const Vector<scoped_refptr<const NGLayoutResult>, 1>& results) {
 #if DCHECK_IS_ON()
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     for (const auto& result : results) {
@@ -94,7 +94,7 @@ void NGFragmentItems::FinalizeAfterLayout(
     wtf_size_t fragment_id;
     wtf_size_t item_index;
   };
-  HeapHashMap<Member<const LayoutObject>, LastItem> last_items;
+  HashMap<const LayoutObject*, LastItem> last_items;
   wtf_size_t item_index = 0;
   for (const auto& result : results) {
     const auto& fragment =
@@ -389,10 +389,5 @@ void NGFragmentItems::CheckAllItemsAreValid() const {
     DCHECK(!item.IsLayoutObjectDestroyedOrMoved());
 }
 #endif
-
-void NGFragmentItems::Trace(Visitor* visitor) const {
-  for (const NGFragmentItem& item : Items())
-    visitor->Trace(item);
-}
 
 }  // namespace blink

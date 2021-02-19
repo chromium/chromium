@@ -85,7 +85,7 @@ class CORE_EXPORT NGLineTruncator final {
                                  TextDirection direction);
   void HideChild(NGLogicalLineItem* child);
 
-  const ComputedStyle* line_style_;
+  scoped_refptr<const ComputedStyle> line_style_;
   LayoutUnit available_width_;
   TextDirection line_direction_;
 

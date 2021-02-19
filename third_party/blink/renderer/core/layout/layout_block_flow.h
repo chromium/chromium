@@ -97,10 +97,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  public:
   explicit LayoutBlockFlow(ContainerNode*);
   ~LayoutBlockFlow() override;
-  void Trace(Visitor*) const override;
 
   static LayoutBlockFlow* CreateAnonymous(Document*,
-                                          ComputedStyle*,
+                                          scoped_refptr<ComputedStyle>,
                                           LegacyLayout);
 
   bool IsLayoutBlockFlow() const final {
@@ -469,7 +468,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   FloatingObject* LastFloatFromPreviousLine() const {
     NOT_DESTROYED();
-    return ContainsFloats() ? floating_objects_->Set().back().Get() : nullptr;
+    return ContainsFloats() ? floating_objects_->Set().back().get() : nullptr;
   }
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
@@ -750,7 +749,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       rect.Expand(f->MarginBoxOutsets());
     }
 
-    UntracedMember<LayoutBox> object;
+    LayoutBox* object;
     LayoutRect rect;
     bool ever_had_layout;
   };
@@ -828,20 +827,20 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       return (-block->MarginAfter()).ClampNegativeToZero();
     }
 
-    void Trace(Visitor*) const;
+    void Trace(Visitor*) const {}
 
     MarginValues margins_;
     LayoutUnit pagination_strut_propagated_from_child_;
 
     LayoutUnit first_forced_break_offset_;
 
-    Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
+    LayoutMultiColumnFlowThread* multi_column_flow_thread_ = nullptr;
 
     // |offset_mapping_| is used only for legacy layout tree for caching offset
     // mapping for |NGInlineNode::GetOffsetMapping()|.
     // TODO(yosin): Once we have no legacy support, we should get rid of
     // |offset_mapping_| here.
-    Member<NGOffsetMapping> offset_mapping_;
+    std::unique_ptr<NGOffsetMapping> offset_mapping_;
 
     // Name of the start page for this object, if propagated from a descendant;
     // see https://drafts.csswg.org/css-page-3/#start-page-value
@@ -859,11 +858,11 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ClearOffsetMappingIfNeeded();
   const NGOffsetMapping* GetOffsetMapping() const;
-  void SetOffsetMapping(NGOffsetMapping*);
+  void SetOffsetMapping(std::unique_ptr<NGOffsetMapping>);
 
   const FloatingObjects* GetFloatingObjects() const {
     NOT_DESTROYED();
-    return floating_objects_;
+    return floating_objects_.get();
   }
 
   static void UpdateAncestorShouldPaintFloatingObject(
@@ -996,8 +995,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool CheckIfIsSelfCollapsingBlock() const;
 
  protected:
-  Member<LayoutBlockFlowRareData> rare_data_;
-  Member<FloatingObjects> floating_objects_;
+  Persistent<LayoutBlockFlowRareData> rare_data_;
+  std::unique_ptr<FloatingObjects> floating_objects_;
 
   friend class MarginInfo;
   friend class LineWidth;  // needs to know FloatingObject

@@ -640,8 +640,9 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
                              : element.GetTreeScope());
 }
 
-ComputedStyle* StyleResolver::StyleForViewport() {
-  ComputedStyle* viewport_style = InitialStyleForElement(GetDocument());
+scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
+  scoped_refptr<ComputedStyle> viewport_style =
+      InitialStyleForElement(GetDocument());
 
   viewport_style->SetZIndex(0);
   viewport_style->SetIsStackingContextWithoutContainment(true);
@@ -702,7 +703,7 @@ static void UpdateAnimationBaseComputedStyle(StyleResolverState& state,
                                               std::move(important_set));
 }
 
-ComputedStyle* StyleResolver::StyleForElement(
+scoped_refptr<ComputedStyle> StyleResolver::StyleForElement(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
     const ComputedStyle* default_parent,
@@ -768,7 +769,7 @@ ComputedStyle* StyleResolver::StyleForElement(
 void StyleResolver::InitStyleAndApplyInheritance(Element& element,
                                                  StyleResolverState& state) {
   if (state.ParentStyle()) {
-    ComputedStyle* style = ComputedStyle::Create();
+    scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
     style->InheritFrom(*state.ParentStyle(),
                        IsAtShadowBoundary(&element)
                            ? ComputedStyle::kAtShadowBoundary
@@ -951,7 +952,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
                                                 offset);
 }
 
-ComputedStyle* StyleResolver::PseudoStyleForElement(
+scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
     const PseudoElementStyleRequest& pseudo_style_request,
@@ -982,7 +983,7 @@ ComputedStyle* StyleResolver::PseudoStyleForElement(
 
   if (ShouldComputeBaseComputedStyle(animation_base_computed_style)) {
     if (pseudo_style_request.AllowsInheritance(parent_style)) {
-      ComputedStyle* style = ComputedStyle::Create();
+      scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
       style->InheritFrom(*parent_style);
       state.SetStyle(std::move(style));
     } else {
@@ -1068,17 +1069,18 @@ ComputedStyle* StyleResolver::PseudoStyleForElement(
   return state.TakeStyle();
 }
 
-const ComputedStyle* StyleResolver::StyleForPage(
-    int page_index,
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
+    uint32_t page_index,
     const AtomicString& page_name) {
-  const ComputedStyle* initial_style = InitialStyleForElement(GetDocument());
+  scoped_refptr<const ComputedStyle> initial_style =
+      InitialStyleForElement(GetDocument());
   if (!GetDocument().documentElement())
     return initial_style;
 
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
-                           initial_style, initial_style);
+                           initial_style.get(), initial_style.get());
 
-  ComputedStyle* style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   const ComputedStyle* root_element_style =
       state.RootElementStyle() ? state.RootElementStyle()
                                : GetDocument().GetComputedStyle();
@@ -1104,10 +1106,11 @@ const ComputedStyle* StyleResolver::StyleForPage(
   return state.TakeStyle();
 }
 
-ComputedStyle* StyleResolver::InitialStyleForElement(Document& document) {
+scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement(
+    Document& document) {
   const LocalFrame* frame = document.GetFrame();
 
-  ComputedStyle* initial_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> initial_style = ComputedStyle::Create();
 
   initial_style->SetRtlOrdering(document.VisuallyOrdered() ? EOrder::kVisual
                                                            : EOrder::kLogical);
@@ -1135,7 +1138,8 @@ ComputedStyle* StyleResolver::InitialStyleForElement(Document& document) {
   return initial_style;
 }
 
-const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForText(
+    Text* text_node) {
   DCHECK(text_node);
   if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*text_node)) {
     const ComputedStyle* style = parent_node->GetComputedStyle();
@@ -1540,7 +1544,7 @@ const CSSValue* StyleResolver::ComputeValue(
                                                    *state.Style());
 }
 
-ComputedStyle* StyleResolver::StyleForInterpolations(
+scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
   StyleResolverState state(GetDocument(), element);
@@ -1563,7 +1567,8 @@ void StyleResolver::ApplyInterpolations(
   cascade.Apply();
 }
 
-ComputedStyle* StyleResolver::BeforeChangeStyleForTransitionUpdate(
+scoped_refptr<ComputedStyle>
+StyleResolver::BeforeChangeStyleForTransitionUpdate(
     Element& element,
     const ComputedStyle& base_style,
     ActiveInterpolationsMap& transition_interpolations) {

@@ -298,11 +298,11 @@ class CORE_EXPORT LocalFrameView final
   // or sticky so that we can support HasStickyViewportConstrainedObject().
   enum ViewportConstrainedType { kFixed = 0, kSticky = 1 };
   // Fixed-position and viewport-constrained sticky-position objects.
-  typedef HeapHashSet<Member<LayoutObject>> ObjectSet;
+  typedef HashSet<LayoutObject*> ObjectSet;
   void AddViewportConstrainedObject(LayoutObject&, ViewportConstrainedType);
   void RemoveViewportConstrainedObject(LayoutObject&, ViewportConstrainedType);
   const ObjectSet* ViewportConstrainedObjects() const {
-    return viewport_constrained_objects_;
+    return viewport_constrained_objects_.get();
   }
   bool HasViewportConstrainedObjects() const {
     return viewport_constrained_objects_ &&
@@ -990,7 +990,7 @@ class CORE_EXPORT LocalFrameView final
 
   LayoutSize size_;
 
-  typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
+  typedef HashSet<scoped_refptr<LayoutEmbeddedObject>> EmbeddedObjectSet;
   EmbeddedObjectSet part_update_set_;
 
   Member<LocalFrame> frame_;
@@ -1032,7 +1032,7 @@ class CORE_EXPORT LocalFrameView final
 
   Member<ScrollableAreaSet> scrollable_areas_;
   Member<ScrollableAreaSet> animating_scrollable_areas_;
-  Member<ObjectSet> viewport_constrained_objects_;
+  std::unique_ptr<ObjectSet> viewport_constrained_objects_;
   // Number of entries in viewport_constrained_objects_ that are sticky.
   unsigned sticky_position_object_count_;
   ObjectSet background_attachment_fixed_objects_;

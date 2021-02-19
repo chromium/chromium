@@ -40,17 +40,6 @@
 
 namespace blink {
 
-typedef HeapHashMap<Member<InlineTextBox>, scoped_refptr<AbstractInlineTextBox>>
-    InlineToLegacyAbstractInlineTextBoxHashMap;
-
-InlineToLegacyAbstractInlineTextBoxHashMap& GetAbstractInlineTextBoxMap() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<InlineToLegacyAbstractInlineTextBoxHashMap>,
-      abstract_inline_text_box_map,
-      (MakeGarbageCollected<InlineToLegacyAbstractInlineTextBoxHashMap>()));
-  return *abstract_inline_text_box_map;
-}
-
 AbstractInlineTextBox::AbstractInlineTextBox(LineLayoutText line_layout_item)
     : line_layout_item_(line_layout_item) {}
 
@@ -74,29 +63,40 @@ LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
 
 // ----
 
+LegacyAbstractInlineTextBox::InlineToLegacyAbstractInlineTextBoxHashMap*
+    LegacyAbstractInlineTextBox::g_abstract_inline_text_box_map_ = nullptr;
+
 scoped_refptr<AbstractInlineTextBox> LegacyAbstractInlineTextBox::GetOrCreate(
     LineLayoutText line_layout_text,
     InlineTextBox* inline_text_box) {
   if (!inline_text_box)
     return nullptr;
 
+  if (!g_abstract_inline_text_box_map_) {
+    g_abstract_inline_text_box_map_ =
+        new InlineToLegacyAbstractInlineTextBoxHashMap();
+  }
+
   InlineToLegacyAbstractInlineTextBoxHashMap::const_iterator it =
-      GetAbstractInlineTextBoxMap().find(inline_text_box);
-  if (it != GetAbstractInlineTextBoxMap().end())
+      g_abstract_inline_text_box_map_->find(inline_text_box);
+  if (it != g_abstract_inline_text_box_map_->end())
     return it->value;
 
   scoped_refptr<AbstractInlineTextBox> obj = base::AdoptRef(
       new LegacyAbstractInlineTextBox(line_layout_text, inline_text_box));
-  GetAbstractInlineTextBoxMap().Set(inline_text_box, obj);
+  g_abstract_inline_text_box_map_->Set(inline_text_box, obj);
   return obj;
 }
 
 void LegacyAbstractInlineTextBox::WillDestroy(InlineTextBox* inline_text_box) {
+  if (!g_abstract_inline_text_box_map_)
+    return;
+
   InlineToLegacyAbstractInlineTextBoxHashMap::const_iterator it =
-      GetAbstractInlineTextBoxMap().find(inline_text_box);
-  if (it != GetAbstractInlineTextBoxMap().end()) {
+      g_abstract_inline_text_box_map_->find(inline_text_box);
+  if (it != g_abstract_inline_text_box_map_->end()) {
     it->value->Detach();
-    GetAbstractInlineTextBoxMap().erase(inline_text_box);
+    g_abstract_inline_text_box_map_->erase(inline_text_box);
   }
 }
 

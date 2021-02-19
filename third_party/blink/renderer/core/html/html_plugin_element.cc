@@ -349,13 +349,13 @@ LayoutObject* HTMLPlugInElement::CreateLayoutObject(const ComputedStyle& style,
     return LayoutObject::CreateObject(this, style, legacy);
 
   if (IsImageType()) {
-    LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
+    LayoutImage* image = new LayoutImage(this);
     image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
     return image;
   }
 
   plugin_is_available_ = true;
-  return MakeGarbageCollected<LayoutEmbeddedObject>(this);
+  return new LayoutEmbeddedObject(this);
 }
 
 void HTMLPlugInElement::FinishParsingChildren() {
@@ -798,9 +798,10 @@ void HTMLPlugInElement::UpdateServiceTypeIfEmpty() {
   }
 }
 
-ComputedStyle* HTMLPlugInElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle> HTMLPlugInElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  ComputedStyle* style = OriginalStyleForLayoutObject(style_recalc_context);
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
   if (IsImageType() && !GetLayoutObject() && style &&
       LayoutObjectIsNeeded(*style)) {
     if (!image_loader_)

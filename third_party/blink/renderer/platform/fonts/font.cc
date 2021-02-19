@@ -304,7 +304,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     curr_point.Move(run_width, 0);
   }
 
-  bidi_runs.ClearRuns();
+  bidi_runs.DeleteRuns();
   return true;
 }
 

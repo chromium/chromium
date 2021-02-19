@@ -16,16 +16,12 @@ class TestInlineTextBox : public InlineTextBox {
   TestInlineTextBox(LineLayoutItem item) : InlineTextBox(item, 0, 0) {
     SetHasVirtualLogicalHeight();
   }
-  void Destroy() override {
-    GetLineLayoutItem().GetLayoutObject()->Destroy();
-    InlineTextBox::Destroy();
-  }
 
   static TestInlineTextBox* Create(Document& document, const String& string) {
     Text* node = document.createTextNode(string);
-    LayoutText* text = MakeGarbageCollected<LayoutText>(node, string.Impl());
+    LayoutText* text = new LayoutText(node, string.Impl());
     text->SetStyle(ComputedStyle::Create());
-    return MakeGarbageCollected<TestInlineTextBox>(LineLayoutItem(text));
+    return new TestInlineTextBox(LineLayoutItem(text));
   }
 
   LayoutUnit VirtualLogicalHeight() const override { return logical_height_; }
@@ -83,8 +79,6 @@ TEST_F(InlineTextBoxTest, LogicalOverflowRect) {
 
   // Ensure it's still movable correctly.
   MoveAndTest(box, move, frame, overflow);
-
-  box->Destroy();
 }
 
 }  // namespace blink

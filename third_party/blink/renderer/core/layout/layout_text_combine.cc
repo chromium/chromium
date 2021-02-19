@@ -165,7 +165,7 @@ void LayoutTextCombine::UpdateFontStyleForCombinedText() {
   NOT_DESTROYED();
   DCHECK(is_combined_);
 
-  ComputedStyle* style = ComputedStyle::Clone(StyleRef());
+  scoped_refptr<ComputedStyle> style = ComputedStyle::Clone(StyleRef());
   SetStyleInternal(style);
 
   unsigned offset = 0;

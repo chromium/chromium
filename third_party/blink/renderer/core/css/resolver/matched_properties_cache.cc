@@ -99,11 +99,6 @@ bool CachedMatchedProperties::DependenciesEqual(
   return true;
 }
 
-void CachedMatchedProperties::Trace(Visitor* visitor) const {
-  visitor->Trace(computed_style);
-  visitor->Trace(parent_computed_style);
-}
-
 MatchedPropertiesCache::MatchedPropertiesCache() = default;
 
 MatchedPropertiesCache::Key::Key(const MatchResult& result)

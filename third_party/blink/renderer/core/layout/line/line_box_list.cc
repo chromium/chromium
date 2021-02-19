@@ -40,12 +40,6 @@
 
 namespace blink {
 
-template <typename InlineBoxType>
-void InlineBoxList<InlineBoxType>::Trace(Visitor* visitor) const {
-  visitor->Trace(first_);
-  visitor->Trace(last_);
-}
-
 #if DCHECK_IS_ON()
 template <typename InlineBoxType>
 void InlineBoxList<InlineBoxType>::AssertIsEmpty() {

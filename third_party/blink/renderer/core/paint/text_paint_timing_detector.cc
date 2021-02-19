@@ -376,8 +376,6 @@ TextRecordsManager::TextRecordsManager(
           paint_timing_detector)) {}
 
 void TextRecordsManager::Trace(Visitor* visitor) const {
-  visitor->Trace(visible_objects_);
-  visitor->Trace(invisible_objects_);
   visitor->Trace(text_element_timing_);
   visitor->Trace(ltp_manager_);
 }

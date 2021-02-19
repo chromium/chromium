@@ -16,7 +16,7 @@ class CORE_EXPORT NGMathPaddedLayoutAlgorithm
  public:
   explicit NGMathPaddedLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() final;
+  scoped_refptr<const NGLayoutResult> Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const final;
 

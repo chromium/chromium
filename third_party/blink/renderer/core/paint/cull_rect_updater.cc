@@ -157,7 +157,7 @@ void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
 
   // Then stacked children (which may not be direct children in PaintLayer
   // hierarchy) in paint order.
-  PaintLayerPaintOrderIterator iterator(&layer, kStackedChildren);
+  PaintLayerPaintOrderIterator iterator(layer, kStackedChildren);
   while (PaintLayer* child = iterator.Next())
     UpdateRecursively(*child, layer, force_update_children);
 }
