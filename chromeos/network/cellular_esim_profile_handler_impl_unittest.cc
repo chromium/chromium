@@ -86,7 +86,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   void AddEuicc(int euicc_num) {
     helper_.hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)),
-        CreateTestEid(euicc_num), true);
+        CreateTestEid(euicc_num), /*is_active=*/true, /*physical_slot=*/0);
     base::RunLoop().RunUntilIdle();
   }
 

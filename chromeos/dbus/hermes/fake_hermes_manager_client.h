@@ -25,7 +25,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesManagerClient
   // HermesManagerClient::TestInterface:
   void AddEuicc(const dbus::ObjectPath& path,
                 const std::string& eid,
-                bool is_active) override;
+                bool is_active,
+                uint32_t physical_slot) override;
   void ClearEuiccs() override;
 
   // HermesManagerClient:

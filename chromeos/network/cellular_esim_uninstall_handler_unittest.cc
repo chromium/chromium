@@ -125,7 +125,8 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     ShillDeviceClient::Get()->GetTestInterface()->AddDevice(
         kDefaultCellularDevicePath, shill::kTypeCellular, "cellular1");
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-        dbus::ObjectPath(kDefaultEuiccPath), kDefaultEid, true);
+        dbus::ObjectPath(kDefaultEuiccPath), kDefaultEid, /*is_active=*/true,
+        /*physical_slot=*/0);
     HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
         dbus::ObjectPath(kTestCarrierProfilePath),
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid,

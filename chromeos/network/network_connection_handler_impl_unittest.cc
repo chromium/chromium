@@ -354,7 +354,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
     // Add EUICC which will hold the profile.
     helper_.hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
-                                            kTestEid, true);
+                                            kTestEid, /*is_active=*/true,
+                                            /*physical_slot=*/0);
 
     // Add eSIM profile; internally, this causes an associated Shill service to
     // be created.

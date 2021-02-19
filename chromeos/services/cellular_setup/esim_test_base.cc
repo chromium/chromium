@@ -77,7 +77,8 @@ void ESimTestBase::TearDown() {
 
 void ESimTestBase::SetupEuicc() {
   HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-      dbus::ObjectPath(kTestEuiccPath), kTestEid, true);
+      dbus::ObjectPath(kTestEuiccPath), kTestEid, /*is_active=*/true,
+      /*physical_slot=*/0);
   base::RunLoop().RunUntilIdle();
 }
 

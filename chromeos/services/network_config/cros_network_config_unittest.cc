@@ -674,7 +674,8 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
 
   // Add a fake eSIM with name kTestProfileName.
   helper().hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
-                                           "eid", true);
+                                           "eid", /*is_active=*/true,
+                                           /*physical_slot=*/0);
   helper().hermes_euicc_test()->AddCarrierProfile(
       dbus::ObjectPath(kTestProfileServicePath),
       dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestProfileName,
