@@ -31796,7 +31796,9 @@ Called by update_feature_policy_enum.py.-->
   <int value="28" label="Tapped manage reactions"/>
 </enum>
 
-<enum name="FeedUserCommandType"/>
+<enum name="FeedUserCommandType">
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
+</enum>
 
 <enum name="FeedZeroStateShowReason">
   <int value="0" label="ERROR"/>
@@ -35656,6 +35658,7 @@ Called by update_feature_policy_enum.py.-->
 
 <enum name="GenericEnum">
   <summary>Generic enums where the label is just the raw number</summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
 <enum name="GeolocationAuthorizationAction">
@@ -59390,6 +59393,7 @@ Called by update_net_trust_anchors.py.-->
     payment sheet. The cardinality is not too high since the total number of
     used bits is less than 4.
   </summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
 <enum name="PaymentRequestMissingPaymentFields">
@@ -59398,6 +59402,7 @@ Called by update_net_trust_anchors.py.-->
     payment sheet. The cardinality is not too high since the total number of
     used bits is less than 6.
   </summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
 <enum name="PaymentRequestMissingShippingFields">
@@ -59406,6 +59411,7 @@ Called by update_net_trust_anchors.py.-->
     payment sheet. The cardinality is not too high since the total number of
     used bits is less than 4.
   </summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
 <enum name="PaymentRequestNoShowReason">
@@ -76265,6 +76271,7 @@ Full version information for the fingerprint enum values:
     This gets populated by the GetEnumsNodes function in merge_xml.py when
     producing the merged XML file.
   </summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
 <enum name="UkmResetReason">

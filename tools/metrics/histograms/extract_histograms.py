@@ -299,6 +299,12 @@ def ExtractEnumsFromXmlTree(tree):
 
     nodes = list(IterElementsWithTag(enum, 'int'))
 
+    obsolete_nodes = list(IterElementsWithTag(enum, 'obsolete', 1))
+    if not nodes and not obsolete_nodes:
+      logging.error('Non-obsolete enum %s should have at least one <int>', name)
+      have_errors = True
+      continue
+
     for int_tag in nodes:
       value_dict = {}
       int_value = int(int_tag.getAttribute('value'))
