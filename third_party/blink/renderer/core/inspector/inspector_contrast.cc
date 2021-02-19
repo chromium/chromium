@@ -198,14 +198,19 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
   TRACE_EVENT0("devtools.contrast", "InspectorContrast::GetContrast");
 
   ContrastInfo result;
+
+  auto* text_node = DynamicTo<Text>(top_element->firstChild());
+  if (!text_node || text_node->nextSibling())
+    return result;
+
+  const String& text = text_node->data().StripWhiteSpace();
+  if (text.IsEmpty())
+    return result;
+
   const LayoutObject* layout_object = top_element->GetLayoutObject();
   const CSSValue* text_color_value = ComputedStyleUtils::ComputedPropertyValue(
       CSSProperty::Get(CSSPropertyID::kColor), layout_object->StyleRef());
   if (!text_color_value->IsColorValue())
-    return result;
-
-  auto* text_node = DynamicTo<Text>(top_element->firstChild());
-  if (!text_node || top_element->firstChild()->nextSibling())
     return result;
 
   float text_opacity = 1.0f;

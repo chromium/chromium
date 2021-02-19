@@ -175,4 +175,38 @@ TEST_F(InspectorContrastTest, GetContrast) {
   EXPECT_NEAR(1.25, contrast_info_2.contrast_ratio, 0.01);
 }
 
+TEST_F(InspectorContrastTest, GetContrastEmptyNodes) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="target1" style="color: red; background-color: red;">	 </div>
+    <div id="target2" style="color: red; background-color: red;"></div>
+    <div id="target3" style="color: red; background-color: red;">
+
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  InspectorContrast contrast(&GetDocument());
+  ContrastInfo contrast_info_1 =
+      contrast.GetContrast(GetDocument().getElementById("target1"));
+  EXPECT_EQ(false, contrast_info_1.able_to_compute_contrast);
+  ContrastInfo contrast_info_2 =
+      contrast.GetContrast(GetDocument().getElementById("target2"));
+  EXPECT_EQ(false, contrast_info_2.able_to_compute_contrast);
+  ContrastInfo contrast_info_3 =
+      contrast.GetContrast(GetDocument().getElementById("target3"));
+  EXPECT_EQ(false, contrast_info_3.able_to_compute_contrast);
+}
+
+TEST_F(InspectorContrastTest, GetContrastMultipleNodes) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="target1" style="color: red; background-color: red;">
+      A <i>B</i>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  InspectorContrast contrast(&GetDocument());
+  ContrastInfo contrast_info_1 =
+      contrast.GetContrast(GetDocument().getElementById("target1"));
+  EXPECT_EQ(false, contrast_info_1.able_to_compute_contrast);
+}
+
 }  // namespace blink
