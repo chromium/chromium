@@ -93,7 +93,7 @@
 <translation id="3515615323037921860">அச்சுப் பணிகள்</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="357889014807611375">கட்டண வைஃபை</translation>
-<translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
+<translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
 <translation id="3749289110408117711">கோப்பு பெயர்</translation>
@@ -129,7 +129,7 @@
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
 <translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
-<translation id="4646949265910132906">பாதுகாப்பான WiFi இணைப்பு</translation>
+<translation id="4646949265910132906">பாதுகாப்பான வைஃபை இணைப்பு</translation>
 <translation id="467510802200863975">கடவுச்சொற்கள் பொருந்தவில்லை</translation>
 <translation id="467715984478005772">ஃபயர்வால் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="4691278870498629773">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
@@ -168,7 +168,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">புதிய கடவுச்சொல்லை இப்போதே தேர்ந்தெடுக்கவும்</translation>
 <translation id="5333530671332546086">அறியப்படாத போர்டல் நிலை</translation>
-<translation id="5372659122375744710">WiFi நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
+<translation id="5372659122375744710">வைஃபை நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
 <translation id="5401938042319910061">எல்லாச் சோதனைகளையும் இயக்கு</translation>
 <translation id="5430931332414098647">உடனடி இணைப்பு முறை</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
@@ -209,7 +209,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="649050271426829538">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6517239166834772319">Explore</translation>
-<translation id="6527081081771465939">அறியப்படாத WiFi பாதுகாப்பு நெறிமுறை</translation>
+<translation id="6527081081771465939">அறியப்படாத வைஃபை பாதுகாப்பு நெறிமுறை</translation>
 <translation id="6532051501443766164">அறிக்கையை மறை</translation>
 <translation id="65587193855025101">ஃபிளாட்பெட்</translation>
 <translation id="6564646048574748301">பிரிண்டரை அணுக முடியாததால் அச்சிட முடியவில்லை</translation>
@@ -270,7 +270,7 @@
 <translation id="8372477600026034341">கூடுதல் ஹோஸ்ட்கள்</translation>
 <translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
-<translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
+<translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
