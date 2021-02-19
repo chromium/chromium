@@ -45,6 +45,9 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
       SurfaceHandle surface_handle) override;
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id) override;
+  bool FillSharedMemoryRegionWithBufferContents(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory) override;
   ImageFactory* AsImageFactory() override;
 
   // Overridden from ImageFactory:

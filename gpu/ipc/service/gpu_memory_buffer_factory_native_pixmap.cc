@@ -145,6 +145,13 @@ void GpuMemoryBufferFactoryNativePixmap::DestroyGpuMemoryBuffer(
   native_pixmaps_.erase(key);
 }
 
+bool GpuMemoryBufferFactoryNativePixmap::
+    FillSharedMemoryRegionWithBufferContents(
+        gfx::GpuMemoryBufferHandle buffer_handle,
+        base::UnsafeSharedMemoryRegion shared_memory) {
+  return false;
+}
+
 ImageFactory* GpuMemoryBufferFactoryNativePixmap::AsImageFactory() {
   return this;
 }

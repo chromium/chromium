@@ -61,6 +61,13 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gpu::SurfaceHandle surface_handle) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
+  void CopyGpuMemoryBufferAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback) override;
+  bool CopyGpuMemoryBufferSync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region) override;
 
   int counter_ = 0;
   // TODO(sad): Explore the option of doing this from an existing thread.

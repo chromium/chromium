@@ -30,6 +30,15 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
                void(gfx::GpuMemoryBuffer* buffer,
                     const gpu::SyncToken& sync_token));
 
+  MOCK_METHOD3(CopyGpuMemoryBufferAsync,
+               void(gfx::GpuMemoryBufferHandle buffer_handle,
+                    base::UnsafeSharedMemoryRegion memory_region,
+                    base::OnceCallback<void(bool)> callback));
+
+  MOCK_METHOD2(CopyGpuMemoryBufferSync,
+               bool(gfx::GpuMemoryBufferHandle buffer_handle,
+                    base::UnsafeSharedMemoryRegion memory_region));
+
   static std::unique_ptr<gfx::GpuMemoryBuffer> CreateFakeGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_HOST_HOST_GPU_MEMORY_BUFFER_MANAGER_H_
 
 #include <memory>
+#include <unordered_map>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
@@ -79,6 +80,13 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       gpu::SurfaceHandle surface_handle) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
+  void CopyGpuMemoryBufferAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback) override;
+  bool CopyGpuMemoryBufferSync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region) override;
 
   // Overridden from base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

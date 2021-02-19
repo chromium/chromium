@@ -281,6 +281,19 @@ void LocalGpuMemoryBufferManager::SetDestructionSyncToken(
     gfx::GpuMemoryBuffer* buffer,
     const gpu::SyncToken& sync_token) {}
 
+void LocalGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
+}
+
+bool LocalGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  return false;
+}
+
 std::unique_ptr<gfx::GpuMemoryBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,
     const gfx::Size& size,

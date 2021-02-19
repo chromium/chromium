@@ -4,6 +4,8 @@
 
 #include "components/viz/host/gpu_client.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -211,6 +213,21 @@ void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
     gpu_memory_buffer_manager->DestroyGpuMemoryBuffer(id, client_id_,
                                                       sync_token);
   }
+}
+
+void GpuClient::CopyGpuMemoryBuffer(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory,
+    CopyGpuMemoryBufferCallback callback) {
+  auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
+
+  if (!gpu_memory_buffer_manager) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  gpu_memory_buffer_manager->CopyGpuMemoryBufferAsync(
+      std::move(buffer_handle), std::move(shared_memory), std::move(callback));
 }
 
 void GpuClient::CreateGpuMemoryBufferFactory(

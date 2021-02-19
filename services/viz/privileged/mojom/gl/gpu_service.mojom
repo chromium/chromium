@@ -28,6 +28,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 
 interface GpuService {
   // Tells the GPU service to create a new channel for communication with a
@@ -89,6 +90,13 @@ interface GpuService {
                          int32 client_id,
                          gpu.mojom.SyncToken sync_token);
 
+  // Copies GMB pixel data to |shared_memory|.
+  // Returns |true| if the copy has succeeded.
+  CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,
+                     mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
+                     => (bool success);
+
+  // Returns current video memory usage.
   GetVideoMemoryUsageStats() => (gpu.mojom.VideoMemoryUsageStats stats);
 
   // Starts tracking the peak GPU memory until GetPeakMemoryUsage is called.

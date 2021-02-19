@@ -34,6 +34,15 @@ class GPU_EXPORT GpuMemoryBufferManager {
   virtual void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                        const gpu::SyncToken& sync_token) = 0;
 
+  // Copies pixel data of GMB to the provided shared memory region.
+  virtual void CopyGpuMemoryBufferAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback) = 0;
+  virtual bool CopyGpuMemoryBufferSync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region) = 0;
+
  protected:
   class GPU_EXPORT AllocatedBufferInfo {
    public:

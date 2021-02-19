@@ -248,6 +248,27 @@ void HostGpuMemoryBufferManager::SetDestructionSyncToken(
       sync_token);
 }
 
+void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  if (auto* gpu_service = GetGpuService()) {
+    gpu_service->CopyGpuMemoryBuffer(std::move(buffer_handle),
+                                     std::move(memory_region),
+                                     std::move(callback));
+  } else {
+    // GPU service failed to start. Run the callback with a null handle.
+    std::move(callback).Run(false);
+  }
+}
+
+bool HostGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool HostGpuMemoryBufferManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {

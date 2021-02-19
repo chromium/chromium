@@ -163,6 +163,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id,
                               const gpu::SyncToken& sync_token) override;
+  void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
+                           base::UnsafeSharedMemoryRegion shared_memory,
+                           CopyGpuMemoryBufferCallback callback) override;
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
   void StartPeakMemoryMonitor(uint32_t sequence_num) override;

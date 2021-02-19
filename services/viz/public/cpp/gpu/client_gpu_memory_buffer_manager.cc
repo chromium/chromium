@@ -170,4 +170,29 @@ void ClientGpuMemoryBufferManager::SetDestructionSyncToken(
       sync_token);
 }
 
+void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  gpu_->CopyGpuMemoryBuffer(std::move(buffer_handle), std::move(memory_region),
+                            std::move(callback));
+}
+
+bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  base::WaitableEvent event;
+  bool mapping_result = false;
+  CopyGpuMemoryBufferAsync(
+      std::move(buffer_handle), std::move(memory_region),
+      base::BindOnce(
+          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
+            *result_ptr = result;
+            event->Signal();
+          },
+          &event, &mapping_result));
+  event.Wait();
+  return mapping_result;
+}
+
 }  // namespace viz

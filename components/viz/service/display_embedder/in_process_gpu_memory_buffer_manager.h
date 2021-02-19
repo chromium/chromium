@@ -43,6 +43,13 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
       gpu::SurfaceHandle surface_handle) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
+  void CopyGpuMemoryBufferAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback) override;
+  bool CopyGpuMemoryBufferSync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region) override;
 
   // base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

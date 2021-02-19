@@ -768,6 +768,16 @@ void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
   gpu_channel_manager_->DestroyGpuMemoryBuffer(id, client_id, sync_token);
 }
 
+void GpuServiceImpl::CopyGpuMemoryBuffer(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory,
+    CopyGpuMemoryBufferCallback callback) {
+  DCHECK(io_runner_->BelongsToCurrentThread());
+  std::move(callback).Run(
+      gpu_memory_buffer_factory_->FillSharedMemoryRegionWithBufferContents(
+          std::move(buffer_handle), std::move(shared_memory)));
+}
+
 void GpuServiceImpl::GetVideoMemoryUsageStats(
     GetVideoMemoryUsageStatsCallback callback) {
   if (io_runner_->BelongsToCurrentThread()) {

@@ -107,6 +107,13 @@ class FakeGpuMemoryBufferFactory : public gpu::GpuMemoryBufferFactory {
     gpu_memory_buffers_[client_id].erase(id);
   }
 
+  bool FillSharedMemoryRegionWithBufferContents(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
   // Type-checking downcast routine.
   gpu::ImageFactory* AsImageFactory() override {
     NOTIMPLEMENTED();
