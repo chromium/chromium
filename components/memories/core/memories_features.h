@@ -9,7 +9,8 @@
 
 namespace memories {
 
-extern const base::Feature kChromeMemories;
+extern const base::Feature kMemories;
+extern const base::Feature kDebug;
 
 }  // namespace memories
 

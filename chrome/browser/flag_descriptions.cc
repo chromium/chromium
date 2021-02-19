@@ -1436,6 +1436,10 @@ const char kMediaRouterCastAllowAllIPsDescription[] =
     "Have the Media Router connect to Cast devices on all IP addresses, not "
     "just RFC1918/RFC4193 private addresses.";
 
+const char kMemoriesDebugName[] = "Memories Debug";
+const char kMemoriesDebugDescription[] =
+    "Show debug information for chrome://memories.";
+
 const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =
     "Enables the new design of metrics settings.";

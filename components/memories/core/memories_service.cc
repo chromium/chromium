@@ -17,7 +17,7 @@ void MemoriesService::Shutdown() {}
 void MemoriesService::AddVisit(const GURL& url,
                                const base::Time& time,
                                const VisitContextSignals& context_signals) {
-  if (!base::FeatureList::IsEnabled(memories::kChromeMemories))
+  if (!base::FeatureList::IsEnabled(memories::kMemories))
     return;
 
   MemoriesVisit visit;

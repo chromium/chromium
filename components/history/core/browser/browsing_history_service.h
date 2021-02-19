@@ -67,7 +67,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
                  bool is_search_result,
                  const base::string16& snippet,
                  bool blocked_visit,
-                 const GURL& remote_icon_url_for_uma);
+                 const GURL& remote_icon_url_for_uma,
+                 int visit_count,
+                 int typed_count);
     HistoryEntry();
     HistoryEntry(const HistoryEntry& other);
     virtual ~HistoryEntry();
@@ -105,6 +107,12 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
     // Optional parameter used to plumb footprints associated icon url.
     GURL remote_icon_url_for_uma;
+
+    // Total number of times this URL has been visited.
+    int visit_count = 0;
+
+    // Number of times this URL has been manually entered in the URL bar.
+    int typed_count = 0;
   };
 
   // Contains information about a completed history query.

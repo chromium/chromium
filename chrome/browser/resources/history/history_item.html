@@ -95,6 +95,17 @@
         --cr-icon-button-size: 32px;
       }
 
+      #debug-container {
+        color: var(--history-item-time-color);
+        display: flex;
+        padding-inline-start: 22px;
+        pointer-events: auto;
+      }
+
+      .debug-info:not(:first-child) {
+        margin-inline-start: 15px;
+      }
+
       #time-gap-separator {
         border-inline-start: 1px solid #888;
         height: 15px;
@@ -208,5 +219,25 @@
           </cr-icon-button>
         </div>
       </div>
+      <template is="dom-if" if="[[item.debug]]">
+        <div id="debug-container" aria-hidden="true">
+          <div class="debug-info">DEBUG</div>
+          <div class="debug-info"
+               hidden="[[!item.debug.isUrlInLocalDatabase]]">
+            in local data
+          </div>
+          <div class="debug-info" hidden="[[!item.isUrlInRemoteUserData]]">
+            in remote data
+          </div>
+          <div class="debug-info"
+               hidden="[[!item.debug.isUrlInLocalDatabase]]">
+            typed count: [[item.debug.typedCount]]
+          </div>
+          <div class="debug-info"
+               hidden="[[!item.debug.isUrlInLocalDatabase]]">
+            visit count: [[item.debug.visitCount]]
+          </div>
+        </div>
+      </template>
       <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>
     </div>

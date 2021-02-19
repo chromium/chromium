@@ -7,9 +7,18 @@
  */
 
 /**
+ * The type of the debug object nested in the history result object. The
+ * definition is based on chrome/browser/ui/webui/browsing_history_handler.cc:
+ * HistoryEntryToValue()
+ * @typedef {{isUrlInLocalDatabase: boolean,
+              visitCount: number,
+              typedCount: number}}
+ */
+export let HistoryEntryDebug;
+
+/**
  * The type of the history result object. The definition is based on
- * chrome/browser/ui/webui/browsing_history_handler.cc:
- *     BrowsingHistoryHandler::HistoryEntry::ToValue()
+ * chrome/browser/ui/webui/browsing_history_handler.cc: HistoryEntryToValue()
  * @typedef {{allTimestamps: Array<number>,
  *            remoteIconUrlForUma: string,
  *            isUrlInRemoteUserData: boolean,
@@ -26,7 +35,8 @@
  *            starred: boolean,
  *            time: number,
  *            title: string,
- *            url: string}}
+ *            url: string,
+ *            debug: HistoryEntryDebug}}
  */
 export let HistoryEntry;
 

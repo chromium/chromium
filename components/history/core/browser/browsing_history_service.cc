@@ -121,7 +121,9 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
     bool is_search_result,
     const base::string16& snippet,
     bool blocked_visit,
-    const GURL& remote_icon_url_for_uma)
+    const GURL& remote_icon_url_for_uma,
+    int visit_count,
+    int typed_count)
     : entry_type(entry_type),
       url(url),
       title(title),
@@ -130,7 +132,9 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
       is_search_result(is_search_result),
       snippet(snippet),
       blocked_visit(blocked_visit),
-      remote_icon_url_for_uma(remote_icon_url_for_uma) {
+      remote_icon_url_for_uma(remote_icon_url_for_uma),
+      visit_count(visit_count),
+      typed_count(typed_count) {
   all_timestamps.insert(time.ToInternalValue());
 }
 
@@ -451,7 +455,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
   std::sort(sorted.begin(), sorted.end(), HistoryEntry::SortByTimeDescending);
 
   // Pre-reserve the size of the new vector. Since we're working with pointers
-  // later on not doing this could lead to the vector being resized and to
+  // later on, not doing this could lead to the vector being resized and to
   // pointers to invalid locations.
   std::vector<HistoryEntry> deduped;
   deduped.reserve(sorted.size());
@@ -459,7 +463,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
   // Maps a URL to the most recent entry on a particular day.
   std::map<GURL, HistoryEntry*> current_day_entries;
 
-  // Keeps track of the day that |current_day_urls| is holding the URLs for,
+  // Keeps track of the day that |current_day_entries| is holding entries for
   // in order to handle removing per-day duplicates.
   base::Time current_day_midnight;
 
@@ -490,14 +494,18 @@ void BrowsingHistoryService::MergeDuplicateResults(
           !entry.remote_icon_url_for_uma.is_empty()) {
         matching_entry->remote_icon_url_for_uma = entry.remote_icon_url_for_uma;
       }
+
+      // Aggregate visit and typed counts.
+      matching_entry->visit_count += entry.visit_count;
+      matching_entry->typed_count += entry.typed_count;
     }
   }
 
   // If the beginning of either source was not reached, that means there are
-  // more results from that source, and then other source needs to have its data
-  // held back until the former source catches up. This only send the UI history
-  // entries in the correct order. Subsequent continuation requests will get the
-  // delayed entries.
+  // more results from that source, and the other source needs to have its data
+  // held back until the former source catches up. This only sends the UI
+  // history entries in the correct order. Subsequent continuation requests will
+  // get the delayed entries.
   base::Time oldest_allowed = base::Time();
   if (state->local_status == MORE_RESULTS) {
     oldest_allowed = std::max(oldest_allowed, oldest_local);
@@ -549,7 +557,7 @@ void BrowsingHistoryService::QueryComplete(
     output.emplace_back(HistoryEntry(
         HistoryEntry::LOCAL_ENTRY, page.url(), page.title(), page.visit_time(),
         std::string(), !state->search_text.empty(), page.snippet().text(),
-        page.blocked_visit(), GURL()));
+        page.blocked_visit(), GURL(), page.visit_count(), page.typed_count()));
   }
 
   state->local_status =
@@ -563,7 +571,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
     scoped_refptr<QueryHistoryState> state) {
   std::vector<HistoryEntry> results;
 
-  // Always merge remote results, because Web History does not deduplicate .
+  // Always merge remote results, because Web History does not deduplicate.
   // Local history should be using per-query deduplication, but if we are in a
   // continuation, it's possible that we have carried over pending entries along
   // with new results, and these two sets may contain duplicates. Assuming every
@@ -691,7 +699,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
           state->remote_results.emplace_back(HistoryEntry(
               HistoryEntry::REMOTE_ENTRY, gurl, title, time, client_id,
               !state->search_text.empty(), base::string16(),
-              /* blocked_visit */ false, GURL(favicon_url)));
+              /* blocked_visit */ false, GURL(favicon_url), 0, 0));
         }
       }
     }

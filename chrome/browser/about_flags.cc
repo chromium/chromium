@@ -92,6 +92,7 @@
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lookalikes/core/features.h"
+#include "components/memories/core/memories_features.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
@@ -4442,6 +4443,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxWebUIOmniboxPopupName,
      flag_descriptions::kOmniboxWebUIOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
+
+    {"memories-debug", flag_descriptions::kMemoriesDebugName,
+     flag_descriptions::kMemoriesDebugDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(memories::kDebug)},
 
     {"search-prefetch", flag_descriptions::kEnableSearchPrefetchName,
      flag_descriptions::kEnableSearchPrefetchDescription, kOsAll,

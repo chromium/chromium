@@ -3410,6 +3410,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "memories-debug",
+    "owners": [ "manukh", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "messages-block-popup-infobars",
     "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 85

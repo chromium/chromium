@@ -631,7 +631,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<NewTabPageUI>;
   if (url.host_piece() == chrome::kChromeUIFeedbackHost)
     return &NewWebUI<FeedbackUI>;
-  if (base::FeatureList::IsEnabled(memories::kChromeMemories)) {
+  if (base::FeatureList::IsEnabled(memories::kMemories)) {
     if (url.host_piece() == chrome::kChromeUIMemoriesHost)
       return &NewWebUI<MemoriesUI>;
   }
