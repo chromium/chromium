@@ -29,7 +29,6 @@
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -209,11 +208,6 @@ void WindowCycleController::Scroll(WindowCyclingDirection direction) {
   window_cycle_list_->ScrollInDirection(direction);
 }
 
-void WindowCycleController::Drag(float delta_x) {
-  DCHECK(window_cycle_list_);
-  window_cycle_list_->Drag(delta_x);
-}
-
 void WindowCycleController::StartCycling() {
   // Close the wallpaper preview if it is open to prevent visual glitches where
   // the window view item for the preview is transparent
@@ -259,14 +253,8 @@ void WindowCycleController::SetFocusedWindow(aura::Window* window) {
   window_cycle_list_->SetFocusedWindow(window);
 }
 
-bool WindowCycleController::IsEventInCycleView(const ui::LocatedEvent* event) {
+bool WindowCycleController::IsEventInCycleView(ui::LocatedEvent* event) {
   return window_cycle_list_ && window_cycle_list_->IsEventInCycleView(event);
-}
-
-aura::Window* WindowCycleController::GetWindowAtPoint(
-    const ui::LocatedEvent* event) {
-  return window_cycle_list_ ? window_cycle_list_->GetWindowAtPoint(event)
-                            : nullptr;
 }
 
 bool WindowCycleController::IsWindowListVisible() {
@@ -393,8 +381,7 @@ void WindowCycleController::StopCycling() {
       window_util::GetActiveWindow();
 
   // Remove our key event filter.
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                  event_filter_.release());
+  event_filter_.reset();
 
   if (active_window_after_window_cycle != nullptr &&
       active_window_before_window_cycle_ != active_window_after_window_cycle) {
