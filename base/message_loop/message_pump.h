@@ -131,13 +131,16 @@ class BASE_EXPORT MessagePump {
   // messages as well as for giving cycles to the delegate periodically. The
   // message pump should take care to mix delegate callbacks with native message
   // processing so neither type of event starves the other of cycles. Each call
-  // to a delegate function or DoInternalWork() is considered the beginning of a
-  // new "unit of work".
+  // to a delegate function is considered the beginning of a new "unit of work".
   //
   // The anatomy of a typical run loop:
   //
   //   for (;;) {
-  //     bool did_internal_work = DoInternalWork();
+  //     bool did_native_work = false;
+  //     {
+  //       auto scoped_do_native_work = state_->delegate->BeginNativeWork();
+  //       did_native_work = DoNativeWork();
+  //     }
   //     if (should_quit_)
   //       break;
   //
@@ -145,7 +148,7 @@ class BASE_EXPORT MessagePump {
   //     if (should_quit_)
   //       break;
   //
-  //     if (did_internal_work || next_work_info.is_immediate())
+  //     if (did_native_work || next_work_info.is_immediate())
   //       continue;
   //
   //     bool did_idle_work = delegate_->DoIdleWork();
@@ -159,12 +162,12 @@ class BASE_EXPORT MessagePump {
   //   }
   //
 
-  // Here, DoInternalWork is some private method of the message pump that is
+  // Here, DoNativeWork is some private method of the message pump that is
   // responsible for dispatching the next UI message or notifying the next IO
   // completion (for example).  WaitForWork is a private method that simply
   // blocks until there is more work of any type to do.
   //
-  // Notice that the run loop cycles between calling DoInternalWork and DoWork
+  // Notice that the run loop cycles between calling DoNativeWork and DoWork
   // methods. This helps ensure that none of these work queues starve the
   // others. This is important for message pumps that are used to drive
   // animations, for example.
