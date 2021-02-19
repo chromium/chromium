@@ -329,11 +329,11 @@ class _ApkDelegate(object):
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
           if not os.path.isdir(self._coverage_dir):
             os.makedirs(self._coverage_dir)
-          with tempfile_ext.NamedTemporaryDirectory(
-              prefix=self._coverage_dir) as temp_d:
-            _PullCoverageFiles(device, device_coverage_dir, temp_d)
-            _MergeCoverageFiles(self._coverage_dir,
-                                os.path.join(temp_d, 'profraw'))
+        # TODO(crbug.com/1179004) Use _MergeCoverageFiles when llvm-profdata
+        # not found is fixed.
+          _PullCoverageFiles(
+              device, device_coverage_dir,
+              os.path.join(self._coverage_dir, str(self._coverage_index)))
 
       return device.ReadFile(stdout_file.name).splitlines()
 
