@@ -186,9 +186,6 @@ class WellKnownChangePasswordTabHelperTest
         entries[0], UkmBuilder::kWellKnownChangePasswordResultName,
         static_cast<int64_t>(expected));
   }
-  // Waits until the navigation is complete and waits for backgroundtasks to
-  // complete. Returns false when timed out.
-  bool WaitUntilLoaded();
   // Returns the url after the navigation is complete.
   GURL GetNavigatedUrl() const;
 
@@ -231,14 +228,6 @@ GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {
     url = delegate_.last_open_url_request()->params.url;
   }
   return url;
-}
-
-bool WellKnownChangePasswordTabHelperTest::WaitUntilLoaded() {
-  return WaitUntilConditionOrTimeout(base::test::ios::kWaitForPageLoadTimeout,
-                                     ^{
-                                       WaitForBackgroundTasks();
-                                       return !web_state()->IsLoading();
-                                     });
 }
 
 std::unique_ptr<HttpResponse>

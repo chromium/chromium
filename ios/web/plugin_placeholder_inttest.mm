@@ -61,6 +61,7 @@ TEST_F(PluginPlaceholderTest, AppletFallback) {
                          kPageDescription, kFallbackText);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that placeholder image is not displayed.
   EXPECT_TRUE(
@@ -84,6 +85,7 @@ TEST_F(PluginPlaceholderTest, AppletOnly) {
                          kPageDescription);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that plugin object is replaced with placeholder image.
   EXPECT_TRUE(
@@ -112,6 +114,7 @@ TEST_F(PluginPlaceholderTest, ObjectFlashEmbedFallback) {
       kPageDescription);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that plugin object is replaced with placeholder image.
   EXPECT_TRUE(
@@ -140,6 +143,7 @@ TEST_F(PluginPlaceholderTest, ObjectUndefinedEmbedFallback) {
       kPageDescription);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that placeholder image is not displayed.
   EXPECT_TRUE(
@@ -166,6 +170,7 @@ TEST_F(PluginPlaceholderTest, ObjectFallback) {
       kPageDescription, kFallbackText);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that placeholder image is not displayed.
   EXPECT_TRUE(
@@ -190,6 +195,7 @@ TEST_F(PluginPlaceholderTest, ObjectOnly) {
       kPageDescription);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that plugin object is replaced with placeholder image.
   EXPECT_TRUE(
@@ -213,6 +219,7 @@ TEST_F(PluginPlaceholderTest, PNGObject) {
       kPageDescription);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that placeholder image is not displayed.
   EXPECT_TRUE(
@@ -254,6 +261,7 @@ TEST_F(PluginPlaceholderTest, SmallFlash) {
       kPageDescription);
   ASSERT_TRUE(SetUpServer(page));
   test::LoadUrl(web_state(), server_.GetURL("/"));
+  ASSERT_TRUE(WaitUntilLoaded());
 
   // Verify that placeholder image is not displayed.
   EXPECT_TRUE(

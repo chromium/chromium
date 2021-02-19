@@ -220,6 +220,13 @@ void WebTestWithWebState::WaitForCondition(ConditionBlock condition) {
                                       base::TimeDelta::FromSeconds(1000));
 }
 
+bool WebTestWithWebState::WaitUntilLoaded() {
+  return WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    WaitForBackgroundTasks();
+    return !web_state()->IsLoading();
+  });
+}
+
 id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
   __block id execution_result = nil;
   __block bool execution_completed = false;

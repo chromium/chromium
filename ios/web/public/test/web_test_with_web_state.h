@@ -63,6 +63,9 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Blocks until known NSRunLoop-based have completed, known message-loop-based
   // background tasks have completed and |condition| evaluates to true.
   void WaitForCondition(ConditionBlock condition);
+  // Blocks until web_state() navigation and background tasks are
+  // completed. Returns false when timed out.
+  bool WaitUntilLoaded();
   // Synchronously executes JavaScript and returns result as id.
   id ExecuteJavaScript(NSString* script);
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
