@@ -722,18 +722,13 @@ config("compiler") {
 
   # Pin to LLVM's legacy pass manager so we can switch independently of a Clang roll.
   # TODO(https://crbug.com/1173188): remove once we've rolled a Clang with the new PM as the default PM.
-  if (is_clang && !is_nacl && !use_xcode_clang &&
-      default_toolchain != "//build/toolchain/cros:target") {
+  if (is_win && is_clang && !is_nacl) {
     cflags += [
       "-Xclang",
       "-fno-experimental-new-pass-manager",
     ]
     if (use_thin_lto) {
-      if (is_win) {
-        ldflags += [ "-opt:noltonewpassmanager" ]
-      } else if (!is_mac) {
-        ldflags += [ "-Wl,--lto-legacy-pass-manager" ]
-      }
+      ldflags += [ "-opt:noltonewpassmanager" ]
     }
   }
 
