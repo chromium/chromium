@@ -1,7 +1,7 @@
 <style include="edu-coexistence-css"></style>
 
-<edu-coexistence-template>
-  <span slot="main">
+<div class="template-container">
+  <div class="content-container">
     <div class="container">
       <div class="main-padding">
         <if expr="_google_chrome">
@@ -12,14 +12,14 @@
         <p class="secondary">$i18n{eduCoexistenceErrorDescription}</p>
       </div>
     </div>
-  </span>
-  <span slot="buttons">
-    <div class = "buttons-layout">
-      <span></span>
-      <span>
-        <edu-coexistence-button button-type="action">
-        </edu-coexistence-button>
-      </span>
+    <div class="footer">
+      <div class="buttons-layout">
+        <span></span>
+        <span>
+          <edu-coexistence-button button-type="action">
+          </edu-coexistence-button>
+        </span>
+      </div>
     </div>
-  </span>
-</edu-coexistence-template>
+  </div>
+</div>
