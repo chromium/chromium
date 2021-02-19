@@ -903,6 +903,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   DCHECK_LT(index, self.items.count);
+
+  // crbug.com/1163238: In the wild, the above DCHECK condition is hit. This
+  // might be a case of the UI sending touch events after the model has updated.
+  // In this case, just no-op; if the user has to tap again to activate a tab,
+  // that's better than a crash.
+  if (index >= self.items.count)
+    return;
+
   NSString* itemID = self.items[index].identifier;
   [self.delegate gridViewController:self didSelectItemWithID:itemID];
 }
