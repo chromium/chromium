@@ -2272,14 +2272,14 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           "  \"paused\": false,"
                           "  \"url\": \"%s\"}]",
                           download_url.c_str())));
-  // File will be renamed to file.html due to its mime type.
+  // Extension for file URLs will not change even if the mime type is text/html.
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
               base::StringPrintf("[{\"id\": %d,"
                                  "  \"filename\": {"
                                  "    \"previous\": \"\","
                                  "    \"current\": \"%s\"}}]",
-                                 result_id, GetFilename("file.html").c_str())));
+                                 result_id, GetFilename("file").c_str())));
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
                       base::StringPrintf(
                           "[{\"id\": %d,"

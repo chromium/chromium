@@ -292,7 +292,7 @@ base::FilePath DownloadTargetDeterminer::GenerateFileName() const {
       download_->GetURL(), download_->GetContentDisposition(), referrer_charset,
       suggested_filename, sniffed_mime_type, default_filename);
 
-  // We don't replace the file extension if safe browsing consider the file
+  // We don't replace the file extension if sfafe browsing consider the file
   // extension to be unsafe. Just let safe browsing scan the generated file.
   if (safe_browsing::FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
           generated_filename)) {
@@ -395,14 +395,26 @@ void DownloadTargetDeterminer::NotifyExtensionsDone(
     // Downloads/music/music/music/bar.mp3.
     base::FilePath new_path(download_prefs_->DownloadPath().Append(
         suggested_path).NormalizePathSeparators());
-    // If the (Chrome) extension does not suggest an file extension, do not pass
-    // a mime type to GenerateSafeFileName so that it does not force the
-    // filename to have an extension. Otherwise, correct the file extension in
-    // case it is wrongly given.
-    if (new_path.Extension().empty())
-      net::GenerateSafeFileName(std::string(), false, &new_path);
-    else
-      net::GenerateSafeFileName(download_->GetMimeType(), true, &new_path);
+
+    // If this is a local file, don't allow extensions to override its
+    // extension.
+    if (download_->GetURL().SchemeIsFile()) {
+      base::FilePath file_path;
+      net::FileURLToFilePath(download_->GetURL(), &file_path);
+      new_path = new_path.ReplaceExtension(file_path.Extension());
+    } else {
+      // If the (Chrome) extension does not suggest an file extension, do not
+      // pass a mime type to GenerateSafeFileName so that it does not force the
+      // filename to have an extension. Otherwise, correct the file extension in
+      // case it is wrongly given.
+      if (new_path.Extension().empty()) {
+        net::GenerateSafeFileName(std::string() /*mime_type*/,
+                                  false /*ignore_extension*/, &new_path);
+      } else {
+        net::GenerateSafeFileName(download_->GetMimeType(),
+                                  true /*ignore_extension*/, &new_path);
+      }
+    }
     virtual_path_ = new_path;
     create_target_directory_ = true;
   }
