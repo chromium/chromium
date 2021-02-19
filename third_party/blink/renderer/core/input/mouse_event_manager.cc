@@ -371,8 +371,6 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
   const bool should_dispatch_click_event =
       click_count_ > 0 && !context_menu_event && mouse_down_element_ &&
       mouse_release_target &&
-      mouse_release_target->CanParticipateInFlatTree() &&
-      mouse_down_element_->CanParticipateInFlatTree() &&
       mouse_down_element_->isConnected();
   if (!should_dispatch_click_event)
     return WebInputEventResult::kNotHandled;
@@ -399,8 +397,7 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
                         click_target_node != old_click_target_node);
 
   const bool click_element_still_in_flat_tree =
-      (click_element_ && click_element_->CanParticipateInFlatTree() &&
-       click_element_->isConnected());
+      (click_element_ && click_element_->isConnected());
   UMA_HISTOGRAM_BOOLEAN("Event.ClickNotFiredDueToDomManipulation",
                         !click_element_still_in_flat_tree);
   DCHECK_EQ(click_element_ == mouse_down_element_,

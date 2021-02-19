@@ -1743,9 +1743,6 @@ void HTMLElement::UpdateDescendantDirectionality(TextDirection direction) {
 void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   // If an ancestor has dir=auto, and this node has the first character,
   // changes to dir attribute may affect the ancestor.
-  if (!CanParticipateInFlatTree())
-    return;
-
   if (!IsValidDirAttribute(params.old_value) &&
       !IsValidDirAttribute(params.new_value))
     return;
