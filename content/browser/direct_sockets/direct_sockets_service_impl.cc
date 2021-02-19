@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,9 +24,17 @@
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+#if defined(OS_WIN) || defined(OS_MAC)
+#include "base/enterprise_util.h"
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/tpm/install_attributes.h"
+#endif
+
 namespace content {
 
 namespace {
+
+base::Optional<bool> g_is_enterprise_managed_for_testing;
 
 constexpr int32_t kMaxBufferSize = 32 * 1024 * 1024;
 
@@ -71,6 +80,23 @@ bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
       return true;
   }
   return false;
+}
+
+// TODO(crbug.com/1119662): Now only check for the device, maybe there are some
+// methods that can be applied to check for the user profile.
+bool IsEnterpriseManaged() {
+  // Return the value of the testing flag if it's set.
+  if (g_is_enterprise_managed_for_testing.has_value())
+    return g_is_enterprise_managed_for_testing.value();
+
+#if defined(OS_WIN) || defined(OS_MAC)
+  return base::IsMachineExternallyManaged();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return chromeos::InstallAttributes::IsInitialized() &&
+         chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -307,6 +333,12 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
 }
 
 // static
+void DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(
+    bool enterprise_managed) {
+  g_is_enterprise_managed_for_testing = enterprise_managed;
+}
+
+// static
 void DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
     PermissionCallback callback) {
   GetPermissionCallbackForTesting() = std::move(callback);
@@ -363,7 +395,14 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   if (options.send_buffer_size < 0 || options.receive_buffer_size < 0)
     return net::ERR_INVALID_ARGUMENT;
 
-  // TODO(crbug.com/1119662): Check for enterprise software policies.
+  // By default, we will restrict use of the API when enterprise software
+  // policies are in effect.
+  if (IsEnterpriseManaged()) {
+    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
+                                  FailureType::kEnterprisePolicy);
+    return net::ERR_NETWORK_ACCESS_DENIED;
+  }
+
   // TODO(crbug.com/1119659): Check permissions policy.
   // TODO(crbug.com/1119600): Implement rate limiting.
 
