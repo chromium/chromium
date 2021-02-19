@@ -344,8 +344,10 @@ bool DefinitelyNewFormattingContext(const Node& node,
     if (IsA<SVGForeignObjectElement>(element))
       return true;
   }
+  // An item inside a flex or grid container always establishes a new formatting
+  // context. Same for a child of a MathML or custom layout container.
   if (const Node* parent = LayoutTreeBuilderTraversal::LayoutParent(node))
-    return parent->ComputedStyleRef().IsDisplayFlexibleOrGridBox();
+    return parent->ComputedStyleRef().BlockifiesChildren();
   return false;
 }
 
@@ -4268,9 +4270,18 @@ void Element::ForceLegacyLayoutInFormattingContext(
     if (!ancestor || ancestor->ShouldForceLegacyLayoutForChild())
       break;
     const ComputedStyle* style = ancestor->GetComputedStyle();
+
+    // Some layout types, such as MathML and custom layout, are only implemented
+    // in LayoutNG. We cannot fall back to legacy layout for such elements. If
+    // some descendant wants legacy fallback, while some ancestor in the same
+    // formatting context doesn't support legacy layout, we have ended up in an
+    // impossible situation.
+    DCHECK(!style->DisplayTypeRequiresLayoutNG());
+
     if (style->Display() == EDisplay::kNone)
       break;
-    found_fc = found_fc || DefinitelyNewFormattingContext(*ancestor, *style);
+
+    found_fc = DefinitelyNewFormattingContext(*ancestor, *style);
     ancestor->SetShouldForceLegacyLayoutForChild(true);
     ancestor->SetNeedsReattachLayoutTree();
   }
