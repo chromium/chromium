@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
@@ -46,11 +47,11 @@ public class ChromeTabModalPresenter
     private final Activity mActivity;
     private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
     private final Supplier<ToolbarManager> mToolbarManagerSupplier;
-    private final Supplier<Tab> mTabSupplier;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     private final FullscreenManager mFullscreenManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final TabModalBrowserControlsVisibilityDelegate mVisibilityDelegate;
+    private final TabModelSelector mTabModelSelector;
 
     /** The active tab of which the dialog will be shown on top. */
     private Tab mActiveTab;
@@ -85,28 +86,29 @@ public class ChromeTabModalPresenter
      * @param activity The activity displaying the dialogs.
      * @param tabObscuringHandlerSupplier Supplies the {@link TabObscuringHandler} object.
      * @param toolbarManagerSupplier Supplies the {@link ToolbarManager} object.
-     * @param tabSupplier Supplies the current {@link Tab} object.
      * @param contextualSearchManagerSupplier Supplies the {@link ContextualSearchManager} object.
      * @param fullscreenManager The {@link FullscreenManager} object, used to exit full screen.
      * @param browserControlsVisibilityManager The {@link BrowserControlsVisibilityManager} object.
+     * @param tabModelSelector The {@link TabModelSelector} object.
      */
     public ChromeTabModalPresenter(Activity activity,
             Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
-            Supplier<ToolbarManager> toolbarManagerSupplier, Supplier<Tab> tabSupplier,
+            Supplier<ToolbarManager> toolbarManagerSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             FullscreenManager fullscreenManager,
-            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            TabModelSelector tabModelSelector) {
         super(activity);
         mActivity = activity;
         mTabObscuringHandlerSupplier = tabObscuringHandlerSupplier;
         mToolbarManagerSupplier = toolbarManagerSupplier;
-        mTabSupplier = tabSupplier;
         mFullscreenManager = fullscreenManager;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mBrowserControlsVisibilityManager.addObserver(this);
         mVisibilityDelegate = new TabModalBrowserControlsVisibilityDelegate();
         mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
+        mTabModelSelector = tabModelSelector;
     }
 
     public void destroy() {
@@ -188,7 +190,7 @@ public class ChromeTabModalPresenter
         View menuButton = mToolbarManagerSupplier.get().getMenuButtonView();
 
         if (restricted) {
-            mActiveTab = mTabSupplier.get();
+            mActiveTab = mTabModelSelector.getCurrentTab();
             assert mActiveTab
                     != null : "Tab modal dialogs should be shown on top of an active tab.";
 

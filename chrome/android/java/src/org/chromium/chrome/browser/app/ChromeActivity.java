@@ -1796,7 +1796,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /**
      * DEPRECATED: Instead, use/hold a reference to {@link #mActivityTabProvider}. See
-     *             https://crbug.com/871279 for more details.
+     *             https://crbug.com/871279 for more details. Note that there are important
+     *             functional differences between {@link ActivityTabProvider} and this function
+     *             when transitioning to/from the tab switcher. For a drop-in replacement, use
+     *             {@link TabModelSelector#getCurrentTab} instead.
      *
      * Returns the tab being displayed by this ChromeActivity instance. This allows differentiation
      * between ChromeActivity subclasses that swap between multiple tabs (e.g. ChromeTabbedActivity)

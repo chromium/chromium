@@ -2334,8 +2334,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected ModalDialogManager createModalDialogManager() {
         ModalDialogManager manager = super.createModalDialogManager();
-        mTabModalHandler = new TabModalLifetimeHandler(this, manager,
-                this::getAppBrowserControlsVisibilityDelegate, this::getTabObscuringHandler);
+        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
+        mTabModalHandler = new TabModalLifetimeHandler(this, getLifecycleDispatcher(), manager,
+                this::getAppBrowserControlsVisibilityDelegate, this::getTabObscuringHandler,
+                this::getToolbarManager, this::getContextualSearchManager,
+                getTabModelSelectorSupplier(), this::getBrowserControlsManager,
+                this::getFullscreenManager);
         return manager;
     }
 
