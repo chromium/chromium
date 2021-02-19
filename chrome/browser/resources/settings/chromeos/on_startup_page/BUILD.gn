@@ -6,25 +6,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":on_startup_page" ]
-}
-
-js_library("on_startup_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "../../settings_page:settings_animated_pages",
-    "//services/device/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [ ":on_startup_page.m" ]
