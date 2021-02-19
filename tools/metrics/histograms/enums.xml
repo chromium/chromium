@@ -79327,6 +79327,7 @@ others/histograms.xml -->
   <int value="10" label="Showed notification"/>
   <int value="11" label="Notification pressed"/>
   <int value="12" label="User unselected linking checkbox during QR scan"/>
+  <int value="13" label="USB transaction was successful"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2MobileResult">

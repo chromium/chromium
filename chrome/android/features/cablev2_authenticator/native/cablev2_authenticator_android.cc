@@ -57,8 +57,9 @@ enum class CableV2MobileEvent {
   kNeedInteractive = 10,
   kInteractionReady = 11,
   kLinkingNotRequested = 12,
+  kUSBSuccess = 13,
 
-  kMaxValue = 12,
+  kMaxValue = 13,
 };
 
 void RecordEvent(CableV2MobileEvent event) {
@@ -261,9 +262,12 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   typedef base::OnceCallback<void(InteractionReadyCallback)>
       InteractionNeededCallback;
 
-  AndroidPlatform(JNIEnv* env, const JavaRef<jobject>& cable_authenticator)
+  AndroidPlatform(JNIEnv* env,
+                  const JavaRef<jobject>& cable_authenticator,
+                  bool is_usb)
       : env_(env),
         cable_authenticator_(cable_authenticator),
+        is_usb_(is_usb),
         need_to_disable_bluetooth_(false) {
     DCHECK(env_->IsInstanceOf(
         cable_authenticator_.obj(),
@@ -284,6 +288,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
                   bool need_to_disable_bluetooth)
       : env_(env),
         interaction_needed_callback_(std::move(interaction_needed_callback)),
+        is_usb_(false),
         need_to_disable_bluetooth_(need_to_disable_bluetooth) {}
 
   ~AndroidPlatform() override {
@@ -393,6 +398,10 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     }
     RecordResult(result);
 
+    if (is_usb_ && result == CableV2MobileResult::kSuccess) {
+      RecordEvent(CableV2MobileEvent::kUSBSuccess);
+    }
+
     // The transaction might fail before interactive mode, thus
     // |cable_authenticator_| may be empty.
     if (cable_authenticator_) {
@@ -489,6 +498,9 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   InteractionNeededCallback interaction_needed_callback_;
   base::Optional<base::ElapsedTimer> tunnel_server_connect_time_;
 
+  // is_usb_ is true if this object was created in order to respond to a client
+  // connected over USB.
+  const bool is_usb_;
   // need_to_disable_bluetooth_ is true if Bluetooth was enabled on the system
   // in order to handle this message and thus should be disabled once handling
   // is complete.
@@ -624,7 +636,8 @@ static jlong JNI_CableAuthenticator_StartUSB(
 
   global_data.current_transaction =
       device::cablev2::authenticator::TransactWithPlaintextTransport(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator),
+          std::make_unique<AndroidPlatform>(env, cable_authenticator,
+                                            /*is_usb=*/true),
           std::unique_ptr<device::cablev2::authenticator::Transport>(
               transport.release()));
 
@@ -655,7 +668,8 @@ static jlong JNI_CableAuthenticator_StartQR(
 
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromQRCode(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator),
+          std::make_unique<AndroidPlatform>(env, cable_authenticator,
+                                            /*is_usb=*/false),
           global_data.network_context, global_data.root_secret,
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
           decoded_qr->peer_identity,
@@ -688,7 +702,8 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   GlobalData& global_data = GetGlobalData();
   global_data
       .current_transaction = device::cablev2::authenticator::TransactFromQRCode(
-      std::make_unique<AndroidPlatform>(env, cable_authenticator),
+      std::make_unique<AndroidPlatform>(env, cable_authenticator,
+                                        /*is_usb=*/false),
       global_data.network_context, dummy_root_secret, dummy_authenticator_name,
       server_link_data
           ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>(),
