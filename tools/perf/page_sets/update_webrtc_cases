@@ -31,10 +31,11 @@ TEST_PAGES_LOCATION_BY_REPO = {
         'dirs': [
             'src/content/datachannel/datatransfer',
             'src/content/getusermedia/resolution',
+            'src/content/insertable-streams/audio-processing',
             'src/content/insertable-streams/video-processing',
             'src/content/peerconnection/negotiate-timing',
             ],
-        'revision': '4b198b679350f836809b40516c25d4b17eb22e9d',
+        'revision': '2cad23c099ce290e5634c856ae1a9ebb8012ba16',
     },
 }
 

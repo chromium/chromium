@@ -133,6 +133,44 @@ class PausePlayPeerConnections(WebrtcPage):
     action_runner.Wait(20)
 
 
+class InsertableStreamsAudioProcessing(WebrtcPage):
+  """Why: processes/transforms audio using insertable streams."""
+
+  def __init__(self, page_set, tags):
+    super(InsertableStreamsAudioProcessing, self).__init__(
+        url='file://webrtc_cases/audio-processing.html',
+        name='insertable_streams_audio_processing',
+        page_set=page_set,
+        tags=tags,
+        extra_browser_args=(
+            '--enable-blink-features=WebCodecs,MediaStreamInsertableStreams'))
+    self.supported = None
+
+  def RunNavigateSteps(self, action_runner):
+    self.supported = action_runner.EvaluateJavaScript('''(function () {
+  try {
+    new MediaStreamTrackGenerator('audio');
+    return true;
+  } catch (e) {
+    return false;
+  }
+})()''')
+    if self.supported:
+      super(InsertableStreamsAudioProcessing,
+            self).RunNavigateSteps(action_runner)
+
+  def ExecuteTest(self, action_runner):
+    self.AddMeasurement(
+        'supported', 'count_biggerIsBetter', 1 if self.supported else 0,
+        'Boolean flag indicating if this benchmark is supported by the browser.'
+    )
+    if not self.supported:
+      return
+    action_runner.WaitForJavaScriptCondition('!!audio')
+    action_runner.ExecuteJavaScript('start()')
+    action_runner.Wait(10)
+
+
 class InsertableStreamsVideoProcessing(WebrtcPage):
   """Why: processes/transforms video in various ways."""
 
@@ -266,6 +304,8 @@ class WebrtcPageSet(story.StorySet):
     self.AddStory(VideoCodecConstraints(self, 'H264', tags=['videoConstraints']))
     self.AddStory(VideoCodecConstraints(self, 'VP8', tags=['videoConstraints']))
     self.AddStory(VideoCodecConstraints(self, 'VP9', tags=['videoConstraints']))
+    self.AddStory(
+        InsertableStreamsAudioProcessing(self, tags=['insertableStreams']))
     self.AddStory(
         InsertableStreamsVideoProcessing(self,
                                          'camera',
