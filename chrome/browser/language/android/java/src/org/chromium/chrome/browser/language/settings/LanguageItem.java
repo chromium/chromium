@@ -76,6 +76,27 @@ public class LanguageItem {
     }
 
     /**
+     * Return true if this LanguageItem is a base language that supports translate.
+     * This filters out country variants that are not supported by Translate even if their base
+     * language is (e.g. en-US, en-IN, or es-MX).
+     * Todo(crbug.com/1180262): Make mSupportTranslate equivalent to this flag.
+     * @return Whether or not this Language item is a base translatable language.
+     */
+    public boolean isSupportedBaseLanguage() {
+        if (!mSupportTranslate) {
+            return false;
+        }
+
+        // Currently the only two country variants that are translateable are zh-CN and zh-TW.
+        if (TextUtils.equals(mCode, "zh-CN") || TextUtils.equals(mCode, "zh-TW")) {
+            return true;
+        }
+
+        // If not a language with supported variants check that the code is a base language.
+        return !mCode.contains("-");
+    }
+
+    /**
      * @return Whether this language supports the Chrome UI.
      */
     public boolean isUISupported() {

@@ -146,13 +146,13 @@ public class LanguagesManager {
     }
 
     /**
-     * Get a list of LanguageItems that are translatable.
+     * Get a list of all LanguageItems that are supported by translate.
      * @return List of LanguageItems.
      */
     public List<LanguageItem> getTranslateLanguageItems() {
         List<LanguageItem> results = new ArrayList<>();
         for (LanguageItem item : mLanguagesMap.values()) {
-            if (item.isSupported()) results.add(item);
+            if (item.isSupportedBaseLanguage()) results.add(item);
         }
         return results;
     }
