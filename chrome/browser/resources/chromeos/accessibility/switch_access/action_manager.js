@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FocusRingManager} from './focus_ring_manager.js';
 import {MenuManager} from './menu_manager.js';
 import {Navigator} from './navigator.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
+import {PointScanState, SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
 
 /**
  * Class to handle performing actions with Switch Access, including determining
@@ -24,6 +25,9 @@ export class ActionManager {
 
     /** @private {!Array<!SAConstants.MenuType>} */
     this.menuStack_ = [];
+
+    /** @private {boolean} */
+    this.inPointScanMode_ = false;
 
     /** @private {?constants.Point} */
     this.pointScanPoint_ = null;
@@ -45,8 +49,8 @@ export class ActionManager {
    * Exits all of the open menus and unconditionally closes the menu window.
    */
   static exitAllMenus() {
-    this.menuStack_ = [];
-    this.actionNode_ = null;
+    ActionManager.instance.menuStack_ = [];
+    ActionManager.instance.actionNode_ = null;
     MenuManager.close();
   }
 
@@ -113,6 +117,14 @@ export class ActionManager {
     if (node.equals(ActionManager.instance.actionNode_)) {
       ActionManager.refreshMenu();
     }
+  }
+
+  /**
+   * @return {boolean} True if in point scanning mode, false if in item scanning
+   * mode.
+   */
+  static inPointScanMode() {
+    return ActionManager.instance.inPointScanMode_;
   }
 
   // ================= Private Methods ==================
@@ -189,6 +201,12 @@ export class ActionManager {
    * @private
    */
   getActionsForCurrentMenuAndNode_() {
+    if (this.currentMenuType_ === SAConstants.MenuType.POINT_SCAN_MENU) {
+      let actions = this.actionsForType_(SAConstants.MenuType.POINT_SCAN_MENU);
+      actions = this.addGlobalActions_(actions);
+      return actions;
+    }
+
     if (!this.actionNode_ || !this.actionNode_.isValidAndVisible()) {
       return [];
     }
@@ -196,9 +214,6 @@ export class ActionManager {
     const possibleActions = this.actionsForType_(this.currentMenuType_);
     actions.filter((a) => possibleActions.includes(a));
     if (this.currentMenuType_ === SAConstants.MenuType.MAIN_MENU) {
-      actions = this.addGlobalActions_(actions);
-    } else if (this.currentMenuType_ === SAConstants.MenuType.POINT_SCAN_MENU) {
-      actions = this.actionsForType_(SAConstants.MenuType.POINT_SCAN_MENU);
       actions = this.addGlobalActions_(actions);
     }
     return actions;
@@ -241,9 +256,7 @@ export class ActionManager {
         return true;
       case SwitchAccessMenuAction.POINT_SCAN:
         ActionManager.exitCurrentMenu();
-        chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.START);
-        chrome.accessibilityPrivate.onPointScanSet.addListener(
-            this.pointScanListener_);
+        this.startPointScan_();
         return true;
       default:
         return false;
@@ -266,8 +279,7 @@ export class ActionManager {
       case SwitchAccessMenuAction.LEFT_CLICK:
         EventGenerator.sendMouseClick(
             this.pointScanPoint_.x, this.pointScanPoint_.y);
-        chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.STOP);
-        this.pointScanPoint_ = null;
+        this.stopPointScan_();
         return true;
       case SwitchAccessMenuAction.RIGHT_CLICK:
         EventGenerator.sendMouseClick(
@@ -275,8 +287,7 @@ export class ActionManager {
               mouseButton:
                   chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT
             });
-        chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.STOP);
-        this.pointScanPoint_ = null;
+        this.stopPointScan_();
         return true;
       default:
         return false;
@@ -327,6 +338,22 @@ export class ActionManager {
         }
         this.openCurrentMenu_();
     }
+  }
+
+  /** @private */
+  startPointScan_() {
+    this.inPointScanMode_ = true;
+    FocusRingManager.clearAll();
+    chrome.accessibilityPrivate.onPointScanSet.addListener(
+        this.pointScanListener_);
+    chrome.accessibilityPrivate.setPointScanState(PointScanState.START);
+  }
+
+  /** @private */
+  stopPointScan_() {
+    chrome.accessibilityPrivate.setPointScanState(PointScanState.STOP);
+    this.pointScanPoint_ = null;
+    this.inPointScanMode_ = false;
   }
 
   /**

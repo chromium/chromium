@@ -5,6 +5,7 @@
 const AutomationNode = chrome.automation.AutomationNode;
 export const SwitchAccessMenuAction =
     chrome.accessibilityPrivate.SwitchAccessMenuAction;
+export const PointScanState = chrome.accessibilityPrivate.PointScanState;
 
 /** Constants used in Switch Access */
 export const SAConstants = {

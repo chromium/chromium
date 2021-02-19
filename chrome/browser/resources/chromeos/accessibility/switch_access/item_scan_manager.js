@@ -247,6 +247,10 @@ export class ItemScanManager extends NavigatorInterface {
    * @private
    */
   onFocusChange_(event) {
+    if (ActionManager.inPointScanMode()) {
+      return;
+    }
+
     // Ignore focus changes from our own actions.
     if (event.eventFrom === 'action') {
       return;
@@ -264,6 +268,10 @@ export class ItemScanManager extends NavigatorInterface {
    * @private
    */
   onScrollChange_() {
+    if (ActionManager.inPointScanMode()) {
+      return;
+    }
+
     if (this.node_.isValidAndVisible()) {
       // Update focus ring.
       FocusRingManager.setFocusedNode(this.node_);
@@ -278,6 +286,10 @@ export class ItemScanManager extends NavigatorInterface {
    * @private
    */
   onModalDialog_(event) {
+    if (ActionManager.inPointScanMode()) {
+      return;
+    }
+
     const modalRoot = ModalDialogRootNode.buildTree(event.target);
     if (modalRoot.isValidGroup()) {
       this.jumpTo_(modalRoot);
@@ -292,6 +304,10 @@ export class ItemScanManager extends NavigatorInterface {
    * @private
    */
   onTreeChange_(treeChange) {
+    if (ActionManager.inPointScanMode()) {
+      return;
+    }
+
     if (treeChange.type === chrome.automation.TreeChangeType.NODE_REMOVED) {
       this.group_.refresh();
       this.moveToValidNode();
