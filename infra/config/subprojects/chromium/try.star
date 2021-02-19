@@ -26,6 +26,7 @@ try_.defaults.set(
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
+    grace_period = 2 * time.minute,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.try",
     service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -1362,7 +1363,6 @@ try_.chromium_mac_builder(
     main_list_view = "try",
     os = os.MAC_DEFAULT,
     tryjob = try_.job(),
-    grace_period = 2 * time.minute,
 )
 
 try_.chromium_mac_builder(
@@ -1415,7 +1415,7 @@ try_.chromium_mac_builder(
     goma_jobs = goma.jobs.J150,
     os = os.MAC_DEFAULT,
     main_list_view = "try",
-    tryjob = try_.job(cancel_stale = False),
+    tryjob = try_.job(),
 )
 
 try_.chromium_mac_builder(
@@ -1575,7 +1575,7 @@ try_.chromium_win_builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     os = os.WINDOWS_ANY,
-    tryjob = try_.job(cancel_stale = False),
+    tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
@@ -1587,7 +1587,7 @@ try_.chromium_win_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    tryjob = try_.job(cancel_stale = False),
+    tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
@@ -1644,10 +1644,7 @@ try_.chromium_win_builder(
     ssd = True,
     use_clang_coverage = True,
     main_list_view = "try",
-    # TODO(https://crbug/1127113): Recipe Engine doesn't handle cancellations
-    # of stale tryjobs gracefully, resulting in longer average build times.
-    # Windows is particularly susceptible to this.
-    tryjob = try_.job(cancel_stale = False),
+    tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
