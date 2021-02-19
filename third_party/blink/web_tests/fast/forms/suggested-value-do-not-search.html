@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<body>
+<title> Tests that a suggested value is not found by a text search. </title>
+<input id='text' type='text'>
+<textarea id='textarea'></textarea>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script>
+
+var input = document.getElementById('text');
+var textarea = document.getElementById('textarea');
+
+if (!window.internals) {
+  testFailed('This test requires internals object');
+} else {
+
+  function lookup(term) {
+    return window.find(term, false, false, true);
+  }
+
+  test(() => {
+    // Verify that a normal value is found by search.
+    input.type = 'text';
+    input.value = 'value';
+    assert_true(lookup('value'));
+    input.value = '';
+
+    const testcases = [
+      // These do not support suggested values.
+      ['button', 'click-me'],
+      ['checkbox', 'check-me'],
+      ['color', '#996633'],
+      ['file', '/'],
+      ['image', 'nonsense'],
+      ['radio', 'select-me'],
+      ['range', '3'],
+      ['week', '2075-W33'],
+      ['date', '2075-05-01', ''],
+      ['datetime-local', '2075-05-01T19:30'],
+      // These do support suggested values.
+      ['month', '2075-02'],
+      ['text', 'blabla'],
+      ['tel', '3'],
+    ];
+
+  // Tests for different types that the value is not found if set as a suggested value.
+  for ( const [type, value] of testcases ) {
+      input.type = type;
+      internals.setSuggestedValue(input, value);
+      assert_false(lookup(value));
+    }
+
+  }, 'Test that suggested values in an input field is not found by search');
+
+  test(() => {
+
+    // Verify that that value is found if set as a normal value.
+    textarea.value = 'value';
+    assert_true(lookup('value'));
+    textarea.value = '';
+
+    // Verify that that value is not found if set as a suggested value.
+    internals.setSuggestedValue(textarea, 'value');
+    assert_false(lookup('value'));
+
+  }, 'Test that suggested values in a text area are not found by search');
+
+}
+
+</script>
+</body>
+</html>
