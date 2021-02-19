@@ -107,6 +107,23 @@ void RestoreData::ModifyWindowInfo(const std::string& app_id,
   data_it->second->ModifyWindowInfo(window_info);
 }
 
+void RestoreData::SetNextRestoreWindowIdForChromeApp(
+    const std::string& app_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return;
+
+  chrome_app_id_to_current_window_id_[app_id] = it->second.begin()->first;
+
+  if (it->second.size() == 1)
+    return;
+
+  // When a chrome app has multiple windows, all windows will be sent to the
+  // background.
+  for (auto& data_it : it->second)
+    data_it.second->activation_index = INT32_MIN;
+}
+
 void RestoreData::RemoveAppRestoreData(const std::string& app_id,
                                        int window_id) {
   if (app_id_to_launch_list_.find(app_id) == app_id_to_launch_list_.end())
@@ -119,6 +136,7 @@ void RestoreData::RemoveAppRestoreData(const std::string& app_id,
 
 void RestoreData::RemoveApp(const std::string& app_id) {
   app_id_to_launch_list_.erase(app_id);
+  chrome_app_id_to_current_window_id_.erase(app_id);
 }
 
 std::unique_ptr<WindowInfo> RestoreData::GetWindowInfo(
@@ -133,6 +151,30 @@ std::unique_ptr<WindowInfo> RestoreData::GetWindowInfo(
     return nullptr;
 
   return data_it->second->GetWindowInfo();
+}
+
+int32_t RestoreData::FetchRestoreWindowId(const std::string& app_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return 0;
+
+  if (chrome_app_id_to_current_window_id_.find(app_id) ==
+      chrome_app_id_to_current_window_id_.end()) {
+    return 0;
+  }
+
+  int window_id = chrome_app_id_to_current_window_id_[app_id];
+
+  // Move to the next window_id.
+  auto data_it = it->second.find(window_id);
+  DCHECK(data_it != it->second.end());
+  ++data_it;
+  if (data_it == it->second.end())
+    chrome_app_id_to_current_window_id_.erase(app_id);
+  else
+    chrome_app_id_to_current_window_id_[app_id] = data_it->first;
+
+  return window_id;
 }
 
 }  // namespace full_restore

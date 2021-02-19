@@ -51,6 +51,13 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
   return FullRestoreReadHandler::GetInstance()->GetWindowInfo(window);
 }
 
+int32_t FetchRestoreWindowId(const std::string& app_id) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return 0;
+
+  return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
+}
+
 bool ShouldRestore(const AccountId& account_id) {
   return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
 }

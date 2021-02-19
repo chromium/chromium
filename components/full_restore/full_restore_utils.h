@@ -53,6 +53,11 @@ std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
 COMPONENT_EXPORT(FULL_RESTORE)
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
+// Fetches the restore window id from the restore data for the given |app_id|.
+// |app_id| should be a Chrome app id.
+COMPONENT_EXPORT(FULL_RESTORE)
+int32_t FetchRestoreWindowId(const std::string& app_id);
+
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);

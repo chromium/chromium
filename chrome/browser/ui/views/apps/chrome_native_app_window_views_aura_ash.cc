@@ -141,6 +141,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   init_params->init_properties_container.SetProperty(
       full_restore::kWindowIdKey, app_window()->session_id().id());
   init_params->init_properties_container.SetProperty(
+      full_restore::kRestoreWindowIdKey,
+      full_restore::FetchRestoreWindowId(app_window()->extension_id()));
+  init_params->init_properties_container.SetProperty(
       full_restore::kAppIdKey, app_window()->extension_id());
   init_params->init_properties_container.SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));

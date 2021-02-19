@@ -17,7 +17,6 @@
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/aura/env.h"
-#include "ui/aura/window.h"
 
 namespace full_restore {
 
@@ -75,6 +74,16 @@ void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
                      std::move(callback)));
 }
 
+void FullRestoreReadHandler::SetNextRestoreWindowIdForChromeApp(
+    const base::FilePath& profile_path,
+    const std::string& app_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  it->second->SetNextRestoreWindowIdForChromeApp(app_id);
+}
+
 void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
                                        const std::string& app_id) {
   auto it = profile_path_to_restore_data_.find(profile_path);
@@ -107,6 +116,15 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   const int32_t restore_window_id =
       window->GetProperty(::full_restore::kRestoreWindowIdKey);
   return GetWindowInfo(restore_window_id);
+}
+
+int32_t FullRestoreReadHandler::FetchRestoreWindowId(
+    const std::string& app_id) {
+  auto it = profile_path_to_restore_data_.find(active_profile_path_);
+  if (it == profile_path_to_restore_data_.end())
+    return 0;
+
+  return it->second->FetchRestoreWindowId(app_id);
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(

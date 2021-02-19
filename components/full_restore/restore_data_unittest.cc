@@ -437,4 +437,40 @@ TEST_F(RestoreDataTest, GetAppWindowInfo) {
                       app_window_info->bounds->height));
 }
 
+TEST_F(RestoreDataTest, FetchRestoreWindowId) {
+  // Add the app launch info, but do not modify the window info.
+  AddAppLaunchInfos();
+
+  // Modify the window info.
+  ModifyWindowInfos();
+
+  restore_data().SetNextRestoreWindowIdForChromeApp(kAppId2);
+
+  EXPECT_EQ(kWindowId3, restore_data().FetchRestoreWindowId(kAppId2));
+
+  // Verify that the activation index is not modified.
+  auto window_info = restore_data().GetWindowInfo(kAppId2, kWindowId3);
+  EXPECT_TRUE(window_info);
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(kActivationIndex3, window_info->activation_index.value());
+
+  restore_data().SetNextRestoreWindowIdForChromeApp(kAppId1);
+
+  // Verify that the activation index is modified as INT32_MIN.
+  EXPECT_EQ(kWindowId1, restore_data().FetchRestoreWindowId(kAppId1));
+  window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
+  EXPECT_TRUE(window_info);
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+
+  // Verify that the activation index is modified as INT32_MIN.
+  EXPECT_EQ(kWindowId2, restore_data().FetchRestoreWindowId(kAppId1));
+  window_info = restore_data().GetWindowInfo(kAppId1, kWindowId2);
+  EXPECT_TRUE(window_info);
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+
+  EXPECT_EQ(0, restore_data().FetchRestoreWindowId(kAppId1));
+}
+
 }  // namespace full_restore

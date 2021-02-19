@@ -190,6 +190,11 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       LaunchArcApp(app_id, it->second);
       break;
     case apps::mojom::AppType::kExtension:
+      ::full_restore::FullRestoreReadHandler::GetInstance()
+          ->SetNextRestoreWindowIdForChromeApp(profile_->GetPath(), app_id);
+      // Deliberately fall through to apps::mojom::AppType::kWeb to launch the
+      // app.
+      FALLTHROUGH;
     case apps::mojom::AppType::kWeb:
       LaunchSystemWebAppOrChromeApp(app_id, it->second);
       break;

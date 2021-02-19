@@ -54,6 +54,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // calls |callback| when the reading operation is done.
   void ReadFromFile(const base::FilePath& profile_path, Callback callback);
 
+  // Modifies the restore data from |profile_path| to set the next restore
+  // window id for the given chrome app |app_id|.
+  void SetNextRestoreWindowIdForChromeApp(const base::FilePath& profile_path,
+                                          const std::string& app_id);
+
   // Removes app launching and app windows for an app with the given |app_id|
   // from |profile_path_to_restore_data_| for |profile_path| .
   void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
@@ -61,6 +66,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // Gets the window information for |restore_window_id| or |window|.
   std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
   std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
+
+  // Fetches the restore id for the window from RestoreData for the given
+  // |app_id|. |app_id| should be a Chrome app id.
+  int32_t FetchRestoreWindowId(const std::string& app_id);
 
  private:
   // Invoked when reading the restore data from |profile_path| is finished, and
