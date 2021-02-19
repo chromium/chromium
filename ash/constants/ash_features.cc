@@ -496,7 +496,7 @@ const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
 
 // Flips chrome://os-settings to show Polymer 3 version
 const base::Feature kOsSettingsPolymer3{"OsSettingsPolymer3",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within Chrome OS.
