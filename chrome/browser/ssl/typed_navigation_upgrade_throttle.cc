@@ -153,6 +153,7 @@ content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillStartRequest() {
   DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().scheme());
   RecordUMA(Event::kHttpsLoadStarted);
+  metrics_timer_.Begin();
   timer_.Start(FROM_HERE, kFallbackDelay.Get(), this,
                &TypedNavigationUpgradeThrottle::OnHttpsLoadTimeout);
   return content::NavigationThrottle::PROCEED;
@@ -172,6 +173,9 @@ TypedNavigationUpgradeThrottle::WillFailRequest() {
       navigation_handle()->GetNetErrorCode() == net::OK) {
     return content::NavigationThrottle::PROCEED;
   }
+
+  UmaHistogramTimes("TypedNavigationUpgradeThrottle.UpgradeFailTime",
+                    metrics_timer_.Elapsed());
 
   if (net::IsCertStatusError(cert_status)) {
     RecordUMA(Event::kHttpsLoadFailedWithCertError);
@@ -200,6 +204,8 @@ TypedNavigationUpgradeThrottle::WillProcessResponse() {
   // If we got here, HTTPS load succeeded. Stop the timer.
   RecordUMA(Event::kHttpsLoadSucceeded);
   timer_.Stop();
+  UmaHistogramTimes("TypedNavigationUpgradeThrottle.UpgradeSuccessTime",
+                    metrics_timer_.Elapsed());
   return content::NavigationThrottle::PROCEED;
 }
 

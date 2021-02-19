@@ -265,11 +265,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="TypedNavigationUpgradeThrottle.Event"
     enum="TypedNavigationUpgradeThrottleEvent" expires_after="2021-08-09">
   <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
-    Events for upgradind Default Omnibox Navigations to HTTPS feature. Recorded
+    Events for upgrading Default Omnibox Navigations to HTTPS feature. Recorded
     when a navigation is started by typing a domain name without a scheme and
     the URL is defaulted to HTTPS instead of HTTP.
+  </summary>
+</histogram>
+
+<histogram name="TypedNavigationUpgradeThrottle.UpgradeFailTime" units="ms"
+    expires_after="2021-08-09">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the duration to detect a failed HTTPS upgrade for omnibox
+    navigations typed without a scheme (i.e. HTTP fallbacks). Only recorded when
+    the HTTPS load fails with an SSL or net error. Not recorded when the upgrade
+    timer expires. Recorded once for a redirect chain.
+  </summary>
+</histogram>
+
+<histogram name="TypedNavigationUpgradeThrottle.UpgradeSuccessTime" units="ms"
+    expires_after="2021-08-09">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the duration to detect a successful HTTPS upgrade for omnibox
+    navigations typed without a scheme. Recorded once for a redirect chain.
   </summary>
 </histogram>
 
