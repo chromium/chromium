@@ -193,6 +193,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kDragUnpinnedAppToPin;
 // Enables the system tray to show more information in larger screen.
 ASH_PUBLIC_EXPORT extern const base::Feature kScalableStatusArea;
 
+// Enables the system tray to show date in sufficiently large screen.
+ASH_PUBLIC_EXPORT extern const base::Feature kShowDateInTrayButton;
+
 ASH_PUBLIC_EXPORT bool IsAllowAmbientEQEnabled();
 
 ASH_PUBLIC_EXPORT bool IsAltTabLimitedToActiveDesk();
@@ -272,6 +275,8 @@ ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpacePreviewsEnabled();
 ASH_PUBLIC_EXPORT bool IsDragUnpinnedAppToPinEnabled();
 
 ASH_PUBLIC_EXPORT bool IsScalableStatusAreaEnabled();
+
+ASH_PUBLIC_EXPORT bool IsShowDateInTrayButtonEnabled();
 
 // These two functions are supposed to be temporary functions to set or get
 // whether "WebUITabStrip" feature is enabled from Chrome.

@@ -23,8 +23,12 @@ class TimeTrayItemViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatureState(
-        features::kScalableStatusArea, is_scalable_status_area_enabled());
+    std::vector<base::Feature> features = {features::kScalableStatusArea,
+                                           features::kShowDateInTrayButton};
+    if (IsShowDateInTrayButtonEnabled())
+      scoped_feature_list_.InitWithFeatures(features, {});
+    else
+      scoped_feature_list_.InitWithFeatures({}, features);
 
     model_ = std::make_unique<UnifiedSystemTrayModel>(GetPrimaryShelf());
     time_tray_item_view_ =
@@ -37,7 +41,7 @@ class TimeTrayItemViewTest : public AshTestBase,
     AshTestBase::TearDown();
   }
 
-  bool is_scalable_status_area_enabled() { return GetParam(); }
+  bool IsShowDateInTrayButtonEnabled() { return GetParam(); }
 
   // Returns true if the time view is in horizontal layout, false if it is in
   // vertical layout.
@@ -59,7 +63,7 @@ class TimeTrayItemViewTest : public AshTestBase,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TimeTrayItemViewTest,
-                         testing::Bool() /* is_scalable_status_area_enabled */);
+                         testing::Bool() /* IsShowDateInTrayButtonEnabled() */);
 
 TEST_P(TimeTrayItemViewTest, ShelfAlignment) {
   // The tray should show time horizontal view when the shelf is bottom.
@@ -87,10 +91,9 @@ TEST_P(TimeTrayItemViewTest, DisplayChanged) {
   UpdateDisplay("800x800");
   EXPECT_FALSE(ShouldShowDateInTimeView());
 
-  // Date should be shown in large screen size (when scalable status area is
-  // enabled).
+  // Date should be shown in large screen size (when the feature is enabled).
   UpdateDisplay("1680x800");
-  EXPECT_EQ(is_scalable_status_area_enabled(), ShouldShowDateInTimeView());
+  EXPECT_EQ(IsShowDateInTrayButtonEnabled(), ShouldShowDateInTimeView());
 }
 
 }  // namespace tray

@@ -143,6 +143,9 @@ const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kShowDateInTrayButton{"ShowDateInTrayButton",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kKeyboardBasedDisplayArrangementInSettings{
     "KeyboardBasedDisplayArrangementInSettings",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -318,6 +321,11 @@ bool IsDragUnpinnedAppToPinEnabled() {
 
 bool IsScalableStatusAreaEnabled() {
   return base::FeatureList::IsEnabled(kScalableStatusArea);
+}
+
+bool IsShowDateInTrayButtonEnabled() {
+  return IsScalableStatusAreaEnabled() &&
+         base::FeatureList::IsEnabled(kShowDateInTrayButton);
 }
 
 namespace {
