@@ -4,21 +4,7 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":os_settings_menu" ]
-}
-
-js_library("os_settings_menu") {
-  deps = [
-    "..:os_route",
-    "../..:router",
-    "//third_party/polymer/v1_0/components-chromium/iron-collapse:iron-collapse-extracted",
-    "//third_party/polymer/v1_0/components-chromium/paper-ripple:paper-ripple-extracted",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -35,8 +21,6 @@ js_library("os_settings_menu.m") {
   ]
   extra_deps = [ ":os_settings_menu_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [ ":os_settings_menu_module" ]
