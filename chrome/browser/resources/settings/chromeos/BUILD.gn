@@ -1143,7 +1143,6 @@ group("closure_compile") {
     "os_printing_page:closure_compile",
     "os_privacy_page:closure_compile",
     "os_reset_page:closure_compile",
-    "os_search_page:closure_compile",
     "parental_controls_page:closure_compile",
     "personalization_page:closure_compile",
 

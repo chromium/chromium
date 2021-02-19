@@ -4,38 +4,7 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":os_search_page",
-    ":os_search_selection_dialog",
-  ]
-}
-
-js_library("os_search_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs",
-    "../../search_engines_page:search_engines_browser_proxy",
-    "../../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("os_search_selection_dialog") {
-  deps = [
-    "../../search_engines_page:search_engines_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -80,8 +49,6 @@ js_library("os_search_selection_dialog.m") {
   ]
   extra_deps = [ ":os_search_selection_dialog_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
