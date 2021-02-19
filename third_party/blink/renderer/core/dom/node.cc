@@ -2843,7 +2843,8 @@ void Node::NotifyMutationObserversNodeWillDetach() {
 void Node::HandleLocalEvents(Event& event) {
   if (UNLIKELY(IsDocumentNode())) {
     if (GetDocument().PopupShowing() &&
-        event.eventPhase() == Event::kCapturingPhase) {
+        (event.eventPhase() == Event::kCapturingPhase ||
+         event.eventPhase() == Event::kAtTarget)) {
       DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
       // There is a popup visible - check if this event should "light dismiss"
       // one or more popups.

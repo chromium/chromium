@@ -139,6 +139,9 @@ void HTMLPopupElement::HandleLightDismiss(const Event& event) {
       // Escape key just pops the topmost <popup> off the stack.
       document.HideTopmostPopupElement();
     }
+  } else if (event_type == event_type_names::kScroll) {
+    // Close all popups upon scroll.
+    document.HideAllPopupsUntil(nullptr);
   }
 }
 
