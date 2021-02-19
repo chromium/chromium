@@ -154,9 +154,6 @@ if (enable_vulkan) {
         data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
       }
     }
-    if (use_x11) {
-      deps += [ "//ui/base:features" ]
-    }
   }
 
   static_library("test_support") {

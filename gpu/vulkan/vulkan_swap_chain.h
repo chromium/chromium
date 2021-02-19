@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     DISALLOW_COPY_AND_ASSIGN(ScopedWrite);
   };
 
-  VulkanSwapChain();
+  explicit VulkanSwapChain(uint64_t acquire_next_image_timeout_ns);
   ~VulkanSwapChain();
 
   // min_image_count is the minimum number of presentable images.
@@ -152,6 +152,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   mutable base::Lock lock_;
+
+  const uint64_t acquire_next_image_timeout_ns_;
 
   bool use_protected_memory_ = false;
   VulkanDeviceQueue* device_queue_ = nullptr;

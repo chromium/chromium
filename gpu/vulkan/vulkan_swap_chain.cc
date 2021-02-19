@@ -17,10 +17,6 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
-
 namespace gpu {
 
 namespace {
@@ -40,7 +36,8 @@ VkSemaphore CreateSemaphore(VkDevice vk_device) {
 
 }  // namespace
 
-VulkanSwapChain::VulkanSwapChain() {
+VulkanSwapChain::VulkanSwapChain(uint64_t acquire_next_image_timeout_ns)
+    : acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -424,24 +421,6 @@ bool VulkanSwapChain::AcquireNextImage() {
   DCHECK_EQ(state_, VK_SUCCESS);
   DCHECK(!acquired_image_);
 
-#if defined(USE_X11)
-  // The xserver should still composite windows with a 1Hz fake vblank when
-  // screen is off or the window is offscreen. However there is an xserver
-  // bug, the requested hardware vblanks are lost, when screen turns off, so
-  // FIFO swapchain will hang.
-  // Workaround the issue by using the 2 seconds timeout for
-  // vkAcquireNextImageKHR(). When timeout happens, we consider the swapchain
-  // hang happened, and then make the surface lost, so a new swapchain will
-  // be recreated.
-  //
-  // TODO(https://crbug.com/1098237): set correct timeout for ozone/x11.
-  static uint64_t kTimeout = features::IsUsingOzonePlatform()
-                                 ? UINT64_MAX
-                                 : base::Time::kNanosecondsPerSecond * 2;
-#else
-  static uint64_t kTimeout = UINT64_MAX;
-#endif
-
   // VulkanDeviceQueue is not threadsafe for now, but |device_queue_| will not
   // be released, and device_queue_->device will never be changed after
   // initialization, so it is safe for now.
@@ -466,8 +445,8 @@ bool VulkanSwapChain::AcquireNextImage() {
   auto result = ({
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    vkAcquireNextImageKHR(device, swap_chain_, kTimeout, acquire_semaphore,
-                          acquire_fence, &next_image);
+    vkAcquireNextImageKHR(device, swap_chain_, acquire_next_image_timeout_ns_,
+                          acquire_semaphore, acquire_fence, &next_image);
   });
 
   if (UNLIKELY(result == VK_TIMEOUT)) {
