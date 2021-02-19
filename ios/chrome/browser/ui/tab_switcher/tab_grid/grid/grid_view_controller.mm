@@ -35,12 +35,22 @@
 #endif
 
 namespace {
+
+// Constants used in the spring animation when inserting items in the thumb
+// strip.
+constexpr CGFloat kSpringAnimationDuration = 0.4;
+constexpr CGFloat kSpringAnimationDamping = 0.6;
+constexpr CGFloat kSpringAnimationInitialVelocity = 1.0;
+
 NSString* const kCellIdentifier = @"GridCellIdentifier";
+
 NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
+
 // Creates an NSIndexPath with |index| in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
 }
+
 }  // namespace
 
 @interface GridViewController () <GridCellDelegate,
@@ -640,8 +650,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
     [self updateFractionVisibleOfLastItem];
   };
+
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
+                   useSpringAnimation:self.currentLayout ==
+                                      self.horizontalLayout
       collectionViewUpdatesCompletion:completion];
 
   [self updateVisibleCellZIndex];
@@ -674,6 +687,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
+                   useSpringAnimation:NO
       collectionViewUpdatesCompletion:completion];
 
   [self updateVisibleCellZIndex];
@@ -731,6 +745,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
+                   useSpringAnimation:NO
       collectionViewUpdatesCompletion:completion];
 
   [self updateVisibleCellZIndex];
@@ -837,19 +852,34 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Performs model updates and view updates together.
 - (void)performModelUpdates:(ProceduralBlock)modelUpdates
               collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
+                 useSpringAnimation:(BOOL)useSpringAnimation
     collectionViewUpdatesCompletion:
         (ProceduralBlockWithBool)collectionViewUpdatesCompletion {
-  [self.collectionView
-      performBatchUpdates:^{
-        self.updating = YES;
-        // Synchronize model and view updates.
-        modelUpdates();
-        collectionViewUpdates();
-      }
-      completion:^(BOOL completed) {
-        collectionViewUpdatesCompletion(completed);
-        self.updating = NO;
-      }];
+  auto batchUpdates = ^(void) {
+    [self.collectionView
+        performBatchUpdates:^{
+          self.updating = YES;
+          // Synchronize model and view updates.
+          modelUpdates();
+          collectionViewUpdates();
+        }
+        completion:^(BOOL completed) {
+          collectionViewUpdatesCompletion(completed);
+          self.updating = NO;
+        }];
+  };
+
+  if (useSpringAnimation) {
+    [UIView animateWithDuration:kSpringAnimationDuration
+                          delay:0
+         usingSpringWithDamping:kSpringAnimationDamping
+          initialSpringVelocity:kSpringAnimationInitialVelocity
+                        options:0
+                     animations:batchUpdates
+                     completion:nil];
+  } else {
+    batchUpdates();
+  }
 }
 
 // Returns the index in |self.items| of the first item whose identifier is
