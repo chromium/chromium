@@ -231,6 +231,7 @@ void WaylandClipboard::OfferClipboardData(
   std::move(callback).Run();
 }
 
+// TODO(crbug.com/1165466): Support nested clipboard requests.
 void WaylandClipboard::RequestClipboardData(
     ClipboardBuffer buffer,
     const std::string& mime_type,
