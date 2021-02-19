@@ -824,11 +824,13 @@ void AutofillAgent::DoFillFieldWithValue(const base::string16& value,
 
 void AutofillAgent::DoPreviewFieldWithValue(const base::string16& value,
                                             WebInputElement* node) {
+  ClearPreviewedForm();
   query_node_autofill_state_ = element_.GetAutofillState();
   node->SetSuggestedValue(blink::WebString::FromUTF16(value));
   node->SetAutofillState(WebAutofillState::kPreviewed);
   form_util::PreviewSuggestion(node->SuggestedValue().Utf16(),
                                node->Value().Utf16(), node);
+  previewed_elements_.push_back(*node);
 }
 
 void AutofillAgent::ProcessForms() {
