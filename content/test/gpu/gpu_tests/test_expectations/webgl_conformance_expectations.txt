@@ -623,6 +623,7 @@ crbug.com/1083320 [ android android-nexus-6 ] conformance/misc/uninitialized-tes
 crbug.com/1056830 [ android android-nexus-6 ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1122644 [ android android-nexus-6 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 crbug.com/1127140 [ android android-nexus-6 ] conformance/extensions/webgl-draw-buffers-framebuffer-unsupported.html [ Skip ]
+crbug.com/1180267 [ android android-nexus-6 ] conformance/extensions/webgl-multi-draw.html [ RetryOnFailure ]
 
 # This test is skipped because running it causes a future test to fail.
 # The list of tests which may be that future test is very long. It is
