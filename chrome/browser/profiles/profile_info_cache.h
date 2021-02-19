@@ -178,6 +178,8 @@ class ProfileInfoCache : public ProfileInfoInterface,
   void LoadGAIAPictureIfNeeded();
 #endif
 
+  void InitEntryWithKey(const std::string& key);
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Migrate any legacy profile names ("First user", "Default Profile") to
   // new style default names ("Person 1"). Rename any duplicates of "Person n"

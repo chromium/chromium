@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -69,9 +70,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
     cache->GetDictionaryWithoutPathExpansion(it.key(), &info);
     base::string16 name;
     info->GetString(ProfileAttributesEntry::kNameKey, &name);
-    keys_.push_back(it.key());
-    profile_attributes_entries_[user_data_dir_.AppendASCII(it.key()).value()] =
-        std::unique_ptr<ProfileAttributesEntry>(nullptr);
+    InitEntryWithKey(it.key());
 
     bool using_default_name;
     if (!info->GetBoolean(ProfileAttributesEntry::kIsUsingDefaultNameKey,
@@ -159,9 +158,7 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   if (account_id.HasAccountIdKey())
     info->SetString(kAccountIdKey, account_id.GetAccountIdKey());
   cache->SetWithoutPathExpansion(key, std::move(info));
-  keys_.push_back(key);
-  profile_attributes_entries_[user_data_dir_.AppendASCII(key).value()] =
-      std::unique_ptr<ProfileAttributesEntry>();
+  InitEntryWithKey(key);
 
   if (!disable_avatar_download_for_testing_)
     DownloadHighResAvatarIfNeeded(icon_index, profile_path);
@@ -239,19 +236,14 @@ void ProfileInfoCache::DeleteProfileFromCache(
 }
 
 size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
-// Ephemeral Guest profile is registered in profile attributes storage,
-// because if Chrome crashes we need the registry to find and delete it.
-// But it should not be counted as a regular profile.
-#if !defined(OS_ANDROID)
-  if (!include_guest_profile) {
-    for (auto& profile : profile_attributes_entries_) {
-      if (profile.second && profile.second->IsGuest())
-        return keys_.size() - 1;
-    }
-  }
-#endif
-
-  return keys_.size();
+  // Ephemeral Guest profile is registered in profile attributes storage,
+  // because if Chrome crashes we need the registry to find and delete it.
+  // But it should not be counted as a regular profile.
+  return std::count_if(
+      profile_attributes_entries_.begin(), profile_attributes_entries_.end(),
+      [include_guest_profile](const auto& key_value) {
+        return !key_value.second->IsGuest() || include_guest_profile;
+      });
 }
 
 size_t ProfileInfoCache::GetIndexOfProfileWithPath(
@@ -553,6 +545,16 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 }
 #endif
 
+void ProfileInfoCache::InitEntryWithKey(const std::string& key) {
+  DCHECK(!base::Contains(keys_, key));
+  keys_.push_back(key);
+  base::FilePath path = user_data_dir_.AppendASCII(key);
+  DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
+  auto new_entry = std::make_unique<ProfileAttributesEntry>();
+  new_entry->Initialize(this, path, prefs_);
+  profile_attributes_entries_[path.value()] = std::move(new_entry);
+}
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
@@ -648,13 +650,7 @@ ProfileAttributesEntry* ProfileInfoCache::GetProfileAttributesWithPath(
   if (entry_iter == profile_attributes_entries_.end())
     return nullptr;
 
-  std::unique_ptr<ProfileAttributesEntry>& current_entry = entry_iter->second;
-  if (!current_entry) {
-    // The profile info is in the cache but its entry isn't created yet, insert
-    // it in the map.
-    current_entry = std::make_unique<ProfileAttributesEntry>();
-    current_entry->Initialize(this, path, prefs_);
-  }
-
-  return current_entry.get();
+  ProfileAttributesEntry* entry = entry_iter->second.get();
+  DCHECK(entry);
+  return entry;
 }
