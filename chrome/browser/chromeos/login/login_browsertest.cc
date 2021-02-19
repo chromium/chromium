@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
+#include "chrome/browser/chromeos/login/test/user_adding_screen_utils.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -134,7 +135,7 @@ class LoginOfflineManagedTest : public LoginManagerTest {
 
 // Used to make sure that the system tray is visible and within the screen
 // bounds after login.
-void TestSystemTrayIsVisible(bool otr) {
+void TestSystemTrayIsVisible() {
   aura::Window* primary_win = ash::Shell::GetPrimaryRootWindow();
   ash::Shelf* shelf = ash::Shelf::ForWindow(primary_win);
   ash::TrayBackgroundView* tray =
@@ -147,8 +148,6 @@ void TestSystemTrayIsVisible(bool otr) {
       shelf->GetStatusAreaWidget());
   EXPECT_TRUE(tray->GetVisible());
 
-  if (otr)
-    return;
   // Wait for the system tray be inside primary bounds.
   chromeos::test::TestPredicateWaiter(
       base::BindRepeating(
@@ -177,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(LoginUserTest, UserPassed) {
   EXPECT_EQ(profile_base_path, profile->GetPath().BaseName().value());
   EXPECT_FALSE(profile->IsOffTheRecord());
 
-  TestSystemTrayIsVisible(false);
+  TestSystemTrayIsVisible();
 }
 
 // After a guest login, we should get the OTR default profile.
@@ -187,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(LoginGuestTest, GuestIsOTR) {
   // Ensure there's extension service for this profile.
   EXPECT_TRUE(extensions::ExtensionSystem::Get(profile)->extension_service());
 
-  TestSystemTrayIsVisible(true);
+  TestSystemTrayIsVisible();
 }
 
 // Verifies the cursor is hidden at startup on login screen.
@@ -200,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(LoginCursorTest, CursorHidden) {
   EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(gfx::Point()));
   EXPECT_TRUE(ash::Shell::Get()->cursor_manager()->IsCursorVisible());
 
-  TestSystemTrayIsVisible(false);
+  TestSystemTrayIsVisible();
 }
 
 // Verifies that the webui for login comes up successfully.
@@ -225,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
   offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
       test_account_id_.GetUserEmail(), LoginManagerTest::kPassword,
       true /* wait for sign-in */);
-  TestSystemTrayIsVisible(false);
+  TestSystemTrayIsVisible();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
@@ -248,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
 
   offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
       prefix, LoginManagerTest::kPassword, true /* wait for sign-in */);
-  TestSystemTrayIsVisible(false);
+  TestSystemTrayIsVisible();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
@@ -262,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
   offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
       managed_user_id_.GetUserEmail(), LoginManagerTest::kPassword,
       true /* wait for sign-in */);
-  TestSystemTrayIsVisible(false);
+  TestSystemTrayIsVisible();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
@@ -278,6 +277,22 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   test::OobeJS().ClickOnPath(kOfflineLoginBackButton);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+class UserAddingScreenTrayTest : public LoginManagerTest {
+ public:
+  UserAddingScreenTrayTest() : LoginManagerTest() {
+    login_mixin_.AppendRegularUsers(3);
+  }
+
+ protected:
+  LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(UserAddingScreenTrayTest, TrayVisible) {
+  LoginUser(login_mixin_.users()[0].account_id);
+  test::ShowUserAddingScreen();
+  TestSystemTrayIsVisible();
 }
 
 }  // namespace chromeos
