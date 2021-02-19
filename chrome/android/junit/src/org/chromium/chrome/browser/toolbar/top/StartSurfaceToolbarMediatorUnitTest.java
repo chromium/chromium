@@ -735,7 +735,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 ()
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting()),
-                new ObservableSupplierImpl<>(), new ObservableSupplierImpl<>(), null);
+                new ObservableSupplierImpl<>(), new ObservableSupplierImpl<>(), null,
+                /* shouldShowTabSwitcherButtonOnHomepage = */ false);
 
         mMediator.setLayoutStateProvider(mLayoutStateProvider);
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());

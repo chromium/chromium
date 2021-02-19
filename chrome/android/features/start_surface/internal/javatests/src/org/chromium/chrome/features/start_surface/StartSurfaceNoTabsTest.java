@@ -133,6 +133,8 @@ public class StartSurfaceNoTabsTest {
                 .check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.trendy_terms_recycler_view))
                 .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.start_tab_switcher_button))
+                .check(matches(withEffectiveVisibility(GONE)));
     }
 
     @Test

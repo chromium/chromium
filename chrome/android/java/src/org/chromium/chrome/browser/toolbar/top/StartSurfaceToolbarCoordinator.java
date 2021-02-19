@@ -97,7 +97,8 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
-                homepageEnabledSupplier, homepageManagedByPolicySupplier, homeButtonOnClickHandler);
+                homepageEnabledSupplier, homepageManagedByPolicySupplier, homeButtonOnClickHandler,
+                StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue());
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -263,6 +264,26 @@ public class StartSurfaceToolbarCoordinator {
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
         if (LibraryLoader.getInstance().isInitialized()) {
             maybeCreateIncognitoSwitchCoordinator();
+        }
+
+        if (StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue()) {
+            mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
+            if (mTabSwitcherLongClickListener != null) {
+                mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);
+                mTabSwitcherLongClickListener = null;
+            }
+            mTabSwitcherButtonCoordinator =
+                    new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
+            mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
+            mTabSwitcherButtonView.setVisibility(View.VISIBLE);
+            if (mTabCountProvider != null) {
+                mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
+                mTabCountProvider = null;
+            }
+            if (mTabSwitcherClickListener != null) {
+                mTabSwitcherButtonCoordinator.setTabSwitcherListener(mTabSwitcherClickListener);
+                mTabSwitcherClickListener = null;
+            }
         }
     }
 

@@ -96,6 +96,7 @@ public class ChromeCachedFlags {
                 PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,
                 ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS,
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER,
+                StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON,
                 StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB,
                 StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES,
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH,

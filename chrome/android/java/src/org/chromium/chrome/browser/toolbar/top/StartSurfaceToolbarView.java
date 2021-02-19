@@ -35,6 +35,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private HomeButton mHomeButton;
     private View mIncognitoSwitch;
     private View mLogo;
+    private View mTabSwitcherButtonView;
     @Nullable
     private ImageButton mIdentityDiscButton;
     private int mPrimaryColor;
@@ -65,6 +66,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mIncognitoSwitch = findViewById(R.id.incognito_switch);
         mLogo = findViewById(R.id.logo);
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
+        mTabSwitcherButtonView = findViewById(R.id.start_tab_switcher_button);
         updatePrimaryColorAndTint(false);
         mNewTabButton.setStartSurfaceEnabled(true);
     }
@@ -309,6 +311,13 @@ class StartSurfaceToolbarView extends RelativeLayout {
         // When simply setting visibility, the animations should be shown. (eg: search box has
         // focus)
         showStartSurfaceToolbar(mInStartSurfaceMode && mShouldShow, true);
+    }
+
+    /**
+     * @param isVisible Whether the tab switcher button is visible.
+     */
+    void setTabSwitcherButtonVisibility(boolean isVisible) {
+        mTabSwitcherButtonView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     /**

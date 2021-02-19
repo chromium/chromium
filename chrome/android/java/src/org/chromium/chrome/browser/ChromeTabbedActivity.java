@@ -997,7 +997,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mHasDeterminedOverviewStateForCurrentSession = true;
         boolean isOverviewVisible = mOverviewModeController.overviewVisible();
 
-        if (shouldShowTabSwitcherOnStart() && !isOverviewVisible) {
+        if (shouldRefreshAndShowOverview(isOverviewVisible)) {
             if (getCurrentTabModel() != null) {
                 RecordHistogram.recordCountHistogram(
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
@@ -1026,6 +1026,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && mOverviewModeController.overviewVisible()) {
             RecordUserAction.record("MobileStartup.UserEnteredTabSwitcher");
         }
+    }
+
+    private boolean shouldRefreshAndShowOverview(boolean isOverviewVisible) {
+        // If StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON is turned on, MV tiles and
+        // carousels may be hidden before Chrome is brought to the background. If overview should be
+        // shown, no matter overview was already visible or not, we should call
+        // showOverview(StartSurfaceState.SHOWING_START) to show MV tiles and carousels again.
+        return shouldShowTabSwitcherOnStart()
+                && (!isOverviewVisible
+                        || StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue());
     }
 
     private boolean shouldShowTabSwitcherOnStart() {

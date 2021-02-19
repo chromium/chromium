@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -84,6 +85,8 @@ class StartSurfaceToolbarViewBinder {
             view.setHomepageManagedByPolicySupplier(model.get(HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER));
         } else if (propertyKey == HOME_BUTTON_CLICK_HANDLER) {
             view.setHomeButtonClickHandler(model.get(HOME_BUTTON_CLICK_HANDLER));
+        } else if (propertyKey == TAB_SWITCHER_BUTTON_IS_VISIBLE) {
+            view.setTabSwitcherButtonVisibility(model.get(TAB_SWITCHER_BUTTON_IS_VISIBLE));
         }
     }
 }

@@ -92,6 +92,11 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM, false);
 
+    private static final String NEW_SURFACE_PARAM = "new_surface_from_home_button";
+    public static final BooleanCachedFieldTrialParameter NEW_SURFACE_FROM_HOME_BUTTON =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, NEW_SURFACE_PARAM, false);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
