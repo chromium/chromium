@@ -3,43 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":os_privacy_page",
-    ":peripheral_data_access_browser_proxy",
-    ":peripheral_data_access_protection_dialog",
-  ]
-}
-
-js_library("os_privacy_page") {
-  deps = [
-    ":peripheral_data_access_browser_proxy",
-    ":peripheral_data_access_protection_dialog",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "../os_people_page:lock_screen",
-    "../os_people_page:lock_state_behavior",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("peripheral_data_access_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("peripheral_data_access_protection_dialog") {
-  deps = [
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -83,8 +49,6 @@ js_library("peripheral_data_access_protection_dialog.m") {
   ]
   extra_deps = [ ":peripheral_data_access_protection_dialog_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
