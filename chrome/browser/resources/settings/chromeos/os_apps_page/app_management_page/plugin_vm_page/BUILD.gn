@@ -3,30 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../../../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":plugin_vm_browser_proxy",
-    ":plugin_vm_detail_view",
-  ]
-}
-
-js_library("plugin_vm_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("plugin_vm_detail_view") {
-  deps = [
-    ":plugin_vm_browser_proxy",
-    "../:constants",
-    "../:permission_item",
-    "../:store_client",
-    "../:util",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -59,8 +38,6 @@ js_library("plugin_vm_detail_view.m") {
   extra_deps = [ ":plugin_vm_detail_view_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":modulize",
@@ -76,8 +53,6 @@ polymer_modulizer("plugin_vm_detail_view") {
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
-
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [ "plugin_vm_browser_proxy.js" ]

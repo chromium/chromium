@@ -1143,11 +1143,6 @@ group("closure_compile") {
     "os_reset_page:closure_compile",
     "parental_controls_page:closure_compile",
     "personalization_page:closure_compile",
-
-    # TODO: These subpages should be listed in the BUILD files of their direct
-    # parents instead of here.
-    "os_apps_page/app_management_page:closure_compile",
-    "os_apps_page/app_management_page/plugin_vm_page:closure_compile",
   ]
 }
 
