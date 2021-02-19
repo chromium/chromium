@@ -1040,8 +1040,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
 
   const auto trace_track = perfetto::Track(reinterpret_cast<uint64_t>(this));
   TRACE_EVENT_BEGIN(
-      "cc,benchmark", "PipelineReporter", trace_track,
-      stage_history_.front().start_time, [&](perfetto::EventContext context) {
+      "cc,benchmark", "PipelineReporter", trace_track, args_.frame_time,
+      [&](perfetto::EventContext context) {
         using perfetto::protos::pbzero::ChromeFrameReporter;
         bool frame_dropped = TestReportType(FrameReportType::kDroppedFrame);
         ChromeFrameReporter::State state;
