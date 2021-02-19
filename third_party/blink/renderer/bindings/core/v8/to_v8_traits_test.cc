@@ -440,6 +440,19 @@ TEST(ToV8TraitsTest, Union) {
                    "https://example.com/", usv_string);
 }
 
+TEST(ToV8TraitsTest, Optional) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLOptional<DOMPointInit>, "undefined", nullptr);
+  DOMPointInit* dom_point_init = DOMPointInit::Create();
+  TEST_TOV8_TRAITS(scope, IDLOptional<DOMPointInit>, "[object Object]",
+                   dom_point_init);
+
+  TEST_TOV8_TRAITS(scope, IDLOptional<IDLAny>, "undefined", ScriptValue());
+  ScriptValue value(scope.GetIsolate(),
+                    v8::Number::New(scope.GetIsolate(), 3.14));
+  TEST_TOV8_TRAITS(scope, IDLOptional<IDLAny>, "3.14", value);
+}
+
 }  // namespace
 
 }  // namespace blink

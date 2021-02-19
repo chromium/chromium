@@ -618,6 +618,25 @@ struct ToV8Traits<IDLUnionNotINT<T>> {
   }
 };
 
+// Optional
+template <typename T>
+struct ToV8Traits<IDLOptional<T>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const T* value) WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Undefined(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const ScriptValue& value)
+      WARN_UNUSED_RESULT {
+    if (value.IsEmpty())
+      return v8::Undefined(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, value);
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
