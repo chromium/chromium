@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_COMMON_PREF_NAMES_H_
 #define COMPONENTS_FEED_CORE_COMMON_PREF_NAMES_H_
 
+#include "build/build_config.h"
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -33,6 +35,12 @@ extern const char kHasReachedClickAndViewActionsUploadConditions[];
 // doesn't take place when the notice card is present but has not yet been
 // detected.
 extern const char kLastFetchHadNoticeCard[];
+
+// The pref name for the bit that determines whether logging is enabled for the
+// feed in the last fetch of content. iOS only.
+#if defined(OS_IOS)
+extern const char kLastFetchHadLoggingEnabled[];
+#endif  // defined(OS_IOS)
 
 // The pref name for the counter for the number of views on the notice card.
 extern const char kNoticeCardViewsCount[];
