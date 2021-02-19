@@ -453,6 +453,7 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
   // created, possibly causing crash if there is 2 mount events without
   // unmounting events in between.
   if (removable_media_watchers_.count(mount_path)) {
+    std::move(callback).Run();
     return;
   }
 
