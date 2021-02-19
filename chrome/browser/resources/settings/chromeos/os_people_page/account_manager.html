@@ -361,19 +361,14 @@
         </div>
       </template>
 
-      <div class$="[[getBottomBorderClassList_(accounts_)]]">
-        <div hidden$="[[!shouldShowNoAccountsMessage_(accounts_)]]"
-            class="no-accounts-message">
-          $i18n{accountManagerSecondaryAccountDescription}
-        </div>
-      </div>
-
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" on-click="onRemoveAccountTap_">
           $i18n{removeAccountLabel}
         </button>
       </cr-action-menu>
     </div>
+
+    <div class="settings-box"></div>
 
   </template>
   <script src="account_manager.js"></script>

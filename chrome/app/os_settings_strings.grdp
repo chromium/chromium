@@ -1233,9 +1233,6 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_SECOND_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
     Adding a school account enables easy sign-in to websites, extensions, and apps as a student while still operating under parental controls.
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DESCRIPTION" desc="Description of secondary accounts usage, shown on Account Manager Settings page.">
-    When you add a secondary account here, you may browse the web, download apps, check your Gmail and other Google services using that account.
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER" desc="List header for Account List in Account Manager Settings page.">
     Accounts
   </message>
