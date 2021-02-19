@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void SetUser(const base::Optional<UserInfo>& user) override;
   void EnableListening(bool enable) override;
   void EnableHotword(bool enable) override;
-  void EnableAmbientMode(bool enabled) override;
   void SetArcPlayStoreEnabled(bool enabled) override;
   void SetAssistantContextEnabled(bool enable) override;
   State GetState() const override;

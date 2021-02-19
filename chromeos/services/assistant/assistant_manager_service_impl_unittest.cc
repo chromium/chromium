@@ -770,17 +770,6 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       ShouldUpdateActionModuleWhenAmbientModeStateChanged) {
-  EXPECT_FALSE(action_module()->IsAmbientModeEnabledForTesting());
-
-  assistant_manager_service()->EnableAmbientMode(true);
-  EXPECT_TRUE(action_module()->IsAmbientModeEnabledForTesting());
-
-  assistant_manager_service()->EnableAmbientMode(false);
-  EXPECT_FALSE(action_module()->IsAmbientModeEnabledForTesting());
-}
-
-TEST_F(AssistantManagerServiceImplTest,
        ShouldNotifyAlarmTimerControllerOfOnlyRingingTimersInV1) {
   UseStrictAlarmTimerControllerMock();
   base::test::ScopedFeatureList scoped_feature_list;

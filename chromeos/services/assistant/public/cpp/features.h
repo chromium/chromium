@@ -48,10 +48,6 @@ extern const base::Feature kAssistantTimersV2;
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kAssistantWaitScheduling;
 
-// Enables Assistant in Ambient Mode.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableAmbientAssistant;
-
 // Enables Better Assistant.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableBetterAssistant;

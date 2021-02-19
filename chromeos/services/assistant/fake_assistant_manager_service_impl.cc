@@ -43,8 +43,6 @@ void FakeAssistantManagerServiceImpl::EnableListening(bool enable) {}
 
 void FakeAssistantManagerServiceImpl::EnableHotword(bool enable) {}
 
-void FakeAssistantManagerServiceImpl::EnableAmbientMode(bool enabled) {}
-
 void FakeAssistantManagerServiceImpl::SetArcPlayStoreEnabled(bool enabled) {}
 
 void FakeAssistantManagerServiceImpl::SetAssistantContextEnabled(bool enabled) {

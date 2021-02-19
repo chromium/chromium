@@ -7,14 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "ash/ambient/ui/ambient_assistant_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/assistant/util/animation_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "ui/aura/window.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
@@ -23,12 +20,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-using chromeos::assistant::features::IsAmbientAssistantEnabled;
-
-}  // namespace
 
 AmbientContainerView::AmbientContainerView(AmbientViewDelegate* delegate)
     : delegate_(delegate) {
@@ -46,12 +37,6 @@ void AmbientContainerView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   photo_view_ = AddChildView(std::make_unique<PhotoView>(delegate_));
-
-  if (IsAmbientAssistantEnabled()) {
-    ambient_assistant_container_view_ =
-        AddChildView(std::make_unique<AmbientAssistantContainerView>());
-    ambient_assistant_container_view_->SetVisible(false);
-  }
 }
 
 BEGIN_METADATA(AmbientContainerView, views::View)

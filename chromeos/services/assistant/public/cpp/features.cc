@@ -41,9 +41,6 @@ const base::Feature kAssistantWaitScheduling{"AssistantWaitScheduling",
 const base::Feature kEnableBetterAssistant{"EnableBetterAssistant",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnableAmbientAssistant{"EnableAmbientAssistant",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableDspHotword{"EnableDspHotword",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -62,12 +59,6 @@ const base::Feature kEnableMediaSessionIntegration{
 // Disable voice match for test purpose.
 const base::Feature kDisableVoiceMatch{"DisableVoiceMatch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAmbientAssistantEnabled() {
-  return chromeos::features::IsAmbientModeEnabled() &&
-         base::FeatureList::IsEnabled(
-             assistant::features::kEnableAmbientAssistant);
-}
 
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(

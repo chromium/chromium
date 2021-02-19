@@ -129,7 +129,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void Stop() override;
   State GetState() const override;
   void SetUser(const base::Optional<UserInfo>& user) override;
-  void EnableAmbientMode(bool enabled) override;
   void EnableListening(bool enable) override;
   void EnableHotword(bool enable) override;
   void SetArcPlayStoreEnabled(bool enable) override;

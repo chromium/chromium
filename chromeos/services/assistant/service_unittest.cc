@@ -9,13 +9,11 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -76,9 +74,6 @@ class AssistantServiceTest : public testing::Test {
   ~AssistantServiceTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::assistant::features::kEnableAmbientAssistant);
-
     chromeos::CrasAudioHandler::InitializeForTesting();
 
     PowerManagerClient::InitializeFake();
@@ -156,12 +151,9 @@ class AssistantServiceTest : public testing::Test {
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  ash::AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   TestingPrefServiceSimple pref_service_;
 
@@ -175,8 +167,6 @@ class AssistantServiceTest : public testing::Test {
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  ash::AmbientUiModel ambient_ui_model_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantServiceTest);
 };
@@ -318,30 +308,6 @@ TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStopped) {
   StopAssistantAndWait();
 
   EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
-}
-
-TEST_F(AssistantServiceTest,
-       ShouldResetAccessTokenWhenAmbientModeStateChanged) {
-  assistant_manager()->FinishStart();
-  EXPECT_STATE(AssistantManagerService::State::RUNNING);
-  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
-  ASSERT_TRUE(assistant_manager()->access_token().has_value());
-  ASSERT_EQ(assistant_manager()->access_token().value(), kAccessToken);
-
-  ambient_ui_model()->SetUiVisibility(ash::AmbientUiVisibility::kShown);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
-  ASSERT_FALSE(assistant_manager()->access_token().has_value());
-
-  // Disabling ambient mode requests a new token.
-  ambient_ui_model()->SetUiVisibility(ash::AmbientUiVisibility::kClosed);
-  EXPECT_TRUE(identity_test_env()->IsAccessTokenRequestPending());
-
-  // Assistant manager receives the new token.
-  IssueAccessToken("new token");
-  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
-  ASSERT_TRUE(assistant_manager()->access_token().has_value());
-  ASSERT_EQ(assistant_manager()->access_token().value(), "new token");
 }
 
 }  // namespace assistant

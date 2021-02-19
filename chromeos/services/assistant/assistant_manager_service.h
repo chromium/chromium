@@ -72,9 +72,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
   // will switch the mode back to normal.
   virtual void SetUser(const base::Optional<UserInfo>& user) = 0;
 
-  // Enable/disable ambient mode for Assistant.
-  virtual void EnableAmbientMode(bool enabled) = 0;
-
   // Turn on / off all listening, including hotword and voice query.
   virtual void EnableListening(bool enable) = 0;
 

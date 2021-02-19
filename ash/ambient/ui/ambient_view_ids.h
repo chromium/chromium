@@ -14,12 +14,9 @@ namespace ash {
 enum AmbientViewID {
   // We start at 1000 to prevent potential overlapping of Assistant view ids.
   kAmbientContainerView = 1000,
-  kAmbientAssistantContainerView,
-  kAmbientAssistantResponseContainerView,
   kAmbientPhotoView,
   kAmbientBackgroundImageView,
   kAmbientGlanceableInfoView,
-  kAmbientAssistantDialogPlate,
   kAmbientMediaStringView,
   kAmbientInfoView,
   kAmbientShieldView,

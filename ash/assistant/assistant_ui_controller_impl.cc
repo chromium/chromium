@@ -4,7 +4,6 @@
 
 #include "ash/assistant/assistant_ui_controller_impl.h"
 
-#include "ash/ambient/ambient_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -16,6 +15,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/toast_data.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
@@ -32,8 +32,6 @@
 namespace ash {
 
 namespace {
-
-using chromeos::assistant::features::IsAmbientAssistantEnabled;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -123,13 +121,6 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
 
   if (!assistant_) {
     ShowToast(kUnboundServiceToastId, IDS_ASH_ASSISTANT_ERROR_GENERIC);
-    return;
-  }
-
-  if (IsAmbientAssistantEnabled() &&
-      Shell::Get()->ambient_controller()->IsShown()) {
-    model_.SetUiMode(AssistantUiMode::kAmbientUi);
-    model_.SetVisible(entry_point);
     return;
   }
 

@@ -180,9 +180,6 @@ void AssistantPageView::RequestFocus() {
       if (assistant_main_view_)
         assistant_main_view_->RequestFocus();
       break;
-    case AssistantUiMode::kAmbientUi:
-      NOTREACHED();
-      break;
   }
 }
 
