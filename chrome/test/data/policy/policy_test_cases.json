@@ -5430,22 +5430,22 @@
     ]
   },
 
-  "SamlLockScreenReauthenticationEnabled": {
+  "LockScreenReauthenticationEnabled": {
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "SamlLockScreenReauthenticationEnabled": true
+          "LockScreenReauthenticationEnabled": true
         },
-        "prefs": { "saml.lock_screen_reauthentication_enabled": {
+        "prefs": { "lock_screen_reauthentication_enabled": {
           "value": true }
         }
       },
       {
         "policies": {
-          "SamlLockScreenReauthenticationEnabled": false
+          "LockScreenReauthenticationEnabled": false
         },
-        "prefs": {"saml.lock_screen_reauthentication_enabled": {
+        "prefs": {"lock_screen_reauthentication_enabled": {
           "value": false }
         }
       }

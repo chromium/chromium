@@ -47,7 +47,7 @@ InSessionPasswordSyncManager::~InSessionPasswordSyncManager() {
 
 bool InSessionPasswordSyncManager::IsLockReauthEnabled() {
   PrefService* prefs = primary_profile_->GetPrefs();
-  return prefs->GetBoolean(prefs::kSamlLockScreenReauthenticationEnabled);
+  return prefs->GetBoolean(prefs::kLockScreenReauthenticationEnabled);
 }
 
 void InSessionPasswordSyncManager::MaybeForceReauthOnLockScreen(

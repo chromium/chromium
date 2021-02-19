@@ -23,7 +23,7 @@ const bool kDefaultSamlInSessionPasswordChangeEnabled = false;
 const int kDefaultSamlPasswordExpirationAdvanceWarningDays = 14;
 
 // Online reauthentication on the lock screen.
-const bool kDefaultSamlLockScreenReauthenticationEnabled = false;
+const bool kDefaultLockScreenReauthenticationEnabled = false;
 
 }  // namespace
 
@@ -47,8 +47,8 @@ void RegisterSamlProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSamlPasswordExpirationAdvanceWarningDays,
       kDefaultSamlPasswordExpirationAdvanceWarningDays);
 
-  registry->RegisterBooleanPref(prefs::kSamlLockScreenReauthenticationEnabled,
-                                kDefaultSamlLockScreenReauthenticationEnabled);
+  registry->RegisterBooleanPref(prefs::kLockScreenReauthenticationEnabled,
+                                kDefaultLockScreenReauthenticationEnabled);
   registry->RegisterStringPref(prefs::kSamlPasswordSyncToken, std::string());
 
   SamlPasswordAttributes::RegisterProfilePrefs(registry);

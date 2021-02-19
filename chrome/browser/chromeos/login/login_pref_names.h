@@ -21,7 +21,7 @@ extern const char kSAMLOfflineSigninTimeLimit[];
 extern const char kSAMLLastGAIASignInTime[];
 extern const char kSamlInSessionPasswordChangeEnabled[];
 extern const char kSamlPasswordExpirationAdvanceWarningDays[];
-extern const char kSamlLockScreenReauthenticationEnabled[];
+extern const char kLockScreenReauthenticationEnabled[];
 extern const char kSamlPasswordSyncToken[];
 
 }  // namespace prefs

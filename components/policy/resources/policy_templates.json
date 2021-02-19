@@ -1221,7 +1221,7 @@
       'policies': [
         'SamlInSessionPasswordChangeEnabled',
         'SamlPasswordExpirationAdvanceWarningDays',
-        'SamlLockScreenReauthenticationEnabled',
+        'LockScreenReauthenticationEnabled',
         'SAMLOfflineSigninTimeLimit',
       ],
     },
@@ -20956,7 +20956,7 @@
       Setting this policy to Disabled or not set, SAML password can't be changed at chrome://password-change and there won't be any notification when SAML passwods are soon to expire.''',
     },
     {
-      'name': 'SamlLockScreenReauthenticationEnabled',
+      'name': 'LockScreenReauthenticationEnabled',
       'owners': ['mslus@chromium.org', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },

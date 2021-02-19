@@ -686,7 +686,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUILockScreenStartReauthHost) {
     if (!profile->GetPrefs()->GetBoolean(
-            chromeos::prefs::kSamlLockScreenReauthenticationEnabled)) {
+            chromeos::prefs::kLockScreenReauthenticationEnabled)) {
       return nullptr;
     }
     return &NewWebUI<chromeos::LockScreenStartReauthUI>;

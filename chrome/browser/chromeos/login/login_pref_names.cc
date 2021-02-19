@@ -69,8 +69,8 @@ const char kSamlPasswordExpirationAdvanceWarningDays[] =
     "saml.password_expiration_advance_warning_days";
 
 // Enable online signin on the lock screen.
-const char kSamlLockScreenReauthenticationEnabled[] =
-    "saml.lock_screen_reauthentication_enabled";
+const char kLockScreenReauthenticationEnabled[] =
+    "lock_screen_reauthentication_enabled";
 
 // SAML password sync token fetched from the external API.
 const char kSamlPasswordSyncToken[] = "saml.password_sync_token";

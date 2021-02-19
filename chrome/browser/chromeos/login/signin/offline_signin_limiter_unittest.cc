@@ -760,7 +760,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
                     base::TimeDelta::FromDays(1).InSeconds());  // 1 day.
 
   // Enable re-authentication on the lock screen.
-  prefs->SetBoolean(prefs::kSamlLockScreenReauthenticationEnabled, true);
+  prefs->SetBoolean(prefs::kLockScreenReauthenticationEnabled, true);
 
   // Advance time by four weeks.
   clock_.Advance(base::TimeDelta::FromDays(28));  // 4 weeks.
@@ -1263,7 +1263,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
   prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 7);  // 1 week.
 
   // Enable re-authentication on the lock screen.
-  prefs->SetBoolean(prefs::kSamlLockScreenReauthenticationEnabled, true);
+  prefs->SetBoolean(prefs::kLockScreenReauthenticationEnabled, true);
 
   // Advance time by four weeks.
   clock_.Advance(base::TimeDelta::FromDays(28));  // 4 weeks.

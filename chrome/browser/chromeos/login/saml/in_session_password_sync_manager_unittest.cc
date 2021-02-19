@@ -151,7 +151,7 @@ InSessionPasswordSyncManagerTest::InSessionReauthReason() {
 
 TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetInSession) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kSamlLockScreenReauthenticationEnabled, true);
+      prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   UnlockScreen();
   user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
@@ -163,7 +163,7 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetInSession) {
 
 TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateResetByToken) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kSamlLockScreenReauthenticationEnabled, true);
+      prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   UnlockScreen();
   user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
@@ -178,7 +178,7 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateResetByToken) {
 
 TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetOnLock) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kSamlLockScreenReauthenticationEnabled, true);
+      prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   LockScreen();
   EXPECT_CALL(*lock_handler_,
@@ -198,7 +198,7 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetOnLock) {
 // enforce_reauth_on_lock_ flag is still set.
 TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithIncorrectUser) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kSamlLockScreenReauthenticationEnabled, true);
+      prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   LockScreen();
   EXPECT_CALL(*lock_handler_,
@@ -228,7 +228,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
   base::Time expected_signin_time = now + kSamlOnlineShortDelay;
 
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kSamlLockScreenReauthenticationEnabled, true);
+      prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   LockScreen();
   EXPECT_CALL(*lock_handler_,
@@ -254,7 +254,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
 
 TEST_F(InSessionPasswordSyncManagerTest, PolicySetToFalse) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kSamlLockScreenReauthenticationEnabled, false);
+      prefs::kLockScreenReauthenticationEnabled, false);
   CreateInSessionSyncManager();
   EXPECT_FALSE(manager_->IsLockReauthEnabled());
 }

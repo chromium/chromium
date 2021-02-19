@@ -34,7 +34,7 @@ class ExtendedAuthenticator;
 // of DM sync token and sends user through online signin flow on the lock
 // screen.
 // This object is created by InSessionPasswordSyncManagerFactory per primary
-// user in active session only when SamlLockScreenReauthenticationEnabled
+// user in active session only when LockScreenReauthenticationEnabled
 // policy is set.
 class InSessionPasswordSyncManager
     : public KeyedService,
@@ -58,7 +58,7 @@ class InSessionPasswordSyncManager
   InSessionPasswordSyncManager& operator=(const InSessionPasswordSyncManager&) =
       delete;
 
-  // Checks if the SamlLockScreenReauthenticationEnabled policy is set to true.
+  // Checks if the LockScreenReauthenticationEnabled policy is set to true.
   // Note that it can be changed in session.
   bool IsLockReauthEnabled();
 
