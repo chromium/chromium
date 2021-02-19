@@ -3410,6 +3410,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "memories",
+    "owners": [ "tommycli", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "memories-debug",
     "owners": [ "manukh", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 105

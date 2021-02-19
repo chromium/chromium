@@ -4444,6 +4444,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxWebUIOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
 
+    {"memories", flag_descriptions::kMemoriesName,
+     flag_descriptions::kMemoriesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(memories::kMemories)},
+
     {"memories-debug", flag_descriptions::kMemoriesDebugName,
      flag_descriptions::kMemoriesDebugDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(memories::kDebug)},

@@ -850,6 +850,9 @@ extern const char kMediaHistoryDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
+extern const char kMemoriesName[];
+extern const char kMemoriesDescription[];
+
 extern const char kMemoriesDebugName[];
 extern const char kMemoriesDebugDescription[];
 
