@@ -123,6 +123,8 @@ void ThreadHeapStatsCollector::NotifyMarkingCompleted(size_t marked_bytes) {
   ForAllObservers([marked_bytes](ThreadHeapStatsObserver* observer) {
     observer->ResetAllocatedObjectSize(marked_bytes);
   });
+
+  is_sweeping_ = true;
 }
 
 void ThreadHeapStatsCollector::NotifySweepingCompleted() {
@@ -139,6 +141,7 @@ void ThreadHeapStatsCollector::NotifySweepingCompleted() {
                 "Event should be trivially copyable");
   previous_ = std::move(current_);
   current_ = Event();
+  is_sweeping_ = false;
 }
 
 void ThreadHeapStatsCollector::UpdateReason(BlinkGC::GCReason reason) {
@@ -146,10 +149,11 @@ void ThreadHeapStatsCollector::UpdateReason(BlinkGC::GCReason reason) {
 }
 
 size_t ThreadHeapStatsCollector::object_size_in_bytes() const {
-  DCHECK_GE(static_cast<int64_t>(previous().marked_bytes) +
-                allocated_bytes_since_prev_gc_,
-            0);
-  return static_cast<size_t>(static_cast<int64_t>(previous().marked_bytes) +
+  const Event& event = is_sweeping_ ? current_ : previous_;
+  DCHECK_GE(
+      static_cast<int64_t>(event.marked_bytes) + allocated_bytes_since_prev_gc_,
+      0);
+  return static_cast<size_t>(static_cast<int64_t>(event.marked_bytes) +
                              allocated_bytes_since_prev_gc_);
 }
 

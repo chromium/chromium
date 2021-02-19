@@ -384,6 +384,7 @@ class PLATFORM_EXPORT ThreadHeapStatsCollector {
   size_t allocated_space_bytes_ = 0;
 
   bool is_started_ = false;
+  bool is_sweeping_ = false;
 
   // base::TimeDelta for RawScope. These don't need to be nested within a
   // garbage collection cycle to make them easier to use.

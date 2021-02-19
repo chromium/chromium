@@ -128,7 +128,8 @@ TEST(ThreadHeapStatsCollectorTest, EstimatedObjectSizeNoMarkedBytes) {
   stats_collector.NotifySweepingCompleted();
 }
 
-TEST(ThreadHeapStatsCollectorTest, EstimatedObjectSizeWithMarkedBytes) {
+TEST(ThreadHeapStatsCollectorTest,
+     EstimatedObjectSizeIgnoresPreviouslyMarkedBytes) {
   ThreadHeapStatsCollector stats_collector;
   stats_collector.NotifyMarkingStarted(BlinkGC::CollectionType::kMajor,
                                        BlinkGC::GCReason::kForcedGCForTesting,
@@ -140,17 +141,17 @@ TEST(ThreadHeapStatsCollectorTest, EstimatedObjectSizeWithMarkedBytes) {
                                        true /* is_forced_gc */);
   stats_collector.NotifyMarkingCompleted(kNoMarkedBytes);
   stats_collector.IncreaseAllocatedObjectSizeForTesting(512);
-  EXPECT_EQ(640u, stats_collector.object_size_in_bytes());
+  EXPECT_EQ(512u, stats_collector.object_size_in_bytes());
   stats_collector.NotifySweepingCompleted();
 }
 
 TEST(ThreadHeapStatsCollectorTest,
-     EstimatedObjectSizeDoNotCountCurrentlyMarkedBytes) {
+     EstimatedObjectSizeUsesCurrentlyMarkedBytes) {
   ThreadHeapStatsCollector stats_collector;
   stats_collector.NotifyMarkingStarted(BlinkGC::CollectionType::kMajor,
                                        BlinkGC::GCReason::kForcedGCForTesting,
                                        true /* is_forced_gc */);
-  stats_collector.NotifyMarkingCompleted(128);
+  stats_collector.NotifyMarkingCompleted(256);
   stats_collector.NotifySweepingCompleted();
   stats_collector.NotifyMarkingStarted(BlinkGC::CollectionType::kMajor,
                                        BlinkGC::GCReason::kForcedGCForTesting,
