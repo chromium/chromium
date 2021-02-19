@@ -35,6 +35,13 @@ fuchsia::web::ContextPtr CreateWebContext(
   return web_context;
 }
 
+bool IsChannelClosed(const zx::channel& channel) {
+  zx_signals_t observed = 0u;
+  zx_status_t status =
+      channel.wait_one(ZX_ERR_PEER_CLOSED, zx::time(), &observed);
+  return status == ZX_OK;
+}
+
 }  // namespace
 
 WebContentRunner::WebContentRunner(
@@ -54,6 +61,12 @@ WebContentRunner::~WebContentRunner() = default;
 void WebContentRunner::CreateFrameWithParams(
     fuchsia::web::CreateFrameParams params,
     fidl::InterfaceRequest<fuchsia::web::Frame> request) {
+  // Synchronously check whether the web.Context channel has closed, to reduce
+  // the chance of issuing CreateFrameWithParams() to an already-closed channel.
+  // This avoids potentially flaking a test - see crbug.com/1173418.
+  if (context_ && IsChannelClosed(context_.channel()))
+    context_.Unbind();
+
   if (!context_) {
     DCHECK(get_context_params_callback_);
     context_ = CreateWebContext(get_context_params_callback_.Run());
