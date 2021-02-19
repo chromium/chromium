@@ -33,6 +33,7 @@ extern NSString* const kSecondaryBackgroundColor;
 extern NSString* const kSeparatorColor;
 extern NSString* const kSolidButtonTextColor;
 extern NSString* const kTableViewRowHighlightColor;
+extern NSString* const kTertiaryBackgroundColor;
 extern NSString* const kTextPrimaryColor;
 extern NSString* const kTextSecondaryColor;
 extern NSString* const kTextfieldBackgroundColor;
@@ -76,6 +77,7 @@ extern NSString* const kGrey900Color;
 
 extern NSString* const kBackgroundDarkColor;
 extern NSString* const kSecondaryBackgroundDarkColor;
+extern NSString* const kTertiaryBackgroundDarkColor;
 extern NSString* const kCloseButtonDarkColor;
 extern NSString* const kTableViewRowHighlightDarkColor;
 extern NSString* const kTextPrimaryDarkColor;

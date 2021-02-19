@@ -42,6 +42,8 @@ group("resources") {
     ":solid_button_text_color",
     ":table_view_row_highlight_color",
     ":table_view_row_highlight_dark_color",
+    ":tertiary_background_color",
+    ":tertiary_background_dark_color",
     ":text_primary_color",
     ":text_primary_dark_color",
     ":text_secondary_color",
@@ -178,6 +180,14 @@ colorset("table_view_row_highlight_color") {
 
 colorset("table_view_row_highlight_dark_color") {
   sources = [ "table_view_row_highlight_dark_color.colorset/Contents.json" ]
+}
+
+colorset("tertiary_background_color") {
+  sources = [ "tertiary_background_color.colorset/Contents.json" ]
+}
+
+colorset("tertiary_background_dark_color") {
+  sources = [ "tertiary_background_dark_color.colorset/Contents.json" ]
 }
 
 colorset("text_primary_color") {

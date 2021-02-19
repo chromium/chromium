@@ -26,6 +26,7 @@ NSString* const kSecondaryBackgroundColor = @"secondary_background_color";
 NSString* const kSeparatorColor = @"separator_color";
 NSString* const kSolidButtonTextColor = @"solid_button_text_color";
 NSString* const kTableViewRowHighlightColor = @"table_view_row_highlight_color";
+NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
@@ -56,6 +57,8 @@ NSString* const kGrey900Color = @"grey_900_color";
 NSString* const kBackgroundDarkColor = @"background_dark_color";
 NSString* const kSecondaryBackgroundDarkColor =
     @"secondary_background_dark_color";
+NSString* const kTertiaryBackgroundDarkColor =
+    @"tertiary_background_dark_color";
 NSString* const kCloseButtonDarkColor = @"close_button_dark_color";
 NSString* const kTableViewRowHighlightDarkColor =
     @"table_view_row_highlight_dark_color";

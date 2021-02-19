@@ -118,6 +118,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       forCellWithReuseIdentifier:kCellIdentifier];
   [collectionView registerClass:[PlusSignCell class]
       forCellWithReuseIdentifier:kPlusSignCellIdentifier];
+  // If this stays as the default |YES|, then cells aren't highlighted
+  // immediately on touch, but after a short delay.
+  collectionView.delaysContentTouches = NO;
   collectionView.dataSource = self;
   collectionView.delegate = self;
   collectionView.backgroundView = [[UIView alloc] init];
