@@ -70,19 +70,8 @@ namespace content {
 
 namespace {
 
-class ContentServiceHolder : public base::SupportsUserData::Data {
- public:
-  explicit ContentServiceHolder(BrowserContext* browser_context) {}
-
-  ~ContentServiceHolder() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentServiceHolder);
-};
-
 // Key names on BrowserContext.
 const char kBrowsingDataRemoverKey[] = "browsing-data-remover";
-const char kContentServiceKey[] = "content-service";
 const char kDownloadManagerKeyName[] = "download_manager";
 const char kPermissionControllerKey[] = "permission-controller";
 const char kStoragePartitionMapKeyName[] = "content_storage_partition_map";
@@ -366,12 +355,6 @@ void BrowserContext::NotifyWillBeDestroyed(BrowserContext* browser_context) {
   if (browser_context->was_notify_will_be_destroyed_called_)
     return;
   browser_context->was_notify_will_be_destroyed_called_ = true;
-
-  // Subclasses of BrowserContext may expect there to be no more
-  // RenderProcessHosts using them by the time this function returns. We
-  // therefore explicitly tear down embedded Content Service instances now to
-  // ensure that all their WebContents (and therefore RPHs) are torn down too.
-  browser_context->RemoveUserData(kContentServiceKey);
 
   // Shut down service worker and shared worker machinery because these can keep
   // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
