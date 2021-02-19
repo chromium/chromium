@@ -946,7 +946,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         break;
 
       if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-        return html_element->ComputeInheritedDirectionality() == direction;
+        return html_element->CachedDirectionality() == direction;
       }
       break;
     }

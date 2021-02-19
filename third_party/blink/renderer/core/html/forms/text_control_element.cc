@@ -1046,10 +1046,8 @@ String TextControlElement::DirectionForFormData() const {
       return dir_attribute_value;
 
     if (EqualIgnoringASCIICase(dir_attribute_value, "auto")) {
-      bool is_auto;
-      TextDirection text_direction =
-          element->DirectionalityIfhasDirAutoAttribute(is_auto);
-      return text_direction == TextDirection::kRtl ? "rtl" : "ltr";
+      return element->CachedDirectionality() == TextDirection::kRtl ? "rtl"
+                                                                    : "ltr";
     }
   }
 

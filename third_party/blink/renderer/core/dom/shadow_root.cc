@@ -125,6 +125,9 @@ void ShadowRoot::setInnerHTML(const String& html,
           html, &host(), kAllowScriptingContent, "innerHTML",
           /*include_shadow_roots=*/false, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
+    auto* element = DynamicTo<HTMLElement>(host());
+    if (element && !element->NeedsInheritDirectionalityFromParent())
+      element->UpdateDescendantDirectionality(element->CachedDirectionality());
   }
 }
 

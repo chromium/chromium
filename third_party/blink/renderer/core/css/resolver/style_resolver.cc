@@ -612,13 +612,11 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
         element.AdditionalPresentationAttributeStyle());
 
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-      bool is_auto;
-      TextDirection text_direction =
-          html_element->DirectionalityIfhasDirAutoAttribute(is_auto);
-      if (is_auto) {
+      if (html_element->HasDirectionAuto()) {
         collector.AddElementStyleProperties(
-            text_direction == TextDirection::kLtr ? LeftToRightDeclaration()
-                                                  : RightToLeftDeclaration());
+            html_element->CachedDirectionality() == TextDirection::kLtr
+                ? LeftToRightDeclaration()
+                : RightToLeftDeclaration());
       }
     }
   }

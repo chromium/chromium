@@ -106,7 +106,6 @@ class CORE_EXPORT HTMLElement : public Element {
   HTMLFormElement* FindFormAncestor() const;
 
   bool HasDirectionAuto() const;
-  TextDirection DirectionalityIfhasDirAutoAttribute(bool& is_auto) const;
 
   virtual bool IsHTMLBodyElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
@@ -154,11 +153,13 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
   bool IsFormAssociatedCustomElement() const;
 
-  TextDirection ComputeInheritedDirectionality() const;
   void AddCandidateDirectionalityForSlot();
   static void AdjustCandidateDirectionalityForSlot(
       HeapHashSet<Member<HTMLElement>> candidate_set);
   void UpdateDescendantHasDirAutoAttribute(bool has_dir_auto);
+  void UpdateDirectionalityAndDescendant(TextDirection direction);
+  void UpdateDescendantDirectionality(TextDirection direction);
+  void BeginParsingChildren() override;
 
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };

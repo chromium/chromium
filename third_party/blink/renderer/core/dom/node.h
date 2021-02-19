@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 // This needs to be here because element.cc also depends on it.
@@ -904,6 +905,30 @@ class CORE_EXPORT Node : public EventTarget {
   void ClearSelfOrAncestorHasDirAutoAttribute() {
     ClearFlag(kSelfOrAncestorHasDirAutoAttribute);
   }
+  TextDirection CachedDirectionality() const {
+    return (node_flags_ & kCachedDirectionalityIsRtl) ? TextDirection::kRtl
+                                                      : TextDirection::kLtr;
+  }
+  void SetCachedDirectionality(TextDirection direction) {
+    switch (direction) {
+      case TextDirection::kRtl:
+        SetFlag(kCachedDirectionalityIsRtl);
+        break;
+      case TextDirection::kLtr:
+        ClearFlag(kCachedDirectionalityIsRtl);
+        break;
+    }
+    ClearFlag(kNeedsInheritDirectionalityFromParent);
+  }
+  bool NeedsInheritDirectionalityFromParent() const {
+    return GetFlag(kNeedsInheritDirectionalityFromParent);
+  }
+  void SetNeedsInheritDirectionalityFromParent() {
+    SetFlag(kNeedsInheritDirectionalityFromParent);
+  }
+  void ClearNeedsInheritDirectionalityFromParent() {
+    ClearFlag(kNeedsInheritDirectionalityFromParent);
+  }
 
   void Trace(Visitor*) const override;
 
@@ -953,10 +978,12 @@ class CORE_EXPORT Node : public EventTarget {
     kHasDisplayLockContext = 1 << 26,
 
     kSelfOrAncestorHasDirAutoAttribute = 1 << 27,
+    kCachedDirectionalityIsRtl = 1 << 28,
+    kNeedsInheritDirectionalityFromParent = 1 << 29,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 5 bits remaining.
+    // 3 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {
