@@ -57,6 +57,24 @@ Polymer({
     },
 
     /**
+     * Total time in minutes of estimate runtime based on routines array.
+     * @type {number}
+     */
+    routineRuntime: {
+      type: Number,
+      value: 0,
+    },
+
+    /**
+     * Timestamp of when routine test started execution in milliseconds.
+     * @private {number}
+     */
+    routineStartTimeMs_: {
+      type: Number,
+      value: -1,
+    },
+
+    /**
      * Overall ExecutionProgress of the routine.
      * @type {!ExecutionProgress}
      * @private
@@ -156,6 +174,10 @@ Polymer({
         this.$.collapse.show();
       }
 
+      this.routineStartTimeMs_ = performance.now();
+      const remainingTimeUpdaterId =
+          setInterval(() => this.setRunningStatusBadgeText_(), 1000);
+
       this.executor_ =
           new RoutineListExecutor(assert(this.systemRoutineController_));
       this.executor_
@@ -186,8 +208,10 @@ Polymer({
           .then((/** @type {!ExecutionProgress} */ status) => {
             this.executionStatus_ = status;
             this.isTestRunning = false;
+            this.routineStartTimeMs_ = -1;
             this.runTestsButtonText =
                 loadTimeData.getString('runAgainButtonText');
+            clearInterval(remainingTimeUpdaterId);
             this.cleanUp_();
           });
     });
@@ -245,6 +269,35 @@ Polymer({
    */
   getReportToggleButtonText_(opened) {
     return loadTimeData.getString(opened ? 'hideReportText' : 'seeReportText');
+  },
+
+  /**
+   * Sets status texts for remaining runtime while the routine runs.
+   * @private
+   */
+  setRunningStatusBadgeText_() {
+    // Routines that are longer than 5 minutes are considered large
+    const largeRoutine = this.routineRuntime >= 5;
+
+    // Calculate time elapsed since the start of routine in minutes.
+    const minsElapsed =
+        (performance.now() - this.routineStartTimeMs_) / 1000 / 60;
+    let timeRemainingInMin = Math.ceil(this.routineRuntime - minsElapsed);
+
+    if (largeRoutine && timeRemainingInMin <= 0) {
+      this.statusText_ =
+          loadTimeData.getString('routineRemainingMinFinalLarge');
+      return;
+    }
+
+    // For large routines, round up to 5 minutes increments.
+    if (largeRoutine && timeRemainingInMin % 5 !== 0) {
+      timeRemainingInMin += (5 - timeRemainingInMin % 5);
+    }
+
+    this.badgeText_ = timeRemainingInMin <= 1 ?
+        loadTimeData.getString('routineRemainingMinFinal') :
+        loadTimeData.getStringF('routineRemainingMin', timeRemainingInMin);
   },
 
   /** @protected */

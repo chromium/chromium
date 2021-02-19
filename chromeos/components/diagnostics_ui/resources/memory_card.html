@@ -10,6 +10,7 @@
     max="[[memoryUsage_.totalMemoryKib]]">
   </percent-bar-chart>
   <routine-section slot="routines" routines="[[routines_]]"
+    routine-runtime="{{getEstimateRuntimeInMinutes_(routines_, memoryUsage_)}}"
     is-test-running="{{isTestRunning}}"
     run-tests-button-text="[[i18n('runMemoryTestText')]]">
   </routine-section>

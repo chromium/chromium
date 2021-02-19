@@ -122,4 +122,17 @@ Polymer({
         convertKibToGibDecimalString(this.memoryUsage_.availableMemoryKib, 2),
         convertKibToGibDecimalString(this.memoryUsage_.totalMemoryKib, 2));
   },
+
+  /**
+   * Estimate the total runtime in minutes with kMicrosecondsPerByte = 0.2
+   * @return {number} Estimate runtime in minutes
+   * @protected
+   */
+  getEstimateRuntimeInMinutes_() {
+    // Since this is an estimate, there's no need to be precise with Kib <-> Kb.
+    // 300000Kb per minute, based on kMicrosecondsPerByte above.
+    return this.memoryUsage_ ?
+        Math.ceil(this.memoryUsage_.totalMemoryKib / 300000) :
+        0;
+  },
 });

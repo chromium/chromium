@@ -25,6 +25,9 @@ export function routineSectionTestSuite() {
   /** @type {!FakeSystemRoutineController} */
   let routineController;
 
+  /** @type {function(this:Performance): number} */
+  const originalTime = performance.now;
+
   setup(function() {
     document.body.innerHTML = '';
 
@@ -50,8 +53,9 @@ export function routineSectionTestSuite() {
   /**
    * Initializes the element and sets the routines.
    * @param {!Array<!RoutineType>} routines
+   * @param {number=} runtime in minutes.
    */
-  function initializeRoutineSection(routines) {
+  function initializeRoutineSection(routines, runtime = 1) {
     assertFalse(!!routineSectionElement);
 
     // Add the entry to the DOM.
@@ -63,6 +67,7 @@ export function routineSectionTestSuite() {
     // Assign the routines to the property.
     routineSectionElement.routines = routines;
     routineSectionElement.isTestRunning = false;
+    routineSectionElement.routineRuntime = runtime;
 
     if (routines.length === 1 && [
           chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge,
@@ -196,6 +201,30 @@ export function routineSectionTestSuite() {
   function getCurrentTestName() {
     assertTrue(!!routineSectionElement);
     return routineSectionElement.currentTestName_;
+  }
+
+  /**
+   * @param {number} t Set current time to t.
+   */
+  function setMockTime(t) {
+    performance.now = () => t;
+  }
+
+  /**
+   * Restores mocked time to the original function.
+   */
+  function resetMockTime() {
+    performance.now = originalTime;
+  }
+
+  /**
+   * Updates time-to-finish status
+   * @suppress {visibility} // access private member for test
+   * @return {!Promise}
+   */
+  function triggerStatusUpdate() {
+    routineSectionElement.setRunningStatusBadgeText_();
+    return flushTasks();
   }
 
   test('ElementRenders', () => {
@@ -740,6 +769,105 @@ export function routineSectionTestSuite() {
         .then(() => clickRunTestsButton())
         .then(() => {
           assertTrue(isVisible(getToggleTestReportButton()));
+        });
+  });
+
+  test('RoutineRuntimeStatus', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kMemory,
+    ];
+
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kMemory,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+
+    setMockTime(0);
+
+    return initializeRoutineSection(routines, 2)
+        .then(() => {
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Badge is visible with test running.
+          assertTrue(isVisible(getStatusBadge()));
+          assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
+          dx_utils.assertTextContains(
+              getStatusBadge().value, loadTimeData.getString('testRunning'));
+
+          return triggerStatusUpdate();
+        })
+        .then(() => {
+          dx_utils.assertTextContains(getStatusBadge().value, '2');
+
+          setMockTime(110000);  // fast forward time to 110 seconds
+          return triggerStatusUpdate();
+        })
+        .then(() => {
+          // Display 'less than a minute remaining'
+          dx_utils.assertTextContains(
+              getStatusBadge().value,
+              loadTimeData.getString('routineRemainingMinFinal'));
+
+          resetMockTime();
+        });
+  });
+
+  test('RoutineRuntimeStatusLarge', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kMemory,
+    ];
+
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kMemory,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+
+    setMockTime(0);
+
+    return initializeRoutineSection(routines, 20)
+        .then(() => {
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Badge is visible with test running.
+          assertTrue(isVisible(getStatusBadge()));
+          assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
+          dx_utils.assertTextContains(
+              getStatusBadge().value, loadTimeData.getString('testRunning'));
+
+          return triggerStatusUpdate();
+        })
+        .then(() => {
+          // Should say about 20 minutes remaining.
+          dx_utils.assertTextContains(getStatusBadge().value, '20');
+
+          setMockTime(120000);  // set time to 120 seconds
+          return triggerStatusUpdate();
+        })
+        .then(() => {
+          // Should still say about 20 minutes remaining.
+          dx_utils.assertTextContains(getStatusBadge().value, '20');
+
+          setMockTime(1020000);  // set time to 17 minutes
+          return triggerStatusUpdate();
+        })
+        .then(() => {
+          // Should say about 5 minutes remaining.
+          dx_utils.assertTextContains(getStatusBadge().value, '5');
+
+          setMockTime(1500000);  // set time to 25 minutes (past estimate)
+          return triggerStatusUpdate();
+        })
+        .then(() => {
+          // Should say about 5 minutes remaining, even after estimated runtime.
+          dx_utils.assertTextContains(getStatusBadge().value, '5');
+
+          // Should update status to just a few more minutes..
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getString('routineRemainingMinFinalLarge'));
+          resetMockTime();
         });
   });
 }

@@ -28,6 +28,7 @@
     value="[[getCurrentCpuSpeed_(cpuUsage_.scalingCurrentFrequencyKhz)]]">
   </data-point>
   <routine-section slot="routines" routines="[[routines_]]"
+    routine-runtime="{{getEstimateRuntimeInMinutes_(routines_)}}"
     is-test-running="{{isTestRunning}}"
     run-tests-button-text="[[i18n('runCpuTestText')]]">
   </routine-section>

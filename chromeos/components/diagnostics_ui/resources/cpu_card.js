@@ -160,4 +160,10 @@ Polymer({
         'currentCpuSpeedText',
         this.convertKhzToGhz_(this.cpuUsage_.scalingCurrentFrequencyKhz));
   },
+
+  /** @protected */
+  getEstimateRuntimeInMinutes_() {
+    // Each routine runs for a minute
+    return this.routines_.length;
+  },
 });

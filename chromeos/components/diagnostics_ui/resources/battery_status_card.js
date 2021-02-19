@@ -254,6 +254,12 @@ Polymer({
         '';
   },
 
+  /** @protected */
+  getEstimateRuntimeInMinutes_() {
+    // Power routines will always last <= 1 minute.
+    return 1;
+  },
+
   /**
    * Use the current battery percentage to determine which icon to show the
    * user. Each icon covers a range of 6 or 7 percentage values.
