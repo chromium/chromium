@@ -131,6 +131,9 @@ class WebDragSourceAura : public content::WebContentsObserver {
   void WebContentsDestroyed() override { CancelDrag(); }
 
   void CancelDrag() {
+    if (!window_)
+      return;
+
     // Cancel the drag if it is still in progress.
     aura::client::DragDropClient* dnd_client =
         aura::client::GetDragDropClient(window_->GetRootWindow());
@@ -144,7 +147,6 @@ class WebDragSourceAura : public content::WebContentsObserver {
 
  private:
   aura::Window* window_;
-  NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(WebDragSourceAura);
 };
