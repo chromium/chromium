@@ -8,21 +8,6 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 assert(is_chromeos, "Only ChromeOS components belong here.")
 
-# JS type check for Polymer 2 and 3
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":network_diagnostics",
-    ":network_diagnostics_mojo",
-    ":network_diagnostics_types",
-    ":network_health_container",
-    ":network_health_mojo",
-    ":network_health_summary",
-    ":routine_group",
-  ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
@@ -33,56 +18,6 @@ js_type_check("closure_compile_module") {
     ":network_health_mojo.m",
     ":network_health_summary.m",
     ":routine_group.m",
-  ]
-}
-
-# Sources with Polymer 3 generated modules
-
-js_library("network_health_summary") {
-  deps = [
-    ":network_health_mojo",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("network_health_mojo") {
-  deps = [
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("network_health_container") {
-}
-
-js_library("network_diagnostics") {
-  deps = [
-    ":network_diagnostics_mojo",
-    ":network_diagnostics_types",
-    ":routine_group",
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("network_diagnostics_mojo") {
-  deps = [
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("network_diagnostics_types") {
-  deps = [ ":network_diagnostics_mojo" ]
-}
-
-js_library("routine_group") {
-  deps = [
-    ":network_diagnostics_types",
-    ":network_health_container",
-    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 
