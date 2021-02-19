@@ -106,20 +106,36 @@ bool CanShowWindowForMultiProfile(aura::Window* window) {
   return account_id == multi_user_window_manager->CurrentAccountId();
 }
 
+// Returns the LayerData entry for |target_layer| in |layer_data|. Returns an
+// empty LayerData struct if not found.
+const LayerData GetLayerDataEntry(
+    const base::flat_map<ui::Layer*, LayerData>& layers_data,
+    ui::Layer* target_layer) {
+  const auto iter = layers_data.find(target_layer);
+  return iter == layers_data.end() ? LayerData{} : iter->second;
+}
+
 // Appends clones of all the visible on all desks windows' layers to
 // |out_desk_container_children|. Should only be called if
 // |visible_on_all_desks_windows| is not empty.
 void AppendVisibleOnAllDesksWindowsToDeskLayer(
     const base::flat_set<aura::Window*>& visible_on_all_desks_windows,
+    const base::flat_map<ui::Layer*, LayerData>& layers_data,
     std::vector<ui::Layer*>* out_desk_container_children) {
   DCHECK(!visible_on_all_desks_windows.empty());
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
 
   for (auto* window : visible_on_all_desks_windows) {
+    const LayerData layer_data =
+        GetLayerDataEntry(layers_data, window->layer());
+    if (layer_data.should_skip_layer)
+      continue;
+
     auto window_iter =
         std::find(mru_windows.begin(), mru_windows.end(), window);
-    DCHECK(window_iter != mru_windows.end());
+    if (window_iter == mru_windows.end())
+      continue;
 
     auto closest_window_below_iter = std::next(window_iter);
     while (closest_window_below_iter != mru_windows.end() &&
@@ -151,9 +167,7 @@ void MirrorLayerTree(ui::Layer* source_layer,
                      const base::flat_map<ui::Layer*, LayerData>& layers_data,
                      const base::flat_set<aura::Window*>&
                          visible_on_all_desks_windows_to_mirror) {
-  const auto iter = layers_data.find(source_layer);
-  const LayerData layer_data =
-      iter == layers_data.end() ? LayerData{} : iter->second;
+  const LayerData layer_data = GetLayerDataEntry(layers_data, source_layer);
   if (layer_data.should_skip_layer)
     return;
 
@@ -166,7 +180,7 @@ void MirrorLayerTree(ui::Layer* source_layer,
     // preview so for inactive desks, we need to append the layers of visible on
     // all desks windows.
     AppendVisibleOnAllDesksWindowsToDeskLayer(
-        visible_on_all_desks_windows_to_mirror, &children);
+        visible_on_all_desks_windows_to_mirror, layers_data, &children);
   }
   for (auto* child : children) {
     // Visible on all desks windows only needed to be added to the subtree once

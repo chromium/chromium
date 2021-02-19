@@ -97,6 +97,11 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Restores the primary user's activate desk at active_desk_index.
   void RestorePrimaryUserActiveDeskIndex(int active_desk_index);
 
+  // Restacks the visible on all desks windows on the active desks and notifies
+  // all desks of content change. Should be called during user switch when the
+  // new user's windows have been shown.
+  void OnNewUserShown();
+
   // Destroys any pending animations in preparation for shutdown.
   void Shutdown();
 
