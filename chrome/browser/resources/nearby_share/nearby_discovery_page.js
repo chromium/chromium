@@ -24,7 +24,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getDiscoveryManager} from './discovery_manager.js';
+import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 
 /**
  * Converts an unguessable token to a string.
@@ -142,6 +142,9 @@ Polymer({
   /** @type {ResizeObserver} used to observer size changes to this element */
   resizeObserver_: null,
 
+  /** @private {?nearbyShare.mojom.DiscoveryObserverReceiver} */
+  discoveryObserver_: null,
+
   /** @override */
   attached() {
     this.shareTargetMap_ = new Map();
@@ -162,12 +165,17 @@ Polymer({
       }
     });
     this.resizeObserver_.observe(this);
+    this.discoveryObserver_ = observeDiscoveryManager(
+        /** @type {!nearbyShare.mojom.DiscoveryObserverInterface} */ (this));
   },
 
   /** @override */
   detached() {
     this.stopDiscovery_();
     this.resizeObserver_.disconnect();
+    if (this.discoveryObserver_) {
+      this.discoveryObserver_.$.close();
+    }
   },
 
   /**
@@ -254,6 +262,29 @@ Polymer({
         id => assert(this.mojoEventTarget_.removeListener(id)));
     this.mojoEventTarget_.$.close();
     this.mojoEventTarget_ = null;
+  },
+
+  /**
+   * Mojo callback when the Nearby utility process stops.
+   * @public
+   */
+  onNearbyProcessStopped() {
+    if (!this.errorTitle_) {
+      this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+      this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
+    }
+  },
+
+  /**
+   * Mojo callback when discovery is started.
+   * @param {boolean} success
+   * @public
+   */
+  onStartDiscoveryResult(success) {
+    if (!success && !this.errorTitle_) {
+      this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+      this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
+    }
   },
 
   /** @private */

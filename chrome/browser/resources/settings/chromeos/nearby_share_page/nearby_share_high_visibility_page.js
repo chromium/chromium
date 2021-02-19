@@ -16,6 +16,7 @@ const NearbyVisibilityErrorState = {
   TIMED_OUT: 0,
   NO_CONNECTION_MEDIUM: 1,
   TRANSFER_IN_PROGRESS: 2,
+  SOMETHING_WRONG: 3,
 };
 
 Polymer({
@@ -60,6 +61,14 @@ Polymer({
     },
 
     /**
+     * @type {boolean}
+     */
+    nearbyProcessStopped: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * A null |setupState_| indicates that the operation has not yet started.
      * @private {?NearbyVisibilityErrorState}
      */
@@ -68,7 +77,7 @@ Polymer({
       value: null,
       computed:
           'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
-          'registerResult)'
+          'registerResult, nearbyProcessStopped)'
     }
 
   },
@@ -131,6 +140,11 @@ Polymer({
     if (this.highVisibilityTimedOut_()) {
       return NearbyVisibilityErrorState.TIMED_OUT;
     }
+    if (this.registerResult ===
+            nearbyShare.mojom.RegisterReceiveSurfaceResult.kFailure ||
+        this.nearbyProcessStopped) {
+      return NearbyVisibilityErrorState.SOMETHING_WRONG;
+    }
     return null;
   },
 
@@ -147,6 +161,8 @@ Polymer({
         return this.i18n('nearbyShareErrorNoConnectionMedium');
       case NearbyVisibilityErrorState.TRANSFER_IN_PROGRESS:
         return this.i18n('nearbyShareErrorTransferInProgressTitle');
+      case NearbyVisibilityErrorState.SOMETHING_WRONG:
+        return this.i18n('nearbyShareErrorCantReceive');
       default:
         return '';
     }
@@ -164,6 +180,8 @@ Polymer({
         return this.i18n('nearbyShareErrorNoConnectionMediumDescription');
       case NearbyVisibilityErrorState.TRANSFER_IN_PROGRESS:
         return this.i18n('nearbyShareErrorTransferInProgressDescription');
+      case NearbyVisibilityErrorState.SOMETHING_WRONG:
+        return this.i18n('nearbyShareErrorSomethingWrong');
       default:
         return '';
     }

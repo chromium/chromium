@@ -70,10 +70,14 @@ NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
     NearbySharingService* nearby_sharing_service,
     std::vector<std::unique_ptr<Attachment>> attachments)
     : nearby_sharing_service_(nearby_sharing_service),
-      attachments_(std::move(attachments)) {}
+      attachments_(std::move(attachments)) {
+  nearby_sharing_service_->AddObserver(this);
+}
 
 NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
   UnregisterSendSurface();
+  observers_set_.Clear();
+  nearby_sharing_service_->RemoveObserver(this);
   base::UmaHistogramEnumeration(
       "Nearby.Share.Discovery.FurthestDiscoveryProgress", furthest_progress_);
   base::UmaHistogramCounts100(
@@ -153,6 +157,11 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
 
   discovered_share_targets_.insert_or_assign(share_target.id, share_target);
   share_target_listener_->OnShareTargetDiscovered(share_target);
+}
+
+void NearbyPerSessionDiscoveryManager::AddDiscoveryObserver(
+    ::mojo::PendingRemote<nearby_share::mojom::DiscoveryObserver> observer) {
+  observers_set_.Add(std::move(observer));
 }
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
@@ -323,6 +332,18 @@ void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {
   }
 
   share_target_listener_.reset();
+}
+
+void NearbyPerSessionDiscoveryManager::OnNearbyProcessStopped() {
+  for (auto& remote : observers_set_) {
+    remote->OnNearbyProcessStopped();
+  }
+}
+
+void NearbyPerSessionDiscoveryManager::OnStartDiscoveryResult(bool success) {
+  for (auto& remote : observers_set_) {
+    remote->OnStartDiscoveryResult(success);
+  }
 }
 
 void NearbyPerSessionDiscoveryManager::

@@ -49,30 +49,39 @@ void NearbyReceiveManager::IsInHighVisibility(
 
 void NearbyReceiveManager::RegisterForegroundReceiveSurface(
     RegisterForegroundReceiveSurfaceCallback callback) {
+  register_foreground_receive_surface_callback_ = std::move(callback);
   const NearbySharingService::StatusCodes result =
       nearby_sharing_service_->RegisterReceiveSurface(
           this, NearbySharingService::ReceiveSurfaceState::kForeground);
   switch (result) {
     case NearbySharingService::StatusCodes::kOk:
-      std::move(callback).Run(
-          nearby_share::mojom::RegisterReceiveSurfaceResult::kSuccess);
+      // Intentionally blank. Wait for OnStartAdvertisingResult.
       return;
     case NearbySharingService::StatusCodes::kError:
     case NearbySharingService::StatusCodes::kOutOfOrderApiCall:
     case NearbySharingService::StatusCodes::kStatusAlreadyStopped:
-      std::move(callback).Run(
-          nearby_share::mojom::RegisterReceiveSurfaceResult::kFailure);
+      std::move(register_foreground_receive_surface_callback_)
+          .Run(nearby_share::mojom::RegisterReceiveSurfaceResult::kFailure);
       return;
     case NearbySharingService::StatusCodes::kTransferAlreadyInProgress:
-      std::move(callback).Run(
-          nearby_share::mojom::RegisterReceiveSurfaceResult::
-              kTransferInProgress);
+      std::move(register_foreground_receive_surface_callback_)
+          .Run(nearby_share::mojom::RegisterReceiveSurfaceResult::
+                   kTransferInProgress);
       return;
     case NearbySharingService::StatusCodes::kNoAvailableConnectionMedium:
-      std::move(callback).Run(
-          nearby_share::mojom::RegisterReceiveSurfaceResult::
-              kNoConnectionMedium);
+      std::move(register_foreground_receive_surface_callback_)
+          .Run(nearby_share::mojom::RegisterReceiveSurfaceResult::
+                   kNoConnectionMedium);
       return;
+  }
+}
+
+void NearbyReceiveManager::OnStartAdvertisingResult(bool success) {
+  if (register_foreground_receive_surface_callback_) {
+    std::move(register_foreground_receive_surface_callback_)
+        .Run(success
+                 ? nearby_share::mojom::RegisterReceiveSurfaceResult::kSuccess
+                 : nearby_share::mojom::RegisterReceiveSurfaceResult::kFailure);
   }
 }
 
@@ -126,6 +135,18 @@ void NearbyReceiveManager::Reject(const base::UnguessableToken& share_target_id,
 void NearbyReceiveManager::OnHighVisibilityChanged(bool in_high_visibility) {
   for (auto& remote : observers_set_) {
     remote->OnHighVisibilityChanged(in_high_visibility);
+  }
+}
+
+void NearbyReceiveManager::OnNearbyProcessStopped() {
+  // If the utility process goes down before StartAdvertising finishes, then
+  // any pending pending foreground receive surface registration has failed.
+  if (register_foreground_receive_surface_callback_) {
+    std::move(register_foreground_receive_surface_callback_)
+        .Run(nearby_share::mojom::RegisterReceiveSurfaceResult::kFailure);
+  }
+  for (auto& remote : observers_set_) {
+    remote->OnNearbyProcessStopped();
   }
 }
 

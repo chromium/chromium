@@ -62,7 +62,15 @@ Polymer({
     transferStatus_: {
       type: nearbyShare.mojom.TransferStatus,
       value: null,
-    }
+    },
+
+    /**
+     * @private {boolean}
+     */
+    nearbyProcessStopped_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {
@@ -166,6 +174,13 @@ Polymer({
           (metadata && metadata.token) ? metadata.token : null;
       this.showConfirmPage();
     }
+  },
+
+  /**
+   * Mojo callback when the Nearby utility process stops.
+   */
+  onNearbyProcessStopped() {
+    this.nearbyProcessStopped_ = true;
   },
 
   /**

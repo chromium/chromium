@@ -27,7 +27,8 @@
 class NearbyPerSessionDiscoveryManager
     : public TransferUpdateCallback,
       public ShareTargetDiscoveredCallback,
-      public nearby_share::mojom::DiscoveryManager {
+      public nearby_share::mojom::DiscoveryManager,
+      public NearbySharingService::Observer {
  public:
   NearbyPerSessionDiscoveryManager(
       NearbySharingService* nearby_sharing_service,
@@ -43,12 +44,21 @@ class NearbyPerSessionDiscoveryManager
   void OnShareTargetLost(ShareTarget share_target) override;
 
   // nearby_share::mojom::DiscoveryManager:
+  void AddDiscoveryObserver(
+      ::mojo::PendingRemote<nearby_share::mojom::DiscoveryObserver> observer)
+      override;
   void StartDiscovery(
       mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
       StartDiscoveryCallback callback) override;
   void SelectShareTarget(const base::UnguessableToken& share_target_id,
                          SelectShareTargetCallback callback) override;
   void GetPayloadPreview(GetPayloadPreviewCallback callback) override;
+
+  // NearbySharingService::Observer
+  void OnHighVisibilityChanged(bool in_high_visibility) override {}
+  void OnShutdown() override {}
+  void OnNearbyProcessStopped() override;
+  void OnStartDiscoveryResult(bool success) override;
 
  private:
   // Used for metrics. These values are persisted to logs, and the entries are
@@ -95,6 +105,8 @@ class NearbyPerSessionDiscoveryManager
   // given discovery session.
   size_t num_discovered_ = 0;
   size_t num_lost_ = 0;
+
+  mojo::RemoteSet<nearby_share::mojom::DiscoveryObserver> observers_set_;
 
   base::WeakPtrFactory<NearbyPerSessionDiscoveryManager> weak_ptr_factory_{
       this};

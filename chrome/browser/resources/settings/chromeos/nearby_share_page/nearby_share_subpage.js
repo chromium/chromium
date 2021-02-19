@@ -216,6 +216,14 @@ Polymer({
     // Note: Intentionally left empty.
   },
 
+  /**
+   * Mojo callback when the Nearby utility process stops.
+   */
+  onNearbyProcessStopped() {
+    // Note: Intentionally left empty.
+  },
+
+
   /** @private */
   onInHighVisibilityToggledByUser_() {
     if (this.inHighVisibility_) {

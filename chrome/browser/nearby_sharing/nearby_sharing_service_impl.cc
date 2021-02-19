@@ -874,10 +874,23 @@ void NearbySharingServiceImpl::OnNearbyProcessStopped(
     chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
         shutdown_reason) {
   DCHECK(process_reference_);
+
+  // Get the service back into a good state if the utility process crashed.
+  is_scanning_ = false;
+  is_transferring_ = false;
+  is_receiving_files_ = false;
+  is_sending_files_ = false;
+  is_connecting_ = false;
+  SetInHighVisibility(false);
+  ClearForegroundReceiveSurfaces();
+
   InvalidateSurfaceState();
   process_reference_.reset();
   NS_LOG(INFO) << __func__
                << ": Shutdown reason:" << static_cast<int>(shutdown_reason);
+  for (auto& observer : observers_) {
+    observer.OnNearbyProcessStopped();
+  }
 }
 
 sharing::mojom::NearbySharingDecoder*
@@ -1757,12 +1770,8 @@ void NearbySharingServiceImpl::StartScanning() {
 
   nearby_connections_manager_->StartDiscovery(
       /*listener=*/this, settings_.GetDataUsage(),
-      base::BindOnce([](NearbyConnectionsManager::ConnectionsStatus status) {
-        NS_LOG(VERBOSE) << __func__
-                        << ": Scanning start attempted over Nearby Connections "
-                           "with result "
-                        << status;
-      }));
+      base::BindOnce(&NearbySharingServiceImpl::OnStartDiscoveryResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   InvalidateSendSurfaceState();
   NS_LOG(VERBOSE) << __func__ << ": Scanning has started";
@@ -3647,12 +3656,37 @@ void NearbySharingServiceImpl::OnStartAdvertisingResult(
         << __func__
         << ": StartAdvertising over Nearby Connections was successful.";
     SetInHighVisibility(used_device_name);
+    for (auto& observer : observers_) {
+      observer.OnStartAdvertisingResult(used_device_name);
+    }
   } else {
     NS_LOG(ERROR) << __func__
                   << ": StartAdvertising over Nearby Connections failed: "
                   << NearbyConnectionsManager::ConnectionsStatusToString(
                          status);
     SetInHighVisibility(false);
+    for (auto& observer : observers_) {
+      observer.OnStartAdvertisingResult(false);
+    }
+  }
+}
+
+void NearbySharingServiceImpl::OnStartDiscoveryResult(
+    NearbyConnectionsManager::ConnectionsStatus status) {
+  bool success =
+      status == NearbyConnectionsManager::ConnectionsStatus::kSuccess;
+  if (success) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": StartDiscovery over Nearby Connections was successful.";
+  } else {
+    NS_LOG(ERROR) << __func__
+                  << ": StartDiscovery over Nearby Connections failed: "
+                  << NearbyConnectionsManager::ConnectionsStatusToString(
+                         status);
+  }
+  for (auto& observer : observers_) {
+    observer.OnStartAdvertisingResult(success);
   }
 }
 

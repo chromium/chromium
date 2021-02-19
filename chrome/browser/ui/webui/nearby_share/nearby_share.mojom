@@ -144,13 +144,27 @@ enum RegisterReceiveSurfaceResult {
   kTransferInProgress,
 };
 
+// Observer interface to receive updates when the Nearby utility process stops.
+// Implemented on the browser process and used by UI surfaces.
+interface DiscoveryObserver {
+  // Called when the Nearby utility process stops.
+  OnNearbyProcessStopped();
+
+  // Called when discovery has started.
+  OnStartDiscoveryResult(bool success);
+};
+
 // Manager interface for nearby device discovery. Implemented on the browser
 // process and used by UI surfaces. The discovery manager is also responsible
 // for previewing the current share with GetPayloadPreview() so the user can
 // verify the attachments being sent before calling SelectShareTarget().
 interface DiscoveryManager {
+  // Allows the caller to observe DiscoveryManager events.
+  AddDiscoveryObserver(pending_remote<DiscoveryObserver> observer);
+
   // Starts discovering nearby devices. The passed |listener| will be called
-  // with any discovered devices.
+  // with any discovered devices. Returns before discovery has actually
+  // started; see |DiscoveryObserver.OnStartDiscoveryResult()|.
   StartDiscovery(pending_remote<ShareTargetListener> listener)
       => (StartDiscoveryResult result);
 
@@ -192,6 +206,9 @@ interface ReceiveObserver {
 
   // Called when the status of the current transfer changes.
   OnTransferUpdate(ShareTarget share_target, TransferMetadata metadata);
+
+  // Called when the Nearby utility process stops.
+  OnNearbyProcessStopped();
 };
 
 // Allows the caller to observe changes to or query high visibility, or

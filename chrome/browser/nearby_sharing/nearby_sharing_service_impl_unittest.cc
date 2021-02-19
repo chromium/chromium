@@ -388,18 +388,20 @@ class NearbySharingServiceImplTest : public testing::Test {
     session_controller_ = std::make_unique<TestSessionController>();
 
     EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
-        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
-                                NearbyProcessStoppedCallback) {
-          auto mock_reference_ptr =
-              std::make_unique<chromeos::nearby::MockNearbyProcessManager::
-                                   MockNearbyProcessReference>();
+        .WillRepeatedly(
+            [&](chromeos::nearby::NearbyProcessManager::
+                    NearbyProcessStoppedCallback process_stopped_callback) {
+              process_stopped_callback_ = std::move(process_stopped_callback);
+              auto mock_reference_ptr =
+                  std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+                                       MockNearbyProcessReference>();
 
-          EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbySharingDecoder)
-              .WillRepeatedly(
-                  testing::ReturnRef(mock_decoder_.shared_remote()));
+              EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbySharingDecoder)
+                  .WillRepeatedly(
+                      testing::ReturnRef(mock_decoder_.shared_remote()));
 
-          return mock_reference_ptr;
-        });
+              return mock_reference_ptr;
+            });
 
     service_ = CreateService();
     SetFakeFastInitiationManagerFactory(/*should_succeed_on_start=*/true);
@@ -954,6 +956,8 @@ class NearbySharingServiceImplTest : public testing::Test {
   size_t set_advertising_interval_call_count_ = 0u;
   int64_t last_advertising_interval_min_ = 0;
   int64_t last_advertising_interval_max_ = 0;
+  chromeos::nearby::NearbyProcessManager::NearbyProcessStoppedCallback
+      process_stopped_callback_;
 };
 
 struct ValidSendSurfaceTestData {
@@ -1025,6 +1029,12 @@ class TestObserver : public NearbySharingService::Observer {
     in_high_visibility_ = in_high_visibility;
   }
 
+  void OnNearbyProcessStopped() override { process_stopped_called_ = true; }
+
+  void OnStartAdvertisingResult(bool success) override {
+    start_advertising_result_ = success;
+  }
+
   void OnShutdown() override {
     shutdown_called_ = true;
     service_->RemoveObserver(this);
@@ -1032,6 +1042,8 @@ class TestObserver : public NearbySharingService::Observer {
 
   bool in_high_visibility_ = false;
   bool shutdown_called_ = false;
+  bool process_stopped_called_ = false;
+  base::Optional<bool> start_advertising_result_ = base::nullopt;
   NearbySharingService* service_;
 };
 
@@ -3514,6 +3526,7 @@ TEST_F(NearbySharingServiceImplTest,
 
   // To start, we should not be in high visibility state.
   EXPECT_FALSE(service_->IsInHighVisibility());
+  EXPECT_FALSE(observer.start_advertising_result_.has_value());
 
   // If we register a foreground surface we should end up in high visibility
   // state.
@@ -3523,6 +3536,8 @@ TEST_F(NearbySharingServiceImplTest,
   // should have been called as well.
   EXPECT_TRUE(service_->IsInHighVisibility());
   EXPECT_TRUE(observer.in_high_visibility_);
+  EXPECT_TRUE(observer.start_advertising_result_.has_value() &&
+              observer.start_advertising_result_.value());
 
   // If we unregister the foreground receive surface we should no longer be in
   // high visibility and the observer should be notified.
@@ -3530,6 +3545,31 @@ TEST_F(NearbySharingServiceImplTest,
             service_->UnregisterReceiveSurface(&callback));
   EXPECT_FALSE(service_->IsInHighVisibility());
   EXPECT_FALSE(observer.in_high_visibility_);
+
+  // Remove the observer before it goes out of scope.
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(NearbySharingServiceImplTest, ProcessStoppedCallsObservers) {
+  TestObserver observer(service_.get());
+  NiceMock<MockTransferUpdateCallback> callback;
+
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+  local_device_data_manager()->SetDeviceName(kDeviceName);
+
+  // If we register a foreground surface we should end up in high visibility
+  // state.
+  SetUpForegroundReceiveSurface(callback);
+  EXPECT_TRUE(service_->IsInHighVisibility());
+
+  // Signal a process crash, check that the observer is called and high
+  // visibility is stopped.
+  std::move(process_stopped_callback_)
+      .Run(chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
+               kCrash);
+  EXPECT_TRUE(observer.process_stopped_called_);
+  EXPECT_FALSE(service_->IsInHighVisibility());
 
   // Remove the observer before it goes out of scope.
   service_->RemoveObserver(&observer);

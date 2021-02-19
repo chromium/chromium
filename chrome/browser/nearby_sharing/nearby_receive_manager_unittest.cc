@@ -30,9 +30,14 @@ class FakeReceiveObserver : public nearby_share::mojom::ReceiveObserver {
     last_metadata_ = *metadata;
   }
 
+  void OnNearbyProcessStopped() override {
+    on_nearby_process_stopped_called_ = true;
+  }
+
   base::Optional<nearby_share::mojom::TransferMetadata> last_metadata_;
   base::Optional<bool> in_high_visibility_;
   ShareTarget last_share_target_;
+  bool on_nearby_process_stopped_called_ = false;
   mojo::Receiver<nearby_share::mojom::ReceiveObserver> receiver_{this};
 };
 
@@ -59,12 +64,21 @@ class NearbyReceiveManagerTest : public testing::Test {
  protected:
   void FlushMojoMessages() { observer_.receiver_.FlushForTesting(); }
 
-  void ExpectRegister(StatusCodes code = StatusCodes::kOk) {
+  void ExpectRegister(StatusCodes code = StatusCodes::kOk,
+                      bool start_advertising_successful = true) {
     EXPECT_CALL(sharing_service_,
                 RegisterReceiveSurface(testing::_, testing::_))
         .WillOnce([=](TransferUpdateCallback* transfer_callback,
                       ReceiveSurfaceState state) {
           EXPECT_EQ(ReceiveSurfaceState::kForeground, state);
+
+          // The receive manager expects to be notified whether the service
+          // successfully started advertising.
+          base::SequencedTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&NearbyReceiveManager::OnStartAdvertisingResult,
+                             base::Unretained(&receive_manager_),
+                             start_advertising_successful));
           return code;
         });
   }
@@ -127,6 +141,14 @@ TEST_F(NearbyReceiveManagerTest, Enter_Exit_Success) {
 TEST_F(NearbyReceiveManagerTest, Enter_Failed) {
   RegisterReceiveSurfaceResult result = RegisterReceiveSurfaceResult::kSuccess;
   ExpectRegister(StatusCodes::kError);
+  receive_manager_waiter_.RegisterForegroundReceiveSurface(&result);
+  EXPECT_EQ(RegisterReceiveSurfaceResult::kFailure, result);
+  ExpectUnregister();
+}
+
+TEST_F(NearbyReceiveManagerTest, StartAdvertising_Failed) {
+  RegisterReceiveSurfaceResult result = RegisterReceiveSurfaceResult::kSuccess;
+  ExpectRegister(StatusCodes::kOk, /*start_advertising_successful=*/false);
   receive_manager_waiter_.RegisterForegroundReceiveSurface(&result);
   EXPECT_EQ(RegisterReceiveSurfaceResult::kFailure, result);
   ExpectUnregister();
