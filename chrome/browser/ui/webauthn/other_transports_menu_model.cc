@@ -112,6 +112,8 @@ void OtherTransportsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   dialog_model_->StartGuidedFlowForTransport(selected_transport);
 }
 
-void OtherTransportsMenuModel::OnModelDestroyed() {
+void OtherTransportsMenuModel::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
+  DCHECK(model == dialog_model_);
   dialog_model_ = nullptr;
 }

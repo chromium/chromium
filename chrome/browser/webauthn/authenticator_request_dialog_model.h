@@ -121,7 +121,7 @@ class AuthenticatorRequestDialogModel {
     virtual void OnStartOver() {}
 
     // Called just before the model is destructed.
-    virtual void OnModelDestroyed() = 0;
+    virtual void OnModelDestroyed(AuthenticatorRequestDialogModel* model) = 0;
 
     // Called when the UX flow has navigated to a different step, so the UI
     // should update.
@@ -163,7 +163,8 @@ class AuthenticatorRequestDialogModel {
     return current_step() == Step::kClosed;
   }
   bool should_dialog_be_hidden() const {
-    return current_step() == Step::kNotStarted;
+    return current_step() == Step::kNotStarted ||
+           current_step() == Step::kSubtleUI;
   }
 
   const TransportAvailabilityInfo* transport_availability() const {

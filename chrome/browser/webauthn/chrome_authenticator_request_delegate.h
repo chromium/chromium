@@ -65,7 +65,9 @@ class ChromeAuthenticatorRequestDelegate
 
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
-  AuthenticatorRequestDialogModel* WeakDialogModelForTesting() const;
+  AuthenticatorRequestDialogModel* dialog_model() const {
+    return weak_dialog_model_;
+  }
 
   // content::AuthenticatorRequestClientDelegate:
   base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
@@ -123,7 +125,7 @@ class ChromeAuthenticatorRequestDelegate
 
   // AuthenticatorRequestDialogModel::Observer:
   void OnStartOver() override;
-  void OnModelDestroyed() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnCancelRequest() override;
 
  private:

@@ -44,7 +44,9 @@ class TestAuthenticatorModelObserver
   // AuthenticatorRequestDialogModel::Observer:
   void OnStepTransition() override { last_step_ = model_->current_step(); }
 
-  void OnModelDestroyed() override { model_ = nullptr; }
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
+    model_ = nullptr;
+  }
 
  private:
   AuthenticatorRequestDialogModel* model_;
@@ -67,8 +69,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetConditionalRequest(conditional_ui);
     delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
-    AuthenticatorRequestDialogModel* model =
-        delegate.WeakDialogModelForTesting();
+    AuthenticatorRequestDialogModel* model = delegate.dialog_model();
     TestAuthenticatorModelObserver observer(model);
     model->AddObserver(&observer);
     EXPECT_EQ(observer.last_step(),

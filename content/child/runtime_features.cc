@@ -393,6 +393,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kWebAppManifestDisplayOverride},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
+          {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

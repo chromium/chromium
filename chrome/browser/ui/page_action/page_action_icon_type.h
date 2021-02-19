@@ -23,6 +23,7 @@ enum class PageActionIconType {
   kSendTabToSelf,
   kSharedClipboard,
   kTranslate,
+  kWebAuthn,
   kZoom,
 };
 

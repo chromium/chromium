@@ -76,7 +76,7 @@ class AuthenticatorRequestDialogView
   base::string16 GetWindowTitle() const override;
 
   // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
 

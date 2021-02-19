@@ -105,7 +105,7 @@ AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
 
 AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
   for (auto& observer : observers_)
-    observer.OnModelDestroyed();
+    observer.OnModelDestroyed(this);
 }
 
 void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
@@ -130,10 +130,6 @@ void AuthenticatorRequestDialogModel::StartFlow(
   if (is_conditional) {
     // If this is a conditional request, keep the UI hidden while dispatching
     // requests.
-    // TODO(nsatragno): show a subtle bubble indicating the user they can insert
-    // and tap their security key.
-    // TODO(nsatragno): skip to the account selection screen when there are
-    // discoverable platform credentials available.
     SetCurrentStep(Step::kSubtleUI);
   } else {
     StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
@@ -374,9 +370,14 @@ void AuthenticatorRequestDialogModel::OnRequestComplete() {
 }
 
 void AuthenticatorRequestDialogModel::OnRequestTimeout() {
+  if (current_step_ == Step::kSubtleUI) {
+    Cancel();
+    return;
+  }
   // The request may time out while the UI shows a different error.
-  if (!is_request_complete())
+  if (!is_request_complete()) {
     SetCurrentStep(Step::kTimedOut);
+  }
 }
 
 void AuthenticatorRequestDialogModel::OnActivatedKeyNotRegistered() {

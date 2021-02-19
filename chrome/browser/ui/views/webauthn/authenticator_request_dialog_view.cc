@@ -205,7 +205,8 @@ base::string16 AuthenticatorRequestDialogView::GetWindowTitle() const {
   return sheet()->model()->GetStepTitle();
 }
 
-void AuthenticatorRequestDialogView::OnModelDestroyed() {
+void AuthenticatorRequestDialogView::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
   NOTREACHED();
 }
 
@@ -256,7 +257,6 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     std::unique_ptr<AuthenticatorRequestDialogModel> model)
     : content::WebContentsObserver(web_contents),
       model_(std::move(model)),
-      sheet_(nullptr),
       other_transports_button_(
           SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
               base::BindRepeating(

@@ -57,7 +57,7 @@ class AuthenticatorSheetModelBase
   void OnCancel() override;
 
   // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
  private:
   AuthenticatorRequestDialogModel* dialog_model_;

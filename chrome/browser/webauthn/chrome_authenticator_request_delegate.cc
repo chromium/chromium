@@ -21,6 +21,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -198,11 +202,6 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
 base::WeakPtr<ChromeAuthenticatorRequestDelegate>
 ChromeAuthenticatorRequestDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-AuthenticatorRequestDialogModel*
-ChromeAuthenticatorRequestDelegate::WeakDialogModelForTesting() const {
-  return weak_dialog_model_;
 }
 
 content::BrowserContext* ChromeAuthenticatorRequestDelegate::browser_context()
@@ -541,9 +540,16 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
 
   weak_dialog_model_->StartFlow(std::move(data), GetLastTransportUsed(),
                                 is_conditional_);
-  ShowAuthenticatorRequestDialog(
-      content::WebContents::FromRenderFrameHost(render_frame_host()),
-      std::move(transient_dialog_model_holder_));
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host());
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (browser) {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kWebAuthn);
+  }
+
+  ShowAuthenticatorRequestDialog(web_contents,
+                                 std::move(transient_dialog_model_holder_));
 }
 
 bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
@@ -639,8 +645,9 @@ void ChromeAuthenticatorRequestDelegate::OnStartOver() {
   start_over_callback_.Run();
 }
 
-void ChromeAuthenticatorRequestDelegate::OnModelDestroyed() {
-  DCHECK(weak_dialog_model_);
+void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
+  DCHECK(weak_dialog_model_ && weak_dialog_model_ == model);
   weak_dialog_model_ = nullptr;
 }
 

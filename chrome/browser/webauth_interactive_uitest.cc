@@ -63,7 +63,7 @@ class WebAuthFocusTest : public InProcessBrowserTest,
     permission_requested_ = true;
   }
 
-  void OnModelDestroyed() override {}
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {}
 
   net::EmbeddedTestServer https_server_;
 
@@ -182,10 +182,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, Focus) {
   // Requesting "direct" attestation will trigger a permissions prompt.
   virtual_device_factory->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
-        dialog_model_ =
-            AuthenticatorRequestScheduler::GetRequestDelegateForTest(
-                initial_web_contents)
-                ->WeakDialogModelForTesting();
+        dialog_model_ = AuthenticatorRequestScheduler::GetRequestDelegate(
+                            initial_web_contents)
+                            ->dialog_model();
         dialog_model_->AddObserver(this);
         return true;
       });

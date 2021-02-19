@@ -30,7 +30,7 @@ class OtherTransportsMenuModel
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
  private:
   // Appends all available transports except the |current_transport|

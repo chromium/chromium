@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webauthn/other_transports_menu_model.h"
+#include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -69,14 +70,11 @@ AuthenticatorSheetModelBase::~AuthenticatorSheetModelBase() {
 // static
 base::string16 AuthenticatorSheetModelBase::GetRelyingPartyIdString(
     const AuthenticatorRequestDialogModel* dialog_model) {
-  static constexpr char kRpIdUrlPrefix[] = "https://";
   // The preferred width of medium snap point modal dialog view is 448 dp, but
   // we leave some room for padding between the text and the modal views.
   static constexpr int kDialogWidth = 300;
-  const auto& rp_id = dialog_model->relying_party_id();
-  DCHECK(!rp_id.empty());
-  GURL rp_id_url(kRpIdUrlPrefix + rp_id);
-  return url_formatter::ElideHost(rp_id_url, gfx::FontList(), kDialogWidth);
+  return webauthn_ui_helpers::RpIdToElidedHost(dialog_model->relying_party_id(),
+                                               kDialogWidth);
 }
 
 bool AuthenticatorSheetModelBase::IsActivityIndicatorVisible() const {
@@ -121,7 +119,9 @@ void AuthenticatorSheetModelBase::OnCancel() {
     dialog_model()->Cancel();
 }
 
-void AuthenticatorSheetModelBase::OnModelDestroyed() {
+void AuthenticatorSheetModelBase::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
+  DCHECK(model == dialog_model_);
   dialog_model_ = nullptr;
 }
 

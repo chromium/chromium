@@ -2168,6 +2168,8 @@
       status: "stable",
     },
     // A more subtle UI for WebAuthn that is web exposed. Under development.
+    // It's controlled by the corresponding Chromium feature which needs to
+    // be enabled to make the whole feature work.
     {
       name: "WebAuthenticationConditionalUI",
     },

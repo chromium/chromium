@@ -850,6 +850,10 @@ const base::Feature kWebAuthCable {
 #endif
 };
 
+// Controls whether WebAuthn conditional UI requests are supported.
+const base::Feature kWebAuthConditionalUI{"WebAuthenticationConditionalUI",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether Web Bluetooth should use the new permissions backend. The
 // new permissions backend uses ChooserContextBase, which is used by other
 // device APIs, such as WebUSB.

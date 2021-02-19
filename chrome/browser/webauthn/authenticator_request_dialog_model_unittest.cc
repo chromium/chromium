@@ -44,7 +44,7 @@ class MockDialogModelObserver
  public:
   MockDialogModelObserver() = default;
 
-  MOCK_METHOD0(OnModelDestroyed, void());
+  MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogModel*));
   MOCK_METHOD0(OnStepTransition, void());
   MOCK_METHOD0(OnCancelRequest, void());
   MOCK_METHOD0(OnBluetoothPoweredStateChanged, void());
@@ -355,7 +355,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
   EXPECT_EQ(Step::kClosed, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnModelDestroyed());
+  EXPECT_CALL(mock_observer, OnModelDestroyed(&model));
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
@@ -395,7 +395,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
     EXPECT_EQ(Step::kClosed, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-    EXPECT_CALL(mock_observer, OnModelDestroyed());
+    EXPECT_CALL(mock_observer, OnModelDestroyed(&model));
   }
 }
 

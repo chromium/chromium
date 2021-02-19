@@ -1527,6 +1527,7 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest_base.h",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/webauthn/authenticator_dialog_view_browsertest.cc",
+      "../browser/ui/views/webauthn/webauthn_icon_interactive_uitest.cc",
       "../browser/ui/views/webview_accessibility_browsertest.cc",
       "../browser/ui/web_applications/app_browser_controller_browsertest.cc",
       "../browser/ui/web_applications/create_shortcut_browsertest.cc",

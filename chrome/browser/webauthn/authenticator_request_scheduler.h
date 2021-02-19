@@ -35,7 +35,7 @@ class AuthenticatorRequestScheduler {
 
   // Returns the current request delegate associated to the |web_contents| or
   // nullptr if there is none.
-  static ChromeAuthenticatorRequestDelegate* GetRequestDelegateForTest(
+  static ChromeAuthenticatorRequestDelegate* GetRequestDelegate(
       content::WebContents* web_contents);
 
  private:

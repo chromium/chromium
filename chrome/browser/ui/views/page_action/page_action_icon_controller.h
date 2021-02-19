@@ -27,6 +27,7 @@ class ReaderModeIconView;
 class SharingIconView;
 class StarView;
 class TranslateIconView;
+class WebAuthnIconView;
 class ZoomView;
 
 namespace autofill {
@@ -100,6 +101,7 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   send_tab_to_self::SendTabToSelfIconView* send_tab_to_self_icon_ = nullptr;
   SharingIconView* shared_clipboard_icon_ = nullptr;
   TranslateIconView* translate_icon_ = nullptr;
+  WebAuthnIconView* webauthn_icon_ = nullptr;
   ZoomView* zoom_icon_ = nullptr;
 
   std::vector<PageActionIconView*> page_action_icons_;

@@ -61,7 +61,7 @@ AuthenticatorRequestScheduler::CreateRequestDelegate(
 
 // static
 ChromeAuthenticatorRequestDelegate*
-AuthenticatorRequestScheduler::GetRequestDelegateForTest(
+AuthenticatorRequestScheduler::GetRequestDelegate(
     content::WebContents* web_contents) {
   return ActiveRequestWeakHolder::EnsureForWebContents(web_contents)
       ->request()

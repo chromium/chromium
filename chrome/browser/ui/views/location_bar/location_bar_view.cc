@@ -86,6 +86,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/feature_switch.h"
@@ -166,7 +167,7 @@ LocationBarView::LocationBarView(Browser* browser,
   }
 }
 
-LocationBarView::~LocationBarView() {}
+LocationBarView::~LocationBarView() = default;
 
 void LocationBarView::Init() {
   // We need to be in a Widget, otherwise GetNativeTheme() may change and we're
@@ -271,6 +272,9 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
     params.types_enabled.push_back(PageActionIconType::kFileSystemAccess);
+    if (base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
+      params.types_enabled.push_back(PageActionIconType::kWebAuthn);
+    }
 
     if (dom_distiller::IsDomDistillerEnabled() && browser_->is_type_normal()) {
       params.types_enabled.push_back(PageActionIconType::kReaderMode);
