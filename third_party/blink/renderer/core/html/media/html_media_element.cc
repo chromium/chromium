@@ -4397,11 +4397,12 @@ bool HTMLMediaElement::WasAutoplayInitiated() {
 }
 
 void HTMLMediaElement::ResumePlayback() {
-  RequestPlay();
+  autoplay_policy_->EnsureAutoplayInitiatedSet();
+  PlayInternal();
 }
 
 void HTMLMediaElement::PausePlayback() {
-  RequestPause(false);
+  PauseInternal();
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {
@@ -4491,6 +4492,11 @@ void HTMLMediaElement::AddMediaPlayerObserver(
 }
 
 void HTMLMediaElement::RequestPlay() {
+  LocalFrame* frame = GetDocument().GetFrame();
+  if (frame) {
+    LocalFrame::NotifyUserActivation(
+        frame, mojom::blink::UserActivationNotificationType::kInteraction);
+  }
   autoplay_policy_->EnsureAutoplayInitiatedSet();
   PlayInternal();
 }
