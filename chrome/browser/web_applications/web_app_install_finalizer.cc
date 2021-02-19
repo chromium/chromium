@@ -18,8 +18,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -34,13 +32,9 @@
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "components/keep_alive_registry/keep_alive_registry.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace web_app {
 
@@ -104,17 +98,6 @@ Source::Type InferSourceFromExternalInstallSource(
 }
 
 }  // namespace
-
-WebAppInstallFinalizer::KeepAlive::KeepAlive(Profile* profile) {
-  browser_keep_alive_ = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::APP_UNINSTALLATION, KeepAliveRestartOption::DISABLED);
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kAppUninstallation);
-}
-
-WebAppInstallFinalizer::KeepAlive::KeepAlive(KeepAlive&& keep_alive) = default;
-
-WebAppInstallFinalizer::KeepAlive::~KeepAlive() = default;
 
 WebAppInstallFinalizer::WebAppInstallFinalizer(
     Profile* profile,
@@ -233,20 +216,11 @@ void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
   // registry.
   DCHECK(!GetWebAppRegistrar().GetAppById(app_id));
 
-  // TODO(crbug.com/1170927)
-  // This turns an existing ambiguous crash into a trackable CHECK crash.
-  CHECK(!KeepAliveRegistry::GetInstance()->IsShuttingDown());
-
-  // TODO(https://crbug.com/1168636): Instead of one KeepAlive per uninstall,
-  // hold on to one for all sync uninstallations.
-  KeepAlive keep_alive(profile_);
-
   icon_manager_->DeleteData(
       app_id,
       base::BindOnce(
           &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback),
-          std::move(keep_alive)));
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(
@@ -350,27 +324,17 @@ void WebAppInstallFinalizer::Shutdown() {
 
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
-  // TODO(crbug.com/1170927)
-  // This turns an existing ambiguous crash into a trackable CHECK crash.
-  CHECK(!KeepAliveRegistry::GetInstance()->IsShuttingDown());
-
-  // KeepAlive will prevent shutdown in the middle of web app installation.
-  // Shutdown process could start if a web app window is the last window to be
-  // closed, which happen in the
-  // WebAppBrowserController::OnWebAppWillBeUninstalled handler.
-  KeepAlive keep_alive(profile_);
 
   registrar().NotifyWebAppWillBeUninstalled(app_id);
   os_integration_manager().UninstallAllOsHooks(
       app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
                              weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback), std::move(keep_alive)));
+                             std::move(callback)));
 }
 
 void WebAppInstallFinalizer::OnUninstallOsHooks(
     const AppId& app_id,
     UninstallWebAppCallback callback,
-    KeepAlive keep_alive,
     OsHooksResults os_hooks_info) {
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   update->DeleteApp(app_id);
@@ -379,8 +343,7 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
       app_id,
       base::BindOnce(
           &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback),
-          std::move(keep_alive)));
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallWebAppOrRemoveSource(
@@ -478,7 +441,6 @@ void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
 void WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled(
     const AppId& app_id,
     UninstallWebAppCallback callback,
-    KeepAlive keep_alive,
     bool success) {
   registrar().NotifyWebAppUninstalled(app_id);
   std::move(callback).Run(success);

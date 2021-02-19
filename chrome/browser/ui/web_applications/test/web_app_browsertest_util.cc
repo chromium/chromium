@@ -325,6 +325,11 @@ void CloseAndWait(Browser* browser) {
   waiter.Wait();
 }
 
+void WaitForBrowserToBeClosed(Browser* browser) {
+  BrowserRemovedWaiter waiter(browser);
+  waiter.Wait();
+}
+
 bool IsBrowserOpen(const Browser* test_browser) {
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser == test_browser)

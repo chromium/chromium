@@ -75,7 +75,7 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // AppRegistrarObserver:
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppUninstalled(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
   void SetReadIconCallbackForTesting(base::OnceClosure callback);

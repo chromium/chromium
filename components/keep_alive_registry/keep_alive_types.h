@@ -63,7 +63,6 @@ enum class KeepAliveOrigin {
 
   // c/b/web_applications
   APP_START_URL_MIGRATION,
-  APP_UNINSTALLATION,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

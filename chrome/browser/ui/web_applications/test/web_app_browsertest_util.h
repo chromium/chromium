@@ -69,6 +69,8 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser);
 
 void CloseAndWait(Browser* browser);
 
+void WaitForBrowserToBeClosed(Browser* browser);
+
 bool IsBrowserOpen(const Browser* test_browser);
 
 // Launches the app for |app| in |profile|.

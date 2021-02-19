@@ -62679,7 +62679,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="kSessionRestore"/>
   <int value="13" label="kChromeViewsDelegate"/>
   <int value="14" label="kDevToolsWindow"/>
-  <int value="15" label="kAppUninstallation"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

@@ -97,6 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   WebAppProvider* provider = web_app::WebAppProvider::Get(profile());
   web_app::CloseAndWait(browser());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   // Uninstalling should close the |app_browser|, but keep the browser
   // object alive long enough to complete the uninstall.
   base::RunLoop run_loop;
@@ -107,6 +108,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
         run_loop.Quit();
       }));
   run_loop.Run();
+  web_app::WaitForBrowserToBeClosed(app_browser);
+
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 }
 
