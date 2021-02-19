@@ -49,6 +49,12 @@ self.addEventListener("fetch", event => {
       await cache.add(event.request);
       return cache.match(event.request);
     })());
+  } else if (param.has("redirect")) {
+    const headers = new Headers();
+    headers.append("Location", "https://a.com");
+    event.respondWith(
+      new Response("Redirect", {"status": 301, "headers": headers})
+    );
   } else {
     // fallback case: do nothing.
   }
