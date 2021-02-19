@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
 
+#include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
@@ -32,9 +33,24 @@ void OnStopDiscoveryDestructorResult(Status status) {
     PA_LOG(WARNING) << "Failed to stop discovery as part of destructor";
 }
 
-std::vector<uint8_t> GenerateEndpointInfo() {
-  std::string endpoint_info = base::RandBytesAsString(kEndpointInfoLength);
+std::vector<uint8_t> GenerateRandomByteArray(size_t length) {
+  std::string endpoint_info = base::RandBytesAsString(length);
   return std::vector<uint8_t>(endpoint_info.begin(), endpoint_info.end());
+}
+
+std::string GenerateEndpointId() {
+  // Generate a random array of bytes; as long as it is of size of at least
+  // 3/4 kEndpointInfoLength, the final substring of the Base64-encoded array
+  // will be of size kEndpointInfoLength.
+  std::vector<uint8_t> raw_endpoint_info =
+      GenerateRandomByteArray(kEndpointIdLength);
+
+  // Return the first kEndpointIdLength characters of the Base64-encoded string.
+  return base::Base64Encode(raw_endpoint_info).substr(0, kEndpointIdLength);
+}
+
+std::vector<uint8_t> GenerateEndpointInfo() {
+  return GenerateRandomByteArray(kEndpointInfoLength);
 }
 
 }  // namespace
@@ -61,7 +77,7 @@ NearbyEndpointFinderImpl::NearbyEndpointFinderImpl(
         location::nearby::connections::mojom::NearbyConnections>&
         nearby_connections)
     : nearby_connections_(nearby_connections),
-      endpoint_id_(base::RandBytesAsString(kEndpointIdLength)),
+      endpoint_id_(GenerateEndpointId()),
       endpoint_info_(GenerateEndpointInfo()) {}
 
 NearbyEndpointFinderImpl::~NearbyEndpointFinderImpl() {
