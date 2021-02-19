@@ -94,6 +94,14 @@ PepperPlatformVideoCapture::~PepperPlatformVideoCapture() {
 void PepperPlatformVideoCapture::OnDeviceOpened(int request_id,
                                                 bool succeeded,
                                                 const std::string& label) {
+  RenderFrameImpl* render_frame =
+      RenderFrameImpl::FromRoutingID(render_frame_id_);
+  if (!render_frame) {
+    if (handler_)
+      handler_->OnInitialized(false);
+    return;
+  }
+
   pending_open_device_ = false;
   pending_open_device_id_ = -1;
 
@@ -105,7 +113,8 @@ void PepperPlatformVideoCapture::OnDeviceOpened(int request_id,
         PP_DEVICETYPE_DEV_VIDEOCAPTURE, label);
     blink::WebVideoCaptureImplManager* manager =
         RenderThreadImpl::current()->video_capture_impl_manager();
-    release_device_cb_ = manager->UseDevice(session_id_);
+    release_device_cb_ = manager->UseDevice(
+        session_id_, render_frame->GetBrowserInterfaceBroker());
   }
 
   if (handler_)
