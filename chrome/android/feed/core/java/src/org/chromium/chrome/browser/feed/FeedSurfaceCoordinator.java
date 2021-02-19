@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
@@ -251,7 +250,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     /**
      * Constructs a new FeedSurfaceCoordinator.
-     * @param activity The containing {@link ChromeActivity}.
+     * @param activity The containing {@link Activity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param windowAndroid The window of the page.
