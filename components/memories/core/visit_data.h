@@ -27,6 +27,14 @@ struct VisitContextSignals {
   // committed, and IS part of a tab group at the end of the page lifetime.
   bool is_placed_in_tab_group = false;
 
+  // True if this page was a bookmark when the navigation was committed.
+  bool is_existing_bookmark = false;
+
+  // True if the page was NOT a bookmark when the navigation was committed and
+  // was MADE a bookmark during the page's lifetime. In other words:
+  // If |is_existing_bookmark| is true, that implies |is_new_bookmark| is false.
+  bool is_new_bookmark = false;
+
   // ---------------------------------------------------------------------------
   // The below metrics are all already recorded by UKM for non-memories reasons.
   // We are duplicating them below to persist on-device and send to an offline

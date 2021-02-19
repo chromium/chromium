@@ -12,12 +12,15 @@
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -101,6 +104,12 @@ class UkmPageLoadMetricsObserverTest
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+
+    BookmarkModelFactory::GetInstance()->SetTestingFactory(
+        profile(), BookmarkModelFactory::GetDefaultFactory());
+    bookmarks::BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
   }
 
   MockNetworkQualityProvider& mock_network_quality_provider() {
@@ -1882,6 +1891,56 @@ TEST_F(UkmPageLoadMetricsObserverTest, AppEnterBackground) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kNavigation_PageEndReason3Name,
       page_load_metrics::END_APP_ENTER_BACKGROUND);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, IsExistingBookmark) {
+  GURL url(kTestUrl1);
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser_context());
+  ASSERT_TRUE(model);
+  ASSERT_TRUE(
+      model->AddURL(model->bookmark_bar_node(), 0, base::string16(), url));
+
+  NavigateAndCommit(url);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kIsExistingBookmarkName, 1);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kIsNewBookmarkName, 0);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
+  GURL url(kTestUrl1);
+
+  NavigateAndCommit(url);
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser_context());
+  ASSERT_TRUE(model);
+  ASSERT_TRUE(
+      model->AddURL(model->bookmark_bar_node(), 0, base::string16(), url));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kIsExistingBookmarkName, 0);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kIsNewBookmarkName, 1);
 }
 
 class TestOfflinePreviewsUkmPageLoadMetricsObserver

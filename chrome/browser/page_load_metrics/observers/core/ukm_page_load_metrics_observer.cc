@@ -15,12 +15,14 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "cc/metrics/ukm_smoothness_data.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -144,10 +146,9 @@ int BucketWithOffsetAndUnit(int num, int offset, uint32_t unit) {
 }
 
 bool IsPageInTabGroup(content::WebContents* contents) {
-  if (!contents)
-    return false;
+  DCHECK(contents);
 
-    // TODO(tommycli): Implement this for Android too.
+  // TODO(tommycli): Implement this for Android too.
 #if !defined(OS_ANDROID)
   if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
     int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
@@ -159,6 +160,17 @@ bool IsPageInTabGroup(content::WebContents* contents) {
 #endif  // !defined(OS_ANDROID)
 
   return false;
+}
+
+// Pass in a separate |url| parameter to ensure that we check the same URL that
+// is being logged in History.
+bool IsPageBookmarked(content::WebContents* contents, const GURL& url) {
+  DCHECK(contents);
+  DCHECK(contents->GetBrowserContext());
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(contents->GetBrowserContext());
+  return model && model->IsBookmarked(url);
 }
 
 }  // namespace
@@ -243,9 +255,9 @@ UkmPageLoadMetricsObserver::ShouldObserveMimeType(
 UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
-  if (navigation_handle->GetWebContents()->GetContentsMimeType() ==
-      kOfflinePreviewsMimeType) {
-    if (!IsOfflinePreview(navigation_handle->GetWebContents()))
+  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  if (web_contents->GetContentsMimeType() == kOfflinePreviewsMimeType) {
+    if (!IsOfflinePreview(web_contents))
       return STOP_OBSERVING;
   }
   connection_info_ = navigation_handle->GetConnectionInfo();
@@ -259,7 +271,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
   prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext());
+          web_contents->GetBrowserContext());
   if (no_state_prefetch_manager) {
     prerender::RecordNoStatePrefetchMetrics(navigation_handle, source_id,
                                             no_state_prefetch_manager);
@@ -267,25 +279,23 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   RecordGeneratedNavigationUKM(source_id, navigation_handle->GetURL());
   navigation_is_cross_process_ = !navigation_handle->IsSameProcess();
   navigation_entry_offset_ = navigation_handle->GetNavigationEntryOffset();
-  main_document_sequence_number_ = navigation_handle->GetWebContents()
-                                       ->GetController()
+  main_document_sequence_number_ = web_contents->GetController()
                                        .GetLastCommittedEntry()
                                        ->GetMainFrameDocumentSequenceNumber();
 
-  render_process_assignment_ = navigation_handle->GetWebContents()
-                                   ->GetMainFrame()
+  render_process_assignment_ = web_contents->GetMainFrame()
                                    ->GetSiteInstance()
                                    ->GetLastProcessAssignmentOutcome();
 
-  memories_signals_.is_existing_part_of_tab_group =
-      IsPageInTabGroup(navigation_handle->GetWebContents());
-
   // Save these at commit time to align with what's recorded in History.
-  committed_url_ = navigation_handle->GetWebContents()->GetLastCommittedURL();
-  committed_history_timestamp_ = navigation_handle->GetWebContents()
-                                     ->GetController()
-                                     .GetLastCommittedEntry()
-                                     ->GetTimestamp();
+  committed_url_ = web_contents->GetLastCommittedURL();
+  committed_history_timestamp_ =
+      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp();
+
+  memories_signals_.is_existing_part_of_tab_group =
+      IsPageInTabGroup(web_contents);
+  memories_signals_.is_existing_bookmark =
+      IsPageBookmarked(web_contents, committed_url_);
 
   return CONTINUE_OBSERVING;
 }
@@ -1046,9 +1056,13 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
 void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
     ukm::builders::PageLoad& builder) {
   // Compute page-end Memories signals.
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
   memories_signals_.is_placed_in_tab_group =
       !memories_signals_.is_existing_part_of_tab_group &&
-      IsPageInTabGroup(GetDelegate().GetWebContents());
+      IsPageInTabGroup(web_contents);
+  memories_signals_.is_new_bookmark =
+      !memories_signals_.is_existing_bookmark &&
+      IsPageBookmarked(web_contents, committed_url_);
 
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
@@ -1060,11 +1074,13 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   builder.SetIsExistingPartOfTabGroup(
       memories_signals_.is_existing_part_of_tab_group);
   builder.SetIsPlacedInTabGroup(memories_signals_.is_placed_in_tab_group);
+  builder.SetIsExistingBookmark(memories_signals_.is_existing_bookmark);
+  builder.SetIsNewBookmark(memories_signals_.is_new_bookmark);
 
   // Forward the finished structure to the MemoriesService for local recording.
   memories::MemoriesService* service =
       MemoriesServiceFactory::GetForBrowserContext(
-          GetDelegate().GetWebContents()->GetBrowserContext());
+          web_contents->GetBrowserContext());
   service->AddVisit(committed_url_, committed_history_timestamp_,
                     memories_signals_);
 }
