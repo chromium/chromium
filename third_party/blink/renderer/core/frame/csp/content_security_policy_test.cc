@@ -1167,9 +1167,9 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   EXPECT_TRUE(csp->AllowEval(ReportingDisposition::kReport,
                              ContentSecurityPolicy::kWillNotThrowException,
                              g_empty_string));
-  EXPECT_TRUE(csp->AllowWasmEval(ReportingDisposition::kReport,
-                                 ContentSecurityPolicy::kWillNotThrowException,
-                                 g_empty_string));
+  EXPECT_TRUE(csp->AllowWasmCodeGeneration(
+      ReportingDisposition::kReport,
+      ContentSecurityPolicy::kWillNotThrowException, g_empty_string));
 
   CSPDirectiveName types_to_test[] = {
       CSPDirectiveName::BaseURI,       CSPDirectiveName::ConnectSrc,

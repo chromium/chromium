@@ -102,7 +102,7 @@ bool CSPDirectiveListAllowEval(
     const String& content);
 
 CORE_EXPORT
-bool CSPDirectiveListAllowWasmEval(
+bool CSPDirectiveListAllowWasmCodeGeneration(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     ReportingDisposition reporting_disposition,
