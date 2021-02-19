@@ -102,8 +102,6 @@ extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
 
 extern const base::Feature kWebFooterExperiment;
 
-extern const base::Feature kWebUIBubblePerProfilePersistence;
-
 extern const base::Feature kWebUITabStrip;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
