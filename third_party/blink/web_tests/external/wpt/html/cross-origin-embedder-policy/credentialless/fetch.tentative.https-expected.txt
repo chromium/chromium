@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS fetch
+PASS fetch same-origin + no-cors + credentials:omit
+PASS fetch same-origin + cors + credentials:omit
+PASS fetch cross-origin + no-cors + credentials:omit
+PASS fetch cross-origin + cors + credentials:omit
+PASS fetch same-origin + no-cors + credentials:include
+PASS fetch same-origin + cors + credentials:include
+PASS fetch same-origin + no-cors + credentials:same-origin
+PASS fetch same-origin + cors + credentials:same-origin
+PASS fetch cross-origin + cors + credentials:include
+PASS fetch cross-origin + cors + same-origin-credentials
+FAIL fetch cross-origin + no-cors + credentials:include assert_equals: coep:credentialless =>  expected (undefined) undefined but got (string) "cross_origin"
+PASS fetch cross-origin + no-cors + credentials:same-origin
+Harness: the test ran to completion.
+
