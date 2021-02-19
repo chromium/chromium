@@ -41,6 +41,9 @@ class TrustTokenKeyCommitmentsComponentInstallerPolicy
   TrustTokenKeyCommitmentsComponentInstallerPolicy& operator=(
       const TrustTokenKeyCommitmentsComponentInstallerPolicy&) = delete;
 
+ protected:
+  void GetHash(std::vector<uint8_t>* hash) const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TrustTokenKeyCommitmentsComponentInstallerTest,
                            LoadsCommitments);
@@ -60,7 +63,6 @@ class TrustTokenKeyCommitmentsComponentInstallerPolicy
                       const base::FilePath& install_dir,
                       std::unique_ptr<base::DictionaryValue> manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 

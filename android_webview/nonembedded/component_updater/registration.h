@@ -12,7 +12,7 @@ class ComponentUpdateService;
 namespace android_webview {
 
 void RegisterComponentsForUpdate(
-    component_updater::ComponentUpdateService* cus);
+    component_updater::ComponentUpdateService* component_update_service);
 
 }  // namespace android_webview
 
