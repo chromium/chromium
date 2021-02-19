@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.CloseableOnMainThread;
@@ -34,6 +35,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -142,6 +144,21 @@ public class UrlBarIntegrationTest {
                         CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
             Assert.assertEquals(HUGE_URL, copyUrlToClipboard(android.R.id.cut));
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    public void testDarkThemeColor() throws Throwable {
+        mActivityTestRule.startMainActivityWithURL(UrlUtils.encodeHtmlDataUri(
+                "<html><meta name=\"theme-color\" content=\"#000000\" /></html>"));
+
+        CriteriaHelper.pollUiThread(() -> {
+            final int expectedTextColor =
+                    ApiCompatibilityUtils.getColor(mActivityTestRule.getActivity().getResources(),
+                            R.color.default_text_color_light);
+            Criteria.checkThat(getUrlBar().getCurrentTextColor(), Matchers.is(expectedTextColor));
+        });
     }
 
     /**
