@@ -203,6 +203,9 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // callbacks.
   void SimulateLoadingCompleted(LoadingScenario loading_scenario);
 
+  // Expose this for testing.
+  using RenderFrameHostImpl::SetPolicyContainerHost;
+
  protected:
   void SendCommitNavigation(
       mojom::NavigationClient* navigation_client,

@@ -6750,10 +6750,8 @@ void RenderFrameHostImpl::CommitNavigation(
     if (IsURLHandledByNetworkStack(common_params->url))
       last_navigation_previews_state_ = common_params->previews_state;
 
-    DCHECK(navigation_request->policy_container_host());
     blink::mojom::PolicyContainerPtr policy_container =
-        navigation_request->policy_container_host()
-            ->CreatePolicyContainerForBlink();
+        navigation_request->CreatePolicyContainerForBlink();
 
     // TODO(crbug.com/1126305): Once the Prerender2 moves to use the MPArch, we
     // need to check the relevant FrameTree to know the precise prerendering
@@ -6825,10 +6823,8 @@ void RenderFrameHostImpl::FailedNavigation(
   mojom::NavigationClient* navigation_client =
       navigation_request->GetCommitNavigationClient();
 
-  DCHECK(navigation_request->policy_container_host());
   blink::mojom::PolicyContainerPtr policy_container =
-      navigation_request->policy_container_host()
-          ->CreatePolicyContainerForBlink();
+      navigation_request->CreatePolicyContainerForBlink();
 
   SendCommitFailedNavigation(
       navigation_client, navigation_request, common_params.Clone(),

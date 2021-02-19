@@ -3902,7 +3902,7 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
   // Take the policy container from the request since we did not move it
   // into the RFH yet.
   return std::make_unique<PolicyContainerPolicies>(
-      request->policy_container_host()->policies());
+      request->GetPolicyContainerPolicies());
 }
 
 void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,

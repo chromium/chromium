@@ -1179,7 +1179,10 @@ NavigationRequest::NavigationRequest(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
 
-  InitializePolicyContainerHost(frame_entry);
+  policy_container_navigation_bundle_.emplace(
+      GetParentFrame(),
+      initiator_frame_token_.has_value() ? &*initiator_frame_token_ : nullptr,
+      frame_entry);
 
   // Initialize the ClientSecurityState's COEP to that of the current document.
   // It will be updated when a network response is received. For navigations
@@ -1347,74 +1350,6 @@ NavigationRequest::NavigationRequest(
   navigation_entry_offset_ = EstimateHistoryOffset();
 
   commit_params_->is_browser_initiated = browser_initiated_;
-}
-
-scoped_refptr<PolicyContainerHost>
-NavigationRequest::MaybeInheritPolicyContainerHost(
-    const FrameNavigationEntry* frame_navigation_entry) {
-  if (frame_navigation_entry &&
-      frame_navigation_entry->policy_container_policies()) {
-    // Only local scheme urls should have policies stored in history.
-    DCHECK(common_params_->url.SchemeIs(url::kAboutScheme) ||
-           common_params_->url.SchemeIs(url::kDataScheme) ||
-           common_params_->url.SchemeIs(url::kBlobScheme) ||
-           common_params_->url.SchemeIs(url::kFileSystemScheme));
-
-    // If there is a history entry with some document policies, initialize the
-    // PolicyContainerHost with them, so that they will get applied to the
-    // document created by the navigation.
-    return base::MakeRefCounted<PolicyContainerHost>(
-        *frame_navigation_entry->policy_container_policies());
-  }
-
-  // Srcdoc iframes inherit their policies from their parent.
-  if (common_params_->url.IsAboutSrcdoc()) {
-    RenderFrameHostImpl* parent = GetParentFrame();
-    if (!parent) {
-      // The navigation will be blocked in BeginNavigation.
-      return nullptr;
-    }
-
-    return parent->policy_container_host()->Clone();
-  }
-
-  // Local schemes inherit the policy container from the initiator.
-  //
-  // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
-  // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
-  // the policy container from the document which created them and not from the
-  // initiator of the navigation).
-  if (common_params_->url.SchemeIs(url::kAboutScheme) ||
-      common_params_->url.SchemeIs(url::kDataScheme) ||
-      common_params_->url.SchemeIs(url::kBlobScheme) ||
-      common_params_->url.SchemeIs(url::kFileSystemScheme)) {
-    if (!initiator_frame_token_) {
-      return nullptr;
-    }
-
-    // We use PolicyContainerHost::FromFrameToken directly since this will
-    // retrieve the PolicyContainerHost of the initiator RenderFrameHost even if
-    // the RenderFrameHost has already been deleted.
-    PolicyContainerHost* initiator_policy_container_host =
-        PolicyContainerHost::FromFrameToken(initiator_frame_token_.value());
-    DCHECK(initiator_policy_container_host);
-
-    return initiator_policy_container_host->Clone();
-  }
-
-  return nullptr;
-}
-
-void NavigationRequest::InitializePolicyContainerHost(
-    const FrameNavigationEntry* frame_navigation_entry) {
-  policy_container_host_ =
-      MaybeInheritPolicyContainerHost(frame_navigation_entry);
-
-  // Use a default value if none was inherited. It will be filled up with data
-  // from this navigation before it commits.
-  if (!policy_container_host_) {
-    policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>();
-  }
 }
 
 NavigationRequest::~NavigationRequest() {
@@ -1904,9 +1839,36 @@ network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {
   return std::move(required_csp_);
 }
 
+const PolicyContainerPolicies*
+NavigationRequest::GetInitiatorPolicyContainerPolicies() const {
+  return policy_container_navigation_bundle_->InitiatorPolicies();
+}
+
+const PolicyContainerPolicies& NavigationRequest::GetPolicyContainerPolicies()
+    const {
+  DCHECK_GE(state_, READY_TO_COMMIT);
+
+  return policy_container_navigation_bundle_->FinalPolicies();
+}
+
+blink::mojom::PolicyContainerPtr
+NavigationRequest::CreatePolicyContainerForBlink() {
+  DCHECK_GE(state_, READY_TO_COMMIT);
+
+  return policy_container_navigation_bundle_->CreatePolicyContainerForBlink();
+}
+
 scoped_refptr<PolicyContainerHost>
 NavigationRequest::TakePolicyContainerHost() {
-  return std::move(policy_container_host_);
+  DCHECK_GE(state_, READY_TO_COMMIT);
+
+  // Move the host out of the data member, then reset the member. This ensures
+  // we do not use the bundle after we moved its contents.
+  scoped_refptr<PolicyContainerHost> host =
+      std::move(*policy_container_navigation_bundle_).TakePolicyContainerHost();
+  policy_container_navigation_bundle_ = base::nullopt;
+
+  return host;
 }
 
 void NavigationRequest::CreateCoepReporter(
@@ -3399,13 +3361,6 @@ void NavigationRequest::CommitErrorPage(
   ComputeSandboxFlagsToCommit(/*response_head=*/nullptr,
                               /*required_csp=*/nullptr);
 
-  // Error pages should not inherit any policies. Initialize a new, default
-  // PolicyContainerHost.
-  //
-  // TODO(https://crbug.com/1175787): We should enforce strict policies on error
-  // pages.
-  policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>();
-
   ReadyToCommitNavigation(true);
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
@@ -4731,20 +4686,11 @@ bool NavigationRequest::IsWebSecureContext() {
   return network::IsOriginPotentiallyTrustworthy(origin);
 }
 
-void NavigationRequest::UpdateClientSecurityStateInternals() {
+void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // It is useless to update this state for same-document navigations as well
   // as pages served from the back-forward cache.
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
-
-  network::mojom::IPAddressSpace computed_ip_address_space =
-      CalculateIPAddressSpace(common_params_->url, response_head_.get());
-
-  // When we cannot compute the IPAddressSpace directly, the policy container
-  // inheritance mechanisms should have provided us with the correct value
-  // already. Do not overwrite it.
-  if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown)
-    policy_container_host_->SetIPAddressSpace(computed_ip_address_space);
 
   ContentBrowserClient* client = GetContentClient()->browser();
   BrowserContext* context =
@@ -4787,7 +4733,16 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   RestartCommitTimeout();
 
   if (!IsSameDocument() && !IsServedFromBackForwardCache()) {
-    UpdateClientSecurityStateInternals();
+    UpdatePrivateNetworkRequestPolicy();
+  }
+
+  policy_container_navigation_bundle_->SetIPAddressSpace(
+      CalculateIPAddressSpace(common_params_->url, response_head_.get()));
+
+  if (is_error) {
+    policy_container_navigation_bundle_->FinalizePoliciesForError();
+  } else {
+    policy_container_navigation_bundle_->FinalizePolicies(common_params_->url);
   }
 
   if (appcache_handle_) {
@@ -5563,7 +5518,7 @@ NavigationRequest::BuildClientSecurityState() {
   client_security_state->cross_origin_embedder_policy =
       cross_origin_embedder_policy_;
   client_security_state->ip_address_space =
-      policy_container_host_->ip_address_space();
+      policy_container_navigation_bundle_->FinalPolicies().ip_address_space;
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
   return client_security_state;

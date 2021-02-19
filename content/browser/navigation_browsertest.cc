@@ -3718,8 +3718,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
         // Even if the initiator RenderFrameHost is gone, the navigation request
         // (to "about:blank") should have inherited its policy container.
+        auto* initiator_policies =
+            request->GetInitiatorPolicyContainerPolicies();
+        ASSERT_TRUE(initiator_policies);
         ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
-                  request->policy_container_host()->referrer_policy());
+                  initiator_policies->referrer_policy);
+
         loop.Quit();
       }));
 
@@ -3801,8 +3805,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
         ASSERT_TRUE(initiator_policy_container);
         EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
                   initiator_policy_container->referrer_policy());
+
+        auto* initiator_policies =
+            request->GetInitiatorPolicyContainerPolicies();
+        ASSERT_TRUE(initiator_policies);
         ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
-                  request->policy_container_host()->referrer_policy());
+                  initiator_policies->referrer_policy);
 
         loop.Quit();
       }));
@@ -3903,8 +3911,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         ASSERT_TRUE(initiator_policy_container);
         EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
                   initiator_policy_container->referrer_policy());
-        ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
-                  request->policy_container_host()->referrer_policy());
+        EXPECT_EQ(
+            network::mojom::ReferrerPolicy::kAlways,
+            request->GetInitiatorPolicyContainerPolicies()->referrer_policy);
 
         loop.Quit();
       }));

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_
 
+#include <iosfwd>
+
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -30,6 +32,15 @@ struct PolicyContainerPolicies {
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kUnknown;
 };
+
+// PolicyContainerPolicies structs are comparable for equality.
+CONTENT_EXPORT bool operator==(const PolicyContainerPolicies& lhs,
+                               const PolicyContainerPolicies& rhs);
+
+// Streams a human-readable string representation of |policies| to |out|.
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& out,
+    const PolicyContainerPolicies& policies);
 
 // PolicyContainerHost serves as a container for several security policies. It
 // should be owned by a RenderFrameHost. It keep tracks of the policies assigned
@@ -88,9 +99,6 @@ class CONTENT_EXPORT PolicyContainerHost
 
   network::mojom::IPAddressSpace ip_address_space() const {
     return policies_.ip_address_space;
-  }
-  void SetIPAddressSpace(network::mojom::IPAddressSpace ip_address_space) {
-    policies_.ip_address_space = ip_address_space;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending

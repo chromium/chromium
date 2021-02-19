@@ -1482,6 +1482,8 @@ source_set("browser") {
     "renderer_host/page_lifecycle_state_manager.h",
     "renderer_host/policy_container_host.cc",
     "renderer_host/policy_container_host.h",
+    "renderer_host/policy_container_navigation_bundle.cc",
+    "renderer_host/policy_container_navigation_bundle.h",
     "renderer_host/raw_clipboard_host_impl.cc",
     "renderer_host/raw_clipboard_host_impl.h",
     "renderer_host/render_frame_host_delegate.cc",

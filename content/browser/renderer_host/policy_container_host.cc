@@ -33,6 +33,18 @@ base::LazyInstance<TokenPolicyContainerMap>::Leaky
 
 }  // namespace
 
+bool operator==(const PolicyContainerPolicies& lhs,
+                const PolicyContainerPolicies& rhs) {
+  return lhs.referrer_policy == rhs.referrer_policy &&
+         lhs.ip_address_space == rhs.ip_address_space;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const PolicyContainerPolicies& policies) {
+  return out << "{ referrer_policy: " << policies.referrer_policy
+             << ", ip_address_space: " << policies.ip_address_space << " }";
+}
+
 PolicyContainerHost::PolicyContainerHost() = default;
 
 PolicyContainerHost::PolicyContainerHost(

@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/policy_container_navigation_bundle.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/common/content_export.h"
@@ -644,6 +645,7 @@ class CONTENT_EXPORT NavigationRequest
     return response_should_be_rendered_;
   }
 
+  // Must only be called after ReadyToCommitNavigation().
   network::mojom::ClientSecurityStatePtr BuildClientSecurityState();
 
   bool ua_change_requires_reload() const { return ua_change_requires_reload_; }
@@ -651,10 +653,25 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
+  // Returns a pointer to the policies copied from the navigation initiator.
+  // Returns nullptr if this navigation had no initiator.
+  const PolicyContainerPolicies* GetInitiatorPolicyContainerPolicies() const;
+
+  // Returns the policies of the new document being navigated to.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  const PolicyContainerPolicies& GetPolicyContainerPolicies() const;
+
+  // Creates a new policy container for Blink connected to this navigation's
+  // PolicyContainerHost.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
+
+  // Moves this navigation's PolicyContainerHost out of this instance.
+  //
+  // Must only be called after ReadyToCommitNavigation().
   scoped_refptr<PolicyContainerHost> TakePolicyContainerHost();
-  PolicyContainerHost* policy_container_host() {
-    return policy_container_host_.get();
-  }
 
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
@@ -824,19 +841,6 @@ class CONTENT_EXPORT NavigationRequest
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
       int initiator_process_id,
       bool was_opener_suppressed);
-
-  // Helper for InitializePolicyContainerHost().
-  //
-  // Logically const, as it does not mutate this class' state. It does however
-  // call into NavigationHandle interface methods which are non-const, which
-  // prevents us from marking this method `const`.
-  scoped_refptr<PolicyContainerHost> MaybeInheritPolicyContainerHost(
-      const FrameNavigationEntry* frame_navigation_entry);
-
-  // Initializes |policy_container_host_| to a non-nullptr value.
-  // Constructor helper.
-  void InitializePolicyContainerHost(
-      const FrameNavigationEntry* frame_navigation_entry);
 
   // Checks if the response requests an isolated origin via the
   // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
@@ -1103,12 +1107,11 @@ class CONTENT_EXPORT NavigationRequest
   // redirect.
   void UpdateStateFollowingRedirect(const GURL& new_referrer_url);
 
-  // Updates the internals used to construct a ClientSecurityState during
-  // ReadyToCommitNavigation().
+  // Updates |private_network_request_policy_| for ReadyToCommitNavigation().
   //
   // Must not be called for same-document navigation requests nor for requests
   // served from the back-forward cache.
-  void UpdateClientSecurityStateInternals();
+  void UpdatePrivateNetworkRequestPolicy();
 
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.
@@ -1531,14 +1534,9 @@ class CONTENT_EXPORT NavigationRequest
   // the RenderFrameHost at DidCommitNavigation time.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // Holds the PolicyContainerHost for the new document that will be created by
-  // this navigation.
-  // Note: Although it is owned through a scoped_refptr, a PolicyContainerHost
-  // should not be shared between different owners (cf. the documentation string
-  // of the PolicyContainerHost class). The NavigationRequest owns the
-  // PolicyContainerHost of the new document until DidCommitNavigation time,
-  // when the PolicyContainerHost is is moved into the RenderFrameHostImpl.
-  scoped_refptr<PolicyContainerHost> policy_container_host_;
+  // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
+  base::Optional<PolicyContainerNavigationBundle>
+      policy_container_navigation_bundle_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
