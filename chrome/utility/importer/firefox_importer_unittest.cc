@@ -17,7 +17,6 @@
 #include "chrome/common/importer/importer_url_row.h"
 #include "chrome/common/importer/mock_importer_bridge.h"
 #include "chrome/utility/importer/firefox_importer.h"
-#include "chrome/utility/importer/firefox_importer_unittest_utils.h"
 #include "chrome/utility/importer/nss_decryptor.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "sql/database.h"
@@ -55,50 +54,39 @@ void ImportBookmarksFromVersion(base::StringPiece firefox_version,
 
 }  // namespace
 
-// TODO(jschuh): Disabled on Win64 build. http://crbug.com/179688
-#if defined(OS_WIN) && defined(ARCH_CPU_X86_64)
-#define MAYBE_NSS(x) DISABLED_##x
-#elif defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-// No NSS dylibs are available for arm64: https://crbug.com/1121685
-#define MAYBE_NSS(x) DISABLED_##x
-#else
-#define MAYBE_NSS(x) x
-#endif
+// These tests don't work on the Mac because the Mac doesn't support loading
+// NSS dylibs into its process to implement password decryption. They don't work
+// on Windows because they were disabled in 2013 in https://crrev.com/12387071
+// due to the 32-bit NSS DLLs being unable to be loaded into a 64-bit Chromium
+// and then, when Firefox went 64-bit, never re-enabled, and they've bitrotted.
+// They're going to be removed anyway (https://crbug.com/513068) as they test
+// obsolete password decrypting mechanisms, but for now they're just disabled.
+#if !defined(OS_MAC) && !defined(OS_WIN)
 
-// The following test requires the use of the NSSDecryptor, on OSX this needs
-// to run in a separate process, so we use a proxy object so we can share the
-// same test between platforms.
-TEST(FirefoxImporterTest, MAYBE_NSS(Firefox3NSS3Decryptor)) {
+TEST(FirefoxImporterTest, Firefox3NSS3Decryptor) {
   base::FilePath nss_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &nss_path));
-#if defined(OS_MAC)
-  nss_path = nss_path.AppendASCII("firefox3_nss_mac");
-#else
   nss_path = nss_path.AppendASCII("firefox3_nss");
-#endif  // !OS_MAC
   base::FilePath db_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &db_path));
   db_path = db_path.AppendASCII("firefox3_profile");
 
-  FFUnitTestDecryptorProxy decryptor_proxy;
-  ASSERT_TRUE(decryptor_proxy.Setup(nss_path));
+  NSSDecryptor decryptor;
+  ASSERT_TRUE(decryptor.Init(nss_path, db_path));
 
-  ASSERT_TRUE(decryptor_proxy.DecryptorInit(nss_path, db_path));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("hello"),
-      decryptor_proxy.Decrypt("MDIEEPgAAAAAAAAAAAAAAAAAAAEwFAYIKoZIhvcNAwcECKa"
+  EXPECT_EQ(base::ASCIIToUTF16("hello"),
+            decryptor.Decrypt("MDIEEPgAAAAAAAAAAAAAAAAAAAEwFAYIKoZIhvcNAwcECKa"
                               "jtRg4qFSHBAhv9luFkXgDJA=="));
   // Test UTF-16 encoding.
-  EXPECT_EQ(
-      base::WideToUTF16(L"\x4E2D"),
-      decryptor_proxy.Decrypt("MDIEEPgAAAAAAAAAAAAAAAAAAAEwFAYIKoZIhvcNAwcECLW"
+  EXPECT_EQ(base::WideToUTF16(L"\x4E2D"),
+            decryptor.Decrypt("MDIEEPgAAAAAAAAAAAAAAAAAAAEwFAYIKoZIhvcNAwcECLW"
                               "qqiccfQHWBAie74hxnULxlw=="));
 
   // Test empty string edge case.
-  EXPECT_EQ(base::string16(), decryptor_proxy.Decrypt(std::string()));
+  EXPECT_EQ(base::string16(), decryptor.Decrypt(std::string()));
 
   // Test invalid base64.
-  EXPECT_EQ(base::string16(), decryptor_proxy.Decrypt("Not! Valid! Base64!"));
+  EXPECT_EQ(base::string16(), decryptor.Decrypt("Not! Valid! Base64!"));
 }
 
 // The following test verifies proper detection of authentication scheme in
@@ -106,7 +94,7 @@ TEST(FirefoxImporterTest, MAYBE_NSS(Firefox3NSS3Decryptor)) {
 // has httpRealm column filled with non-empty string, therefore resulting
 // ImportedPasswordForm should have SCHEME_BASIC in scheme. The second entry has
 // NULL httpRealm, so it should produce a SCHEME_HTML ImportedPasswordForm.
-TEST(FirefoxImporterTest, MAYBE_NSS(FirefoxNSSDecryptorDeduceAuthScheme)) {
+TEST(FirefoxImporterTest, FirefoxNSSDecryptorDeduceAuthScheme) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath signons_path =
@@ -142,26 +130,23 @@ TEST(FirefoxImporterTest, MAYBE_NSS(FirefoxNSSDecryptorDeduceAuthScheme)) {
 
   base::FilePath nss_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &nss_path));
-#if defined(OS_MAC)
-  nss_path = nss_path.AppendASCII("firefox3_nss_mac");
-#else
   nss_path = nss_path.AppendASCII("firefox3_nss");
-#endif  // !OS_MAC
   base::FilePath db_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &db_path));
   db_path = db_path.AppendASCII("firefox3_profile");
 
-  FFUnitTestDecryptorProxy decryptor_proxy;
-  ASSERT_TRUE(decryptor_proxy.Setup(nss_path));
+  NSSDecryptor decryptor;
+  ASSERT_TRUE(decryptor.Init(nss_path, db_path));
 
-  ASSERT_TRUE(decryptor_proxy.DecryptorInit(nss_path, db_path));
-  std::vector<importer::ImportedPasswordForm> forms =
-      decryptor_proxy.ParseSignons(signons_path);
+  std::vector<importer::ImportedPasswordForm> forms;
+  ASSERT_TRUE(decryptor.ReadAndParseSignons(signons_path, &forms));
 
   ASSERT_EQ(2u, forms.size());
   EXPECT_EQ(importer::ImportedPasswordForm::Scheme::kBasic, forms[0].scheme);
   EXPECT_EQ(importer::ImportedPasswordForm::Scheme::kHtml, forms[1].scheme);
 }
+
+#endif  // !defined(OS_MAC) && !defined(OS_WIN)
 
 TEST(FirefoxImporterTest, ImportBookmarks_Firefox48) {
   std::vector<ImportedBookmarkEntry> bookmarks;

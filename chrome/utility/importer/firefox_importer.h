@@ -60,7 +60,9 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
   void ImportBookmarks();
+#if !defined(OS_MAC)
   void ImportPasswords();
+#endif
   void ImportHistory();
   // Import the user's home page, unless it is set to default home page as
   // defined in browserconfig.properties.

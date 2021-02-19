@@ -93,19 +93,21 @@ static_library("utility") {
       "importer/importer.h",
       "importer/importer_creator.cc",
       "importer/importer_creator.h",
-      "importer/nss_decryptor.cc",
-      "importer/nss_decryptor.h",
       "importer/profile_import_impl.cc",
       "importer/profile_import_impl.h",
     ]
     if (is_mac) {
       sources += [
-        "importer/nss_decryptor_mac.h",
-        "importer/nss_decryptor_mac.mm",
         "importer/safari_importer.h",
         "importer/safari_importer.mm",
       ]
-    } else if (is_win) {
+    } else {
+      sources += [
+        "importer/nss_decryptor.cc",
+        "importer/nss_decryptor.h",
+      ]
+    }
+    if (is_win) {
       sources += [
         "importer/edge_database_reader_win.cc",
         "importer/edge_database_reader_win.h",

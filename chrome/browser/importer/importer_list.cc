@@ -134,9 +134,14 @@ void DetectFirefoxProfiles(const std::string locale,
 #endif
     if (firefox.app_path.empty())
       firefox.app_path = app_path;
-    firefox.services_supported = importer::HISTORY | importer::FAVORITES |
-                                 importer::PASSWORDS |
-                                 importer::AUTOFILL_FORM_DATA;
+    firefox.services_supported =
+        importer::HISTORY | importer::FAVORITES | importer::AUTOFILL_FORM_DATA;
+#if !defined(OS_MAC)
+    // Passwords are imported by loading the NSS DLLs into the Chromium process.
+    // Restrictive code signing prevents that from ever working again in modern
+    // macOSes, so don't promise an import service that can't be delivered.
+    firefox.services_supported |= importer::PASSWORDS;
+#endif
     firefox.locale = locale;
     profiles->push_back(firefox);
   }

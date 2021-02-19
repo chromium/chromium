@@ -23,10 +23,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "chrome/utility/importer/favicon_reencode.h"
-#include "chrome/utility/importer/nss_decryptor.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
+
+#if !defined(OS_MAC)
+#include "chrome/utility/importer/nss_decryptor.h"
+#endif
 
 namespace {
 
@@ -149,11 +152,13 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
     ImportBookmarks();
     bridge_->NotifyItemEnded(importer::FAVORITES);
   }
+#if !defined(OS_MAC)
   if ((items & importer::PASSWORDS) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::PASSWORDS);
     ImportPasswords();
     bridge_->NotifyItemEnded(importer::PASSWORDS);
   }
+#endif
   if ((items & importer::AUTOFILL_FORM_DATA) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::AUTOFILL_FORM_DATA);
     ImportAutofillFormData();
@@ -372,6 +377,7 @@ void FirefoxImporter::ImportBookmarks() {
   }
 }
 
+#if !defined(OS_MAC)
 void FirefoxImporter::ImportPasswords() {
   // Initializes NSS3.
   NSSDecryptor decryptor;
@@ -408,6 +414,7 @@ void FirefoxImporter::ImportPasswords() {
     }
   }
 }
+#endif
 
 void FirefoxImporter::ImportHomepage() {
   GURL home_page = GetHomepage(source_path_);

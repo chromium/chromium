@@ -3440,18 +3440,6 @@ group("telemetry_perf_webview_tests") {
   deps = [ "//chrome/test:telemetry_perf_tests" ]
 }
 
-if (is_mac) {
-  mojom("firefox_importer_interface") {
-    sources =
-        [ "../utility/importer/firefox_importer_unittest_utils_mac.mojom" ]
-    public_deps = [
-      "//chrome/common/importer:interfaces",
-      "//components/autofill/core/common/mojom:mojo_types",
-      "//mojo/public/mojom/base",
-    ]
-  }
-}
-
 test("unit_tests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -4796,8 +4784,6 @@ test("unit_tests") {
       "../test/base/browser_with_test_window_test.h",
       "../utility/importer/bookmark_html_reader_unittest.cc",
       "../utility/importer/bookmarks_file_importer_unittest.cc",
-      "../utility/importer/firefox_importer_unittest.cc",
-      "../utility/importer/firefox_importer_unittest_utils.h",
 
       # Android uses different way of showing feedback page
       "../browser/feedback/show_feedback_page_unittest.cc",
@@ -4838,7 +4824,6 @@ test("unit_tests") {
     if (is_mac) {
       sources += [
         "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
-        "../utility/importer/firefox_importer_unittest_utils_mac.cc",
         "../utility/importer/safari_importer_unittest.mm",
       ]
 
@@ -4871,9 +4856,6 @@ test("unit_tests") {
     ]
     if (is_win) {
       deps += [ "//components/chrome_cleaner/public/proto:test_only_proto" ]
-    }
-    if (is_mac) {
-      deps += [ ":firefox_importer_interface" ]
     }
     if (is_chromeos_ash) {
       deps += [
