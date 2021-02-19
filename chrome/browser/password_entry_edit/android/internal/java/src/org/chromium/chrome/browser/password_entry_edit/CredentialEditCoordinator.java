@@ -42,13 +42,17 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
                          .with(URL_OR_APP, displayUrlOrAppName)
                          .with(FEDERATION_ORIGIN, displayFederationOrigin)
                          .build();
-        CredentialEditCoordinator.setupModelChangeProcessor(mModel, mFragmentView);
         mMediator.initialize(mModel);
         mMediator.setCredential(username, password);
     }
 
     void dismiss() {
         mMediator.dismiss();
+    }
+
+    @Override
+    public void onStartFragment() {
+        CredentialEditCoordinator.setupModelChangeProcessor(mModel, mFragmentView);
     }
 
     @Override

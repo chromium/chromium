@@ -20,15 +20,22 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class CredentialEditViewBinder {
     static void bindCredentialEditView(
-            PropertyModel model, CredentialEditFragmentView view, PropertyKey propertyKey) {
-        // TODO(crbug.com/1175785): Handle the other properties once the layout is in place.
+            PropertyModel model, CredentialEditFragmentView fragmentView, PropertyKey propertyKey) {
         if (propertyKey == URL_OR_APP) {
-        } else if (propertyKey == USERNAME) {
-        } else if (propertyKey == PASSWORD_VISIBLE) {
-        } else if (propertyKey == PASSWORD) {
+            fragmentView.setUrlOrApp(model.get(URL_OR_APP));
         } else if (propertyKey == FEDERATION_ORIGIN) {
+            // TODO(crbug.com/1180252): Treat this case when the federated credentials
+            // layout is in place.
+        } else if (propertyKey == USERNAME) {
+            fragmentView.setUsername(model.get(USERNAME));
+        } else if (propertyKey == PASSWORD_VISIBLE) {
+            fragmentView.changePasswordVisibility(model.get(PASSWORD_VISIBLE));
+        } else if (propertyKey == PASSWORD) {
+            if (model.get(FEDERATION_ORIGIN).isEmpty()) {
+                fragmentView.setPassword(model.get(PASSWORD));
+            }
         } else if (propertyKey == UI_DISMISSED_BY_NATIVE) {
-            view.dismiss();
+            fragmentView.dismiss();
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }
