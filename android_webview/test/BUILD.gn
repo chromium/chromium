@@ -325,6 +325,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/PopupWindowTest.java",
     "../javatests/src/org/chromium/android_webview/test/PostMessageTest.java",
     "../javatests/src/org/chromium/android_webview/test/RenderProcessGoneHelper.java",
+    "../javatests/src/org/chromium/android_webview/test/RendererProcessMetricsProviderTest.java",
     "../javatests/src/org/chromium/android_webview/test/SafeBrowsingTest.java",
     "../javatests/src/org/chromium/android_webview/test/SaveRestoreStateTest.java",
     "../javatests/src/org/chromium/android_webview/test/SslPreferencesTest.java",
@@ -407,6 +408,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
 android_library("webview_instrumentation_test_utils_java") {
   testonly = true
   sources = [
+    "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
   ]
@@ -423,6 +425,7 @@ android_library("webview_instrumentation_test_utils_java") {
 generate_jni("webview_instrumentation_test_native_jni") {
   testonly = true
   sources = [
+    "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
   ]
@@ -430,6 +433,7 @@ generate_jni("webview_instrumentation_test_native_jni") {
 
 source_set("webview_instrumentation_test_native_jni_impl") {
   sources = [
+    "browser/renderer_process_metrics_provider_utils.cc",
     "browser/variations_test_utils.cc",
     "shell/memory_metrics_logger_utils.cc",
   ]
@@ -437,6 +441,7 @@ source_set("webview_instrumentation_test_native_jni_impl") {
   deps = [
     ":webview_instrumentation_test_native_jni",
     "//android_webview/browser",
+    "//android_webview/browser/metrics",
     "//base",
     "//base/test:test_support",
     "//components/embedder_support/android/metrics",

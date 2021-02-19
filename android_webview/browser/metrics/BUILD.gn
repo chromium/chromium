@@ -9,6 +9,8 @@ source_set("metrics") {
     "aw_metrics_service_client.h",
     "aw_stability_metrics_provider.cc",
     "aw_stability_metrics_provider.h",
+    "renderer_process_metrics_provider.cc",
+    "renderer_process_metrics_provider.h",
     "visibility_metrics_logger.cc",
     "visibility_metrics_logger.h",
     "visibility_metrics_provider.cc",

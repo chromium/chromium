@@ -2276,6 +2276,11 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="DIRECT"/>
 </enum>
 
+<enum name="AndroidWebViewSingleOrMultiProcess">
+  <int value="0" label="SINGLE_PROCESS"/>
+  <int value="1" label="MULTI_PROCESS"/>
+</enum>
+
 <enum name="AndroidWebViewSslErrorType">
   <obsolete>
     Removed 09/2020. These are no longer being tracked.
