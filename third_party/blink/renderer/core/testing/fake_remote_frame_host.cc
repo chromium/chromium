@@ -34,14 +34,14 @@ void FakeRemoteFrameHost::CapturePaintPreviewOfCrossProcessSubframe(
 void FakeRemoteFrameHost::SetIsInert(bool inert) {}
 
 void FakeRemoteFrameHost::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {}
+    const base::Optional<LocalFrameToken>& opener_frame_token) {}
 
 void FakeRemoteFrameHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
-    const base::UnguessableToken& source_frame_token) {}
+    const LocalFrameToken& source_frame_token) {}
 
 void FakeRemoteFrameHost::RouteMessageEvent(
-    const base::Optional<base::UnguessableToken>& source_frame_token,
+    const base::Optional<LocalFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {}

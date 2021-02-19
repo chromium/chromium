@@ -291,7 +291,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   static RenderFrameHostImpl* FromID(int process_id, int routing_id);
   static RenderFrameHostImpl* FromFrameToken(
       int process_id,
-      const base::UnguessableToken& frame_token);
+      const blink::LocalFrameToken& frame_token);
 
   static RenderFrameHostImpl* FromAXTreeID(ui::AXTreeID ax_tree_id);
   static RenderFrameHostImpl* FromOverlayRoutingToken(
@@ -304,7 +304,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // RenderFrameHost
   int GetRoutingID() override;
-  const base::UnguessableToken& GetFrameToken() override;
+  const blink::LocalFrameToken& GetFrameToken() override;
+
   ui::AXTreeID GetAXTreeID() override;
   SiteInstanceImpl* GetSiteInstance() override;
   RenderProcessHost* GetProcess() override;
@@ -548,7 +549,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& frame_name,
       const std::string& frame_unique_name,
       bool is_created_by_script,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
@@ -578,7 +579,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int process_id,
       int frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-      const base::UnguessableToken& frame_token);
+      const blink::LocalFrameToken& frame_token);
   void RemoveChild(FrameTreeNode* child);
   void ResetChildren();
 
@@ -1081,7 +1082,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // or speculative RenderFrameHost (that has not committed) should be avoided.
   void SetVisibilityForChildViews(bool visible);
 
-  const base::UnguessableToken& GetTopFrameToken();
+  const blink::LocalFrameToken& GetTopFrameToken();
 
   // Returns an unguessable token for this RFHI.  This provides a temporary way
   // to identify a RenderFrameHost that's compatible with IPC.  Else, one needs
@@ -1297,7 +1298,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Posts a message from a frame in another process to the current renderer.
   void PostMessageEvent(
-      const base::Optional<base::UnguessableToken>& source_token,
+      const base::Optional<blink::RemoteFrameToken>& source_token,
       const base::string16& source_origin,
       const base::string16& target_origin,
       blink::TransferableMessage message);
@@ -1750,7 +1751,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const base::UnguessableToken& child_frame_token,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties) override;
   void DidChangeOpener(
-      const base::Optional<base::UnguessableToken>& opener_frame) override;
+      const base::Optional<blink::LocalFrameToken>& opener_frame) override;
   void DidChangeCSPAttribute(
       const base::UnguessableToken& child_frame_token,
       network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) override;
@@ -1960,7 +1961,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                       FrameTreeNode* frame_tree_node,
                       int32_t routing_id,
                       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-                      const base::UnguessableToken& frame_token,
+                      const blink::LocalFrameToken& frame_token,
                       bool renderer_initiated_creation_of_main_frame,
                       LifecycleState lifecycle_state);
 
@@ -3166,7 +3167,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       dropped_interface_request_logger_;
 
   // IPC-friendly token that represents this host.
-  const base::UnguessableToken frame_token_;
+  const blink::LocalFrameToken frame_token_;
 
   // Binding to remote implementation of mojom::RenderAccessibility. Note that
   // this binding is done on-demand (in UpdateAccessibilityMode()) and will only

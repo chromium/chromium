@@ -327,9 +327,9 @@ typedef std::unordered_map<GlobalFrameRoutingId,
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
-using TokenFrameMap = std::unordered_map<base::UnguessableToken,
+using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
                                          RenderFrameHostImpl*,
-                                         base::UnguessableTokenHash>;
+                                         blink::LocalFrameToken::Hasher>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -945,7 +945,7 @@ RenderFrameHost* RenderFrameHost::FromID(int render_process_id,
 // static
 RenderFrameHost* RenderFrameHost::FromFrameToken(
     int process_id,
-    const base::UnguessableToken& token) {
+    const blink::LocalFrameToken& token) {
   return RenderFrameHostImpl::FromFrameToken(process_id, token);
 }
 
@@ -972,7 +972,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
 // static
 RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
     int process_id,
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = g_token_frame_map.Get().find(frame_token);
   if (it == g_token_frame_map.Get().end())
@@ -1003,7 +1003,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromAXTreeID(
 RenderFrameHostImpl* RenderFrameHostImpl::FromOverlayRoutingToken(
     const base::UnguessableToken& token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = g_token_frame_map.Get().find(token);
+  auto it = g_token_frame_map.Get().find(blink::LocalFrameToken(token));
   return it == g_token_frame_map.Get().end() ? nullptr : it->second;
 }
 
@@ -1023,7 +1023,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation_of_main_frame,
     LifecycleState lifecycle_state)
     : render_view_host_(std::move(render_view_host)),
@@ -1312,7 +1312,7 @@ int RenderFrameHostImpl::GetRoutingID() {
   return routing_id_;
 }
 
-const base::UnguessableToken& RenderFrameHostImpl::GetFrameToken() {
+const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() {
   return frame_token_;
 }
 
@@ -1320,7 +1320,7 @@ ui::AXTreeID RenderFrameHostImpl::GetAXTreeID() {
   return ax_tree_id();
 }
 
-const base::UnguessableToken& RenderFrameHostImpl::GetTopFrameToken() {
+const blink::LocalFrameToken& RenderFrameHostImpl::GetTopFrameToken() {
   RenderFrameHostImpl* frame = this;
   while (frame->parent_) {
     frame = frame->parent_;
@@ -2658,7 +2658,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     const std::string& frame_name,
     const std::string& frame_unique_name,
     bool is_created_by_script,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
@@ -2675,7 +2675,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
         GetProcess(), bad_message::RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE);
   }
 
-  DCHECK(frame_token);
   DCHECK(devtools_frame_token);
 
   // The RenderFrame corresponding to this host sent an IPC message to create a
@@ -2957,7 +2956,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     int process_id,
     int frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   // Child frame must always be created in the same process as the parent.
   CHECK_EQ(process_id, GetProcess()->GetID());
 
@@ -5041,7 +5040,7 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 }
 
 void RenderFrameHostImpl::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {
+    const base::Optional<blink::LocalFrameToken>& opener_frame_token) {
   frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
                                                       GetSiteInstance());
 }
@@ -6267,7 +6266,7 @@ void RenderFrameHostImpl::AdvanceFocus(blink::mojom::FocusType type,
   DCHECK(!source_proxy ||
          (source_proxy->GetProcess()->GetID() == GetProcess()->GetID()));
 
-  base::Optional<base::UnguessableToken> frame_token;
+  base::Optional<blink::RemoteFrameToken> frame_token;
   if (source_proxy)
     frame_token = source_proxy->GetFrameToken();
 
@@ -7644,7 +7643,7 @@ int RenderFrameHost::GetFrameTreeNodeIdForRoutingId(int process_id,
 // static
 RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
     int render_process_id,
-    const base::UnguessableToken& placeholder_frame_token) {
+    const blink::RemoteFrameToken& placeholder_frame_token) {
   RenderFrameProxyHost* rfph = RenderFrameProxyHost::FromFrameToken(
       render_process_id, placeholder_frame_token);
   FrameTreeNode* node = rfph ? rfph->frame_tree_node() : nullptr;
@@ -9504,7 +9503,7 @@ bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
 }
 
 void RenderFrameHostImpl::PostMessageEvent(
-    const base::Optional<base::UnguessableToken>& source_token,
+    const base::Optional<blink::RemoteFrameToken>& source_token,
     const base::string16& source_origin,
     const base::string16& target_origin,
     blink::TransferableMessage message) {

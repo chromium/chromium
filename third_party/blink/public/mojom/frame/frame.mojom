@@ -456,9 +456,9 @@ interface LocalFrameHost {
     blink.mojom.FrameOwnerProperties frame_owner_properties);
 
   // Sent when a local renderer frame either updates its opener to another
-  // frame identified by |opener_frame|, or, if |opener_frame| // is "empty",
+  // frame identified by |opener_frame|, or, if |opener_frame| is "empty",
   // the frame disowns its opener for the lifetime of the window.
-  DidChangeOpener(mojo_base.mojom.UnguessableToken? opener_frame);
+  DidChangeOpener(blink.mojom.LocalFrameToken? opener_frame);
 
   // Notifies the browser that sandbox flags or container policy have changed
   // for a subframe of this frame.
@@ -777,7 +777,7 @@ interface RemoteFrameHost {
   // Sent when a renderer remote frame either updates its opener to another
   // frame identified by |opener_frame|, or, if |opener_frame| is "empty",
   // the frame disowns its opener for the lifetime of the window.
-  DidChangeOpener(mojo_base.mojom.UnguessableToken? opener_frame);
+  DidChangeOpener(blink.mojom.LocalFrameToken? opener_frame);
 
   // This message is sent from a RemoteFrame when sequential focus navigation
   // needs to advance into its actual frame. |source_frame_token| identifies the
@@ -785,7 +785,7 @@ interface RemoteFrameHost {
   // <shift-tab> hits an out-of-process iframe when searching for the next
   // focusable element.
   AdvanceFocus(blink.mojom.FocusType focus_type,
-               mojo_base.mojom.UnguessableToken source_frame_token);
+               blink.mojom.LocalFrameToken source_frame_token);
 
   // Sent to the browser to post a message to the frame's active renderer, which
   // will receive the re-routed message from the browser process via the method
@@ -798,7 +798,7 @@ interface RemoteFrameHost {
   // sent, |target_origin| specifies what the origin of the target frame must be
   // for the message to be dispatched and |message| is the encoded data, plus
   // any extra properties such as transferred ports or blobs.
-  RouteMessageEvent(mojo_base.mojom.UnguessableToken? source_frame_token,
+  RouteMessageEvent(blink.mojom.LocalFrameToken? source_frame_token,
                     mojo_base.mojom.String16 source_origin,
                     mojo_base.mojom.String16 target_origin,
                     blink.mojom.TransferableMessage message);

@@ -27,6 +27,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
@@ -180,7 +181,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   void InitChild(SiteInstance* site_instance,
                  int32_t frame_routing_id,
                  mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-                 const base::UnguessableToken& frame_token);
+                 const blink::LocalFrameToken& frame_token);
 
   // Returns the currently active RenderFrameHost.
   //
@@ -264,7 +265,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // updated opener will be forwarded to any other RenderFrameProxies and
   // RenderFrames for this FrameTreeNode.
   void DidChangeOpener(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::LocalFrameToken>& opener_frame_token,
       SiteInstance* source_site_instance);
 
   // Creates and initializes a RenderFrameHost. If |for_early_commit| is true
@@ -830,7 +831,7 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstance* site_instance,
       int32_t frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation);
 
   // Create and initialize a speculative RenderFrameHost for an ongoing

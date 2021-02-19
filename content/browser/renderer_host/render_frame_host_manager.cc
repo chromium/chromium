@@ -230,7 +230,7 @@ void RenderFrameHostManager::InitChild(
     SiteInstance* site_instance,
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token,
@@ -405,7 +405,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
 }
 
 void RenderFrameHostManager::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::LocalFrameToken>& opener_frame_token,
     SiteInstance* source_site_instance) {
   FrameTreeNode* opener = nullptr;
   if (opener_frame_token) {
@@ -2371,7 +2371,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
     SiteInstance* site_instance,
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation) {
   FrameTree* frame_tree = frame_tree_node_->frame_tree();
 

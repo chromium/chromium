@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/feature_policy/document_policy.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -105,7 +106,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // RenderFrameHost.
   static RenderFrameHost* FromFrameToken(
       int initiator_process_id,
-      const base::UnguessableToken& frame_token);
+      const blink::LocalFrameToken& frame_token);
 
   // Globally allows for injecting JavaScript into the main world. This feature
   // is present only to support Android WebView, WebLayer, Fuchsia web.Contexts,
@@ -127,7 +128,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // frame was recently deleted or swapped to |render_process_id| itself.
   static RenderFrameHost* FromPlaceholderToken(
       int render_process_id,
-      const base::UnguessableToken& placeholder_frame_token);
+      const blink::RemoteFrameToken& placeholder_frame_token);
 
 #if defined(OS_ANDROID)
   // Returns the RenderFrameHost object associated with a Java native pointer.
@@ -141,7 +142,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual int GetRoutingID() = 0;
 
   // Returns the frame token for this frame.
-  virtual const base::UnguessableToken& GetFrameToken() = 0;
+  virtual const blink::LocalFrameToken& GetFrameToken() = 0;
 
   // Returns the accessibility tree ID for this RenderFrameHost.
   virtual ui::AXTreeID GetAXTreeID() = 0;

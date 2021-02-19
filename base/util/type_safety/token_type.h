@@ -68,6 +68,16 @@ class TokenType : public base::StrongAlias<TypeMarker, base::UnguessableToken> {
   operator const base::UnguessableToken&() const& {
     return this->value();
   }
+
+  // Allow direct comparison for implicitly convertible tokens.
+  constexpr bool operator==(const TokenType& rhs) const {
+    return this->value() == rhs.value();
+  }
+  template <bool kAllowImplicitConversion2 = kAllowImplicitConversion,
+            typename = std::enable_if_t<kAllowImplicitConversion2>>
+  constexpr bool operator==(const base::UnguessableToken& rhs) const {
+    return this->value() == rhs;
+  }
 };
 
 }  // namespace util

@@ -128,7 +128,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const base::UnguessableToken& child_frame_token,
       mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) override;
   void DidChangeOpener(
-      const base::Optional<base::UnguessableToken>& opener_frame) override;
+      const base::Optional<LocalFrameToken>& opener_frame) override;
   void DidChangeCSPAttribute(const base::UnguessableToken& child_frame_token,
                              network::mojom::blink::ContentSecurityPolicyPtr
                                  parsed_csp_attribute) override;

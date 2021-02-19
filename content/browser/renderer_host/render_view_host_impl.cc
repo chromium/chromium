@@ -449,8 +449,11 @@ bool RenderViewHostImpl::CreateRenderView(
           main_rfh->policy_container_host()->CreatePolicyContainerForBlink();
     }
   }
-  params->main_frame_frame_token =
-      main_rfh ? main_rfh->GetFrameToken() : main_rfph->GetFrameToken();
+  if (main_rfh) {
+    params->main_frame_frame_token = main_rfh->GetFrameToken();
+  } else {
+    params->main_frame_frame_token = main_rfph->GetFrameToken();
+  }
   params->session_storage_namespace_id =
       delegate_->GetSessionStorageNamespace(instance_.get())->id();
   // Ensure the RenderView sets its opener correctly.

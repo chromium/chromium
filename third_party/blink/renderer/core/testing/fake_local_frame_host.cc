@@ -193,7 +193,7 @@ void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) {}
 
 void FakeLocalFrameHost::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame) {}
+    const base::Optional<LocalFrameToken>& opener_frame) {}
 
 void FakeLocalFrameHost::DidChangeCSPAttribute(
     const base::UnguessableToken& child_frame_token,

@@ -17,6 +17,7 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-forward.h"
@@ -78,7 +79,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   static RenderFrameProxyHost* FromID(int process_id, int routing_id);
   static RenderFrameProxyHost* FromFrameToken(
       int process_id,
-      const base::UnguessableToken& frame_token);
+      const blink::RemoteFrameToken& frame_token);
 
   // Sets a callback to be called whenever any RenderFrameProxyHost is created.
   static void SetCreatedCallbackForTesting(
@@ -171,12 +172,12 @@ class CONTENT_EXPORT RenderFrameProxyHost
       const gfx::Rect& clip_rect,
       const base::UnguessableToken& guid) override;
   void SetIsInert(bool inert) override;
-  void DidChangeOpener(const base::Optional<base::UnguessableToken>&
+  void DidChangeOpener(const base::Optional<blink::LocalFrameToken>&
                            opener_frame_token) override;
   void AdvanceFocus(blink::mojom::FocusType focus_type,
-                    const base::UnguessableToken& source_frame_token) override;
+                    const blink::LocalFrameToken& source_frame_token) override;
   void RouteMessageEvent(
-      const base::Optional<base::UnguessableToken>& source_frame_token,
+      const base::Optional<blink::LocalFrameToken>& source_frame_token,
       const base::string16& source_origin,
       const base::string16& target_origin,
       blink::TransferableMessage message) override;
@@ -218,7 +219,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfacesTesting();
   bool IsInertForTesting();
 
-  const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
+  const blink::RemoteFrameToken& GetFrameToken() const { return frame_token_; }
 
  private:
   // These interceptor need access to frame_host_receiver_for_testing().
@@ -306,7 +307,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   mojo::AssociatedReceiver<blink::mojom::RemoteMainFrameHost>
       remote_main_frame_host_receiver_{this};
 
-  base::UnguessableToken frame_token_ = base::UnguessableToken::Create();
+  blink::RemoteFrameToken frame_token_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameProxyHost);
 };

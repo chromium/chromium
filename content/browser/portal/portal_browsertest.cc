@@ -1539,7 +1539,7 @@ class RenderFrameHostFactoryForLocalMainFrameInterceptor
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation,
       RenderFrameHostImpl::LifecycleState lifecycle_state) override {
     return base::WrapUnique(new RenderFrameHostImplForLocalMainFrameInterceptor(

@@ -67,9 +67,9 @@ typedef std::unordered_map<RenderFrameProxyHostID,
 base::LazyInstance<RoutingIDFrameProxyMap>::DestructorAtExit
     g_routing_id_frame_proxy_map = LAZY_INSTANCE_INITIALIZER;
 
-using TokenFrameMap = std::unordered_map<base::UnguessableToken,
+using TokenFrameMap = std::unordered_map<blink::RemoteFrameToken,
                                          RenderFrameProxyHost*,
-                                         base::UnguessableTokenHash>;
+                                         blink::RemoteFrameToken::Hasher>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_proxy_map =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -128,7 +128,7 @@ RenderFrameProxyHost* RenderFrameProxyHost::FromID(int process_id,
 // static
 RenderFrameProxyHost* RenderFrameProxyHost::FromFrameToken(
     int process_id,
-    const base::UnguessableToken& frame_token) {
+    const blink::RemoteFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TokenFrameMap* frames = g_token_frame_proxy_map.Pointer();
   auto it = frames->find(frame_token);
@@ -518,7 +518,7 @@ void RenderFrameProxyHost::SetIsInert(bool inert) {
 }
 
 void RenderFrameProxyHost::RouteMessageEvent(
-    const base::Optional<base::UnguessableToken>& source_frame_token,
+    const base::Optional<blink::LocalFrameToken>& source_frame_token,
     const base::string16& source_origin,
     const base::string16& target_origin,
     blink::TransferableMessage message) {
@@ -581,7 +581,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
 
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
-  base::Optional<base::UnguessableToken> translated_source_token;
+  base::Optional<blink::RemoteFrameToken> translated_source_token;
   ukm::SourceId source_page_ukm_source_id = ukm::kInvalidSourceId;
   if (source_frame_token) {
     RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
@@ -753,14 +753,14 @@ void RenderFrameProxyHost::UpdateViewportIntersection(
 }
 
 void RenderFrameProxyHost::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {
-  frame_tree_node_->render_manager()->DidChangeOpener(
-      opener_frame_token.value_or(base::UnguessableToken()), GetSiteInstance());
+    const base::Optional<blink::LocalFrameToken>& opener_frame_token) {
+  frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
+                                                      GetSiteInstance());
 }
 
 void RenderFrameProxyHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
-    const base::UnguessableToken& source_frame_token) {
+    const blink::LocalFrameToken& source_frame_token) {
   RenderFrameHostImpl* target_rfh = frame_tree_node_->current_frame_host();
   if (target_rfh->InsidePortal()) {
     bad_message::ReceivedBadMessage(
