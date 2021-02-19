@@ -3758,9 +3758,14 @@ if (enable_java_templates) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       testonly = true
 
-      # Enables the test_runner to find the source file location of a test
-      # after it is ran.
+      # The size info enables the test_runner to find the source file location
+      # of a test after it is ran.
       include_size_info = true
+      data = [ "$root_build_dir/size-info/${invoker.apk_name}.apk.jar.info" ]
+      if (defined(invoker.data)) {
+        data += invoker.data
+      }
+
       deps = [ "//testing/android/broker:broker_java" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
@@ -3796,10 +3801,6 @@ if (enable_java_templates) {
         data_deps += [ invoker.use_webview_provider ]
       }
 
-      data = []
-      if (defined(invoker.data)) {
-        data += invoker.data
-      }
       if (defined(invoker.proguard_enabled) && invoker.proguard_enabled &&
           !incremental_install) {
         # When ProGuard is on, we use ProGuard to combine the under test java
