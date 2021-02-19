@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -201,6 +202,11 @@ PrivacySection::PrivacySection(Profile* profile,
 }
 
 PrivacySection::~PrivacySection() = default;
+
+void PrivacySection::AddHandlers(content::WebUI* web_ui) {
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::settings::PeripheralDataAccessHandler>());
+}
 
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

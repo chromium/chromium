@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PERIPHERAL_DATA_ACCESS_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PERIPHERAL_DATA_ACCESS_HANDLER_H_
+
+#include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+
+namespace chromeos {
+namespace settings {
+
+class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
+ public:
+  PeripheralDataAccessHandler();
+  ~PeripheralDataAccessHandler() override;
+
+  PeripheralDataAccessHandler(const PeripheralDataAccessHandler&) = delete;
+  PeripheralDataAccessHandler& operator=(const PeripheralDataAccessHandler&) =
+      delete;
+
+  // SettingsPageUIHandler:
+  void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
+
+ private:
+  // Handles checking if thunderbolt is supported in this device.
+  void HandleThunderboltSupported(const base::ListValue* args);
+
+  // Observer for the CrosSetting.
+  void OnPeripheralDataAccessProtectionChanged();
+
+  void OnFilePathChecked(const std::string& callback_id,
+      bool is_thunderbolt_supported);
+
+  base::CallbackListSubscription peripheral_data_access_subscription_;
+
+  // Used for callbacks.
+  base::WeakPtrFactory<PeripheralDataAccessHandler> weak_ptr_factory_{this};
+};
+
+}  // namespace settings
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PERIPHERAL_DATA_ACCESS_HANDLER_H_

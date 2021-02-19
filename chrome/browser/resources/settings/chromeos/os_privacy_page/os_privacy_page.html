@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="peripheral_data_access_protection_dialog.html">
+<link rel="import" href="peripheral_data_access_browser_proxy.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
@@ -21,7 +22,14 @@
 
 <dom-module id="os-settings-privacy-page">
   <template>
-    <style include="settings-shared"></style>
+    <style include="settings-shared">
+      :host(:not([is-peripheral-protection-toggle-enforced_]))
+          #peripheralDataAccessProtection {
+        --cr-disabled-opacity: 1;
+        cursor: pointer;
+        opacity: 1;
+      }
+    </style>
     <settings-animated-pages id="pages" section="osPrivacy"
         focus-config="[[focusConfig_]]">
 
@@ -68,17 +76,24 @@
             deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
         </settings-toggle-button>
         <div class="hr"></div>
-        <!-- TODO(jimmyxgong): Update the url with the real one -->
-        <template is="dom-if" if="[[isPciguardUiEnabled_]]">
-          <settings-toggle-button
-              id="peripheral-data-access-protection"
-              pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
-              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
-              sub-label="$i18n{peripheralDataAccessProtectionToggleDescription}"
-              deep-link-focus-id$="[[Setting.kPeripheralDataAccessProtection]]"
-              learn-more-url="url"
-              on-settings-boolean-control-change="onToggleChanged_">
-          </settings-toggle-button>
+        <template is="dom-if" if="[[isThunderboltSupported_]]">
+          <template is="dom-if" if="[[isPciguardUiEnabled_]]">
+            <!-- This toggle is always disabled. The underlying pref state is
+                 handled by the JS impl. This is to prevent toggling the pref
+                 before the user confirms the action. -->
+            <settings-toggle-button
+                id="peripheralDataAccessProtection"
+                pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
+                label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+                sub-label=
+                    "$i18n{peripheralDataAccessProtectionToggleDescription}"
+                deep-link-focus-id$=
+                    "[[Setting.kPeripheralDataAccessProtection]]"
+                on-click="onPeripheralProtectionClick_"
+                disabled
+                inverted>
+            </settings-toggle-button>
+          </template>
         </template>
       </div>
 
@@ -129,7 +144,7 @@
     </template>
 
     <template is="dom-if" if="[[showDisableProtectionDialog_]]" restamp>
-      <settings-peripheral-data-access-protection-dialog
+      <settings-peripheral-data-access-protection-dialog id="protectionDialog"
           on-close="onDisableProtectionDialogClosed_" prefs="{{prefs}}">
       </settings-peripheral-data-access-protection-dialog>
     </template>

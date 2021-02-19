@@ -123,14 +123,37 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    isThunderboltSupported_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    isPeripheralProtectionToggleEnforced_: {
+      type: Boolean,
+      computed: 'computeIsPeripheralProtectionToggleEnforced_(' +
+          'prefs.cros.device.peripheral_data_access_enabled.*)',
+      reflectToAttribute: true,
+    },
   },
 
+  /** @private {?settings.PeripheralDataAccessBrowserProxy} */
+  browserProxy_: null,
+
   /** @override */
-  attached() {
-    if (this.isPciguardUiEnabled_) {
-      this.supportedSettingIds.add(
-          chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection);
-    }
+  created() {
+    this.browserProxy_ =
+        settings.PeripheralDataAccessBrowserProxyImpl.getInstance();
+
+    this.browserProxy_.isThunderboltSupported().then(enabled => {
+      this.isThunderboltSupported_ = enabled;
+      if (this.isPciguardUiEnabled_ && this.isThunderboltSupported_) {
+        this.supportedSettingIds.add(
+            chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection);
+      }
+    });
   },
 
   /**
@@ -261,18 +284,36 @@ Polymer({
     }, lifetimeMs);
   },
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onToggleChanged_(e) {
-    if (!e.target.checked) {
-      this.showDisableProtectionDialog_ = true;
-    }
-  },
-
   /** @private */
   onDisableProtectionDialogClosed_() {
     this.showDisableProtectionDialog_ = false;
   },
+
+  /** @private */
+  onPeripheralProtectionClick_() {
+    if (this.isPeripheralProtectionToggleEnforced_) {
+      return;
+    }
+
+    // Do not flip the actual toggle as this will flip the underlying pref.
+    // Instead if the user is attempting to disable the toggle, present the
+    // warning dialog.
+    if (!this.prefs['cros']['device']['peripheral_data_access_enabled'].value) {
+      this.showDisableProtectionDialog_ = true;
+      return;
+    }
+
+    // The underlying settings-toggle-button is disabled, therefore we will have
+    // to set the pref value manually to flip the toggle.
+    this.setPrefValue('cros.device.peripheral_data_access_enabled', false);
+  },
+
+  /**
+   * @return {boolean} True is the toggle is enforced.
+   * @private
+   */
+  computeIsPeripheralProtectionToggleEnforced_() {
+    return this.prefs['cros']['device']['peripheral_data_access_enabled']
+               .enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
 });

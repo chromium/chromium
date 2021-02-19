@@ -25,8 +25,7 @@
       }
     </style>
 
-    <cr-dialog id="warningDialog" on-close="handleDialogClosed_"
-        show-on-attach>
+    <cr-dialog id="warningDialog" show-on-attach>
       <div slot="title">
         <div hidden="[[!showDisablingDialog_]]">
           $i18n{peripheralDataAccessProtectionDisablingTitle}
@@ -40,7 +39,8 @@
           <div id="disablingDescription">
             $i18n{peripheralDataAccessProtectionDisablingDescription}
           </div>
-          <paper-progress indeterminate=true></paper-progress>
+          <paper-progress id="progressLoad" indeterminate>
+          </paper-progress>
         </template>
         <div hidden="[[showDisablingDialog_]]">
           $i18n{peripheralDataAccessProtectionWarningDescription}
@@ -48,12 +48,13 @@
       </div>
       <template is="dom-if" if="[[!showDisablingDialog_]]">
         <div slot="button-container">
-          <cr-button class="cancel-button" on-click="onCancelButtonClicked_">
-              $i18n{peripheralDataAccessProtectionCancelButton}
+          <cr-button id="cancelButton" class="cancel-button"
+              on-click="onCancelButtonClicked_">
+            $i18n{peripheralDataAccessProtectionCancelButton}
           </cr-button>
-          <cr-button id="disable-confirmation" class="action-button"
+          <cr-button id="disableConfirmation" class="action-button"
               on-click="onDisableClicked_">
-              $i18n{peripheralDataAccessProtectionDisableButton}
+            $i18n{peripheralDataAccessProtectionDisableButton}
           </cr-button>
         </div>
       </template>
