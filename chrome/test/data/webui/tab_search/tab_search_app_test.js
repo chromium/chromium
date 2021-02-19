@@ -276,6 +276,38 @@ suite('TabSearchAppTest', () => {
     assertEquals(2, testProxy.getCallCount('getProfileData'));
   });
 
+  test('Verify hiding document resets selection and search text', async () => {
+    await setupTest(sampleData());
+    assertEquals(1, testProxy.getCallCount('getProfileData'));
+
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    searchField.setValue('Apple');
+    await flushTasks();
+    verifyTabIds(queryRows(), [6, 4]);
+    keyDownOn(searchField, 0, [], 'ArrowDown');
+    assertEquals('Apple', tabSearchApp.getSearchTextForTesting());
+    assertEquals(1, tabSearchApp.getSelectedIndex());
+
+    // When hidden visibilitychange should reset selection and search text.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
+    assertEquals('', tabSearchApp.getSearchTextForTesting());
+    assertEquals(0, tabSearchApp.getSelectedIndex());
+
+    // State should match that of the hidden state when visible again.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
+    assertEquals('', tabSearchApp.getSearchTextForTesting());
+    assertEquals(0, tabSearchApp.getSelectedIndex());
+  });
+
   test('Verify tab switch is logged correctly', async () => {
     await setupTest(sampleData());
     // Make sure that tab data has been recieved.

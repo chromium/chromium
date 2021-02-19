@@ -108,6 +108,8 @@ export class TabSearchAppElement extends PolymerElement {
       // Refresh Tab Search's tab data when transitioning into a visible state.
       if (document.visibilityState === 'visible') {
         this.updateTabs_();
+      } else {
+        this.onDocumentHidden_();
       }
     };
   }
@@ -167,6 +169,12 @@ export class TabSearchAppElement extends PolymerElement {
 
     document.removeEventListener(
         'visibilitychange', this.visibilityChangedListener_);
+  }
+
+  /** @private */
+  onDocumentHidden_() {
+    (this.$.tabsList).selected = NO_SELECTION;
+    this.$.searchField.setValue('');
   }
 
   /** @private */
@@ -476,9 +484,14 @@ export class TabSearchAppElement extends PolymerElement {
     this.searchResultText_ = this.getA11ySearchResultText_();
   }
 
-  /** return {!Tab} */
+  /** @return {!Tab} */
   getSelectedTab_() {
     return this.filteredOpenTabs_[this.getSelectedIndex()].tab;
+  }
+
+  /** @return {string} */
+  getSearchTextForTesting() {
+    return this.searchText_;
   }
 }
 
