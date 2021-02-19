@@ -262,7 +262,6 @@ void WebOTPService::NavigationEntryCommitted(
 void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RecordMetrics(status);
   base::Optional<std::string> code = base::nullopt;
   if (status == SmsStatus::kSuccess) {
     DCHECK(one_time_code_);
@@ -270,6 +269,7 @@ void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   }
 
   if (callback_) {
+    RecordMetrics(status);
     std::move(callback_).Run(status, code);
   }
 

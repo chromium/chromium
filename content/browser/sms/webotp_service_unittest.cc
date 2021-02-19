@@ -157,14 +157,15 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     if (entries.empty())
       FAIL() << "No WebOTPServiceOutcome was recorded";
 
+    // There are non-outcome metrics under the same entry of SMSReceiver UKM. We
+    // need to make sure that the outcome metric only includes the expected one.
     for (const auto* const entry : entries) {
       const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
-      if (metric && *metric == static_cast<int>(outcome)) {
-        SUCCEED();
-        return;
-      }
+      if (metric && *metric != static_cast<int>(outcome))
+        FAIL() << "Unexpected outcome was recorded";
     }
-    FAIL() << "Expected WebOTPServiceOutcome was not recorded";
+
+    SUCCEED();
   }
 
   void ExpectTimingUKM(const std::string& metric_name) {
@@ -866,8 +867,14 @@ TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithTimerActivation) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
-  service.NotifyFailure(FailureType::kPromptTimeout);
-  service.ActivateTimer();
+
+  EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
+    service.NotifyFailure(FailureType::kPromptTimeout);
+    service.ActivateTimer();
+  }));
+
+  service.MakeRequest(BindLambdaForTesting(
+      [](SmsStatus status, const Optional<string>& otp) {}));
 
   ukm_loop.Run();
 
@@ -880,8 +887,16 @@ TEST_F(WebOTPServiceTest, NotRecordTimeoutAsOutcomeWithoutTimerActivation) {
 
   ServiceWithPrompt service(web_contents());
 
-  service.NotifyFailure(FailureType::kPromptTimeout);
+  base::RunLoop loop;
+  EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&]() {
+    service.NotifyFailure(FailureType::kPromptTimeout);
+    loop.Quit();
+  }));
 
+  service.MakeRequest(BindLambdaForTesting(
+      [](SmsStatus status, const Optional<string>& otp) {}));
+
+  loop.Run();
   ExpectNoOutcomeUKM();
 }
 
@@ -894,8 +909,14 @@ TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcome) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
-  service.NotifyFailure(FailureType::kPromptCancelled);
-  service.ActivateTimer();
+
+  EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
+    service.NotifyFailure(FailureType::kPromptCancelled);
+    service.ActivateTimer();
+  }));
+
+  service.MakeRequest(BindLambdaForTesting(
+      [](SmsStatus status, const Optional<string>& otp) {}));
 
   ukm_loop.Run();
 
@@ -911,8 +932,16 @@ TEST_F(WebOTPServiceTest,
 
   ServiceWithPrompt service(web_contents());
 
-  service.NotifyFailure(FailureType::kPromptCancelled);
+  base::RunLoop loop;
+  EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&]() {
+    service.NotifyFailure(FailureType::kPromptCancelled);
+    loop.Quit();
+  }));
 
+  service.MakeRequest(BindLambdaForTesting(
+      [](SmsStatus status, const Optional<string>& otp) {}));
+
+  loop.Run();
   ExpectNoOutcomeUKM();
 }
 
@@ -940,6 +969,89 @@ TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
   ExpectTimingUKM("TimeUserCancelMs");
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
+}
+
+TEST_F(WebOTPServiceTest, RecordUnhandledRequestOnNavigation) {
+  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  NavigateAndCommit(GURL(kTestUrl));
+  NiceMock<MockSmsWebContentsDelegate> delegate;
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  web_contents_impl->SetDelegate(&delegate);
+
+  NiceMock<MockSmsProvider> provider;
+  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
+                                    service.BindNewPipeAndPassReceiver()));
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  base::RunLoop navigate;
+
+  EXPECT_CALL(provider, Retrieve(_)).WillOnce(Invoke([&navigate]() {
+    navigate.Quit();
+  }));
+
+  base::RunLoop reload;
+
+  service->Receive(base::BindLambdaForTesting(
+      [&reload](SmsStatus status, const Optional<string>& otp) {
+        EXPECT_EQ(SmsStatus::kUnhandledRequest, status);
+        EXPECT_EQ(base::nullopt, otp);
+        reload.Quit();
+      }));
+
+  navigate.Run();
+
+  // Simulates the user navigating to a new page.
+  NavigateAndCommit(GURL("https://www.example.com"));
+
+  reload.Run();
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(GURL(kTestUrl),
+                   blink::WebOTPServiceOutcome::kUnhandledRequest);
+}
+
+TEST_F(WebOTPServiceTest, NotRecordUnhandledRequestWhenThereIsNoRequest) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  {
+    ServiceWithPrompt service(web_contents());
+    ASSERT_FALSE(service.fetcher()->HasSubscribers());
+  }
+
+  ExpectNoOutcomeUKM();
+}
+
+TEST_F(WebOTPServiceTest, NotRecordUnhandledRequestWhenRequestIsHandled) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  {
+    ServiceWithPrompt service(web_contents());
+
+    base::RunLoop ukm_loop;
+    ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                          ukm_loop.QuitClosure());
+
+    service.ExpectRequestUserConsent();
+    EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
+      service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+      service.DismissPrompt();
+    }));
+
+    service.MakeRequest(BindLambdaForTesting(
+        [](SmsStatus status, const Optional<string>& otp) {}));
+
+    ukm_loop.Run();
+  }
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
 }
 
 }  // namespace content
