@@ -1134,7 +1134,6 @@ group("closure_compile") {
     "localized_link:closure_compile",
     "os_people_page:closure_compile",
     "parental_controls_page:closure_compile",
-    "personalization_page:closure_compile",
   ]
 }
 
