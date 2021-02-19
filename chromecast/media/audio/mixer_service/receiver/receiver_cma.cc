@@ -95,7 +95,7 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
 
     if (message.has_eos_played_out()) {
       // Explicit EOS.
-      HandleAudioData(nullptr, 0, INT64_MIN);
+      return HandleAudioData(nullptr, 0, INT64_MIN);
     }
 
     return true;
