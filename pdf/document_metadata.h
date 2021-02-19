@@ -41,7 +41,6 @@ enum class FormType {
 // Document properties, including those specified in the document information
 // dictionary (see section 14.3.3 "Document Information Dictionary" of the ISO
 // 32000-1 standard).
-// TODO(crbug.com/93619): Add `size_bytes`.
 struct DocumentMetadata {
   DocumentMetadata();
   DocumentMetadata(const DocumentMetadata&) = delete;
@@ -50,6 +49,9 @@ struct DocumentMetadata {
 
   // Version of the document.
   PdfVersion version = PdfVersion::kUnknown;
+
+  // The size of the document in bytes.
+  size_t size_bytes = 0;
 
   // Number of pages in the document.
   size_t page_count = 0;

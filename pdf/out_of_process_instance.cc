@@ -67,6 +67,7 @@
 #include "ppapi/cpp/var_dictionary.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -121,6 +122,7 @@ constexpr char kJSBookmarksData[] = "bookmarksData";
 constexpr char kJSMetadataType[] = "metadata";
 constexpr char kJSMetadataData[] = "metadataData";
 constexpr char kJSVersion[] = "version";
+constexpr char kJSFileSize[] = "fileSize";
 constexpr char kJSLinearized[] = "linearized";
 constexpr char kJSTitle[] = "title";
 constexpr char kJSAuthor[] = "author";
@@ -1975,6 +1977,10 @@ void OutOfProcessInstance::SendMetadata() {
   base::string16 version = GetFormattedVersion(document_metadata.version);
   if (!version.empty())
     metadata_data.Set(pp::Var(kJSVersion), pp::Var(base::UTF16ToUTF8(version)));
+
+  metadata_data.Set(
+      pp::Var(kJSFileSize),
+      base::UTF16ToUTF8(ui::FormatBytes(document_metadata.size_bytes)));
 
   metadata_data.Set(pp::Var(kJSLinearized),
                     pp::Var(document_metadata.linearized));

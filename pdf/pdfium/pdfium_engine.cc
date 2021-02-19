@@ -4033,6 +4033,7 @@ void PDFiumEngine::LoadDocumentMetadata() {
   DCHECK(document_loaded_);
 
   doc_metadata_.version = GetDocumentVersion();
+  doc_metadata_.size_bytes = GetLoadedByteSize();
   doc_metadata_.page_count = pages_.size();
   doc_metadata_.linearized = IsLinearized();
   doc_metadata_.has_attachments = !doc_attachment_info_list_.empty();

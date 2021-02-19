@@ -23,6 +23,7 @@ export const DisplayAnnotationsAction = {
  *   canSerializeDocument: boolean,
  *   creationDate: string,
  *   creator: string,
+ *   fileSize: string,
  *   keywords: string,
  *   linearized: boolean,
  *   modDate: string,

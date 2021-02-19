@@ -50,7 +50,7 @@ const tests = [
     // TODO(crbug.com/93169): None of the following expected values should be
     // '-' when support for every property is implemented.
     [['file-name', 'document_info.pdf'],
-     ['file-size', '-'],
+     ['file-size', '714 B'],
      ['title', 'Sample PDF Document Info'],
      ['author', 'Chromium Authors'],
      ['subject', 'Testing'],

@@ -350,6 +350,7 @@ TEST_F(PDFiumEngineTest, GetDocumentMetadata) {
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
 
   EXPECT_EQ(PdfVersion::k1_7, doc_metadata.version);
+  EXPECT_EQ(714u, doc_metadata.size_bytes);
   EXPECT_FALSE(doc_metadata.linearized);
   EXPECT_EQ("Sample PDF Document Info", doc_metadata.title);
   EXPECT_EQ("Chromium Authors", doc_metadata.author);
@@ -378,6 +379,7 @@ TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
 
   EXPECT_EQ(PdfVersion::k1_7, doc_metadata.version);
+  EXPECT_EQ(786u, doc_metadata.size_bytes);
   EXPECT_FALSE(doc_metadata.linearized);
   EXPECT_THAT(doc_metadata.title, IsEmpty());
   EXPECT_THAT(doc_metadata.author, IsEmpty());
