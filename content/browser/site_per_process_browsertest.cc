@@ -16525,6 +16525,38 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
               expected_y, 1.f);
 }
 
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       AccessWindowProxyOfCrashedFrameAfterNavigation) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  const GURL cross_site_url =
+      embedded_test_server()->GetURL("b.com", "/title1.html");
+  TestNavigationObserver observer(cross_site_url);
+  observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("openedWindow = window.open($1)", cross_site_url)));
+  observer.WaitForNavigationFinished();
+
+  EXPECT_EQ(2u, Shell::windows().size());
+  CrashTab(Shell::windows()[1]->web_contents());
+
+  // When starting a navigation in a crashed frame, the navigation code
+  // immediately swaps in the speculative RFH.
+  EXPECT_TRUE(
+      ExecJs(shell(), "openedWindow.location = 'data:text/html,content'"));
+  // The early-swapped frame should not be scriptable from another frame--nor
+  // should trying to script it result in a crash.
+  std::string result =
+      EvalJs(shell(),
+             "try { openedWindow.document } catch (e) { e.toString(); }")
+          .ExtractString();
+  EXPECT_THAT(
+      result,
+      ::testing::MatchesRegex(
+          "SecurityError: Blocked a frame with origin \"http://a.com:\\d+\" "
+          "from accessing a cross-origin frame."));
+}
+
 class SitePerProcessCompositorViewportBrowserTest
     : public SitePerProcessBrowserTestBase,
       public testing::WithParamInterface<double> {
