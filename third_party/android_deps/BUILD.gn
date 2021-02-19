@@ -384,21 +384,6 @@ android_aar_prebuilt("com_android_support_viewpager_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_android_tools_build_jetifier_jetifier_processor_java") {
-  jar_path = "libs/com_android_tools_build_jetifier_jetifier_processor/jetifier-processor-1.0.0-beta08.jar"
-  output_name = "com_android_tools_build_jetifier_jetifier_processor"
-  enable_bytecode_checks = false
-  deps = [
-    ":com_android_tools_build_jetifier_jetifier_core_java",
-    ":org_jdom_jdom2_java",
-    ":org_jetbrains_kotlin_kotlin_stdlib_java",
-    ":org_ow2_asm_asm_commons_java",
-    ":org_ow2_asm_asm_java",
-    ":org_ow2_asm_asm_util_java",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_auth_java") {
   aar_path = "libs/com_google_android_gms_play_services_auth/play-services-auth-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
@@ -913,13 +898,6 @@ java_prebuilt("com_squareup_javapoet_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("commons_cli_commons_cli_java") {
-  jar_path = "libs/commons_cli_commons_cli/commons-cli-1.3.1.jar"
-  output_name = "commons_cli_commons_cli"
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("javax_annotation_javax_annotation_api_java") {
   jar_path = "libs/javax_annotation_javax_annotation_api/javax.annotation-api-1.3.2.jar"
   output_name = "javax_annotation_javax_annotation_api"
@@ -1411,24 +1389,6 @@ android_aar_prebuilt("com_android_support_versionedparcelable_java") {
   jar_excluded_patterns = [
     "android/support/v4/graphics/drawable/IconCompat.class",
     "androidx/*",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_android_tools_build_jetifier_jetifier_core_java") {
-  jar_path = "libs/com_android_tools_build_jetifier_jetifier_core/jetifier-core-1.0.0-beta08.jar"
-  output_name = "com_android_tools_build_jetifier_jetifier_core"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-  deps = [
-    ":com_google_code_gson_gson_java",
-    ":org_jetbrains_kotlin_kotlin_stdlib_java",
   ]
 }
 
@@ -2381,20 +2341,6 @@ java_prebuilt("org_codehaus_plexus_plexus_utils_java") {
     "//third_party/androidx:*",
   ]
   testonly = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_jdom_jdom2_java") {
-  jar_path = "libs/org_jdom_jdom2/jdom2-2.0.6.jar"
-  output_name = "org_jdom_jdom2"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
