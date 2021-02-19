@@ -1236,11 +1236,8 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
 
   // If we don't have a computed style, and our parent element does not have a
   // computed style it's not necessary to mark this node for style recalc.
-  if (auto* parent = GetStyleRecalcParent()) {
-    while (parent && !parent->CanParticipateInFlatTree())
-      parent = parent->GetStyleRecalcParent();
+  if (Element* parent = GetStyleRecalcParent())
     return !parent || !parent->GetComputedStyle();
-  }
   // If this is the root element, and it does not have a computed style, we
   // still need to mark it for style recalc since it may change from
   // display:none. Otherwise, the node is not in the flat tree, and we can
@@ -1250,9 +1247,9 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
 }
 
 void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
-  ContainerNode* style_parent = GetStyleRecalcParent();
+  Element* style_parent = GetStyleRecalcParent();
   bool parent_dirty = style_parent && style_parent->IsDirtyForStyleRecalc();
-  ContainerNode* ancestor = style_parent;
+  Element* ancestor = style_parent;
   for (; ancestor && !ancestor->ChildNeedsStyleRecalc();
        ancestor = ancestor->GetStyleRecalcParent()) {
     if (!ancestor->isConnected())
@@ -1263,11 +1260,8 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
     // If we reach a locked ancestor, we should abort since the ancestor marking
     // will be done when the lock is committed.
     if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
-      auto* ancestor_element = DynamicTo<Element>(ancestor);
-      if (ancestor_element &&
-          ancestor_element->ChildStyleRecalcBlockedByDisplayLock()) {
+      if (ancestor->ChildStyleRecalcBlockedByDisplayLock())
         break;
-      }
     }
   }
   if (!isConnected())
@@ -1281,14 +1275,10 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
   if (const ComputedStyle* current_style = GetComputedStyle()) {
     if (current_style->IsEnsuredOutsideFlatTree())
       return;
-  } else {
-    while (style_parent && !style_parent->CanParticipateInFlatTree())
-      style_parent = style_parent->GetStyleRecalcParent();
-    if (style_parent) {
-      if (const auto* parent_style = style_parent->GetComputedStyle()) {
-        if (parent_style->IsEnsuredOutsideFlatTree())
-          return;
-      }
+  } else if (style_parent) {
+    if (const auto* parent_style = style_parent->GetComputedStyle()) {
+      if (parent_style->IsEnsuredOutsideFlatTree())
+        return;
     }
   }
   // If we're in a locked subtree, then we should not update the style recalc
@@ -1298,13 +1288,10 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
   if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled() &&
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() >
           0) {
-    for (auto* ancestor_copy = ancestor; ancestor_copy;
+    for (Element* ancestor_copy = ancestor; ancestor_copy;
          ancestor_copy = ancestor_copy->GetStyleRecalcParent()) {
-      auto* ancestor_copy_element = DynamicTo<Element>(ancestor_copy);
-      if (ancestor_copy_element &&
-          ancestor_copy_element->ChildStyleRecalcBlockedByDisplayLock()) {
+      if (ancestor_copy->ChildStyleRecalcBlockedByDisplayLock())
         return;
-      }
     }
   }
 

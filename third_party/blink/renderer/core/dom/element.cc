@@ -2675,35 +2675,33 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
-  if (CanParticipateInFlatTree()) {
-    if (being_rendered) {
-      AdjustForceLegacyLayout(style, &children_context.force_legacy_layout);
-      LegacyLayout legacy = children_context.force_legacy_layout
-                                ? LegacyLayout::kForce
-                                : LegacyLayout::kAuto;
-      LayoutTreeBuilderForElement builder(*this, context, style, legacy);
-      builder.CreateLayoutObject();
+  if (being_rendered) {
+    AdjustForceLegacyLayout(style, &children_context.force_legacy_layout);
+    LegacyLayout legacy = children_context.force_legacy_layout
+                              ? LegacyLayout::kForce
+                              : LegacyLayout::kAuto;
+    LayoutTreeBuilderForElement builder(*this, context, style, legacy);
+    builder.CreateLayoutObject();
 
-      layout_object = GetLayoutObject();
-      if (layout_object) {
-        children_context.previous_in_flow = nullptr;
-        children_context.parent = layout_object;
-        children_context.next_sibling = nullptr;
-        children_context.next_sibling_valid = true;
-      } else if (style->Display() != EDisplay::kContents) {
-        // The layout object creation was suppressed for other reasons than
-        // being display:none or display:contents (E.g.
-        // LayoutObject::CanHaveChildren() returning false). Make sure we don't
-        // attempt to create LayoutObjects further down the subtree.
-        children_context.parent = nullptr;
-      }
-      // For display:contents elements, we keep the previous_in_flow,
-      // next_sibling, and parent, in the context for attaching children.
-    } else {
-      // We are a display:none element. Set the parent to nullptr to make sure
-      // we never create any child layout boxes.
+    layout_object = GetLayoutObject();
+    if (layout_object) {
+      children_context.previous_in_flow = nullptr;
+      children_context.parent = layout_object;
+      children_context.next_sibling = nullptr;
+      children_context.next_sibling_valid = true;
+    } else if (style->Display() != EDisplay::kContents) {
+      // The layout object creation was suppressed for other reasons than
+      // being display:none or display:contents (E.g.
+      // LayoutObject::CanHaveChildren() returning false). Make sure we don't
+      // attempt to create LayoutObjects further down the subtree.
       children_context.parent = nullptr;
     }
+    // For display:contents elements, we keep the previous_in_flow,
+    // next_sibling, and parent, in the context for attaching children.
+  } else {
+    // We are a display:none element. Set the parent to nullptr to make sure
+    // we never create any child layout boxes.
+    children_context.parent = nullptr;
   }
   children_context.use_previous_in_flow = true;
 
@@ -3143,8 +3141,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     // layout tree siblings.
     WhitespaceAttacher local_attacher;
     WhitespaceAttacher* child_attacher;
-    if (GetLayoutObject() ||
-        (!HasDisplayContentsStyle() && CanParticipateInFlatTree())) {
+    if (GetLayoutObject() || !HasDisplayContentsStyle()) {
       whitespace_attacher.DidVisitElement(this);
       if (GetDocument().GetStyleEngine().NeedsWhitespaceReattachment(this))
         local_attacher.SetReattachAllWhitespaceNodes();
@@ -4809,27 +4806,23 @@ const ComputedStyle* Element::EnsureComputedStyle(
   // values returned for the ":selection" pseudo-element will be correct.
   const ComputedStyle* element_style = GetComputedStyle();
   if (!element_style || element_style->IsEnsuredOutsideFlatTree()) {
-    if (CanParticipateInFlatTree()) {
-      if (ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this)) {
-        parent->EnsureComputedStyle();
-        if (element_style)
-          element_style = GetComputedStyle();
-      }
-      if (element_style && NeedsStyleRecalc()) {
-        // RecalcStyle() will not traverse into connected elements outside the
-        // flat tree and we may have a dirty element or ancestors if this
-        // element is not in the flat tree. If we don't need a style recalc,
-        // we can just re-use the ComputedStyle from the last
-        // getComputedStyle(). Otherwise, we need to clear the ensured styles
-        // for the uppermost dirty ancestor and all of its descendants. If
-        // this element was not the uppermost dirty element, we would not end
-        // up here because a dirty ancestor would have cleared the
-        // ComputedStyle in the recursive call above and element_style would
-        // have been null.
-        GetDocument().GetStyleEngine().ClearEnsuredDescendantStyles(*this);
-        element_style = nullptr;
-      }
-    } else {
+    if (ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this)) {
+      parent->EnsureComputedStyle();
+      if (element_style)
+        element_style = GetComputedStyle();
+    }
+    if (element_style && NeedsStyleRecalc()) {
+      // RecalcStyle() will not traverse into connected elements outside the
+      // flat tree and we may have a dirty element or ancestors if this
+      // element is not in the flat tree. If we don't need a style recalc,
+      // we can just re-use the ComputedStyle from the last
+      // getComputedStyle(). Otherwise, we need to clear the ensured styles
+      // for the uppermost dirty ancestor and all of its descendants. If
+      // this element was not the uppermost dirty element, we would not end
+      // up here because a dirty ancestor would have cleared the
+      // ComputedStyle in the recursive call above and element_style would
+      // have been null.
+      GetDocument().GetStyleEngine().ClearEnsuredDescendantStyles(*this);
       element_style = nullptr;
     }
     if (!element_style) {

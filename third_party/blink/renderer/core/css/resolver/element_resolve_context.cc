@@ -36,13 +36,8 @@ ElementResolveContext::ElementResolveContext(Element& element)
       element_link_state_(
           element.GetDocument().GetVisitedLinkState().DetermineLinkState(
               element)) {
-  if (element.CanParticipateInFlatTree()) {
-    parent_node_ = LayoutTreeBuilderTraversal::Parent(element);
-    layout_parent_ = LayoutTreeBuilderTraversal::LayoutParent(element);
-  } else {
-    parent_node_ = nullptr;
-    layout_parent_ = nullptr;
-  }
+  parent_node_ = LayoutTreeBuilderTraversal::Parent(element);
+  layout_parent_ = LayoutTreeBuilderTraversal::LayoutParent(element);
 
   if (auto* document_element = element.GetDocument().documentElement()) {
     if (element != document_element)
