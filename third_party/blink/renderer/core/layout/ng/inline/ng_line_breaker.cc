@@ -935,7 +935,7 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
 
   // TODO(crbug.com/1003742): We should use |result.is_overflow| here. For now,
   // use |inline_size| because some tests rely on this behavior.
-  return inline_size <= available_width ? kSuccess : kOverflow;
+  return inline_size <= available_width_with_hyphens ? kSuccess : kOverflow;
 }
 
 // Breaks the text item at the previous break opportunity from
