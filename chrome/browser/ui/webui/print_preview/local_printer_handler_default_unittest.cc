@@ -88,8 +88,9 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
 
     // Choose between running with local test runner or via a service.
     const bool use_backend_service = GetParam();
+    feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
+                                       use_backend_service);
     if (use_backend_service) {
-      feature_list_.InitAndEnableFeature(features::kEnableOopPrintDrivers);
       print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
           test_remote_, test_backend_);
     }
