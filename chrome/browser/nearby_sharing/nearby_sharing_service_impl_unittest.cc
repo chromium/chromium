@@ -37,7 +37,6 @@
 #include "chrome/browser/nearby_sharing/fast_initiation_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
-#include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
@@ -52,6 +51,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -188,7 +188,7 @@ class FakePowerClient : public PowerClient {
   using PowerClient::SetSuspended;
 };
 
-namespace {
+namespace NearbySharingServiceUnitTests {
 
 constexpr base::TimeDelta kDelta = base::TimeDelta::FromMilliseconds(100);
 
@@ -387,12 +387,21 @@ class NearbySharingServiceImplTest : public testing::Test {
 
     session_controller_ = std::make_unique<TestSessionController>();
 
+    EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
+        .WillRepeatedly([&](base::OnceClosure) {
+          auto mock_reference_ptr =
+              std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+                                   MockNearbyProcessReference>();
+
+          EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbySharingDecoder)
+              .WillRepeatedly(
+                  testing::ReturnRef(mock_decoder_.shared_remote()));
+
+          return mock_reference_ptr;
+        });
+
     service_ = CreateService();
     SetFakeFastInitiationManagerFactory(/*should_succeed_on_start=*/true);
-
-    EXPECT_CALL(mock_nearby_process_manager(),
-                GetOrStartNearbySharingDecoder(testing::_))
-        .WillRepeatedly(testing::Return(&mock_decoder_));
 
     service_->set_free_disk_space_for_testing(kFreeDiskSpace);
 
@@ -434,8 +443,6 @@ class NearbySharingServiceImplTest : public testing::Test {
         &prefs_, notification_display_service, profile_,
         base::WrapUnique(fake_nearby_connections_manager_),
         &mock_nearby_process_manager_, std::move(power_client));
-    ON_CALL(mock_nearby_process_manager_, IsActiveProfile(profile_))
-        .WillByDefault(Return(true));
 
     DownloadCoreServiceFactory::GetForBrowserContext(profile_)
         ->SetDownloadManagerDelegateForTesting(
@@ -493,7 +500,8 @@ class NearbySharingServiceImplTest : public testing::Test {
         network_notifier_->GetConnectionType());
   }
 
-  NiceMock<MockNearbyProcessManager>& mock_nearby_process_manager() {
+  NiceMock<chromeos::nearby::MockNearbyProcessManager>&
+  mock_nearby_process_manager() {
     return mock_nearby_process_manager_;
   }
 
@@ -507,6 +515,9 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   void ProcessLatestPublicCertificateDecryption(size_t expected_num_calls,
                                                 bool success) {
+    // Ensure that all pending mojo messages are processed and the certificate
+    // manager state is as expected up to this point.
+    base::RunLoop().RunUntilIdle();
     std::vector<
         FakeNearbyShareCertificateManager::GetDecryptedPublicCertificateCall>&
         calls = certificate_manager()->get_decrypted_public_certificate_calls();
@@ -901,6 +912,13 @@ class NearbySharingServiceImplTest : public testing::Test {
     return last_advertising_interval_max_;
   }
 
+  void FireProcessShutdownIfRunning() {
+    if (service_->process_shutdown_pending_timer_.IsRunning())
+      service_->process_shutdown_pending_timer_.FireNow();
+  }
+
+  bool IsBoundToProcess() { return service_->process_reference_ != nullptr; }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   // We need to ensure that |network_notifier_| is created and destroyed after
@@ -918,7 +936,8 @@ class NearbySharingServiceImplTest : public testing::Test {
   FakeNearbyShareContactManager::Factory contact_manager_factory_;
   FakeNearbyShareCertificateManager::Factory certificate_manager_factory_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  NiceMock<MockNearbyProcessManager> mock_nearby_process_manager_;
+  NiceMock<chromeos::nearby::MockNearbyProcessManager>
+      mock_nearby_process_manager_;
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<NearbySharingServiceImpl> service_;
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
@@ -1014,19 +1033,6 @@ class TestObserver : public NearbySharingService::Observer {
   bool shutdown_called_ = false;
   NearbySharingService* service_;
 };
-
-}  // namespace
-
-TEST_F(NearbySharingServiceImplTest, AddsNearbyProcessObserver) {
-  EXPECT_TRUE(
-      mock_nearby_process_manager().observers_.HasObserver(service_.get()));
-}
-
-TEST_F(NearbySharingServiceImplTest, RemovesNearbyProcessObserver) {
-  service_->Shutdown();
-  service_.reset();
-  EXPECT_FALSE(!mock_nearby_process_manager().observers_.empty());
-}
 
 TEST_F(NearbySharingServiceImplTest, DisableNearbyShutdownConnections) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -1143,21 +1149,6 @@ TEST_F(NearbySharingServiceImplTest,
   SetBluetoothIsPowered(false);
   EXPECT_TRUE(fast_initiation_manager_factory_
                   ->StopAdvertisingCalledAndManagerDestroyed());
-}
-
-TEST_F(NearbySharingServiceImplTest,
-       RegisterSendSurfaceNoActiveProfilesNotDiscovering) {
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  ON_CALL(mock_nearby_process_manager_, IsActiveProfile(_))
-      .WillByDefault(Return(false));
-  MockTransferUpdateCallback transfer_callback;
-  MockShareTargetDiscoveredCallback discovery_callback;
-  EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
-      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
-                                    SendSurfaceState::kForeground));
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }
 
 TEST_F(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPresent) {
@@ -1502,13 +1493,14 @@ TEST_F(NearbySharingServiceImplTest, UnregisterSendSurfaceStopsDiscovering) {
                                     SendSurfaceState::kForeground));
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
 
-  EXPECT_CALL(mock_nearby_process_manager(), StopProcess(profile_))
-      .Times(AtLeast(1));
   EXPECT_EQ(
       NearbySharingService::StatusCodes::kOk,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+  EXPECT_TRUE(IsBoundToProcess());
+  FireProcessShutdownIfRunning();
+  EXPECT_FALSE(IsBoundToProcess());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1533,14 +1525,15 @@ TEST_F(NearbySharingServiceImplTest,
 TEST_F(NearbySharingServiceImplTest, UnregisterSendSurfaceNeverRegistered) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
-  EXPECT_CALL(mock_nearby_process_manager(), StopProcess(profile_))
-      .Times(AtLeast(1));
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
       NearbySharingService::StatusCodes::kError,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_TRUE(IsBoundToProcess());
+  FireProcessShutdownIfRunning();
+  EXPECT_FALSE(IsBoundToProcess());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1981,13 +1974,14 @@ TEST_F(NearbySharingServiceImplTest, UnregisterReceiveSurfaceStopsAdvertising) {
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
 
-  EXPECT_CALL(mock_nearby_process_manager(), StopProcess(profile_))
-      .Times(AtLeast(1));
   NearbySharingService::StatusCodes result2 =
       service_->UnregisterReceiveSurface(&callback);
   EXPECT_EQ(result2, NearbySharingService::StatusCodes::kOk);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+  EXPECT_TRUE(IsBoundToProcess());
+  FireProcessShutdownIfRunning();
+  EXPECT_FALSE(IsBoundToProcess());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -2009,14 +2003,15 @@ TEST_F(NearbySharingServiceImplTest,
 TEST_F(NearbySharingServiceImplTest, UnregisterReceiveSurfaceNeverRegistered) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
-  EXPECT_CALL(mock_nearby_process_manager(), StopProcess(profile_))
-      .Times(AtLeast(1));
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result =
       service_->UnregisterReceiveSurface(&callback);
   // This is no longer considered an error condition.
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_TRUE(IsBoundToProcess());
+  FireProcessShutdownIfRunning();
+  EXPECT_FALSE(IsBoundToProcess());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -2038,6 +2033,11 @@ TEST_F(NearbySharingServiceImplTest,
                                  &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
+
+  // Ensure that the messages sent by ProcessLatestPublicCertificateDecryption
+  // are processed prior to closing connection.
+  base::RunLoop().RunUntilIdle();
+
   connection_.Close();
 
   // Introduction is ignored without any side effect.
@@ -3050,6 +3050,9 @@ TEST_F(NearbySharingServiceImplTest,
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
 
+  // Ensure that the messages sent by ProcessLatestPublicCertificateDecryption
+  // are processed prior to checking if connection is closed.
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(connection_.IsClosed());
 
   // To avoid UAF in OnIncomingTransferUpdate().
@@ -3499,48 +3502,6 @@ TEST_F(NearbySharingServiceImplTest, SendFiles_Success) {
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
 
-TEST_F(NearbySharingServiceImplTest, ProfileChangedControlsDiscovery) {
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  MockTransferUpdateCallback transfer_callback;
-  MockShareTargetDiscoveredCallback discovery_callback;
-  EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
-      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
-                                    SendSurfaceState::kForeground));
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-
-  ON_CALL(mock_nearby_process_manager_, IsActiveProfile(profile_))
-      .WillByDefault(Return(false));
-  service_->OnNearbyProfileChanged(/*profile=*/nullptr);
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
-
-  ON_CALL(mock_nearby_process_manager_, IsActiveProfile(profile_))
-      .WillByDefault(Return(true));
-  service_->OnNearbyProfileChanged(/*profile=*/nullptr);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-}
-
-TEST_F(NearbySharingServiceImplTest, ProfileChangedControlsAdvertising) {
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  MockTransferUpdateCallback callback;
-  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
-      &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-
-  ON_CALL(mock_nearby_process_manager_, IsActiveProfile(profile_))
-      .WillByDefault(Return(false));
-  service_->OnNearbyProfileChanged(/*profile=*/nullptr);
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
-  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
-
-  ON_CALL(mock_nearby_process_manager_, IsActiveProfile(profile_))
-      .WillByDefault(Return(true));
-  service_->OnNearbyProfileChanged(/*profile=*/nullptr);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-}
-
 TEST_F(NearbySharingServiceImplTest,
        RegisterForegroundReceiveSurfaceEntersHighVisibility) {
   TestObserver observer(service_.get());
@@ -3719,3 +3680,5 @@ TEST_F(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
     run_loop.Run();
   }
 }
+
+}  // namespace NearbySharingServiceUnitTests

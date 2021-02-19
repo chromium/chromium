@@ -31,7 +31,6 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
-#include "chrome/browser/nearby_sharing/nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/outgoing_share_target_info.h"
@@ -40,8 +39,10 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 
 class FastInitiationManager;
 class NearbyConnectionsManager;
@@ -53,12 +54,15 @@ class NotificationDisplayService;
 class PrefService;
 class Profile;
 
+namespace NearbySharingServiceUnitTests {
+class NearbySharingServiceImplTest;
+}
+
 // All methods should be called from the same sequence that created the service.
 class NearbySharingServiceImpl
     : public NearbySharingService,
       public nearby_share::mojom::NearbyShareSettingsObserver,
       public NearbyShareCertificateManager::Observer,
-      public NearbyProcessManager::Observer,
       public device::BluetoothAdapter::Observer,
       public NearbyConnectionsManager::IncomingConnectionListener,
       public NearbyConnectionsManager::DiscoveryListener,
@@ -70,7 +74,7 @@ class NearbySharingServiceImpl
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-      NearbyProcessManager* process_manager,
+      chromeos::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client);
   ~NearbySharingServiceImpl() override;
 
@@ -117,11 +121,6 @@ class NearbySharingServiceImpl
   NearbyShareContactManager* GetContactManager() override;
   NearbyShareCertificateManager* GetCertificateManager() override;
 
-  // NearbyProcessManager::Observer:
-  void OnNearbyProfileChanged(Profile* profile) override;
-  void OnNearbyProcessStarted() override;
-  void OnNearbyProcessStopped() override;
-
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnection(const std::string& endpoint_id,
                             const std::vector<uint8_t>& endpoint_info,
@@ -134,6 +133,8 @@ class NearbySharingServiceImpl
   }
 
  private:
+  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTest;
+
   // nearby_share::mojom::NearbyShareSettingsObserver:
   void OnEnabledChanged(bool enabled) override;
   void OnDeviceNameChanged(const std::string& device_name) override;
@@ -307,6 +308,9 @@ class NearbySharingServiceImpl
   void OnIncomingMutualAcceptanceTimeout(const ShareTarget& share_target);
   void OnOutgoingMutualAcceptanceTimeout(const ShareTarget& share_target);
 
+  void OnNearbyProcessStopped();
+  sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
+
   base::Optional<ShareTarget> CreateShareTarget(
       const std::string& endpoint_id,
       const sharing::mojom::AdvertisementPtr& advertisement,
@@ -354,10 +358,11 @@ class NearbySharingServiceImpl
 
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  NearbyProcessManager* process_manager_;
+  chromeos::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<
+      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+      process_reference_;
   std::unique_ptr<PowerClient> power_client_;
-  ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
-      nearby_process_observer_{this};
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::unique_ptr<FastInitiationManager> fast_initiation_manager_;
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
