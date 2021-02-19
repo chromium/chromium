@@ -3,46 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":main_page_behavior",
-    ":os_settings_page",
-    ":settings_idle_load",
-  ]
-}
-
-js_library("os_settings_page") {
-  deps = [
-    ":main_page_behavior",
-    "..:os_page_visibility",
-    "..:os_route",
-    "../..:router",
-    "../..:search_settings",
-    "../os_apps_page:android_apps_browser_proxy",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("main_page_behavior") {
-  deps = [
-    "../..:router",
-    "../../settings_page:settings_section",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("settings_idle_load") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -106,8 +69,6 @@ js_library("settings_idle_load.m") {
   ]
   extra_deps = [ ":settings_idle_load_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
