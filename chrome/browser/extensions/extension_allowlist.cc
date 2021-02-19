@@ -43,7 +43,7 @@ void ExtensionAllowlist::Init() {
 void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value& attributes) {
-  const base::Value* allowlist_value = attributes.FindKey("_esbAllowist");
+  const base::Value* allowlist_value = attributes.FindKey("_esbAllowlist");
 
   if (!allowlist_value) {
     // TODO(jeffcyr): Add metric to track if there is an issue.
