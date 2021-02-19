@@ -42,8 +42,7 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
                              const H264Picture::Vector& ref_pic_listb1,
                              scoped_refptr<H264Picture> pic) override;
   Status ParseEncryptedSliceHeader(
-      const uint8_t* data,
-      size_t size,
+      const std::vector<base::span<const uint8_t>>& data,
       const std::vector<SubsampleEntry>& subsamples,
       const std::vector<uint8_t>& sps_nalu_data,
       const std::vector<uint8_t>& pps_nalu_data,

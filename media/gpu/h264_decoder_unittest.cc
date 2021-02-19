@@ -68,8 +68,7 @@ MATCHER(SubsampleSizeMatches, "Verify subsample sizes match buffer size") {
 // Emulates encrypted slice header parsing. We don't actually encrypt the data
 // so we can easily do this by just parsing it.
 H264Decoder::H264Accelerator::Status ParseSliceHeader(
-    const uint8_t* data,
-    size_t size,
+    const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
     const std::vector<uint8_t>& sps_nalu_data,
     const std::vector<uint8_t>& pps_nalu_data,
@@ -79,15 +78,14 @@ H264Decoder::H264Accelerator::Status ParseSliceHeader(
   // Construct the bitstream for parsing.
   std::vector<uint8_t> full_data;
   const std::vector<uint8_t> start_code = {0u, 0u, 1u};
-  constexpr size_t kExtraBytes = 3 * 3;  // 3 byte start code for 3 NALUs
-  full_data.reserve(size + sps_nalu_data.size() + pps_nalu_data.size() +
-                    kExtraBytes);
   full_data.insert(full_data.end(), start_code.begin(), start_code.end());
   full_data.insert(full_data.end(), sps_nalu_data.begin(), sps_nalu_data.end());
   full_data.insert(full_data.end(), start_code.begin(), start_code.end());
   full_data.insert(full_data.end(), pps_nalu_data.begin(), pps_nalu_data.end());
-  full_data.insert(full_data.end(), start_code.begin(), start_code.end());
-  full_data.insert(full_data.end(), data, data + size);
+  for (const auto& span : data) {
+    full_data.insert(full_data.end(), start_code.begin(), start_code.end());
+    full_data.insert(full_data.end(), span.begin(), span.end());
+  }
   H264Parser parser;
   parser.SetStream(full_data.data(), full_data.size());
   while (true) {
@@ -122,9 +120,8 @@ class MockH264Accelerator : public H264Decoder::H264Accelerator {
 
   MOCK_METHOD0(CreateH264Picture, scoped_refptr<H264Picture>());
   MOCK_METHOD1(SubmitDecode, Status(scoped_refptr<H264Picture> pic));
-  MOCK_METHOD6(ParseEncryptedSliceHeader,
-               Status(const uint8_t* data,
-                      size_t size,
+  MOCK_METHOD5(ParseEncryptedSliceHeader,
+               Status(const std::vector<base::span<const uint8_t>>& data,
                       const std::vector<SubsampleEntry>& subsamples,
                       const std::vector<uint8_t>& sps_nalu_data,
                       const std::vector<uint8_t>& pps_nalu_data,
@@ -301,7 +298,7 @@ TEST_F(H264DecoderTest, DecodeSingleEncryptedFrame) {
 
   {
     InSequence sequence;
-    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _, _))
+    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
         .WillOnce(Invoke(&ParseSliceHeader));
     EXPECT_CALL(*accelerator_, CreateH264Picture());
     EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
@@ -624,20 +621,20 @@ TEST_F(H264DecoderTest, ParseEncryptedSliceHeaderRetry) {
   EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
   EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
 
-  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _, _))
+  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode(true));
 
   // Try again, assuming key still not set. Only ParseEncryptedSliceHeader()
   // should be called again.
-  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _, _))
+  EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode(true));
 
   // Assume key has been provided now, next call to Decode() should proceed.
   {
     InSequence sequence;
-    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _, _))
+    EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _, _))
         .WillOnce(Invoke(&ParseSliceHeader));
     EXPECT_CALL(*accelerator_, CreateH264Picture());
     EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
