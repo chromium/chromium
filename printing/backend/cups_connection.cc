@@ -63,142 +63,157 @@ QueueStatus::QueueStatus(const QueueStatus& other) = default;
 
 QueueStatus::~QueueStatus() = default;
 
-CupsConnection::CupsConnection(const GURL& print_server_url,
-                               http_encryption_t encryption,
-                               bool blocking)
-    : print_server_url_(print_server_url),
-      cups_encryption_(encryption),
-      blocking_(blocking),
-      cups_http_(nullptr) {}
+class CupsConnectionImpl : public CupsConnection {
+ public:
+  CupsConnectionImpl(const GURL& print_server_url,
+                     http_encryption_t encryption,
+                     bool blocking)
+      : print_server_url_(print_server_url),
+        cups_encryption_(encryption),
+        blocking_(false),
+        cups_http_(nullptr) {}
 
-CupsConnection::CupsConnection(CupsConnection&& connection)
-    : print_server_url_(connection.print_server_url_),
-      cups_encryption_(connection.cups_encryption_),
-      blocking_(connection.blocking_),
-      cups_http_(std::move(connection.cups_http_)) {}
+  CupsConnectionImpl(CupsConnectionImpl&& connection)
+      : print_server_url_(connection.print_server_url_),
+        cups_encryption_(connection.cups_encryption_),
+        blocking_(connection.blocking_),
+        cups_http_(std::move(connection.cups_http_)) {}
 
-CupsConnection::~CupsConnection() {}
+  ~CupsConnectionImpl() override {}
 
-bool CupsConnection::Connect() {
-  if (cups_http_)
-    return true;  // we're already connected
+  std::vector<std::unique_ptr<CupsPrinter>> GetDests() override {
+    if (!Connect()) {
+      LOG(WARNING) << "CUPS connection failed";
+      return std::vector<std::unique_ptr<CupsPrinter>>();
+    }
 
-  std::string host;
-  int port;
+    // On macOS, AirPrint destinations show up even if they're not added to the
+    // system, and their capabilities cannot be read in that situation
+    // (crbug.com/1027834). Therefore, only show discovered destinations that
+    // have been added locally. Also exclude fax and scanner devices.
+    constexpr cups_ptype_t kMask =
+        CUPS_PRINTER_FAX | CUPS_PRINTER_SCANNER | CUPS_PRINTER_DISCOVERED;
+    DestinationEnumerator enumerator;
+    const int success =
+        cupsEnumDests(CUPS_DEST_FLAGS_NONE, kTimeoutMs,
+                      /*cancel=*/nullptr,
+                      /*type=*/CUPS_PRINTER_LOCAL, kMask,
+                      &DestinationEnumerator::cups_callback, &enumerator);
 
-  if (!print_server_url_.is_empty()) {
-    host = print_server_url_.host();
-    port = print_server_url_.IntPort();
-  } else {
-    host = cupsServer();
-    port = ippPort();
+    if (!success) {
+      LOG(WARNING) << "Enumerating printers failed";
+      return std::vector<std::unique_ptr<CupsPrinter>>();
+    }
+
+    auto dests = std::move(enumerator.get_dests());
+    std::vector<std::unique_ptr<CupsPrinter>> printers;
+    for (auto& dest : dests) {
+      printers.push_back(
+          CupsPrinter::Create(cups_http_.get(), std::move(dest)));
+    }
+
+    return printers;
   }
 
-  cups_http_.reset(httpConnect2(host.c_str(), port, nullptr, AF_UNSPEC,
-                                cups_encryption_, blocking_ ? 1 : 0, kTimeoutMs,
-                                nullptr));
-  return !!cups_http_;
-}
+  std::unique_ptr<CupsPrinter> GetPrinter(const std::string& name) override {
+    if (!Connect())
+      return nullptr;
 
-std::vector<CupsPrinter> CupsConnection::GetDests() {
-  if (!Connect()) {
-    LOG(WARNING) << "CUPS connection failed";
-    return std::vector<CupsPrinter>();
+    cups_dest_t* dest =
+        cupsGetNamedDest(cups_http_.get(), name.c_str(), nullptr);
+    if (!dest)
+      return nullptr;
+
+    return CupsPrinter::Create(cups_http_.get(), ScopedDestination(dest));
   }
 
-  // On macOS, AirPrint destinations show up even if they're not added to the
-  // system, and their capabilities cannot be read in that situation
-  // (crbug.com/1027834). Therefore, only show discovered destinations that have
-  // been added locally. Also exclude fax and scanner devices.
-  constexpr cups_ptype_t kMask =
-      CUPS_PRINTER_FAX | CUPS_PRINTER_SCANNER | CUPS_PRINTER_DISCOVERED;
-  DestinationEnumerator enumerator;
-  const int success =
-      cupsEnumDests(CUPS_DEST_FLAGS_NONE, kTimeoutMs,
-                    /*cancel=*/nullptr,
-                    /*type=*/CUPS_PRINTER_LOCAL, kMask,
-                    &DestinationEnumerator::cups_callback, &enumerator);
-
-  if (!success) {
-    LOG(WARNING) << "Enumerating printers failed";
-    return std::vector<CupsPrinter>();
-  }
-
-  auto dests = std::move(enumerator.get_dests());
-  std::vector<CupsPrinter> printers;
-  for (auto& dest : dests) {
-    printers.emplace_back(cups_http_.get(), std::move(dest));
-  }
-
-  return printers;
-}
-
-std::unique_ptr<CupsPrinter> CupsConnection::GetPrinter(
-    const std::string& name) {
-  if (!Connect())
-    return nullptr;
-
-  cups_dest_t* dest = cupsGetNamedDest(cups_http_.get(), name.c_str(), nullptr);
-  if (!dest)
-    return nullptr;
-
-  return std::make_unique<CupsPrinter>(cups_http_.get(),
-                                       ScopedDestination(dest));
-}
-
-bool CupsConnection::GetJobs(const std::vector<std::string>& printer_ids,
-                             std::vector<QueueStatus>* queues) {
-  DCHECK(queues);
-  if (!Connect()) {
-    LOG(ERROR) << "Could not establish connection to CUPS";
-    return false;
-  }
-
-  std::vector<QueueStatus> temp_queues;
-
-  for (const std::string& id : printer_ids) {
-    temp_queues.emplace_back();
-    QueueStatus* queue_status = &temp_queues.back();
-
-    if (!printing::GetPrinterStatus(cups_http_.get(), id,
-                                    &queue_status->printer_status)) {
-      LOG(WARNING) << "Could not retrieve printer status for " << id;
+  bool GetJobs(const std::vector<std::string>& printer_ids,
+               std::vector<QueueStatus>* queues) override {
+    DCHECK(queues);
+    if (!Connect()) {
+      LOG(ERROR) << "Could not establish connection to CUPS";
       return false;
     }
 
-    if (!GetCupsJobs(cups_http_.get(), id, kCompletedJobsLimit, COMPLETED,
-                     &queue_status->jobs)) {
-      LOG(WARNING) << "Could not get completed jobs for " << id;
+    std::vector<QueueStatus> temp_queues;
+
+    for (const std::string& id : printer_ids) {
+      temp_queues.emplace_back();
+      QueueStatus* queue_status = &temp_queues.back();
+
+      if (!printing::GetPrinterStatus(cups_http_.get(), id,
+                                      &queue_status->printer_status)) {
+        LOG(WARNING) << "Could not retrieve printer status for " << id;
+        return false;
+      }
+
+      if (!GetCupsJobs(cups_http_.get(), id, kCompletedJobsLimit, COMPLETED,
+                       &queue_status->jobs)) {
+        LOG(WARNING) << "Could not get completed jobs for " << id;
+        return false;
+      }
+
+      if (!GetCupsJobs(cups_http_.get(), id, kProcessingJobsLimit, PROCESSING,
+                       &queue_status->jobs)) {
+        LOG(WARNING) << "Could not get in progress jobs for " << id;
+        return false;
+      }
+    }
+    queues->insert(queues->end(), temp_queues.begin(), temp_queues.end());
+
+    return true;
+  }
+
+  bool GetPrinterStatus(const std::string& printer_id,
+                        PrinterStatus* printer_status) override {
+    if (!Connect()) {
+      LOG(ERROR) << "Could not establish connection to CUPS";
       return false;
     }
+    return printing::GetPrinterStatus(cups_http_.get(), printer_id,
+                                      printer_status);
+  }
 
-    if (!GetCupsJobs(cups_http_.get(), id, kProcessingJobsLimit, PROCESSING,
-                     &queue_status->jobs)) {
-      LOG(WARNING) << "Could not get in progress jobs for " << id;
-      return false;
+  std::string server_name() const override { return print_server_url_.host(); }
+
+  int last_error() const override { return cupsLastError(); }
+
+ private:
+  // lazily initialize http connection
+  bool Connect() {
+    if (cups_http_)
+      return true;  // we're already connected
+
+    std::string host;
+    int port;
+
+    if (!print_server_url_.is_empty()) {
+      host = print_server_url_.host();
+      port = print_server_url_.IntPort();
+    } else {
+      host = cupsServer();
+      port = ippPort();
     }
+
+    cups_http_.reset(httpConnect2(host.c_str(), port, nullptr, AF_UNSPEC,
+                                  cups_encryption_, blocking_ ? 1 : 0,
+                                  kTimeoutMs, nullptr));
+    return !!cups_http_;
   }
-  queues->insert(queues->end(), temp_queues.begin(), temp_queues.end());
 
-  return true;
-}
+  GURL print_server_url_;
+  http_encryption_t cups_encryption_;
+  bool blocking_;
 
-bool CupsConnection::GetPrinterStatus(const std::string& printer_id,
-                                      PrinterStatus* printer_status) {
-  if (!Connect()) {
-    LOG(ERROR) << "Could not establish connection to CUPS";
-    return false;
-  }
-  return printing::GetPrinterStatus(cups_http_.get(), printer_id,
-                                    printer_status);
-}
+  ScopedHttpPtr cups_http_;
+};
 
-std::string CupsConnection::server_name() const {
-  return print_server_url_.host();
-}
-
-int CupsConnection::last_error() const {
-  return cupsLastError();
+std::unique_ptr<CupsConnection> CupsConnection::Create(
+    const GURL& print_server_url,
+    http_encryption_t encryption,
+    bool blocking) {
+  return std::make_unique<CupsConnectionImpl>(print_server_url, encryption,
+                                              blocking);
 }
 
 }  // namespace printing

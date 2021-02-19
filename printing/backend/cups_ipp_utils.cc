@@ -40,9 +40,9 @@ std::unique_ptr<CupsConnection> CreateConnection(
   GURL print_server_url = GURL(print_server_url_str);
   bool cups_blocking = cups_blocking_str == kValueTrue;
 
-  return std::make_unique<CupsConnection>(
-      print_server_url, static_cast<http_encryption_t>(encryption),
-      cups_blocking);
+  return CupsConnection::Create(print_server_url,
+                                static_cast<http_encryption_t>(encryption),
+                                cups_blocking);
 }
 
 }  // namespace printing

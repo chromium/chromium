@@ -240,7 +240,7 @@ std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
 
 PrintingContextChromeos::PrintingContextChromeos(Delegate* delegate)
     : PrintingContext(delegate),
-      connection_(GURL(), HTTP_ENCRYPT_NEVER, true),
+      connection_(CupsConnection::Create(GURL(), HTTP_ENCRYPT_NEVER, true)),
       send_user_info_(false) {}
 
 PrintingContextChromeos::~PrintingContextChromeos() {
@@ -371,7 +371,7 @@ PrintingContext::Result PrintingContextChromeos::InitializeDevice(
     const std::string& device) {
   DCHECK(!in_print_job_);
 
-  std::unique_ptr<CupsPrinter> printer = connection_.GetPrinter(device);
+  std::unique_ptr<CupsPrinter> printer = connection_->GetPrinter(device);
   if (!printer) {
     LOG(WARNING) << "Could not initialize device";
     return OnError();
