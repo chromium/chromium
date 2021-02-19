@@ -28,7 +28,7 @@ import org.chromium.components.component_updater.IComponentsProviderService;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -118,13 +118,20 @@ public class ComponentsProviderServiceTest {
     }
 
     private Bundle getFilesForComponentSync(String componentId) throws Exception {
-        CompletableFuture<Bundle> future = new CompletableFuture<>();
+        CountDownLatch latch = new CountDownLatch(1);
+        final Bundle result = new Bundle();
         mService.getFilesForComponent(componentId, new ResultReceiver(null) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
-                future.complete(resultData);
+                if (resultData != null) {
+                    result.putAll(resultData);
+                }
+                latch.countDown();
             }
         });
-        return future.get(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertTrue("Timeout waiting to receive result from getFilesForComponent",
+                latch.await(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+
+        return result.isEmpty() ? null : result;
     }
 }
