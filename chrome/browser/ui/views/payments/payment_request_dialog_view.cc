@@ -474,6 +474,11 @@ PaymentRequestDialogView::PaymentRequestDialogView(
 
   SetCloseCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
                                   weak_ptr_factory_.GetWeakPtr()));
+  // The dialog's CancelCallback may be called during initialization e.g. by
+  // pressing the escape key, calling OnDialogClosed will ensure the correct
+  // order of destruction.
+  SetCancelCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
+                                   weak_ptr_factory_.GetWeakPtr()));
 
   request->spec()->AddObserver(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
