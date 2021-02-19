@@ -13,6 +13,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.services.AwMinidumpUploadJobService;
+import org.chromium.android_webview.services.ComponentsProviderService;
 import org.chromium.android_webview.services.CrashReceiverService;
 import org.chromium.android_webview.services.DeveloperModeContentProvider;
 import org.chromium.android_webview.services.DeveloperUiService;
@@ -41,5 +42,8 @@ public class ServiceNamesTest {
                 ServiceNames.METRICS_BRIDGE_SERVICE);
         Assert.assertEquals("Incorrect class name constant", VariationsSeedServer.class.getName(),
                 ServiceNames.VARIATIONS_SEED_SERVER);
+        Assert.assertEquals("Incorrect class name constant",
+                ComponentsProviderService.class.getName(),
+                ServiceNames.AW_COMPONENTS_PROVIDER_SERVICE);
     }
 }

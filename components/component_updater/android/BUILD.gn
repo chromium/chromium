@@ -38,3 +38,12 @@ static_library("native_background_task_update_scheduler") {
     "//components/component_updater",
   ]
 }
+
+android_aidl("component_provider_service_aidl") {
+  import_include = [ "java/src" ]
+  sources = [ "java/src/org/chromium/components/component_updater/IComponentsProviderService.aidl" ]
+}
+
+android_library("component_provider_service_aidl_java") {
+  srcjar_deps = [ ":component_provider_service_aidl" ]
+}
