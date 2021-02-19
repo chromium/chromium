@@ -54,8 +54,8 @@ var TelemetryExtensionUIBrowserTest = class extends testing.Test {
 TEST_F('TelemetryExtensionUIBrowserTest', 'HasChromeSchemeURL', () => {
   const title = document.querySelector('title');
 
-  assertEquals(title.innerText, 'Telemetry Extension');
-  assertEquals(document.location.origin, HOST_ORIGIN);
+  assertEquals('Telemetry Extension', title.innerText);
+  assertEquals(HOST_ORIGIN, document.location.origin);
   testDone();
 });
 
@@ -63,86 +63,85 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'HasChromeSchemeURL', () => {
 // chrome-untrusted:// iframe.
 TEST_F('TelemetryExtensionUIBrowserTest', 'HasChromeUntrustedIframe', () => {
   const iframe = document.querySelector('iframe');
-  assertNotEquals(iframe, null);
+  assertNotEquals(null, iframe);
   testDone();
 });
 
 TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
   // Unit tests for convertRoutineId
-  assertEquals(diagnosticsProxy.convertRoutineId(234089591), 234089591);
+  assertEquals(234089591, diagnosticsProxy.convertRoutineId(234089591));
 
   // Unit tests for convertCommandToEnum
   const commandEnum = chromeos.health.mojom.DiagnosticRoutineCommandEnum;
 
   assertEquals(
-      diagnosticsProxy.convertCommandToEnum('continue'), commandEnum.kContinue);
+      commandEnum.kContinue, diagnosticsProxy.convertCommandToEnum('continue'));
   assertEquals(
-      diagnosticsProxy.convertCommandToEnum('cancel'), commandEnum.kCancel);
+      commandEnum.kCancel, diagnosticsProxy.convertCommandToEnum('cancel'));
   assertEquals(
-      diagnosticsProxy.convertCommandToEnum('get-status'),
-      commandEnum.kGetStatus);
+      commandEnum.kGetStatus,
+      diagnosticsProxy.convertCommandToEnum('get-status'));
   assertEquals(
-      diagnosticsProxy.convertCommandToEnum('remove'), commandEnum.kRemove);
+      commandEnum.kRemove, diagnosticsProxy.convertCommandToEnum('remove'));
 
   // Unit tests for convertStatus
   const statusEnum = chromeos.health.mojom.DiagnosticRoutineStatusEnum;
 
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kReady), 'ready');
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kRunning), 'running');
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kWaiting), 'waiting');
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kPassed), 'passed');
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kFailed), 'failed');
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kError), 'error');
+  assertEquals('ready', diagnosticsProxy.convertStatus(statusEnum.kReady));
+  assertEquals('running', diagnosticsProxy.convertStatus(statusEnum.kRunning));
+  assertEquals('waiting', diagnosticsProxy.convertStatus(statusEnum.kWaiting));
+  assertEquals('passed', diagnosticsProxy.convertStatus(statusEnum.kPassed));
+  assertEquals('failed', diagnosticsProxy.convertStatus(statusEnum.kFailed));
+  assertEquals('error', diagnosticsProxy.convertStatus(statusEnum.kError));
   assertEquals(
-      diagnosticsProxy.convertStatus(statusEnum.kCancelled), 'cancelled');
+      'cancelled', diagnosticsProxy.convertStatus(statusEnum.kCancelled));
   assertEquals(
-      diagnosticsProxy.convertStatus(statusEnum.kFailedToStart),
-      'failed-to-start');
-  assertEquals(diagnosticsProxy.convertStatus(statusEnum.kRemoved), 'removed');
+      'failed-to-start',
+      diagnosticsProxy.convertStatus(statusEnum.kFailedToStart));
+  assertEquals('removed', diagnosticsProxy.convertStatus(statusEnum.kRemoved));
   assertEquals(
-      diagnosticsProxy.convertStatus(statusEnum.kCancelling), 'cancelling');
+      'cancelling', diagnosticsProxy.convertStatus(statusEnum.kCancelling));
   assertEquals(
-      diagnosticsProxy.convertStatus(statusEnum.kUnsupported), 'unsupported');
-  assertEquals(
-      diagnosticsProxy.convertStatus(statusEnum.kNotRun), 'not-run');
+      'unsupported', diagnosticsProxy.convertStatus(statusEnum.kUnsupported));
+  assertEquals('not-run', diagnosticsProxy.convertStatus(statusEnum.kNotRun));
 
   // Unit tests for convertUserMessage
   const userMessageEnum =
       chromeos.health.mojom.DiagnosticRoutineUserMessageEnum;
 
   assertEquals(
-      diagnosticsProxy.convertUserMessage(userMessageEnum.kUnplugACPower),
-      'unplug-ac-power');
+      'unplug-ac-power',
+      diagnosticsProxy.convertUserMessage(userMessageEnum.kUnplugACPower));
   assertEquals(
-      diagnosticsProxy.convertUserMessage(userMessageEnum.kPlugInACPower),
-      'plug-in-ac-power');
+      'plug-in-ac-power',
+      diagnosticsProxy.convertUserMessage(userMessageEnum.kPlugInACPower));
 
   // Unit tests for convertPowerStatusToEnum
   const acPowerStatusEnum = chromeos.health.mojom.AcPowerStatusEnum;
   assertEquals(
-      diagnosticsProxy.convertPowerStatusToEnum('connected'),
-      acPowerStatusEnum.kConnected);
+      acPowerStatusEnum.kConnected,
+      diagnosticsProxy.convertPowerStatusToEnum('connected'));
   assertEquals(
-      diagnosticsProxy.convertPowerStatusToEnum('disconnected'),
-      acPowerStatusEnum.kDisconnected);
+      acPowerStatusEnum.kDisconnected,
+      diagnosticsProxy.convertPowerStatusToEnum('disconnected'));
 
   // Unit tests for convertNvmeSelfTestTypeToEnum
   const nvmeSelfTestTypeEnum = chromeos.health.mojom.NvmeSelfTestTypeEnum;
   assertEquals(
-      diagnosticsProxy.convertNvmeSelfTestTypeToEnum('short-self-test'),
-      nvmeSelfTestTypeEnum.kShortSelfTest);
+      nvmeSelfTestTypeEnum.kShortSelfTest,
+      diagnosticsProxy.convertNvmeSelfTestTypeToEnum('short-self-test'));
   assertEquals(
-      diagnosticsProxy.convertNvmeSelfTestTypeToEnum('long-self-test'),
-      nvmeSelfTestTypeEnum.kLongSelfTest);
+      nvmeSelfTestTypeEnum.kLongSelfTest,
+      diagnosticsProxy.convertNvmeSelfTestTypeToEnum('long-self-test'));
 
   // Unit tests for convertDiskReadTypeToEnum
   const diskReadRoutineTypeEnum = chromeos.health.mojom.DiskReadRoutineTypeEnum;
   assertEquals(
-      diagnosticsProxy.convertDiskReadTypeToEnum('linear-read'),
-      diskReadRoutineTypeEnum.kLinearRead);
+      diskReadRoutineTypeEnum.kLinearRead,
+      diagnosticsProxy.convertDiskReadTypeToEnum('linear-read'));
   assertEquals(
-      diagnosticsProxy.convertDiskReadTypeToEnum('random-read'),
-      diskReadRoutineTypeEnum.kRandomRead);
+      diskReadRoutineTypeEnum.kRandomRead,
+      diagnosticsProxy.convertDiskReadTypeToEnum('random-read'));
 
   testDone();
 });
@@ -153,42 +152,30 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
   const errorTypeEnum = chromeos.health.mojom.ErrorType;
 
   assertEquals(
-      telemetryProxy.convertErrorType(errorTypeEnum.kFileReadError),
-      'file-read-error');
+      'file-read-error',
+      telemetryProxy.convertErrorType(errorTypeEnum.kFileReadError));
   assertEquals(
-      telemetryProxy.convertErrorType(errorTypeEnum.kParseError),
-      'parse-error');
+      'parse-error',
+      telemetryProxy.convertErrorType(errorTypeEnum.kParseError));
   assertEquals(
-      telemetryProxy.convertErrorType(errorTypeEnum.kSystemUtilityError),
-      'system-utility-error');
+      'system-utility-error',
+      telemetryProxy.convertErrorType(errorTypeEnum.kSystemUtilityError));
   assertEquals(
-      telemetryProxy.convertErrorType(errorTypeEnum.kServiceUnavailable),
-      'service-unavailable');
+      'service-unavailable',
+      telemetryProxy.convertErrorType(errorTypeEnum.kServiceUnavailable));
 
   // Unit tests for convertCpuArch.
   const cpuArchEnum = chromeos.health.mojom.CpuArchitectureEnum;
 
-  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kUnknown), 'unknown');
-  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kX86_64), 'x86-64');
-  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kAArch64), 'AArch64');
-  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kArmv7l), 'Armv7l');
+  assertEquals('unknown', telemetryProxy.convertCpuArch(cpuArchEnum.kUnknown));
+  assertEquals('x86-64', telemetryProxy.convertCpuArch(cpuArchEnum.kX86_64));
+  assertEquals('AArch64', telemetryProxy.convertCpuArch(cpuArchEnum.kAArch64));
+  assertEquals('Armv7l', telemetryProxy.convertCpuArch(cpuArchEnum.kArmv7l));
 
   // Check that convertAllEnums converts all Mojo enums to strings and does not
   // crash if some enums are not present in TelemetryInfo.
-  assertDeepEquals(telemetryProxy.convertAllEnums({}), {});
+  assertDeepEquals({}, telemetryProxy.convertAllEnums({}));
   assertDeepEquals(
-      telemetryProxy.convertAllEnums({
-        batteryResult: {},
-        blockDeviceResult: {},
-        vpdResult: {},
-        cpuResult: {},
-        timezoneResult: {},
-        memoryResult: {},
-        backlightResult: {},
-        fanResult: {},
-        statefulPartitionResult: {},
-        bluetoothResult: {}
-      }),
       {
         batteryResult: {},
         blockDeviceResult: {},
@@ -200,22 +187,47 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
         fanResult: {},
         statefulPartitionResult: {},
         bluetoothResult: {}
-      });
+      },
+      telemetryProxy.convertAllEnums({
+        batteryResult: {},
+        blockDeviceResult: {},
+        vpdResult: {},
+        cpuResult: {},
+        timezoneResult: {},
+        memoryResult: {},
+        backlightResult: {},
+        fanResult: {},
+        statefulPartitionResult: {},
+        bluetoothResult: {}
+      }));
   // Check architecture equals to 0 (i.e. kUnknown).
   assertDeepEquals(
+      {cpuResult: {cpuInfo: {architecture: 'unknown', physicalCpus: []}}},
       telemetryProxy.convertAllEnums({
         cpuResult:
             {cpuInfo: {architecture: cpuArchEnum.kUnknown, physicalCpus: []}}
-      }),
-      {cpuResult: {cpuInfo: {architecture: 'unknown', physicalCpus: []}}});
+      }));
   assertDeepEquals(
+      {cpuResult: {cpuInfo: {architecture: 'x86-64', physicalCpus: []}}},
       telemetryProxy.convertAllEnums({
         cpuResult:
             {cpuInfo: {architecture: cpuArchEnum.kX86_64, physicalCpus: []}}
-      }),
-      {cpuResult: {cpuInfo: {architecture: 'x86-64', physicalCpus: []}}});
+      }));
   // Check error type equals to 0 (i.e. kFileReadError).
   assertDeepEquals(
+      {
+        batteryResult: {error: {type: 'file-read-error', msg: 'battery'}},
+        blockDeviceResult: {error: {type: 'file-read-error', msg: 'ssd'}},
+        vpdResult: {error: {type: 'file-read-error', msg: 'vpd'}},
+        cpuResult: {error: {type: 'file-read-error', msg: 'cpu'}},
+        timezoneResult: {error: {type: 'file-read-error', msg: 'timezone'}},
+        memoryResult: {error: {type: 'file-read-error', msg: 'memory'}},
+        backlightResult: {error: {type: 'file-read-error', msg: 'backlight'}},
+        fanResult: {error: {type: 'file-read-error', msg: 'fan'}},
+        statefulPartitionResult:
+            {error: {type: 'file-read-error', msg: 'partition'}},
+        bluetoothResult: {error: {type: 'file-read-error', msg: 'bluetooth'}}
+      },
       telemetryProxy.convertAllEnums({
         batteryResult:
             {error: {type: errorTypeEnum.kFileReadError, msg: 'battery'}},
@@ -234,21 +246,22 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
             {error: {type: errorTypeEnum.kFileReadError, msg: 'partition'}},
         bluetoothResult:
             {error: {type: errorTypeEnum.kFileReadError, msg: 'bluetooth'}}
-      }),
-      {
-        batteryResult: {error: {type: 'file-read-error', msg: 'battery'}},
-        blockDeviceResult: {error: {type: 'file-read-error', msg: 'ssd'}},
-        vpdResult: {error: {type: 'file-read-error', msg: 'vpd'}},
-        cpuResult: {error: {type: 'file-read-error', msg: 'cpu'}},
-        timezoneResult: {error: {type: 'file-read-error', msg: 'timezone'}},
-        memoryResult: {error: {type: 'file-read-error', msg: 'memory'}},
-        backlightResult: {error: {type: 'file-read-error', msg: 'backlight'}},
-        fanResult: {error: {type: 'file-read-error', msg: 'fan'}},
-        statefulPartitionResult:
-            {error: {type: 'file-read-error', msg: 'partition'}},
-        bluetoothResult: {error: {type: 'file-read-error', msg: 'bluetooth'}}
-      });
+      }));
   assertDeepEquals(
+      {
+        batteryResult: {error: {type: 'parse-error', msg: 'battery'}},
+        blockDeviceResult: {error: {type: 'system-utility-error', msg: 'ssd'}},
+        vpdResult: {error: {type: 'service-unavailable', msg: 'vpd'}},
+        cpuResult: {error: {type: 'parse-error', msg: 'cpu'}},
+        timezoneResult:
+            {error: {type: 'system-utility-error', msg: 'timezone'}},
+        memoryResult: {error: {type: 'service-unavailable', msg: 'memory'}},
+        backlightResult: {error: {type: 'parse-error', msg: 'backlight'}},
+        fanResult: {error: {type: 'system-utility-error', msg: 'fan'}},
+        statefulPartitionResult:
+            {error: {type: 'service-unavailable', msg: 'partition'}},
+        bluetoothResult: {error: {type: 'parse-error', msg: 'bluetooth'}}
+      },
       telemetryProxy.convertAllEnums({
         batteryResult:
             {error: {type: errorTypeEnum.kParseError, msg: 'battery'}},
@@ -270,21 +283,7 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
         },
         bluetoothResult:
             {error: {type: errorTypeEnum.kParseError, msg: 'bluetooth'}}
-      }),
-      {
-        batteryResult: {error: {type: 'parse-error', msg: 'battery'}},
-        blockDeviceResult: {error: {type: 'system-utility-error', msg: 'ssd'}},
-        vpdResult: {error: {type: 'service-unavailable', msg: 'vpd'}},
-        cpuResult: {error: {type: 'parse-error', msg: 'cpu'}},
-        timezoneResult:
-            {error: {type: 'system-utility-error', msg: 'timezone'}},
-        memoryResult: {error: {type: 'service-unavailable', msg: 'memory'}},
-        backlightResult: {error: {type: 'parse-error', msg: 'backlight'}},
-        fanResult: {error: {type: 'system-utility-error', msg: 'fan'}},
-        statefulPartitionResult:
-            {error: {type: 'service-unavailable', msg: 'partition'}},
-        bluetoothResult: {error: {type: 'parse-error', msg: 'bluetooth'}}
-      });
+      }));
 
   testDone();
 });
@@ -295,56 +294,55 @@ TEST_F(
     'TelemetryExtensionUIBrowserTest', 'ConvertTelemetryMojoTypesToWebIDLTypes',
     () => {
       // null/undefined --> null.
-      assertEquals(telemetryProxy.convert(null), null);
-      assertEquals(telemetryProxy.convert(undefined), null);
+      assertEquals(null, telemetryProxy.convert(null));
+      assertEquals(null, telemetryProxy.convert(undefined));
 
       // number/string --> number/string.
-      assertEquals(telemetryProxy.convert('simple string'), 'simple string');
-      assertEquals(telemetryProxy.convert(2020), 2020);
+      assertEquals('simple string', telemetryProxy.convert('simple string'));
+      assertEquals(2020, telemetryProxy.convert(2020));
 
       // {value: X} --> X if X is a number.
-      assertEquals(telemetryProxy.convert({value: 15}), 15);
-      assertEquals(telemetryProxy.convert({value: 777.555}), 777.555);
+      assertEquals(15, telemetryProxy.convert({value: 15}));
+      assertEquals(777.555, telemetryProxy.convert({value: 777.555}));
 
       // {value: X} --> X if X is a booelan.
-      assertEquals(telemetryProxy.convert({value: false}), false);
-      assertEquals(telemetryProxy.convert({value: true}), true);
+      assertEquals(false, telemetryProxy.convert({value: false}));
+      assertEquals(true, telemetryProxy.convert({value: true}));
 
       // {value: X} --> {value: X} if X is not a number.
-      assertDeepEquals(telemetryProxy.convert({value: 'ABC'}), {value: 'ABC'});
+      assertDeepEquals({value: 'ABC'}, telemetryProxy.convert({value: 'ABC'}));
       assertDeepEquals(
-          telemetryProxy.convert({value: {k: 'v'}}), {value: {k: 'v'}});
+          {value: {k: 'v'}}, telemetryProxy.convert({value: {k: 'v'}}));
 
       // omit null/undefined properties.
       assertDeepEquals(
-          telemetryProxy.convert({a: 1, b: null, c: undefined}), {a: 1});
+          {a: 1}, telemetryProxy.convert({a: 1, b: null, c: undefined}));
       assertDeepEquals(
-          telemetryProxy.convert({a: {x: null, y: undefined, z: 'zZz'}}),
-          {a: {z: 'zZz'}});
+          {a: {z: 'zZz'}},
+          telemetryProxy.convert({a: {x: null, y: undefined, z: 'zZz'}}));
 
-      // covnert arrays.
-      assertDeepEquals(telemetryProxy.convert([]), []);
-      assertDeepEquals(telemetryProxy.convert([null, undefined]), []);
-      assertDeepEquals(telemetryProxy.convert([{value: 1}]), [1]);
+      // convert arrays.
+      assertDeepEquals([], telemetryProxy.convert([]));
+      assertDeepEquals([], telemetryProxy.convert([null, undefined]));
+      assertDeepEquals([1], telemetryProxy.convert([{value: 1}]));
       assertDeepEquals(
-          telemetryProxy.convert([null, undefined, {a: 1}, []]), [{a: 1}, []]);
-      assertDeepEquals(
-          telemetryProxy.convert(
-              [{a: null, b: undefined}, {x: 'xxx', y: null}]),
-          [{x: 'xxx'}]);
+          [{a: 1}, []], telemetryProxy.convert([null, undefined, {a: 1}, []]));
+      assertDeepEquals([{x: 'xxx'}], telemetryProxy.convert([
+        {a: null, b: undefined}, {x: 'xxx', y: null}
+      ]));
 
       // convert objects without properties to null.
-      assertEquals(telemetryProxy.convert({}), null);
-      assertEquals(telemetryProxy.convert({a: null, b: undefined}), null);
-      assertEquals(telemetryProxy.convert({a: {x: null, y: undefined}}), null);
+      assertEquals(null, telemetryProxy.convert({}));
+      assertEquals(null, telemetryProxy.convert({a: null, b: undefined}));
+      assertEquals(null, telemetryProxy.convert({a: {x: null, y: undefined}}));
 
       assertDeepEquals(
+          {a: 1, c: {x: 1000, y: 'YYY', z: {value: 'ZzZ'}}},
           telemetryProxy.convert({
             a: 1,
             b: null,
             c: {x: {value: 1000}, y: 'YYY', z: {value: 'ZzZ'}}
-          }),
-          {a: 1, c: {x: 1000, y: 'YYY', z: {value: 'ZzZ'}}});
+          }));
 
       testDone();
     });
@@ -670,18 +668,20 @@ TEST_F(
     'UntrustedRequestTelemetryInfoWithInterceptor', async function() {
       await runTestInUntrusted('UntrustedRequestTelemetryInfoWithInterceptor');
 
-      assertDeepEquals(this.probeService.probeTelemetryInfoCategories, [
-        chromeos.health.mojom.ProbeCategoryEnum.kBattery,
-        chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices,
-        chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData,
-        chromeos.health.mojom.ProbeCategoryEnum.kCpu,
-        chromeos.health.mojom.ProbeCategoryEnum.kTimezone,
-        chromeos.health.mojom.ProbeCategoryEnum.kMemory,
-        chromeos.health.mojom.ProbeCategoryEnum.kBacklight,
-        chromeos.health.mojom.ProbeCategoryEnum.kFan,
-        chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition,
-        chromeos.health.mojom.ProbeCategoryEnum.kBluetooth
-      ]);
+      assertDeepEquals(
+          [
+            chromeos.health.mojom.ProbeCategoryEnum.kBattery,
+            chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices,
+            chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData,
+            chromeos.health.mojom.ProbeCategoryEnum.kCpu,
+            chromeos.health.mojom.ProbeCategoryEnum.kTimezone,
+            chromeos.health.mojom.ProbeCategoryEnum.kMemory,
+            chromeos.health.mojom.ProbeCategoryEnum.kBacklight,
+            chromeos.health.mojom.ProbeCategoryEnum.kFan,
+            chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition,
+            chromeos.health.mojom.ProbeCategoryEnum.kBluetooth
+          ],
+          this.probeService.probeTelemetryInfoCategories);
 
       testDone();
     });
