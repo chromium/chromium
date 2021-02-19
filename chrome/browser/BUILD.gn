@@ -4634,7 +4634,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos_ash) {
     sources += [
       "feedback/system_logs/log_sources/user_log_files_log_source.cc",
       "feedback/system_logs/log_sources/user_log_files_log_source.h",

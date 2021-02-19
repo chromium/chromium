@@ -84,9 +84,7 @@ void OnLacrosActiveTabUrlFeteched(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(http://crbug.com/1132106): Include the following code only in
-// non-lacros builds after M87 beta when Feedback crosapi is available in all
-// ash versions.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Calls feedback private api to show Feedback ui.
 void RequestFeedbackFlow(const GURL& page_url,
                          Profile* profile,
@@ -116,6 +114,7 @@ void RequestFeedbackFlow(const GURL& page_url,
       extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
       include_bluetooth_logs, source == kFeedbackSourceKaleidoscope);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -185,21 +184,13 @@ void ShowFeedbackPage(const GURL& page_url,
                             kFeedbackSourceCount);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosChromeServiceImpl::Get()->IsFeedbackAvailable()) {
-    // Send request to ash via crosapi mojo to show Feedback ui from ash.
-    internal::ShowFeedbackPageLacros(page_url, source, description_template,
-                                     description_placeholder_text, category_tag,
-                                     extra_diagnostics);
-  } else {
-    // If ash version is too old, which does not support Feedback crosapi,
-    // invoke the Feedback ui from feedback extension in lacros and send
-    // a simple lacros feedback report for backward compatibility support.
-    // TODO(http://crbug.com/1132106): Remove this code after M87 beta
-    // when Feedback should be available in crosapi for all ash versions.
-    RequestFeedbackFlow(page_url, profile, source, description_template,
-                        description_placeholder_text, category_tag,
-                        extra_diagnostics);
-  }
+  // After M87 beta, Feedback API should be supported in crosapi with all ash
+  // versions on chromeOS platform where lacros is deployed.
+  DCHECK(chromeos::LacrosChromeServiceImpl::Get()->IsFeedbackAvailable());
+  // Send request to ash via crosapi mojo to show Feedback ui from ash.
+  internal::ShowFeedbackPageLacros(page_url, source, description_template,
+                                   description_placeholder_text, category_tag,
+                                   extra_diagnostics);
 #else
   // Show feedback dialog using feedback extension API.
   RequestFeedbackFlow(page_url, profile, source, description_template,

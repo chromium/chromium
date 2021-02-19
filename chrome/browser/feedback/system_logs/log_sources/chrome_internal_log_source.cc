@@ -78,7 +78,7 @@ constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kDataReductionProxyKey[] = "data_reduction_proxy";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
 #endif
 
@@ -236,12 +236,6 @@ std::string GetChromeVersionString() {
   // Version of the current running browser.
   std::string browser_version = chrome::GetVersionString();
 
-// This is used by simple lacros feedback for backward compatibility.
-// TODO(http://crbug.com/1132106): Remove after M87 beta when Feedback
-// crosapi is available in all ash versions.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  browser_version = kLacrosChromeVersionPrefix + browser_version;
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the device is receiving LTS updates, add a prefix to the version string.

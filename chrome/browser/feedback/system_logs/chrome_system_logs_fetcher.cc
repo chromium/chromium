@@ -29,13 +29,13 @@
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/feedback/system_logs/log_sources/user_log_files_log_source.h"
 #endif
 
 namespace system_logs {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 constexpr char kDefaultLogPath[] = "/home/chronos/user/lacros/lacros.log";
@@ -73,11 +73,6 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
       crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
     fetcher->AddSource(std::make_unique<CrosapiSystemLogSource>());
   }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
-      base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
