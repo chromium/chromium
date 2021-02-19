@@ -68,8 +68,9 @@ static const char kManifestDisplayOverrideNotSupportedMessage[] =
     "Manifest contains 'display_override' field, and the first supported "
     "display mode must be one of 'standalone', 'fullscreen', or 'minimal-ui'";
 static const char kWarnNotOfflineCapable[] =
-    "Page does not work offline. The page will not be regarded as installable "
-    "after Chrome 93, stable release August 2021.";
+    "Page does not work offline. Starting in Chrome 93, the installability "
+    "criteria is changing, and this site will not be installable. See "
+    "https://goo.gle/improved-pwa-offline-detection for more information.";
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
