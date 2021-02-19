@@ -339,8 +339,6 @@ const std::vector<SearchConcept>& GetParentalSearchConcepts() {
 void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
                                   Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"accountManagerChildDescription",
-       IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION},
       {"accountManagerChildFirstMessage",
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_FIRST_MESSAGE},
       {"accountManagerChildSecondMessage",
@@ -385,6 +383,11 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       "accountListDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION,
                                  user->GetGivenName()));
+  html_source->AddString(
+      "accountListChildDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION,
+          base::UTF8ToUTF16(user->GetDisplayEmail())));
 
   html_source->AddString("accountManagerLearnMoreUrl",
                          chrome::kAccountManagerLearnMoreURL);
@@ -403,11 +406,15 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD},
         {"accountManagerDescription",
          IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2},
+        {"accountManagerChildDescription",
+         IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2},
     };
     html_source->AddLocalizedStrings(kLocalizedStringsV2);
   } else {
     static constexpr webui::LocalizedString kLocalizedStringsV1[] = {
         {"accountManagerDescription", IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION},
+        {"accountManagerChildDescription",
+         IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION},
         {"addAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL},
         {"accountListHeader", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER},
     };

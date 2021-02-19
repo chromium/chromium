@@ -138,6 +138,15 @@ Polymer({
   },
 
   /**
+   * @return {boolean} whether the additional messages for child user should be
+   *     shown.
+   * @private
+   */
+  showChildMessage_() {
+    return this.isChildUser_ && !this.isAccountManagementFlowsV2Enabled_;
+  },
+
+  /**
    * @return {string} account manager 'add account' label.
    * @private
    */
@@ -158,6 +167,16 @@ Polymer({
       return loadTimeData.getString('accountListHeaderChild');
     }
     return loadTimeData.getString('accountListHeader');
+  },
+
+  /**
+   * @return {string} accounts list description.
+   * @private
+   */
+  getAccountListDescription_() {
+    return this.isChildUser_ ?
+        loadTimeData.getString('accountListChildDescription') :
+        loadTimeData.getString('accountListDescription');
   },
 
   /**

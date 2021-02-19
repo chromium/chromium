@@ -95,6 +95,7 @@
 
       #account-list-header {
         padding-bottom: 12px;
+        padding-inline-end: 12px;
       }
 
       cr-policy-indicator {
@@ -205,7 +206,8 @@
           localized-string="[[getAccountManagerDescription_()]]"
           link-url="$i18nRaw{accountManagerLearnMoreUrl}">
       </settings-localized-link>
-      <div hidden$="[[!isChildUser_]]">
+      <div hidden$="[[!showChildMessage_(isChildUser_,
+                        isAccountManagementFlowsV2Enabled_)]]">
         <p>$i18n{accountManagerChildFirstMessage}</p>
         <p>$i18n{accountManagerChildSecondMessage}</p>
       </div>
@@ -269,7 +271,7 @@
         </h2>
         <span class="secondary"
             hidden$="[[!isAccountManagementFlowsV2Enabled_]]">
-          $i18n{accountListDescription}
+          [[getAccountListDescription_(isChildUser_)]]
         </span>
       </div>
       <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
