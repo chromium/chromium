@@ -24,6 +24,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
   const viz::FrameSinkId& current_frame_sink_id() const {
     return current_frame_sink_id_;
   }
+  gfx::Size frame_sink_size() const { return frame_sink_size_; }
   const gfx::Size& video_size() const { return video_size_; }
 
   void Bind(
@@ -37,36 +38,39 @@ class FakeRecordingService : public recording::mojom::RecordingService {
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& fullscreen_size) override {
+      const gfx::Size& frame_sink_size) override {
     remote_client_.Bind(std::move(client));
     current_frame_sink_id_ = frame_sink_id;
     current_capture_source_ = CaptureModeSource::kFullscreen;
-    video_size_ = fullscreen_size;
+    frame_sink_size_ = frame_sink_size;
+    video_size_ = frame_sink_size;
   }
   void RecordWindow(
       mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
+      const gfx::Size& frame_sink_size,
       const viz::SubtreeCaptureId& subtree_capture_id,
-      const gfx::Size& initial_window_size,
-      const gfx::Size& max_window_size) override {
+      const gfx::Size& window_size) override {
     remote_client_.Bind(std::move(client));
     current_frame_sink_id_ = frame_sink_id;
     current_capture_source_ = CaptureModeSource::kWindow;
-    video_size_ = max_window_size;
+    frame_sink_size_ = frame_sink_size;
+    video_size_ = window_size;
   }
   void RecordRegion(
       mojo::PendingRemote<recording::mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& fullscreen_size,
+      const gfx::Size& frame_sink_size,
       const gfx::Rect& crop_region) override {
     remote_client_.Bind(std::move(client));
     current_frame_sink_id_ = frame_sink_id;
     current_capture_source_ = CaptureModeSource::kRegion;
-    video_size_ = fullscreen_size;
+    frame_sink_size_ = frame_sink_size;
+    video_size_ = crop_region.size();
   }
   void StopRecording() override {
     remote_client_->OnRecordingEnded(/*success=*/true);
@@ -74,14 +78,18 @@ class FakeRecordingService : public recording::mojom::RecordingService {
   }
   void OnRecordedWindowChangingRoot(
       const viz::FrameSinkId& new_frame_sink_id,
-      const gfx::Size& new_max_video_size) override {
+      const gfx::Size& new_frame_sink_size) override {
     DCHECK_EQ(current_capture_source_, CaptureModeSource::kWindow);
     current_frame_sink_id_ = new_frame_sink_id;
-    video_size_ = new_max_video_size;
+    frame_sink_size_ = new_frame_sink_size;
   }
-  void OnDisplaySizeChanged(const gfx::Size& new_display_size) override {
+  void OnRecordedWindowSizeChanged(const gfx::Size& new_window_size) override {
+    DCHECK_EQ(current_capture_source_, CaptureModeSource::kWindow);
+    video_size_ = new_window_size;
+  }
+  void OnFrameSinkSizeChanged(const gfx::Size& new_frame_sink_size) override {
     DCHECK_NE(current_capture_source_, CaptureModeSource::kFullscreen);
-    video_size_ = new_display_size;
+    frame_sink_size_ = new_frame_sink_size;
   }
 
  private:
@@ -89,6 +97,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
   mojo::Remote<recording::mojom::RecordingServiceClient> remote_client_;
   viz::FrameSinkId current_frame_sink_id_;
   CaptureModeSource current_capture_source_ = CaptureModeSource::kFullscreen;
+  gfx::Size frame_sink_size_;
   gfx::Size video_size_;
 };
 
@@ -107,6 +116,10 @@ TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
 viz::FrameSinkId TestCaptureModeDelegate::GetCurrentFrameSinkId() const {
   return fake_service_ ? fake_service_->current_frame_sink_id()
                        : viz::FrameSinkId();
+}
+
+gfx::Size TestCaptureModeDelegate::GetCurrentFrameSinkSize() const {
+  return fake_service_ ? fake_service_->frame_sink_size() : gfx::Size();
 }
 
 gfx::Size TestCaptureModeDelegate::GetCurrentVideoSize() const {

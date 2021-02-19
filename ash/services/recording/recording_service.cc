@@ -96,13 +96,13 @@ void RecordingService::RecordFullscreen(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& video_size) {
+    const gfx::Size& frame_sink_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory),
                     VideoCaptureParams::CreateForFullscreenCapture(
-                        frame_sink_id, video_size));
+                        frame_sink_id, frame_sink_size));
 }
 
 void RecordingService::RecordWindow(
@@ -110,16 +110,16 @@ void RecordingService::RecordWindow(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
+    const gfx::Size& frame_sink_size,
     const viz::SubtreeCaptureId& subtree_capture_id,
-    const gfx::Size& initial_video_size,
-    const gfx::Size& max_video_size) {
+    const gfx::Size& window_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
-                    VideoCaptureParams::CreateForWindowCapture(
-                        frame_sink_id, subtree_capture_id, initial_video_size,
-                        max_video_size));
+  StartNewRecording(
+      std::move(client), std::move(video_capturer),
+      std::move(audio_stream_factory),
+      VideoCaptureParams::CreateForWindowCapture(
+          frame_sink_id, subtree_capture_id, window_size, frame_sink_size));
 }
 
 void RecordingService::RecordRegion(
@@ -127,14 +127,14 @@ void RecordingService::RecordRegion(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
     mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
     const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& full_capture_size,
+    const gfx::Size& frame_sink_size,
     const gfx::Rect& crop_region) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory),
                     VideoCaptureParams::CreateForRegionCapture(
-                        frame_sink_id, full_capture_size, crop_region));
+                        frame_sink_id, frame_sink_size, crop_region));
 }
 
 void RecordingService::StopRecording() {
@@ -147,7 +147,7 @@ void RecordingService::StopRecording() {
 
 void RecordingService::OnRecordedWindowChangingRoot(
     const viz::FrameSinkId& new_frame_sink_id,
-    const gfx::Size& new_max_video_size) {
+    const gfx::Size& new_frame_sink_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   if (!current_video_capture_params_) {
@@ -159,12 +159,29 @@ void RecordingService::OnRecordedWindowChangingRoot(
   // If there's a change in the new root's size, we must reconfigure the video
   // encoder so that output video has the correct dimensions.
   if (current_video_capture_params_->OnRecordedWindowChangingRoot(
-          video_capturer_remote_, new_frame_sink_id, new_max_video_size)) {
+          video_capturer_remote_, new_frame_sink_id, new_frame_sink_size)) {
     ReconfigureVideoEncoder();
   }
 }
 
-void RecordingService::OnDisplaySizeChanged(const gfx::Size& new_display_size) {
+void RecordingService::OnRecordedWindowSizeChanged(
+    const gfx::Size& new_window_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (!current_video_capture_params_) {
+    // A recording might terminate before we signal the client with an
+    // |OnRecordingEnded()| call.
+    return;
+  }
+
+  if (current_video_capture_params_->OnRecordedWindowSizeChanged(
+          video_capturer_remote_, new_window_size)) {
+    ReconfigureVideoEncoder();
+  }
+}
+
+void RecordingService::OnFrameSinkSizeChanged(
+    const gfx::Size& new_frame_sink_size) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   if (!current_video_capture_params_) {
@@ -175,8 +192,8 @@ void RecordingService::OnDisplaySizeChanged(const gfx::Size& new_display_size) {
 
   // If there's a change in the new root's size, we must reconfigure the video
   // encoder so that output video has the correct dimensions.
-  if (current_video_capture_params_->OnDisplaySizeChanged(
-          video_capturer_remote_, new_display_size)) {
+  if (current_video_capture_params_->OnFrameSinkSizeChanged(
+          video_capturer_remote_, new_frame_sink_size)) {
     ReconfigureVideoEncoder();
   }
 }
@@ -305,8 +322,7 @@ void RecordingService::StartNewRecording(
 
   encoder_muxer_ = RecordingEncoderMuxer::Create(
       encoding_task_runner_,
-      CreateVideoEncoderOptions(
-          current_video_capture_params_->GetCaptureSize()),
+      CreateVideoEncoderOptions(current_video_capture_params_->GetVideoSize()),
       should_record_audio ? &audio_parameters_ : nullptr,
       base::BindRepeating(&RecordingService::OnMuxerWrite,
                           base::Unretained(this)),
@@ -333,7 +349,7 @@ void RecordingService::ReconfigureVideoEncoder() {
 
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::InitializeVideoEncoder)
       .WithArgs(CreateVideoEncoderOptions(
-          current_video_capture_params_->GetCaptureSize()));
+          current_video_capture_params_->GetVideoSize()));
 }
 
 void RecordingService::TerminateRecording(bool success) {

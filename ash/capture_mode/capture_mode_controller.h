@@ -156,6 +156,11 @@ class ASH_EXPORT CaptureModeController
   void OnRecordedWindowChangingRoot(aura::Window* window,
                                     aura::Window* new_root);
 
+  // Called by |video_recording_watcher_| to inform us that the size of the
+  // |window| being recorded was changed to |new_size| in DIPs. This is pushed
+  // to the recording service in order to update the video dimensions.
+  void OnRecordedWindowSizeChanged(const gfx::Size& new_size);
+
   // Returns true if screen recording needs to be blocked due to protected
   // content. |window| is the window being recorded or desired to be recorded.
   bool ShouldBlockRecordingForContentProtection(aura::Window* window) const;

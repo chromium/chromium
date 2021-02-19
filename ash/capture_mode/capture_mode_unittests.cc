@@ -1754,14 +1754,16 @@ TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
   EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, window->layer()));
   EXPECT_EQ(shield_layer->bounds(), roots[0]->bounds());
 
-  // The capturer should capture from the frame sink of the first display, and
-  // the video size should match the size of the current root window.
+  // The capturer should capture from the frame sink of the first display.
+  // The video size should match the window's size.
   CaptureModeTestApi test_api;
   test_api.FlushRecordingServiceForTesting();
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   EXPECT_EQ(roots[0]->GetFrameSinkId(), test_delegate->GetCurrentFrameSinkId());
-  EXPECT_EQ(roots[0]->bounds().size(), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(roots[0]->bounds().size(),
+            test_delegate->GetCurrentFrameSinkSize());
+  EXPECT_EQ(window->bounds().size(), test_delegate->GetCurrentVideoSize());
 
   // Moving a window to a different display should be propagated to the service,
   // with the new root's frame sink ID, and the new root's size.
@@ -1770,13 +1772,65 @@ TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
   test_api.FlushRecordingServiceForTesting();
   ASSERT_EQ(window->GetRootWindow(), roots[1]);
   EXPECT_EQ(roots[1]->GetFrameSinkId(), test_delegate->GetCurrentFrameSinkId());
-  EXPECT_EQ(roots[1]->bounds().size(), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(roots[1]->bounds().size(),
+            test_delegate->GetCurrentFrameSinkSize());
+  EXPECT_EQ(window->bounds().size(), test_delegate->GetCurrentVideoSize());
 
   // The shield layer should move with the window, and maintain the stacking
   // below the window's layer.
   EXPECT_EQ(shield_layer->parent(), window->layer()->parent());
   EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, window->layer()));
   EXPECT_EQ(shield_layer->bounds(), roots[1]->bounds());
+}
+
+TEST_F(CaptureModeTest, WindowResizing) {
+  UpdateDisplay("600x600");
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+
+  CaptureModeTestApi test_api;
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(200, 200), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(gfx::Size(600, 600), test_delegate->GetCurrentFrameSinkSize());
+
+  // Multiple resize events should be throttled.
+  window->SetBounds(gfx::Rect(250, 250));
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(200, 200), test_delegate->GetCurrentVideoSize());
+
+  window->SetBounds(gfx::Rect(250, 300));
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(200, 200), test_delegate->GetCurrentVideoSize());
+
+  window->SetBounds(gfx::Rect(300, 300));
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(200, 200), test_delegate->GetCurrentVideoSize());
+
+  // Once throttling ends, the current size is pushed.
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  recording_watcher->SendThrottledWindowSizeChangedNowForTesting();
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(300, 300), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(gfx::Size(600, 600), test_delegate->GetCurrentFrameSinkSize());
+
+  // Maximizing a window changes its size, and is pushed to the service with
+  // throttling.
+  WindowState::Get(window.get())->Maximize();
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_EQ(gfx::Size(300, 300), test_delegate->GetCurrentVideoSize());
+
+  recording_watcher->SendThrottledWindowSizeChangedNowForTesting();
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_NE(gfx::Size(300, 300), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(window->bounds().size(), test_delegate->GetCurrentVideoSize());
 }
 
 TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
@@ -1788,19 +1842,23 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
   controller->StartVideoRecordingImmediatelyForTesting();
   EXPECT_TRUE(controller->is_recording_in_progress());
 
-  // Initially the video size matches the un-rotated display size in DIPs.
+  // Initially the frame sink size matches the un-rotated display size in DIPs,
+  // but the video size matches the size of the crop region.
   CaptureModeTestApi test_api;
   test_api.FlushRecordingServiceForTesting();
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  EXPECT_EQ(gfx::Size(600, 800), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(gfx::Size(600, 800), test_delegate->GetCurrentFrameSinkSize());
+  EXPECT_EQ(gfx::Size(100, 200), test_delegate->GetCurrentVideoSize());
 
-  // Rotate by 90 degree, the video size should be updated to match that.
+  // Rotate by 90 degree, the frame sink size should be updated to match that.
+  // The video size should remain unaffected.
   Shell::Get()->display_manager()->SetDisplayRotation(
       WindowTreeHostManager::GetPrimaryDisplayId(), display::Display::ROTATE_90,
       display::Display::RotationSource::USER);
   test_api.FlushRecordingServiceForTesting();
-  EXPECT_EQ(gfx::Size(800, 600), test_delegate->GetCurrentVideoSize());
+  EXPECT_EQ(gfx::Size(800, 600), test_delegate->GetCurrentFrameSinkSize());
+  EXPECT_EQ(gfx::Size(100, 200), test_delegate->GetCurrentVideoSize());
 }
 
 // Tests the behavior of screen recording with the presence of HDCP secure

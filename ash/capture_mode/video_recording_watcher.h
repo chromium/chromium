@@ -71,6 +71,10 @@ class ASH_EXPORT VideoRecordingWatcher
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
   void OnWindowOpacitySet(aura::Window* window,
                           ui::PropertyChangeReason reason) override;
   void OnWindowStackingChanged(aura::Window* window) override;
@@ -113,6 +117,8 @@ class ASH_EXPORT VideoRecordingWatcher
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay);
 
   void FlushCursorOverlayForTesting();
+
+  void SendThrottledWindowSizeChangedNowForTesting();
 
  protected:
   // ui::LayerOwner:
@@ -165,7 +171,11 @@ class ASH_EXPORT VideoRecordingWatcher
   // Invoked when the |cursor_events_throttle_timer_| fires, in order to update
   // the cursor overlay with the pending most recently throttled mouse event
   // location in |throttled_cursor_location_| if any.
-  void OnThrottleTimerFiring();
+  void OnCursorThrottleTimerFiring();
+
+  // Invoked when the |window_size_change_throttle_timer_| fires, in order to
+  // push the current size of the window being recorded to the service.
+  void OnWindowSizeChangeThrottleTimerFiring();
 
   CaptureModeController* const controller_;
   wm::CursorManager* const cursor_manager_;
@@ -199,14 +209,20 @@ class ASH_EXPORT VideoRecordingWatcher
   // etc.) to the cursor overlay. This timer is used to throttle such events
   // received while this timer is running, and their location will overwrite the
   // value of |throttled_cursor_location_|. Once the timer fires,
-  // OnThrottleTimerFiring() will be called to update the overlay with the most
-  // recent received throttled event.
+  // OnCursorThrottleTimerFiring() will be called to update the overlay with the
+  // most recent received throttled event.
   base::OneShotTimer cursor_events_throttle_timer_;
 
   // Stores the location of the most recent throttled mouse event (i.e. received
   // while the |cursor_events_throttle_timer_| was running). The location is in
   // the |window_being_recorded_| coordinates.
   base::Optional<gfx::PointF> throttled_cursor_location_;
+
+  // Resizing a window can generate many intermediate steps, and it would be
+  // inefficient to push all of them to the recording service, causing a
+  // repeated reconfiguration of the video encoder. This timer is used to
+  // throttle such events.
+  base::OneShotTimer window_size_change_throttle_timer_;
 
   // True if we force hiding the cursor overlay. This happens when we record a
   // fullscreen, or a partial screen region, and the software-composited cursor
