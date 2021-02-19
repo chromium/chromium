@@ -22,7 +22,7 @@ class UnifiedSliderListener;
 // brightness slider that can be triggered from hardware buttons.
 class ASH_EXPORT UnifiedSliderBubbleController
     : public TrayBubbleView::Delegate,
-      public chromeos::CrasAudioHandler::AudioObserver,
+      public CrasAudioHandler::AudioObserver,
       public UnifiedSystemTrayModel::Observer,
       public UnifiedVolumeSliderController::Delegate,
       public ShelfObserver {
@@ -50,7 +50,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
 
-  // chromeos::CrasAudioHandler::AudioObserver:
+  // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
 

@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -137,7 +137,7 @@ AudioDeviceType AudioDevice::GetAudioType(
 
 AudioDevice::AudioDevice() = default;
 
-AudioDevice::AudioDevice(const AudioNode& node) {
+AudioDevice::AudioDevice(const chromeos::AudioNode& node) {
   is_input = node.is_input;
   id = node.id;
   stable_device_id_version = node.StableDeviceIdVersion();
@@ -214,4 +214,4 @@ bool AudioDevice::IsInternalMic() const {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

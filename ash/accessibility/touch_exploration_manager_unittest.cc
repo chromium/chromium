@@ -18,7 +18,7 @@ using TouchExplorationManagerTest = AshTestBase;
 TEST_F(TouchExplorationManagerTest, AdjustSound) {
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
   TouchExplorationManager touch_exploration_manager(controller);
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
+  auto* audio_handler = CrasAudioHandler::Get();
 
   touch_exploration_manager.SetOutputLevel(10);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 10);

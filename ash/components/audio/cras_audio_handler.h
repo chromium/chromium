@@ -35,7 +35,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace chromeos {
+namespace ash {
 
 class AudioDevicesPrefHandler;
 
@@ -47,7 +47,7 @@ using VoidCrasAudioHandlerCallback = base::OnceCallback<void(bool result)>;
 // This class is not thread safe. The public functions should be called on
 // browser main thread.
 class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
-    : public CrasAudioClient::Observer,
+    : public chromeos::CrasAudioClient::Observer,
       public AudioPrefObserver,
       public media::VideoCaptureObserver,
       public media_session::mojom::MediaControllerObserver {
@@ -354,7 +354,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
  private:
   friend class CrasAudioHandlerTest;
 
-  // CrasAudioClient::Observer overrides.
+  // chromeos::CrasAudioClient::Observer overrides.
   void AudioClientRestarted() override;
   void NodesChanged() override;
   void ActiveOutputNodeChanged(uint64_t node_id) override;
@@ -401,7 +401,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Sets up the additional active audio node's state.
   void SetupAdditionalActiveAudioNodeState(uint64_t node_id);
 
-  AudioDevice ConvertAudioNodeWithModifiedPriority(const AudioNode& node);
+  AudioDevice ConvertAudioNodeWithModifiedPriority(
+      const chromeos::AudioNode& node);
 
   const AudioDevice* GetDeviceFromStableDeviceId(
       uint64_t stable_device_id) const;
@@ -444,7 +445,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Updates the current audio nodes list and switches the active device
   // if needed.
-  void UpdateDevicesAndSwitchActive(const AudioNodeList& nodes);
+  void UpdateDevicesAndSwitchActive(const chromeos::AudioNodeList& nodes);
 
   // Returns true if the current active device is changed to
   // |new_active_device|.
@@ -456,7 +457,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // *|device_removed| indicates if any devices have been removed.
   // *|active_device_removed| indicates if the current active device has been
   // removed.
-  bool HasDeviceChange(const AudioNodeList& new_nodes,
+  bool HasDeviceChange(const chromeos::AudioNodeList& new_nodes,
                        bool is_input,
                        AudioDevicePriorityQueue* new_discovered,
                        bool* device_removed,
@@ -673,12 +674,12 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   DISALLOW_COPY_AND_ASSIGN(CrasAudioHandler);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::CrasAudioHandler;
+namespace chromeos {
+using ::ash::CrasAudioHandler;
 }
 
 #endif  // ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_

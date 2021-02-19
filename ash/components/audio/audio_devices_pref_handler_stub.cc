@@ -7,7 +7,7 @@
 #include "ash/components/audio/audio_device.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 
 AudioDevicesPrefHandlerStub::AudioDevicesPrefHandlerStub() = default;
 
@@ -84,5 +84,4 @@ void AudioDevicesPrefHandlerStub::RemoveAudioPrefObserver(
     AudioPrefObserver* observer) {
 }
 
-}  // namespace chromeos
-
+}  // namespace ash

@@ -1184,7 +1184,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManagerBackdropTest);
 };
 
-constexpr base::Optional<chromeos::Sound> kNoSoundKey = base::nullopt;
+constexpr base::Optional<Sound> kNoSoundKey = base::nullopt;
 
 }  // namespace
 
@@ -1546,7 +1546,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
 
   generator->MoveMouseTo(300, 300);
   generator->ClickLeftButton();
-  EXPECT_EQ(chromeos::Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
+  EXPECT_EQ(Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
 
   generator->MoveMouseRelativeTo(window.get(), 10, 10);
   generator->ClickLeftButton();
@@ -1602,7 +1602,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackForArc) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(300, 300);
   generator->ClickLeftButton();
-  EXPECT_EQ(chromeos::Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
+  EXPECT_EQ(Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
 
   generator->MoveMouseTo(70, 70);
   generator->ClickLeftButton();

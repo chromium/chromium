@@ -24,7 +24,7 @@ class UnifiedSystemTrayController;
 // Controller of Audio detailed view in UnifiedSystemTray.
 class ASH_EXPORT UnifiedAudioDetailedViewController
     : public DetailedViewController,
-      public chromeos::CrasAudioHandler::AudioObserver {
+      public CrasAudioHandler::AudioObserver {
  public:
   explicit UnifiedAudioDetailedViewController(
       UnifiedSystemTrayController* tray_controller);

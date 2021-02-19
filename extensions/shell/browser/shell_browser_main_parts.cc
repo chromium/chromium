@@ -202,9 +202,9 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
       media_controller_manager;
   content::GetMediaSessionService().BindMediaControllerManager(
       media_controller_manager.InitWithNewPipeAndPassReceiver());
-  chromeos::CrasAudioHandler::Initialize(
+  ash::CrasAudioHandler::Initialize(
       std::move(media_controller_manager),
-      base::MakeRefCounted<chromeos::AudioDevicesPrefHandlerImpl>(
+      base::MakeRefCounted<ash::AudioDevicesPrefHandlerImpl>(
           local_state_.get()));
   audio_controller_.reset(new ShellAudioController());
 #endif
@@ -287,7 +287,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   audio_controller_.reset();
-  chromeos::CrasAudioHandler::Shutdown();
+  ash::CrasAudioHandler::Shutdown();
 #endif
 
   sessions::SessionIdGenerator::GetInstance()->Shutdown();

@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/audio/audio_node.h"
 
-namespace chromeos {
+namespace ash {
 
 // Ordered from the highest priority to the lowest.
 enum class AudioDeviceType {
@@ -39,7 +39,7 @@ enum class AudioDeviceType {
 
 struct COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevice {
   AudioDevice();
-  explicit AudioDevice(const AudioNode& node);
+  explicit AudioDevice(const chromeos::AudioNode& node);
   AudioDevice(const AudioDevice& other);
   std::string ToString() const;
 
@@ -113,8 +113,7 @@ struct AudioDeviceCompare {
   //       [External Mic/USB Mic/Bluetooth > Internal Mic]
   // 2.) Device Plugged in Time:
   //       [Later > Earlier]
-  bool operator()(const chromeos::AudioDevice& a,
-                  const chromeos::AudioDevice& b) const {
+  bool operator()(const AudioDevice& a, const AudioDevice& b) const {
     if (a.priority < b.priority) {
       return true;
     } else if (b.priority < a.priority) {
@@ -127,13 +126,14 @@ struct AudioDeviceCompare {
   }
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::AudioDevice;
-using ::chromeos::AudioDeviceType;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// directory migration is finished.
+namespace chromeos {
+using ::ash::AudioDevice;
+using ::ash::AudioDeviceList;
+using ::ash::AudioDeviceType;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_

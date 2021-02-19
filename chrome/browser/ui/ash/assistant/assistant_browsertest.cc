@@ -17,8 +17,10 @@
 
 namespace chromeos {
 namespace assistant {
-
 namespace {
+
+using ::ash::CrasAudioHandler;
+
 // Please remember to set auth token when running in |kProxy| mode.
 constexpr auto kMode = FakeS3Mode::kReplay;
 // Update this when you introduce breaking changes to existing tests.
@@ -159,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpVolume) {
 
   ASSERT_TRUE(tester()->IsVisible());
 
-  auto* cras = chromeos::CrasAudioHandler::Get();
+  auto* cras = CrasAudioHandler::Get();
   constexpr int kStartVolumePercent = 50;
   cras->SetOutputVolumePercent(kStartVolumePercent);
   EXPECT_EQ(kStartVolumePercent, cras->GetOutputVolumePercent());
@@ -167,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpVolume) {
   tester()->SendTextQuery("turn up volume");
 
   ExpectResult(true, base::BindRepeating(
-                         [](chromeos::CrasAudioHandler* cras) {
+                         [](CrasAudioHandler* cras) {
                            return cras->GetOutputVolumePercent() >
                                   kStartVolumePercent;
                          },
@@ -181,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownVolume) {
 
   ASSERT_TRUE(tester()->IsVisible());
 
-  auto* cras = chromeos::CrasAudioHandler::Get();
+  auto* cras = CrasAudioHandler::Get();
   constexpr int kStartVolumePercent = 50;
   cras->SetOutputVolumePercent(kStartVolumePercent);
   EXPECT_EQ(kStartVolumePercent, cras->GetOutputVolumePercent());
@@ -189,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownVolume) {
   tester()->SendTextQuery("turn down volume");
 
   ExpectResult(true, base::BindRepeating(
-                         [](chromeos::CrasAudioHandler* cras) {
+                         [](CrasAudioHandler* cras) {
                            return cras->GetOutputVolumePercent() <
                                   kStartVolumePercent;
                          },

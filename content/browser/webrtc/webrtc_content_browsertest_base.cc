@@ -45,7 +45,7 @@ void WebRtcContentBrowserTestBase::SetUp() {
   EnablePixelOutput();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CrasAudioClient::InitializeFake();
-  chromeos::CrasAudioHandler::InitializeForTesting();
+  ash::CrasAudioHandler::InitializeForTesting();
 #endif
   ContentBrowserTest::SetUp();
   ASSERT_TRUE(base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -55,7 +55,7 @@ void WebRtcContentBrowserTestBase::SetUp() {
 void WebRtcContentBrowserTestBase::TearDown() {
   ContentBrowserTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrasAudioHandler::Shutdown();
+  ash::CrasAudioHandler::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
 #endif
 }

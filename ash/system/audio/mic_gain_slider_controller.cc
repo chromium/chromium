@@ -8,8 +8,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 namespace {

@@ -119,6 +119,9 @@
 namespace chromeos {
 namespace {
 
+using ::ash::AudioDevice;
+using ::ash::AudioDeviceType;
+
 // Maximum delay for startup sound after 'loginPromptVisible' signal.
 const int kStartupSoundMaxDelayMs = 4000;
 
@@ -391,7 +394,7 @@ class CloseAfterCommit : public ui::CompositorObserver,
 
 // Returns true if we have default audio device.
 bool CanPlayStartupSound() {
-  chromeos::AudioDevice device;
+  AudioDevice device;
   bool found =
       chromeos::CrasAudioHandler::Get()->GetPrimaryActiveOutputDevice(&device);
   return found && device.stable_device_id_version &&

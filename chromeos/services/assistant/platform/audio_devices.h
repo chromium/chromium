@@ -8,14 +8,13 @@
 #include <cstdint>
 
 #include "ash/components/audio/audio_device.h"
+// TODO(https://crbug.com/1164001): use forward declaration when migrated to
+// ash/.
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-
-namespace chromeos {
-class CrasAudioHandler;
-}  // namespace chromeos
 
 namespace chromeos {
 namespace assistant {

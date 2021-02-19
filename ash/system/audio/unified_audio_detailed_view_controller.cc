@@ -9,8 +9,6 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 UnifiedAudioDetailedViewController::UnifiedAudioDetailedViewController(

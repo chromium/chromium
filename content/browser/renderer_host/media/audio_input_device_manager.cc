@@ -36,7 +36,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SetKeyboardMicStreamActiveOnUIThread(bool active) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  chromeos::CrasAudioHandler::Get()->SetKeyboardMicActive(active);
+  ash::CrasAudioHandler::Get()->SetKeyboardMicActive(active);
 }
 #endif
 

@@ -33,7 +33,7 @@ namespace {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
+  ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
 #endif
 }
 

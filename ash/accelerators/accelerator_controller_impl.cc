@@ -1559,7 +1559,7 @@ const double kStepPercentage = 4.0;
 void HandleVolumeDown() {
   base::RecordAction(UserMetricsAction("Accel_VolumeDown_F9"));
 
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
+  auto* audio_handler = CrasAudioHandler::Get();
   if (audio_handler->IsOutputMuted()) {
     audio_handler->SetOutputVolumePercent(0);
   } else {
@@ -1575,13 +1575,13 @@ void HandleVolumeMute(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_VOLUME_MUTE)
     base::RecordAction(UserMetricsAction("Accel_VolumeMute_F8"));
 
-  chromeos::CrasAudioHandler::Get()->SetOutputMute(true);
+  CrasAudioHandler::Get()->SetOutputMute(true);
 }
 
 void HandleVolumeUp() {
   base::RecordAction(UserMetricsAction("Accel_VolumeUp_F10"));
 
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
+  auto* audio_handler = CrasAudioHandler::Get();
   bool play_sound = false;
   if (audio_handler->IsOutputMuted()) {
     audio_handler->SetOutputMute(false);
@@ -2664,8 +2664,7 @@ bool AcceleratorControllerImpl::ShouldSwapSideVolumeButtons(
 }
 
 void AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram() {
-  const int volume_percent =
-      chromeos::CrasAudioHandler::Get()->GetOutputVolumePercent();
+  const int volume_percent = CrasAudioHandler::Get()->GetOutputVolumePercent();
   const bool swapped = features::IsSwapSideVolumeButtonsForOrientationEnabled();
   if ((volume_adjust_starts_with_up_ &&
        volume_percent >= initial_volume_percent_) ||
@@ -2686,8 +2685,7 @@ void AcceleratorControllerImpl::StartTabletModeVolumeAdjustTimer(
     AcceleratorAction action) {
   if (!tablet_mode_volume_adjust_timer_.IsRunning()) {
     volume_adjust_starts_with_up_ = action == VOLUME_UP;
-    initial_volume_percent_ =
-        chromeos::CrasAudioHandler::Get()->GetOutputVolumePercent();
+    initial_volume_percent_ = CrasAudioHandler::Get()->GetOutputVolumePercent();
   }
   tablet_mode_volume_adjust_timer_.Start(
       FROM_HERE, kVolumeAdjustTimeout, this,

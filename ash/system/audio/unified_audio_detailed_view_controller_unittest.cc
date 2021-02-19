@@ -12,17 +12,15 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/media_session/public/mojom/media_controller.mojom-test-utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using chromeos::AudioDevice;
-using chromeos::AudioDeviceList;
 using chromeos::AudioNode;
 using chromeos::AudioNodeList;
-using chromeos::CrasAudioHandler;
 
 namespace ash {
 namespace {
@@ -149,7 +147,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
       CrasAudioHandler::Shutdown();
 
     fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
-    audio_pref_handler_ = new chromeos::AudioDevicesPrefHandlerStub();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
@@ -167,7 +165,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   std::map<uint64_t, views::View*> sliders_map_;
   MicGainSliderController::MapDeviceSliderCallback map_device_sliders_callback_;
   CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
-  scoped_refptr<chromeos::AudioDevicesPrefHandlerStub> audio_pref_handler_;
+  scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
   std::unique_ptr<UnifiedAudioDetailedViewController>
       audio_detailed_view_controller_;

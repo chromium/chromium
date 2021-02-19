@@ -50,7 +50,7 @@ class ASH_EXPORT AssistantControllerImpl
       public AssistantControllerObserver,
       public AssistantStateObserver,
       public mojom::AssistantVolumeControl,
-      public chromeos::CrasAudioHandler::AudioObserver,
+      public CrasAudioHandler::AudioObserver,
       public AccessibilityObserver,
       public AssistantInterfaceBinder {
  public:
@@ -91,7 +91,7 @@ class ASH_EXPORT AssistantControllerImpl
   void AddVolumeObserver(
       mojo::PendingRemote<mojom::VolumeObserver> observer) override;
 
-  // chromeos::CrasAudioHandler::AudioObserver:
+  // CrasAudioHandler::AudioObserver:
   void OnOutputMuteChanged(bool mute_on) override;
   void OnOutputNodeVolumeChanged(uint64_t node, int volume) override;
 

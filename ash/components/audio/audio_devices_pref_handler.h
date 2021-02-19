@@ -9,7 +9,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 
-namespace chromeos {
+namespace ash {
 
 struct AudioDevice;
 
@@ -66,6 +66,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   friend class base::RefCountedThreadSafe<AudioDevicesPrefHandler>;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_

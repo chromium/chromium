@@ -18,8 +18,6 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 namespace {

@@ -230,8 +230,9 @@
 #endif
 
 namespace chromeos {
-
 namespace {
+
+using ::ash::AudioDevicesPrefHandlerImpl;
 
 void ChromeOSVersionCallback(const std::string& version) {
   base::SetLinuxDistro(std::string("CrOS ") + version);

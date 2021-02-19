@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
+namespace ash {
 namespace {
 
 // Values used for muted preference.
@@ -41,8 +42,7 @@ const char kActivateByUserKey[] = "activate_by_user";
 // string contains only latter 2 parts - in order to preserve backward
 // compatibility with existing ID from before v2 stable device ID was
 // introduced.
-std::string GetVersionedDeviceIdString(const chromeos::AudioDevice& device,
-                                       int version) {
+std::string GetVersionedDeviceIdString(const AudioDevice& device, int version) {
   CHECK(device.stable_device_id_version >= version);
   DCHECK_GE(device.stable_device_id_version, 1);
   DCHECK_LE(device.stable_device_id_version, 2);
@@ -63,7 +63,7 @@ std::string GetVersionedDeviceIdString(const chromeos::AudioDevice& device,
   return device_id_string;
 }
 
-std::string GetDeviceIdString(const chromeos::AudioDevice& device) {
+std::string GetDeviceIdString(const AudioDevice& device) {
   return GetVersionedDeviceIdString(device, device.stable_device_id_version);
 }
 
@@ -74,7 +74,7 @@ std::string GetDeviceIdString(const chromeos::AudioDevice& device) {
 // Returns whether the migration occurred.
 bool MigrateDeviceIdInSettings(base::DictionaryValue* settings,
                                const std::string& intended_key,
-                               const chromeos::AudioDevice& device) {
+                               const AudioDevice& device) {
   if (device.stable_device_id_version == 1)
     return false;
 
@@ -91,8 +91,6 @@ bool MigrateDeviceIdInSettings(base::DictionaryValue* settings,
 }
 
 }  // namespace
-
-namespace chromeos {
 
 double AudioDevicesPrefHandlerImpl::GetOutputVolumeValue(
     const AudioDevice* device) {
@@ -409,4 +407,4 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAudioMute, kPrefMuteOff);
 }
 
-}  // namespace chromeos
+}  // namespace ash

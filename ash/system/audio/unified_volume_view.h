@@ -13,7 +13,7 @@ namespace ash {
 
 // View of a slider that can change audio volume.
 class UnifiedVolumeView : public UnifiedSliderView,
-                          public chromeos::CrasAudioHandler::AudioObserver {
+                          public CrasAudioHandler::AudioObserver {
  public:
   UnifiedVolumeView(UnifiedVolumeSliderController* controller,
                     UnifiedVolumeSliderController::Delegate* delegate,

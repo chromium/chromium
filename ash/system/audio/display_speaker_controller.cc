@@ -11,8 +11,6 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 DisplaySpeakerController::DisplaySpeakerController() {

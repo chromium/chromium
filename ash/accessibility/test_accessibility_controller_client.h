@@ -29,7 +29,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
   void TriggerAccessibilityAlert(AccessibilityAlert alert) override;
   void TriggerAccessibilityAlertWithMessage(
       const std::string& message) override;
-  void PlayEarcon(chromeos::Sound sound_key) override;
+  void PlayEarcon(Sound sound_key) override;
   base::TimeDelta PlayShutdownSound() override;
   void HandleAccessibilityGesture(ax::mojom::Gesture gesture,
                                   gfx::PointF location) override;
@@ -47,7 +47,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value) override;
 
-  base::Optional<chromeos::Sound> GetPlayedEarconAndReset();
+  base::Optional<Sound> GetPlayedEarconAndReset();
 
   AccessibilityAlert last_a11y_alert() const { return last_a11y_alert_; }
   ax::mojom::Gesture last_a11y_gesture() const { return last_a11y_gesture_; }
@@ -65,7 +65,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
  private:
   AccessibilityAlert last_a11y_alert_ = AccessibilityAlert::NONE;
   std::string last_alert_message_;
-  base::Optional<chromeos::Sound> sound_key_;
+  base::Optional<Sound> sound_key_;
   bool is_dictation_active_ = false;
   SelectToSpeakPanelAction last_select_to_speak_panel_action_ =
       SelectToSpeakPanelAction::kNone;

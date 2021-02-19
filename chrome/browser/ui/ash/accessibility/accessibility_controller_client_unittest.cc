@@ -17,6 +17,8 @@
 
 namespace {
 
+using ::ash::Sound;
+
 constexpr base::TimeDelta kShutdownSoundDuration =
     base::TimeDelta::FromMilliseconds(1000);
 
@@ -29,9 +31,7 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   void TriggerAccessibilityAlert(ash::AccessibilityAlert alert) override {
     last_a11y_alert_ = alert;
   }
-  void PlayEarcon(chromeos::Sound sound_key) override {
-    last_sound_key_ = sound_key;
-  }
+  void PlayEarcon(Sound sound_key) override { last_sound_key_ = sound_key; }
   base::TimeDelta PlayShutdownSound() override {
     return kShutdownSoundDuration;
   }
@@ -62,7 +62,7 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   }
 
   ash::AccessibilityAlert last_a11y_alert_ = ash::AccessibilityAlert::NONE;
-  base::Optional<chromeos::Sound> last_sound_key_;
+  base::Optional<Sound> last_sound_key_;
   ax::mojom::Gesture last_a11y_gesture_ = ax::mojom::Gesture::kNone;
   gfx::PointF last_a11y_gesture_point_;
   int toggle_dictation_count_ = 0;
@@ -106,7 +106,7 @@ TEST_F(AccessibilityControllerClientTest, MethodCalls) {
   EXPECT_EQ(alert, client.last_a11y_alert_);
 
   // Tests PlayEarcon method call.
-  const chromeos::Sound sound_key = chromeos::Sound::kShutdown;
+  const Sound sound_key = Sound::kShutdown;
   client.PlayEarcon(sound_key);
   EXPECT_EQ(sound_key, client.last_sound_key_);
 

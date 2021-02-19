@@ -144,7 +144,7 @@ void EnableHotwordEffect(const StreamControls& controls, int* effects) {
   if (controls.hotword_enabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Only enable if a hotword device exists.
-    if (chromeos::CrasAudioHandler::Get()->HasHotwordDevice())
+    if (ash::CrasAudioHandler::Get()->HasHotwordDevice())
       *effects |= media::AudioParameters::HOTWORD;
 #endif
   }

@@ -19,11 +19,8 @@
 #include "ui/display/display_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace chromeos {
-class CrasAudioHandler;
-}
-
 namespace ash {
+class CrasAudioHandler;
 class RootWindowController;
 
 // Responsible for initializing TouchExplorationController when spoken feedback
@@ -98,7 +95,7 @@ class ASH_EXPORT TouchExplorationManager
   std::unique_ptr<TouchExplorationController> touch_exploration_controller_;
   std::unique_ptr<TouchAccessibilityEnabler> touch_accessibility_enabler_;
   RootWindowController* root_window_controller_;
-  chromeos::CrasAudioHandler* audio_handler_;
+  CrasAudioHandler* audio_handler_;
   aura::Window* observing_window_;
 
   DISALLOW_COPY_AND_ASSIGN(TouchExplorationManager);

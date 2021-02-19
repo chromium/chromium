@@ -272,14 +272,14 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::CrasAudioClient::InitializeFake();
-    chromeos::CrasAudioHandler::InitializeForTesting();
+    ash::CrasAudioHandler::InitializeForTesting();
 #endif
   }
 
   ~MediaStreamDispatcherHostTest() override {
     audio_manager_->Shutdown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::CrasAudioHandler::Shutdown();
+    ash::CrasAudioHandler::Shutdown();
     chromeos::CrasAudioClient::Shutdown();
 #endif
   }

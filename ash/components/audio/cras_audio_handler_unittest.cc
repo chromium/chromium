@@ -29,8 +29,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::chromeos::AudioNode;
+using ::chromeos::AudioNodeList;
+using ::chromeos::CrasAudioClient;
+using ::chromeos::FakeCrasAudioClient;
 
 class FakeMediaControllerManager
     : public media_session::mojom::MediaControllerManagerInterceptorForTesting {
@@ -151,7 +156,7 @@ const AudioNodeInfo kUSBJabraSpeakerInput2[] = {{true, kUSBJabraSpeakerInputId2,
 const AudioNodeInfo kUSBCameraInput[] = {
     {true, kUSBCameraInputId, "USB Camera", "USB", "USB Camera"}};
 
-class TestObserver : public chromeos::CrasAudioHandler::AudioObserver {
+class TestObserver : public CrasAudioHandler::AudioObserver {
  public:
   TestObserver() = default;
 
@@ -202,7 +207,7 @@ class TestObserver : public chromeos::CrasAudioHandler::AudioObserver {
   ~TestObserver() override = default;
 
  protected:
-  // chromeos::CrasAudioHandler::AudioObserver overrides.
+  // CrasAudioHandler::AudioObserver overrides.
   void OnActiveOutputNodeChanged() override {
     ++active_output_node_changed_count_;
   }
@@ -4260,4 +4265,4 @@ TEST_P(CrasAudioHandlerTest, SuspendAllSessionsForInput) {
   ChangeAudioNodes(audio_nodes);
 }
 
-}  // namespace chromeos
+}  // namespace ash

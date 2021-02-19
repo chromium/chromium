@@ -8,6 +8,9 @@
 #include <string>
 
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
+// TODO(https://crbug.com/1164001): use forward declaration when migrated to
+// ash/.
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
@@ -18,7 +21,6 @@ class AssistantStateBase;
 }  // namespace ash
 
 namespace chromeos {
-class CrasAudioHandler;
 class PowerManagerClient;
 }  // namespace chromeos
 

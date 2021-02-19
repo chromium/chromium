@@ -30,7 +30,7 @@ namespace ash {
 
 AssistantControllerImpl::AssistantControllerImpl() {
   assistant_state_controller_.AddObserver(this);
-  chromeos::CrasAudioHandler::Get()->AddAudioObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
   AddObserver(this);
 
   // The Assistant service needs to have accessibility state synced with ash
@@ -44,7 +44,7 @@ AssistantControllerImpl::AssistantControllerImpl() {
 AssistantControllerImpl::~AssistantControllerImpl() {
   NotifyDestroying();
 
-  chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
   assistant_state_controller_.RemoveObserver(this);
   RemoveObserver(this);
@@ -232,20 +232,19 @@ void AssistantControllerImpl::OnDeepLinkReceived(
 void AssistantControllerImpl::SetVolume(int volume, bool user_initiated) {
   volume = std::min(100, volume);
   volume = std::max(volume, 0);
-  chromeos::CrasAudioHandler::Get()->SetOutputVolumePercent(volume);
+  CrasAudioHandler::Get()->SetOutputVolumePercent(volume);
 }
 
 void AssistantControllerImpl::SetMuted(bool muted) {
-  chromeos::CrasAudioHandler::Get()->SetOutputMute(muted);
+  CrasAudioHandler::Get()->SetOutputMute(muted);
 }
 
 void AssistantControllerImpl::AddVolumeObserver(
     mojo::PendingRemote<mojom::VolumeObserver> observer) {
   volume_observers_.Add(std::move(observer));
 
-  int output_volume =
-      chromeos::CrasAudioHandler::Get()->GetOutputVolumePercent();
-  bool mute = chromeos::CrasAudioHandler::Get()->IsOutputMuted();
+  int output_volume = CrasAudioHandler::Get()->GetOutputVolumePercent();
+  bool mute = CrasAudioHandler::Get()->IsOutputMuted();
   OnOutputMuteChanged(mute);
   OnOutputNodeVolumeChanged(0 /* node */, output_volume);
 }

@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_AUDIO_SOUNDS_H_
 
 // This file declares sound resources keys for ChromeOS.
-namespace chromeos {
+namespace ash {
 
 enum class Sound {
   kStartup,
@@ -29,12 +29,12 @@ enum class Sound {
   kDictationCancel,
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::Sound;
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// directory migration is finished.
+namespace chromeos {
+using ::ash::Sound;
 }
 
 #endif  // ASH_COMPONENTS_AUDIO_SOUNDS_H_

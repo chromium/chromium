@@ -14,7 +14,7 @@ namespace policy {
 
 namespace {
 
-class TestAudioObserver : public chromeos::CrasAudioHandler::AudioObserver {
+class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
  public:
   TestAudioObserver() : output_mute_changed_count_(0) {}
   ~TestAudioObserver() override {}
@@ -25,7 +25,7 @@ class TestAudioObserver : public chromeos::CrasAudioHandler::AudioObserver {
   int output_mute_changed_count() const { return output_mute_changed_count_; }
 
  protected:
-  // chromeos::CrasAudioHandler::AudioObserver overrides.
+  // ash::CrasAudioHandler::AudioObserver overrides.
   void OnOutputMuteChanged(bool /* mute_on */) override {
     ++output_mute_changed_count_;
   }
@@ -38,7 +38,7 @@ class TestAudioObserver : public chromeos::CrasAudioHandler::AudioObserver {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, DisableAudioOutput) {
   // Set up the mock observer.
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
+  auto* audio_handler = ash::CrasAudioHandler::Get();
   std::unique_ptr<TestAudioObserver> test_observer(new TestAudioObserver);
   audio_handler->AddAudioObserver(test_observer.get());
 

@@ -35,8 +35,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 namespace {

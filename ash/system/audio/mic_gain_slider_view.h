@@ -13,7 +13,7 @@ namespace ash {
 class MicGainSliderController;
 
 class MicGainSliderView : public UnifiedSliderView,
-                          public chromeos::CrasAudioHandler::AudioObserver {
+                          public CrasAudioHandler::AudioObserver {
  public:
   MicGainSliderView(MicGainSliderController* controller,
                     uint64_t device_id,

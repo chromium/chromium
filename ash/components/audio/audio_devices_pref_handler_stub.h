@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 
 // Stub class for AudioDevicesPrefHandler, used for testing.
 class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerStub
@@ -57,6 +57,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerStub
   DISALLOW_COPY_AND_ASSIGN(AudioDevicesPrefHandlerStub);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_STUB_H_

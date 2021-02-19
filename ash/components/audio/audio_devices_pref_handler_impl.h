@@ -18,7 +18,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // Class which implements AudioDevicesPrefHandler interface and register audio
 // preferences as well.
@@ -121,6 +121,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
   DISALLOW_COPY_AND_ASSIGN(AudioDevicesPrefHandlerImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_

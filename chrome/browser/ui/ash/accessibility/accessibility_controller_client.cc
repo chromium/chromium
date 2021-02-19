@@ -98,7 +98,7 @@ void AccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
   AutomationManagerAura::GetInstance()->HandleAlert(message);
 }
 
-void AccessibilityControllerClient::PlayEarcon(chromeos::Sound sound_key) {
+void AccessibilityControllerClient::PlayEarcon(ash::Sound sound_key) {
   AccessibilityManager::Get()->PlayEarcon(
       sound_key, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }

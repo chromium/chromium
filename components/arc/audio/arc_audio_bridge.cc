@@ -16,6 +16,9 @@
 namespace arc {
 namespace {
 
+using ::ash::AudioDevice;
+using ::ash::AudioDeviceType;
+
 // Singleton factory for ArcAccessibilityHelperBridge.
 class ArcAudioBridgeFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
@@ -46,7 +49,7 @@ ArcAudioBridge* ArcAudioBridge::GetForBrowserContext(
 ArcAudioBridge::ArcAudioBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
-      cras_audio_handler_(chromeos::CrasAudioHandler::Get()) {
+      cras_audio_handler_(ash::CrasAudioHandler::Get()) {
   arc_bridge_service_->audio()->SetHost(this);
   arc_bridge_service_->audio()->AddObserver(this);
   cras_audio_handler_->AddAudioObserver(this);
@@ -84,20 +87,19 @@ void ArcAudioBridge::OnSystemVolumeUpdateRequest(int32_t percent) {
 
 void ArcAudioBridge::OnAudioNodesChanged() {
   uint64_t output_id = cras_audio_handler_->GetPrimaryActiveOutputNode();
-  const chromeos::AudioDevice* output_device =
+  const ash::AudioDevice* output_device =
       cras_audio_handler_->GetDeviceFromId(output_id);
   bool headphone_inserted =
-      (output_device &&
-       (output_device->type == chromeos::AudioDeviceType::kHeadphone ||
-        output_device->type == chromeos::AudioDeviceType::kUsb ||
-        output_device->type == chromeos::AudioDeviceType::kLineout));
+      (output_device && (output_device->type == AudioDeviceType::kHeadphone ||
+                         output_device->type == AudioDeviceType::kUsb ||
+                         output_device->type == AudioDeviceType::kLineout));
 
   uint64_t input_id = cras_audio_handler_->GetPrimaryActiveInputNode();
-  const chromeos::AudioDevice* input_device =
+  const ash::AudioDevice* input_device =
       cras_audio_handler_->GetDeviceFromId(input_id);
   bool microphone_inserted =
-      (input_device && (input_device->type == chromeos::AudioDeviceType::kMic ||
-                        input_device->type == chromeos::AudioDeviceType::kUsb));
+      (input_device && (input_device->type == AudioDeviceType::kMic ||
+                        input_device->type == AudioDeviceType::kUsb));
 
   DVLOG(1) << "HEADPHONE " << headphone_inserted << " MICROPHONE "
            << microphone_inserted;

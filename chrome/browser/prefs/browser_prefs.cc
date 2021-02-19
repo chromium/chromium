@@ -757,7 +757,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   arc::prefs::RegisterLocalStatePrefs(registry);
   ChromeOSMetricsProvider::RegisterPrefs(registry);
   chromeos::ArcKioskAppManager::RegisterPrefs(registry);
-  chromeos::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
+  ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
   chromeos::cert_provisioning::RegisterLocalStatePrefs(registry);
   chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(registry);
   chromeos::ChromeUserManagerImpl::RegisterPrefs(registry);

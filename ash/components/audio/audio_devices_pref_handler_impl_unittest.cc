@@ -16,7 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 using testing::Values;
 
@@ -77,7 +77,7 @@ const uint32_t kInputMaxSupportedChannels = 1;
 const uint32_t kOutputMaxSupportedChannels = 2;
 
 AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
-  return AudioDevice(AudioNode(
+  return AudioDevice(chromeos::AudioNode(
       info.is_input, info.id, version == 2, info.id /* stable_device_id_v1 */,
       version == 1 ? 0 : info.id ^ 0xFF /* stable_device_id_v2 */,
       info.device_name, info.type, info.name, false, 0,
@@ -447,4 +447,4 @@ TEST_P(AudioDevicesPrefHandlerTest, TestSettingV2DeviceStateRemovesV1Entry) {
   ExpectDeviceStateEquals(device_v2, false, false);
 }
 
-}  // namespace chromeos
+}  // namespace ash

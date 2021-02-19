@@ -1194,7 +1194,7 @@ void AccessibilityControllerImpl::TriggerAccessibilityAlertWithMessage(
     client_->TriggerAccessibilityAlertWithMessage(message);
 }
 
-void AccessibilityControllerImpl::PlayEarcon(chromeos::Sound sound_key) {
+void AccessibilityControllerImpl::PlayEarcon(Sound sound_key) {
   if (client_)
     client_->PlayEarcon(sound_key);
 }
@@ -1974,7 +1974,7 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       Shell::Get()->UpdateCursorCompositingEnabled();
       break;
     case FeatureType::kMonoAudio:
-      chromeos::CrasAudioHandler::Get()->SetOutputMonoEnabled(enabled);
+      CrasAudioHandler::Get()->SetOutputMonoEnabled(enabled);
       break;
     case FeatureType::kSpokenFeedback:
       message_center::MessageCenter::Get()->SetSpokenFeedbackEnabled(enabled);

@@ -112,7 +112,7 @@ AshTestHelper::AshTestHelper(ConfigType config_type,
   chromeos::CrasAudioClient::InitializeFake();
   // Create CrasAudioHandler for testing since g_browser_process is not
   // created in AshTestBase tests.
-  chromeos::CrasAudioHandler::InitializeForTesting();
+  CrasAudioHandler::InitializeForTesting();
 
   // Reset the global state for the cursor manager. This includes the
   // last cursor visibility state, etc.
@@ -156,7 +156,7 @@ void AshTestHelper::TearDown() {
 
   chromeos::LoginState::Shutdown();
 
-  chromeos::CrasAudioHandler::Shutdown();
+  CrasAudioHandler::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
 
   // The PowerPolicyController holds a pointer to the PowerManagementClient, so

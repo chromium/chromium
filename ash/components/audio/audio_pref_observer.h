@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for observing audio preference changes.
 class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioPrefObserver {
@@ -20,6 +20,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioPrefObserver {
   virtual ~AudioPrefObserver() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_AUDIO_AUDIO_PREF_OBSERVER_H_

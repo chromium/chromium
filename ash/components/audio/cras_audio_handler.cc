@@ -25,12 +25,14 @@
 #include "base/system/system_monitor.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-using std::max;
-using std::min;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::chromeos::AudioNode;
+using ::chromeos::AudioNodeList;
+using ::chromeos::CrasAudioClient;
+using ::std::max;
+using ::std::min;
 
 // Default value for unmuting, as a percent in the range [0, 100].
 // Used when sound is unmuted, but volume was less than kMuteThresholdPercent.
@@ -1589,8 +1591,7 @@ void CrasAudioHandler::HandleAudioDeviceChange(
   }
 }
 
-void CrasAudioHandler::HandleGetNodes(
-    base::Optional<chromeos::AudioNodeList> node_list) {
+void CrasAudioHandler::HandleGetNodes(base::Optional<AudioNodeList> node_list) {
   if (!node_list.has_value()) {
     LOG(ERROR) << "Failed to retrieve audio nodes data";
     return;
@@ -1894,4 +1895,4 @@ void CrasAudioHandler::HandleGetSystemAecGroupId(
   system_aec_group_id_ = system_aec_group_id.value();
 }
 
-}  // namespace chromeos
+}  // namespace ash

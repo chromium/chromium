@@ -29,7 +29,7 @@ static constexpr base::TimeDelta kSliderDelay = base::TimeDelta::FromSeconds(1);
 // This class handles logging for settings changes that are initiated by the
 // user from the quick settings tray. Exported for tests.
 class ASH_EXPORT UserSettingsEventLogger
-    : public chromeos::CrasAudioHandler::AudioObserver,
+    : public CrasAudioHandler::AudioObserver,
       public chromeos::PowerManagerClient::Observer,
       public ShellObserver,
       public VideoDetector::Observer {
@@ -65,7 +65,7 @@ class ASH_EXPORT UserSettingsEventLogger
   void LogAccessibilityUkmEvent(UserSettingsEvent::Event::AccessibilityId id,
                                 bool enabled);
 
-  // chromeos::CrasAudioHandler::AudioObserver overrides:
+  // CrasAudioHandler::AudioObserver overrides:
   void OnOutputNodeVolumeChanged(uint64_t node, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
   void OnOutputStarted() override;

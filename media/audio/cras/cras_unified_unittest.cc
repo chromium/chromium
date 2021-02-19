@@ -62,14 +62,14 @@ class CrasUnifiedStreamTest : public testing::Test {
  protected:
   CrasUnifiedStreamTest() {
     chromeos::CrasAudioClient::InitializeFake();
-    chromeos::CrasAudioHandler::InitializeForTesting();
+    ash::CrasAudioHandler::InitializeForTesting();
     mock_manager_.reset(new StrictMock<MockAudioManagerCras>());
     base::RunLoop().RunUntilIdle();
   }
 
   ~CrasUnifiedStreamTest() override {
     mock_manager_->Shutdown();
-    chromeos::CrasAudioHandler::Shutdown();
+    ash::CrasAudioHandler::Shutdown();
     chromeos::CrasAudioClient::Shutdown();
   }
 
