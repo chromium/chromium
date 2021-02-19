@@ -5,12 +5,36 @@
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 #include "base/files/memory_mapped_file.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "components/translate/core/common/translate_constants.h"
 
 namespace {
+
 constexpr char kTFLiteModelVersion[] = "TFLiteLanguageDetection_v1";
-}
+
+// Util class for recording the result of loading the detection model. The
+// result is recorded when it goes out of scope and its destructor is called.
+class ScopedLanguageDetectionModelStateRecorder {
+ public:
+  explicit ScopedLanguageDetectionModelStateRecorder(
+      translate::LanguageDetectionModelState state)
+      : state_(state) {}
+  ~ScopedLanguageDetectionModelStateRecorder() {
+    UMA_HISTOGRAM_ENUMERATION(
+        "LanguageDetection.TFLiteModel.LanguageDetectionModelState", state_);
+  }
+
+  void set_state(translate::LanguageDetectionModelState state) {
+    state_ = state;
+  }
+
+ private:
+  translate::LanguageDetectionModelState state_;
+};
+
+}  // namespace
+
 namespace translate {
 
 LanguageDetectionModel::LanguageDetectionModel() = default;
@@ -18,23 +42,16 @@ LanguageDetectionModel::LanguageDetectionModel() = default;
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
-  // TODO(crbug.com/1157661): Update to be full histograms.
-  if (!model_file.IsValid()) {
-    LOCAL_HISTOGRAM_ENUMERATION(
-        "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
-        LanguageDetectionModelState::kModelFileInvalid);
-    return;
-  }
+  ScopedLanguageDetectionModelStateRecorder recorder(
+      LanguageDetectionModelState::kModelFileInvalid);
 
-  if (!model_fb_.Initialize(std::move(model_file))) {
-    LOCAL_HISTOGRAM_ENUMERATION(
-        "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
-        LanguageDetectionModelState::kModelFileInvalid);
+  if (!model_file.IsValid())
     return;
-  }
 
-  LOCAL_HISTOGRAM_ENUMERATION(
-      "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
+  if (!model_fb_.Initialize(std::move(model_file)))
+    return;
+
+  recorder.set_state(
       LanguageDetectionModelState::kModelFileValidAndMemoryMapped);
 
   // TODO(crbug.com/1151413): Initialize tflite classifier with the provided

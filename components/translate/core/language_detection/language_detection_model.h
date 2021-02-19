@@ -12,6 +12,8 @@ namespace translate {
 
 // The state of the language detection model file needed for determining
 // the language of the page.
+//
+// Keep in sync with LanguageDetectionModelState in enums.xml.
 enum class LanguageDetectionModelState {
   // The language model state is not known.
   kUnknown,

@@ -231,9 +231,9 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
-      "TranslateModelService.LanguageDetectionModel.WasValid", 1);
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
   histogram_tester.ExpectUniqueSample(
-      "TranslateModelService.LanguageDetectionModel.WasValid", false, 1);
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,

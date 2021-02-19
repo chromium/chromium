@@ -13,7 +13,6 @@
 #include "base/json/string_escape.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -148,7 +147,7 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
                                   &model_detected_language, &is_model_reliable,
                                   model_reliability_score)
                             : translate::kUnknownLanguageCode;
-    LOCAL_HISTOGRAM_BOOLEAN(
+    UMA_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);
     detection_model_version = language_detection_model.GetModelVersion();

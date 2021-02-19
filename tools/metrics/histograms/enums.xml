@@ -41694,6 +41694,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8026721" label="Zaza"/>
 </enum>
 
+<enum name="LanguageDetectionModelState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model File Invalid"/>
+  <int value="2" label="Model File Valid and Available"/>
+</enum>
+
 <enum name="LanguageSettingsActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Click on the 'Add Language' button">
