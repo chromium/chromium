@@ -744,7 +744,7 @@ TEST_P(HTMLMediaElementTest, GcMarkingNoAllocWebTimeRanges) {
   ThreadState::NoAllocationScope no_allocation_scope(thread_state);
   EXPECT_FALSE(thread_state->IsAllocationAllowed());
   // Use of TimeRanges is not allowed during GC marking (crbug.com/970150)
-  EXPECT_DCHECK_DEATH(MakeGarbageCollected<TimeRanges>(0, 0));
+  EXPECT_DEATH(MakeGarbageCollected<TimeRanges>(0, 0), "");
   // Instead of using TimeRanges, WebTimeRanges can be used without GC
   Vector<WebTimeRanges> ranges;
   ranges.emplace_back();
