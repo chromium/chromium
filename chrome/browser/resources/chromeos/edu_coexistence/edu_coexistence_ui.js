@@ -64,17 +64,6 @@ Polymer({
     EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
   },
 
-  /**
-   * Takes the appropriate "back" action from the GAIA edu login page.
-   * @param {Event} e
-   * @private
-   */
-  handleGaiaLoginGoBack_(e) {
-    e.stopPropagation();
-    this.webview_.back();
-    this.webview_.focus();
-  },
-
   loadAuthExtension_(data) {
     // Set up the controller.
     this.controller_.loadAuthExtension(data);
@@ -82,6 +71,27 @@ Polymer({
     this.webview_.addEventListener('contentload', () => {
       this.loading_ = false;
       this.configureUiForGaiaFlow();
+    });
+  },
+
+  handleGaiaLoginGoBack_(e) {
+    e.stopPropagation();
+    let backButton = this.root.getElementById('gaia-back-button');
+    if (backButton.disabled) {
+      // This is a safeguard against this method getting called somehow
+      // despite the button being disabled.
+      return;
+    }
+    backButton.disabled = true;
+
+    this.webview_.back((success /* ignored */) => {
+      // Wait a full second after the callback fires before processing another
+      // click on the back button.  This delay is needed because the callback
+      // fires before the content finishes navigating to the previous page.
+      setTimeout(() => {
+        backButton.disabled = false;
+      }, 1000 /* 1 second */);
+      this.webview_.focus();
     });
   },
 
