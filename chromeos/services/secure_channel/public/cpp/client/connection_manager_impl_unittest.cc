@@ -24,6 +24,10 @@
 namespace chromeos {
 namespace secure_channel {
 namespace {
+const char kSecureChannelFeatureName[] = "phone_hub";
+const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
+const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
+const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 
 using multidevice_setup::mojom::HostStatus;
 
@@ -91,6 +95,8 @@ class ConnectionManagerImplTest : public testing::Test {
         base::WrapUnique(new secure_channel::ConnectionManagerImpl(
             &fake_multidevice_setup_client_, &fake_device_sync_client_,
             fake_secure_channel_client_.get(), std::move(timer),
+            kSecureChannelFeatureName, kConnectionResultMetricName,
+            kConnectionLatencyMetricName, kConnectionDurationMetricName,
             test_clock_.get()));
     connection_manager_->AddObserver(&fake_observer_);
     EXPECT_EQ(secure_channel::ConnectionManager::Status::kDisconnected,
@@ -137,7 +143,7 @@ class ConnectionManagerImplTest : public testing::Test {
   void VerifyConnectionResultHistogram(
       base::HistogramBase::Sample sample,
       base::HistogramBase::Count expected_count) {
-    histogram_tester_.ExpectBucketCount("PhoneHub.Connection.Result", sample,
+    histogram_tester_.ExpectBucketCount(kConnectionResultMetricName, sample,
                                         expected_count);
   }
 
@@ -157,7 +163,7 @@ class ConnectionManagerImplTest : public testing::Test {
 
 TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnection) {
   CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
@@ -176,14 +182,14 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnection) {
   EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(secure_channel::ConnectionManager::Status::kConnected, GetStatus());
 
-  histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
+  histogram_tester_.ExpectTimeBucketCount(kConnectionLatencyMetricName,
                                           kFakeConnectionLatencyTime, 1);
   VerifyConnectionResultHistogram(true, 1);
 }
 
 TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
   CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
@@ -206,7 +212,7 @@ TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
 
 TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
   CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
@@ -227,7 +233,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
   EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(secure_channel::ConnectionManager::Status::kConnected, GetStatus());
 
-  histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
+  histogram_tester_.ExpectTimeBucketCount(kConnectionLatencyMetricName,
                                           kFakeConnectionLatencyTime, 1);
   VerifyConnectionResultHistogram(true, 1);
 
@@ -240,13 +246,13 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
   EXPECT_EQ(secure_channel::ConnectionManager::Status::kDisconnected,
             GetStatus());
 
-  histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connection.Duration",
+  histogram_tester_.ExpectTimeBucketCount(kConnectionDurationMetricName,
                                           kFakeConnectionDurationTime, 1);
 }
 
 TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
   CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
@@ -262,7 +268,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
       fake_client_channel.get();
   fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
 
-  histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
+  histogram_tester_.ExpectTimeBucketCount(kConnectionLatencyMetricName,
                                           kFakeConnectionLatencyTime, 1);
   VerifyConnectionResultHistogram(true, 1);
 
@@ -284,7 +290,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutLocalDevice) {
   // Simulate a missing local device.
   fake_device_sync_client_.set_local_device_metadata(
       base::Optional<chromeos::multidevice::RemoteDeviceRef>());
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that
   // the status observer did not get called (exited early).
@@ -298,7 +304,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutRemoteDevice) {
   fake_multidevice_setup_client_.SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified,
                      base::Optional<chromeos::multidevice::RemoteDeviceRef>()));
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that
   // the status observer did not get called (exited early).
@@ -309,7 +315,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutRemoteDevice) {
 
 TEST_F(ConnectionManagerImplTest, ConnectionTimeout) {
   CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.
@@ -330,7 +336,7 @@ TEST_F(ConnectionManagerImplTest, ConnectionTimeout) {
 
 TEST_F(ConnectionManagerImplTest, DisconnectConnection) {
   CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 
   // Status has been updated to connecting, verify that the status observer
   // has been called.

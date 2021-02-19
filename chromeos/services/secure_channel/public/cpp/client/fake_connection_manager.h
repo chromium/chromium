@@ -31,7 +31,7 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
  private:
   // ConnectionManager:
   Status GetStatus() const override;
-  void AttemptConnection() override;
+  void AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
 

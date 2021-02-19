@@ -32,6 +32,12 @@
 #include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {
+namespace {
+const char kSecureChannelFeatureName[] = "phone_hub";
+const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
+const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
+const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
+}  // namespace
 namespace phonehub {
 
 PhoneHubManagerImpl::PhoneHubManagerImpl(
@@ -45,7 +51,11 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
               device_sync_client,
-              secure_channel_client)),
+              secure_channel_client,
+              kSecureChannelFeatureName,
+              kConnectionResultMetricName,
+              kConnectionDurationMetricName,
+              kConnectionLatencyMetricName)),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client,

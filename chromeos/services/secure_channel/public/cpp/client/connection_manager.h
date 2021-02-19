@@ -13,17 +13,18 @@
 namespace chromeos {
 namespace secure_channel {
 
-// Responsible for creating and maintaining a connection to the user's phone.
+// Responsible for creating and maintaining a connection to the user's
+// multidevice host.
 class ConnectionManager {
  public:
   enum class Status {
-    // Disconnected from the host phone.
+    // Disconnected from the multidevice host.
     kDisconnected,
 
-    // Initiating a connection to the host phone.
+    // Initiating a connection to the multidevice host.
     kConnecting,
 
-    // Connected to the host phone.
+    // Connected to the multidevice host.
     kConnected,
   };
 
@@ -44,10 +45,10 @@ class ConnectionManager {
 
   virtual Status GetStatus() const = 0;
 
-  // Initiates a connection to the host phone. The local device
-  // (e.g. this chromebook) must have Bluetooth enabled in order to bootstrap
-  // the connection.
-  virtual void AttemptConnection() = 0;
+  // Initiates a connection to the multidevice host with medium priority using
+  // nearby. The local device (e.g. this chromebook) must have Bluetooth
+  // enabled in order to bootstrap the connection.
+  virtual void AttemptNearbyConnection() = 0;
 
   // Cancels an ongoing connection attempt. Is a no-op is there is currently no
   // connection attempt.

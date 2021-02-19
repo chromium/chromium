@@ -16,23 +16,28 @@
 namespace chromeos {
 namespace secure_channel {
 namespace {
-constexpr char kPhoneHubFeatureName[] = "phone_hub";
 constexpr base::TimeDelta kConnectionTimeoutSeconds(
     base::TimeDelta::FromSeconds(15u));
 
-void RecordConnectionSuccessMetric(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("PhoneHub.Connection.Result", success);
+void RecordConnectionSuccessMetric(const std::string& metric_name_result,
+                                   bool success) {
+  base::UmaHistogramBoolean(metric_name_result, success);
 }
-
 }  // namespace
 
 ConnectionManagerImpl::MetricsRecorder::MetricsRecorder(
     ConnectionManager* connection_manager,
-    base::Clock* clock)
+    base::Clock* clock,
+    const std::string& metric_name_result,
+    const std::string& metric_name_latency,
+    const std::string& metric_name_duration)
     : connection_manager_(connection_manager),
       status_(connection_manager->GetStatus()),
       clock_(clock),
-      status_change_timestamp_(clock_->Now()) {
+      status_change_timestamp_(clock_->Now()),
+      metric_name_result_(metric_name_result),
+      metric_name_latency_(metric_name_latency),
+      metric_name_duration_(metric_name_duration) {
   connection_manager_->AddObserver(this);
 }
 
@@ -53,16 +58,16 @@ void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
 
     case ConnectionManager::Status::kDisconnected:
       if (prev_status == ConnectionManager::Status::kConnected) {
-        base::UmaHistogramLongTimes100("PhoneHub.Connection.Duration", delta);
+        base::UmaHistogramLongTimes100(metric_name_duration_, delta);
       } else if (prev_status == ConnectionManager::Status::kConnecting) {
-        RecordConnectionSuccessMetric(false);
+        RecordConnectionSuccessMetric(metric_name_result_, false);
       }
       break;
 
     case ConnectionManager::Status::kConnected:
       if (prev_status == ConnectionManager::Status::kConnecting) {
-        UMA_HISTOGRAM_TIMES("PhoneHub.Connectivity.Latency", delta);
-        RecordConnectionSuccessMetric(true);
+        base::UmaHistogramTimes(metric_name_latency_, delta);
+        RecordConnectionSuccessMetric(metric_name_result_, true);
       }
       break;
   }
@@ -71,11 +76,19 @@ void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client)
+    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    const std::string& feature_name,
+    const std::string& metric_name_result,
+    const std::string& metric_name_latency,
+    const std::string& metric_name_duration)
     : ConnectionManagerImpl(multidevice_setup_client,
                             device_sync_client,
                             secure_channel_client,
                             std::make_unique<base::OneShotTimer>(),
+                            feature_name,
+                            metric_name_result,
+                            metric_name_latency,
+                            metric_name_duration,
                             base::DefaultClock::GetInstance()) {}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
@@ -83,12 +96,22 @@ ConnectionManagerImpl::ConnectionManagerImpl(
     device_sync::DeviceSyncClient* device_sync_client,
     chromeos::secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<base::OneShotTimer> timer,
+    const std::string& feature_name,
+    const std::string& metric_name_result,
+    const std::string& metric_name_latency,
+    const std::string& metric_name_duration,
     base::Clock* clock)
     : multidevice_setup_client_(multidevice_setup_client),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
       timer_(std::move(timer)),
-      metrics_recorder_(std::make_unique<MetricsRecorder>(this, clock)) {
+      feature_name_(feature_name),
+      metrics_recorder_(
+          std::make_unique<MetricsRecorder>(this,
+                                            clock,
+                                            metric_name_result,
+                                            metric_name_latency,
+                                            metric_name_duration)) {
   DCHECK(multidevice_setup_client_);
   DCHECK(device_sync_client_);
   DCHECK(secure_channel_client_);
@@ -117,9 +140,9 @@ ConnectionManager::Status ConnectionManagerImpl::GetStatus() const {
   return Status::kDisconnected;
 }
 
-void ConnectionManagerImpl::AttemptConnection() {
+void ConnectionManagerImpl::AttemptNearbyConnection() {
   if (GetStatus() != Status::kDisconnected) {
-    PA_LOG(WARNING) << "Connection to phone already established or is "
+    PA_LOG(WARNING) << "Connection to host already established or is "
                     << "currently attempting to establish, exiting "
                     << "AttemptConnection().";
     return;
@@ -137,7 +160,7 @@ void ConnectionManagerImpl::AttemptConnection() {
   }
 
   connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
-      *remote_device, *local_device, kPhoneHubFeatureName,
+      *remote_device, *local_device, feature_name_,
       secure_channel::ConnectionMedium::kNearbyConnections,
       secure_channel::ConnectionPriority::kMedium);
   connection_attempt_->SetDelegate(this);

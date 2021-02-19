@@ -25,7 +25,7 @@ secure_channel::ConnectionManager::Status FakeConnectionManager::GetStatus()
   return status_;
 }
 
-void FakeConnectionManager::AttemptConnection() {
+void FakeConnectionManager::AttemptNearbyConnection() {
   ++num_attempt_connection_calls_;
   if (status_ == Status::kDisconnected)
     SetStatus(Status::kConnecting);

@@ -50,7 +50,7 @@ void ConnectionSchedulerImpl::ScheduleConnectionNow() {
     return;
   }
 
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 }
 
 void ConnectionSchedulerImpl::OnFeatureStatusChanged() {

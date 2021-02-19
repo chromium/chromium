@@ -31,7 +31,7 @@ namespace secure_channel {
 class SecureChannelClient;
 
 // ConnectionManager implementation which utilizes SecureChannelClient to
-// establish a connection to a host phone.
+// establish a connection to a multidevice host.
 class ConnectionManagerImpl
     : public ConnectionManager,
       public secure_channel::ConnectionAttempt::Delegate,
@@ -40,12 +40,16 @@ class ConnectionManagerImpl
   ConnectionManagerImpl(
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+      secure_channel::SecureChannelClient* secure_channel_client,
+      const std::string& feature_name,
+      const std::string& metric_name_result,
+      const std::string& metric_name_latency,
+      const std::string& metric_name_duration);
   ~ConnectionManagerImpl() override;
 
   // ConnectionManager:
   ConnectionManager::Status GetStatus() const override;
-  void AttemptConnection() override;
+  void AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
 
@@ -54,7 +58,11 @@ class ConnectionManagerImpl
 
   class MetricsRecorder : public ConnectionManager::Observer {
    public:
-    MetricsRecorder(ConnectionManager* connection_manager, base::Clock* clock);
+    MetricsRecorder(ConnectionManager* connection_manager,
+                    base::Clock* clock,
+                    const std::string& metric_name_result,
+                    const std::string& metric_name_latency,
+                    const std::string& metric_name_duration);
     ~MetricsRecorder() override;
     MetricsRecorder(const MetricsRecorder&) = delete;
     MetricsRecorder* operator=(const MetricsRecorder&) = delete;
@@ -67,6 +75,9 @@ class ConnectionManagerImpl
     ConnectionManager::Status status_;
     base::Clock* clock_;
     base::Time status_change_timestamp_;
+    const std::string metric_name_result_;
+    const std::string metric_name_latency_;
+    const std::string metric_name_duration_;
   };
 
   ConnectionManagerImpl(
@@ -74,6 +85,10 @@ class ConnectionManagerImpl
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<base::OneShotTimer> timer,
+      const std::string& feature_name,
+      const std::string& metrics_name_result,
+      const std::string& metrics_name_latency,
+      const std::string& metrics_name_duration,
       base::Clock* clock);
 
   // secure_channel::ConnectionAttempt::Delegate:
@@ -96,6 +111,7 @@ class ConnectionManagerImpl
       connection_attempt_;
   std::unique_ptr<chromeos::secure_channel::ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;
+  const std::string feature_name_;
   std::unique_ptr<MetricsRecorder> metrics_recorder_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
