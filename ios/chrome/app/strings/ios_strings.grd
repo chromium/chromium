@@ -2658,10 +2658,10 @@ New Search
         Offer to Translate
       </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
-        A link to the highlighted text can not be created.
+        A link to the highlight can not be created.
       </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_TITLE" desc="Title of the alert dialog shown when link-to-text link generation failed. [iOS only]">
-        Unable to Link to Text
+        Unable to Create Link
       </message>
       <message name="IDS_IOS_TRANSLATE_SETTING" desc="Title for the view and option in Settings for Translate. [Length: 25em] [iOS only]">
         Google Translate
@@ -2778,7 +2778,7 @@ New Search
           Sign in to website
       </message>
       <message name="IDS_IOS_SHARE_LINK_TO_TEXT" desc="Option that appears in the iOS Edit Menu when highlighting text (alongside options like Copy, Paste, and Share). When selected, this generates a special URL that will open the current page and jump to/highlight the user's current selection. The user will then have the chance to share this special URL through the normal iOS sharing menu.">
-          Link to Text
+          Create Link
       </message>
       <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION" desc="Explanatory text that appears when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used. [iOS only]">
           Finish what you were doing in your other open Chrome window.
