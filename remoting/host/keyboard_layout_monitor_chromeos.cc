@@ -221,10 +221,9 @@ LayoutKeyFunction KeyboardLayoutMonitorChromeOs::GetFunctionFromKeyboardCode(
     case ui::VKEY_RMENU:
     case ui::VKEY_LMENU:
       return protocol::LayoutKeyFunction::ALT;
-    // TODO(joedow): Update the meta keys to use a CrOS specific function.
     case ui::VKEY_LWIN:
     case ui::VKEY_RWIN:
-      return protocol::LayoutKeyFunction::META;
+      return protocol::LayoutKeyFunction::SEARCH;
     default:
       return LayoutKeyFunction::UNKNOWN;
   }
