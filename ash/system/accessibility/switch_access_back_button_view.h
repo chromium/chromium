@@ -26,6 +26,7 @@ class SwitchAccessBackButtonView : public views::BoxLayoutView {
   SwitchAccessBackButtonView& operator=(const SwitchAccessBackButtonView&) =
       delete;
 
+  int GetFocusRingWidthPerSide();
   void SetFocusRing(bool should_show);
   void SetForMenu(bool for_menu);
 

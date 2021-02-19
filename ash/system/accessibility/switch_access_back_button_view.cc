@@ -36,9 +36,7 @@ constexpr int kRadiusDp = 18;
 SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu) {
   // Calculate the side length of the bounding box, with room for the two-color
   // focus ring on either side.
-  int focus_ring_width_per_side =
-      2 * kFocusRingSingleColorWidthDp + kFocusRingBufferDp;
-  int side_length = 2 * (kRadiusDp + focus_ring_width_per_side);
+  int side_length = 2 * (kRadiusDp + GetFocusRingWidthPerSide());
 
   views::Builder<SwitchAccessBackButtonView>(this)
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
@@ -56,6 +54,10 @@ SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu) {
                    base::Unretained(this)))})
       .SetSize(gfx::Size(side_length, side_length))
       .BuildChildren();
+}
+
+int SwitchAccessBackButtonView::GetFocusRingWidthPerSide() {
+  return 2 * kFocusRingSingleColorWidthDp + kFocusRingBufferDp;
 }
 
 void SwitchAccessBackButtonView::SetFocusRing(bool should_show) {

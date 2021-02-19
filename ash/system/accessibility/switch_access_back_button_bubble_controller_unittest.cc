@@ -58,19 +58,29 @@ TEST_F(SwitchAccessBackButtonBubbleControllerTest, AdjustAnchorRect) {
                                  ->GetDisplayNearestPoint(gfx::Point(100, 100))
                                  .bounds();
 
-  // When there's space for the button, the bottom left corner of the button
-  // should be the upper right corner of the anchor rect.
+  // When there's space for the button, the top edges of the button and the
+  // anchor rect's focus ring should be equal.
   gfx::Rect anchor_rect(100, 100, 50, 50);
   ShowBackButton(anchor_rect);
   gfx::Rect button_bounds = GetBackButtonBounds();
-  EXPECT_EQ(anchor_rect.top_right(), button_bounds.bottom_left());
+  gfx::Point anchor_top_right = anchor_rect.top_right();
+  // The focus ring is shown around the anchor rect, so offset to include that.
+  anchor_top_right.Offset(
+      SwitchAccessBackButtonBubbleController::kFocusRingPaddingDp,
+      -SwitchAccessBackButtonBubbleController::kFocusRingPaddingDp);
+
+  EXPECT_EQ(anchor_top_right, button_bounds.origin());
 
   // When the anchor rect is aligned with the top edge of the screen, the back
   // button should also align with the top edge of the screen.
   anchor_rect = gfx::Rect(100, 0, 50, 50);
   ShowBackButton(anchor_rect);
   button_bounds = GetBackButtonBounds();
-  EXPECT_EQ(anchor_rect.right(), button_bounds.x());
+  int anchor_right = anchor_rect.right();
+  // The focus ring is shown around the anchor rect, so offset to include that.
+  anchor_right += SwitchAccessBackButtonBubbleController::kFocusRingPaddingDp;
+
+  EXPECT_EQ(anchor_right, button_bounds.x());
   EXPECT_EQ(display_bounds.y(), button_bounds.y());
 
   // When the anchor rect is aligned with the right edge of the screen, the back
@@ -78,16 +88,18 @@ TEST_F(SwitchAccessBackButtonBubbleControllerTest, AdjustAnchorRect) {
   anchor_rect = gfx::Rect(display_bounds.right() - 50, 100, 50, 50);
   ShowBackButton(anchor_rect);
   button_bounds = GetBackButtonBounds();
+  int anchor_y = anchor_rect.y();
+  // The focus ring is shown around the anchor rect, so offset to include that.
+  anchor_y -= SwitchAccessBackButtonBubbleController::kFocusRingPaddingDp;
   EXPECT_EQ(display_bounds.right(), button_bounds.right());
-  EXPECT_EQ(anchor_rect.y(), button_bounds.bottom());
+  EXPECT_EQ(anchor_y, button_bounds.y());
 
-  // When the anchor rect is shorter than the back button, the back button
-  // should still display entirely onscreen.
-  anchor_rect =
-      gfx::Rect(display_bounds.right() - 10, display_bounds.y() - 10, 10, 10);
+  // When the anchor rect is very small at the bottom of the screen, the back
+  // button should still display entirely onscreen.
+  anchor_rect = gfx::Rect(display_bounds.right() - 10,
+                          display_bounds.bottom() - 10, 10, 10);
   ShowBackButton(anchor_rect);
-  button_bounds = GetBackButtonBounds();
-  EXPECT_EQ(display_bounds.top_right(), button_bounds.top_right());
+  EXPECT_TRUE(display_bounds.Contains(GetBackButtonBounds()));
 }
 
 }  // namespace ash
