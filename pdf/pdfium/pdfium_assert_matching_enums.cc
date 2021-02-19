@@ -359,3 +359,38 @@ STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kTextField,
                    PP_PRIVATEFOCUSOBJECT_TEXT_FIELD);
 STATIC_ASSERT_ENUM(chrome_pdf::FocusObjectType::kMaxValue,
                    PP_PRIVATEFOCUSOBJECT_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAction::kNone, PP_PDF_ACTION_NONE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAction::kScrollToMakeVisible,
+                   PP_PDF_SCROLL_TO_MAKE_VISIBLE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAction::kDoDefaultAction,
+                   PP_PDF_DO_DEFAULT_ACTION);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAction::kScrollToGlobalPoint,
+                   PP_PDF_SCROLL_TO_GLOBAL_POINT);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAction::kSetSelection,
+                   PP_PDF_SET_SELECTION);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAction::kMaxValue,
+                   PP_PDF_ACCESSIBILITYACTION_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAnnotationType::kNone,
+                   PP_PDF_TYPE_NONE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAnnotationType::kLink, PP_PDF_LINK);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityAnnotationType::kMaxValue,
+                   PP_PDF_ACCESSIBILITY_ANNOTATIONTYPE_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kNone,
+                   PP_PDF_SCROLL_NONE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kCenter,
+                   PP_PDF_SCROLL_ALIGNMENT_CENTER);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kTop,
+                   PP_PDF_SCROLL_ALIGNMENT_TOP);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kBottom,
+                   PP_PDF_SCROLL_ALIGNMENT_BOTTOM);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kLeft,
+                   PP_PDF_SCROLL_ALIGNMENT_LEFT);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kRight,
+                   PP_PDF_SCROLL_ALIGNMENT_RIGHT);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kClosestToEdge,
+                   PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE);
+STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kMaxValue,
+                   PP_PDF_ACCESSIBILITYSCROLLALIGNMENT_LAST);

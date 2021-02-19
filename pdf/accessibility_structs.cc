@@ -204,4 +204,33 @@ AccessibilityPageObjects::AccessibilityPageObjects(
 
 AccessibilityPageObjects::~AccessibilityPageObjects() = default;
 
+AccessibilityActionData::AccessibilityActionData() = default;
+
+AccessibilityActionData::AccessibilityActionData(
+    AccessibilityAction action,
+    AccessibilityAnnotationType annotation_type,
+    const gfx::Point& target_point,
+    const gfx::Rect& target_rect,
+    uint32_t annotation_index,
+    uint32_t page_index,
+    AccessibilityScrollAlignment horizontal_scroll_alignment,
+    AccessibilityScrollAlignment vertical_scroll_alignment,
+    const PageCharacterIndex& selection_start_index,
+    const PageCharacterIndex& selection_end_index)
+    : action(action),
+      annotation_type(annotation_type),
+      target_point(target_point),
+      target_rect(target_rect),
+      annotation_index(annotation_index),
+      page_index(page_index),
+      horizontal_scroll_alignment(horizontal_scroll_alignment),
+      vertical_scroll_alignment(vertical_scroll_alignment),
+      selection_start_index(selection_start_index),
+      selection_end_index(selection_end_index) {}
+
+AccessibilityActionData::AccessibilityActionData(
+    const AccessibilityActionData& other) = default;
+
+AccessibilityActionData::~AccessibilityActionData() = default;
+
 }  // namespace chrome_pdf
