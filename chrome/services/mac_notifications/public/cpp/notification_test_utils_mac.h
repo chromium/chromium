@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#include "base/mac/scoped_nsobject.h"
+
 API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotification : NSObject
 @property(nonatomic, retain, nullable) UNNotificationRequest* request;
@@ -65,5 +67,9 @@ API_AVAILABLE(macosx(10.14))
 - (NSSet<UNNotificationCategory*>* _Nonnull)categories;
 
 @end
+
+API_AVAILABLE(macosx(10.14))
+base::scoped_nsobject<FakeUNNotificationResponse>
+CreateFakeUNNotificationResponse(NSDictionary* _Nonnull userInfo);
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_TEST_UTILS_MAC_H_

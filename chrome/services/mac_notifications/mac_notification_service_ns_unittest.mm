@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#include "url/gurl.h"
 
 // Make dynamic properties accessible for OCMock.
 @implementation NSUserNotificationCenter (Testing)
@@ -31,6 +33,21 @@
 - (void)setDelegate:(id<NSUserNotificationCenterDelegate>)delegate {
 }
 - (NSArray*)deliveredNotifications {
+  return nil;
+}
+@end
+
+@implementation NSUserNotification (Testing)
+- (NSDictionary*)userInfo {
+  return nil;
+}
+- (NSUserNotificationActivationType)activationType {
+  return NSUserNotificationActivationTypeNone;
+}
+- (NSArray*)_alternateActionButtonTitles {
+  return nil;
+}
+- (NSNumber*)_alternateActionIndex {
   return nil;
 }
 @end
@@ -176,8 +193,11 @@ TEST_F(MacNotificationServiceNSTest, DisplayNotification) {
       mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
   auto notification_identifier = mojom::NotificationIdentifier::New(
       "notificationId", std::move(profile_identifier));
-  auto notification =
-      mojom::Notification::New(std::move(notification_identifier));
+  auto meta = mojom::NotificationMetadata::New(
+      std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
+      /*creator_pid=*/0);
+
+  auto notification = mojom::Notification::New(std::move(meta));
   service_remote_->DisplayNotification(std::move(notification));
 
   run_loop.Run();
@@ -242,22 +262,78 @@ TEST_F(MacNotificationServiceNSTest, CloseAllNotifications) {
   [mock_notification_center_ verify];
 }
 
-TEST_F(MacNotificationServiceNSTest, OnNotificationAction) {
+struct NotificationActionParams {
+  NSUserNotificationActivationType activation_type;
+  NSNumber* has_settings_button;
+  NSArray* action_button_titles;
+  NSNumber* alternate_action_index;
+  NotificationOperation operation;
+  int button_index;
+};
+
+const NotificationActionParams kNotificationActionParams[] = {
+    {NSUserNotificationActivationTypeNone,
+     /*has_settings_button=*/@NO, @[ @"A", @"B" ],
+     /*alternate_action_index=*/@0, NotificationOperation::NOTIFICATION_CLOSE,
+     notification_constants::kNotificationInvalidButtonIndex},
+    {NSUserNotificationActivationTypeContentsClicked,
+     /*has_settings_button=*/@NO, @[ @"A", @"B" ],
+     /*alternate_action_index=*/@0, NotificationOperation::NOTIFICATION_CLICK,
+     notification_constants::kNotificationInvalidButtonIndex},
+    {NSUserNotificationActivationTypeActionButtonClicked,
+     /*has_settings_button=*/@NO, @[ @"A", @"B" ],
+     /*alternate_action_index=*/@0, NotificationOperation::NOTIFICATION_CLICK,
+     /*button_index=*/0},
+    {NSUserNotificationActivationTypeActionButtonClicked,
+     /*has_settings_button=*/@YES, @[ @"A", @"B", @"Settings" ],
+     /*alternate_action_index=*/@1, NotificationOperation::NOTIFICATION_CLICK,
+     /*button_index=*/1},
+    {NSUserNotificationActivationTypeActionButtonClicked,
+     /*has_settings_button=*/@YES, @[ @"A", @"B", @"Settings" ],
+     /*alternate_action_index=*/@2,
+     NotificationOperation::NOTIFICATION_SETTINGS,
+     notification_constants::kNotificationInvalidButtonIndex},
+};
+
+class MacNotificationServiceNSTestNotificationAction
+    : public MacNotificationServiceNSTest,
+      public testing::WithParamInterface<NotificationActionParams> {
+ public:
+  MacNotificationServiceNSTestNotificationAction() = default;
+  ~MacNotificationServiceNSTestNotificationAction() override = default;
+};
+
+TEST_P(MacNotificationServiceNSTestNotificationAction, OnNotificationAction) {
+  const NotificationActionParams& params = GetParam();
   base::RunLoop run_loop;
   EXPECT_CALL(mock_handler_, OnNotificationAction)
       .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
-        // TODO(knollr): verify properties of |action_info| once we set
-        // them.
+        EXPECT_EQ(params.operation, action_info->operation);
+        EXPECT_EQ(params.button_index, action_info->button_index);
         run_loop.Quit();
       });
 
   // Simulate a notification action and wait until we acknowledge it.
-  NSUserNotification* notification =
-      [OCMockObject mockForClass:[NSUserNotification class]];
+  id notification = [OCMockObject mockForClass:[NSUserNotification class]];
+  [[[notification stub] andReturn:@{
+    notification_constants::
+    kNotificationHasSettingsButton : params.has_settings_button,
+  }] userInfo];
+  [[[notification stub] andReturnValue:OCMOCK_VALUE(params.activation_type)]
+      activationType];
+  [[[notification stub] andReturn:params.action_button_titles]
+      valueForKey:@"_alternateActionButtonTitles"];
+  [[[notification stub] andReturn:params.alternate_action_index]
+      valueForKey:@"_alternateActionIndex"];
+
   [notification_center_delegate_
        userNotificationCenter:mock_notification_center_
       didActivateNotification:notification];
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MacNotificationServiceNSTestNotificationAction,
+                         testing::ValuesIn(kNotificationActionParams));
 
 }  // namespace mac_notifications

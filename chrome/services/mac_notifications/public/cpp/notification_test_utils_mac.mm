@@ -4,8 +4,6 @@
 
 #include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
 
-#include "base/mac/scoped_nsobject.h"
-
 @implementation FakeUNNotification
 @synthesize request = _request;
 - (void)dealloc {
@@ -120,3 +118,26 @@
 }
 
 @end
+
+base::scoped_nsobject<FakeUNNotificationResponse>
+CreateFakeUNNotificationResponse(NSDictionary* userInfo) {
+  base::scoped_nsobject<UNMutableNotificationContent> content(
+      [[UNMutableNotificationContent alloc] init]);
+  [content setUserInfo:userInfo];
+
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:@"identifier"
+                                           content:content.get()
+                                           trigger:nil];
+
+  base::scoped_nsobject<FakeUNNotification> notification(
+      [[FakeUNNotification alloc] init]);
+  [notification setRequest:request];
+
+  base::scoped_nsobject<FakeUNNotificationResponse> response(
+      [[FakeUNNotificationResponse alloc] init]);
+  [response setNotification:notification.get()];
+  [response setActionIdentifier:UNNotificationDefaultActionIdentifier];
+
+  return response;
+}

@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -104,9 +105,11 @@ TEST_F(NotificationAlertServiceBridgeTest, DeliverNotification) {
   base::RunLoop run_loop;
   EXPECT_CALL(mock_service_, DisplayNotification)
       .WillOnce([&](mac_notifications::mojom::NotificationPtr notification) {
-        EXPECT_EQ("notificationId", notification->id->id);
-        EXPECT_EQ("profileId", notification->id->profile->id);
-        EXPECT_TRUE(notification->id->profile->incognito);
+        const mac_notifications::mojom::NotificationIdentifierPtr& identifier =
+            notification->meta->id;
+        EXPECT_EQ("notificationId", identifier->id);
+        EXPECT_EQ("profileId", identifier->profile->id);
+        EXPECT_TRUE(identifier->profile->incognito);
         run_loop.Quit();
       });
 
@@ -202,9 +205,21 @@ TEST_F(NotificationAlertServiceBridgeTest, CloseAllNotifications) {
 }
 
 TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
-  // TODO(knollr): pass and verify expected notification action data.
-  handler_remote_->OnNotificationAction(
-      mac_notifications::mojom::NotificationActionInfo::New());
+  auto profile_identifier = mac_notifications::mojom::ProfileIdentifier::New(
+      "profileId", /*incognito=*/true);
+  auto notification_identifier =
+      mac_notifications::mojom::NotificationIdentifier::New(
+          "notificationId", std::move(profile_identifier));
+  auto meta = mac_notifications::mojom::NotificationMetadata::New(
+      std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
+      /*creator_pid=*/0);
+
+  auto action_info = mac_notifications::mojom::NotificationActionInfo::New(
+      std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
+      /*button_index=*/-1, /*reply=*/base::nullopt);
+  handler_remote_->OnNotificationAction(std::move(action_info));
+
+  // TODO(knollr): verify expected notification action data.
   // Wait until the action has been handled.
   task_environment_.RunUntilIdle();
 }

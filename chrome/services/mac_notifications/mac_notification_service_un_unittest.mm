@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -22,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#include "url/gurl.h"
 
 namespace mac_notifications {
 
@@ -194,8 +196,11 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
         mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
     auto notification_identifier = mojom::NotificationIdentifier::New(
         "notificationId", std::move(profile_identifier));
-    auto notification =
-        mojom::Notification::New(std::move(notification_identifier));
+    auto meta = mojom::NotificationMetadata::New(
+        std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
+        /*creator_pid=*/0);
+
+    auto notification = mojom::Notification::New(std::move(meta));
     service_remote_->DisplayNotification(std::move(notification));
 
     run_loop.Run();
@@ -268,29 +273,59 @@ TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
   }
 }
 
+struct NotificationActionParams {
+  NSString* action_identifier;
+  NotificationOperation operation;
+  int button_index;
+};
+
 TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
   if (@available(macOS 10.14, *)) {
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_handler_, OnNotificationAction)
-        .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
-          // TODO(knollr): verify properties of |action_info| once we set
-          // them.
-          run_loop.Quit();
-        });
+    // We can't use TEST_P and INSTANTIATE_TEST_SUITE_P as we can't access
+    // UNNotificationDefaultActionIdentifier etc. outside an @available block.
+    NotificationActionParams kNotificationActionParams[] = {
+        {UNNotificationDismissActionIdentifier,
+         NotificationOperation::NOTIFICATION_CLOSE,
+         notification_constants::kNotificationInvalidButtonIndex},
+        {UNNotificationDefaultActionIdentifier,
+         NotificationOperation::NOTIFICATION_CLICK,
+         notification_constants::kNotificationInvalidButtonIndex},
+        {notification_constants::kNotificationButtonOne,
+         NotificationOperation::NOTIFICATION_CLICK,
+         /*button_index=*/0},
+        {notification_constants::kNotificationButtonTwo,
+         NotificationOperation::NOTIFICATION_CLICK,
+         /*button_index=*/1},
+        {notification_constants::kNotificationSettingsButtonTag,
+         NotificationOperation::NOTIFICATION_SETTINGS,
+         notification_constants::kNotificationInvalidButtonIndex},
+    };
 
-    // Simulate a notification action and wait until we acknowledge it.
-    base::RunLoop inner_run_loop;
-    base::RepeatingClosure inner_quit_closure = inner_run_loop.QuitClosure();
-    UNNotificationResponse* response =
-        [OCMockObject mockForClass:[UNNotificationResponse class]];
-    [notification_center_delegate_
-                userNotificationCenter:mock_notification_center_
-        didReceiveNotificationResponse:response
-                 withCompletionHandler:^() {
-                   inner_quit_closure.Run();
-                 }];
-    inner_run_loop.Run();
-    run_loop.Run();
+    for (const auto& params : kNotificationActionParams) {
+      base::RunLoop run_loop;
+      EXPECT_CALL(mock_handler_, OnNotificationAction)
+          .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
+            EXPECT_EQ(params.operation, action_info->operation);
+            EXPECT_EQ(params.button_index, action_info->button_index);
+            run_loop.Quit();
+          });
+
+      // Simulate a notification action and wait until we acknowledge it.
+      base::RunLoop inner_run_loop;
+      base::RepeatingClosure inner_quit_closure = inner_run_loop.QuitClosure();
+      base::scoped_nsobject<FakeUNNotificationResponse> response =
+          CreateFakeUNNotificationResponse(@{});
+      [response setActionIdentifier:params.action_identifier];
+      [notification_center_delegate_
+                  userNotificationCenter:mock_notification_center_
+          didReceiveNotificationResponse:static_cast<UNNotificationResponse*>(
+                                             response.get())
+                   withCompletionHandler:^() {
+                     inner_quit_closure.Run();
+                   }];
+      inner_run_loop.Run();
+      run_loop.Run();
+    }
   }
 }
 

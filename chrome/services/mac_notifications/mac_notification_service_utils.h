@@ -14,6 +14,9 @@ namespace mac_notifications {
 NSDictionary* GetMacNotificationUserInfo(
     const mojom::NotificationPtr& notification);
 
+mojom::NotificationMetadataPtr GetMacNotificationMetadata(
+    NSDictionary* user_info);
+
 }  // namespace mac_notifications
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UTILS_H_

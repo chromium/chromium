@@ -14,10 +14,12 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -27,8 +29,22 @@ class MacNotificationActionHandlerImpl
   // mac_notifications::mojom::MacNotificationActionHandler:
   void OnNotificationAction(
       mac_notifications::mojom::NotificationActionInfoPtr info) override {
-    NSDictionary* dict = nil;
-    // TODO(knollr): Get all properties from |info| into |dict|.
+    NSDictionary* dict = @{
+      notification_constants::
+      kNotificationId : base::SysUTF8ToNSString(info->meta->id->id),
+      notification_constants::kNotificationProfileId :
+          base::SysUTF8ToNSString(info->meta->id->profile->id),
+      notification_constants::kNotificationIncognito :
+          [NSNumber numberWithBool:info->meta->id->profile->incognito],
+      notification_constants::kNotificationOrigin :
+          base::SysUTF8ToNSString(info->meta->origin_url.spec()),
+      notification_constants::kNotificationType : @(info->meta->type),
+      notification_constants::
+      kNotificationCreatorPid : @(info->meta->creator_pid),
+      notification_constants::kNotificationOperation :
+          [NSNumber numberWithInt:static_cast<int>(info->operation)],
+      notification_constants::kNotificationButtonIndex : @(info->button_index),
+    };
     ProcessMacNotificationResponse(dict);
   }
 
@@ -137,13 +153,32 @@ void DispatchGetAllNotificationsReply(
   bool incognito = [[notificationData
       objectForKey:notification_constants::kNotificationIncognito] boolValue];
 
-  // TODO(knollr): Pass properties from |notificationData| into
-  // |notification|.
-  auto notification = mac_notifications::mojom::Notification::New();
   auto profileIdentifier = mac_notifications::mojom::ProfileIdentifier::New(
       base::SysNSStringToUTF8(profileId), incognito);
-  notification->id = mac_notifications::mojom::NotificationIdentifier::New(
-      base::SysNSStringToUTF8(notificationId), std::move(profileIdentifier));
+  auto notificationIdentifier =
+      mac_notifications::mojom::NotificationIdentifier::New(
+          base::SysNSStringToUTF8(notificationId),
+          std::move(profileIdentifier));
+
+  int type = [[notificationData
+      objectForKey:notification_constants::kNotificationType] intValue];
+  GURL originUrl;
+  if ([notificationData
+          objectForKey:notification_constants::kNotificationOrigin]) {
+    originUrl = GURL(base::SysNSStringToUTF8([notificationData
+        objectForKey:notification_constants::kNotificationOrigin]));
+  }
+  int creatorPid = [[notificationData
+      objectForKey:notification_constants::kNotificationCreatorPid] intValue];
+
+  auto meta = mac_notifications::mojom::NotificationMetadata::New(
+      std::move(notificationIdentifier), type, std::move(originUrl),
+      creatorPid);
+
+  // TODO(knollr): Pass properties from |notificationData| into
+  // |notification|.
+  auto notification =
+      mac_notifications::mojom::Notification::New(std::move(meta));
 
   _service->DisplayNotification(std::move(notification));
 }

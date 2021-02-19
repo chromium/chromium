@@ -6,6 +6,7 @@ source_set("constants") {
   sources = [
     "notification_constants_mac.h",
     "notification_constants_mac.mm",
+    "notification_operation.h",
   ]
 
   frameworks = [ "Foundation.framework" ]

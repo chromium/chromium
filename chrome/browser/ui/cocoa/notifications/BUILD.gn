@@ -59,7 +59,6 @@ static_library("common") {
     "notification_builder_mac.h",
     "notification_builder_mac.mm",
     "notification_delivery.h",
-    "notification_operation.h",
     "notification_response_builder_mac.h",
     "notification_response_builder_mac.mm",
     "unnotification_builder_mac.h",

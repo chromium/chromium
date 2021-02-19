@@ -15,6 +15,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -25,6 +26,45 @@ API_AVAILABLE(macosx(10.14))
     (mojo::PendingRemote<
         mac_notifications::mojom::MacNotificationActionHandler>)handler;
 @end
+
+namespace {
+
+API_AVAILABLE(macosx(10.14))
+NotificationOperation GetNotificationOperationFromAction(
+    NSString* actionIdentifier) {
+  if ([actionIdentifier isEqual:UNNotificationDismissActionIdentifier] ||
+      [actionIdentifier isEqualToString:notification_constants::
+                                            kNotificationCloseButtonTag]) {
+    return NotificationOperation::NOTIFICATION_CLOSE;
+  }
+  if ([actionIdentifier isEqual:UNNotificationDefaultActionIdentifier] ||
+      [actionIdentifier
+          isEqualToString:notification_constants::kNotificationButtonOne] ||
+      [actionIdentifier
+          isEqualToString:notification_constants::kNotificationButtonTwo]) {
+    return NotificationOperation::NOTIFICATION_CLICK;
+  }
+  if ([actionIdentifier isEqualToString:notification_constants::
+                                            kNotificationSettingsButtonTag]) {
+    return NotificationOperation::NOTIFICATION_SETTINGS;
+  }
+  NOTREACHED();
+  return NotificationOperation::NOTIFICATION_CLICK;
+}
+
+int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
+  if ([actionIdentifier
+          isEqualToString:notification_constants::kNotificationButtonOne]) {
+    return 0;
+  }
+  if ([actionIdentifier
+          isEqualToString:notification_constants::kNotificationButtonTwo]) {
+    return 1;
+  }
+  return notification_constants::kNotificationInvalidButtonIndex;
+}
+
+}  // namespace
 
 namespace mac_notifications {
 
@@ -57,9 +97,9 @@ void MacNotificationServiceUN::DisplayNotification(
   [content setBody:@"body"];
   [content setUserInfo:GetMacNotificationUserInfo(notification)];
 
+  const mojom::NotificationIdentifierPtr& identifier = notification->meta->id;
   std::string notification_id = DeriveMacNotificationId(
-      notification->id->profile->incognito, notification->id->profile->id,
-      notification->id->id);
+      identifier->profile->incognito, identifier->profile->id, identifier->id);
 
   // This uses a private API to prevent notifications from dismissing after
   // clicking on them. This only affects the default action though, other action
@@ -188,8 +228,14 @@ void MacNotificationServiceUN::RequestPermission() {
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
-  auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New();
-  // TODO(knollr): Fill |action_info| with details from |response|.
+  mac_notifications::mojom::NotificationMetadataPtr meta =
+      mac_notifications::GetMacNotificationMetadata(
+          [[[[response notification] request] content] userInfo]);
+  NotificationOperation operation =
+      GetNotificationOperationFromAction([response actionIdentifier]);
+  int buttonIndex = GetActionButtonIndexFromAction([response actionIdentifier]);
+  auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
+      std::move(meta), operation, buttonIndex, /*reply=*/base::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
   completionHandler();
 }

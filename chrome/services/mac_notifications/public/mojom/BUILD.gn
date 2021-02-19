@@ -7,5 +7,23 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "mac_notifications.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mac_notifications.mojom.NotificationOperation"
+          cpp = "::NotificationOperation"
+        },
+      ]
+      traits_headers = [ "mac_notifications_mojom_traits.h" ]
+      traits_sources = [ "mac_notifications_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//chrome/services/mac_notifications/public/cpp:constants" ]
+    },
+  ]
 }
