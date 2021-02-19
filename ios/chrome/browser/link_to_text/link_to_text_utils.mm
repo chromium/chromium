@@ -52,6 +52,9 @@ shared_highlighting::LinkGenerationError OutcomeToError(
     case LinkGenerationOutcome::kAmbiguous:
       return LinkGenerationError::kContextExhausted;
       break;
+    case LinkGenerationOutcome::kTimeout:
+      return LinkGenerationError::kTimeout;
+      break;
     case LinkGenerationOutcome::kSuccess:
       // kSuccess is not supposed to happen, as it is not an error.
       NOTREACHED();
