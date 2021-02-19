@@ -769,7 +769,7 @@ class AppCacheUpdateJobTest : public testing::Test,
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+    mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
 
     uint32_t bytes_written = body.size();
     producer_handle->WriteData(body.data(), &bytes_written,

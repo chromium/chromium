@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
   mojo::ScopedDataPipeConsumerHandle consumer;
   mojo::ScopedDataPipeProducerHandle producer;
   ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(/* options */ nullptr, &producer, &consumer));
+            mojo::CreateDataPipe(/* options */ nullptr, producer, consumer));
   using std::swap;
   swap(request->mutable_response_body_for_testing(), consumer);
 

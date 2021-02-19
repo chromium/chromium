@@ -110,7 +110,7 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   CHECK_EQ(MOJO_RESULT_OK,
-           mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+           mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
   producer_handle->WriteData(response_info.body.data(), &bytes_written,
                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   client->OnStartLoadingResponseBody(std::move(consumer_handle));

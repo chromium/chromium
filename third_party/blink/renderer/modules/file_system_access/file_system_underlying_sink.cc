@@ -316,7 +316,7 @@ bool CreateDataPipe(uint64_t data_size,
   options.element_num_bytes = 1;
   options.capacity_num_bytes = BlobUtils::GetDataPipeCapacity(data_size);
 
-  MojoResult rv = CreateDataPipe(&options, &producer, &consumer);
+  MojoResult rv = CreateDataPipe(&options, producer, consumer);
   if (rv != MOJO_RESULT_OK) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Failed to create datapipe");

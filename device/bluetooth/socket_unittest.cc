@@ -34,14 +34,14 @@ class SocketTest : public testing::Test {
     mojo::ScopedDataPipeConsumerHandle receive_pipe_consumer_handle;
     ASSERT_EQ(
         MOJO_RESULT_OK,
-        mojo::CreateDataPipe(/*options=*/nullptr, &receive_pipe_producer_handle,
-                             &receive_pipe_consumer_handle));
+        mojo::CreateDataPipe(/*options=*/nullptr, receive_pipe_producer_handle,
+                             receive_pipe_consumer_handle));
 
     mojo::ScopedDataPipeProducerHandle send_pipe_producer_handle;
     mojo::ScopedDataPipeConsumerHandle send_pipe_consumer_handle;
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
-                                                   &send_pipe_producer_handle,
-                                                   &send_pipe_consumer_handle));
+                                                   send_pipe_producer_handle,
+                                                   send_pipe_consumer_handle));
 
     receive_stream_ = std::move(receive_pipe_consumer_handle);
     send_stream_ = std::move(send_pipe_producer_handle);

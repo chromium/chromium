@@ -483,7 +483,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
   mojo::ScopedDataPipeConsumerHandle body_consumer;
   mojo::ScopedDataPipeProducerHandle body_producer;
   ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(&options, &body_producer, &body_consumer));
+            mojo::CreateDataPipe(&options, body_producer, body_consumer));
   client->OnStartLoadingResponseBody(std::move(body_consumer));
   mojo::BlockingCopyFromString(body_from_net, body_producer);
   body_producer.reset();
@@ -781,7 +781,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
     EXPECT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(&options, &producer, &consumer));
+              mojo::CreateDataPipe(&options, producer, consumer));
     uint32_t bytes_written = body_from_net.size();
     EXPECT_EQ(MOJO_RESULT_OK,
               producer->WriteData(body_from_net.data(), &bytes_written,

@@ -83,7 +83,7 @@ BytesConsumer::Result BlobBytesConsumer::BeginRead(const char** buffer,
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     mojo::ScopedDataPipeProducerHandle producer_handle;
     MojoResult rv =
-        mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
     if (rv != MOJO_RESULT_OK)
       return Result::kError;
 

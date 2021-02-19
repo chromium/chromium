@@ -65,7 +65,7 @@ MojoCreateDataPipeResult* Mojo::createDataPipe(
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
     result_dict->setProducer(MakeGarbageCollected<MojoHandle>(

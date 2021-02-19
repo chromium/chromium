@@ -411,7 +411,7 @@ TEST_F(ResponseBodyLoaderTest, NotDrainable) {
 TEST_F(ResponseBodyLoaderTest, DrainAsDataPipe) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   mojo::ScopedDataPipeProducerHandle producer_end;
-  auto result = mojo::CreateDataPipe(nullptr, &producer_end, &consumer_end);
+  auto result = mojo::CreateDataPipe(nullptr, producer_end, consumer_end);
 
   ASSERT_EQ(result, MOJO_RESULT_OK);
 
@@ -684,7 +684,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_F(ResponseBodyLoaderTest, DrainAsDataPipeAndReportError) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   mojo::ScopedDataPipeProducerHandle producer_end;
-  auto result = mojo::CreateDataPipe(nullptr, &producer_end, &consumer_end);
+  auto result = mojo::CreateDataPipe(nullptr, producer_end, consumer_end);
 
   ASSERT_EQ(result, MOJO_RESULT_OK);
 
@@ -1035,7 +1035,7 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
        DrainAsDataPipe) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   mojo::ScopedDataPipeProducerHandle producer_end;
-  auto result = mojo::CreateDataPipe(nullptr, &producer_end, &consumer_end);
+  auto result = mojo::CreateDataPipe(nullptr, producer_end, consumer_end);
 
   ASSERT_EQ(result, MOJO_RESULT_OK);
 

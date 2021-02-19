@@ -175,7 +175,7 @@ int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
   options.capacity_num_bytes = blink::BlobUtils::GetDataPipeCapacity(blob_size);
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
-  MojoResult rv = mojo::CreateDataPipe(&options, &producer_handle, handle_out);
+  MojoResult rv = mojo::CreateDataPipe(&options, producer_handle, *handle_out);
   if (rv != MOJO_RESULT_OK)
     return net::ERR_FAILED;
 

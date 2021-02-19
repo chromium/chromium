@@ -188,7 +188,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
     options.capacity_num_bytes = 16;
-    mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle);
+    mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
     CHECK(producer_handle.is_valid());
     auto producer =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));

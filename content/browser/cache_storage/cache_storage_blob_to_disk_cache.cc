@@ -49,7 +49,7 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   MojoResult rv =
-      mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+      mojo::CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
     std::move(callback).Run(std::move(entry), false /* success */);
     return;

@@ -205,7 +205,7 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
       kReceiveDataPipeCapacity};
   mojo::ScopedDataPipeConsumerHandle readable;
   const MojoResult result =
-      mojo::CreateDataPipe(&data_pipe_options, &impl_->writable_, &readable);
+      mojo::CreateDataPipe(&data_pipe_options, impl_->writable_, readable);
   if (result != MOJO_RESULT_OK) {
     DVLOG(1) << "mojo::CreateDataPipe error:" << result;
     impl_->Reset();
@@ -220,7 +220,7 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
 
   mojo::ScopedDataPipeProducerHandle writable;
   const MojoResult write_pipe_result =
-      mojo::CreateDataPipe(&data_pipe_options, &writable, &impl_->readable_);
+      mojo::CreateDataPipe(&data_pipe_options, writable, impl_->readable_);
   if (write_pipe_result != MOJO_RESULT_OK) {
     DVLOG(1) << "mojo::CreateDataPipe error:" << result;
     impl_->Reset();

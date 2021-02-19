@@ -182,7 +182,7 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   MojoResult rv =
-      mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+      mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
   ASSERT_EQ(MOJO_RESULT_OK, rv);
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader =
       std::make_unique<SignedExchangeLoader>(

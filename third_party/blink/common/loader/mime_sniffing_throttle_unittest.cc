@@ -123,7 +123,7 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
       // Send OnStartLoadingResponseBody() if it's the first call.
       mojo::ScopedDataPipeConsumerHandle consumer;
       EXPECT_EQ(MOJO_RESULT_OK,
-                mojo::CreateDataPipe(nullptr, &source_body_handle_, &consumer));
+                mojo::CreateDataPipe(nullptr, source_body_handle_, consumer));
       source_loader_client_remote()->OnStartLoadingResponseBody(
           std::move(consumer));
     }
@@ -338,7 +338,7 @@ TEST_F(MimeSniffingThrottleTest, EmptyBody) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
   delegate->source_loader_client_remote()->OnStartLoadingResponseBody(
       std::move(consumer));
   producer.reset();  // The pipe is empty.

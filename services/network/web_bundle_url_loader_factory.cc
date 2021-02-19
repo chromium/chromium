@@ -120,7 +120,7 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     options.capacity_num_bytes = kBlockedBodyAllocationSize;
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
     if (result != MOJO_RESULT_OK) {
       wrapped_->OnComplete(
           URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
@@ -215,7 +215,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // Send empty body to the URLLoaderClient.
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+    if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
       OnFail(net::ERR_INSUFFICIENT_RESOURCES);
       return;
     }
@@ -696,7 +696,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     loader->OnFail(net::ERR_INSUFFICIENT_RESOURCES);
     return;
   }

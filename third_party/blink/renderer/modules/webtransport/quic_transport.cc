@@ -60,7 +60,7 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
   // TODO(ricea): Find an appropriate value for capacity_num_bytes.
   options.capacity_num_bytes = 0;
 
-  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
   if (result != MOJO_RESULT_OK) {
     // Probably out of resources.
     exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,

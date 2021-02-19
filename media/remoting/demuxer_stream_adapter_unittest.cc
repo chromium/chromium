@@ -122,9 +122,8 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
     mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender;
     mojo::ScopedDataPipeProducerHandle producer_end;
     mojo::ScopedDataPipeConsumerHandle consumer_end;
-    CHECK_EQ(
-        MOJO_RESULT_OK,
-        mojo::CreateDataPipe(&data_pipe_options, &producer_end, &consumer_end));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
+                                                  producer_end, consumer_end));
 
     data_stream_sender_.reset(new FakeRemotingDataStreamSender(
         stream_sender.InitWithNewPipeAndPassReceiver(),

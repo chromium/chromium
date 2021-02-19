@@ -241,7 +241,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
   client_->OnReceiveResponse(std::move(client_response));
 
   mojo::ScopedDataPipeConsumerHandle client_consumer;
-  if (mojo::CreateDataPipe(nullptr, &client_producer_, &client_consumer) !=
+  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
       MOJO_RESULT_OK) {
     // Reports error to cache writer and finally the loader would process this
     // failure in OnCacheWriterResumed()

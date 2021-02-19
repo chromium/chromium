@@ -66,7 +66,7 @@ FooPtr MakeFoo() {
     options.capacity_num_bytes = 1024;
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    mojo::CreateDataPipe(&options, &producer, &consumer);
+    mojo::CreateDataPipe(&options, producer, consumer);
     input_streams[i] = std::move(consumer);
     output_streams[i] = std::move(producer);
   }

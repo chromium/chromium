@@ -602,7 +602,7 @@ MojoResult URLLoaderInterceptor::WriteResponseBody(
   options.capacity_num_bytes = body.size();
 
   MojoResult result =
-      CreateDataPipe(&options, &producer_handle, &consumer_handle);
+      CreateDataPipe(&options, producer_handle, consumer_handle);
   if (result != MOJO_RESULT_OK) {
     return result;
   }

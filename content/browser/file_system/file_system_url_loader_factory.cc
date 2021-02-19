@@ -351,7 +351,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoResult rv =
-        mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
     if (rv != MOJO_RESULT_OK) {
       OnClientComplete(net::ERR_FAILED);
       return;
@@ -488,7 +488,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     MojoResult rv =
-        mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+        mojo::CreateDataPipe(&options, producer_handle, consumer_handle_);
     if (rv != MOJO_RESULT_OK) {
       OnClientComplete(net::ERR_FAILED);
       return;

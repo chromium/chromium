@@ -41,8 +41,8 @@ class IncomingStreamTest : public ::testing::Test {
     options.element_num_bytes = 1;
     options.capacity_num_bytes = capacity;
 
-    MojoResult result = mojo::CreateDataPipe(&options, &data_pipe_producer_,
-                                             &data_pipe_consumer_);
+    MojoResult result = mojo::CreateDataPipe(&options, data_pipe_producer_,
+                                             data_pipe_consumer_);
     if (result != MOJO_RESULT_OK) {
       ADD_FAILURE() << "CreateDataPipe() returned " << result;
     }

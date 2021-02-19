@@ -52,7 +52,7 @@ class BytesUploaderTest : public ::testing::Test {
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
         capacity};
     ASSERT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(&data_pipe_options, &writable_, &readable_));
+              mojo::CreateDataPipe(&data_pipe_options, writable_, readable_));
   }
 
   MockBytesConsumer& Mock() const { return *mock_bytes_consumer_; }

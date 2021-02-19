@@ -24,7 +24,7 @@ bool CreateDataPipeForWebTransportTests(
   options.element_num_bytes = 1;
   options.capacity_num_bytes = 0;  // 0 means the system default size.
 
-  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
   if (result != MOJO_RESULT_OK) {
     ADD_FAILURE() << "CreateDataPipe() returned " << result;
     return false;

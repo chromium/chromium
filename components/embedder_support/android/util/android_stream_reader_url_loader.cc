@@ -285,8 +285,8 @@ void AndroidStreamReaderURLLoader::HeadersComplete(
 void AndroidStreamReaderURLLoader::SendBody() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (CreateDataPipe(nullptr /*options*/, &producer_handle_,
-                     &consumer_handle_) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr /*options*/, producer_handle_, consumer_handle_) !=
+      MOJO_RESULT_OK) {
     RequestComplete(net::ERR_FAILED);
     return;
   }

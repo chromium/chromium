@@ -226,7 +226,7 @@ class WebSocketChannelImplTest : public PageTestBase {
     const MojoCreateDataPipeOptions data_pipe_options{
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
         capacity};
-    return mojo::CreateDataPipe(&data_pipe_options, writable, readable);
+    return mojo::CreateDataPipe(&data_pipe_options, *writable, *readable);
   }
 
   std::unique_ptr<TestWebSocket> EstablishConnection(

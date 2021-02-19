@@ -123,7 +123,7 @@ FetchRequestData* FetchRequestData::Create(
     MojoCreateDataPipeOptions options{sizeof(MojoCreateDataPipeOptions),
                                       MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
     const MojoResult result =
-        mojo::CreateDataPipe(&options, &writable, &readable);
+        mojo::CreateDataPipe(&options, writable, readable);
     if (result == MOJO_RESULT_OK) {
       DataPipeBytesConsumer::CompletionNotifier* completion_notifier = nullptr;
       // Explicitly creating a ReadableStream here in order to remember

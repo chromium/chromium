@@ -1102,7 +1102,7 @@ TEST_F(BlobRegistryImplTest, RegisterFromStream) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  mojo::CreateDataPipe(nullptr, &producer, &consumer);
+  mojo::CreateDataPipe(nullptr, producer, consumer);
   blink::mojom::SerializedBlobPtr blob;
   base::RunLoop loop;
   registry_->RegisterFromStream(
@@ -1142,7 +1142,7 @@ TEST_F(BlobRegistryImplTest, RegisterFromStream_NoDiskSpace) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  mojo::CreateDataPipe(nullptr, &producer, &consumer);
+  mojo::CreateDataPipe(nullptr, producer, consumer);
   blink::mojom::SerializedBlobPtr blob;
   base::RunLoop loop;
   registry_->RegisterFromStream(

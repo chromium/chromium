@@ -585,7 +585,7 @@ void MockServiceWorkerResourceReader::ReadData(
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
   options.capacity_num_bytes = expected_max_data_bytes_;
-  mojo::CreateDataPipe(&options, &body_, &consumer);
+  mojo::CreateDataPipe(&options, body_, consumer);
   std::move(callback).Run(std::move(std::move(consumer)));
 }
 
@@ -861,8 +861,8 @@ void ServiceWorkerUpdateCheckTestUtils::
   if (!diff_data_block.empty()) {
     mojo::ScopedDataPipeConsumerHandle network_consumer;
     // Create a data pipe which has the new block sent from the network.
-    ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, out_body_handle,
-                                                   &network_consumer));
+    ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, *out_body_handle,
+                                                   network_consumer));
     uint32_t written_size = diff_data_block.size();
     ASSERT_EQ(MOJO_RESULT_OK,
               (*out_body_handle)

@@ -49,7 +49,7 @@ void StartCachedLoad(
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     client->OnComplete(
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
     return;

@@ -335,7 +335,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   MojoResult rv =
-      mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+      mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
   ASSERT_EQ(MOJO_RESULT_OK, rv);
   NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       std::move(common_params), std::move(commit_params), /*request_id=*/1,

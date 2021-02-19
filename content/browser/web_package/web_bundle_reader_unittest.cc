@@ -218,8 +218,7 @@ TEST_F(WebBundleReaderTest, ReadResponseBody) {
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.element_num_bytes = 1;
   options.capacity_num_bytes = response->payload_length + 1;
-  ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(&options, &producer, &consumer));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, producer, consumer));
 
   base::RunLoop run_loop;
   net::Error callback_result;

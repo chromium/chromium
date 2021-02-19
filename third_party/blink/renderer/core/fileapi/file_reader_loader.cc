@@ -92,7 +92,7 @@ void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
       blink::BlobUtils::GetDataPipeCapacity(blob_data->size());
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
-  MojoResult rv = CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+  MojoResult rv = CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
     Failed(FileErrorCode::kNotReadableErr, FailureType::kMojoPipeCreation);
     return;

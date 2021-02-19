@@ -228,7 +228,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
     mojo::ScopedDataPipeConsumerHandle body_consumer;
     MojoCreateDataPipeOptions options = CreateDataPipeOptions();
     EXPECT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(&options, body_producer, &body_consumer));
+              mojo::CreateDataPipe(&options, *body_producer, body_consumer));
     worker_main_script_load_params->response_body = std::move(body_consumer);
 
     return worker_main_script_load_params;

@@ -803,7 +803,7 @@ std::unique_ptr<network::DataPipeToSourceStream> BlobReader::CreateDataPipe(
   options.capacity_num_bytes =
       blink::BlobUtils::GetDataPipeCapacity(max_bytes_to_read);
 
-  MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
 
   if (result != MOJO_RESULT_OK)
     return nullptr;

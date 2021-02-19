@@ -190,7 +190,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   options.element_num_bytes = 1;
   options.capacity_num_bytes = 3;
 
-  MojoResult result = CreateDataPipe(&options, &producer, &consumer);
+  MojoResult result = CreateDataPipe(&options, producer, consumer);
   ASSERT_EQ(result, MOJO_RESULT_OK);
 
   loader->DidReceiveResponse(WrappedResourceResponse(response));
@@ -612,7 +612,7 @@ class ResourceLoaderSubresourceFilterCnameAliasTest
     options.element_num_bytes = 1;
     options.capacity_num_bytes = 3;
 
-    MojoResult result = CreateDataPipe(&options, &producer, &consumer);
+    MojoResult result = CreateDataPipe(&options, producer, consumer);
     ASSERT_EQ(result, MOJO_RESULT_OK);
   }
 

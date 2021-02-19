@@ -201,9 +201,8 @@ void CloudSpeechRecognitionClientUnitTest::InitializeUpstreamPipeIfNecessary() {
         kDataPipeCapacity};
     mojo::ScopedDataPipeProducerHandle producer_end;
     mojo::ScopedDataPipeConsumerHandle consumer_end;
-    CHECK_EQ(
-        MOJO_RESULT_OK,
-        mojo::CreateDataPipe(&data_pipe_options, &producer_end, &consumer_end));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
+                                                  producer_end, consumer_end));
     chunked_data_pipe_getter_->StartReading(std::move(producer_end));
     upstream_data_pipe_ = std::move(consumer_end);
   }
@@ -296,7 +295,7 @@ void CloudSpeechRecognitionClientUnitTest::
   mojo::ScopedDataPipeProducerHandle producer_end;
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
-                                                &producer_end, &consumer_end));
+                                                producer_end, consumer_end));
   downstream_request->client->OnStartLoadingResponseBody(
       std::move(consumer_end));
   downstream_data_pipe_ = std::move(producer_end);

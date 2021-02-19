@@ -127,16 +127,15 @@ TEST_F(BluetoothServerSocketTest, TestAccept_Success) {
 
   mojo::ScopedDataPipeProducerHandle receive_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle receive_pipe_consumer_handle;
-  ASSERT_EQ(
-      MOJO_RESULT_OK,
-      mojo::CreateDataPipe(/*options=*/nullptr, &receive_pipe_producer_handle,
-                           &receive_pipe_consumer_handle));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
+                                                 receive_pipe_producer_handle,
+                                                 receive_pipe_consumer_handle));
 
   mojo::ScopedDataPipeProducerHandle send_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle send_pipe_consumer_handle;
-  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
-                                                 &send_pipe_producer_handle,
-                                                 &send_pipe_consumer_handle));
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/*options=*/nullptr, send_pipe_producer_handle,
+                                 send_pipe_consumer_handle));
 
   mojo::PendingRemote<bluetooth::mojom::Socket> pending_socket;
 

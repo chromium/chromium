@@ -56,7 +56,7 @@ void StoreFileTask::StartRead() {
   options.capacity_num_bytes = kDataPipeCapacity;
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
-  MojoResult rv = CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+  MojoResult rv = CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
     std::move(callback_).Run(blink::mojom::ShareError::INTERNAL_ERROR);
     return;

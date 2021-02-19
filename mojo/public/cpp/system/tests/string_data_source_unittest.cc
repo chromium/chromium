@@ -90,7 +90,7 @@ class StringDataSourceTest : public testing::Test {
     options.element_num_bytes = 1;
     options.capacity_num_bytes = capacity;
     ASSERT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(&options, producer, consumer));
+              mojo::CreateDataPipe(&options, *producer, *consumer));
   }
 
   static void WriteStringThenCloseProducer(

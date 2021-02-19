@@ -202,7 +202,7 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
   options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
 
   MojoResult rv =
-      mojo::CreateDataPipe(&options, &producer_handle_, &consumer_handle);
+      mojo::CreateDataPipe(&options, producer_handle_, consumer_handle);
 
   if (rv != MOJO_RESULT_OK) {
     delete this;

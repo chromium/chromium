@@ -429,8 +429,8 @@ void Adapter::OnConnectToService(
   mojo::ScopedDataPipeProducerHandle receive_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle receive_pipe_consumer_handle;
   MojoResult result =
-      mojo::CreateDataPipe(/*options=*/nullptr, &receive_pipe_producer_handle,
-                           &receive_pipe_consumer_handle);
+      mojo::CreateDataPipe(/*options=*/nullptr, receive_pipe_producer_handle,
+                           receive_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
     socket->Disconnect(base::BindOnce(
         &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
@@ -440,8 +440,8 @@ void Adapter::OnConnectToService(
 
   mojo::ScopedDataPipeProducerHandle send_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle send_pipe_consumer_handle;
-  result = mojo::CreateDataPipe(/*options=*/nullptr, &send_pipe_producer_handle,
-                                &send_pipe_consumer_handle);
+  result = mojo::CreateDataPipe(/*options=*/nullptr, send_pipe_producer_handle,
+                                send_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
     socket->Disconnect(base::BindOnce(
         &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),

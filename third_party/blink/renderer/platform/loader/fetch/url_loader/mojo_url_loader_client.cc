@@ -470,7 +470,7 @@ void MojoURLLoaderClient::OnStartLoadingResponseBody(
   mojo::ScopedDataPipeProducerHandle new_body_producer;
   mojo::ScopedDataPipeConsumerHandle new_body_consumer;
   MojoResult result =
-      mojo::CreateDataPipe(nullptr, &new_body_producer, &new_body_consumer);
+      mojo::CreateDataPipe(nullptr, new_body_producer, new_body_consumer);
   if (result != MOJO_RESULT_OK) {
     OnComplete(
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));

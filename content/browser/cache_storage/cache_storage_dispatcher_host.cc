@@ -93,7 +93,7 @@ blink::mojom::MatchResultPtr EagerlyReadResponseBody(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  MojoResult rv = CreateDataPipe(&options, &producer_handle, &consumer_handle);
+  MojoResult rv = CreateDataPipe(&options, producer_handle, consumer_handle);
   if (rv != MOJO_RESULT_OK)
     return blink::mojom::MatchResult::NewResponse(std::move(response));
 

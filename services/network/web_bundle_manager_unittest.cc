@@ -108,7 +108,7 @@ mojo::ScopedDataPipeProducerHandle SetBundleStream(
     WebBundleURLLoaderFactory& factory) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   mojo::ScopedDataPipeProducerHandle producer;
-  CHECK_EQ(MOJO_RESULT_OK, CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, CreateDataPipe(nullptr, producer, consumer));
   factory.SetBundleStream(std::move(consumer));
   return producer;
 }
@@ -289,7 +289,7 @@ TEST_F(WebBundleManagerTest,
   // SetBundleStream manually.
   mojo::ScopedDataPipeConsumerHandle consumer;
   mojo::ScopedDataPipeProducerHandle producer;
-  ASSERT_EQ(CreateDataPipe(nullptr, &producer, &consumer), MOJO_RESULT_OK);
+  ASSERT_EQ(CreateDataPipe(nullptr, producer, consumer), MOJO_RESULT_OK);
   factory->SetBundleStream(std::move(consumer));
 
   mojo::BlockingCopyFromString(CreateSmallBundleString(), producer);

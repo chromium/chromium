@@ -89,7 +89,7 @@ void ReadData(
   mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
   MojoResult create_result = mojo::CreateDataPipe(
-      &options, &pipe_producer_handle, &pipe_consumer_handle);
+      &options, pipe_producer_handle, pipe_consumer_handle);
   CHECK_EQ(create_result, MOJO_RESULT_OK);
 
   void* buffer = nullptr;

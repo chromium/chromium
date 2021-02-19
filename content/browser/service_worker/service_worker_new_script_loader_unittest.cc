@@ -113,8 +113,7 @@ class MockNetwork {
     uint32_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
-    CHECK_EQ(MOJO_RESULT_OK,
-             mojo::CreateDataPipe(nullptr, &producer, &consumer));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
     MojoResult result = producer->WriteData(
         response.body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     CHECK_EQ(MOJO_RESULT_OK, result);

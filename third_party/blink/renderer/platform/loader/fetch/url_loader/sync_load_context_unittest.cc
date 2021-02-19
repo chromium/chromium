@@ -146,8 +146,8 @@ class SyncLoadContextTest : public testing::Test {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     EXPECT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(nullptr /* options */, &producer_handle,
-                                   &consumer_handle));
+              mojo::CreateDataPipe(nullptr /* options */, producer_handle,
+                                   consumer_handle));
     context->OnStartLoadingResponseBody(std::move(consumer_handle));
     context->OnCompletedRequest(network::URLLoaderCompletionStatus(net::OK));
 

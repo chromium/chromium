@@ -34,7 +34,7 @@ bool CreateDataPipe(uint32_t capacity,
   options.capacity_num_bytes = capacity;
 
   auto result =
-      mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
+      mojo::CreateDataPipe(&options, *producer_handle, *consumer_handle);
 
   if (result != MOJO_RESULT_OK) {
     DLOG(ERROR) << "DataPipe creation failed with " << result;

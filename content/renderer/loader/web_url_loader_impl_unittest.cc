@@ -379,8 +379,7 @@ class WebURLLoaderImplTest : public testing::Test {
 
   void DoStartLoadingResponseBody() {
     mojo::ScopedDataPipeConsumerHandle handle_to_pass;
-    MojoResult rv =
-        mojo::CreateDataPipe(nullptr, &body_handle_, &handle_to_pass);
+    MojoResult rv = mojo::CreateDataPipe(nullptr, body_handle_, handle_to_pass);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     peer()->OnStartLoadingResponseBody(std::move(handle_to_pass));
   }

@@ -284,7 +284,7 @@ void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBody(
   DCHECK_EQ(LoaderState::kWaitingForBody, network_loader_state_);
   // Create a pair of the consumer and producer for responding to the client.
   mojo::ScopedDataPipeConsumerHandle client_consumer;
-  if (mojo::CreateDataPipe(nullptr, &client_producer_, &client_consumer) !=
+  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
       MOJO_RESULT_OK) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
                     ServiceWorkerConsts::kServiceWorkerFetchScriptError);

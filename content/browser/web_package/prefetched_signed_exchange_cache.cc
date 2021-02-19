@@ -222,8 +222,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     // Send an empty response's body.
     mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
     mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
-    MojoResult rv = mojo::CreateDataPipe(nullptr, &pipe_producer_handle,
-                                         &pipe_consumer_handle);
+    MojoResult rv = mojo::CreateDataPipe(nullptr, pipe_producer_handle,
+                                         pipe_consumer_handle);
     if (rv != MOJO_RESULT_OK) {
       client_->OnComplete(
           network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
@@ -269,8 +269,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
     options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
-    MojoResult rv = mojo::CreateDataPipe(&options, &pipe_producer_handle,
-                                         &pipe_consumer_handle);
+    MojoResult rv = mojo::CreateDataPipe(&options, pipe_producer_handle,
+                                         pipe_consumer_handle);
     if (rv != MOJO_RESULT_OK) {
       client_->OnComplete(
           network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));

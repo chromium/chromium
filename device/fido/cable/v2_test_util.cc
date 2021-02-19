@@ -151,9 +151,9 @@ class TestNetworkContext : public network::TestNetworkContext {
       options.element_num_bytes = sizeof(uint8_t);
       options.capacity_num_bytes = 1 << 16;
 
-      CHECK_EQ(mojo::CreateDataPipe(&options, &in_producer_, &in_),
+      CHECK_EQ(mojo::CreateDataPipe(&options, in_producer_, in_),
                MOJO_RESULT_OK);
-      CHECK_EQ(mojo::CreateDataPipe(&options, &out_, &out_consumer_),
+      CHECK_EQ(mojo::CreateDataPipe(&options, out_, out_consumer_),
                MOJO_RESULT_OK);
 
       in_watcher_.Watch(in_.get(), MOJO_HANDLE_SIGNAL_READABLE,

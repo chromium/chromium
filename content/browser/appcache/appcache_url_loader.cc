@@ -175,7 +175,7 @@ void AppCacheURLLoader::Start(
       base::BindOnce(&AppCacheURLLoader::DeleteSoon, GetWeakPtr()));
 
   MojoResult result =
-      mojo::CreateDataPipe(nullptr, &response_body_stream_, &consumer_handle_);
+      mojo::CreateDataPipe(nullptr, response_body_stream_, consumer_handle_);
   if (result != MOJO_RESULT_OK) {
     NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
     return;

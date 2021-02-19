@@ -32,8 +32,8 @@ class BufferingBytesConsumerTest : public testing::Test {
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     mojo::ScopedDataPipeProducerHandle producer_handle;
     CHECK_EQ(MOJO_RESULT_OK,
-             mojo::CreateDataPipe(&data_pipe_options, &producer_handle,
-                                  &consumer_handle));
+             mojo::CreateDataPipe(&data_pipe_options, producer_handle,
+                                  consumer_handle));
     return consumer_handle;
   }
 

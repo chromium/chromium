@@ -526,14 +526,14 @@ void QuicTransport::OnIncomingBidirectionalStreamAvailable() {
     mojo::ScopedDataPipeProducerHandle writable_for_incoming;
     const MojoCreateDataPipeOptions options = {
         sizeof(options), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 256 * 1024};
-    if (mojo::CreateDataPipe(&options, &writable_for_outgoing,
-                             &readable_for_outgoing) != MOJO_RESULT_OK) {
+    if (mojo::CreateDataPipe(&options, writable_for_outgoing,
+                             readable_for_outgoing) != MOJO_RESULT_OK) {
       stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
       // TODO(yhirano): Error the entire connection.
       return;
     }
-    if (mojo::CreateDataPipe(&options, &writable_for_incoming,
-                             &readable_for_incoming) != MOJO_RESULT_OK) {
+    if (mojo::CreateDataPipe(&options, writable_for_incoming,
+                             readable_for_incoming) != MOJO_RESULT_OK) {
       stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
       // TODO(yhirano): Error the entire connection.
       return;
@@ -567,8 +567,8 @@ void QuicTransport::OnIncomingUnidirectionalStreamAvailable() {
     mojo::ScopedDataPipeProducerHandle writable_for_incoming;
     const MojoCreateDataPipeOptions options = {
         sizeof(options), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 256 * 1024};
-    if (mojo::CreateDataPipe(&options, &writable_for_incoming,
-                             &readable_for_incoming) != MOJO_RESULT_OK) {
+    if (mojo::CreateDataPipe(&options, writable_for_incoming,
+                             readable_for_incoming) != MOJO_RESULT_OK) {
       stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
       // TODO(yhirano): Error the entire connection.
       return;

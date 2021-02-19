@@ -154,7 +154,7 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
     options.capacity_num_bytes =
         std::min(expected_source_size, limits_.max_shared_memory_size);
     MojoResult result =
-        CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+        CreateDataPipe(&options, producer_handle, consumer_handle_);
     if (result != MOJO_RESULT_OK) {
       DVLOG(1) << "Unable to create data pipe for blob transfer.";
       std::move(result_callback_).Run(BlobStatus::ERR_OUT_OF_MEMORY);

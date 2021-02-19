@@ -130,7 +130,7 @@ class SerialPortImplTest : public DeviceServiceTestBase {
     options.element_num_bytes = 1;
     options.capacity_num_bytes = 64;
 
-    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
     DCHECK_EQ(result, MOJO_RESULT_OK);
   }
 

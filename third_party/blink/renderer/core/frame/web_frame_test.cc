@@ -11288,7 +11288,7 @@ class TestLocalFrameHostForSaveImageFromDataURL : public FakeLocalFrameHost {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     auto result =
-        mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
     DCHECK(result == MOJO_RESULT_OK);
 
     blob->ReadAll(std::move(producer_handle), mojo::NullRemote());

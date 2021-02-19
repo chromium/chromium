@@ -190,8 +190,8 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
 
         mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
         mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
-        MojoResult rv = mojo::CreateDataPipe(nullptr, &pipe_producer_handle,
-                                             &pipe_consumer_handle);
+        MojoResult rv = mojo::CreateDataPipe(nullptr, pipe_producer_handle,
+                                             pipe_consumer_handle);
         if (rv != MOJO_RESULT_OK) {
           return Result::kError;
         }

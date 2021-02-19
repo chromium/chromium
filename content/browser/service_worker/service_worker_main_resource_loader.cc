@@ -206,7 +206,7 @@ void ServiceWorkerMainResourceLoader::CommitResponseBody(
 void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  if (CreateDataPipe(nullptr, &producer_handle, &consumer_handle) !=
+  if (CreateDataPipe(nullptr, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     CommitCompleted(net::ERR_INSUFFICIENT_RESOURCES,
                     "Can't create empty data pipe");

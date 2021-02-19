@@ -242,7 +242,7 @@ bool PrefetchURLLoader::SendEmptyBody() {
   // Send an empty response's body.
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     // No more resources available for creating a data pipe. Close the
     // connection, which will in turn make this loader destroyed.
     forwarding_client_->OnComplete(

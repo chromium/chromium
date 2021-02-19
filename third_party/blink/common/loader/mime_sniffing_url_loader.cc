@@ -251,7 +251,7 @@ void MimeSniffingURLLoader::CompleteSniffing() {
   throttle_->ResumeWithNewResponseHead(std::move(response_head_));
   mojo::ScopedDataPipeConsumerHandle body_to_send;
   MojoResult result =
-      mojo::CreateDataPipe(nullptr, &body_producer_handle_, &body_to_send);
+      mojo::CreateDataPipe(nullptr, body_producer_handle_, body_to_send);
   if (result != MOJO_RESULT_OK) {
     Abort();
     return;

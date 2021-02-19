@@ -1326,7 +1326,7 @@ void URLLoader::ContinueOnResponseStarted() {
   options.element_num_bytes = 1;
   options.capacity_num_bytes = kDataPipeDefaultAllocationSize;
   MojoResult result =
-      mojo::CreateDataPipe(&options, &response_body_stream_, &consumer_handle_);
+      mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
   if (result != MOJO_RESULT_OK) {
     NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
     return;

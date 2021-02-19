@@ -29,7 +29,7 @@ bool CreateDataPipeForStreamType(media::DemuxerStream::Type type,
       1u /* element_num_bytes */,
       media::GetDefaultDecoderBufferConverterCapacity(type)};
   MojoResult result =
-      mojo::CreateDataPipe(&data_pipe_options, producer, consumer);
+      mojo::CreateDataPipe(&data_pipe_options, *producer, *consumer);
   return result == MOJO_RESULT_OK;
 }
 

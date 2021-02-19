@@ -284,7 +284,7 @@ class ContentDirectoryURLLoader : public network::mojom::URLLoader {
     // client.
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    MojoResult rv = mojo::CreateDataPipe(0, &producer_handle, &consumer_handle);
+    MojoResult rv = mojo::CreateDataPipe(0u, producer_handle, consumer_handle);
     if (rv != MOJO_RESULT_OK) {
       client_->OnComplete(
           network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));

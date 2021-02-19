@@ -44,8 +44,7 @@ void DataURLBlobReader::Start(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  MojoResult result =
-      CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+  MojoResult result = CreateDataPipe(nullptr, producer_handle, consumer_handle);
   if (result != MOJO_RESULT_OK) {
     std::move(callback).Run();
     return;

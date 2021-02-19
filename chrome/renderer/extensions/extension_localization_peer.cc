@@ -168,7 +168,7 @@ void ExtensionLocalizationPeer::StartSendingBody() {
 
   mojo::ScopedDataPipeConsumerHandle consumer_to_send;
   MojoResult result = mojo::CreateDataPipe(
-      nullptr, &data_pipe_state_.destination_handle_, &consumer_to_send);
+      nullptr, data_pipe_state_.destination_handle_, consumer_to_send);
   if (result != MOJO_RESULT_OK) {
     completion_status_ =
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES);

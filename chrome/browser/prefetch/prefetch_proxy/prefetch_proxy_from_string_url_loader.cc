@@ -97,7 +97,7 @@ void PrefetchProxyFromStringURLLoader::BindAndStart(
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   MojoResult rv =
-      mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+      mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
 
   if (rv != MOJO_RESULT_OK) {
     Finish(net::ERR_FAILED);

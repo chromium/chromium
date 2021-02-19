@@ -96,7 +96,7 @@ class BluetoothSerialPortImplTest : public testing::Test {
     options.element_num_bytes = kElementNumBytes;
     options.capacity_num_bytes = kCapacityNumBytes;
 
-    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
     DCHECK_EQ(result, MOJO_RESULT_OK);
   }
 

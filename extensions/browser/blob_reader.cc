@@ -71,8 +71,7 @@ void BlobReader::Start(base::OnceClosure callback) {
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  MojoResult result =
-      CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+  MojoResult result = CreateDataPipe(nullptr, producer_handle, consumer_handle);
   if (result != MOJO_RESULT_OK) {
     Failed();
     return;

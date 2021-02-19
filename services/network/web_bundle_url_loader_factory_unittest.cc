@@ -151,7 +151,7 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
  public:
   void SetUp() override {
     mojo::ScopedDataPipeConsumerHandle consumer;
-    ASSERT_EQ(CreateDataPipe(nullptr, &bundle_data_destination_, &consumer),
+    ASSERT_EQ(CreateDataPipe(nullptr, bundle_data_destination_, consumer),
               MOJO_RESULT_OK);
     mojo::Remote<mojom::WebBundleHandle> handle;
     handle_ = std::make_unique<TestWebBundleHandle>(

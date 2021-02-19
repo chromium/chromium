@@ -155,7 +155,7 @@ void BlobURLLoader::Start(const std::string& method,
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
   options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
-  if (mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle) !=
+  if (mojo::CreateDataPipe(&options, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     OnComplete(net::ERR_INSUFFICIENT_RESOURCES, 0);
     delete this;

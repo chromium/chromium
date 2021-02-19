@@ -264,7 +264,7 @@ TEST_P(HandlePassingTest, DataPipe) {
                                        MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
                                        1024};
   ASSERT_EQ(MOJO_RESULT_OK,
-            CreateDataPipe(&options, &producer_handle, &consumer_handle));
+            CreateDataPipe(&options, producer_handle, consumer_handle));
   std::string expected_text_reply = "got it";
   // +1 for \0.
   uint32_t data_size = static_cast<uint32_t>(expected_text_reply.size() + 1);

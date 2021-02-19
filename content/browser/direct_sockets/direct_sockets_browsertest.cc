@@ -219,7 +219,7 @@ class MockNetworkContext : public network::TestNetworkContext {
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
     DCHECK_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(nullptr, &producer, &consumer));
+              mojo::CreateDataPipe(nullptr, producer, consumer));
     std::move(callback).Run(result_, local_addr, peer_addr, std::move(consumer),
                             std::move(producer));
   }

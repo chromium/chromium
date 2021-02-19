@@ -180,8 +180,7 @@ TEST_F(DataPipeBytesConsumerTest, SignalSizeBeforeRead) {
   mojo::ScopedDataPipeProducerHandle writable;
   const MojoCreateDataPipeOptions options{
       sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
-  ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(&options, &writable, &readable));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, writable, readable));
   DataPipeBytesConsumer::CompletionNotifier* notifier = nullptr;
   DataPipeBytesConsumer* consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
       task_runner_, std::move(readable), &notifier);
@@ -222,8 +221,7 @@ TEST_F(DataPipeBytesConsumerTest, SignalExcessSizeBeforeEndOfData) {
   mojo::ScopedDataPipeProducerHandle writable;
   const MojoCreateDataPipeOptions options{
       sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
-  ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(&options, &writable, &readable));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, writable, readable));
   DataPipeBytesConsumer::CompletionNotifier* notifier = nullptr;
   DataPipeBytesConsumer* consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
       task_runner_, std::move(readable), &notifier);
@@ -250,8 +248,7 @@ TEST_F(DataPipeBytesConsumerTest, SignalExcessSizeAfterEndOfData) {
   mojo::ScopedDataPipeProducerHandle writable;
   const MojoCreateDataPipeOptions options{
       sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
-  ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(&options, &writable, &readable));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, writable, readable));
   DataPipeBytesConsumer::CompletionNotifier* notifier = nullptr;
   DataPipeBytesConsumer* consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
       task_runner_, std::move(readable), &notifier);
@@ -278,8 +275,7 @@ TEST_F(DataPipeBytesConsumerTest, SignalSizeAfterRead) {
   mojo::ScopedDataPipeProducerHandle writable;
   const MojoCreateDataPipeOptions options{
       sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
-  ASSERT_EQ(MOJO_RESULT_OK,
-            mojo::CreateDataPipe(&options, &writable, &readable));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, writable, readable));
 
   DataPipeBytesConsumer::CompletionNotifier* notifier = nullptr;
   DataPipeBytesConsumer* consumer = MakeGarbageCollected<DataPipeBytesConsumer>(

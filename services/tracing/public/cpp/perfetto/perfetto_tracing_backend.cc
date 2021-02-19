@@ -418,7 +418,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoResult result =
-        mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
     if (result != MOJO_RESULT_OK) {
       OnTracingFailed();
       return;

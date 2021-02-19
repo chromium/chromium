@@ -162,7 +162,7 @@ class ExtensionLocalizationPeerTest : public testing::Test {
     options.capacity_num_bytes = data.size();
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
     EXPECT_EQ(MOJO_RESULT_OK, result);
     filter_peer_->OnStartLoadingResponseBody(std::move(consumer));
     mojo::BlockingCopyFromString(data, producer);
@@ -172,7 +172,7 @@ class ExtensionLocalizationPeerTest : public testing::Test {
   mojo::ScopedDataPipeConsumerHandle CreateEmptyBodyDataPipe() const {
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
-    MojoResult result = mojo::CreateDataPipe(nullptr, &producer, &consumer);
+    MojoResult result = mojo::CreateDataPipe(nullptr, producer, consumer);
     DCHECK_EQ(MOJO_RESULT_OK, result);
     return consumer;
   }

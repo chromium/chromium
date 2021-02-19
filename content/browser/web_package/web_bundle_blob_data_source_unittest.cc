@@ -52,8 +52,7 @@ class WebBundleBlobDataSourceTest : public testing::Test {
       base::Optional<int64_t> content_length = base::nullopt) {
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    CHECK_EQ(MOJO_RESULT_OK,
-             mojo::CreateDataPipe(nullptr, &producer, &consumer));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
     mojo::BlockingCopyFromString(test_data, producer);
     producer.reset();
 
@@ -227,7 +226,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::ERR_FAILED;
   source->ReadToDataPipe(
@@ -257,7 +256,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe_EndOfSourceReached) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::ERR_FAILED;
   source->ReadToDataPipe(
@@ -286,7 +285,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe_OutOfRangeError) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::ERR_FAILED;
   source->ReadToDataPipe(
@@ -311,7 +310,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe_ContentLengthTooSmall) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::OK;
   source->ReadToDataPipe(
@@ -340,7 +339,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe_ContentLengthTooLarge) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::OK;
   source->ReadToDataPipe(
@@ -371,7 +370,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe_NoStorage) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::OK;
   source->ReadToDataPipe(
@@ -396,7 +395,7 @@ TEST_F(WebBundleBlobDataSourceTest, ReadToDataPipe_Destructed) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &producer, &consumer));
+  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
 
   net::Error read_response_body_result = net::OK;
   source->ReadToDataPipe(

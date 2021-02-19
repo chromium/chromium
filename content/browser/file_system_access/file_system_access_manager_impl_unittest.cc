@@ -101,7 +101,7 @@ std::string ReadStringFromFileRemote(
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   mojo::ScopedDataPipeProducerHandle producer_handle;
 
-  CHECK_EQ(mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle),
+  CHECK_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
            MOJO_RESULT_OK);
 
   blob->ReadAll(std::move(producer_handle), mojo::NullRemote());

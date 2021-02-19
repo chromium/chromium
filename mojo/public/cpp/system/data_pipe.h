@@ -143,16 +143,6 @@ inline MojoResult CreateDataPipe(
   return CreateDataPipe(&options, data_pipe_producer, data_pipe_consumer);
 }
 
-// Deprecated overload for the referenced-based signature above.
-inline MojoResult CreateDataPipe(
-    const MojoCreateDataPipeOptions* options,
-    ScopedDataPipeProducerHandle* data_pipe_producer,
-    ScopedDataPipeConsumerHandle* data_pipe_consumer) {
-  DCHECK(data_pipe_producer);
-  DCHECK(data_pipe_consumer);
-  return CreateDataPipe(options, *data_pipe_producer, *data_pipe_consumer);
-}
-
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_SYSTEM_DATA_PIPE_H_
