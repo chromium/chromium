@@ -43,7 +43,7 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   std::unique_ptr<DesktopMediaPicker> CreatePicker(
       const content::MediaStreamRequest* request) override;
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
-      const std::vector<content::DesktopMediaID::Type>& types) override;
+      const std::vector<DesktopMediaList::Type>& types) override;
 
  private:
   FakeDesktopMediaPicker* picker_;

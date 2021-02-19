@@ -91,8 +91,8 @@ void ArcScreenCaptureBridge::RequestPermission(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<DesktopMediaPicker> picker = DesktopMediaPicker::Create();
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
-  source_lists.emplace_back(std::make_unique<DesktopMediaListAsh>(
-      content::DesktopMediaID::TYPE_SCREEN));
+  source_lists.emplace_back(
+      std::make_unique<DesktopMediaListAsh>(DesktopMediaList::Type::kScreen));
   const base::string16 display_name16 = base::UTF8ToUTF16(display_name);
   DesktopMediaPicker::Params picker_params;
   picker_params.context = ash::Shell::GetRootWindowForDisplayId(

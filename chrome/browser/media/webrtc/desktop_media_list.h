@@ -22,6 +22,16 @@ class DesktopMediaListObserver;
 // TODO(crbug.com/987001): Consider renaming this class.
 class DesktopMediaList {
  public:
+  // Reflects content::DesktopMediaID::Type, but can decorate it with additional
+  // information. For example, we can specify *current* screen/window/type while
+  // keeping all other code that uses content::DesktopMediaID::Type unchanged.
+  enum class Type {
+    kNone,         // TYPE_NONE
+    kScreen,       // TYPE_SCREEN
+    kWindow,       // TYPE_WINDOW
+    kWebContents,  // TYPE_WEB_CONTENTS
+  };
+
   // Struct used to represent each entry in the list.
   struct Source {
     // Id of the source.
@@ -70,7 +80,7 @@ class DesktopMediaList {
   virtual int GetSourceCount() const = 0;
   virtual const Source& GetSource(int index) const = 0;
 
-  virtual content::DesktopMediaID::Type GetMediaListType() const = 0;
+  virtual Type GetMediaListType() const = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_

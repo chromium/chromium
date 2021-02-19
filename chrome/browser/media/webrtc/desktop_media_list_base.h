@@ -34,7 +34,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   void Update(UpdateCallback callback) override;
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
-  content::DesktopMediaID::Type GetMediaListType() const override;
+  DesktopMediaList::Type GetMediaListType() const override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 
@@ -76,7 +76,7 @@ class DesktopMediaListBase : public DesktopMediaList {
       content::DesktopMediaID(content::DesktopMediaID::TYPE_NONE, -1);
 
   // Desktop media type of the list.
-  content::DesktopMediaID::Type type_ = content::DesktopMediaID::TYPE_NONE;
+  DesktopMediaList::Type type_ = DesktopMediaList::Type::kNone;
 
  private:
   // Post a task for next list update.

@@ -41,7 +41,7 @@ class MockDesktopMediaList : public DesktopMediaList {
   MOCK_METHOD1(Update, void(UpdateCallback callback));
   MOCK_CONST_METHOD0(GetSourceCount, int());
   MOCK_CONST_METHOD1(GetSource, Source&(int index));
-  MOCK_CONST_METHOD0(GetMediaListType, content::DesktopMediaID::Type());
+  MOCK_CONST_METHOD0(GetMediaListType, DesktopMediaList::Type());
 };
 
 class MockDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
@@ -51,7 +51,7 @@ class MockDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
                    const content::MediaStreamRequest* request));
   MOCK_METHOD1(CreateMediaList,
                std::vector<std::unique_ptr<DesktopMediaList>>(
-                   const std::vector<content::DesktopMediaID::Type>& types));
+                   const std::vector<DesktopMediaList::Type>& types));
 };
 
 class DesktopMediaPickerControllerTest : public testing::Test {
@@ -71,8 +71,8 @@ class DesktopMediaPickerControllerTest : public testing::Test {
  protected:
   DesktopMediaPickerController::Params picker_params_;
   base::MockCallback<DesktopMediaPickerController::DoneCallback> done_;
-  std::vector<content::DesktopMediaID::Type> source_types_{
-      content::DesktopMediaID::TYPE_SCREEN};
+  std::vector<DesktopMediaList::Type> source_types_{
+      DesktopMediaList::Type::kScreen};
   content::DesktopMediaID media_id_{content::DesktopMediaID::TYPE_SCREEN, 42};
   std::unique_ptr<MockDesktopMediaPicker> picker_ =
       std::make_unique<MockDesktopMediaPicker>();

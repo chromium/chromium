@@ -92,22 +92,22 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   }
 
   bool request_audio = false;
-  std::vector<content::DesktopMediaID::Type> media_types;
+  std::vector<DesktopMediaList::Type> media_types;
   for (auto source_type : sources) {
     switch (source_type) {
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_NONE: {
         return RespondNow(Error(kInvalidSourceNameError));
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_SCREEN: {
-        media_types.push_back(content::DesktopMediaID::TYPE_SCREEN);
+        media_types.push_back(DesktopMediaList::Type::kScreen);
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_WINDOW: {
-        media_types.push_back(content::DesktopMediaID::TYPE_WINDOW);
+        media_types.push_back(DesktopMediaList::Type::kWindow);
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_TAB: {
-        media_types.push_back(content::DesktopMediaID::TYPE_WEB_CONTENTS);
+        media_types.push_back(DesktopMediaList::Type::kWebContents);
         break;
       }
       case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_AUDIO: {
@@ -124,8 +124,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   // content-picker will offer both screen and window sources.
   // See crbug.com/1157006.
   if (content::desktop_capture::CanUsePipeWire() &&
-      base::Contains(media_types, content::DesktopMediaID::TYPE_SCREEN)) {
-    base::Erase(media_types, content::DesktopMediaID::TYPE_WINDOW);
+      base::Contains(media_types, DesktopMediaList::Type::kScreen)) {
+    base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(

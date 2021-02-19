@@ -293,7 +293,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
       provider_id != MediaRouteProviderId::EXTENSION) {
     desktop_picker_.Show(
         MakeDesktopPickerParams(web_contents),
-        {content::DesktopMediaID::TYPE_SCREEN},
+        {DesktopMediaList::Type::kScreen},
         base::BindOnce(&MediaRouterMojoImpl::CreateRouteWithSelectedDesktop,
                        weak_factory_.GetWeakPtr(), provider_id, sink_id,
                        presentation_id, origin, web_contents, timeout,

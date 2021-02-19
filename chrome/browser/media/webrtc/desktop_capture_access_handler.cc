@@ -535,9 +535,8 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     }
   }
 
-  std::vector<content::DesktopMediaID::Type> media_types = {
-      content::DesktopMediaID::TYPE_WEB_CONTENTS};
-  auto source_lists = picker_factory_->CreateMediaList(media_types);
+  auto source_lists =
+      picker_factory_->CreateMediaList({DesktopMediaList::Type::kWebContents});
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DesktopCaptureAccessHandler::OnPickerDialogResults,

@@ -93,12 +93,12 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
-      case DesktopMediaID::TYPE_NONE: {
+      case DesktopMediaList::Type::kNone: {
         NOTREACHED();
         break;
       }
-      case DesktopMediaID::TYPE_SCREEN: {
-        source_types_.push_back(DesktopMediaID::TYPE_SCREEN);
+      case DesktopMediaList::Type::kScreen: {
+        source_types_.push_back(DesktopMediaList::Type::kScreen);
 
         const DesktopMediaSourceViewStyle kSingleScreenStyle(
             1,                                       // columns
@@ -138,8 +138,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             std::make_pair(screen_title_text, std::move(screen_scroll_view)));
         break;
       }
-      case DesktopMediaID::TYPE_WINDOW: {
-        source_types_.push_back(DesktopMediaID::TYPE_WINDOW);
+      case DesktopMediaList::Type::kWindow: {
+        source_types_.push_back(DesktopMediaList::Type::kWindow);
 
         const DesktopMediaSourceViewStyle kWindowStyle(
             3,                                     // columns
@@ -169,8 +169,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             std::make_pair(window_title_text, std::move(window_scroll_view)));
         break;
       }
-      case DesktopMediaID::TYPE_WEB_CONTENTS: {
-        source_types_.push_back(DesktopMediaID::TYPE_WEB_CONTENTS);
+      case DesktopMediaList::Type::kWebContents: {
+        source_types_.push_back(DesktopMediaList::Type::kWebContents);
 
         base::string16 title =
             l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB);
@@ -274,17 +274,17 @@ void DesktopMediaPickerDialogView::OnSourceTypeSwitched(int index) {
   // Set whether the checkbox is visible based on the source type.
   if (audio_share_checkbox_) {
     switch (source_types_[index]) {
-      case DesktopMediaID::TYPE_SCREEN:
+      case DesktopMediaList::Type::kScreen:
         audio_share_checkbox_->SetVisible(
             DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform);
         break;
-      case DesktopMediaID::TYPE_WINDOW:
+      case DesktopMediaList::Type::kWindow:
         audio_share_checkbox_->SetVisible(false);
         break;
-      case DesktopMediaID::TYPE_WEB_CONTENTS:
+      case DesktopMediaList::Type::kWebContents:
         audio_share_checkbox_->SetVisible(true);
         break;
-      case DesktopMediaID::TYPE_NONE:
+      case DesktopMediaList::Type::kNone:
         NOTREACHED();
         break;
     }
@@ -317,13 +317,13 @@ base::string16 DesktopMediaPickerDialogView::GetWindowTitle() const {
 
   if (!tabbed_pane_) {
     switch (source_types_.front()) {
-      case DesktopMediaID::TYPE_SCREEN:
+      case DesktopMediaList::Type::kScreen:
         title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE_SCREEN_ONLY;
         break;
-      case DesktopMediaID::TYPE_WINDOW:
+      case DesktopMediaList::Type::kWindow:
         title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE_WINDOW_ONLY;
         break;
-      case DesktopMediaID::TYPE_WEB_CONTENTS:
+      case DesktopMediaList::Type::kWebContents:
         title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE_WEB_CONTENTS_ONLY;
         break;
       default:

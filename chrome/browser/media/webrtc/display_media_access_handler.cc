@@ -214,16 +214,15 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
 
-  std::vector<content::DesktopMediaID::Type> media_types = {
-      content::DesktopMediaID::TYPE_SCREEN,
-      content::DesktopMediaID::TYPE_WINDOW,
-      content::DesktopMediaID::TYPE_WEB_CONTENTS};
+  std::vector<DesktopMediaList::Type> media_types = {
+      DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
+      DesktopMediaList::Type::kWebContents};
 
   // Avoid offering window-capture as a separate source, since PipeWire's
   // content-picker will offer both screen and window sources.
   // See crbug.com/1157006.
   if (content::desktop_capture::CanUsePipeWire()) {
-    base::Erase(media_types, content::DesktopMediaID::TYPE_WINDOW);
+    base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
   auto source_lists = picker_factory_->CreateMediaList(media_types);

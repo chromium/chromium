@@ -25,11 +25,11 @@ const int kDefaultDesktopMediaListUpdatePeriod = 500;
 
 }  // namespace
 
-DesktopMediaListAsh::DesktopMediaListAsh(content::DesktopMediaID::Type type)
+DesktopMediaListAsh::DesktopMediaListAsh(DesktopMediaList::Type type)
     : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
           kDefaultDesktopMediaListUpdatePeriod)) {
-  DCHECK(type == content::DesktopMediaID::TYPE_SCREEN ||
-         type == content::DesktopMediaID::TYPE_WINDOW);
+  DCHECK(type == DesktopMediaList::Type::kScreen ||
+         type == DesktopMediaList::Type::kWindow);
   type_ = type;
 }
 
@@ -86,7 +86,7 @@ void DesktopMediaListAsh::EnumerateSources(
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
 
   for (size_t i = 0; i < root_windows.size(); ++i) {
-    if (type_ == content::DesktopMediaID::TYPE_SCREEN) {
+    if (type_ == DesktopMediaList::Type::kScreen) {
       SourceDescription screen_source(
           content::DesktopMediaID::RegisterNativeWindow(
               content::DesktopMediaID::TYPE_SCREEN, root_windows[i]),

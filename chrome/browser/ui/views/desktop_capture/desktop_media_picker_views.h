@@ -73,7 +73,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   views::TabbedPane* tabbed_pane_ = nullptr;
   std::vector<std::unique_ptr<DesktopMediaListController>> list_controllers_;
-  std::vector<content::DesktopMediaID::Type> source_types_;
+  std::vector<DesktopMediaList::Type> source_types_;
 
   base::Optional<content::DesktopMediaID> accepted_source_;
 };

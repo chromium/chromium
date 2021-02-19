@@ -62,9 +62,9 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
  protected:
   std::vector<std::unique_ptr<DesktopMediaList>> CreateDefaultSourceLists() {
     std::vector<std::unique_ptr<DesktopMediaList>> sources;
-    for (auto type : {content::DesktopMediaID::TYPE_SCREEN,
-                      content::DesktopMediaID::TYPE_WINDOW,
-                      content::DesktopMediaID::TYPE_WEB_CONTENTS}) {
+    for (auto type :
+         {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
+          DesktopMediaList::Type::kWebContents}) {
       sources.push_back(std::make_unique<FakeDesktopMediaList>(type));
     }
     return sources;
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_tabs) {
         sources[0]->SetSourceName(2, base::ASCIIToUTF16("Feisty Fawn"));
       });
   override_source_lists_.push_back(std::make_unique<FakeDesktopMediaList>(
-      content::DesktopMediaID::TYPE_WEB_CONTENTS));
+      DesktopMediaList::Type::kWebContents));
   ShowAndVerifyUi();
 }
 
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
 IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
                        SingleSourceTypeChangesTitle) {
   override_source_lists_.push_back(std::make_unique<FakeDesktopMediaList>(
-      content::DesktopMediaID::TYPE_WEB_CONTENTS));
+      DesktopMediaList::Type::kWebContents));
   ShowUi(std::string());
 
   EXPECT_EQ(picker_->GetDialogViewForTesting()->GetWindowTitle(),

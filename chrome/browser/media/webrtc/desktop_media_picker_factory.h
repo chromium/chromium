@@ -23,7 +23,7 @@ class DesktopMediaPickerFactory {
   virtual std::unique_ptr<DesktopMediaPicker> CreatePicker(
       const content::MediaStreamRequest* request) = 0;
   virtual std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
-      const std::vector<content::DesktopMediaID::Type>& types) = 0;
+      const std::vector<DesktopMediaList::Type>& types) = 0;
 
  protected:
   DesktopMediaPickerFactory();

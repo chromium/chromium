@@ -94,7 +94,7 @@ class NativeDesktopMediaList::Worker
  public:
   Worker(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
          base::WeakPtr<NativeDesktopMediaList> media_list,
-         DesktopMediaID::Type type,
+         DesktopMediaList::Type type,
          std::unique_ptr<webrtc::DesktopCapturer> capturer);
   ~Worker() override;
 
@@ -126,7 +126,7 @@ class NativeDesktopMediaList::Worker
 
   base::WeakPtr<NativeDesktopMediaList> media_list_;
 
-  DesktopMediaID::Type type_;
+  DesktopMediaList::Type type_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
 
   // Stores hashes of snapshots previously captured.
@@ -143,7 +143,7 @@ class NativeDesktopMediaList::Worker
 NativeDesktopMediaList::Worker::Worker(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<NativeDesktopMediaList> media_list,
-    DesktopMediaID::Type type,
+    DesktopMediaList::Type type,
     std::unique_ptr<webrtc::DesktopCapturer> capturer)
     : task_runner_(task_runner),
       media_list_(media_list),
@@ -176,8 +176,10 @@ void NativeDesktopMediaList::Worker::Refresh(
   bool mutiple_sources = sources.size() > 1;
   base::string16 title;
   for (size_t i = 0; i < sources.size(); ++i) {
+    DesktopMediaID::Type type = DesktopMediaID::Type::TYPE_NONE;
     switch (type_) {
-      case DesktopMediaID::TYPE_SCREEN:
+      case DesktopMediaList::Type::kScreen:
+        type = DesktopMediaID::Type::TYPE_SCREEN;
         // Just in case 'Screen' is inflected depending on the screen number,
         // use plural formatter.
         title = mutiple_sources
@@ -188,7 +190,8 @@ void NativeDesktopMediaList::Worker::Refresh(
                           IDS_DESKTOP_MEDIA_PICKER_SINGLE_SCREEN_NAME);
         break;
 
-      case DesktopMediaID::TYPE_WINDOW:
+      case DesktopMediaList::Type::kWindow:
+        type = DesktopMediaID::Type::TYPE_WINDOW;
         // Skip the picker dialog window.
         if (sources[i].id == view_dialog_id)
           continue;
@@ -198,8 +201,7 @@ void NativeDesktopMediaList::Worker::Refresh(
       default:
         NOTREACHED();
     }
-    result.push_back(
-        SourceDescription(DesktopMediaID(type_, sources[i].id), title));
+    result.emplace_back(DesktopMediaID(type, sources[i].id), title);
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -292,7 +294,7 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
 }
 
 NativeDesktopMediaList::NativeDesktopMediaList(
-    DesktopMediaID::Type type,
+    DesktopMediaList::Type type,
     std::unique_ptr<webrtc::DesktopCapturer> capturer)
     : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
           kDefaultNativeDesktopMediaListUpdatePeriod)),

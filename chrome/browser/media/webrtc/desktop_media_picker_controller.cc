@@ -42,9 +42,9 @@ DesktopMediaPickerController::~DesktopMediaPickerController() = default;
 
 void DesktopMediaPickerController::Show(
     const Params& params,
-    const std::vector<content::DesktopMediaID::Type>& sources,
+    const std::vector<DesktopMediaList::Type>& sources,
     DoneCallback done_callback) {
-  DCHECK(!base::Contains(sources, content::DesktopMediaID::TYPE_NONE));
+  DCHECK(!base::Contains(sources, DesktopMediaList::Type::kNone));
   DCHECK(!done_callback_);
 
   done_callback_ = std::move(done_callback);
@@ -60,7 +60,7 @@ void DesktopMediaPickerController::Show(
   }
 
   if (params.select_only_screen && sources.size() == 1 &&
-      sources[0] == content::DesktopMediaID::TYPE_SCREEN) {
+      sources[0] == DesktopMediaList::Type::kScreen) {
     // Try to bypass the picker dialog if possible.
     DCHECK(source_lists_.size() == 1);
     auto* source_list = source_lists_[0].get();

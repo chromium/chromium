@@ -68,7 +68,7 @@ const DesktopMediaList::Source& DesktopMediaListBase::GetSource(
   return sources_[index];
 }
 
-DesktopMediaID::Type DesktopMediaListBase::GetMediaListType() const {
+DesktopMediaList::Type DesktopMediaListBase::GetMediaListType() const {
   return type_;
 }
 

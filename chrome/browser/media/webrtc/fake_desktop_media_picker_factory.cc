@@ -33,15 +33,15 @@ void FakeDesktopMediaPicker::Show(
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
-      case content::DesktopMediaID::TYPE_NONE:
+      case DesktopMediaList::Type::kNone:
         break;
-      case content::DesktopMediaID::TYPE_SCREEN:
+      case DesktopMediaList::Type::kScreen:
         show_screens = true;
         break;
-      case content::DesktopMediaID::TYPE_WINDOW:
+      case DesktopMediaList::Type::kWindow:
         show_windows = true;
         break;
-      case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+      case DesktopMediaList::Type::kWebContents:
         show_tabs = true;
         break;
     }
@@ -96,7 +96,7 @@ std::unique_ptr<DesktopMediaPicker> FakeDesktopMediaPickerFactory::CreatePicker(
 
 std::vector<std::unique_ptr<DesktopMediaList>>
 FakeDesktopMediaPickerFactory::CreateMediaList(
-    const std::vector<content::DesktopMediaID::Type>& types) {
+    const std::vector<DesktopMediaList::Type>& types) {
   EXPECT_LE(current_test_, tests_count_);
   std::vector<std::unique_ptr<DesktopMediaList>> media_lists;
   for (auto source_type : types)

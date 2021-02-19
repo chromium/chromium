@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
 
 class DesktopMediaPickerViews;
@@ -33,7 +34,7 @@ class DesktopMediaPickerViewsTestApi {
   void FocusAudioCheckbox();
   void PressMouseOnSourceAtIndex(size_t index, bool double_click = false);
   void PressKeyOnSourceAtIndex(size_t index, const ui::KeyEvent& event);
-  void SelectTabForSourceType(content::DesktopMediaID::Type source_type);
+  void SelectTabForSourceType(DesktopMediaList::Type source_type);
   views::Checkbox* GetAudioShareCheckbox();
 
   bool HasSourceAtIndex(size_t index) const;
