@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -62,7 +63,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
     RenderFrameImpl* frame_to_replace,
     int routing_id,
     blink::mojom::TreeScopeType scope,
-    const base::UnguessableToken& proxy_frame_token) {
+    const blink::RemoteFrameToken& proxy_frame_token) {
   CHECK_NE(routing_id, MSG_ROUTING_NONE);
 
   std::unique_ptr<RenderFrameProxy> proxy(
@@ -110,7 +111,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     const base::Optional<base::UnguessableToken>& opener_frame_token,
     int parent_routing_id,
     mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& frame_token,
+    const blink::RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
   RenderFrameProxy* parent = nullptr;
   if (parent_routing_id != MSG_ROUTING_NONE) {
@@ -177,7 +178,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortal(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* parent,
     int proxy_routing_id,
-    const base::UnguessableToken& frame_token,
+    const blink::RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const blink::WebElement& portal_element) {
   auto proxy = base::WrapUnique(
@@ -409,9 +410,7 @@ void RenderFrameProxy::Navigate(
   params->blob_url_token = std::move(blob_url_token);
   params->initiator_policy_container_keep_alive_handle =
       std::move(initiator_policy_container_keep_alive_handle);
-  params->initiator_frame_token =
-      initiator_frame_token ? base::make_optional(*initiator_frame_token)
-                            : base::nullopt;
+  params->initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
 
   if (impression)
     params->impression = blink::ConvertWebImpressionToImpression(*impression);

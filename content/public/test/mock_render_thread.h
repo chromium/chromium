@@ -64,7 +64,7 @@ class MockRenderThread : public RenderThread {
   int GenerateRoutingID() override;
   bool GenerateFrameRoutingID(
       int32_t& routing_id,
-      base::UnguessableToken& frame_token,
+      blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token) override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void RemoveFilter(IPC::MessageFilter* filter) override;

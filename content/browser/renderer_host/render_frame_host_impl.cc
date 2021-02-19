@@ -2699,7 +2699,7 @@ void RenderFrameHostImpl::CreateChildFrame(
     const blink::FramePolicy& frame_policy,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     const blink::mojom::FrameOwnerElementType owner_type) {
-  base::UnguessableToken frame_token;
+  blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   if (!static_cast<RenderProcessHostImpl*>(GetProcess())
            ->TakeFrameTokensForFrameRoutingID(new_routing_id, frame_token,

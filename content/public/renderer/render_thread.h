@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "ipc/ipc_channel_proxy.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace base {
@@ -74,7 +75,7 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual int GenerateRoutingID() = 0;
   virtual bool GenerateFrameRoutingID(
       int32_t& routing_id,
-      base::UnguessableToken& frame_token,
+      blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token) = 0;
 
   // These map to IPC::ChannelProxy methods.

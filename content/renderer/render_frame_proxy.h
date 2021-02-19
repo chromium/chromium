@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -79,7 +80,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       RenderFrameImpl* frame_to_replace,
       int routing_id,
       blink::mojom::TreeScopeType scope,
-      const base::UnguessableToken& proxy_frame_token);
+      const blink::RemoteFrameToken& proxy_frame_token);
 
   // This method should be used to create a RenderFrameProxy, when there isn't
   // an existing RenderFrame. It should be called to construct a local
@@ -101,7 +102,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       int parent_routing_id,
       mojom::FrameReplicationStatePtr replicated_state,
-      const base::UnguessableToken& frame_token,
+      const blink::RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token);
 
   // Creates a RenderFrameProxy to be used with a portal owned by |parent|.
@@ -110,7 +111,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       AgentSchedulingGroup& agent_scheduling_group,
       RenderFrameImpl* parent,
       int proxy_routing_id,
-      const base::UnguessableToken& frame_token,
+      const blink::RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       const blink::WebElement& portal_element);
 

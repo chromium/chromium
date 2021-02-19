@@ -1622,7 +1622,7 @@ void RenderFrameImpl::CreateFrame(
     const base::Optional<base::UnguessableToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     mojom::FrameReplicationStatePtr replicated_state,
     CompositorDependencies* compositor_deps,
@@ -2233,7 +2233,7 @@ void RenderFrameImpl::Unload(
     int proxy_routing_id,
     bool is_loading,
     mojom::FrameReplicationStatePtr replicated_frame_state,
-    const base::UnguessableToken& proxy_frame_token) {
+    const blink::RemoteFrameToken& proxy_frame_token) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "id",
                routing_id_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
@@ -3740,7 +3740,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     blink::WebPolicyContainerBindParams policy_container_bind_params) {
   // Allocate child routing ID. This is a synchronous call.
   int child_routing_id;
-  base::UnguessableToken frame_token;
+  blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   if (!RenderThread::Get()->GenerateFrameRoutingID(
           child_routing_id, frame_token, devtools_frame_token)) {
@@ -3827,7 +3827,7 @@ RenderFrameImpl::CreatePortal(
   mojom::FrameReplicationStatePtr initial_replicated_state =
       mojom::FrameReplicationState::New();
   blink::PortalToken portal_token;
-  base::UnguessableToken frame_token;
+  blink::RemoteFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   GetFrameHost()->CreatePortal(std::move(portal_endpoint),
                                std::move(client_endpoint), &proxy_routing_id,
@@ -3844,7 +3844,7 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
     const blink::PortalToken& portal_token,
     const blink::WebElement& portal_element) {
   int proxy_routing_id = MSG_ROUTING_NONE;
-  base::UnguessableToken frame_token;
+  blink::RemoteFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   mojom::FrameReplicationStatePtr replicated_state =
       mojom::FrameReplicationState::New();

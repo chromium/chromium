@@ -72,6 +72,7 @@
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -305,7 +306,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // |new_routing_id| was not found in the token table.
   bool TakeFrameTokensForFrameRoutingID(
       int32_t new_routing_id,
-      base::UnguessableToken& frame_token,
+      blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token);
 
   // Called when the renderer has fully destroyed the associated RenderView

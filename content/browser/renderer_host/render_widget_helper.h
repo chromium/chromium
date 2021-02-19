@@ -21,6 +21,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/widget_type.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -44,7 +45,7 @@ class RenderWidgetHelper
   // were found.
   bool TakeFrameTokensForFrameRoutingID(
       int32_t routing_id,
-      base::UnguessableToken& frame_token,
+      blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token);
 
   // Store a set of frame tokens given a routing id. This is usually called on
@@ -52,7 +53,7 @@ class RenderWidgetHelper
   // UI thread at a later point.
   void StoreNextFrameRoutingID(
       int32_t routing_id,
-      const base::UnguessableToken& frame_token,
+      const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token);
 
   // IO THREAD ONLY -----------------------------------------------------------
@@ -72,7 +73,13 @@ class RenderWidgetHelper
   int render_process_id_;
 
   struct FrameTokens {
-    base::UnguessableToken frame_token;
+    FrameTokens(const blink::LocalFrameToken& frame_token,
+                const base::UnguessableToken& devtools_frame_token);
+    FrameTokens(const FrameTokens& other);
+    FrameTokens& operator=(const FrameTokens& other);
+    ~FrameTokens();
+
+    blink::LocalFrameToken frame_token;
     base::UnguessableToken devtools_frame_token;
   };
 

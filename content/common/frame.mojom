@@ -422,7 +422,7 @@ interface Frame {
   Unload(int32 new_remote_frame_routing_id,
          bool is_loading,
          FrameReplicationState new_remote_frame_replication_state,
-         mojo_base.mojom.UnguessableToken new_remote_frame_token);
+         blink.mojom.RemoteFrameToken new_remote_frame_token);
 
   // Delete the frame. This is only called for child frames that the browser
   // wants to detach, or for speculative main frames which are owned by the
@@ -557,7 +557,7 @@ struct CreateNewWindowReply {
   pending_associated_receiver<content.mojom.Frame> frame;
 
   // The unique identifier of the RenderFrameHost
-  mojo_base.mojom.UnguessableToken main_frame_frame_token;
+  blink.mojom.LocalFrameToken main_frame_frame_token;
 
   CreateFrameWidgetParams widget_params;
 
@@ -651,7 +651,7 @@ interface FrameHost {
       => (int32 proxy_routing_id,
           FrameReplicationState initial_replicated_state,
           blink.mojom.PortalToken portal_token,
-          mojo_base.mojom.UnguessableToken frame_token,
+          blink.mojom.RemoteFrameToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);
 
   // Requests that this frame adopts the portal identified by |portal_token|.
@@ -665,7 +665,7 @@ interface FrameHost {
   [Sync] AdoptPortal(blink.mojom.PortalToken portal_token)
       => (int32 proxy_routing_id,
           FrameReplicationState replicated_state,
-          mojo_base.mojom.UnguessableToken frame_token,
+          blink.mojom.RemoteFrameToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);
 
 

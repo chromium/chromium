@@ -2829,7 +2829,7 @@ void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
 
 bool RenderProcessHostImpl::TakeFrameTokensForFrameRoutingID(
     int32_t new_routing_id,
-    base::UnguessableToken& frame_token,
+    blink::LocalFrameToken& frame_token,
     base::UnguessableToken& devtools_frame_token) {
   return widget_helper_->TakeFrameTokensForFrameRoutingID(
       new_routing_id, frame_token, devtools_frame_token);

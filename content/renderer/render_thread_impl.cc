@@ -828,7 +828,7 @@ int RenderThreadImpl::GenerateRoutingID() {
 
 bool RenderThreadImpl::GenerateFrameRoutingID(
     int32_t& routing_id,
-    base::UnguessableToken& frame_token,
+    blink::LocalFrameToken& frame_token,
     base::UnguessableToken& devtools_frame_token) {
   return render_message_filter()->GenerateFrameRoutingID(
       &routing_id, &frame_token, &devtools_frame_token);

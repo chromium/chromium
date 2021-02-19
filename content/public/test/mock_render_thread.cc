@@ -51,7 +51,7 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
   void GenerateFrameRoutingID(
       GenerateFrameRoutingIDCallback callback) override {
     int routing_id;
-    base::UnguessableToken frame_token;
+    blink::LocalFrameToken frame_token;
     base::UnguessableToken devtools_frame_token;
     RenderThread::Get()->GenerateFrameRoutingID(routing_id, frame_token,
                                                 devtools_frame_token);
@@ -147,10 +147,10 @@ int MockRenderThread::GenerateRoutingID() {
 
 bool MockRenderThread::GenerateFrameRoutingID(
     int32_t& routing_id,
-    base::UnguessableToken& frame_token,
+    blink::LocalFrameToken& frame_token,
     base::UnguessableToken& devtools_frame_token) {
   routing_id = GetNextRoutingID();
-  frame_token = base::UnguessableToken::Create();
+  frame_token = blink::LocalFrameToken();
   devtools_frame_token = base::UnguessableToken::Create();
   return true;
 }
