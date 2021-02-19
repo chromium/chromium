@@ -1133,7 +1133,6 @@ group("closure_compile") {
     "date_time_page:closure_compile",
     "device_page:closure_compile",
     "google_assistant_page:closure_compile",
-    "internet_page:closure_compile",
     "kerberos_page:closure_compile",
     "localized_link:closure_compile",
     "multidevice_page:closure_compile",
