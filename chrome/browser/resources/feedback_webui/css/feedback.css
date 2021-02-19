@@ -1,0 +1,243 @@
+/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+
+html {
+  height: 100%;
+}
+
+body {
+  background-color: #fbfbfb;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.title-bar {
+  -webkit-align-items: center;
+  -webkit-app-region: drag;
+  background-color: #fff;
+  box-shadow: 0 1px #d0d0d0;
+  color: rgb(80, 80, 82);
+  display: flex;
+  flex-grow: 0;
+  font-size: 15px;
+  min-height: 48px;
+}
+
+.title-bar #page-title {
+  flex: 1 1 auto;
+  margin-inline-start: 20px;
+}
+
+.title-bar .button-bar {
+  flex: 0 1 auto;
+}
+
+#content-pane {
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+  padding: 20px;
+}
+
+.content {
+  color: #444;
+  font-size: 12px;
+}
+
+.content #free-form-text {
+  margin-top: 0;  /* the content frame already gives enough margin. */
+}
+
+.content #description-text {
+  border-color: #c8c8c8;
+  box-sizing: border-box;
+  height: 120px;
+  line-height: 18px;
+  padding: 10px;
+  resize: none;
+  width: 100%;
+}
+
+.content #additional-info-label {
+  margin-inline-start: 10px;
+}
+
+.content .text-field-container {
+  -webkit-align-items: center;
+  display: flex;
+  height: 29px;
+  margin-top: 10px;
+  padding-inline-start: 10px;
+}
+
+.content .text-field-container > label {
+  flex: 0 1 auto;
+  width: 100px;
+}
+
+.content .text-field-container > select {
+  border: 1px solid #c8c8c8;
+  color: #585858;
+  flex: 1 1 auto;
+  height: 100%;
+  padding-inline-start: 5px;
+}
+
+.content .text-field-container > input[type=text] {
+  flex: 1 1 auto;
+  border: 1px solid;
+  border-color: #c8c8c8;
+  color: #585858;
+  height: 100%;
+  padding-inline-start: 5px;
+}
+
+.content .text-field-container > input[type=checkbox] {
+  margin-inline-end: 9px;
+}
+
+.content .description-empty-notification {
+  color: rgb(204, 0, 0);
+  font-weight: bold;
+}
+
+.content .checkbox-field-container {
+  -webkit-align-items: center;
+  display: flex;
+  height: 29px;
+}
+
+#assistant-checkbox-container {
+  align-items: flex-start;
+  line-height: 20px;
+  margin-bottom: 20px;
+  margin-top: 7px;
+  vertical-align: text-top;
+}
+
+#screenshot-container {
+  margin-top: 10px;
+}
+
+.content #screenshot-image {
+  display: block;
+  height: 60px;
+  margin-inline-end: 25px;
+  margin-top: 40px;
+  transition: all 250ms ease;
+}
+
+.content #screenshot-image:hover {
+  height: 125px;
+  margin-inline-end: 0;
+  margin-top: 80px;
+  z-index: 1;
+}
+
+.content #screenshot-image.wide-screen {
+  height: auto;
+  width: 100px;
+}
+
+.content #screenshot-image.wide-screen:hover {
+  height: auto;
+  width: 200px;
+}
+
+.content #screenshot-chk-label {
+  flex: auto;
+}
+
+.content #sys-info-container {
+  margin-inline-end: 130px;
+}
+
+.content #privacy-note {
+  font-size: 12px;
+  line-height: 20px;
+  margin-bottom: 0;
+  margin-top: 20px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.content .buttons-pane {
+  bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  left: 20px;
+  position: absolute;
+  right: 20px;
+}
+
+.content .top-buttons {
+  position: absolute;
+}
+
+#bottom-buttons-container {
+  box-shadow: 0 -1px #d0d0d0;
+  margin: 0;
+  padding: 0 20px;
+}
+
+.content .bottom-buttons {
+  margin: 20px;
+  position: static;
+}
+
+.content .remove-file-button {
+  background-color: transparent;
+  background-image: -webkit-image-set(
+      url(../images/button_butter_bar_close.png) 1x,
+      url(../images/2x/button_butter_bar_close.png) 2x);
+  background-position: 50% 80%;
+  background-repeat: no-repeat;
+  border: none;
+  height: 16px;
+  margin-inline-start: 5px;
+  pointer-events: auto;
+  width: 16px;
+}
+
+.content .remove-file-button:hover {
+  background-image: -webkit-image-set(
+      url(../images/button_butter_bar_close_hover.png) 1x,
+      url(../images/2x/button_butter_bar_close_hover.png) 2x);
+}
+
+.content .remove-file-button:active {
+  background-image: -webkit-image-set(
+      url(../images/button_butter_bar_close_pressed.png) 1x,
+      url(../images/2x/button_butter_bar_close_pressed.png) 2x);
+}
+
+.content #attach-file-note {
+  margin-bottom: 10px;
+  margin-inline-start: 112px;
+  margin-top: 10px;
+}
+
+.content .attach-file-notification {
+  color: rgb(204, 0, 0);
+  font-weight: bold;
+}
+
+button.white-button {
+  color: #000;
+  margin-inline-end: 10px;
+}
+
+button.blue-button {
+  color: #fff;
+  text-shadow: 1px sharp drop shadow rgb(45, 106, 218);
+}

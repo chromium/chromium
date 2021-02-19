@@ -135,6 +135,7 @@
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
@@ -628,6 +629,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<NewTabUI>;
   if (url.host_piece() == chrome::kChromeUINewTabPageHost)
     return &NewWebUI<NewTabPageUI>;
+  if (url.host_piece() == chrome::kChromeUIFeedbackHost)
+    return &NewWebUI<FeedbackUI>;
   if (base::FeatureList::IsEnabled(memories::kChromeMemories)) {
     if (url.host_piece() == chrome::kChromeUIMemoriesHost)
       return &NewWebUI<MemoriesUI>;

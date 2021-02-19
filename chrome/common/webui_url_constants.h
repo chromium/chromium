@@ -85,6 +85,7 @@ extern const char kChromeUIFamilyLinkUserInternalsHost[];
 extern const char kChromeUIFaviconHost[];
 extern const char kChromeUIFaviconURL[];
 extern const char kChromeUIFavicon2Host[];
+extern const char kChromeUIFeedbackHost[];
 extern const char kChromeUIFileiconURL[];
 extern const char kChromeUIFlagsHost[];
 extern const char kChromeUIFlagsURL[];

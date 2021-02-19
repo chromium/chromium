@@ -1,0 +1,119 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+  <title i18n-content="appTitle"> </title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://resources/css/apps/common.css"></link>
+  <link rel="stylesheet" href="chrome://resources/css/apps/topbutton_bar.css">
+  </link>
+  <link rel="stylesheet" href="../css/feedback.css">
+
+  <script src="chrome://resources/js/load_time_data.js"></script>
+  <script src="chrome://resources/js/i18n_template_no_process.js"></script>
+  <script src="chrome://resources/js/assert.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="../js/feedback_util.js"></script>
+  <script src="../js/take_screenshot.js"></script>
+  <script src="../js/topbar_handlers.js"></script>
+  <script src="../js/feedback.js"></script>
+</head>
+<body>
+  <div id="title-bar" class="title-bar">
+    <span id="page-title" i18n-content="pageTitle"></span>
+    <span class="topbutton-bar">
+      <button class="minimize-button" id="minimize-button" tabindex="-1"
+              i18n-values="aria-label:minimizeBtnLabel">
+      </button>
+      <button class="close-button" id="close-button" tabindex="-1"
+              i18n-values="aria-label:closeBtnLabel">
+      </button>
+    </span>
+  </div>
+  <div id="content-pane" class="content">
+    <p id="free-form-text" i18n-content="freeFormText"></p>
+    <textarea id="description-text" aria-labelledby="free-form-text"
+      aria-required="true">
+    </textarea>
+    <p id="description-empty-error" class="description-empty-notification"
+       i18n-content="noDescription" aria-hidden="true" hidden></p>
+    <div>
+      <p id="additional-info-label" i18n-content="additionalInfo"><p>
+    </div>
+    <div id="page-url" class="text-field-container">
+      <label id="page-url-label" i18n-content="pageUrl"></label>
+      <input id="page-url-text" aria-labelledby="page-url-label" type="text">
+    </div>
+    <!-- User e-mail -->
+    <div id="user-email" class="text-field-container" hidden>
+      <label id="user-email-label" i18n-content="userEmail"></label>
+      <select id="user-email-drop-down" aria-labelledby="user-email-label">
+        <option id="anonymous-user-option" value=""
+                i18n-content="anonymousUser"></option>
+      </select>
+    </div>
+    <!-- Attach a file -->
+    <div id="attach-file-container" class="text-field-container">
+      <label id="attach-file-label" i18n-content="attachFileLabel"></label>
+      <input id="attach-file" type="file" aria-describedby="attach-file-note">
+      <div id="custom-file-container" hidden>
+        <label id="attached-filename-text"></label>
+        <button id="remove-attached-file" class="remove-file-button"></button>
+      </div>
+      <div id="attach-error" class="attach-file-notification"
+          role="alert" i18n-content="attachFileToBig" hidden></div>
+    </div>
+    <div id="attach-file-note" i18n-content="attachFileNote"
+      aria-hidden="true"></div>
+    <!-- Screenshot -->
+    <div id="screenshot-container" class="checkbox-field-container">
+      <input id="screenshot-checkbox" type="checkbox"
+             aria-labelledby="screenshot-chk-label">
+      <label id="screenshot-chk-label" i18n-content="screenshot"></label>
+      <img id="screenshot-image" i18n-values="aria-label:screenshotA11y">
+    </div>
+    <!-- System Information -->
+    <div id="sys-info-container" class="checkbox-field-container">
+      <input id="sys-info-checkbox" type="checkbox"
+             aria-labelledby="sys-info-label" checked>
+      <label id="sys-info-label" i18n-values=".innerHTML:sysInfo"></label>
+    </div>
+<if expr="chromeos">
+    <!-- Assistant Debug Logs (Googler Internal Only) -->
+    <div id="assistant-checkbox-container" class="checkbox-field-container"
+         hidden>
+      <input id="assistant-info-checkbox" type="checkbox"
+             checked aria-labelledby="assistant-info-label">
+      <label id="assistant-info-label"
+             i18n-values=".innerHTML:assistantInfo"></label>
+    </div>
+    <!-- Bluetooth Logs (Googler Internal Only) -->
+    <div id="bluetooth-checkbox-container" class="checkbox-field-container"
+      hidden>
+      <input id="bluetooth-logs-checkbox" type="checkbox" checked>
+      <label id="bluetooth-info-label"
+        i18n-values=".innerHTML:bluetoothLogsInfo"></label>
+    </div>
+    <!-- Performance Feedback -->
+    <div id="performance-info-area" hidden>
+      <input id="performance-info-checkbox" type="checkbox">
+      <a id="performance-info-link" href="#" i18n-content="performanceTrace">
+      </a>
+    </div>
+</if>
+    <!-- Privacy note -->
+    <div id="privacy-note" i18n-values=".innerHTML:privacyNote"></div>
+  </div>
+  <!-- Buttons -->
+  <div id="bottom-buttons-container" class="content">
+    <div class="buttons-pane bottom-buttons">
+      <button id="cancel-button" type="submit"
+          class="white-button" i18n-content="cancel">
+      </button>
+      <button id="send-report-button" type="submit"
+          class="blue-button" i18n-content="sendReport">
+      </button>
+    </div>
+  </div>
+</body>
+</html>

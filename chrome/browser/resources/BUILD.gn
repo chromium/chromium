@@ -27,6 +27,7 @@ group("resources") {
       "bookmarks:resources",
       "commander:resources",
       "downloads:resources",
+      "feedback_webui:resources",
       "gaia_auth_host:resources",
       "history:resources",
       "memories:resources",
