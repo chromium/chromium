@@ -62,8 +62,11 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
       network::mojom::CSPDirectiveName::WorkerSrc,
       std::string("worker-src 'self';"));
   source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameAncestors,
+      std::string("frame-ancestors 'self';"));
+  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      std::string("frame-src ") + kChromeUIUntrustedCameraAppURL + ";");
+      std::string("frame-src 'self' ") + kChromeUIUntrustedCameraAppURL + ";");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc,
       std::string("object-src 'self';"));
