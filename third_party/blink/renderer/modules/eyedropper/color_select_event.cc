@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/eyedropper/color_select_event.h"
 
-#include "third_party/blink/renderer/modules/eyedropper/color_select_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_color_select_event_init.h"
 
 namespace blink {
 

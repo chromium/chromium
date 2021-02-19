@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/mediastream/video_track_signal_underlying_source.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track_signal.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"

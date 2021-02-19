@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/modules/mediastream/video_track_signal_underlying_sink.h"
 
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal_type.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track_signal.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

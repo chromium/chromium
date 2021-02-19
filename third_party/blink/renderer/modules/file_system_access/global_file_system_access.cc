@@ -390,7 +390,9 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   auto save_file_picker_options = mojom::blink::SaveFilePickerOptions::New(
       mojom::blink::AcceptsTypesInfo::New(std::move(accepts),
                                           !options->excludeAcceptAllOption()),
-      options->hasSuggestedNameNonNull() ? options->suggestedName() : "");
+      (options->hasSuggestedName() && !options->suggestedName().IsNull())
+          ? options->suggestedName()
+          : g_empty_string);
   return ShowFilePickerImpl(
       script_state, window,
       mojom::blink::FilePickerOptions::NewSaveFilePickerOptions(
