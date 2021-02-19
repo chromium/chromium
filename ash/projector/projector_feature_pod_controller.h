@@ -5,6 +5,7 @@
 #ifndef ASH_PROJECTOR_PROJECTOR_FEATURE_POD_CONTROLLER_H_
 #define ASH_PROJECTOR_PROJECTOR_FEATURE_POD_CONTROLLER_H_
 
+#include "ash/projector/model/projector_ui_model.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 
 namespace ash {
@@ -12,7 +13,8 @@ namespace ash {
 class UnifiedSystemTrayController;
 
 // Controller of a feature pod button that toggles Projector tools.
-class ProjectorFeaturePodController : public FeaturePodControllerBase {
+class ProjectorFeaturePodController : public FeaturePodControllerBase,
+                                      public ProjectorUiModelObserver {
  public:
   explicit ProjectorFeaturePodController(
       UnifiedSystemTrayController* controller);
@@ -25,6 +27,9 @@ class ProjectorFeaturePodController : public FeaturePodControllerBase {
   FeaturePodButton* CreateButton() override;
   void OnIconPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;
+
+  // ProjectorUiModelObserver:
+  void OnProjectorBarStateChanged(bool enabled) override;
 
  private:
   UnifiedSystemTrayController* const tray_controller_;

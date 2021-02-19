@@ -20,10 +20,17 @@ namespace ash {
 ProjectorFeaturePodController::ProjectorFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  // TODO(llin): Observe Projector UI model to update the toggle state.
+  Shell::Get()->projector_controller()->ui_controller()->model()->AddObserver(
+      this);
 }
 
-ProjectorFeaturePodController::~ProjectorFeaturePodController() = default;
+ProjectorFeaturePodController::~ProjectorFeaturePodController() {
+  Shell::Get()
+      ->projector_controller()
+      ->ui_controller()
+      ->model()
+      ->RemoveObserver(this);
+}
 
 FeaturePodButton* ProjectorFeaturePodController::CreateButton() {
   DCHECK(!button_);
@@ -36,7 +43,11 @@ FeaturePodButton* ProjectorFeaturePodController::CreateButton() {
   button_->SetLabelTooltip(label_text);
   button_->SetVisible(
       !Shell::Get()->session_controller()->IsUserSessionBlocked());
-  // TODO(llin): Update toggle state based on Projector UI model.
+  button_->SetToggled(Shell::Get()
+                          ->projector_controller()
+                          ->ui_controller()
+                          ->model()
+                          ->bar_enabled());
   return button_;
 }
 
@@ -49,6 +60,10 @@ void ProjectorFeaturePodController::OnIconPressed() {
 
 SystemTrayItemUmaType ProjectorFeaturePodController::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_PROJECTOR;
+}
+
+void ProjectorFeaturePodController::OnProjectorBarStateChanged(bool enabled) {
+  button_->SetToggled(enabled);
 }
 
 }  // namespace ash
