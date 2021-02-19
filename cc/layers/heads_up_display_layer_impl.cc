@@ -582,6 +582,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudContents() {
     if (debug_state.show_fps_counter) {
       throughput_value_ =
           layer_tree_impl()->dropped_frame_counter()->GetAverageThroughput();
+      const auto& args = layer_tree_impl()->CurrentBeginFrameArgs();
+      if (args.IsValid())
+        frame_interval_ = args.interval;
     }
 
     if (debug_state.ShowMemoryStats()) {
@@ -742,14 +745,15 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
                        kGraphWidth, kGraphHeight);
 
   // Draw the frame rendering stats.
-  const std::string title("Frames");
-  const std::string value_text = base::StringPrintf("%d%%", throughput_value_);
-  const std::string dropped_frames_text =
-      base::StringPrintf("%zu (%zu m) dropped of %zu",
-                         dropped_frame_counter->total_compositor_dropped(),
-                         dropped_frame_counter->total_main_dropped(),
-                         dropped_frame_counter->total_frames());
-
+  const std::string title("Frame Rate");
+  std::string value_text = "n/a";
+  if (frame_interval_.has_value()) {
+    // This assumes a constant frame rate. If the frame rate changed throughout
+    // the sequence, then maybe we should average over the sequence.
+    double frame_rate = static_cast<double>(throughput_value_) /
+                        (100 * frame_interval_.value().InSecondsF());
+    value_text = base::StringPrintf("%5.1f fps", frame_rate);
+  }
   VLOG(1) << value_text;
 
   flags.setColor(DebugColors::HUDTitleColor());
@@ -757,9 +761,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
            title_bounds.left(), title_bounds.bottom());
 
   flags.setColor(DebugColors::FPSDisplayTextAndGraphColor());
-  DrawText(canvas, flags, value_text, TextAlign::kLeft, kFontHeight,
-           text_bounds.left(), text_bounds.bottom());
-  DrawText(canvas, flags, dropped_frames_text, TextAlign::kRight, kFontHeight,
+  DrawText(canvas, flags, value_text, TextAlign::kRight, kFontHeight,
            text_bounds.right(), text_bounds.bottom());
 
   DrawGraphLines(canvas, &flags, graph_bounds);
