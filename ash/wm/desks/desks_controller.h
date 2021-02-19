@@ -177,6 +177,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Removes |window| if it is in |visible_on_all_desks_windows_|.
   void MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window);
 
+  // Notifies each desk in |desks_| that their contents has changed.
+  void NotifyAllDesksForContentChanged();
+
   // Reverts the name of the given |desk| to the default value (i.e. "Desk 1",
   // "Desk 2", ... etc.) according to its position in the |desks_| list, as if
   // it was never modified by users.
