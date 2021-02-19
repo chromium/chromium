@@ -45,9 +45,8 @@ struct MockSingleOverload<DistrT, Ret(MockingBitGen&, Args...)> {
                 "Overload signature must have return type matching the "
                 "distribution result_type.");
   using KeyT = Ret(DistrT, std::tuple<Args...>);
-  auto gmock_Call(
-      absl::MockingBitGen& gen,  // NOLINT(google-runtime-references)
-      const ::testing::Matcher<Args>&... matchers)
+  auto gmock_Call(absl::MockingBitGen& gen,
+                  const ::testing::Matcher<Args>&... matchers)
       -> decltype(MockHelpers::MockFor<KeyT>(gen).gmock_Call(matchers...)) {
     return MockHelpers::MockFor<KeyT>(gen).gmock_Call(matchers...);
   }
@@ -59,10 +58,9 @@ struct MockSingleOverload<DistrT, Ret(Arg, MockingBitGen&, Args...)> {
                 "Overload signature must have return type matching the "
                 "distribution result_type.");
   using KeyT = Ret(DistrT, std::tuple<Arg, Args...>);
-  auto gmock_Call(
-      const ::testing::Matcher<Arg>& matcher,
-      absl::MockingBitGen& gen,  // NOLINT(google-runtime-references)
-      const ::testing::Matcher<Args>&... matchers)
+  auto gmock_Call(const ::testing::Matcher<Arg>& matcher,
+                  absl::MockingBitGen& gen,
+                  const ::testing::Matcher<Args>&... matchers)
       -> decltype(MockHelpers::MockFor<KeyT>(gen).gmock_Call(matcher,
                                                              matchers...)) {
     return MockHelpers::MockFor<KeyT>(gen).gmock_Call(matcher, matchers...);

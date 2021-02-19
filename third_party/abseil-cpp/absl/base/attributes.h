@@ -18,8 +18,6 @@
 // These macros are used within Abseil and allow the compiler to optimize, where
 // applicable, certain function calls.
 //
-// This file is used for both C and C++!
-//
 // Most macros here are exposing GCC or Clang features, and are stubbed out for
 // other compilers.
 //

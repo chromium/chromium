@@ -460,5 +460,4 @@ TEST(Status, Swap) {
   test_swap(no_payload, with_payload);
   test_swap(with_payload, no_payload);
 }
-
 }  // namespace

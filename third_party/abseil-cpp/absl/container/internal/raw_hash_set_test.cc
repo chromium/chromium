@@ -14,6 +14,7 @@
 
 #include "absl/container/internal/raw_hash_set.h"
 
+#include <atomic>
 #include <cmath>
 #include <cstdint>
 #include <deque>
@@ -22,6 +23,8 @@
 #include <numeric>
 #include <random>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -48,11 +51,10 @@ struct RawHashSetTestOnlyAccess {
 
 namespace {
 
-using ::testing::DoubleNear;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Ge;
 using ::testing::Lt;
-using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -75,8 +77,14 @@ TEST(Util, GrowthAndCapacity) {
   for (size_t growth = 0; growth < 10000; ++growth) {
     SCOPED_TRACE(growth);
     size_t capacity = NormalizeCapacity(GrowthToLowerboundCapacity(growth));
-    // The capacity is large enough for `growth`
+    // The capacity is large enough for `growth`.
     EXPECT_THAT(CapacityToGrowth(capacity), Ge(growth));
+    // For (capacity+1) < kWidth, growth should equal capacity.
+    if (capacity + 1 < Group::kWidth) {
+      EXPECT_THAT(CapacityToGrowth(capacity), Eq(capacity));
+    } else {
+      EXPECT_THAT(CapacityToGrowth(capacity), Lt(capacity));
+    }
     if (growth != 0 && capacity > 1) {
       // There is no smaller capacity that works.
       EXPECT_THAT(CapacityToGrowth(capacity / 2), Lt(growth));
@@ -1875,18 +1883,34 @@ TEST(RawHashSamplerTest, Sample) {
 
   auto& sampler = HashtablezSampler::Global();
   size_t start_size = 0;
-  start_size += sampler.Iterate([&](const HashtablezInfo&) { ++start_size; });
+  std::unordered_set<const HashtablezInfo*> preexisting_info;
+  start_size += sampler.Iterate([&](const HashtablezInfo& info) {
+    preexisting_info.insert(&info);
+    ++start_size;
+  });
 
   std::vector<IntTable> tables;
   for (int i = 0; i < 1000000; ++i) {
     tables.emplace_back();
     tables.back().insert(1);
+    tables.back().insert(i % 5);
   }
   size_t end_size = 0;
-  end_size += sampler.Iterate([&](const HashtablezInfo&) { ++end_size; });
+  std::unordered_map<size_t, int> observed_checksums;
+  end_size += sampler.Iterate([&](const HashtablezInfo& info) {
+    if (preexisting_info.count(&info) == 0) {
+      observed_checksums[info.hashes_bitwise_xor.load(
+          std::memory_order_relaxed)]++;
+    }
+    ++end_size;
+  });
 
   EXPECT_NEAR((end_size - start_size) / static_cast<double>(tables.size()),
               0.01, 0.005);
+  EXPECT_EQ(observed_checksums.size(), 5);
+  for (const auto& [_, count] : observed_checksums) {
+    EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.2, 0.05);
+  }
 }
 #endif  // ABSL_INTERNAL_HASHTABLEZ_SAMPLE
 

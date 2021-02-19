@@ -121,11 +121,25 @@ const int kMaxThreads = absl::base_internal::NumCPUs();
 const int kMaxThreads = std::min(absl::base_internal::NumCPUs(), 4);
 #endif
 
+// Return all of the interesting buffer sizes worth testing:
+// powers of two and adjacent values.
+std::vector<int> InterestingBufferSizes() {
+  std::vector<int> ret;
+  for (int v : MultiplicativeRange(1, 128, 2)) {
+    ret.push_back(v);
+    if (v > 1) {
+      ret.push_back(v - 1);
+    }
+    ret.push_back(v + 1);
+  }
+  return ret;
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TestManyByteSizes, ConcurrentSequenceLockTest,
     testing::Combine(
         // Buffer size (bytes).
-        testing::Range(1, 128),
+        testing::ValuesIn(InterestingBufferSizes()),
         // Number of reader threads.
         testing::ValuesIn(MultiplicativeRange(1, kMaxThreads, 2))));
 

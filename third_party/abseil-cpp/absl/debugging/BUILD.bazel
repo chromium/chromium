@@ -66,7 +66,8 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS + select({
-        "//absl:windows": ["-DEFAULTLIB:dbghelp.lib"],
+        "//absl:msvc_compiler": ["-DEFAULTLIB:dbghelp.lib"],
+        "//absl:clang-cl_compiler": ["-DEFAULTLIB:dbghelp.lib"],
         "//conditions:default": [],
     }),
     deps = [
@@ -86,11 +87,13 @@ cc_test(
     name = "symbolize_test",
     srcs = ["symbolize_test.cc"],
     copts = ABSL_TEST_COPTS + select({
-        "//absl:windows": ["/Z7"],
+        "//absl:msvc_compiler": ["/Z7"],
+        "//absl:clang-cl_compiler": ["/Z7"],
         "//conditions:default": [],
     }),
     linkopts = ABSL_DEFAULT_LINKOPTS + select({
-        "//absl:windows": ["/DEBUG"],
+        "//absl:msvc_compiler": ["/DEBUG"],
+        "//absl:clang-cl_compiler": ["/DEBUG"],
         "//conditions:default": [],
     }),
     deps = [
@@ -148,7 +151,8 @@ cc_test(
     srcs = ["failure_signal_handler_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = select({
-        "//absl:windows": [],
+        "//absl:msvc_compiler": [],
+        "//absl:clang-cl_compiler": [],
         "//absl:wasm": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,

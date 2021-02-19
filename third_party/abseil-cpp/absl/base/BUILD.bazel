@@ -160,7 +160,8 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = select({
-        "//absl:windows": [],
+        "//absl:msvc_compiler": [],
+        "//absl:clang-cl_compiler": [],
         "//absl:wasm": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
@@ -220,7 +221,10 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = select({
-        "//absl:windows": [
+        "//absl:msvc_compiler": [
+            "-DEFAULTLIB:advapi32.lib",
+        ],
+        "//absl:clang-cl_compiler": [
             "-DEFAULTLIB:advapi32.lib",
         ],
         "//absl:wasm": [],

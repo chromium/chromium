@@ -75,7 +75,8 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS + select({
-        "//absl:windows": ["-DEFAULTLIB:bcrypt.lib"],
+        "//absl:msvc_compiler": ["-DEFAULTLIB:bcrypt.lib"],
+        "//absl:clang-cl_compiler": ["-DEFAULTLIB:bcrypt.lib"],
         "//conditions:default": [],
     }),
     deps = [
@@ -98,7 +99,8 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = select({
-        "//absl:windows": [],
+        "//absl:msvc_compiler": [],
+        "//absl:clang-cl_compiler": [],
         "//absl:wasm": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
@@ -325,7 +327,8 @@ cc_library(
         "randen_hwaes.h",
     ],
     copts = ABSL_DEFAULT_COPTS + ABSL_RANDOM_RANDEN_COPTS + select({
-        "//absl:windows": [],
+        "//absl:msvc_compiler": [],
+        "//absl:clang-cl_compiler": [],
         "//conditions:default": ["-Wno-pass-failed"],
     }),
     linkopts = ABSL_DEFAULT_LINKOPTS,

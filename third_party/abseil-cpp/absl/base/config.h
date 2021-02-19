@@ -216,6 +216,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #if ABSL_INTERNAL_HAS_KEYWORD(__builtin_LINE) && \
     ABSL_INTERNAL_HAS_KEYWORD(__builtin_FILE)
 #define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
 #endif
 #endif
 

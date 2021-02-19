@@ -488,7 +488,7 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    shard_count = 32,
+    shard_count = 31,
     deps = [
         ":flag_internal",
         "//absl/base",
