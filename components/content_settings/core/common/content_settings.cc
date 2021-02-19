@@ -41,7 +41,6 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::MEDIASTREAM_MIC, 12},
     {ContentSettingsType::MEDIASTREAM_CAMERA, 13},
     {ContentSettingsType::PROTOCOL_HANDLERS, 14},
-    {ContentSettingsType::PPAPI_BROKER, 15},
     {ContentSettingsType::AUTOMATIC_DOWNLOADS, 16},
     {ContentSettingsType::MIDI_SYSEX, 17},
     {ContentSettingsType::SSL_CERT_DECISIONS, 19},

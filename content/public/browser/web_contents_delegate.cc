@@ -243,14 +243,6 @@ bool WebContentsDelegate::ShouldBlockMediaRequest(const GURL& url) {
 }
 #endif
 
-void WebContentsDelegate::RequestPpapiBrokerPermission(
-    WebContents* web_contents,
-    const GURL& url,
-    const base::FilePath& plugin_path,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
 WebContentsDelegate::~WebContentsDelegate() {
   while (!attached_contents_.empty()) {
     WebContents* web_contents = *attached_contents_.begin();

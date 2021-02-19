@@ -737,47 +737,6 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(2U, new_bubble_content.media_menus.size());
 }
 
-TEST_F(ContentSettingBubbleModelTest, PepperBroker) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-  content_settings->OnContentBlocked(ContentSettingsType::PPAPI_BROKER);
-
-  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          NULL, web_contents(), ContentSettingsType::PPAPI_BROKER));
-  const ContentSettingBubbleModel::BubbleContent& bubble_content =
-      content_setting_bubble_model->bubble_content();
-
-  base::string16 title = bubble_content.title;
-  EXPECT_FALSE(title.empty());
-  ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
-  base::string16 radio1 = bubble_content.radio_group.radio_items[0];
-  base::string16 radio2 = bubble_content.radio_group.radio_items[1];
-  EXPECT_FALSE(bubble_content.custom_link_enabled);
-  EXPECT_FALSE(bubble_content.manage_text.empty());
-
-  WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-  content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-  content_settings->OnContentAllowed(ContentSettingsType::PPAPI_BROKER);
-  content_setting_bubble_model =
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          NULL, web_contents(), ContentSettingsType::PPAPI_BROKER);
-  const ContentSettingBubbleModel::BubbleContent& bubble_content_2 =
-      content_setting_bubble_model->bubble_content();
-
-  EXPECT_FALSE(bubble_content_2.title.empty());
-  EXPECT_NE(title, bubble_content_2.title);
-  ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_NE(radio1, bubble_content_2.radio_group.radio_items[0]);
-  EXPECT_NE(radio2, bubble_content_2.radio_group.radio_items[1]);
-  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
-  EXPECT_FALSE(bubble_content_2.manage_text.empty());
-}
-
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);

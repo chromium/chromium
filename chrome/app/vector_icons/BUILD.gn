@@ -131,7 +131,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "user_account_avatar.icon",
     "user_menu_guest.icon",
     "user_menu_right_arrow.icon",
-    "warning_badge.icon",
     "web.icon",
     "webauthn/webauthn_aoa.icon",
     "webauthn/webauthn_error.icon",

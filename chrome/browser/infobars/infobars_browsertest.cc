@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_observer.h"
 #include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/pepper_broker_infobar_delegate.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
@@ -187,7 +186,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
        IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
       {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
       {"nacl", IBD::NACL_INFOBAR_DELEGATE},
-      {"pepper_broker", IBD::PEPPER_BROKER_INFOBAR_DELEGATE},
       {"outdated_plugin", IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE},
       {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
       {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
@@ -258,13 +256,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #else
       ADD_FAILURE() << "This infobar is not supported when NaCl is disabled.";
 #endif
-      break;
-
-    case IBD::PEPPER_BROKER_INFOBAR_DELEGATE:
-      PepperBrokerInfoBarDelegate::Create(GetInfoBarService(),
-                                          GURL("http://example.com/"),
-                                          base::ASCIIToUTF16("Test Plugin"),
-                                          nullptr, nullptr, base::DoNothing());
       break;
 
     case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
@@ -416,10 +407,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_nacl) {
   ShowAndVerifyUi();
 }
 #endif
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_pepper_broker) {
-  ShowAndVerifyUi();
-}
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_outdated_plugin) {
   ShowAndVerifyUi();

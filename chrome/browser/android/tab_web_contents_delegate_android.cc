@@ -308,14 +308,6 @@ void TabWebContentsDelegateAndroid::SetOverlayMode(bool use_overlay_mode) {
                                                         use_overlay_mode);
 }
 
-void TabWebContentsDelegateAndroid::RequestPpapiBrokerPermission(
-    WebContents* web_contents,
-    const GURL& url,
-    const base::FilePath& plugin_path,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
 WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     WebContents* source,
     const content::OpenURLParams& params) {

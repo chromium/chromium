@@ -43,7 +43,6 @@ base::Optional<ViewID> GetViewID(
 
     case ImageType::COOKIES:
     case ImageType::IMAGES:
-    case ImageType::PPAPI_BROKER:
     case ImageType::GEOLOCATION:
     case ImageType::MIXEDSCRIPT:
     case ImageType::PROTOCOL_HANDLERS:

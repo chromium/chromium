@@ -232,8 +232,6 @@ const ContentSettingsImageDetails kImageDetails[] = {
      IDS_BLOCKED_JAVASCRIPT_MESSAGE, 0, 0},
     {ContentSettingsType::MIXEDSCRIPT, kMixedContentIcon,
      IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT, 0, 0},
-    {ContentSettingsType::PPAPI_BROKER, vector_icons::kExtensionIcon,
-     IDS_BLOCKED_PPAPI_BROKER_MESSAGE, 0, IDS_ALLOWED_PPAPI_BROKER_MESSAGE},
     {ContentSettingsType::SOUND, kTabAudioIcon, IDS_BLOCKED_SOUND_TITLE, 0, 0},
     {ContentSettingsType::ADS, vector_icons::kAdsIcon,
      IDS_BLOCKED_ADS_PROMPT_TOOLTIP, IDS_BLOCKED_ADS_PROMPT_TITLE, 0},
@@ -280,9 +278,6 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
     case ImageType::JAVASCRIPT:
       return std::make_unique<ContentSettingBlockedImageModel>(
           ImageType::JAVASCRIPT, ContentSettingsType::JAVASCRIPT);
-    case ImageType::PPAPI_BROKER:
-      return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::PPAPI_BROKER, ContentSettingsType::PPAPI_BROKER);
     case ImageType::POPUPS:
       return std::make_unique<ContentSettingPopupImageModel>();
     case ImageType::GEOLOCATION:
@@ -447,9 +442,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
   }
 
   const gfx::VectorIcon* badge_id = &gfx::kNoneIcon;
-  if (type == ContentSettingsType::PPAPI_BROKER)
-    badge_id = &kWarningBadgeIcon;
-  else if (content_settings->IsContentBlocked(type))
+  if (content_settings->IsContentBlocked(type))
     badge_id = &vector_icons::kBlockedBadgeIcon;
 
   const gfx::VectorIcon* icon = &image_details->icon;
@@ -994,7 +987,6 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
       ImageType::COOKIES,
       ImageType::IMAGES,
       ImageType::JAVASCRIPT,
-      ImageType::PPAPI_BROKER,
       ImageType::POPUPS,
       ImageType::GEOLOCATION,
       ImageType::MIXEDSCRIPT,

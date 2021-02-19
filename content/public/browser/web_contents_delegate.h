@@ -558,15 +558,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void SetOverlayMode(bool use_overlay_mode) {}
 #endif
 
-  // Requests permission to access the PPAPI broker. The delegate must either
-  // call the passed in |callback| with the result, or call it with false
-  // to indicate that it does not support asking for permission.
-  virtual void RequestPpapiBrokerPermission(
-      WebContents* web_contents,
-      const GURL& url,
-      const base::FilePath& plugin_path,
-      base::OnceCallback<void(bool)> callback);
-
   // Returns the size for the new render view created for the pending entry in
   // |web_contents|; if there's no size, returns an empty size.
   // This is optional for implementations of WebContentsDelegate; if the

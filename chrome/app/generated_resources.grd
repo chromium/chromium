@@ -5190,43 +5190,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         You are using an unsupported environment variable: <ph name="BAD_VAR">$1<ex>SSLKEYLOGFILE</ex></ph>. Stability and security will suffer.
       </message>
 
-      <!-- Pepper Broker Infobar -->
-      <if expr="enable_plugins">
-        <message name="IDS_PEPPER_BROKER_MESSAGE" desc="Message shown when a pepper plugin wants to launch its broker. This message is followed by a 'Learn more' link.">
-          <ph name="PEPPER_PLUGIN_NAME">$1<ex>Flash</ex></ph> on <ph name="PEPPER_PLUGIN_DOMAIN">$2<ex>example.com</ex></ph> wants to access your computer
-        </message>
-        <message name="IDS_PEPPER_BROKER_ALLOW_BUTTON" desc="Text for the allow button on the pepper broker launch prompt">
-          Allow
-        </message>
-        <message name="IDS_PEPPER_BROKER_DENY_BUTTON" desc="Text for the deny button on the pepper broker launch prompt">
-          Deny
-        </message>
-        <message name="IDS_BLOCKED_PPAPI_BROKER_TITLE" desc="Title for the page action when Pepper sandbox access was blocked.">
-          Unsandboxed plugin blocked
-        </message>
-        <message name="IDS_ALLOWED_PPAPI_BROKER_TITLE" desc="Title for the page action when Pepper sandbox access was allowed.">
-          Unsandboxed plugin allowed
-        </message>
-        <message name="IDS_BLOCKED_PPAPI_BROKER_MESSAGE" desc="Message for the page action when Pepper broker access was blocked">
-          An unsandboxed plugin was prevented from running on this page.
-        </message>
-        <message name="IDS_ALLOWED_PPAPI_BROKER_MESSAGE" desc="Message for the page action when Pepper broker access was allowed">
-          An unsandboxed plugin was allowed to run on this page.
-        </message>
-        <message name="IDS_BLOCKED_PPAPI_BROKER_UNBLOCK" desc="Radio button to unblock the Pepper broker">
-          Always allow unsandboxed plugins on <ph name="HOST">$1<ex>example.com</ex></ph>
-        </message>
-        <message name="IDS_BLOCKED_PPAPI_BROKER_NO_ACTION" desc="Radio button to keep blocking the Pepper broker">
-          Continue blocking unsandboxed plugins
-        </message>
-        <message name="IDS_ALLOWED_PPAPI_BROKER_NO_ACTION" desc="Radio button to keep allowing the Pepper broker">
-          Continue allowing unsandboxed plugins
-        </message>
-        <message name="IDS_ALLOWED_PPAPI_BROKER_BLOCK" desc="Radio button to block the Pepper broker">
-          Always block unsandboxed plugins on <ph name="HOST">$1<ex>example.com</ex></ph>
-        </message>
-      </if>
-
       <!-- Blocked Displaying/Running Insecure Content bubble -->
       <message name="IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT_TITLE" desc="Title of the bubble shown when a message has asked Chrome to display mixed content.">
         Insecure content blocked

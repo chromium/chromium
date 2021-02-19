@@ -228,7 +228,6 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_TITLE},
       {ContentSettingsType::MIXEDSCRIPT,
        IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT_TITLE},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_TITLE},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_BLOCKED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_TITLE},
@@ -238,7 +237,6 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
   // Fields as for kBlockedTitleIDs, above.
   static const ContentSettingsTypeIdEntry kAccessedTitleIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_COOKIES_TITLE},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
@@ -269,7 +267,6 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
       // {ContentSettingsType::POPUPS, No message. intentionally left out},
       {ContentSettingsType::MIXEDSCRIPT,
        IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -282,7 +279,6 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   // Fields as for kBlockedMessageIDs, above.
   const ContentSettingsTypeIdEntry kAccessedMessageIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_COOKIES_MESSAGE},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -566,7 +562,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_UNBLOCK},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_UNBLOCK},
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_UNBLOCK},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_UNBLOCK},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_UNBLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_UNBLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_UNBLOCK},
@@ -577,7 +572,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   // Fields as for kBlockedAllowIDs, above.
   static const ContentSettingsTypeIdEntry kAllowedAllowIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_COOKIES_NO_ACTION},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -602,7 +596,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_NO_ACTION},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_NO_ACTION},
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_NO_ACTION},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_NO_ACTION},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_NO_ACTION},
@@ -612,7 +605,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   };
   static const ContentSettingsTypeIdEntry kAllowedBlockIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_COOKIES_BLOCK},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_BLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_BLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_BLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_BLOCK},
@@ -1659,7 +1651,6 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
   }
   if (content_type == ContentSettingsType::IMAGES ||
       content_type == ContentSettingsType::JAVASCRIPT ||
-      content_type == ContentSettingsType::PPAPI_BROKER ||
       content_type == ContentSettingsType::SOUND ||
       content_type == ContentSettingsType::CLIPBOARD_READ_WRITE ||
       content_type == ContentSettingsType::MIDI_SYSEX ||
