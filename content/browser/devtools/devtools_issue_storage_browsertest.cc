@@ -165,7 +165,7 @@ class DevToolsIssueStorageWithBackForwardCacheBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
   }
 
  protected:

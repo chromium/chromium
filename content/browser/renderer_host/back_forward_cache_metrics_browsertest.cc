@@ -685,7 +685,7 @@ class RecordBackForwardCacheMetricsWithoutEnabling
         // DeviceHasEnoughMemoryForBackForwardCache() is false, we allow all
         // URLs as default.
         {features::kBackForwardCache,
-         features::kBackForwardCacheMemoryControl});
+         features::kBackForwardCacheMemoryControls});
   }
 
   ~RecordBackForwardCacheMetricsWithoutEnabling() override = default;
@@ -793,7 +793,7 @@ class BackForwardCacheEnabledMetricsBrowserTest
            // they shouldn't.
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
   }
 
   ~BackForwardCacheEnabledMetricsBrowserTest() override = default;

@@ -816,7 +816,7 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
            // they shouldn't.
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
     ContentSettingsTest::SetUpCommandLine(command_line);
   }
 

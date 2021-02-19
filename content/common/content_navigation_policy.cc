@@ -18,10 +18,10 @@ namespace content {
 bool DeviceHasEnoughMemoryForBackForwardCache() {
   // This method make sure that the physical memory of device is greater than
   // the allowed threshold and enables back-forward cache if the feature
-  // kBackForwardCacheMemoryControl is enabled.
+  // kBackForwardCacheMemoryControls is enabled.
   // It is important to check the base::FeatureList to avoid activating any
   // field trial groups if BFCache is disabled due to memory threshold.
-  if (base::FeatureList::IsEnabled(features::kBackForwardCacheMemoryControl)) {
+  if (base::FeatureList::IsEnabled(features::kBackForwardCacheMemoryControls)) {
     // On Android, BackForwardCache is only enabled for 2GB+ high memory
     // devices. The default threshold value is set to 1700 MB to account for all
     // 2GB devices which report lower RAM due to carveouts.
@@ -34,13 +34,13 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
         0;
 #endif
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-        features::kBackForwardCacheMemoryControl,
+        features::kBackForwardCacheMemoryControls,
         "memory_threshold_for_back_forward_cache_in_mb",
         default_memory_threshold_mb);
     return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
   }
 
-  // If the feature kBackForwardCacheMemoryControl is not enabled, all the
+  // If the feature kBackForwardCacheMemoryControls is not enabled, all the
   // devices are included by default.
   return true;
 }

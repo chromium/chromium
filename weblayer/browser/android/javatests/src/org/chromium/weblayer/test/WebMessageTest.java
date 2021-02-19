@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.WebLayer;
@@ -199,14 +198,13 @@ public class WebMessageTest {
         });
     }
 
-    /* Disable BackForwardCacheMemoryControl to allow BackForwardCache for all devices regardless of
-     * their memory. */
+    /* Disable BackForwardCacheMemoryControls to allow BackForwardCache for all devices regardless
+     * of their memory. */
     @MinWebLayerVersion(90)
     @Test
     @SmallTest
     @CommandLineFlags.
-    Add({"enable-features=BackForwardCache", "disable-features=BackForwardCacheMemoryControl"})
-    @DisabledTest(message = "https://crbug.com/1173185")
+    Add({"enable-features=BackForwardCache", "disable-features=BackForwardCacheMemoryControls"})
     public void onActiveChangedForBackForwardCache() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");

@@ -115,7 +115,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     EnableFeatureAndSetParams(features::kBackForwardCache, "enable_same_site",
                               "true");
     // Allow BackForwardCache for all devices regardless of their memory.
-    DisableFeature(features::kBackForwardCacheMemoryControl);
+    DisableFeature(features::kBackForwardCacheMemoryControls);
 
     SetupFeaturesAndParameters();
 

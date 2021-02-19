@@ -164,7 +164,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
                               "process_binding_strength", "NORMAL");
 #endif
     // Allow BackForwardCache for all devices regardless of their memory.
-    DisableFeature(features::kBackForwardCacheMemoryControl);
+    DisableFeature(features::kBackForwardCacheMemoryControls);
 
     SetupFeaturesAndParameters();
 
@@ -6996,7 +6996,7 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
     std::string memory_threshold =
         base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCacheMemoryControl,
+        {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
@@ -7128,7 +7128,7 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
     // if back-forward cache is enabled or not.
     std::string memory_threshold =
         base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() - 1);
-    EnableFeatureAndSetParams(features::kBackForwardCacheMemoryControl,
+    EnableFeatureAndSetParams(features::kBackForwardCacheMemoryControls,
                               "memory_threshold_for_back_forward_cache_in_mb",
                               memory_threshold);
     EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,

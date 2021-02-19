@@ -3160,7 +3160,7 @@ class PageLoadMetricsBrowserTestWithBackForwardCache
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"ignore_outstanding_network_request_for_testing", "true"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
   }
 
  private:

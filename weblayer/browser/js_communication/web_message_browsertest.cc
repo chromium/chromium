@@ -146,7 +146,7 @@ class WebMessageTestWithBfCache : public WebLayerBrowserTest {
            // they shouldn't.
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
     WebLayerBrowserTest::SetUp();
   }
 

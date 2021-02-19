@@ -1117,7 +1117,7 @@ class ServiceWorkerContainerHostTestWithBackForwardCache
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache, {GetFeatureParams()}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        /*disabled_features=*/{features::kBackForwardCacheMemoryControl});
+        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
   }
 
  protected:

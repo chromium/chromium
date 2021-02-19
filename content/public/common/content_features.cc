@@ -94,10 +94,10 @@ const base::Feature kBackForwardCache{"BackForwardCache",
 // BackForwardCacheMemoryControls is enabled only on Android to disable
 // BackForwardCache for lower memory devices due to memory limiations.
 #if defined(OS_ANDROID)
-const base::Feature kBackForwardCacheMemoryControl{
+const base::Feature kBackForwardCacheMemoryControls{
     "BackForwardCacheMemoryControls", base::FEATURE_ENABLED_BY_DEFAULT};
 #else
-const base::Feature kBackForwardCacheMemoryControl{
+const base::Feature kBackForwardCacheMemoryControls{
     "BackForwardCacheMemoryControls", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 

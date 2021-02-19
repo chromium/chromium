@@ -101,7 +101,7 @@ class CrossOriginOpenerPolicyBrowserTest
           {{features::kBackForwardCache,
             {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
           // Allow BackForwardCache for all devices regardless of their memory.
-          {features::kBackForwardCacheMemoryControl});
+          {features::kBackForwardCacheMemoryControls});
     } else {
       feature_list_for_back_forward_cache_.InitWithFeatures(
           {}, {features::kBackForwardCache});

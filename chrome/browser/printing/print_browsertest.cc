@@ -485,7 +485,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
           // they shouldn't.
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
 
     PrintBrowserTest::SetUpCommandLine(command_line);
   }

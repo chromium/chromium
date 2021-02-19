@@ -173,7 +173,7 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedWhenRendererIsKilled) {
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kBackForwardCache, {}}},
       // Allow BackForwardCache for all devices regardless of their memory.
-      {features::kBackForwardCacheMemoryControl});
+      {features::kBackForwardCacheMemoryControls});
   base::HistogramTester histogram_tester;
 
   const GURL url1("http://foo1");

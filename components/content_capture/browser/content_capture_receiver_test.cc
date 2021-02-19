@@ -171,7 +171,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{{features::kBackForwardCache}, {{"enable_same_site", "true"}}}},
           // Allow BackForwardCache for all devices regardless of their memory.
-          {features::kBackForwardCacheMemoryControl});
+          {features::kBackForwardCacheMemoryControls});
     }
     content::RenderViewHostTestHarness::SetUp();
     ContentCaptureReceiverManagerHelper::Create(web_contents(),

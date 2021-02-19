@@ -2431,7 +2431,7 @@ class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
          {{kSearchPrefetchService}, {}},
          {{features::kBackForwardCache}, {{"enable_same_site", "true"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControl});
+        {features::kBackForwardCacheMemoryControls});
   }
 
  private:
