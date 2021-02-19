@@ -97,8 +97,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
 
 H264Decoder::H264Accelerator::Status
 H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
-    const uint8_t* data,
-    size_t size,
+    const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
     const std::vector<uint8_t>& sps_nalu_data,
     const std::vector<uint8_t>& pps_nalu_data,
@@ -149,6 +148,9 @@ void H264Decoder::Reset() {
   parser_.Reset();
   accelerator_->Reset();
   last_output_poc_ = std::numeric_limits<int>::min();
+
+  encrypted_sei_nalus_.clear();
+  sei_subsamples_.clear();
 
   recovery_frame_num_.reset();
   recovery_frame_cnt_.reset();
@@ -1281,9 +1283,16 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
     const std::vector<SubsampleEntry>& subsamples) {
   DCHECK(curr_nalu_);
   DCHECK(curr_slice_hdr_);
-  return accelerator_->ParseEncryptedSliceHeader(
-      curr_nalu_->data, curr_nalu_->size, subsamples, last_sps_nalu_,
-      last_pps_nalu_, curr_slice_hdr_.get());
+  std::vector<base::span<const uint8_t>> spans(encrypted_sei_nalus_.size() + 1);
+  spans.assign(encrypted_sei_nalus_.begin(), encrypted_sei_nalus_.end());
+  spans.emplace_back(curr_nalu_->data, curr_nalu_->size);
+  std::vector<SubsampleEntry> all_subsamples(sei_subsamples_.size() + 1);
+  all_subsamples.assign(sei_subsamples_.begin(), sei_subsamples_.end());
+  all_subsamples.insert(all_subsamples.end(), subsamples.begin(),
+                        subsamples.end());
+  return accelerator_->ParseEncryptedSliceHeader(spans, all_subsamples,
+                                                 last_sps_nalu_, last_pps_nalu_,
+                                                 curr_slice_hdr_.get());
 }
 
 H264Decoder::H264Accelerator::Status H264Decoder::PreprocessCurrentSlice() {
@@ -1386,6 +1395,8 @@ void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   current_stream_ = ptr;
   current_stream_size_ = size;
   current_stream_has_been_changed_ = true;
+  encrypted_sei_nalus_.clear();
+  sei_subsamples_.clear();
   if (decrypt_config) {
     parser_.SetEncryptedStream(ptr, size, decrypt_config->subsamples());
     current_decrypt_config_ = decrypt_config->Clone();
@@ -1482,6 +1493,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               CHECK_ACCELERATOR_RESULT(ProcessEncryptedSliceHeader(subsamples));
               parsed_header = true;
               curr_slice_hdr_->pic_parameter_set_id = last_parsed_pps_id_;
+              encrypted_sei_nalus_.clear();
+              sei_subsamples_.clear();
             }
           }
           if (!parsed_header) {
@@ -1577,6 +1590,20 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         break;
 
       case H264NALU::kSEIMessage:
+        if (current_decrypt_config_) {
+          // If there are encrypted SEI NALUs as part of CENCv1, then we also
+          // need to save those so we can send them into the accelerator so it
+          // can decrypt the sample properly (otherwise it would be starting
+          // partway into a block).
+          const std::vector<SubsampleEntry>& subsamples =
+              parser_.GetCurrentSubsamples();
+          if (!subsamples.empty()) {
+            encrypted_sei_nalus_.emplace_back(curr_nalu_->data,
+                                              curr_nalu_->size);
+            DCHECK_EQ(1u, subsamples.size());
+            sei_subsamples_.push_back(subsamples[0]);
+          }
+        }
         if (state_ == kAfterReset && !recovery_frame_cnt_ &&
             !recovery_frame_num_) {
           // If we are after reset, we can also resume from a SEI recovery point

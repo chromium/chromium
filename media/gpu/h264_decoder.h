@@ -91,17 +91,17 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
         scoped_refptr<H264Picture> pic) = 0;
 
     // Used for handling CENCv1 streams where the entire slice header, except
-    // for the NALU type byte, is encrypted. |data| and |size| represent the
-    // encrypted slice data. |subsamples| specifies what is encrypted and should
-    // have just a single clear byte and the rest is encrypted. |sps_nalu_data|
+    // for the NALU type byte, is encrypted. |data| represents the encrypted
+    // ranges which will include any SEI NALUs along with the encrypted slice
+    // NALU. |subsamples| specifies what is encrypted and should have just a
+    // single clear byte for each and the rest is encrypted. |sps_nalu_data|
     // and |pps_nalu_data| are the SPS and PPS NALUs respectively.
     // |slice_header_out| should have its fields filled in upon successful
     // return. Returns kOk if successful, kFail if there are errors, or
     // kTryAgain if the accelerator needs additional data before being able to
     // proceed.
     virtual Status ParseEncryptedSliceHeader(
-        const uint8_t* data,
-        size_t size,
+        const std::vector<base::span<const uint8_t>>& data,
         const std::vector<SubsampleEntry>& subsamples,
         const std::vector<uint8_t>& sps_nalu_data,
         const std::vector<uint8_t>& pps_nalu_data,
@@ -377,6 +377,12 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Current NALU and slice header being processed.
   std::unique_ptr<H264NALU> curr_nalu_;
   std::unique_ptr<H264SliceHeader> curr_slice_hdr_;
+
+  // Encrypted SEI NALUs preceding a fully encrypted slice NALU. We need to
+  // save these that are part of a single sample so they can all be decrypted
+  // together.
+  std::vector<base::span<const uint8_t>> encrypted_sei_nalus_;
+  std::vector<SubsampleEntry> sei_subsamples_;
 
   // These are base::nullopt unless get recovery point SEI message after Reset.
   // A frame_num of the frame at output order that is correct in content.

@@ -203,15 +203,14 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
-    const uint8_t* data,
-    size_t size,
+    const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
     const std::vector<uint8_t>& sps_nalu_data,
     const std::vector<uint8_t>& pps_nalu_data,
     H264SliceHeader* slice_header_out) {
   DCHECK(slice_header_out);
   DCHECK(!subsamples.empty());
-  DCHECK_EQ(subsamples[0].clear_bytes, 1u);
+  DCHECK(!data.empty());
 
   // This is done by sending in the encryption parameters and the encrypted
   // slice header. Then the vaEndPicture call is blocking while it decrypts and
@@ -224,8 +223,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   // Don't use the VAEncryptionSegmentInfo vector in the class since we do not
   // need to hold this data across calls.
   std::vector<VAEncryptionSegmentInfo> segment_info;
-  ProtectedSessionState state = SetupDecryptDecode(
-      true /* full sample */, size, &crypto_params, &segment_info, subsamples);
+  ProtectedSessionState state =
+      SetupDecryptDecode(true /* full sample */, data[0].size(), &crypto_params,
+                         &segment_info, subsamples);
   if (state == ProtectedSessionState::kFailed) {
     LOG(ERROR) << "ParseEncryptedSliceHeader fails because we couldn't setup "
                   "the protected session";
@@ -241,10 +241,19 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
 
   // Adjust the first segment length and init length to compensate for inserting
   // the SPS, PPS and 3 start codes.
-  segment_info.back().segment_length +=
+  size_t size_adjustment =
       sps_nalu_data.size() + pps_nalu_data.size() + kExtraDataBytes;
-  segment_info.back().init_byte_length +=
-      sps_nalu_data.size() + pps_nalu_data.size() + kExtraDataBytes;
+  size_t total_size = 0;
+  size_t offset_adjustment = 0;
+  for (auto& segment : segment_info) {
+    segment.segment_length += size_adjustment;
+    segment.init_byte_length += size_adjustment;
+    segment.segment_start_offset += offset_adjustment;
+    offset_adjustment += size_adjustment;
+    // Any additional segments are only adjusted by the start code size;
+    size_adjustment = kStartCodeSize;
+    total_size += segment.segment_length;
+  }
 
   crypto_params.status_report_index = GetSliceHeaderCounter();
 
@@ -280,19 +289,20 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     return DecodeStatus::kFail;
   }
 
-  // Assembles the 'slice data' which is the SPS, PPS and slice data, each of
-  // which is also prefixed by the 0x000001 start code.
+  // Assembles the 'slice data' which is the SPS, PPS, encrypted SEIS and
+  // encrypted slice data, each of which is also prefixed by the 0x000001 start
+  // code.
   std::vector<uint8_t> full_data;
   const std::vector<uint8_t> start_code = {0u, 0u, 1u};
-  full_data.reserve(size + sps_nalu_data.size() + pps_nalu_data.size() +
-                    kExtraDataBytes);
+  full_data.reserve(total_size);
   full_data.insert(full_data.end(), start_code.begin(), start_code.end());
   full_data.insert(full_data.end(), sps_nalu_data.begin(), sps_nalu_data.end());
   full_data.insert(full_data.end(), start_code.begin(), start_code.end());
   full_data.insert(full_data.end(), pps_nalu_data.begin(), pps_nalu_data.end());
-  full_data.insert(full_data.end(), start_code.begin(), start_code.end());
-  full_data.insert(full_data.end(), data, data + size);
-
+  for (auto& nalu : data) {
+    full_data.insert(full_data.end(), start_code.begin(), start_code.end());
+    full_data.insert(full_data.end(), nalu.begin(), nalu.end());
+  }
   if (!vaapi_wrapper_->SubmitBuffers({{VAEncryptionParameterBufferType,
                                        sizeof(crypto_params), &crypto_params},
                                       {VAProtectedSliceDataBufferType,
@@ -313,8 +323,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   // Read the parsed slice header data back and populate the structure with it.
   slice_header_out->idr_pic_flag = !!slice_param_buf->idr_pic_flag;
   slice_header_out->nal_ref_idc = slice_param_buf->nal_ref_idc;
-  slice_header_out->nalu_data = data;
-  slice_header_out->nalu_size = size;
+  // The last span in |data| will be the slice header NALU.
+  slice_header_out->nalu_data = data.back().data();
+  slice_header_out->nalu_size = data.back().size();
   slice_header_out->slice_type = slice_param_buf->slice_type;
   slice_header_out->frame_num = slice_param_buf->frame_number;
   slice_header_out->idr_pic_id = slice_param_buf->idr_pic_id;

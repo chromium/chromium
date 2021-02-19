@@ -24,6 +24,15 @@ namespace {
 // interval no greater than this. This allows updating of key usage data.
 constexpr base::TimeDelta kKeyRetrievalMaxPeriod =
     base::TimeDelta::FromMinutes(1);
+// This increments the lower 64 bit counter of an 128 bit IV.
+void ctr128_inc64(uint8_t* counter) {
+  uint32_t n = 16;
+  do {
+    if (++counter[--n] != 0)
+      return;
+  } while (n > 8);
+}
+
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -215,19 +224,34 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
            DecryptConfig::kDecryptionKeySize);
     segments->emplace_back(std::move(segment_info));
   } else {
+    size_t total_cypher_size = 0;
+    std::vector<uint8_t> iv(DecryptConfig::kDecryptionKeySize);
+    iv.assign(decrypt_config_->iv().begin(), decrypt_config_->iv().end());
     for (const auto& entry : subsamples) {
       VAEncryptionSegmentInfo segment_info = {};
       segment_info.segment_start_offset = offset;
       segment_info.segment_length = entry.clear_bytes + entry.cypher_bytes;
-      segment_info.partial_aes_block_size = 0;
-      segment_info.init_byte_length = entry.clear_bytes;
-      memcpy(segment_info.aes_cbc_iv_or_ctr, decrypt_config_->iv().data(),
+      size_t partial_block_size =
+          (DecryptConfig::kDecryptionKeySize -
+           (total_cypher_size % DecryptConfig::kDecryptionKeySize)) %
+          DecryptConfig::kDecryptionKeySize;
+      segment_info.partial_aes_block_size = partial_block_size;
+      memcpy(segment_info.aes_cbc_iv_or_ctr, iv.data(),
              DecryptConfig::kDecryptionKeySize);
-      segments->emplace_back(std::move(segment_info));
+      // If we are finishing a block, increment the counter.
+      if (partial_block_size && entry.cypher_bytes > partial_block_size)
+        ctr128_inc64(iv.data());
+      // Increment the counter for every complete block we are adding.
+      for (size_t block = 0; block < (entry.cypher_bytes - partial_block_size) /
+                                         DecryptConfig::kDecryptionKeySize;
+           ++block)
+        ctr128_inc64(iv.data());
+      total_cypher_size += entry.cypher_bytes;
+      segment_info.init_byte_length = entry.clear_bytes;
       offset += entry.clear_bytes + entry.cypher_bytes;
+      segments->emplace_back(std::move(segment_info));
     }
   }
-
   memcpy(crypto_params->wrapped_decrypt_blob,
          hw_key_data_map_[decrypt_config_->key_id()].data(),
          DecryptConfig::kDecryptionKeySize);
