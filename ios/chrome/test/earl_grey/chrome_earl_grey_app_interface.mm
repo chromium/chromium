@@ -324,6 +324,23 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 #pragma mark - Window utilities (EG2)
 
+// Returns screen position of the given |windowNumber|
++ (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {
+  NSArray<SceneState*>* connectedScenes =
+      chrome_test_util::GetMainController().appState.connectedScenes;
+  NSString* accessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)windowNumber];
+  for (SceneState* state in connectedScenes) {
+    if ([state.window.accessibilityIdentifier
+            isEqualToString:accessibilityIdentifier]) {
+      return
+          [state.window convertRect:state.window.frame
+                  toCoordinateSpace:state.window.screen.fixedCoordinateSpace];
+    }
+  }
+  return CGRectZero;
+}
+
 + (NSUInteger)windowCount WARN_UNUSED_RESULT {
   // If the scene API is in use, return the count of open sessions.
   if (@available(iOS 13, *)) {

@@ -818,20 +818,19 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 #pragma mark - Window utilities (EG2)
 
-// Returns the number of windows, including background and disconnected or
-// archived windows.
+- (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {
+  return [ChromeEarlGreyAppInterface
+      screenPositionOfScreenWithNumber:windowNumber];
+}
+
 - (NSUInteger)windowCount WARN_UNUSED_RESULT {
   return [ChromeEarlGreyAppInterface windowCount];
 }
 
-// Returns the number of foreground (visible on screen) windows.
 - (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT {
   return [ChromeEarlGreyAppInterface foregroundWindowCount];
 }
 
-// Closes all but one window, including all non-foreground windows. Then kills
-// and relaunches app with launch args specified in |appConfig|. No-op if only
-// one window presents.
 - (void)closeAllExtraWindows {
   if ([self windowCount] <= 1) {
     return;

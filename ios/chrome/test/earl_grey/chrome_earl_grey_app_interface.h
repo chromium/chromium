@@ -174,6 +174,9 @@
 
 #pragma mark - Window utilities (EG2)
 
+// Returns screen position of the given |windowNumber|
++ (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber;
+
 // Returns the number of windows, including background and disconnected or
 // archived windows.
 + (NSUInteger)windowCount WARN_UNUSED_RESULT;
