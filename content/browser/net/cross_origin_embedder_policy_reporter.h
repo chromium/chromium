@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
@@ -69,6 +70,10 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   void QueueWorkerInitializationReport(const GURL& blocked_url,
                                        bool report_only);
 
+  base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   void QueueAndNotify(std::initializer_list<
                           std::pair<base::StringPiece, base::StringPiece>> body,
@@ -85,6 +90,10 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   mojo::ReceiverSet<network::mojom::CrossOriginEmbedderPolicyReporter>
       receiver_set_;
   mojo::Remote<blink::mojom::ReportingObserver> observer_;
+
+  // This must be the last member.
+  base::WeakPtrFactory<CrossOriginEmbedderPolicyReporter> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content
