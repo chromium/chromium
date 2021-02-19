@@ -28,15 +28,9 @@ if (use_system_harfbuzz) {
   }
 
   config("harfbuzz_warnings") {
-    cflags = []
     if (is_win) {
       # Result of 32-bit shift implicitly converted to 64 bits.
-      cflags += [ "/wd4334" ]
-    }
-
-    if (is_clang) {
-      # Has a false positive in hb-icu.cc, see crbug.com/1174192#c5
-      cflags += [ "-Wno-array-bounds" ]
+      cflags = [ "/wd4334" ]
     }
   }
 
