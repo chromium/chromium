@@ -76,6 +76,11 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
   TestPrintBackend* print_backend() { return test_backend_.get(); }
 
   void SetUp() override {
+    // Choose between running with local test runner or via a service.
+    const bool use_backend_service = GetParam();
+    feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
+                                       use_backend_service);
+
     TestingProfile::Builder builder;
     profile_ = builder.Build();
     initiator_web_contents_ = content::WebContents::Create(
@@ -86,10 +91,6 @@ class LocalPrinterHandlerDefaultTest : public testing::TestWithParam<bool> {
     local_printer_handler_ =
         std::make_unique<LocalPrinterHandlerDefault>(initiator);
 
-    // Choose between running with local test runner or via a service.
-    const bool use_backend_service = GetParam();
-    feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
-                                       use_backend_service);
     if (use_backend_service) {
       print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
           test_remote_, test_backend_);
