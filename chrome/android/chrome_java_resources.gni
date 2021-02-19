@@ -883,6 +883,8 @@ chrome_java_resources = [
   "java/res/menu/bookmark_action_bar_menu.xml",
   "java/res/menu/custom_tabs_menu.xml",
   "java/res/menu/history_manager_menu.xml",
+  "java/res/menu/main_menu.xml",
+  "java/res/menu/main_menu_regroup.xml",
   "java/res/menu/password_entry_viewer_action_bar_menu.xml",
   "java/res/menu/prefeditor_editor_menu.xml",
   "java/res/menu/save_password_preferences_action_bar_menu.xml",
