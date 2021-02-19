@@ -159,6 +159,10 @@ const char kDiscoverFeedNetworkDuration[] =
 // opened in.
 const char kDiscoverFeedURLOpened[] = "NewTabPage.ContentSuggestions.Opened";
 
+// Histogram name to capture if the last Feed fetch had logging enabled.
+const char kDiscoverFeedActivityLoggingEnabled[] =
+    "ContentSuggestions.Feed.ActivityLoggingEnabled";
+
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
 const int kMinScrollThreshold = 160;
@@ -406,6 +410,11 @@ const int kMinutesBetweenSessions = 5;
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedUserActionNativePulldownMenuClosed));
   }
+}
+
+- (void)recordActivityLoggingEnabled:(BOOL)loggingEnabled {
+  base::UmaHistogramBoolean(kDiscoverFeedActivityLoggingEnabled,
+                            loggingEnabled);
 }
 
 #pragma mark - Private
