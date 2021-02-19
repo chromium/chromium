@@ -399,7 +399,10 @@ void OmniboxResult::UpdateTitleAndDetails() {
     SetTitleTags(title_tags);
 
     if (!app_list_features::IsOmniboxRichEntitiesEnabled() ||
+        match_.type == AutocompleteMatchType::CALCULATOR ||
         match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+      // Only set the details text for rich entity or calculator results. This
+      // prevents default descriptions such as "Google Search" from being added.
       SetDetails(match_.description);
       ChromeSearchResult::Tags details_tags;
       ACMatchClassificationsToTags(match_.description, match_.description_class,
