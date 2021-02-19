@@ -5,6 +5,9 @@
 #include "chrome/browser/chromeos/borealis/borealis_app_uninstaller.h"
 
 #include "base/logging.h"
+#include "chrome/browser/chromeos/borealis/borealis_installer.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
+#include "chrome/browser/chromeos/borealis/borealis_util.h"
 
 namespace borealis {
 
@@ -13,9 +16,11 @@ BorealisAppUninstaller::BorealisAppUninstaller(Profile* profile)
 
 void BorealisAppUninstaller::Uninstall(std::string app_id,
                                        OnUninstalledCallback callback) {
-  // TODO(b/170264723): Implement this.
-  (void)profile_;
-  LOG(WARNING) << "Uninstallation is not implemented.";
+  // TODO(b/171353248): Allow uninstalling other apps
+  DCHECK(app_id == kBorealisAppId);
+
+  BorealisService::GetForProfile(profile_)->Installer().Uninstall(
+      base::DoNothing());
 }
 
 }  // namespace borealis

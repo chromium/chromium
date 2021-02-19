@@ -37,6 +37,17 @@ enum class BorealisInstallResult {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class BorealisUninstallResult {
+  kSuccess = 0,
+  kAlreadyInProgress = 1,
+  kShutdownFailed = 2,
+  kRemoveDiskFailed = 3,
+  kRemoveDlcFailed = 4,
+  kMaxValue = kRemoveDlcFailed,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BorealisStartupResult {
   kSuccess = 0,
   kCancelled = 1,

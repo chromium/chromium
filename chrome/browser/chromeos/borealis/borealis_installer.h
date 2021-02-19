@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -37,12 +38,18 @@ class BorealisInstaller : public KeyedService {
 
   static std::string GetInstallingStateName(InstallingState state);
 
-  // Checks if an installation process is already running.
+  // Checks if an installation process is already running. This applies to
+  // installation only, uninstallation is unaffected (also for Start() and
+  // Cancel()).
   virtual bool IsProcessing() = 0;
   // Start the installation process.
   virtual void Start() = 0;
   // Cancels the installation process.
   virtual void Cancel() = 0;
+
+  // Removes borealis and all of its associated apps/features from the system.
+  virtual void Uninstall(base::OnceCallback<void(BorealisUninstallResult)>
+                             on_uninstall_callback) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

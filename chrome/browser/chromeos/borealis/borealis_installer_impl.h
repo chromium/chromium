@@ -6,11 +6,18 @@
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_INSTALLER_IMPL_H_
 
 #include "chrome/browser/chromeos/borealis/borealis_installer.h"
+
+#include <memory>
+
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "chrome/browser/chromeos/borealis/infra/expected.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
 class Profile;
 
 namespace borealis {
+
+class Uninstallation;
 
 // This class is responsible for installing the Borealis VM. Currently
 // the only installation requirements for Borealis is to install the
@@ -32,6 +39,17 @@ class BorealisInstallerImpl : public BorealisInstaller {
   // Cancels the installation process.
   void Cancel() override;
 
+  // Holds information about uninstall operations.
+  struct UninstallInfo {
+    std::string vm_name;
+    std::string container_name;
+    base::Time start_time;
+  };
+
+  // Removes borealis and all of its associated apps/features from the system.
+  void Uninstall(base::OnceCallback<void(BorealisUninstallResult)>
+                     on_uninstall_callback) override;
+
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -52,12 +70,18 @@ class BorealisInstallerImpl : public BorealisInstaller {
   void OnDlcInstallationCompleted(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
+  void OnUninstallComplete(
+      base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
+      Expected<std::unique_ptr<UninstallInfo>, BorealisUninstallResult> result);
+
   State state_;
   InstallingState installing_state_;
   double progress_;
   base::TimeTicks installation_start_tick_;
   Profile* profile_;
   base::ObserverList<Observer> observers_;
+
+  std::unique_ptr<Uninstallation> in_progress_uninstallation_;
 
   base::WeakPtrFactory<BorealisInstallerImpl> weak_ptr_factory_;
 };

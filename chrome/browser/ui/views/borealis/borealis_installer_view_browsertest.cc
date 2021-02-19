@@ -35,6 +35,10 @@ class BorealisInstallerMock : public borealis::BorealisInstaller {
   MOCK_METHOD0(IsProcessing, bool());
   MOCK_METHOD0(Start, void());
   MOCK_METHOD0(Cancel, void());
+  MOCK_METHOD(void,
+              Uninstall,
+              (base::OnceCallback<void(BorealisUninstallResult)>),
+              ());
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
 };
