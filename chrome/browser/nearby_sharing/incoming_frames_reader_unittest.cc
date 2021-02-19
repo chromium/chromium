@@ -69,7 +69,8 @@ class IncomingFramesReaderTest : public testing::Test {
 
   void SetUp() override {
     EXPECT_CALL(mock_process_manager_, GetNearbyProcessReference)
-        .WillRepeatedly([&](base::OnceClosure) {
+        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+                                NearbyProcessStoppedCallback) {
           auto mock_reference_ptr =
               std::make_unique<chromeos::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();

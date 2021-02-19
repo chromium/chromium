@@ -25,7 +25,7 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
   ~FakeNearbyProcessManager() override;
 
   size_t GetNumActiveReferences() const;
-  void SimulateProcessStopped();
+  void SimulateProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
   // Return null if there are no active references.
   const MockNearbyConnections* active_connections() const {
@@ -37,7 +37,7 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
 
   // NearbyProcessManager:
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
-      base::OnceClosure on_process_stopped_callback) override;
+      NearbyProcessStoppedCallback on_process_stopped_callback) override;
 
  private:
   class FakeNearbyProcessReference
@@ -72,7 +72,7 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
 
   // Map which stores callbacks to be invoked if the Nearby process shuts down
   // unexpectedly, before clients release their references.
-  base::flat_map<base::UnguessableToken, base::OnceClosure>
+  base::flat_map<base::UnguessableToken, NearbyProcessStoppedCallback>
       id_to_process_stopped_callback_map_;
 
   // Null if no outstanding references exist.

@@ -388,7 +388,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     session_controller_ = std::make_unique<TestSessionController>();
 
     EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
-        .WillRepeatedly([&](base::OnceClosure) {
+        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+                                NearbyProcessStoppedCallback) {
           auto mock_reference_ptr =
               std::make_unique<chromeos::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();

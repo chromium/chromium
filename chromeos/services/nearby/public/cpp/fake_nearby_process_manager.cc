@@ -50,26 +50,27 @@ size_t FakeNearbyProcessManager::GetNumActiveReferences() const {
   return id_to_process_stopped_callback_map_.size();
 }
 
-void FakeNearbyProcessManager::SimulateProcessStopped() {
+void FakeNearbyProcessManager::SimulateProcessStopped(
+    NearbyProcessShutdownReason shutdown_reason) {
   active_connections_.reset();
   active_decoder_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  base::flat_map<base::UnguessableToken, base::OnceClosure> old_map =
+  base::flat_map<base::UnguessableToken, NearbyProcessStoppedCallback> old_map =
       std::move(id_to_process_stopped_callback_map_);
   id_to_process_stopped_callback_map_.clear();
 
   for (auto& entry : old_map)
-    std::move(entry.second).Run();
+    std::move(entry.second).Run(shutdown_reason);
 }
 
 void FakeNearbyProcessManager::Shutdown() {
-  SimulateProcessStopped();
+  SimulateProcessStopped(NearbyProcessShutdownReason::kNormal);
 }
 
 std::unique_ptr<NearbyProcessManager::NearbyProcessReference>
 FakeNearbyProcessManager::GetNearbyProcessReference(
-    base::OnceClosure on_process_stopped_callback) {
+    NearbyProcessStoppedCallback on_process_stopped_callback) {
   if (!active_connections_)
     active_connections_ = std::make_unique<MockNearbyConnections>();
   if (!active_decoder_)
