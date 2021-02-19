@@ -614,6 +614,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "commander",
+    "owners": [ "lgrey" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "composited-layer-borders",
     "owners": [ "ccameron" ],
     "expiry_milestone": 76

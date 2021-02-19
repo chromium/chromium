@@ -4,21 +4,15 @@
 
 #include "chrome/browser/ui/commander/commander.h"
 
-#include "base/command_line.h"
 #include "chrome/browser/ui/commander/commander_controller.h"
 #include "chrome/browser/ui/commander/commander_frontend.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace commander {
 
-namespace {
-
-constexpr char kEnableCommander[] = "enable-commander";
-
-}  // namespace
-
 bool IsEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableCommander);
+  return base::FeatureList::IsEnabled(features::kCommander);
 }
 
 // static

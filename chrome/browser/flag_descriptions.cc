@@ -4932,6 +4932,10 @@ const char kDirectManipulationStylusDescription[] =
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
+const char kCommanderName[] = "Commander";
+const char kCommanderDescription[] =
+    "Enable a text interface to browser features";
+
 const char kDesktopRestructuredLanguageSettingsName[] =
     "Restructured Language Settings (Desktop)";
 const char kDesktopRestructuredLanguageSettingsDescription[] =

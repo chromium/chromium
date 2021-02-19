@@ -2889,6 +2889,9 @@ extern const char kDirectManipulationStylusDescription[];
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
+extern const char kCommanderName[];
+extern const char kCommanderDescription[];
+
 extern const char kDesktopRestructuredLanguageSettingsName[];
 extern const char kDesktopRestructuredLanguageSettingsDescription[];
 

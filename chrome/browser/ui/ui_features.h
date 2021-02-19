@@ -27,6 +27,8 @@ extern const base::Feature kChromeLabs;
 extern const base::Feature kChromeTipsInMainMenu;
 #endif
 
+extern const base::Feature kCommander;
+
 extern const base::Feature kEvDetailsInPageInfo;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

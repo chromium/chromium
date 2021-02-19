@@ -13,6 +13,9 @@ namespace features {
 const base::Feature kChromeLabs{"ChromeLabs",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Commander UI surface. See https://crbug.com/1014639
+const base::Feature kCommander{"Commander", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Enables "Tips for Chrome" in Main Chrome Menu | Help.
 const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
