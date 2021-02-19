@@ -727,7 +727,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   // two scores will be used.
   // If both are false, the server score will be used.
   bool use_client_score = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentUseClientScore", true);
+      omnibox::kDocumentProvider, "DocumentUseClientScore", false);
   bool use_server_score = base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kDocumentProvider, "DocumentUseServerScore", true);
 

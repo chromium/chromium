@@ -1023,6 +1023,10 @@ TEST_F(DocumentProviderTest, Scoring) {
 }
 
 TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kDocumentProvider, {{"DocumentUseClientScore", "true"}});
+
   auto GetTestProviderMatches = [this](const std::string& input_text,
                                        const std::string& response_str) {
     provider_->input_.UpdateText(base::UTF8ToUTF16(input_text), 0, {});
@@ -1130,7 +1134,8 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
 
 TEST_F(DocumentProviderTest, CachingForSyncMatches) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kDocumentProvider);
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kDocumentProvider, {{"DocumentUseClientScore", "true"}});
   InitClient();
 
   AutocompleteInput input(base::ASCIIToUTF16("document"),
