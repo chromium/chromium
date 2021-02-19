@@ -92,7 +92,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 TabModel normalTabModel = mTabModelSelector.getModel(false);
                 if (mAddNormalTabModelObserverPending) {
                     mAddNormalTabModelObserverPending = false;
-                    normalTabModel.addObserver(mNormalTabModelObserver);
+                    mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
+                            mNormalTabModelObserver);
                 }
 
                 int selectedTabIndex = normalTabModel.index();
@@ -158,7 +159,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     @Override
     public void hideOverview(boolean animate) {
         mShouldIgnoreNextSelect = false;
-        mTabModelSelector.getModel(false).removeObserver(mNormalTabModelObserver);
+        mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
+                mNormalTabModelObserver);
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
 
         mPropertyModel.set(IS_VISIBLE, false);
@@ -193,8 +195,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 }
             }
         } else {
+            mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
+                    mNormalTabModelObserver);
             TabModel normalTabModel = mTabModelSelector.getModel(false);
-            normalTabModel.addObserver(mNormalTabModelObserver);
 
             int selectedTabIndex = normalTabModel.index();
             if (selectedTabIndex != TabList.INVALID_TAB_INDEX) {
