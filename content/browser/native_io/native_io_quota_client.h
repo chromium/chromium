@@ -21,7 +21,7 @@ class NativeIOManager;
 // Each NativeIOManager owns exactly one NativeIOQuotaClient.
 class CONTENT_EXPORT NativeIOQuotaClient : public storage::mojom::QuotaClient {
  public:
-  NativeIOQuotaClient();
+  explicit NativeIOQuotaClient(NativeIOManager* manager);
   ~NativeIOQuotaClient() override;
 
   NativeIOQuotaClient(const NativeIOQuotaClient&) = delete;
@@ -43,6 +43,8 @@ class CONTENT_EXPORT NativeIOQuotaClient : public storage::mojom::QuotaClient {
                              PerformStorageCleanupCallback callback) override;
 
  private:
+  NativeIOManager* manager_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

@@ -38,6 +38,9 @@ class NativeIOFileHost;
 // sequences, if desired.
 class NativeIOHost : public blink::mojom::NativeIOHost {
  public:
+  using DeleteAllDataCallback =
+      base::OnceCallback<void(base::File::Error result, NativeIOHost* host)>;
+
   // `allow_set_length_ipc` gates NativeIOFileHost::SetLength(), which works
   // around a sandboxing limitation on macOS < 10.15. This is plumbed as a flag
   // all the from NativeIOManager to facilitate testing.
@@ -66,6 +69,11 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // The origin served by this host.
   const url::Origin& origin() const { return origin_; }
 
+  // True if this host's data is currently being deleted.
+  bool delete_all_data_in_progress() const {
+    return !delete_all_data_callbacks_.empty();
+  }
+
   // blink::mojom::NativeIOHost:
   void OpenFile(
       const std::string& name,
@@ -77,6 +85,10 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   void RenameFile(const std::string& old_name,
                   const std::string& new_name,
                   RenameFileCallback callback) override;
+
+  // Removes all data stored for the host's origin from disk. All mojo
+  // connections for open files are closed.
+  void DeleteAllData(DeleteAllDataCallback callback);
 
   // Called when one of the open files for this origin closes.
   //
@@ -106,10 +118,18 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
                      RenameFileCallback callback,
                      blink::mojom::NativeIOErrorPtr rename_error);
 
+  // Called after the file I/O part of DeleteAllData() completed.
+  void DidDeleteAllData(base::File::Error error);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The origin served by this host.
   const url::Origin origin_;
+
+  // Deletion requests issued during an ongoing deletion are coalesced with that
+  // deletion request. All coalesced callbacks are stored and invoked
+  // together.
+  std::vector<DeleteAllDataCallback> delete_all_data_callbacks_;
 
   // The directory holding all the files for this origin.
   const base::FilePath root_path_;
