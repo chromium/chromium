@@ -82,9 +82,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   const bool is_column_;
   const bool is_horizontal_flow_;
   const bool is_cross_size_definite_;
+  const LogicalSize child_percentage_size_;
+
   bool ignore_child_scrollbar_changes_ = false;
-  LogicalSize child_percentage_size_;
-  base::Optional<FlexLayoutAlgorithm> algorithm_;
+  FlexLayoutAlgorithm algorithm_;
 };
 
 }  // namespace blink

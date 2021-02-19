@@ -36,13 +36,15 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
     : NGLayoutAlgorithm(params),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_horizontal_flow_(FlexLayoutAlgorithm::IsHorizontalFlow(Style())),
-      is_cross_size_definite_(IsContainerCrossSizeDefinite()) {
-  child_percentage_size_ = CalculateChildPercentageSize(
-      ConstraintSpace(), Node(), ChildAvailableSize());
-
-  algorithm_.emplace(&Style(), MainAxisContentExtent(LayoutUnit::Max()),
-                     child_percentage_size_, &Node().GetDocument());
-}
+      is_cross_size_definite_(IsContainerCrossSizeDefinite()),
+      child_percentage_size_(
+          CalculateChildPercentageSize(ConstraintSpace(),
+                                       Node(),
+                                       ChildAvailableSize())),
+      algorithm_(&Style(),
+                 MainAxisContentExtent(LayoutUnit::Max()),
+                 child_percentage_size_,
+                 &Node().GetDocument()) {}
 
 bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
     const NGBlockNode& child) const {
@@ -295,7 +297,7 @@ bool NGFlexLayoutAlgorithm::ShouldItemShrinkToFit(
 
 bool NGFlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
     const NGBlockNode& child) const {
-  return !algorithm_->IsMultiline() && is_cross_size_definite_ &&
+  return !algorithm_.IsMultiline() && is_cross_size_definite_ &&
          DoesItemStretch(child);
 }
 
@@ -718,7 +720,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
     const Length& min = is_horizontal_flow_ ? child.Style().MinWidth()
                                             : child.Style().MinHeight();
-    if (algorithm_->ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
+    if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
       LayoutUnit content_size_suggestion;
       if (MainAxisIsInlineAxis(child)) {
         if (child.IsReplaced() && child.HasAspectRatio()) {
@@ -864,12 +866,12 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
     NGBoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
     algorithm_
-        ->emplace_back(nullptr, child.Style(), flex_base_content_size,
-                       min_max_sizes_in_main_axis_direction,
-                       min_max_sizes_in_cross_axis_direction,
-                       main_axis_border_padding, cross_axis_border_padding,
-                       physical_child_margins, scrollbars,
-                       min_max_sizes.has_value())
+        .emplace_back(nullptr, child.Style(), flex_base_content_size,
+                      min_max_sizes_in_main_axis_direction,
+                      min_max_sizes_in_cross_axis_direction,
+                      main_axis_border_padding, cross_axis_border_padding,
+                      physical_child_margins, scrollbars,
+                      min_max_sizes.has_value())
         .ng_input_node_ = child;
   }
 }
@@ -967,8 +969,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     main_axis_end_offset = BorderScrollbarPadding().inline_end;
   }
   FlexLine* line;
-  while ((line = algorithm_->ComputeNextFlexLine(
-              container_builder_.InlineSize()))) {
+  while ((
+      line = algorithm_.ComputeNextFlexLine(container_builder_.InlineSize()))) {
     line->SetContainerMainInnerSize(
         MainAxisContentExtent(line->sum_hypothetical_main_size_));
     line->FreezeInflexibleItems();
@@ -1094,10 +1096,10 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
 
-  if (algorithm_->FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
+  if (algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty()) {
     intrinsic_block_size += Node().GetLayoutBox()->LogicalHeightForEmptyLine();
   } else {
-    intrinsic_block_size += algorithm_->IntrinsicContentBlockSize();
+    intrinsic_block_size += algorithm_.IntrinsicContentBlockSize();
   }
 
   intrinsic_block_size =
@@ -1152,7 +1154,7 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
 }
 
 bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
-  Vector<FlexLine>& line_contexts = algorithm_->FlexLines();
+  Vector<FlexLine>& line_contexts = algorithm_.FlexLines();
   const LayoutUnit cross_axis_start_edge =
       line_contexts.IsEmpty() ? LayoutUnit()
                               : line_contexts[0].cross_axis_offset_;
@@ -1164,24 +1166,24 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
   if (is_column_)
     std::swap(final_content_main_size, final_content_cross_size);
 
-  if (!algorithm_->IsMultiline() && !line_contexts.IsEmpty())
+  if (!algorithm_.IsMultiline() && !line_contexts.IsEmpty())
     line_contexts[0].cross_axis_extent_ = final_content_cross_size;
 
-  algorithm_->AlignFlexLines(final_content_cross_size);
+  algorithm_.AlignFlexLines(final_content_cross_size);
 
-  algorithm_->AlignChildren();
+  algorithm_.AlignChildren();
 
   if (Style().FlexWrap() == EFlexWrap::kWrapReverse) {
     // flex-wrap: wrap-reverse reverses the order of the lines in the container;
     // FlipForWrapReverse recalculates each item's cross axis position. We have
     // to do that after AlignChildren sets an initial cross axis position.
-    algorithm_->FlipForWrapReverse(cross_axis_start_edge,
-                                   final_content_cross_size);
+    algorithm_.FlipForWrapReverse(cross_axis_start_edge,
+                                  final_content_cross_size);
   }
 
   if (Style().ResolvedIsColumnReverseFlexDirection()) {
-    algorithm_->LayoutColumnReverse(final_content_main_size,
-                                    BorderScrollbarPadding().block_start);
+    algorithm_.LayoutColumnReverse(final_content_main_size,
+                                   BorderScrollbarPadding().block_start);
   }
 
   base::Optional<LayoutUnit> fallback_baseline;
@@ -1380,7 +1382,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
       sizes.max_size = std::max(sizes.max_size, child_result.sizes.max_size);
     } else {
       sizes.max_size += child_result.sizes.max_size;
-      if (algorithm_->IsMultiline()) {
+      if (algorithm_.IsMultiline()) {
         sizes.min_size = std::max(sizes.min_size, child_result.sizes.min_size);
       } else {
         sizes.min_size += child_result.sizes.min_size;
@@ -1389,9 +1391,9 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
   }
   if (!is_column_) {
     LayoutUnit gap_inline_size =
-        (number_of_items - 1) * algorithm_->gap_between_items_;
+        (number_of_items - 1) * algorithm_.gap_between_items_;
     sizes.max_size += gap_inline_size;
-    if (!algorithm_->IsMultiline()) {
+    if (!algorithm_.IsMultiline()) {
       sizes.min_size += gap_inline_size;
     }
   }
