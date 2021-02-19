@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-// TODO(b/180449465): Remove this include
-#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 
 namespace chromeos {
 namespace assistant {
