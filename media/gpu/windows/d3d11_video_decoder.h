@@ -174,13 +174,10 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
     // GPU workarounds has turned this off.
     kOffByWorkaround = 8,
 
-    // Operating system version too low.
-    kUnsupportedOsVersion = 9,
-
     // For UMA. Must be the last entry. It should be initialized to the
     // numerically largest value above; if you add more entries, then please
     // update this to the last one.
-    kMaxValue = kUnsupportedOsVersion
+    kMaxValue = kOffByWorkaround
   };
 
   enum class D3D11LifetimeProgression {

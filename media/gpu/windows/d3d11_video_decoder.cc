@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
-#include "base/win/windows_version.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
@@ -954,12 +953,6 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     GetD3D11DeviceCB get_d3d11_device_cb) {
   const std::string uma_name("Media.D3D11.WasVideoSupported");
-
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    UMA_HISTOGRAM_ENUMERATION(uma_name,
-                              NotSupportedReason::kUnsupportedOsVersion);
-    return {};
-  }
 
   if (!base::FeatureList::IsEnabled(kD3D11VideoDecoderIgnoreWorkarounds)) {
     // Allow all of d3d11 to be turned off by workaround.

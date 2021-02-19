@@ -207,12 +207,6 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     const bool low_delay = false;
     CdmContext* cdm_context = nullptr;
 
-    // We never support win8/7, so always expect failure on init if using win8.
-    if (base::win::GetVersion() <= base::win::Version::WIN8 &&
-        expectation == StatusCode::kOk) {
-      expectation = StatusCode::kDecoderInitializeNeverCompleted;
-    }
-
     if (expectation == StatusCode::kOk) {
       EXPECT_CALL(*this, MockInitCB(_)).Times(0);
       EXPECT_CALL(*impl_, MockInitialize());
@@ -267,7 +261,13 @@ TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
 
   EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
   CreateDecoder();
-  InitializeDecoder(configuration);
+  // We don't support vp9 on windows 7 and below.
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+    InitializeDecoder(configuration,
+                      StatusCode::kDecoderInitializeNeverCompleted);
+  } else {
+    InitializeDecoder(configuration);
+  }
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithLegacyGPU) {
