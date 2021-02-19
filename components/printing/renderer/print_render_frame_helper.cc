@@ -1181,6 +1181,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
 void PrintRenderFrameHelper::WillBeDestroyed() {
   // TODO(crbug.com/956832): Handle unpausing here when PrintRenderFrameHelper
   // can safely pause/unpause pages.
+  receivers_.Clear();
 }
 
 void PrintRenderFrameHelper::OnDestruct() {
