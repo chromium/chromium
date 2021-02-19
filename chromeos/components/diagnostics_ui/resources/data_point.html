@@ -29,7 +29,8 @@
     color: var(--google-red-600);
   }
 </style>
-<div class="data-point">
+<div class="data-point" tabindex="0" aria-labelledby="headerText value"
+    aria-describedby="tooltipText">
   <div class="header">
     <span id="headerText" aria-hidden="true"> [[header]]</span>
     <iron-icon slot="icon" icon="cr:info-outline" id="infoIcon"
@@ -39,7 +40,7 @@
       <span id="tooltipText">[[tooltipText]]</span>
     </paper-tooltip>
   </div>
-  <div class$="[[getValueClass_(warningState)]]" aria-labelledby="headerText"
-      aria-describedby="tooltipText"> [[value]]
+  <div class$="[[getValueClass_(warningState)]]" id="value" aria-hidden="true">
+    [[value]]
   </div>
 </div>
