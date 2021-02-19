@@ -912,7 +912,6 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
     data->text_content = builder.ToString();
   } else {
     DCHECK(layout_block_flow->IsLayoutNGMixin());
-    DCHECK_EQ(data->text_content, builder.ToString());
   }
 
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
