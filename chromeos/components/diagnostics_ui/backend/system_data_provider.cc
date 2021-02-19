@@ -234,7 +234,7 @@ void SystemDataProvider::GetSystemInfo(GetSystemInfoCallback callback) {
       {ProbeCategories::kBattery, ProbeCategories::kCpu,
        ProbeCategories::kMemory, ProbeCategories::kSystem},
       base::BindOnce(&SystemDataProvider::OnSystemInfoProbeResponse,
-                     base::Unretained(this), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SystemDataProvider::GetBatteryInfo(GetBatteryInfoCallback callback) {
@@ -243,7 +243,7 @@ void SystemDataProvider::GetBatteryInfo(GetBatteryInfoCallback callback) {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBattery},
       base::BindOnce(&SystemDataProvider::OnBatteryInfoProbeResponse,
-                     base::Unretained(this), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SystemDataProvider::ObserveBatteryChargeStatus(
@@ -314,7 +314,7 @@ void SystemDataProvider::PowerChanged(
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBattery},
       base::BindOnce(&SystemDataProvider::OnBatteryChargeStatusUpdated,
-                     base::Unretained(this), proto));
+                     weak_factory_.GetWeakPtr(), proto));
 }
 
 void SystemDataProvider::BindInterface(
@@ -427,7 +427,7 @@ void SystemDataProvider::UpdateBatteryChargeStatus() {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBattery},
       base::BindOnce(&SystemDataProvider::OnBatteryChargeStatusUpdated,
-                     base::Unretained(this), properties));
+                     weak_factory_.GetWeakPtr(), properties));
 }
 
 void SystemDataProvider::UpdateBatteryHealth() {
@@ -436,7 +436,7 @@ void SystemDataProvider::UpdateBatteryHealth() {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBattery},
       base::BindOnce(&SystemDataProvider::OnBatteryHealthUpdated,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SystemDataProvider::UpdateMemoryUsage() {
@@ -445,7 +445,7 @@ void SystemDataProvider::UpdateMemoryUsage() {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kMemory},
       base::BindOnce(&SystemDataProvider::OnMemoryUsageUpdated,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SystemDataProvider::UpdateCpuUsage() {
@@ -454,7 +454,7 @@ void SystemDataProvider::UpdateCpuUsage() {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kCpu},
       base::BindOnce(&SystemDataProvider::OnCpuUsageUpdated,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SystemDataProvider::OnBatteryChargeStatusUpdated(
@@ -635,8 +635,9 @@ void SystemDataProvider::BindCrosHealthdProbeServiceIfNeccessary() {
   if (!probe_service_ || !probe_service_.is_connected()) {
     cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
         probe_service_.BindNewPipeAndPassReceiver());
-    probe_service_.set_disconnect_handler(base::BindOnce(
-        &SystemDataProvider::OnProbeServiceDisconnect, base::Unretained(this)));
+    probe_service_.set_disconnect_handler(
+        base::BindOnce(&SystemDataProvider::OnProbeServiceDisconnect,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 

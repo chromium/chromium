@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/components/diagnostics_ui/backend/cpu_usage_data.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
@@ -131,6 +132,8 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   std::unique_ptr<base::RepeatingTimer> battery_health_timer_;
   std::unique_ptr<base::RepeatingTimer> memory_usage_timer_;
   std::unique_ptr<base::RepeatingTimer> cpu_usage_timer_;
+
+  base::WeakPtrFactory<SystemDataProvider> weak_factory_{this};
 };
 
 }  // namespace diagnostics

@@ -257,7 +257,7 @@ void SystemRoutineController::GetSupportedRoutines(
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetAvailableRoutines(
       base::BindOnce(&SystemRoutineController::OnAvailableRoutinesFetched,
-                     base::Unretained(this), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SystemRoutineController::BindInterface(
@@ -285,45 +285,45 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
       diagnostics_service_->RunBatteryChargeRoutine(
           kBatteryDurationInSeconds, kBatteryChargeMinimumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
 
       break;
     case mojom::RoutineType::kBatteryDischarge:
       diagnostics_service_->RunBatteryDischargeRoutine(
           kBatteryDurationInSeconds, kBatteryDischargeMaximumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
 
       break;
     case mojom::RoutineType::kCpuCache:
       diagnostics_service_->RunCpuCacheRoutine(
           healthd::NullableUint32::New(kCpuCacheDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kCpuFloatingPoint:
       diagnostics_service_->RunFloatingPointAccuracyRoutine(
           healthd::NullableUint32::New(kCpuFloatingPointDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kCpuPrime:
       diagnostics_service_->RunPrimeSearchRoutine(
           healthd::NullableUint32::New(kCpuPrimeDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
           healthd::NullableUint32::New(kCpuStressDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
       break;
     case mojom::RoutineType::kMemory:
       AcquireWakeLock();
       diagnostics_service_->RunMemoryRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
       memory_routine_start_timestamp_ = base::Time::Now();
       break;
   }
@@ -384,7 +384,7 @@ void SystemRoutineController::ContinuePowerRoutine(
       inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kContinue,
       /*should_include_output=*/true,
       base::BindOnce(&SystemRoutineController::OnPowerRoutineContinued,
-                     base::Unretained(this), routine_type));
+                     weak_factory_.GetWeakPtr(), routine_type));
 }
 
 void SystemRoutineController::OnPowerRoutineContinued(
@@ -417,7 +417,7 @@ void SystemRoutineController::CheckRoutineStatus(
       inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kGetStatus,
       should_include_output,
       base::BindOnce(&SystemRoutineController::OnRoutineStatusUpdated,
-                     base::Unretained(this), routine_type));
+                     weak_factory_.GetWeakPtr(), routine_type));
 }
 
 void SystemRoutineController::OnRoutineStatusUpdated(
@@ -526,7 +526,7 @@ void SystemRoutineController::ScheduleCheckRoutineStatus(
   inflight_routine_timer_->Start(
       FROM_HERE, base::TimeDelta::FromSeconds(duration_in_seconds),
       base::BindOnce(&SystemRoutineController::CheckRoutineStatus,
-                     base::Unretained(this), routine_type));
+                     weak_factory_.GetWeakPtr(), routine_type));
 }
 
 void SystemRoutineController::ParsePowerRoutineResult(
@@ -667,7 +667,7 @@ void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
         diagnostics_service_.BindNewPipeAndPassReceiver());
     diagnostics_service_.set_disconnect_handler(base::BindOnce(
         &SystemRoutineController::OnDiagnosticsServiceDisconnected,
-        base::Unretained(this)));
+        weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -695,7 +695,7 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
       inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
       /*should_include_output=*/false,
       base::BindOnce(&SystemRoutineController::OnRoutineCancelAttempted,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 
   // Reset `inflight_routine_id_` to maintain invariant.
   inflight_routine_id_ = kInvalidRoutineId;
