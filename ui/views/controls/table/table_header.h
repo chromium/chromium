@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -85,7 +86,7 @@ class VIEWS_EXPORT TableHeader : public views::View {
 
   const gfx::FontList font_list_;
 
-  TableView* table_;
+  CheckedPtr<TableView> table_;
 
   // If non-null a resize is in progress.
   std::unique_ptr<ColumnResizeDetails> resize_details_;

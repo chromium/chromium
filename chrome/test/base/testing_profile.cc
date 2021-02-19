@@ -517,7 +517,7 @@ TestingProfile::~TestingProfile() {
   // failure.
   if (resource_context_) {
     CHECK(BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE,
-                                    resource_context_));
+                                    resource_context_.get()));
     resource_context_ = nullptr;
     content::RunAllPendingInMessageLoop(BrowserThread::IO);
   }

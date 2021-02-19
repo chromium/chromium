@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -497,7 +498,7 @@ class MdnsResponderManager::SocketHandler {
   // handler should be destroyed before |responder_manager_| becomes invalid or
   // a weak reference should be used to access the manager when there is no such
   // guarantee in an operation.
-  MdnsResponderManager* const responder_manager_;
+  const CheckedPtr<MdnsResponderManager> responder_manager_;
   scoped_refptr<net::IOBufferWithSize> io_buffer_;
   net::IPEndPoint recv_addr_;
   net::IPEndPoint multicast_addr_;
@@ -1149,7 +1150,7 @@ MdnsResponder::MdnsResponder(
       name_generator_(manager_->name_generator()) {
   receiver_.set_disconnect_handler(
       base::BindOnce(&MdnsResponderManager::OnMojoConnectionError,
-                     base::Unretained(manager_), this));
+                     base::Unretained(manager_.get()), this));
 }
 
 MdnsResponder::~MdnsResponder() {

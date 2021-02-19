@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -98,7 +99,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
  private:
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 };
 
 }  // namespace

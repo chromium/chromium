@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_GL_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_GL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -39,7 +40,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     const gfx::ColorSpace& color_space() const { return color_space_; }
 
    private:
-    DisplayResourceProviderGL* const resource_provider_;
+    const CheckedPtr<DisplayResourceProviderGL> resource_provider_;
     const ResourceId resource_id_;
 
     GLuint texture_id_ = 0;
@@ -86,7 +87,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     GLuint texture_id() const { return texture_id_; }
 
    private:
-    DisplayResourceProviderGL* const resource_provider_;
+    const CheckedPtr<DisplayResourceProviderGL> resource_provider_;
     const ResourceId resource_id_;
     GLuint texture_id_ = 0;
   };

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -45,7 +46,7 @@ class SubtleNotificationView : public views::View {
   class InstructionView;
 
   // Text displayed in the bubble, with optional keyboard keys.
-  InstructionView* instruction_view_;
+  CheckedPtr<InstructionView> instruction_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_

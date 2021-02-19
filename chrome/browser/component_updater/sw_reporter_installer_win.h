@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -96,7 +97,7 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
 
  private:
   // Will outlive this object.
-  ComponentUpdateService* cus_;
+  CheckedPtr<ComponentUpdateService> cus_;
   base::OnceClosure on_error_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SwReporterOnDemandFetcher);

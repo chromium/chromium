@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 
@@ -114,7 +115,7 @@ class BASE_EXPORT WaitableEventWatcher
   win::ObjectWatcher watcher_;
 
   EventCallback callback_;
-  WaitableEvent* event_ = nullptr;
+  CheckedPtr<WaitableEvent> event_ = nullptr;
 #elif defined(OS_APPLE)
   // Invokes the callback and resets the source. Must be called on the task
   // runner on which StartWatching() was called.

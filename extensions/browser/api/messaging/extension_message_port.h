@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "extensions/browser/api/messaging/message_port.h"
@@ -145,9 +146,9 @@ class ExtensionMessagePort : public MessagePort {
 
   const PortId port_id_;
   std::string extension_id_;
-  content::BrowserContext* browser_context_ = nullptr;
+  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
   // Only for receivers in an extension process.
-  content::RenderProcessHost* extension_process_ = nullptr;
+  CheckedPtr<content::RenderProcessHost> extension_process_ = nullptr;
 
   // When the port is used as a sender, this set contains only one element.
   // If used as a receiver, it may contain any number of frames.
@@ -168,7 +169,7 @@ class ExtensionMessagePort : public MessagePort {
   bool did_create_port_ = false;
 
   // Used in IncrementLazyKeepaliveCount
-  ExtensionHost* background_host_ptr_ = nullptr;
+  CheckedPtr<ExtensionHost> background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessagePort);

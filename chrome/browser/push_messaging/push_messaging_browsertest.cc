@@ -13,6 +13,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -376,15 +377,15 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  gcm::FakeGCMProfileService* gcm_service_;
-  instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
+  CheckedPtr<gcm::FakeGCMProfileService> gcm_service_;
+  CheckedPtr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  PushMessagingServiceImpl* push_service_;
+  CheckedPtr<PushMessagingServiceImpl> push_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PushMessagingBrowserTest);
 };
@@ -2781,7 +2782,7 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTest {
   Browser* GetBrowser() const override { return incognito_browser_; }
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  CheckedPtr<Browser> incognito_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/476474

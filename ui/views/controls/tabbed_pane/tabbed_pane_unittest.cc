@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -146,7 +147,7 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
   }
 
   std::unique_ptr<Widget> widget_;
-  TabbedPane* tabbed_pane_;
+  CheckedPtr<TabbedPane> tabbed_pane_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TabbedPaneWithWidgetTest);

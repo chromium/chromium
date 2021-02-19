@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
@@ -51,10 +52,10 @@ class CONTENT_EXPORT AppCacheDiskCacheEntry {
   ~AppCacheDiskCacheEntry();
 
   // The disk_cache::Entry is owned by this entry and closed on destruction.
-  disk_cache::Entry* disk_cache_entry_;
+  CheckedPtr<disk_cache::Entry> disk_cache_entry_;
 
   // The cache that this entry belongs to.
-  AppCacheDiskCache* cache_;
+  CheckedPtr<AppCacheDiskCache> cache_;
 };
 
 // An implementation of AppCacheDiskCache that
@@ -126,7 +127,7 @@ class CONTENT_EXPORT AppCacheDiskCache {
 
     const PendingCallType call_type;
     const int64_t key;
-    AppCacheDiskCacheEntry** const entry;
+    const CheckedPtr<AppCacheDiskCacheEntry*> entry;
     net::CompletionOnceCallback callback;
   };
 

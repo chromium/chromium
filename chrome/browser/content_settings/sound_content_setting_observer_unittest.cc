@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -97,7 +98,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
 #endif
 
  private:
-  HostContentSettingsMap* host_content_settings_map_;
+  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(SoundContentSettingObserverTest);

@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -2032,7 +2033,7 @@ class GLRendererSkipTest : public GLRendererTest {
     Mock::VerifyAndClearExpectations(gl_);
   }
 
-  StrictMock<DrawElementsGLES2Interface>* gl_;
+  CheckedPtr<StrictMock<DrawElementsGLES2Interface>> gl_;
   RendererSettings settings_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<FakeOutputSurface> output_surface_;
@@ -2554,7 +2555,7 @@ class MockOutputSurfaceTest : public GLRendererTest {
 
   RendererSettings settings_;
   cc::FakeOutputSurfaceClient output_surface_client_;
-  OutputSurfaceMockGLES2Interface* gl_ = nullptr;
+  CheckedPtr<OutputSurfaceMockGLES2Interface> gl_ = nullptr;
   std::unique_ptr<StrictMock<MockOutputSurface>> output_surface_;
   std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
@@ -3293,7 +3294,7 @@ class GLRendererFastSolidColorTest : public GLRendererTest {
   }
 
  private:
-  FastSolidColorMockGLES2Interface* gl_ = nullptr;
+  CheckedPtr<FastSolidColorMockGLES2Interface> gl_ = nullptr;
   std::unique_ptr<FakeRendererGL> fake_renderer_;
   std::unique_ptr<FakeOutputSurface> output_surface_;
   std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
@@ -3862,7 +3863,7 @@ class GLRendererWithMockContextTest : public ::testing::Test {
   RendererSettings settings_;
   DebugRendererSettings debug_settings_;
   cc::FakeOutputSurfaceClient output_surface_client_;
-  MockContextSupport* context_support_ptr_;
+  CheckedPtr<MockContextSupport> context_support_ptr_;
   std::unique_ptr<OutputSurface> output_surface_;
   std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
   std::unique_ptr<GLRenderer> renderer_;

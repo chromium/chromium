@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/object_watcher.h"
@@ -165,8 +166,8 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   HANDLE accept_event_;
   base::win::ObjectWatcher accept_watcher_;
 
-  std::unique_ptr<TCPSocketWin>* accept_socket_;
-  IPEndPoint* accept_address_;
+  CheckedPtr<std::unique_ptr<TCPSocketWin>> accept_socket_;
+  CheckedPtr<IPEndPoint> accept_address_;
   CompletionOnceCallback accept_callback_;
 
   // The various states that the socket could be in.

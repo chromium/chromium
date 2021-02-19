@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -51,7 +52,7 @@ class CheckObserver : public MessageCenterObserver {
   }
 
  private:
-  MessageCenter* message_center_;
+  CheckedPtr<MessageCenter> message_center_;
   std::string target_id_;
 
   DISALLOW_COPY_AND_ASSIGN(CheckObserver);
@@ -70,7 +71,7 @@ class RemoveObserver : public MessageCenterObserver {
   }
 
  private:
-  MessageCenter* message_center_;
+  CheckedPtr<MessageCenter> message_center_;
   std::string target_id_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveObserver);
@@ -104,7 +105,7 @@ class TestAddObserver : public MessageCenterObserver {
 
  private:
   std::map<std::string, std::string> logs_;
-  MessageCenter* message_center_;
+  CheckedPtr<MessageCenter> message_center_;
 };
 
 class TestDelegate : public NotificationDelegate {
@@ -156,7 +157,7 @@ class DeleteOnCloseDelegate : public NotificationDelegate {
  private:
   ~DeleteOnCloseDelegate() override = default;
 
-  MessageCenter* message_center_;
+  CheckedPtr<MessageCenter> message_center_;
   std::string notification_id_;
 };
 
@@ -187,7 +188,7 @@ class MessageCenterImplTest : public testing::Test {
 
   MessageCenter* message_center() const { return message_center_; }
   MessageCenterImpl* message_center_impl() const {
-    return reinterpret_cast<MessageCenterImpl*>(message_center_);
+    return reinterpret_cast<MessageCenterImpl*>(message_center_.get());
   }
 
   base::RunLoop* run_loop() const { return run_loop_.get(); }
@@ -255,7 +256,7 @@ class MessageCenterImplTest : public testing::Test {
   }
 
  private:
-  MessageCenter* message_center_;
+  CheckedPtr<MessageCenter> message_center_;
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::RepeatingClosure closure_;

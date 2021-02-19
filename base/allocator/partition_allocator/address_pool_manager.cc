@@ -204,6 +204,21 @@ AddressPoolManager::Pool::~Pool() = default;
 
 #else  // defined(PA_HAS_64_BITS_POINTERS)
 
+static_assert(
+    kSuperPageSize %
+            AddressPoolManagerBitmap::kBytesPer1BitOfNormalBucketBitmap ==
+        0,
+    "kSuperPageSize must be a multiple of kBytesPer1BitOfNormalBucketBitmap.");
+static_assert(
+    kSuperPageSize /
+            AddressPoolManagerBitmap::kBytesPer1BitOfNormalBucketBitmap >
+        0,
+    "kSuperPageSize must be larger than kBytesPer1BitOfNormalBucketBitmap.");
+static_assert(AddressPoolManagerBitmap::kGuardBitsOfNormalBucketBitmap >=
+                  AddressPoolManagerBitmap::kGuardOffsetOfNormalBucketBitmap,
+              "kGuardBitsOfNormalBucketBitmap must be larger than or equal to "
+              "kGuardOffsetOfNormalBucketBitmap.");
+
 template <size_t bitsize>
 void SetBitmap(std::bitset<bitsize>& bitmap,
                size_t start_bit,
@@ -231,10 +246,6 @@ void ResetBitmap(std::bitset<bitsize>& bitmap,
     bitmap.reset(i);
   }
 }
-
-static_assert(kSuperPageSize % PageAllocationGranularity() == 0,
-              "AddressPoolManager depends on that kSuperPageSize is multiples "
-              "of PageAllocationGranularity().");
 
 char* AddressPoolManager::Reserve(pool_handle handle,
                                   void* requested_address,
@@ -272,8 +283,37 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
   } else {
     PA_DCHECK(handle == kNormalBucketHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    SetBitmap(AddressPoolManagerBitmap::normal_bucket_bits_,
-              ptr_as_uintptr >> kSuperPageShift, length >> kSuperPageShift);
+    // If BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE) is defined,
+    // make IsManagedByNormalBucketPool return false when an address
+    // inside the first or the last PartitionPageSize()-bytes
+    // block is given:
+    //
+    //          ------+---+---------------+---+----
+    // memory   ..... | B | managed by PA | B | ...
+    // regions  ------+---+---------------+---+----
+    //
+    // B: PartitionPageSize()-bytes block. This is used by
+    // PartitionAllocator and is not available for callers.
+    //
+    // This is required to avoid crash caused by the following code:
+    //
+    // {
+    //   CheckedPtr<T> ptr = allocateFromNotPartitionAllocator(X * sizeof(T));
+    //   for (size_t i = 0; i < X; i ++) { ...; ptr++; }
+    //   // |ptr| may point an address inside 'B'.
+    // }
+    //
+    // Suppose that |ptr| points to an address inside B after the loop. So when
+    // exiting the scope, IsManagedByNormalBucketPool(ptr) returns true without
+    // the barrier blocks. Since the memory is not allocated by Partition
+    // Allocator, ~CheckedPtr will cause crash.
+    SetBitmap(
+        AddressPoolManagerBitmap::normal_bucket_bits_,
+        (ptr_as_uintptr >>
+         AddressPoolManagerBitmap::kBitShiftOfNormalBucketBitmap) +
+            AddressPoolManagerBitmap::kGuardOffsetOfNormalBucketBitmap,
+        (length >> AddressPoolManagerBitmap::kBitShiftOfNormalBucketBitmap) -
+            AddressPoolManagerBitmap::kGuardBitsOfNormalBucketBitmap);
   }
 }
 
@@ -290,8 +330,16 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   } else {
     PA_DCHECK(handle == kNormalBucketHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    ResetBitmap(AddressPoolManagerBitmap::normal_bucket_bits_,
-                address >> kSuperPageShift, length >> kSuperPageShift);
+    // If BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE) is defined,
+    // make IsManagedByNormalBucketPool return false when an address
+    // inside the first or the last PartitionPageSize()-bytes block is given.
+    // (See MarkUsed comment)
+    ResetBitmap(
+        AddressPoolManagerBitmap::normal_bucket_bits_,
+        (address >> AddressPoolManagerBitmap::kBitShiftOfNormalBucketBitmap) +
+            AddressPoolManagerBitmap::kGuardOffsetOfNormalBucketBitmap,
+        (length >> AddressPoolManagerBitmap::kBitShiftOfNormalBucketBitmap) -
+            AddressPoolManagerBitmap::kGuardBitsOfNormalBucketBitmap);
   }
 }
 

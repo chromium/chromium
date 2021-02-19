@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -255,7 +256,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to observe the completion of commit messages for the sake of testing.
-  ObserverForTests* observer_for_tests_;
+  CheckedPtr<ObserverForTests> observer_for_tests_;
 
   // Response type override callback used in tests.
   ResponseTypeProvider response_type_override_;

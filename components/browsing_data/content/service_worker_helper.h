@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/service_worker_context.h"
 #include "url/gurl.h"
@@ -50,7 +51,7 @@ class ServiceWorkerHelper
   virtual ~ServiceWorkerHelper();
 
   // Owned by the profile.
-  content::ServiceWorkerContext* service_worker_context_;
+  CheckedPtr<content::ServiceWorkerContext> service_worker_context_;
 
  private:
   friend class base::RefCountedThreadSafe<ServiceWorkerHelper>;

@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
@@ -327,7 +328,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   BubbleBorder::Shadow shadow_;
   SkColor color_ = gfx::kPlaceholderColor;
   bool color_explicitly_set_ = false;
-  Widget* anchor_widget_ = nullptr;
+  CheckedPtr<Widget> anchor_widget_ = nullptr;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
@@ -353,7 +354,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   gfx::NativeView parent_window_ = nullptr;
 
   // Pointer to this bubble's ClientView.
-  ClientView* client_view_ = nullptr;
+  CheckedPtr<ClientView> client_view_ = nullptr;
 
 #if defined(OS_APPLE)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is

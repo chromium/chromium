@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "ui/base/ui_base_types.h"
@@ -86,7 +87,7 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
 
  private:
   // The dialog_view_ is owned by itself.
-  EnterpriseStartupDialogView* dialog_view_;
+  CheckedPtr<EnterpriseStartupDialogView> dialog_view_;
 };
 
 }  // namespace policy

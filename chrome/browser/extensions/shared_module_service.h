@@ -8,6 +8,7 @@
 #include <list>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "extensions/browser/extension_registry.h"
@@ -78,7 +79,7 @@ class SharedModuleService : public ExtensionRegistryObserver,
       extension_registry_observer_{this};
 
   // The context associated with this SharedModuleService.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedModuleService);
 };

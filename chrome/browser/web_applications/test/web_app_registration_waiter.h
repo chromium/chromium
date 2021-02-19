@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "url/gurl.h"
@@ -24,7 +25,7 @@ class WebAppRegistrationWaiter {
   void AwaitRegistrationsComplete();
 
  private:
-  PendingAppManager* const manager_;
+  const CheckedPtr<PendingAppManager> manager_;
   base::RunLoop run_loop_;
   GURL install_url_;
   // If unset then check for any non failure result.

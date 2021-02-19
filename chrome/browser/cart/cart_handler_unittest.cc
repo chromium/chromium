@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
@@ -123,7 +124,7 @@ class CartHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CartHandler> handler_;
-  CartService* service_;
+  CheckedPtr<CartService> service_;
   base::HistogramTester histogram_tester_;
 };
 

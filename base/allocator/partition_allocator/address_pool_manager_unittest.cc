@@ -216,11 +216,28 @@ TEST_F(AddressPoolManagerTest, IsManagedByNormalBucketPool) {
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
   }
+
+  constexpr size_t first_guard_size =
+      AddressPoolManagerBitmap::kBytesPer1BitOfNormalBucketBitmap *
+      AddressPoolManagerBitmap::kGuardOffsetOfNormalBucketBitmap;
+  constexpr size_t last_guard_size =
+      AddressPoolManagerBitmap::kBytesPer1BitOfNormalBucketBitmap *
+      (AddressPoolManagerBitmap::kGuardBitsOfNormalBucketBitmap -
+       AddressPoolManagerBitmap::kGuardOffsetOfNormalBucketBitmap);
+
   for (size_t i = 0; i < kAllocCount; ++i) {
-    const char* ptr = reinterpret_cast<const char*>(addrs[i]);
-    size_t num_system_pages = kNumPages[i] * kSuperPageSize / SystemPageSize();
+    const char* base_ptr = reinterpret_cast<const char*>(addrs[i]);
+    const char* ptr = base_ptr;
+    size_t num_allocated_size = kNumPages[i] * kSuperPageSize;
+    size_t num_system_pages = num_allocated_size / SystemPageSize();
     for (size_t j = 0; j < num_system_pages; ++j) {
-      EXPECT_TRUE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
+      size_t offset = ptr - base_ptr;
+      if (offset < first_guard_size ||
+          offset >= (num_allocated_size - last_guard_size)) {
+        EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
+      } else {
+        EXPECT_TRUE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
+      }
       EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
       ptr += SystemPageSize();
     }

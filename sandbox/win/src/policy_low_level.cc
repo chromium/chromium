@@ -348,7 +348,7 @@ bool PolicyRule::RebindCopy(PolicyOpcode* opcode_start,
 }
 
 PolicyRule::~PolicyRule() {
-  delete[] reinterpret_cast<char*>(buffer_);
+  delete[] reinterpret_cast<char*>(buffer_.get());
   delete opcode_factory_;
 }
 

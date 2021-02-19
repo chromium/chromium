@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -60,7 +61,7 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
 
  private:
   // Not owned.
-  Client* client_ = nullptr;
+  CheckedPtr<Client> client_ = nullptr;
 
   // Last non-zero frame token received from the renderer. Any swap messsages
   // having a token less than or equal to this value will be processed.

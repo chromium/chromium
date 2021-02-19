@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/multiprocess_test.h"
@@ -440,7 +441,7 @@ class ChromeCleanerControllerTest
   MockChromeCleanerProcess::Options cleaner_process_options_;
 
   StrictMock<MockChromeCleanerControllerObserver> mock_observer_;
-  ChromeCleanerControllerImpl* controller_;
+  CheckedPtr<ChromeCleanerControllerImpl> controller_;
   ChromeCleanerRunner::ProcessStatus cleaner_process_status_;
 
   std::vector<Profile*> profiles_tagged_;
@@ -716,7 +717,7 @@ class ChromeCleanerControllerReporterInteractionTest
 
   ChromeCleanerController::State initial_state_;
 
-  ChromeCleanerControllerImpl* controller_ = nullptr;
+  CheckedPtr<ChromeCleanerControllerImpl> controller_ = nullptr;
   StrictMock<MockChromeCleanerControllerObserver> mock_observer_;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
@@ -110,8 +111,8 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   }
 
  private:
-  views::View* const anchor_view_;
-  Profile* const profile_;
+  const CheckedPtr<views::View> anchor_view_;
+  const CheckedPtr<Profile> profile_;
   const GURL webui_url_;
   const int task_manager_string_id_;
   const bool enable_extension_apis_;

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -197,7 +198,7 @@ class MockSender {
   }
 
  private:
-  RpcBroker* const rpc_broker_;
+  const CheckedPtr<RpcBroker> rpc_broker_;
   const int rpc_handle_;
   const int remote_handle_;
 };

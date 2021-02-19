@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -406,14 +407,14 @@ class VIEWS_EXPORT WidgetDelegate {
 
   // The Widget that was initialized with this instance as its WidgetDelegate,
   // if any.
-  Widget* widget_ = nullptr;
+  CheckedPtr<Widget> widget_ = nullptr;
   Params params_;
 
-  View* default_contents_view_ = nullptr;
+  CheckedPtr<View> default_contents_view_ = nullptr;
   bool contents_view_taken_ = false;
   bool can_activate_ = true;
 
-  View* unowned_contents_view_ = nullptr;
+  CheckedPtr<View> unowned_contents_view_ = nullptr;
   std::unique_ptr<View> owned_contents_view_;
 
   // Managed by Widget. Ensures |this| outlives its Widget.

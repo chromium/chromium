@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 
@@ -170,8 +171,8 @@ class TargetServices;
 
 // Contains the pointer to a target or broker service.
 struct SandboxInterfaceInfo {
-  BrokerServices* broker_services;
-  TargetServices* target_services;
+  CheckedPtr<BrokerServices> broker_services;
+  CheckedPtr<TargetServices> target_services;
 };
 
 #define SANDBOX_INTERCEPT extern "C"

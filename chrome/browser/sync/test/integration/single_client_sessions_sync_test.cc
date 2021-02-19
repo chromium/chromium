@@ -4,6 +4,7 @@
 
 #include "base/base64.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -120,7 +121,7 @@ class IsHistoryURLSyncedChecker : public SingleClientStatusChangeChecker {
 
  private:
   const std::string url_;
-  fake_server::FakeServer* fake_server_;
+  CheckedPtr<fake_server::FakeServer> fake_server_;
 };
 
 class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
@@ -160,7 +161,7 @@ class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
  private:
   const std::string page_url_;
   const std::string icon_url_;
-  fake_server::FakeServer* fake_server_;
+  CheckedPtr<fake_server::FakeServer> fake_server_;
 };
 
 // Checker to block until the history DB for |profile| does / does not have a
@@ -219,7 +220,7 @@ class FaviconForPageUrlAvailableChecker : public StatusChangeChecker {
     CheckExitCondition();
   }
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   const GURL page_url_;
   const bool should_be_available_;
   base::CallbackListSubscription callback_subscription_;

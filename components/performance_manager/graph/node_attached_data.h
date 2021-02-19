@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 
@@ -55,7 +56,7 @@ class InternalNodeAttachedDataStorage {
   }
 
  private:
-  NodeAttachedData* data_ = nullptr;
+  CheckedPtr<NodeAttachedData> data_ = nullptr;
   uint8_t buffer_[kDataSize];
   DISALLOW_COPY_AND_ASSIGN(InternalNodeAttachedDataStorage);
 };

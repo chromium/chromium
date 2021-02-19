@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -232,8 +233,8 @@ class OmniboxViewViews : public OmniboxView,
    private:
     // Non-owning pointers. |view_| and |render_text_| must always outlive this
     // class.
-    OmniboxViewViews* view_;
-    gfx::RenderText* render_text_;
+    CheckedPtr<OmniboxViewViews> view_;
+    CheckedPtr<gfx::RenderText> render_text_;
 
     // The target bounds passed in to Start().
     gfx::Range elide_to_bounds_;
@@ -605,7 +606,7 @@ class OmniboxViewViews : public OmniboxView,
   // histogram was recorded due to the omnibox being focused, so that it won't
   // be recorded again for the same continuous hover when the mouse exits.
   bool recorded_hover_on_focus_ = false;
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
   std::vector<gfx::Range> saved_temporary_selection_;
@@ -619,7 +620,7 @@ class OmniboxViewViews : public OmniboxView,
   bool ime_composing_before_change_ = false;
 
   // |location_bar_view_| can be NULL in tests.
-  LocationBarView* location_bar_view_;
+  CheckedPtr<LocationBarView> location_bar_view_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the IME candidate window is open. When this is true, we want to

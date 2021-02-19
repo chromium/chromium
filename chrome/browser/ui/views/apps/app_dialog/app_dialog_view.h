@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
@@ -29,7 +30,7 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   void SetLabelText(const base::string16& text);
 
  private:
-  views::Label* label_ = nullptr;
+  CheckedPtr<views::Label> label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_

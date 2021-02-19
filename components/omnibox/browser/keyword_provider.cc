@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,7 +61,7 @@ class ScopedEndExtensionKeywordMode {
   void StayInKeywordMode();
 
  private:
-  KeywordExtensionsDelegate* delegate_;
+  CheckedPtr<KeywordExtensionsDelegate> delegate_;
 };
 
 ScopedEndExtensionKeywordMode::ScopedEndExtensionKeywordMode(
