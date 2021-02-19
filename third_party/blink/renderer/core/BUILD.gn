@@ -1258,6 +1258,7 @@ source_set("unit_tests") {
     "frame/document_policy_violation_report_body_test.cc",
     "frame/dom_timer_test.cc",
     "frame/find_in_page_test.cc",
+    "frame/frame_content_as_text_test.cc",
     "frame/frame_overlay_test.cc",
     "frame/frame_serializer_test.cc",
     "frame/frame_test.cc",

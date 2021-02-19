@@ -28,7 +28,8 @@ void FrameContentAsText(size_t max_chars,
   DCHECK(!frame->View()->NeedsLayout());
   DCHECK(!document->NeedsLayoutTreeUpdate());
 
-  if (document->documentElement()) {
+  if (document->documentElement() &&
+      document->documentElement()->GetLayoutObject()) {
     output.Append(document->documentElement()->innerText());
     if (output.length() >= max_chars)
       output.Resize(max_chars);
