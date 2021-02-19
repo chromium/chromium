@@ -8,37 +8,21 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
 
-using content::NavigationController;
 using content::RenderWidgetHost;
 using content::RenderWidgetHostView;
-using content::Source;
 using content::WebContents;
 
 SessionRestoreStatsCollector* g_instance = nullptr;
 
-// Returns the RenderWidgetHostView associated with a NavigationController.
-RenderWidgetHostView* GetRenderWidgetHostView(
-    NavigationController* tab) {
-  WebContents* web_contents = tab->GetWebContents();
-  if (web_contents)
-    return web_contents->GetRenderWidgetHostView();
-  return nullptr;
-}
-
-// Returns the RenderWidgetHost associated with a NavigationController.
-RenderWidgetHost* GetRenderWidgetHost(
-    NavigationController* tab) {
+// Returns the RenderWidgetHost associated with a WebContents.
+RenderWidgetHost* GetRenderWidgetHost(WebContents* web_contents) {
   content::RenderWidgetHostView* render_widget_host_view =
-      GetRenderWidgetHostView(tab);
+      web_contents->GetRenderWidgetHostView();
   if (render_widget_host_view)
     return render_widget_host_view->GetRenderWidgetHost();
   return nullptr;
@@ -49,12 +33,6 @@ RenderWidgetHost* GetRenderWidgetHost(
 SessionRestoreStatsCollector::TabLoaderStats::TabLoaderStats()
     : tab_count(0u),
       tab_first_paint_reason(PAINT_FINISHED_UMA_MAX) {}
-
-SessionRestoreStatsCollector::TabState::TabState(
-    NavigationController* controller)
-    : controller(controller),
-      was_hidden_or_occluded(false),
-      observed_host(nullptr) {}
 
 SessionRestoreStatsCollector::SessionRestoreStatsCollector(
     const base::TimeTicks& restore_started,
@@ -94,41 +72,25 @@ void SessionRestoreStatsCollector::TrackTabs(
       time_since_active = now - tab.contents()->GetLastActiveTime();
     reporting_delegate_->ReportTabTimeSinceActive(time_since_active);
 
-    // Get the active navigation entry. Restored tabs should always have one.
-    auto* controller = &tab.contents()->GetController();
-    auto* nav_entry =
-        controller->GetEntryAtIndex(controller->GetCurrentEntryIndex());
-    DCHECK(nav_entry);
-
-    RegisterForNotifications(controller);
+    RegisterObserverForTab(tab.contents());
   }
-}
 
-void SessionRestoreStatsCollector::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_WEB_CONTENTS_DESTROYED: {
-      // This happens when a tab has been closed. A tab can be in any state
-      // when this occurs. Simply stop tracking the tab.
-      WebContents* web_contents = Source<WebContents>(source).ptr();
-      NavigationController* tab = &web_contents->GetController();
-      RemoveTab(tab);
-      break;
-    }
-    default:
-      NOTREACHED() << "Unknown notification received:" << type;
-      break;
-  }
+  // If we were not able to register observers for any tab, report stats.
+  if (tracked_tabs_occluded_map_.empty())
+    ReportStatsAndSelfDestroy();
 }
 
 void SessionRestoreStatsCollector::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* widget_host,
     bool became_visible) {
-  auto* tab_state = GetTabState(widget_host);
-  if (tab_state && !became_visible)
-    tab_state->was_hidden_or_occluded = true;
+  if (became_visible)
+    return;
+
+  auto host_and_occluded_it = tracked_tabs_occluded_map_.find(widget_host);
+  if (host_and_occluded_it == tracked_tabs_occluded_map_.end())
+    return;
+
+  host_and_occluded_it->second = true;
 }
 
 void SessionRestoreStatsCollector::RenderWidgetHostDidUpdateVisualProperties(
@@ -138,12 +100,12 @@ void SessionRestoreStatsCollector::RenderWidgetHostDidUpdateVisualProperties(
   if (!widget_host->GetView() || !widget_host->GetView()->IsShowing())
     return;
 
-  auto* tab_state = GetTabState(widget_host);
-  if (tab_state) {
+  auto host_and_occluded_it = tracked_tabs_occluded_map_.find(widget_host);
+  if (host_and_occluded_it != tracked_tabs_occluded_map_.end()) {
     // Ignore first paint of a restored tab that was hidden or occluded
     // before first paint. If another restored tab is painted, its paint
     // time will be recorded.
-    if (tab_state->was_hidden_or_occluded) {
+    if (host_and_occluded_it->second) {
       hidden_or_occluded_tab_ignored_ = true;
       return;
     }
@@ -166,55 +128,24 @@ void SessionRestoreStatsCollector::RenderWidgetHostDidUpdateVisualProperties(
 void SessionRestoreStatsCollector::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
   render_widget_host_observations_.RemoveObservation(widget_host);
+  tracked_tabs_occluded_map_.erase(widget_host);
 
-  auto* tab_state = GetTabState(widget_host);
-  if (tab_state)
-    tab_state->observed_host = nullptr;
-}
-
-void SessionRestoreStatsCollector::RemoveTab(NavigationController* tab) {
-  // Stop observing this tab.
-  registrar_.Remove(this, content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                    Source<WebContents>(tab->GetWebContents()));
-  auto tab_it = tabs_tracked_.find(tab);
-  DCHECK(tab_it != tabs_tracked_.end());
-  TabState& tab_state = tab_it->second;
-  if (tab_state.observed_host)
-    render_widget_host_observations_.RemoveObservation(tab_state.observed_host);
-
-  // Remove the tab from the |tabs_tracked_| map.
-  tabs_tracked_.erase(tab_it);
-
-  // It is possible for all restored contents to be destroyed before a first
-  // paint has arrived.
-  if (tabs_tracked_.empty())
+  if (tracked_tabs_occluded_map_.empty())
     ReportStatsAndSelfDestroy();
 }
 
-SessionRestoreStatsCollector::TabState*
-SessionRestoreStatsCollector::RegisterForNotifications(
-    NavigationController* tab) {
-  registrar_.Add(this, content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                 Source<WebContents>(tab->GetWebContents()));
-  auto result = tabs_tracked_.insert(std::make_pair(tab, TabState(tab)));
-  DCHECK(result.second);
-  TabState* tab_state = &result.first->second;
-  // Register for RenderWidgetHostVisibilityChanged notifications for this tab.
-  tab_state->observed_host = GetRenderWidgetHost(tab);
-  if (tab_state->observed_host)
-    render_widget_host_observations_.AddObservation(tab_state->observed_host);
-  return tab_state;
-}
+void SessionRestoreStatsCollector::RegisterObserverForTab(WebContents* tab) {
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost(tab);
 
-SessionRestoreStatsCollector::TabState*
-SessionRestoreStatsCollector::GetTabState(RenderWidgetHost* tab) {
-  for (auto& pair : tabs_tracked_) {
-    if (pair.second.observed_host == tab)
-      return &pair.second;
-  }
-  // It's possible for this lookup to fail as paint events can be received for
-  // tabs that aren't being tracked.
-  return nullptr;
+  // If we don't have a RenderWidgetHost, we can't track paints for the tab so
+  // ignore it.
+  if (!rwh)
+    return;
+
+  // Assume that tabs do not start out hidden or occluded.
+  auto result = tracked_tabs_occluded_map_.emplace(rwh, false);
+  DCHECK(result.second);
+  render_widget_host_observations_.AddObservation(rwh);
 }
 
 void SessionRestoreStatsCollector::ReportStatsAndSelfDestroy() {
