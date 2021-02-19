@@ -553,7 +553,7 @@ promise_test(async t => {
     await promise_rejects_js(t, TypeError, frame.contentWindow.fetch(echo_url, {
         method: 'POST',
         body: rs
-    });
+    }));
   }, 'FetchEvent#body is a ReadableStream, used and passed to network fallback');
 
 // Test that the request body is sent to network upon network fallback even when
