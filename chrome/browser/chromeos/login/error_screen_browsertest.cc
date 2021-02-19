@@ -327,7 +327,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 };
 
 // Verify that certificate manager dialog opens.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, DISABLED_OpenCertificateConfig) {
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
   while (!ash::LoginScreenTestApi::IsAppsButtonShown()) {
     int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
     ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
@@ -341,7 +341,10 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, DISABLED_OpenCertificateConfig) {
   DialogWindowWaiter waiter(
       l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE));
 
-  test::OobeJS().TapOnPath({"error-message", "configureCertsButton"});
+  const test::UIPath kCertsButton = {"error-message", "configureCertsButton"};
+  test::OobeJS().CreateVisibilityWaiter(true, kCertsButton)->Wait();
+  test::OobeJS().ClickOnPath(kCertsButton);
+
   waiter.Wait();
 }
 
