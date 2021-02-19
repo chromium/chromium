@@ -5325,6 +5325,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.ArcAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.ArcAppsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5335,6 +5338,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.BorealisAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.BorealisAppsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5359,6 +5365,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.CrostiniAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.CrostiniAppsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5381,6 +5390,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.EnabledExtensionsCount"
     units="Number of Extensions" expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.EnabledExtensionsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5391,6 +5403,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.ExtensionAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.ExtensionAppsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5414,6 +5429,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.InstalledExtensionsCount"
     units="Number of Extensions" expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.InstalledExtensionsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5437,6 +5455,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.OtherAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    Replaced with individual app types in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5514,6 +5535,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.TotalAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    We only know the individual app type totals, not the overall total, after
+    M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -5536,12 +5561,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.WebAppsCount" units="Number of Apps"
     expires_after="2021-08-12">
+  <obsolete>
+    Replaced with FamilyUser.WebAppsCount2 in M90.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Around once per day, records the number of recently used web apps in the
     past 28 days.
   </summary>
+</histogram>
+
+<histogram name="FamilyUser.{AppType}AppsCount2" units="Number of Apps"
+    expires_after="2022-02-04">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used {AppType} apps in
+    the past 28 days.
+  </summary>
+  <token key="AppType">
+    <variant name="Arc"/>
+    <variant name="Borealis"/>
+    <variant name="Crostini"/>
+    <variant name="Extension"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
+<histogram name="FamilyUser.{ExtensionStatus}ExtensionsCount2"
+    units="Number of Extensions" expires_after="2022-02-04">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of non-component {ExtensionStatus} regular browser
+    extensions and themes around once per day, regardless of when they were last
+    used.
+  </summary>
+  <token key="ExtensionStatus">
+    <variant name="Enabled" summary="enabled"/>
+    <variant name="Installed" summary="installed"/>
+  </token>
 </histogram>
 
 <histogram name="FaultTolerantHeap" enum="FaultTolerantHeap"
