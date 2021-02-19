@@ -115,6 +115,11 @@ class EventRewriterChromeOS : public EventRewriter {
     // window and EventRewriterChromeOS will not rewrite the event.
     virtual bool IsSearchKeyAcceleratorReserved() const = 0;
 
+    // Used to send a notification about Alt-Click being deprecated.
+    // The notification is only sent once per user session, and this function
+    // returns true if the notification was shown.
+    virtual bool NotifyDeprecatedRightClickRewrite() = 0;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
@@ -224,9 +229,16 @@ class EventRewriterChromeOS : public EventRewriter {
   // that was used to match based on flag/feature settings. |matched_mask|
   // only has a valid value when returning true. However, Alt+Click will not
   // be remapped if |is_alt_left_click_remapping_enabled_| is false.
+  // |matched_alt_deprecation| is set to true if the alt variant has been
+  // deprecated but otherwise would have been remapped. This is used to
+  // show a deprecation notification.
+  //
+  // TODO(zentaro): This function can be removed once the deprecation for
+  // Alt-rewrites is complete.
   bool ShouldRemapToRightClick(const MouseEvent& mouse_event,
                                int flags,
-                               int* matched_mask) const;
+                               int* matched_mask,
+                               bool* matched_alt_deprecation) const;
 
   // Rewrite a particular kind of event.
   EventRewriteStatus RewriteKeyEvent(const KeyEvent& key_event,

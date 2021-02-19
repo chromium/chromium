@@ -43,6 +43,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/test_event_processor.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
+#include "ui/message_center/fake_message_center.h"
 #include "ui/wm/core/window_util.h"
 
 namespace {
@@ -176,7 +177,8 @@ class EventRewriterTest : public ChromeAshTestBase {
     input_method_manager_mock_ = new input_method::MockInputMethodManagerImpl;
     chromeos::input_method::InitializeForTesting(
         input_method_manager_mock_);  // pass ownership
-    delegate_ = std::make_unique<EventRewriterDelegateImpl>(nullptr);
+    delegate_ =
+        std::make_unique<EventRewriterDelegateImpl>(nullptr, &message_center_);
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
     rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(delegate_.get(),
@@ -330,6 +332,11 @@ class EventRewriterTest : public ChromeAshTestBase {
     TestExternalAppleKeyboard(tests);
   }
 
+  void ClearNotifications() {
+    message_center_.RemoveAllNotifications(
+        false, message_center::FakeMessageCenter::RemoveType::ALL);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeChromeUserManager* fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -340,6 +347,7 @@ class EventRewriterTest : public ChromeAshTestBase {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
+  message_center::FakeMessageCenter message_center_;
 };
 
 TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
@@ -3728,12 +3736,14 @@ void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
+  EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
   scoped_feature_list_.InitAndEnableFeature(
       chromeos::features::kUseSearchClickForRightClick);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
 
 TEST_F(EventRewriterTest,
@@ -3741,6 +3751,92 @@ TEST_F(EventRewriterTest,
   scoped_feature_list_.InitAndEnableFeature(
       ::features::kImprovedKeyboardShortcuts);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(message_center_.NotificationCount(), 0);
+}
+
+TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  std::vector<ui::InputDevice> touchpad_devices(1);
+  constexpr int kTouchpadId1 = 10;
+  touchpad_devices[0].id = kTouchpadId1;
+  static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
+      ->OnTouchpadDevicesUpdated(touchpad_devices);
+  std::vector<ui::InputDevice> mouse_devices(1);
+  constexpr int kMouseId = 12;
+  touchpad_devices[0].id = kMouseId;
+  static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
+      ->OnMouseDevicesUpdated(mouse_devices);
+
+  const int deprecated_flags = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN;
+
+  // Alt + Left click => No rewrite.
+  {
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), deprecated_flags,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_press(&press);
+    test_press.set_source_device_id(kTouchpadId1);
+    // Sanity check.
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(deprecated_flags, press.flags());
+    const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+
+    // No rewrite occurred.
+    EXPECT_EQ(deprecated_flags, deprecated_flags & result.flags());
+    EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
+
+    // Expect a deprecation notification.
+    EXPECT_EQ(message_center_.NotificationCount(), 1);
+    ClearNotifications();
+  }
+  {
+    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                           ui::EventTimeForNow(), deprecated_flags,
+                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_release(&release);
+    test_release.set_source_device_id(kTouchpadId1);
+    const ui::MouseEvent result = RewriteMouseButtonEvent(release);
+
+    // No rewrite occurred.
+    EXPECT_EQ(deprecated_flags, deprecated_flags & result.flags());
+    EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
+
+    // Don't expect a new notification on release.
+    EXPECT_EQ(message_center_.NotificationCount(), 0);
+  }
+
+  // No rewrite or notification for non-touchpad devices.
+  {
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), deprecated_flags,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_press(&press);
+    test_press.set_source_device_id(kMouseId);
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(deprecated_flags, press.flags());
+    const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+    EXPECT_EQ(deprecated_flags, deprecated_flags & result.flags());
+    EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
+
+    // No notification expected for this case.
+    EXPECT_EQ(message_center_.NotificationCount(), 0);
+  }
+  {
+    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                           ui::EventTimeForNow(), deprecated_flags,
+                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_release(&release);
+    test_release.set_source_device_id(kMouseId);
+    const ui::MouseEvent result = RewriteMouseButtonEvent(release);
+    EXPECT_EQ(deprecated_flags, deprecated_flags & result.flags());
+    EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
+
+    // No notification expected for this case.
+    EXPECT_EQ(message_center_.NotificationCount(), 0);
+  }
 }
 
 TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {

@@ -3472,6 +3472,11 @@ Here are some things you can try to get started.
       <message name="IDS_APP_ACCESSIBILITY_PAUSED_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an paused installed app.">
         <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App, Paused
       </message>
+
+      <!-- Shortcut deprecation notifications -->
+      <message name="IDS_ASH_SHORTCUT_DEPRECATION_ALT_CLICK" desc="Message telling user to use search/launcher click instead of alt click to emulate a right click. The name of the launcher key varies by device and may be either Search or Launcher depending on the glyph on the keyboard." translateable="false">
+        The Alt + click keyboard shortcut has changed. To use your keyboard to right-click, press the <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click.
+      </message>
     </messages>
   </release>
 </grit>

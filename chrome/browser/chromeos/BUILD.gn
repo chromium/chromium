@@ -24,6 +24,7 @@ source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    "//ash/resources/vector_icons",
     "//ash/strings",
     "//chrome:extra_resources",
     "//chrome:resources",
@@ -545,6 +546,8 @@ source_set("chromeos") {
     "../ash/assistant/assistant_util.h",
     "../ash/mobile/mobile_activator.cc",
     "../ash/mobile/mobile_activator.h",
+    "../ash/notifications/deprecation_notification_controller.cc",
+    "../ash/notifications/deprecation_notification_controller.h",
     "../ash/profiles/profile_helper.cc",
     "../ash/profiles/profile_helper.h",
     "../ash/reset/metrics.h",

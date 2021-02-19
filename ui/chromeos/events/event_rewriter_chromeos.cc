@@ -956,12 +956,14 @@ int EventRewriterChromeOS::GetRemappedModifierMasks(const Event& event,
 bool EventRewriterChromeOS::ShouldRemapToRightClick(
     const MouseEvent& mouse_event,
     int flags,
-    int* matched_mask) const {
+    int* matched_mask,
+    bool* matched_alt_deprecation) const {
   *matched_mask = 0;
+  *matched_alt_deprecation = false;
 
-  // TODO(zentaro): When enabling the improved shortcut flag by default,
-  // decide whether to also enable the search click flag to allow opt out of
-  // just Search+Click.
+  // TODO(crbug.com/1179893): When enabling the improved shortcut flag by
+  // default, decide whether to also enable the search click flag to allow opt
+  // out of just Search+Click.
   const bool use_search_key =
       base::FeatureList::IsEnabled(
           ::chromeos::features::kUseSearchClickForRightClick) ||
@@ -969,12 +971,23 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
   if (use_search_key) {
     if (AreFlagsSet(flags, kSearchLeftButton)) {
       *matched_mask = kSearchLeftButton;
+    } else if (AreFlagsSet(flags, kAltLeftButton) &&
+               is_alt_down_remapping_enabled_) {
+      // When the alt variant is deprecated, report when it would have matched.
+      *matched_alt_deprecation =
+          ((mouse_event.type() == ET_MOUSE_PRESSED) ||
+           pressed_device_ids_.count(mouse_event.source_device_id())) &&
+          IsFromTouchpadDevice(mouse_event);
     }
   } else {
     if (AreFlagsSet(flags, kAltLeftButton) && is_alt_down_remapping_enabled_) {
       *matched_mask = kAltLeftButton;
     }
   }
+
+  // If the event rewrite matched (ie. matched_mask != 0) then
+  // |matched_alt_deprecation| must be false.
+  DCHECK(*matched_mask == 0 || !*matched_alt_deprecation);
 
   return (*matched_mask != 0) &&
          ((mouse_event.type() == ET_MOUSE_PRESSED) ||
@@ -1190,7 +1203,7 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
          key_event.type() == ET_KEY_RELEASED);
   MutableKeyState incoming = *state;
 
-  // TODO(zentaro): This workaround isn't needed once Alt rewrites
+  // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
   // are deprecated.
   if (!::features::IsImprovedKeyboardShortcutsEnabled() &&
       ((incoming.flags & (EF_COMMAND_DOWN | EF_ALT_DOWN)) ==
@@ -1218,7 +1231,7 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
         delegate_ && delegate_->IsSearchKeyAcceleratorReserved();
 
     if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
-      // TODO(zentaro): This workaround isn't needed once Alt rewrites
+      // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
       // are deprecated.
       strict = ::features::IsNewShortcutMappingEnabled();
       if (strict) {
@@ -1269,7 +1282,7 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
     }
   }
 
-  // TODO(zentaro): Remove block once Alt rewrites are deprecated.
+  // TODO(crbug.com/1179893): Remove block once Alt rewrites are deprecated.
   if (!::features::IsImprovedKeyboardShortcutsEnabled() &&
       (incoming.flags & EF_ALT_DOWN) && is_alt_down_remapping_enabled_) {
     static const KeyboardRemapping kNonSearchRemappings[] = {
@@ -1454,7 +1467,7 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
     }
   }
 
-  // TODO(zentaro): Remove this entire block when
+  // TODO(crbug.com/1179893): Remove this entire block when
   // IsImprovedKeyboardShortcutsEnabled is always on.
   if (state->flags & EF_COMMAND_DOWN) {
     const bool strict = ::features::IsNewShortcutMappingEnabled();
@@ -1520,7 +1533,12 @@ int EventRewriterChromeOS::RewriteModifierClick(const MouseEvent& mouse_event,
   // Remap either Alt+Button1 or Search+Button1 to Button3 based on
   // flag/setting.
   int matched_mask;
-  if (ShouldRemapToRightClick(mouse_event, *flags, &matched_mask)) {
+  bool matched_alt_deprecation;
+  if (ShouldRemapToRightClick(mouse_event, *flags, &matched_mask,
+                              &matched_alt_deprecation)) {
+    // If the rewrite matched the deprecation message should also not occur.
+    DCHECK(!matched_alt_deprecation);
+
     *flags &= ~matched_mask;
     *flags |= EF_RIGHT_MOUSE_BUTTON;
     if (mouse_event.type() == ET_MOUSE_PRESSED) {
@@ -1537,6 +1555,8 @@ int EventRewriterChromeOS::RewriteModifierClick(const MouseEvent& mouse_event,
       pressed_device_ids_.erase(mouse_event.source_device_id());
     }
     return EF_RIGHT_MOUSE_BUTTON;
+  } else if (matched_alt_deprecation) {
+    delegate_->NotifyDeprecatedRightClickRewrite();
   }
   return EF_NONE;
 }

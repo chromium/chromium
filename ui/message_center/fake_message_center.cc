@@ -29,7 +29,7 @@ void FakeMessageCenter::RemoveNotificationBlocker(
     NotificationBlocker* blocker) {}
 
 size_t FakeMessageCenter::NotificationCount() const {
-  return 0u;
+  return notifications_.GetNotifications().size();
 }
 
 bool FakeMessageCenter::HasPopupNotifications() const {
@@ -110,7 +110,14 @@ void FakeMessageCenter::RemoveNotification(const std::string& id,
 void FakeMessageCenter::RemoveNotificationsForNotifierId(
     const NotifierId& notifier_id) {}
 
-void FakeMessageCenter::RemoveAllNotifications(bool by_user, RemoveType type) {}
+void FakeMessageCenter::RemoveAllNotifications(bool by_user, RemoveType type) {
+  // Only removing all is supported.
+  DCHECK_EQ(type, RemoveType::ALL);
+  for (const auto* notification : notifications_.GetNotifications()) {
+    // This is safe to remove since GetNotifications() returned a copy.
+    RemoveNotification(notification->id(), by_user);
+  }
+}
 
 void FakeMessageCenter::SetNotificationIcon(const std::string& notification_id,
                                             const gfx::Image& image) {}

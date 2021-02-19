@@ -14,13 +14,21 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/message_center/message_center.h"
 
 namespace chromeos {
 
 EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     wm::ActivationClient* activation_client)
+    : EventRewriterDelegateImpl(activation_client,
+                                message_center::MessageCenter::Get()) {}
+
+EventRewriterDelegateImpl::EventRewriterDelegateImpl(
+    wm::ActivationClient* activation_client,
+    message_center::MessageCenter* message_center)
     : pref_service_for_testing_(nullptr),
-      activation_client_(activation_client) {}
+      activation_client_(activation_client),
+      deprecation_controller_(message_center) {}
 
 EventRewriterDelegateImpl::~EventRewriterDelegateImpl() {}
 
@@ -104,6 +112,10 @@ bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
   aura::Window* active_window = activation_client_->GetActiveWindow();
   return active_window &&
          active_window->GetProperty(ash::kSearchKeyAcceleratorReservedKey);
+}
+
+bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
+  return deprecation_controller_.NotifyDeprecatedRightClickRewrite();
 }
 
 const PrefService* EventRewriterDelegateImpl::GetPrefService() const {

@@ -3371,6 +3371,7 @@ class DesksAcceleratorsTest : public DesksTest,
     return false;
   }
   bool IsSearchKeyAcceleratorReserved() const override { return true; }
+  bool NotifyDeprecatedRightClickRewrite() override { return false; }
 
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
     ui::test::EventGenerator* generator = GetEventGenerator();
