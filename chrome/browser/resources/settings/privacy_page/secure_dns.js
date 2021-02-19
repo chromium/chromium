@@ -411,8 +411,6 @@ Polymer({
   onSecureDnsInputEvaluated_: function(event) {
     if (event.detail.isValid) {
       this.updateDnsPrefs_(this.secureDnsRadio_, event.detail.text);
-    } else if (this.secureDnsRadio_ === SecureDnsMode.SECURE) {
-      this.secureDnsRadio_ = SecureDnsMode.AUTOMATIC;
     }
   },
 });

@@ -350,9 +350,13 @@ suite('SettingsSecureDnsInteractive', function() {
 
   test('SecureDnsInputChange', async function() {
     // Start in secure mode with a custom valid template
+    testElement.prefs = {
+      dns_over_https:
+          {mode: {value: SecureDnsMode.SECURE}, templates: {value: validEntry}},
+    };
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: ['https://dns.example/dns-query'],
+      templates: [validEntry],
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -361,11 +365,10 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals('block', getComputedStyle(secureDnsInput).display);
     assertFalse(secureDnsInput.matches(':focus-within'));
     assertFalse(secureDnsInput.isInvalid());
-    assertEquals('https://dns.example/dns-query', secureDnsInput.value);
+    assertEquals(validEntry, secureDnsInput.value);
     assertEquals(SecureDnsMode.SECURE, secureDnsRadioGroup.selected);
 
-    // Make the template invalid and check that the mode pref changes to
-    // 'automatic'.
+    // Make the template invalid and check that the mode pref doesn't change.
     secureDnsInput.focus();
     assertTrue(focused(secureDnsInput));
     secureDnsInput.value = invalidEntry;
@@ -374,10 +377,10 @@ suite('SettingsSecureDnsInteractive', function() {
     await testBrowserProxy.whenCalled('parseCustomDnsEntry');
     assertFalse(secureDnsInput.matches(':focus-within'));
     assertTrue(secureDnsInput.isInvalid());
-    assertEquals(SecureDnsMode.AUTOMATIC, secureDnsRadioGroup.selected);
+    assertEquals(SecureDnsMode.SECURE, secureDnsRadioGroup.selected);
     assertEquals(
-        SecureDnsMode.AUTOMATIC, testElement.prefs.dns_over_https.mode.value);
-    assertEquals('', testElement.prefs.dns_over_https.templates.value);
+        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+    assertEquals(validEntry, testElement.prefs.dns_over_https.templates.value);
 
     // Receive a pref update and make sure the custom input field is not
     // cleared.
@@ -486,5 +489,13 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(2, testBrowserProxy.getCallCount('probeCustomDnsTemplate'));
     assertFalse(secureDnsInput.matches(':focus-within'));
     assertTrue(secureDnsInput.isInvalid());
+
+    // Unreachable templates are accepted and committed anyway.
+    assertEquals(SecureDnsMode.SECURE, secureDnsRadioGroup.selected);
+    assertEquals(
+        SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
+    assertEquals(
+        `${validEntry} ${otherEntry}`,
+        testElement.prefs.dns_over_https.templates.value);
   });
 });
