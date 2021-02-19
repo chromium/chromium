@@ -31,6 +31,10 @@ void SurfaceResourceHolder::ReceiveFromChild(
 void SurfaceResourceHolder::RefResources(
     const std::vector<TransferableResource>& resources) {
   for (const auto& resource : resources) {
+    // We don't handle reserved resources here.
+    if (resource.id >= kVizReservedRangeStartId)
+      continue;
+
     auto count_it = resource_id_info_map_.find(resource.id);
     DCHECK(count_it != resource_id_info_map_.end());
     count_it->second.refs_holding_resource_alive++;
@@ -42,6 +46,10 @@ void SurfaceResourceHolder::UnrefResources(
   std::vector<ReturnedResource> resources_available_to_return;
 
   for (const auto& resource : resources) {
+    // We don't handle reserved resources here.
+    if (resource.id >= kVizReservedRangeStartId)
+      continue;
+
     auto count_it = resource_id_info_map_.find(resource.id);
     if (count_it == resource_id_info_map_.end())
       continue;

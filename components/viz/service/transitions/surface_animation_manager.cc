@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 
 namespace viz {
@@ -133,6 +135,26 @@ double SurfaceAnimationManager::CalculateAnimationProgress() const {
 
 void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   // TODO(vmpstr): Do the interpolation and saving things back to surface.
+}
+
+void SurfaceAnimationManager::RefResources(
+    const std::vector<TransferableResource>& resources) {
+  if (transferable_resource_tracker_.is_empty())
+    return;
+  for (const auto& resource : resources) {
+    if (resource.id >= kVizReservedRangeStartId)
+      transferable_resource_tracker_.RefResource(resource.id);
+  }
+}
+
+void SurfaceAnimationManager::UnrefResources(
+    const std::vector<ReturnedResource>& resources) {
+  if (transferable_resource_tracker_.is_empty())
+    return;
+  for (const auto& resource : resources) {
+    if (resource.id >= kVizReservedRangeStartId)
+      transferable_resource_tracker_.UnrefResource(resource.id);
+  }
 }
 
 }  // namespace viz
