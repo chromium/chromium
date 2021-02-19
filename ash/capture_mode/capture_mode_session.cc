@@ -336,20 +336,29 @@ class CaptureModeSession::CursorSetter {
         cursor_manager_->GetCursor().type();
     const ui::mojom::CursorType new_cursor_type = cursor.type();
     const CaptureModeType capture_type = CaptureModeController::Get()->type();
+    const float device_scale_factor =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(GetPreferredRootWindow())
+            .device_scale_factor();
 
-    // For custom cursor, update the cursor if we need to change between image
-    // capture and video capture or the screen orientation changes.
+    // For custom cursors, update the cursor if we need to change between image
+    // capture and video capture, if the device scale factor changes, or if the
+    // screen orientation changes.
     const OrientationLockType orientation = GetCurrentScreenOrientation();
     const bool is_cursor_changed =
         current_cursor_type != new_cursor_type ||
         (current_cursor_type == ui::mojom::CursorType::kCustom &&
          (custom_cursor_capture_type_ != capture_type ||
+          custom_cursor_device_scale_factor_ != device_scale_factor ||
           current_orientation_ != orientation));
     const bool is_cursor_visibility_changed =
         cursor_manager_->IsCursorVisible() !=
         (new_cursor_type != ui::mojom::CursorType::kNone);
-    if (new_cursor_type == ui::mojom::CursorType::kCustom)
+    if (new_cursor_type == ui::mojom::CursorType::kCustom) {
       custom_cursor_capture_type_ = capture_type;
+      custom_cursor_device_scale_factor_ = device_scale_factor;
+    }
+
     current_orientation_ = orientation;
 
     if (!is_cursor_changed && !is_cursor_visibility_changed)
@@ -418,6 +427,10 @@ class CaptureModeSession::CursorSetter {
   // the mouse cursor, and kVideo if we're using video record icon as the mouse
   // cursor.
   CaptureModeType custom_cursor_capture_type_ = CaptureModeType::kImage;
+
+  // Records the current device scale factor. If the DSF changes, we will need
+  // to update the cursor if we're using a custom cursor.
+  float custom_cursor_device_scale_factor_ = 1.f;
 
   // Records the current screen orientation. If screen orientation changes, we
   // will need to update the cursor if we're using custom cursor.
@@ -1575,6 +1588,11 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
     capture_mode_bar_widget_->SetBounds(
         CaptureModeBarView::GetBounds(current_root_));
   }
+
+  // Because we use custom cursors for region and full screen capture, we need
+  // to update the cursor in case the display DSF changes.
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
 
   // The following call to UpdateCaptureRegion will update the capture label
   // bounds, moving it onto the correct display, but will early return if the
