@@ -2262,7 +2262,7 @@
   {
     "name": "enable-resampling-scroll-events-experimental-prediction",
     "owners": [ "input-dev" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-resource-loading-hints",
