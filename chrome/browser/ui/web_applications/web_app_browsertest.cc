@@ -135,8 +135,8 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
     static int index = 0;
 
     base::HistogramTester tester;
-    const std::string base_url = "https://example.com/path";
-    const GURL app_url(base_url + base::NumberToString(index++));
+    const GURL app_url = https_server()->GetURL(
+        base::StringPrintf("/web_apps/basic.html?index=%d", index++));
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url;
@@ -147,23 +147,28 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
 
     AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
+    DCHECK(app_browser->is_type_app());
     DCHECK(app_browser->app_controller());
     tester.ExpectUniqueSample(
         kLaunchWebAppDisplayModeHistogram,
         display_override_mode ? *display_override_mode : display_mode, 1);
 
-    NavigateToURLAndWait(app_browser, app_url);
+    content::WebContents* const web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(WaitForLoadStop(web_contents));
+    EXPECT_EQ(app_url, web_contents->GetVisibleURL());
 
     bool matches;
+    const bool result = app_browser->app_controller()->HasMinimalUiButtons();
     EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        app_browser->tab_strip_model()->GetActiveWebContents(),
+        web_contents,
         "window.domAutomationController.send(window.matchMedia('(display-mode: "
         "minimal-ui)').matches)",
         &matches));
-    EXPECT_EQ(app_browser->app_controller()->HasMinimalUiButtons(), matches);
+    EXPECT_EQ(result, matches);
     CloseAndWait(app_browser);
 
-    return matches;
+    return result;
   }
 };
 
