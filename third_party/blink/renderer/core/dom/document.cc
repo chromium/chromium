@@ -3359,7 +3359,6 @@ void Document::open(LocalDOMWindow* entered_window,
 
       dom_window_->GetSecurityContext().SetSecurityOrigin(
           entered_window->GetMutableSecurityOrigin());
-      dom_window_->SetReferrerPolicy(entered_window->GetReferrerPolicy());
       cookie_url_ = entered_window->document()->CookieURL();
     }
   }
