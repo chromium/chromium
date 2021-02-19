@@ -20,6 +20,7 @@
 
 namespace blink {
 
+class WebContentSettingsClient;
 struct WebMediaKeySystemConfiguration;
 class WebString;
 
@@ -33,8 +34,10 @@ class MediaPermission;
 
 class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
  public:
-  KeySystemConfigSelector(KeySystems* key_systems,
-                          MediaPermission* media_permission);
+  KeySystemConfigSelector(
+      KeySystems* key_systems,
+      MediaPermission* media_permission,
+      blink::WebContentSettingsClient* content_settings_client);
 
   ~KeySystemConfigSelector();
 
@@ -110,7 +113,13 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
           encryption_scheme);
 
   KeySystems* const key_systems_;
+
+  // These objects are unowned but their pointers are always valid. They have
+  // the same lifetime as RenderFrameImpl, and |this| also has the same lifetime
+  // as RenderFrameImpl. RenderFrameImpl owns content::MediaFactory which owns
+  // WebEncryptedMediaClientImpl which owns |this|.
   MediaPermission* media_permission_;
+  blink::WebContentSettingsClient* content_settings_client_;
 
   // A callback used to check whether a media type is supported. Only set in
   // tests. If null the implementation will check the support using MimeUtil.

@@ -100,9 +100,12 @@ class WebEncryptedMediaClientImpl::Reporter {
 
 WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
     CdmFactory* cdm_factory,
-    MediaPermission* media_permission)
+    MediaPermission* media_permission,
+    blink::WebContentSettingsClient* content_settings_client)
     : cdm_factory_(cdm_factory),
-      key_system_config_selector_(KeySystems::GetInstance(), media_permission) {
+      key_system_config_selector_(KeySystems::GetInstance(),
+                                  media_permission,
+                                  content_settings_client) {
   DCHECK(cdm_factory_);
 }
 

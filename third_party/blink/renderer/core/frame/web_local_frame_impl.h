@@ -253,6 +253,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void RemoveSpellingMarkers() override;
   void RemoveSpellingMarkersUnderWords(
       const WebVector<WebString>& words) override;
+  WebContentSettingsClient* GetContentSettingsClient() const override;
   void SetContentSettingsClient(WebContentSettingsClient*) override;
   void ReloadImage(const WebNode&) override;
   bool IsAllowedToDownload() const override;
@@ -453,10 +454,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 
   WebFrameWidgetImpl* FrameWidgetImpl() { return frame_widget_; }
-
-  WebContentSettingsClient* GetContentSettingsClient() {
-    return content_settings_client_;
-  }
 
   WebTextCheckClient* GetTextCheckerClient() const {
     return text_check_client_;

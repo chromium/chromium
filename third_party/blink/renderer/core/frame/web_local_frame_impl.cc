@@ -755,6 +755,10 @@ void WebLocalFrameImpl::SetName(const WebString& name) {
   GetFrame()->Tree().SetName(name, FrameTree::kReplicate);
 }
 
+WebContentSettingsClient* WebLocalFrameImpl::GetContentSettingsClient() const {
+  return content_settings_client_;
+}
+
 void WebLocalFrameImpl::SetContentSettingsClient(
     WebContentSettingsClient* client) {
   content_settings_client_ = client;

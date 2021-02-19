@@ -21,6 +21,7 @@
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -336,9 +337,11 @@ class KeySystemConfigSelector::ConfigState {
 
 KeySystemConfigSelector::KeySystemConfigSelector(
     KeySystems* key_systems,
-    MediaPermission* media_permission)
+    MediaPermission* media_permission,
+    blink::WebContentSettingsClient* content_settings_client)
     : key_systems_(key_systems),
       media_permission_(media_permission),
+      content_settings_client_(content_settings_client),
       is_supported_media_type_cb_(base::BindRepeating(&IsSupportedMediaType)) {
   DCHECK(key_systems_);
   DCHECK(media_permission_);
@@ -637,8 +640,14 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // 9. If persistent state requirement is "optional" and persisting state is
   //    not allowed according to restrictions, set persistent state requirement
   //    to "not-allowed".
+  const bool local_storage_allowed =
+      !content_settings_client_ ||
+      content_settings_client_->AllowStorageAccessSync(
+          blink::WebContentSettingsClient::StorageType::kLocalStorage);
   EmeFeatureSupport persistent_state_support =
-      key_systems_->GetPersistentStateSupport(key_system);
+      local_storage_allowed
+          ? key_systems_->GetPersistentStateSupport(key_system)
+          : EmeFeatureSupport::NOT_SUPPORTED;
   if (persistent_state == EmeFeatureRequirement::kOptional) {
     if (persistent_state_support == EmeFeatureSupport::INVALID ||
         persistent_state_support == EmeFeatureSupport::NOT_SUPPORTED) {

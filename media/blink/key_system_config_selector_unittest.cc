@@ -15,6 +15,7 @@
 #include "media/base/mime_util.h"
 #include "media/blink/key_system_config_selector.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -364,20 +365,36 @@ class FakeMediaPermission : public MediaPermission {
   bool is_encrypted_media_enabled = true;
 };
 
+class FakeWebContentSettingsClient : public blink::WebContentSettingsClient {
+ public:
+  bool AllowStorageAccessSync(StorageType storage_type) override {
+    if (storage_type ==
+        blink::WebContentSettingsClient::StorageType::kLocalStorage) {
+      return local_storage_allowed_;
+    }
+    return true;
+  }
+
+  bool local_storage_allowed_ = true;
+};
+
 }  // namespace
 
 class KeySystemConfigSelectorTest : public testing::Test {
  public:
   KeySystemConfigSelectorTest()
-      : key_systems_(new FakeKeySystems()),
-        media_permission_(new FakeMediaPermission()) {}
+      : key_systems_(std::make_unique<FakeKeySystems>()),
+        media_permission_(std::make_unique<FakeMediaPermission>()),
+        content_settings_client_(
+            std::make_unique<FakeWebContentSettingsClient>()) {}
 
   void SelectConfig() {
     media_permission_->requests = 0;
     succeeded_count_ = 0;
     not_supported_count_ = 0;
-    KeySystemConfigSelector key_system_config_selector(key_systems_.get(),
-                                                       media_permission_.get());
+    KeySystemConfigSelector key_system_config_selector(
+        key_systems_.get(), media_permission_.get(),
+        content_settings_client_.get());
 
     key_system_config_selector.SetIsSupportedMediaTypeCBForTesting(
         base::BindRepeating(&IsSupportedMediaType));
@@ -434,6 +451,7 @@ class KeySystemConfigSelectorTest : public testing::Test {
 
   std::unique_ptr<FakeKeySystems> key_systems_;
   std::unique_ptr<FakeMediaPermission> media_permission_;
+  std::unique_ptr<FakeWebContentSettingsClient> content_settings_client_;
 
   // Held values for the call to SelectConfig().
   WebString key_system_ = WebString::FromUTF8(kSupportedKeySystem);
@@ -708,6 +726,17 @@ TEST_F(KeySystemConfigSelectorTest, PersistentState_Blocked) {
   config.persistent_state = MediaKeysRequirement::kNotAllowed;
   configs_.push_back(config);
 
+  SelectConfigReturnsError();
+}
+
+TEST_F(KeySystemConfigSelectorTest, PersistentState_BlockedByContentSettings) {
+  key_systems_->persistent_state = EmeFeatureSupport::ALWAYS_ENABLED;
+
+  auto config = UsableConfiguration();
+  config.persistent_state = MediaKeysRequirement::kRequired;
+  configs_.push_back(config);
+
+  content_settings_client_->local_storage_allowed_ = false;
   SelectConfigReturnsError();
 }
 

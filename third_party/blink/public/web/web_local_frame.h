@@ -556,6 +556,7 @@ class WebLocalFrame : public WebFrame {
 
   // Content Settings -------------------------------------------------------
 
+  virtual WebContentSettingsClient* GetContentSettingsClient() const = 0;
   virtual void SetContentSettingsClient(WebContentSettingsClient*) = 0;
 
   // Image reload -----------------------------------------------------------
