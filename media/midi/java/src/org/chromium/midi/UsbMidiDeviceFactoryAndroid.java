@@ -16,6 +16,7 @@ import android.hardware.usb.UsbManager;
 import android.os.Parcelable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -150,7 +151,8 @@ class UsbMidiDeviceFactoryAndroid {
                 // There is at least one interface supporting MIDI.
                 mUsbManager.requestPermission(device,
                         PendingIntent.getBroadcast(ContextUtils.getApplicationContext(), 0,
-                                new Intent(ACTION_USB_PERMISSION), 0));
+                                new Intent(ACTION_USB_PERMISSION),
+                                IntentUtils.getPendingIntentMutabilityFlag(true)));
                 mRequestedDevices.add(device);
                 break;
             }
