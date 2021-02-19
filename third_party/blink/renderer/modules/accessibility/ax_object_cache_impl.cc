@@ -2399,7 +2399,7 @@ void AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout(
   AXObject* ax_image_link =
       ax_image ? ax_image->FirstChildIncludingIgnored() : nullptr;
   HTMLMapElement* previous_map =
-      ax_image_link
+      ax_image_link && ax_image_link->GetNode()
           ? Traversal<HTMLMapElement>::FirstAncestor(*ax_image_link->GetNode())
           : nullptr;
   // Both the old and new image may change image <--> image map.
