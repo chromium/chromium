@@ -10,5 +10,6 @@
 // <include src="../../../system_apps/public/js/message_pipe.js">
 // <include src="types.js">
 // <include src="namespace.js">
+// <include src="dpsl_types.js">
 // <include src="telemetry_requester.js">
 // <include src="diagnostics_manager.js">
