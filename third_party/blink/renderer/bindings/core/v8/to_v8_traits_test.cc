@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 
@@ -183,6 +184,13 @@ TEST(ToV8TraitsTest, EmptyString) {
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty_string);
   const char* const empty = "";
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty);
+}
+
+TEST(ToV8TraitsTest, Promise) {
+  const V8TestingScope scope;
+  ScriptPromise::InternalResolver resolver(scope.GetScriptState());
+  ScriptPromise promise = resolver.Promise();
+  TEST_TOV8_TRAITS(scope, IDLPromise, "[object Promise]", promise);
 }
 
 TEST(ToV8TraitsTest, Vector) {
@@ -430,6 +438,26 @@ TEST(ToV8TraitsTest, NullableEnumeration) {
       V8AddressSpace::Create("public");
   TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "public",
                    v8_address_space);
+}
+
+TEST(ToV8TraitsTest, NullableDate) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDate>, "null", base::nullopt);
+
+  base::Time expected_date;
+  EXPECT_TRUE(
+      base::Time::FromString("Fri, 01 Jan 2021 00:00:00 GMT", &expected_date));
+  v8::Local<v8::Value> result;
+  ASSERT_TRUE(
+      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
+          scope.GetScriptState(), base::Optional<base::Time>(expected_date))
+          .ToLocal(&result));
+  String actual_string =
+      ToCoreString(result->ToString(scope.GetContext()).ToLocalChecked());
+  base::Time actual_date;
+  EXPECT_TRUE(
+      base::Time::FromString(actual_string.Ascii().c_str(), &actual_date));
+  EXPECT_EQ(expected_date, actual_date);
 }
 
 TEST(ToV8TraitsTest, Union) {

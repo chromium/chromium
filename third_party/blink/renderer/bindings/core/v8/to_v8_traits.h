@@ -167,6 +167,17 @@ struct ToV8Traits<
   }
 };
 
+// Promise
+template <>
+struct ToV8Traits<IDLPromise> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const ScriptPromise& script_promise)
+      WARN_UNUSED_RESULT {
+    DCHECK(!script_promise.IsEmpty());
+    return script_promise.V8Value();
+  }
+};
+
 // ScriptWrappable
 template <typename T>
 struct ToV8Traits<
@@ -593,6 +604,21 @@ struct ToV8Traits<IDLNullable<T>,
     if (!enumeration)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, *enumeration);
+  }
+};
+
+// Nullable Date
+// IDLDate must be used as IDLNullable<IDLDate>.
+template <>
+struct ToV8Traits<IDLNullable<IDLDate>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const base::Optional<base::Time> date)
+      WARN_UNUSED_RESULT {
+    if (!date)
+      return v8::Null(script_state->GetIsolate());
+    return v8::Date::New(script_state->GetContext(),
+                         date->ToJsTimeIgnoringNull())
+        .ToLocalChecked();
   }
 };
 
