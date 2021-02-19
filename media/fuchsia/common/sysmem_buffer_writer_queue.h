@@ -55,12 +55,18 @@ class SysmemBufferWriterQueue {
   void ResetBuffers();
 
   // Resets pending queue position to the start of the queue and pauses the
-  // writer. All pending buffers will be resent when Unpause() is
-  // called.
+  // writer. All pending buffers will be resent when Unpause() is called.
+  // This method is used to handle OnStreamFailed event received from
+  // StreamProcessor, particularly to handle NoKey error in CDM. When that event
+  // is received the StreamProcessor client should assumes that all queued
+  // packets were not processed. Once the error condition is resolved (e.g. by
+  // adding a new decryption key), the client should start a new stream and
+  // resend all failed packets, which is achieved by calling Unpause()
   void ResetPositionAndPause();
 
-  // Normally this should be called after restarting a stream in a
-  // StreamProcessor.
+  // Resumes sending packets on stream that was previously paused with
+  // ResetPositionAndPause(). Should be called after starting a new stream in
+  // the StreamProcessor (e.g. by calling StreamProcessorHelper::Reset()).
   void Unpause();
 
   // Number of buffers in the sysmem collection or 0 if sysmem buffers has not

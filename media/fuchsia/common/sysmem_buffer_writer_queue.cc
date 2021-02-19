@@ -37,9 +37,9 @@ struct SysmemBufferWriterQueue::PendingBuffer {
   // be released.
   bool is_complete = false;
 
-  // Index of the last buffer in the sysmem buffer collection that was used for
-  // this input buffer. Valid only when |bytes_left()==0|.
-  size_t tail_sysmem_buffer_index = 0;
+  // Index of the last buffer in the sysmem buffer collection that was used to
+  // send this input buffer. Should be set only when |bytes_left()==0|.
+  base::Optional<size_t> tail_sysmem_buffer_index;
 };
 
 SysmemBufferWriterQueue::SysmemBufferWriterQueue() = default;
@@ -137,6 +137,11 @@ void SysmemBufferWriterQueue::ResetPositionAndPause() {
   for (auto& buffer : pending_buffers_) {
     buffer.buffer_pos = 0;
     buffer.is_complete = false;
+
+    // All packets that were pending will need to be resent. Reset
+    // |tail_sysmem_buffer_index| to ensure that these packets are not removed
+    // from the queue in ReleaseBuffer().
+    buffer.tail_sysmem_buffer_index = base::nullopt;
   }
   input_queue_position_ = 0;
   is_paused_ = true;
