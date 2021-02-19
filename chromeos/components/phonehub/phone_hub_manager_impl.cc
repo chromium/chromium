@@ -8,7 +8,6 @@
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/browser_tabs_model_controller.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
-#include "chromeos/components/phonehub/connection_manager_impl.h"
 #include "chromeos/components/phonehub/connection_scheduler_impl.h"
 #include "chromeos/components/phonehub/cros_state_sender.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
@@ -29,6 +28,7 @@
 #include "chromeos/components/phonehub/tether_controller_impl.h"
 #include "chromeos/components/phonehub/user_action_recorder_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {
@@ -38,13 +38,14 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     PrefService* pref_service,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
     const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
     : connection_manager_(
-          std::make_unique<ConnectionManagerImpl>(multidevice_setup_client,
-                                                  device_sync_client,
-                                                  secure_channel_client)),
+          std::make_unique<secure_channel::ConnectionManagerImpl>(
+              multidevice_setup_client,
+              device_sync_client,
+              secure_channel_client)),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client,

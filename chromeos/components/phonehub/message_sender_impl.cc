@@ -9,8 +9,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/components/phonehub/util/histogram_util.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -30,7 +30,8 @@ std::string SerializeMessage(proto::MessageType message_type,
 
 }  // namespace
 
-MessageSenderImpl::MessageSenderImpl(ConnectionManager* connection_manager)
+MessageSenderImpl::MessageSenderImpl(
+    secure_channel::ConnectionManager* connection_manager)
     : connection_manager_(connection_manager) {
   DCHECK(connection_manager_);
 }

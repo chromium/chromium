@@ -12,8 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/components/phonehub/fake_connection_manager.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -27,7 +27,8 @@ class MessageSenderImplTest : public testing::Test {
   ~MessageSenderImplTest() override = default;
 
   void SetUp() override {
-    fake_connection_manager_ = std::make_unique<FakeConnectionManager>();
+    fake_connection_manager_ =
+        std::make_unique<secure_channel::FakeConnectionManager>();
     message_sender_ =
         std::make_unique<MessageSenderImpl>(fake_connection_manager_.get());
   }
@@ -55,7 +56,8 @@ class MessageSenderImplTest : public testing::Test {
     EXPECT_EQ(expected_proto_message, actual_proto_message);
   }
 
-  std::unique_ptr<FakeConnectionManager> fake_connection_manager_;
+  std::unique_ptr<secure_channel::FakeConnectionManager>
+      fake_connection_manager_;
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 

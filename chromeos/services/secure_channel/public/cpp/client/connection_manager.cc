@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/phonehub/connection_manager.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
-namespace phonehub {
+namespace secure_channel {
 
 ConnectionManager::ConnectionManager() = default;
 ConnectionManager::~ConnectionManager() = default;
@@ -44,5 +44,5 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace phonehub
+}  // namespace secure_channel
 }  // namespace chromeos

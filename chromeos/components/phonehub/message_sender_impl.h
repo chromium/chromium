@@ -14,13 +14,17 @@
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
-namespace phonehub {
 
+namespace secure_channel {
 class ConnectionManager;
+}  // namespace secure_channel
+
+namespace phonehub {
 
 class MessageSenderImpl : public MessageSender {
  public:
-  MessageSenderImpl(ConnectionManager* connection_manager);
+  explicit MessageSenderImpl(
+      secure_channel::ConnectionManager* connection_manager);
   ~MessageSenderImpl() override;
 
   // MessageSender:
@@ -38,7 +42,7 @@ class MessageSenderImpl : public MessageSender {
   void SendMessage(proto::MessageType message_type,
                    google::protobuf::MessageLite* request);
 
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
 };
 
 }  // namespace phonehub

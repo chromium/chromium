@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/phonehub/fake_connection_manager.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 
 namespace chromeos {
-namespace phonehub {
+namespace secure_channel {
 
 FakeConnectionManager::FakeConnectionManager()
     : status_(Status::kDisconnected) {}
@@ -20,7 +20,8 @@ void FakeConnectionManager::SetStatus(Status status) {
   NotifyStatusChanged();
 }
 
-ConnectionManager::Status FakeConnectionManager::GetStatus() const {
+secure_channel::ConnectionManager::Status FakeConnectionManager::GetStatus()
+    const {
   return status_;
 }
 
@@ -39,5 +40,5 @@ void FakeConnectionManager::SendMessage(const std::string& payload) {
   sent_messages_.push_back(payload);
 }
 
-}  // namespace phonehub
+}  // namespace secure_channel
 }  // namespace chromeos

@@ -130,7 +130,7 @@ bool IsFeatureDisabledByUser(FeatureState feature_state) {
 FeatureStatusProviderImpl::FeatureStatusProviderImpl(
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    ConnectionManager* connection_manager,
+    secure_channel::ConnectionManager* connection_manager,
     session_manager::SessionManager* session_manager,
     PowerManagerClient* power_manager_client)
     : device_sync_client_(device_sync_client),
@@ -284,11 +284,11 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
     return FeatureStatus::kUnavailableBluetoothOff;
 
   switch (connection_manager_->GetStatus()) {
-    case ConnectionManager::Status::kDisconnected:
+    case secure_channel::ConnectionManager::Status::kDisconnected:
       return FeatureStatus::kEnabledButDisconnected;
-    case ConnectionManager::Status::kConnecting:
+    case secure_channel::ConnectionManager::Status::kConnecting:
       return FeatureStatus::kEnabledAndConnecting;
-    case ConnectionManager::Status::kConnected:
+    case secure_channel::ConnectionManager::Status::kConnected:
       return FeatureStatus::kEnabledAndConnected;
   }
 

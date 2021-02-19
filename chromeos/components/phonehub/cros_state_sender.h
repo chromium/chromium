@@ -6,8 +6,8 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_
 
 #include "base/timer/timer.h"
-#include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -18,12 +18,12 @@ class PhoneModel;
 // Responsible for sending the Chrome OS's device state to the user's
 // phone.
 class CrosStateSender
-    : public ConnectionManager::Observer,
+    : public secure_channel::ConnectionManager::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
   CrosStateSender(
       MessageSender* message_sender,
-      ConnectionManager* connection_manager,
+      secure_channel::ConnectionManager* connection_manager,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       PhoneModel* phone_model);
   ~CrosStateSender() override;
@@ -33,14 +33,14 @@ class CrosStateSender
 
   CrosStateSender(
       MessageSender* message_sender,
-      ConnectionManager* connection_manager,
+      secure_channel::ConnectionManager* connection_manager,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       PhoneModel* phone_model,
       std::unique_ptr<base::OneShotTimer> timer);
 
   void AttemptUpdateCrosState();
 
-  // ConnectionManager::Observer:
+  // secure_channel::ConnectionManager::Observer:
   void OnConnectionStatusChanged() override;
 
   // MultiDeviceSetupClient::Observer:
@@ -54,7 +54,7 @@ class CrosStateSender
   void OnRetryTimerFired();
 
   MessageSender* message_sender_;
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   PhoneModel* phone_model_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;

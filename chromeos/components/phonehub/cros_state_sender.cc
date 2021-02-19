@@ -30,7 +30,7 @@ using multidevice_setup::mojom::FeatureState;
 
 CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
-    ConnectionManager* connection_manager,
+    secure_channel::ConnectionManager* connection_manager,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     PhoneModel* phone_model)
     : CrosStateSender(message_sender,
@@ -41,7 +41,7 @@ CrosStateSender::CrosStateSender(
 
 CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
-    ConnectionManager* connection_manager,
+    secure_channel::ConnectionManager* connection_manager,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     PhoneModel* phone_model,
     std::unique_ptr<base::OneShotTimer> timer)
@@ -74,7 +74,7 @@ void CrosStateSender::AttemptUpdateCrosState() {
 
   // Wait for connection to be established.
   if (connection_manager_->GetStatus() !=
-      ConnectionManager::Status::kConnected) {
+      secure_channel::ConnectionManager::Status::kConnected) {
     PA_LOG(VERBOSE) << "Could not start AttemptUpdateCrosState() because "
                     << "connection manager status is: "
                     << connection_manager_->GetStatus();
@@ -105,7 +105,7 @@ void CrosStateSender::OnRetryTimerFired() {
   // retry sending the cros state.
   if (phone_model_->phone_status_model().has_value() ||
       connection_manager_->GetStatus() !=
-          ConnectionManager::Status::kConnected) {
+          secure_channel::ConnectionManager::Status::kConnected) {
     return;
   }
 

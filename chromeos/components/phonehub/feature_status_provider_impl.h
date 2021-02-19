@@ -7,11 +7,11 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -27,14 +27,14 @@ class FeatureStatusProviderImpl
       public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public device::BluetoothAdapter::Observer,
-      public ConnectionManager::Observer,
+      public secure_channel::ConnectionManager::Observer,
       public session_manager::SessionManagerObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
   FeatureStatusProviderImpl(
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      ConnectionManager* connection_manager,
+      secure_channel::ConnectionManager* connection_manager,
       session_manager::SessionManager* session_manager,
       PowerManagerClient* power_manager_client);
   ~FeatureStatusProviderImpl() override;
@@ -69,7 +69,7 @@ class FeatureStatusProviderImpl
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
 
-  // ConnectionManager::Observer:
+  // secure_channel::ConnectionManager::Observer:
   void OnConnectionStatusChanged() override;
 
   // SessionManagerObserver:
@@ -83,7 +83,7 @@ class FeatureStatusProviderImpl
 
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
   session_manager::SessionManager* session_manager_;
   PowerManagerClient* power_manager_client_;
 

@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/phonehub/fake_connection_manager.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -34,7 +34,8 @@ class CrosStateSenderTest : public testing::Test {
     mock_timer_ = timer.get();
 
     fake_message_sender_ = std::make_unique<FakeMessageSender>();
-    fake_connection_manager_ = std::make_unique<FakeConnectionManager>();
+    fake_connection_manager_ =
+        std::make_unique<secure_channel::FakeConnectionManager>();
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     phone_model_ = std::make_unique<MutablePhoneModel>();
@@ -47,7 +48,8 @@ class CrosStateSenderTest : public testing::Test {
   base::TimeDelta GetRetryDelay() { return cros_state_sender_->retry_delay_; }
 
   std::unique_ptr<FakeMessageSender> fake_message_sender_;
-  std::unique_ptr<FakeConnectionManager> fake_connection_manager_;
+  std::unique_ptr<secure_channel::FakeConnectionManager>
+      fake_connection_manager_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
@@ -58,7 +60,8 @@ class CrosStateSenderTest : public testing::Test {
 };
 
 TEST_F(CrosStateSenderTest, PerformUpdateCrosStateRetrySequence) {
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnected);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
   // The retry time follows a doubling sequence.
@@ -85,14 +88,17 @@ TEST_F(CrosStateSenderTest, PerformUpdateCrosStateRetrySequence) {
   EXPECT_EQ(4u, fake_message_sender_->GetCrosStateCallCount());
   EXPECT_EQ(base::TimeDelta::FromSeconds(16u), GetRetryDelay());
 
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnecting);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnecting);
   EXPECT_FALSE(mock_timer_->IsRunning());
 
   // Cancellation of the retry timer occurs properly when an attempt is
   // reinitiated but the status is not connecting.
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnected);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
   EXPECT_TRUE(mock_timer_->IsRunning());
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnecting);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnecting);
   EXPECT_FALSE(mock_timer_->IsRunning());
 }
 
@@ -105,13 +111,15 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
   EXPECT_FALSE(mock_timer_->IsRunning());
 
   // Update connection state to connecting.
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnecting);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnecting);
   // Connecting state does not trigger a request message.
   EXPECT_EQ(0u, fake_message_sender_->GetCrosStateCallCount());
   EXPECT_FALSE(mock_timer_->IsRunning());
 
   // Simulate connected state. Expect a new message to be sent.
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnected);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
   EXPECT_TRUE(fake_message_sender_->GetRecentCrosState());
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
@@ -121,7 +129,8 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
   // Simulate disconnected state, this should not trigger a new request.
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kDisconnected);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kDisconnected);
   EXPECT_TRUE(fake_message_sender_->GetRecentCrosState());
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
   EXPECT_FALSE(mock_timer_->IsRunning());
@@ -129,7 +138,8 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
 
 TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   // Set connection state to be connected.
-  fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnected);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
 
   // Phone model is populated.
   phone_model_->SetPhoneStatusModel(CreateFakePhoneStatusModel());

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_MANAGER_H_
-#define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_MANAGER_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_
 
 #include <vector>
-#include "chromeos/components/phonehub/connection_manager.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
-namespace phonehub {
+namespace secure_channel {
 
-class FakeConnectionManager : public ConnectionManager {
+class FakeConnectionManager : public secure_channel::ConnectionManager {
  public:
   FakeConnectionManager();
   ~FakeConnectionManager() override;
@@ -41,7 +41,7 @@ class FakeConnectionManager : public ConnectionManager {
   size_t num_disconnect_calls_ = 0;
 };
 
-}  // namespace phonehub
+}  // namespace secure_channel
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_MANAGER_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_

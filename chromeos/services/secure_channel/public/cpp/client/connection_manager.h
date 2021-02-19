@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_PHONEHUB_CONNECTION_MANAGER_H_
-#define CHROMEOS_COMPONENTS_PHONEHUB_CONNECTION_MANAGER_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_MANAGER_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_MANAGER_H_
 
 #include <ostream>
 
@@ -11,7 +11,7 @@
 #include "base/observer_list_types.h"
 
 namespace chromeos {
-namespace phonehub {
+namespace secure_channel {
 
 // Responsible for creating and maintaining a connection to the user's phone.
 class ConnectionManager {
@@ -72,7 +72,7 @@ class ConnectionManager {
 std::ostream& operator<<(std::ostream& stream,
                          ConnectionManager::Status status);
 
-}  // namespace phonehub
+}  // namespace secure_channel
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_PHONEHUB_CONNECTION_MANAGER_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_MANAGER_H_

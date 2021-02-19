@@ -22,14 +22,14 @@ constexpr base::TimeDelta kEmptyPhoneStatusModelGracePeriodTimeDelta =
 }  // namespace
 
 InvalidConnectionDisconnector::InvalidConnectionDisconnector(
-    ConnectionManager* connection_manager,
+    secure_channel::ConnectionManager* connection_manager,
     PhoneModel* phone_model)
     : InvalidConnectionDisconnector(connection_manager,
                                     phone_model,
                                     std::make_unique<base::OneShotTimer>()) {}
 
 InvalidConnectionDisconnector::InvalidConnectionDisconnector(
-    ConnectionManager* connection_manager,
+    secure_channel::ConnectionManager* connection_manager,
     PhoneModel* phone_model,
     std::unique_ptr<base::OneShotTimer> timer)
     : connection_manager_(connection_manager),
@@ -64,7 +64,7 @@ void InvalidConnectionDisconnector::OnTimerFired() {
 
 bool InvalidConnectionDisconnector::IsPhoneConnected() const {
   return connection_manager_->GetStatus() ==
-         ConnectionManager::Status::kConnected;
+         secure_channel::ConnectionManager::Status::kConnected;
 }
 
 bool InvalidConnectionDisconnector::DoesPhoneStatusModelExist() const {

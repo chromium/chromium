@@ -12,6 +12,10 @@ source_set("client") {
     "connection_attempt.h",
     "connection_attempt_impl.cc",
     "connection_attempt_impl.h",
+    "connection_manager.cc",
+    "connection_manager.h",
+    "connection_manager_impl.cc",
+    "connection_manager_impl.h",
     "nearby_connector.cc",
     "nearby_connector.h",
     "secure_channel_client.h",
@@ -20,8 +24,11 @@ source_set("client") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/multidevice/logging",
+    "//chromeos/services/device_sync/public/cpp",
+    "//chromeos/services/multidevice_setup/public/cpp",
     "//chromeos/services/secure_channel/public/cpp/shared",
     "//chromeos/services/secure_channel/public/mojom",
     "//mojo/public/cpp/bindings",
@@ -38,6 +45,8 @@ static_library("test_support") {
     "fake_client_channel_observer.h",
     "fake_connection_attempt.cc",
     "fake_connection_attempt.h",
+    "fake_connection_manager.cc",
+    "fake_connection_manager.h",
     "fake_nearby_connector.cc",
     "fake_nearby_connector.h",
     "fake_secure_channel_client.cc",
@@ -57,16 +66,20 @@ source_set("unit_tests") {
 
   sources = [
     "client_channel_impl_unittest.cc",
+    "connection_manager_impl_unittest.cc",
     "secure_channel_client_impl_unittest.cc",
   ]
 
   deps = [
     ":client",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
+    "//chromeos/services/device_sync/public/cpp:test_support",
+    "//chromeos/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/services/secure_channel",
     "//chromeos/services/secure_channel:test_support",
     "//chromeos/services/secure_channel/public/cpp/shared",

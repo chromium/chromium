@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 
-#include "chromeos/components/phonehub/connection_manager.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace base {
 class OneShotTimer;
@@ -18,10 +18,12 @@ class PhoneModel;
 
 // Disconnects the phone if the ConnectionManager is in the kConnected
 // state, but the PhoneStatusModel remains empty after a grace period.
-class InvalidConnectionDisconnector : public ConnectionManager::Observer {
+class InvalidConnectionDisconnector
+    : public secure_channel::ConnectionManager::Observer {
  public:
-  InvalidConnectionDisconnector(ConnectionManager* connection_manager,
-                                PhoneModel* phone_model);
+  InvalidConnectionDisconnector(
+      secure_channel::ConnectionManager* connection_manager,
+      PhoneModel* phone_model);
   ~InvalidConnectionDisconnector() override;
 
   InvalidConnectionDisconnector(const InvalidConnectionDisconnector&) = delete;
@@ -31,11 +33,12 @@ class InvalidConnectionDisconnector : public ConnectionManager::Observer {
  private:
   friend class InvalidConnectionDisconnectorTest;
 
-  InvalidConnectionDisconnector(ConnectionManager* connection_manager,
-                                PhoneModel* phone_model,
-                                std::unique_ptr<base::OneShotTimer> timer);
+  InvalidConnectionDisconnector(
+      secure_channel::ConnectionManager* connection_manager,
+      PhoneModel* phone_model,
+      std::unique_ptr<base::OneShotTimer> timer);
 
-  // ConnectionManager::Observer:
+  // secure_channel::ConnectionManager::Observer:
   void OnConnectionStatusChanged() override;
 
   void UpdateTimer();
@@ -44,7 +47,7 @@ class InvalidConnectionDisconnector : public ConnectionManager::Observer {
   bool IsPhoneConnected() const;
   bool DoesPhoneStatusModelExist() const;
 
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
   PhoneModel* phone_model_;
   std::unique_ptr<base::OneShotTimer> timer_;
 };

@@ -24,6 +24,7 @@ class MultiDeviceSetupClient;
 }  // namespace multidevice_setup
 
 namespace secure_channel {
+class ConnectionManager;
 class SecureChannelClient;
 }  // namespace secure_channel
 
@@ -31,7 +32,6 @@ namespace phonehub {
 
 class BrowserTabsModelController;
 class BrowserTabsModelProvider;
-class ConnectionManager;
 class CrosStateSender;
 class InvalidConnectionDisconnector;
 class MessageSender;
@@ -73,7 +73,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  std::unique_ptr<ConnectionManager> connection_manager_;
+  std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<UserActionRecorder> user_action_recorder_;
   std::unique_ptr<MessageReceiver> message_receiver_;

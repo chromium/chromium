@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/phonehub/connection_manager_impl.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
@@ -14,7 +14,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace chromeos {
-namespace phonehub {
+namespace secure_channel {
 namespace {
 constexpr char kPhoneHubFeatureName[] = "phone_hub";
 constexpr base::TimeDelta kConnectionTimeoutSeconds(
@@ -209,5 +209,5 @@ void ConnectionManagerImpl::TearDownConnection() {
   NotifyStatusChanged();
 }
 
-}  // namespace phonehub
+}  // namespace secure_channel
 }  // namespace chromeos
