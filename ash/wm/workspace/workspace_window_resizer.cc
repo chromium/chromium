@@ -627,9 +627,10 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
 
   // Start dwell countdown if move window to the top of screen.
   if (snap_type == SnapType::kMaximize) {
-    if (!dwell_countdown_timer_.IsRunning() ||
+    bool drag_passed_threshold =
         (location_in_screen - dwell_location_in_screen_).Length() >
-            kSnapDragDwellTimeResetThreshold) {
+        kSnapDragDwellTimeResetThreshold;
+    if (!dwell_countdown_timer_.IsRunning() || drag_passed_threshold) {
       // Do not show snap window if not pass dwell time.
       // Restart timer if user moves the window significantly.
       dwell_countdown_timer_.Start(
@@ -637,9 +638,14 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
           base::BindOnce(&WorkspaceWindowResizer::UpdateSnapPhantomWindow,
                          weak_ptr_factory_.GetWeakPtr(), location_in_screen,
                          bounds));
+      // Cancel maximization if drag passed threshold.
+      // Window can still be maximized in next dwell cycle if stays at top of
+      // display.
+      if (drag_passed_threshold) {
+        snap_type_ = SnapType::kNone;
+        snap_phantom_window_controller_.reset();
+      }
       dwell_location_in_screen_ = location_in_screen;
-      snap_type_ = SnapType::kNone;
-      snap_phantom_window_controller_.reset();
     }
   } else {
     UpdateSnapPhantomWindow(location_in_screen, bounds);

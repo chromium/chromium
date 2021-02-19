@@ -2170,7 +2170,8 @@ TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
   EXPECT_FALSE(window_state->IsMaximized());
 
   // Once dwell timer starts, drag away the window
-  // will not maximize the window.
+  // will not maximize the window if move more than
+  // kSnapDragDwellTimeResetThreshold.
   resizer.reset();
   resizer = CreateResizerForTest(window_.get());
   resizer->Drag(gfx::PointF(400.f, 400.f), 0);
@@ -2179,6 +2180,24 @@ TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
   resizer->Drag(gfx::PointF(200.f, 3.f), 0);
   // Timer is triggered.
   EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  // Once dwell timer starts, drag away the window
+  // can still maximize the window if move less than
+  // kSnapDragDwellTimeResetThreshold.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->Drag(gfx::PointF(101.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_TRUE(window_state->IsMaximized());
 }
 
 // Test horizontal move won't trigger snap.
