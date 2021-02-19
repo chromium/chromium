@@ -315,14 +315,14 @@ union BASE_EXPORT TraceValue {
     using No = char[2];
 
     template <typename V>
-    static Yes& check(
+    static Yes& check_support(
         decltype(TraceValue::Helper<typename InnerType<V>::type>::kType,
                  int()));
     template <typename V>
-    static No& check(...);
+    static No& check_support(...);
 
    public:
-    static constexpr bool value = sizeof(Yes) == sizeof(check<T>(0));
+    static constexpr bool value = sizeof(Yes) == sizeof(check_support<T>(0));
   };
 
   // TraceValue::TypeFor<T>::value returns the TRACE_VALUE_TYPE_XXX
