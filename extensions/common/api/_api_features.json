@@ -172,14 +172,33 @@
     "contexts": "all",
     "matches": ["<all_urls>"]
   },
-  "feedbackPrivate": {
-    "dependencies": ["permission:feedbackPrivate"],
-    "contexts": ["blessed_extension"]
-  },
-  "feedbackPrivate.readLogSource": {
-    "platforms": ["chromeos"],
-    "session_types": ["kiosk"]
-  },
+  "feedbackPrivate": [
+    {
+      "dependencies": ["permission:feedbackPrivate"],
+      "contexts": ["blessed_extension"],
+      "default_parent": true
+    },
+    {
+      "channel": "stable",
+      "contexts": ["webui"],
+      "matches": [
+        "chrome://feedback/*"
+      ]
+    }
+  ],
+  "feedbackPrivate.readLogSource": [
+    {
+      "platforms": ["chromeos"],
+      "session_types": ["kiosk"]
+    },
+    {
+      "channel": "stable",
+      "contexts": ["webui"],
+      "matches": [
+        "chrome://feedback/*"
+      ]
+    }
+  ],
   "fileSystem": {
     "dependencies": ["permission:fileSystem"],
     "contexts": ["blessed_extension"],
