@@ -5653,6 +5653,14 @@ crbug.com/1177568 http/tests/devtools/console/console-api-on-call-frame.js [ Pas
 crbug.com/1177568 http/tests/devtools/runtime/evaluate-timeout.js [ Pass Failure ]
 crbug.com/1177568 http/tests/devtools/console/console-error-on-call-frame.js [ Pass Failure ]
 
+# Some cases in the non-virtual tests constantly fail, and their -expected.txt are rebaselined to
+# contain the FAIL expectations. The virtual/threaded-prefer-compositing variants sometimes produce
+# the same falures, while sometimes produce more PASSes.
+crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryListEvent.html [ Pass Failure ]
+crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-addListener-handleEvent.html [ Pass Failure ]
+crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget.html [ Pass Failure ]
+crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget-interop.html [ Pass Failure ]
+
 # Failing on Webkit Linux Leak
 crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
 

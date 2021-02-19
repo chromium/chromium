@@ -86,7 +86,8 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
       is_repeating_fixed_position(false),
       has_svg_hidden_container_ancestor(false),
       supports_composited_raster_invalidation(true),
-      was_layout_shift_root(false) {}
+      was_layout_shift_root(false),
+      was_main_thread_scrolling(false) {}
 
 PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
     VisualViewport& visual_viewport,
@@ -3556,6 +3557,14 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
       CompositingReasonFinder::DirectReasonsForPaintProperties(object_);
   context_.was_layout_shift_root =
       IsLayoutShiftRoot(object_, object_.FirstFragment());
+  context_.was_main_thread_scrolling = false;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      IsA<LayoutBox>(object_)) {
+    if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea()) {
+      context_.was_main_thread_scrolling =
+          scrollable_area->ShouldScrollOnMainThread();
+    }
+  }
 
   UpdatePaintingLayer();
 
@@ -3680,6 +3689,15 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForChildren() {
   // We need to update property tree states of paint chunks.
   if (property_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved)
     context_.painting_layer->SetNeedsRepaint();
+
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      IsA<LayoutBox>(object_)) {
+    if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea()) {
+      if (context_.was_main_thread_scrolling !=
+          scrollable_area->ShouldScrollOnMainThread())
+        scrollable_area->MainThreadScrollingDidChange();
+    }
+  }
 
   return property_changed;
 }

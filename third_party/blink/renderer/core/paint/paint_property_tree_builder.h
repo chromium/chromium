@@ -228,6 +228,8 @@ struct PaintPropertyTreeBuilderContext {
   // (not this one).
   unsigned was_layout_shift_root : 1;
 
+  unsigned was_main_thread_scrolling : 1;
+
   // This is always recalculated in PaintPropertyTreeBuilder::UpdateForSelf()
   // which overrides the inherited value.
   CompositingReasons direct_compositing_reasons = CompositingReason::kNone;

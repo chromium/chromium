@@ -164,14 +164,14 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
   }
 }
 
-void ProgrammaticScrollAnimator::LayerForCompositedScrollingDidChange(
-    CompositorAnimationTimeline* timeline) {
-  ReattachCompositorAnimationIfNeeded(timeline);
+void ProgrammaticScrollAnimator::MainThreadScrollingDidChange() {
+  ReattachCompositorAnimationIfNeeded(
+      scrollable_area_->GetCompositorAnimationTimeline());
 
-  // If the composited scrolling layer is lost during a composited animation,
-  // continue the animation on the main thread.
+  // If the scrollable area switched to require main thread scrolling during a
+  // composited animation, continue the animation on the main thread.
   if (run_state_ == RunState::kRunningOnCompositor &&
-      !scrollable_area_->LayerForScrolling()) {
+      scrollable_area_->ShouldScrollOnMainThread()) {
     RemoveAnimation();
     run_state_ = RunState::kRunningOnMainThread;
     animation_curve_->SetInitialValue(

@@ -400,6 +400,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     uses_composited_scrolling_ = uses_composited_scrolling;
   }
   virtual bool ShouldScrollOnMainThread() const { return false; }
+  void MainThreadScrollingDidChange();
 
   // Overlay scrollbars can "fade-out" when inactive. This value should only be
   // updated if BlinkControlsOverlayVisibility is true in the
@@ -451,7 +452,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return scroll_corner_needs_paint_invalidation_;
   }
 
-  void LayerForScrollingDidChange(CompositorAnimationTimeline*);
   bool NeedsShowScrollbarLayers() const { return needs_show_scrollbar_layers_; }
   void DidShowScrollbarLayers() { needs_show_scrollbar_layers_ = false; }
 

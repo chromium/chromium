@@ -351,9 +351,10 @@ void ScrollAnimator::UpdateCompositorAnimations() {
   }
 
   if (run_state_ == RunState::kWaitingToSendToCompositor) {
-    if (!element_id_)
+    if (!element_id_) {
       ReattachCompositorAnimationIfNeeded(
           GetScrollableArea()->GetCompositorAnimationTimeline());
+    }
 
     if (!animation_curve_)
       CreateAnimationCurve();
@@ -392,9 +393,9 @@ void ScrollAnimator::TakeOverCompositorAnimation() {
   ScrollAnimatorCompositorCoordinator::TakeOverCompositorAnimation();
 }
 
-void ScrollAnimator::LayerForCompositedScrollingDidChange(
-    CompositorAnimationTimeline* timeline) {
-  ReattachCompositorAnimationIfNeeded(timeline);
+void ScrollAnimator::MainThreadScrollingDidChange() {
+  ReattachCompositorAnimationIfNeeded(
+      GetScrollableArea()->GetCompositorAnimationTimeline());
 }
 
 bool ScrollAnimator::RegisterAndScheduleAnimation() {

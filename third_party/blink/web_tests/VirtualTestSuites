@@ -92,7 +92,8 @@
   {
     "prefix": "threaded-prefer-compositing",
     "bases": ["fast/scroll-behavior",
-              "fast/scrolling"],
+              "fast/scrolling",
+              "external/wpt/css/cssom-view"],
     "args": ["--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"]
   },

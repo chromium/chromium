@@ -2492,8 +2492,9 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   }
 
   // Property tree state is not available until the PrePaint lifecycle stage.
+  // PaintPropertyTreeBuilder needs to get the old status during PrePaint.
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+            DocumentLifecycle::kInPrePaint);
   const auto* properties = GetLayoutBox()->FirstFragment().PaintProperties();
   if (!properties || !properties->Scroll() ||
       properties->Scroll()->GetMainThreadScrollingReasons())

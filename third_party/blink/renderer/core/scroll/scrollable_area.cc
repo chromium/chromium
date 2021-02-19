@@ -651,14 +651,11 @@ bool ScrollableArea::HasLayerForScrollCorner() const {
   return LayerForScrollCorner();
 }
 
-void ScrollableArea::LayerForScrollingDidChange(
-    CompositorAnimationTimeline* timeline) {
-  if (ProgrammaticScrollAnimator* programmatic_scroll_animator =
-          ExistingProgrammaticScrollAnimator())
-    programmatic_scroll_animator->LayerForCompositedScrollingDidChange(
-        timeline);
-  if (ScrollAnimatorBase* scroll_animator = ExistingScrollAnimator())
-    scroll_animator->LayerForCompositedScrollingDidChange(timeline);
+void ScrollableArea::MainThreadScrollingDidChange() {
+  if (auto* programmatic_scroll_animator = ExistingProgrammaticScrollAnimator())
+    programmatic_scroll_animator->MainThreadScrollingDidChange();
+  if (auto* scroll_animator = ExistingScrollAnimator())
+    scroll_animator->MainThreadScrollingDidChange();
 }
 
 void ScrollableArea::ServiceScrollAnimations(double monotonic_time) {

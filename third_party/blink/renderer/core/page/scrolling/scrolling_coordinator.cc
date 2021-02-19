@@ -289,8 +289,7 @@ void ScrollingCoordinator::ScrollableAreaScrollLayerDidChange(
     }
   }
 
-  scrollable_area->LayerForScrollingDidChange(
-      scrollable_area->GetCompositorAnimationTimeline());
+  scrollable_area->MainThreadScrollingDidChange();
 }
 
 void ScrollingCoordinator::Reset(LocalFrame* frame) {
