@@ -208,8 +208,9 @@ void IdpNetworkRequestManager::SendSigninRequest(
 void IdpNetworkRequestManager::OnWellKnownLoaded(
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  auto* response_info = url_loader_->ResponseInfo();
+  if (response_info && response_info->headers)
+    response_code = response_info->headers->response_code();
 
   url_loader_.reset();
 
