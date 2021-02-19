@@ -86,6 +86,10 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   // complete cycling.
   void ProcessMouseEvent(ui::MouseEvent* event);
 
+  // Depending on the properties of |event|, may continuously scroll the window
+  // cycle list, move the cycle view's focus ring or complete cycling.
+  bool ProcessGestureEvent(ui::GestureEvent* event);
+
   // Called by ProcessMouseEvent() and OnScrollEvent(). May cycle the window
   // cycle list. Returns true if the event has been handled and should not be
   // processed further, false otherwise.
@@ -128,6 +132,15 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   // Stores the current scroll session data. If it does not exist, there is no
   // active scroll session.
   base::Optional<ScrollData> scroll_data_;
+
+  // When a user taps on a preview item it should move the focus ring to it.
+  // However, the focus ring should not move if the user is scrolling. Store
+  // |tapped_window_| on tap events and determine whether this is a tap or
+  // scroll with subsequent events.
+  aura::Window* tapped_window_ = nullptr;
+
+  // Tracks whether the user is touch scrolling the window cycle list.
+  bool touch_scrolling_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleEventFilter);
 };
