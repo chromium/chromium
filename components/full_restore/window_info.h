@@ -31,6 +31,9 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
   // Virtual desk id.
   base::Optional<int32_t> desk_id;
 
+  // Whether the |window| is visible on all workspaces.
+  base::Optional<bool> visible_on_all_workspaces;
+
   // The restored bounds in screen coordinates. Empty if the window is not
   // snapped/maximized/minimized.
   base::Optional<gfx::Rect> restore_bounds;

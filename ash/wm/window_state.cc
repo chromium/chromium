@@ -924,12 +924,13 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == aura::client::kWindowWorkspaceKey) {
+  if (key == aura::client::kWindowWorkspaceKey ||
+      key == aura::client::kVisibleOnAllWorkspacesKey) {
     // Save the window for full restore purposes unless
     // |ignore_property_change_| is true. Note that moving windows across
-    // displays will also trigger a property change, even if the value stays the
-    // same, so we do not need to save the window when it changes root windows
-    // (OnWindowAddedToRootWindow).
+    // displays will also trigger a kWindowWorkspaceKey change, even if the
+    // value stays the same, so we do not need to save the window when it
+    // changes root windows (OnWindowAddedToRootWindow).
     if (!ignore_property_change_)
       SaveWindowForFullRestore(this);
     return;

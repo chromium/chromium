@@ -16,18 +16,19 @@ namespace full_restore {
 
 namespace {
 
-const char kEventFlagKey[] = "event_flag";
-const char kContainerKey[] = "container";
-const char kDispositionKey[] = "disposition";
-const char kDisplayIdKey[] = "display_id";
-const char kUrlKey[] = "url";
-const char kIntentKey[] = "intent";
-const char kFilePathsKey[] = "file_paths";
-const char kActivationIndexKey[] = "index";
-const char kDeskIdKey[] = "desk_id";
-const char kRestoreBoundsKey[] = "restore_bounds";
-const char kcurrentBoundsKey[] = "current_bounds";
-const char kWindowStateTypeKey[] = "window_state_type";
+constexpr char kEventFlagKey[] = "event_flag";
+constexpr char kContainerKey[] = "container";
+constexpr char kDispositionKey[] = "disposition";
+constexpr char kDisplayIdKey[] = "display_id";
+constexpr char kUrlKey[] = "url";
+constexpr char kIntentKey[] = "intent";
+constexpr char kFilePathsKey[] = "file_paths";
+constexpr char kActivationIndexKey[] = "index";
+constexpr char kDeskIdKey[] = "desk_id";
+constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
+constexpr char kRestoreBoundsKey[] = "restore_bounds";
+constexpr char kCurrentBoundsKey[] = "current_bounds";
+constexpr char kWindowStateTypeKey[] = "window_state_type";
 
 // Converts |rect| to base::Value, e.g. { 0, 100, 200, 300 }.
 base::Value ConvertRectToValue(const gfx::Rect& rect) {
@@ -37,6 +38,13 @@ base::Value ConvertRectToValue(const gfx::Rect& rect) {
   rect_list.Append(base::Value(rect.width()));
   rect_list.Append(base::Value(rect.height()));
   return rect_list;
+}
+
+// Gets bool value from base::DictionaryValue, e.g. { "key": true } returns
+// true.
+base::Optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
+                                          const std::string& key_name) {
+  return dict.HasKey(key_name) ? dict.FindBoolKey(key_name) : base::nullopt;
 }
 
 // Gets int value from base::DictionaryValue, e.g. { "key": 100 } returns 100.
@@ -137,8 +145,10 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   file_paths = GetFilePathsFromDict(*data_dict);
   activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
   desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
+  visible_on_all_workspaces =
+      GetBoolValueFromDict(*data_dict, kVisibleOnAllWorkspacesKey);
   restore_bounds = GetBoundsRectFromDict(*data_dict, kRestoreBoundsKey);
-  current_bounds = GetBoundsRectFromDict(*data_dict, kcurrentBoundsKey);
+  current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
 
   if (data_dict->HasKey(kIntentKey)) {
@@ -192,6 +202,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (desk_id.has_value())
     data->desk_id = desk_id.value();
 
+  if (visible_on_all_workspaces.has_value())
+    data->visible_on_all_workspaces = visible_on_all_workspaces.value();
+
   if (restore_bounds.has_value())
     data->restore_bounds = restore_bounds.value();
 
@@ -242,13 +255,18 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (desk_id.has_value())
     launch_info_dict.SetIntKey(kDeskIdKey, desk_id.value());
 
+  if (visible_on_all_workspaces.has_value()) {
+    launch_info_dict.SetBoolKey(kVisibleOnAllWorkspacesKey,
+                                visible_on_all_workspaces.value());
+  }
+
   if (restore_bounds.has_value()) {
     launch_info_dict.SetKey(kRestoreBoundsKey,
                             ConvertRectToValue(restore_bounds.value()));
   }
 
   if (current_bounds.has_value()) {
-    launch_info_dict.SetKey(kcurrentBoundsKey,
+    launch_info_dict.SetKey(kCurrentBoundsKey,
                             ConvertRectToValue(current_bounds.value()));
   }
 
@@ -266,6 +284,9 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
 
   if (window_info.desk_id.has_value())
     desk_id = window_info.desk_id.value();
+
+  if (window_info.visible_on_all_workspaces.has_value())
+    visible_on_all_workspaces = window_info.visible_on_all_workspaces.value();
 
   if (window_info.restore_bounds.has_value())
     restore_bounds = std::move(window_info.restore_bounds.value());
@@ -285,6 +306,9 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (desk_id.has_value())
     window_info->desk_id = desk_id.value();
+
+  if (visible_on_all_workspaces.has_value())
+    window_info->visible_on_all_workspaces = visible_on_all_workspaces.value();
 
   if (restore_bounds.has_value())
     window_info->restore_bounds = restore_bounds.value();

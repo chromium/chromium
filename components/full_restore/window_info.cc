@@ -15,6 +15,11 @@ std::string ToPrefixedString(base::Optional<int32_t> val,
   return prefix + base::StringPrintf(": %d \n", val ? *val : -1);
 }
 
+std::string ToPrefixedString(base::Optional<bool> val,
+                             const std::string& prefix) {
+  return prefix + base::StringPrintf(": %d \n", val ? *val : 0);
+}
+
 std::string ToPrefixedString(base::Optional<gfx::Rect> val,
                              const std::string& prefix) {
   return prefix + ": " + (val ? *val : gfx::Rect()).ToString() + " \n";
@@ -35,6 +40,8 @@ WindowInfo::~WindowInfo() = default;
 std::string WindowInfo::ToString() const {
   return ToPrefixedString(activation_index, "Activation index") +
          ToPrefixedString(desk_id, "Desk") +
+         ToPrefixedString(visible_on_all_workspaces,
+                          "Visible on all workspaces") +
          ToPrefixedString(restore_bounds, "Restore bounds") +
          ToPrefixedString(current_bounds, "Current bounds") +
          ToPrefixedString(window_state_type, "Window state");

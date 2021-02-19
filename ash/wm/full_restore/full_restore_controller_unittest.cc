@@ -13,6 +13,7 @@
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -151,6 +152,25 @@ TEST_F(FullRestoreControllerTest, WindowMovedDesks) {
       {ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN});
   ASSERT_NE(previous_parent, window->parent());
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+}
+
+// Tests that data gets saved when assigning a window to all desks.
+TEST_F(FullRestoreControllerTest, AssignToAllDesks) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(0, desks_controller->GetDeskIndex(
+                   desks_controller->GetTargetActiveDesk()));
+
+  auto window = CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+  ResetSaveWindowsCount();
+
+  // Assign |window| to all desks. This should trigger a save.
+  window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, true);
+  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+
+  // Unassign |window| from all desks. This should trigger a save.
+  window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);
+  EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
 }
 
 // Tests that data gets saved when moving a window to another display using the

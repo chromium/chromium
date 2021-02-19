@@ -139,6 +139,11 @@ void FullRestoreController::SaveWindowImpl(
   window_info.activation_index = window_activation_index;
   window_info.window = window;
   window_info.desk_id = window->GetProperty(aura::client::kWindowWorkspaceKey);
+  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+    // Only save |visible_on_all_workspaces| field if it's true to reduce file
+    // storage size.
+    window_info.visible_on_all_workspaces = true;
+  }
   window_info.restore_bounds = window_state->GetRestoreBoundsInScreen();
   window_info.current_bounds = window->GetBoundsInScreen();
   window_info.window_state_type = window_state->GetStateType();

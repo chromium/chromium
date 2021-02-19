@@ -84,6 +84,8 @@ void ModifyWidgetParams(int32_t restore_window_id,
 
   if (window_info->desk_id)
     out_params->workspace = base::NumberToString(*window_info->desk_id);
+  out_params->visible_on_all_workspaces =
+      window_info->visible_on_all_workspaces.has_value();
   if (window_info->current_bounds)
     out_params->bounds = *window_info->current_bounds;
   if (window_info->restore_bounds) {

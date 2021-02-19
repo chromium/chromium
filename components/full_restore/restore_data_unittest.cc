@@ -21,48 +21,52 @@ namespace full_restore {
 
 namespace {
 
-const char kAppId1[] = "aaa";
-const char kAppId2[] = "bbb";
+constexpr char kAppId1[] = "aaa";
+constexpr char kAppId2[] = "bbb";
 
-const int32_t kWindowId1 = 100;
-const int32_t kWindowId2 = 200;
-const int32_t kWindowId3 = 300;
+constexpr int32_t kWindowId1 = 100;
+constexpr int32_t kWindowId2 = 200;
+constexpr int32_t kWindowId3 = 300;
 
-const int64_t kDisplayId1 = 22000000;
-const int64_t kDisplayId2 = 11000000;
+constexpr int64_t kDisplayId1 = 22000000;
+constexpr int64_t kDisplayId2 = 11000000;
 
-const char kFilePath1[] = "path1";
-const char kFilePath2[] = "path2";
+constexpr char kFilePath1[] = "path1";
+constexpr char kFilePath2[] = "path2";
 
-const char kIntentActionView[] = "view";
-const char kIntentActionSend[] = "send";
+constexpr char kIntentActionView[] = "view";
+constexpr char kIntentActionSend[] = "send";
 
-const char kMimeType[] = "text/plain";
+constexpr char kMimeType[] = "text/plain";
 
-const char kShareText1[] = "text1";
-const char kShareText2[] = "text2";
+constexpr char kShareText1[] = "text1";
+constexpr char kShareText2[] = "text2";
 
-const int32_t kActivationIndex1 = 100;
-const int32_t kActivationIndex2 = 101;
-const int32_t kActivationIndex3 = 102;
+constexpr int32_t kActivationIndex1 = 100;
+constexpr int32_t kActivationIndex2 = 101;
+constexpr int32_t kActivationIndex3 = 102;
 
-const int32_t kDeskId1 = 1;
-const int32_t kDeskId2 = 2;
-const int32_t kDeskId3 = 3;
+constexpr int32_t kDeskId1 = 1;
+constexpr int32_t kDeskId2 = 2;
+constexpr int32_t kDeskId3 = 3;
 
-const gfx::Rect kRestoreBounds1(10, 20, 110, 120);
-const gfx::Rect kRestoreBounds2(30, 40, 130, 140);
-const gfx::Rect kRestoreBounds3(50, 60, 150, 160);
+constexpr bool kVisibleOnAllWorkspaces1 = false;
+constexpr bool kVisibleOnAllWorkspaces2 = false;
+constexpr bool kVisibleOnAllWorkspaces3 = true;
 
-const gfx::Rect kCurrentBounds1(11, 21, 111, 121);
-const gfx::Rect kCurrentBounds2(31, 41, 131, 141);
-const gfx::Rect kCurrentBounds3(51, 61, 151, 161);
+constexpr gfx::Rect kRestoreBounds1(10, 20, 110, 120);
+constexpr gfx::Rect kRestoreBounds2(30, 40, 130, 140);
+constexpr gfx::Rect kRestoreBounds3(50, 60, 150, 160);
 
-const chromeos::WindowStateType kWindowStateType1 =
+constexpr gfx::Rect kCurrentBounds1(11, 21, 111, 121);
+constexpr gfx::Rect kCurrentBounds2(31, 41, 131, 141);
+constexpr gfx::Rect kCurrentBounds3(51, 61, 151, 161);
+
+constexpr chromeos::WindowStateType kWindowStateType1 =
     chromeos::WindowStateType::kMaximized;
-const chromeos::WindowStateType kWindowStateType2 =
+constexpr chromeos::WindowStateType kWindowStateType2 =
     chromeos::WindowStateType::kInactive;
-const chromeos::WindowStateType kWindowStateType3 =
+constexpr chromeos::WindowStateType kWindowStateType3 =
     chromeos::WindowStateType::kFullscreen;
 
 }  // namespace
@@ -135,6 +139,7 @@ class RestoreDataTest : public testing::Test {
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;
     window_info3.desk_id = kDeskId3;
+    window_info3.visible_on_all_workspaces = kVisibleOnAllWorkspaces3;
     window_info3.restore_bounds = kRestoreBounds3;
     window_info3.current_bounds = kCurrentBounds3;
     window_info3.window_state_type = kWindowStateType3;
@@ -152,6 +157,7 @@ class RestoreDataTest : public testing::Test {
                             apps::mojom::IntentPtr intent,
                             int32_t activation_index,
                             int32_t desk_id,
+                            bool visible_on_all_workspaces,
                             const gfx::Rect& restore_bounds,
                             const gfx::Rect& current_bounds,
                             chromeos::WindowStateType window_state_type) {
@@ -179,6 +185,15 @@ class RestoreDataTest : public testing::Test {
 
     EXPECT_TRUE(data->desk_id.has_value());
     EXPECT_EQ(desk_id, data->desk_id.value());
+
+    if (!visible_on_all_workspaces)
+      // This field should only be written if it is true.
+      EXPECT_FALSE(data->visible_on_all_workspaces.has_value());
+    else {
+      EXPECT_TRUE(data->visible_on_all_workspaces.has_value());
+      EXPECT_EQ(visible_on_all_workspaces,
+                data->visible_on_all_workspaces.value());
+    }
 
     EXPECT_TRUE(data->restore_bounds.has_value());
     EXPECT_EQ(restore_bounds, data->restore_bounds.value());
@@ -209,8 +224,8 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
-        kActivationIndex1, kDeskId1, kRestoreBounds1, kCurrentBounds1,
-        kWindowStateType1);
+        kActivationIndex1, kDeskId1, kVisibleOnAllWorkspaces1, kRestoreBounds1,
+        kCurrentBounds1, kWindowStateType1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -220,8 +235,8 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
-        kActivationIndex2, kDeskId2, kRestoreBounds2, kCurrentBounds2,
-        kWindowStateType2);
+        kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kRestoreBounds2,
+        kCurrentBounds2, kWindowStateType2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -236,8 +251,8 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_POPUP, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
-        kActivationIndex3, kDeskId3, kRestoreBounds3, kCurrentBounds3,
-        kWindowStateType3);
+        kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3, kRestoreBounds3,
+        kCurrentBounds3, kWindowStateType3);
   }
 
   RestoreData& restore_data() { return restore_data_; }

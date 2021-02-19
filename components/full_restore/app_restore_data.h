@@ -39,7 +39,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
 
   std::unique_ptr<AppRestoreData> Clone() const;
 
-  // Converts the struct LaunchAndWindowInfo to base::Value, e.g.:
+  // Converts the struct AppRestoreData to base::Value, e.g.:
   // {
   //    "event_flag": 0,
   //    "container": 0,
@@ -50,6 +50,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   //    "file_paths": { "aa.cc", "bb.h", ... },
   //    "index": 3,
   //    "desk_id": 1,
+  //    "visible": true,
   //    "restored_bounds": { 0, 100, 200, 300 },
   //    "current_bounds": { 100, 200, 200, 300 },
   //    "window_state_type": 256,
@@ -77,6 +78,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // Window's information.
   base::Optional<int32_t> activation_index;
   base::Optional<int32_t> desk_id;
+  base::Optional<bool> visible_on_all_workspaces;
   base::Optional<gfx::Rect> restore_bounds;
   base::Optional<gfx::Rect> current_bounds;
   base::Optional<chromeos::WindowStateType> window_state_type;
