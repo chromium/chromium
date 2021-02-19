@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -36,11 +37,11 @@ namespace {
 
 void RegisterProtocolHandlersWithOSInBackground(
     const web_app::AppId& app_id,
-    const base::string16& app_name,
+    const std::wstring& app_name,
     Profile* profile,
     const base::FilePath& profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
-    const base::string16& app_name_extension) {
+    const std::wstring& app_name_extension) {
   base::AssertLongCPUWorkAllowed();
   base::FilePath web_app_path =
       web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id,
@@ -56,11 +57,11 @@ void RegisterProtocolHandlersWithOSInBackground(
       web_app::GetAppLauncherCommand(app_id, app_specific_launcher_path.value(),
                                      profile_path);
 
-  base::string16 user_visible_app_name(app_name);
+  std::wstring user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
-  base::FilePath icon_path =
-      web_app::internals::GetIconFilePath(web_app_path, app_name);
+  base::FilePath icon_path = web_app::internals::GetIconFilePath(
+      web_app_path, base::AsString16(app_name));
 
   ShellUtil::AddApplicationClass(web_app::GetProgIdForApp(profile_path, app_id),
                                  app_specific_launcher_command,
@@ -88,7 +89,7 @@ void UnregisterProtocolHandlersWithOsInBackground(
   // remove the web application directory. This must be done before cleaning up
   // the registry, since the app-specific-launcher path is retrieved from the
   // registry.
-  base::string16 prog_id = web_app::GetProgIdForApp(profile_path, app_id);
+  std::wstring prog_id = web_app::GetProgIdForApp(profile_path, app_id);
   base::FilePath app_specific_launcher_path =
       ShellUtil::GetApplicationPathForProgId(prog_id);
 
@@ -111,14 +112,14 @@ void RegisterProtocolHandlersWithOs(
   if (protocol_handlers.empty())
     return;
 
-  base::string16 app_name_extension =
+  std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile->GetPath());
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RegisterProtocolHandlersWithOSInBackground, app_id,
-                     base::UTF8ToUTF16(app_name), profile, profile->GetPath(),
+                     base::UTF8ToWide(app_name), profile, profile->GetPath(),
                      std::move(protocol_handlers), app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
                      app_id));

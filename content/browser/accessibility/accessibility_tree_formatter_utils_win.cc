@@ -699,7 +699,7 @@ CONTENT_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {
 }
 
 struct HWNDSearchInfo {
-  base::string16 title;
+  std::wstring title;
   HWND hwnd;
 };
 
@@ -709,13 +709,13 @@ BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
     return TRUE;
   }
 
-  base::string16 title(num_chars + 1, '\0');
+  std::wstring title(num_chars + 1, '\0');
   if (!::GetWindowText(hwnd, &title.front(), title.size())) {
     return TRUE;
   }
 
   auto* info = reinterpret_cast<HWNDSearchInfo*>(lParam);
-  if (title.find(info->title) != std::string::npos) {
+  if (title.find(info->title) != std::wstring::npos) {
     info->hwnd = hwnd;
     return FALSE;
   }

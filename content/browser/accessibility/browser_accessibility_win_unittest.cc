@@ -1484,11 +1484,11 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   ASSERT_NE(nullptr, menu_accessible_com);
   ASSERT_EQ(ax::mojom::Role::kMenu, menu_accessible_com->GetData().role);
 
-  EXPECT_IA2_TEXT_AT_OFFSET(
-      menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
-      /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
-      /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+  EXPECT_IA2_TEXT_AT_OFFSET(menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
+                            /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
+                            /*text=*/
+                            base::as_wcstr(base::string16{
+                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 }
 
 TEST_F(BrowserAccessibilityWinTest,
@@ -1658,18 +1658,18 @@ TEST_F(BrowserAccessibilityWinTest,
                             /*text=*/L"e");
 
   // L"before" <[obj]> [obj] L"after" L"tail"
-  EXPECT_IA2_TEXT_AT_OFFSET(
-      body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
-      /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
-      /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+  EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
+                            /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
+                            /*text=*/
+                            base::as_wcstr(base::string16{
+                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" [obj] <[obj]> L"after" L"tail"
-  EXPECT_IA2_TEXT_AT_OFFSET(
-      body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
-      /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
-      /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+  EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
+                            /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
+                            /*text=*/
+                            base::as_wcstr(base::string16{
+                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" [obj] [obj] L"<a>fter" L"tail"
   EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 8, IA2_TEXT_BOUNDARY_CHAR,
@@ -1805,14 +1805,16 @@ TEST_F(BrowserAccessibilityWinTest,
       body_accessible_com, 5, IA2_TEXT_BOUNDARY_CHAR,
       /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
       /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+      base::as_wcstr(
+          base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" <[obj]> [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_AFTER_OFFSET(
       body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
       /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
       /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+      base::as_wcstr(
+          base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // <[obj]>
   EXPECT_IA2_TEXT_AFTER_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
