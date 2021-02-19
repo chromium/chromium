@@ -444,13 +444,23 @@ class MainThreadSchedulerImplTest : public testing::Test {
 
     default_task_runner_ =
         scheduler_->DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
-    compositor_task_runner_ =
-        scheduler_->CompositorTaskQueue()->GetTaskRunnerWithDefaultTaskType();
+    if (!scheduler_->scheduling_settings()
+             .mbi_compositor_task_runner_per_agent_scheduling_group) {
+      compositor_task_runner_ =
+          scheduler_->CompositorTaskQueue()->GetTaskRunnerWithDefaultTaskType();
+    }
     idle_task_runner_ = scheduler_->IdleTaskRunner();
     v8_task_runner_ =
         scheduler_->V8TaskQueue()->GetTaskRunnerWithDefaultTaskType();
 
-    agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
+    agent_group_scheduler_ = std::unique_ptr<AgentGroupSchedulerImpl>(
+        static_cast<AgentGroupSchedulerImpl*>(
+            scheduler_->CreateAgentGroupScheduler().release()));
+    if (scheduler_->scheduling_settings()
+            .mbi_compositor_task_runner_per_agent_scheduling_group) {
+      compositor_task_runner_ = agent_group_scheduler_->CompositorTaskQueue()
+                                    ->GetTaskRunnerWithDefaultTaskType();
+    }
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
         scheduler_.get(),
         static_cast<AgentGroupSchedulerImpl&>(*agent_group_scheduler_));
@@ -472,6 +482,15 @@ class MainThreadSchedulerImplTest : public testing::Test {
         blink::TaskType::kInternalFindInPage);
     prioritised_local_frame_task_runner_ = main_frame_scheduler_->GetTaskRunner(
         blink::TaskType::kInternalHighPriorityLocalFrame);
+  }
+
+  MainThreadTaskQueue* compositor_task_queue() {
+    if (scheduler_->scheduling_settings()
+            .mbi_compositor_task_runner_per_agent_scheduling_group) {
+      return agent_group_scheduler_->CompositorTaskQueue().get();
+    } else {
+      return scheduler_->CompositorTaskQueue().get();
+    }
   }
 
   MainThreadTaskQueue* loading_task_queue() {
@@ -946,7 +965,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 
   std::unique_ptr<MainThreadSchedulerImplForTest> scheduler_;
-  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
+  std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler_;
   std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
   std::unique_ptr<WebWidgetScheduler> widget_scheduler_;
@@ -2883,9 +2902,8 @@ TEST_F(MainThreadSchedulerImplTest, SYNCHRONIZED_GESTURE_CompositingExpensive) {
 
   // Throttleable tasks should not have been starved by the expensive compositor
   // tasks.
-  EXPECT_EQ(
-      TaskQueue::kNormalPriority,
-      scheduler_->CompositorTaskQueue()->GetTaskQueue()->GetQueuePriority());
+  EXPECT_EQ(TaskQueue::kNormalPriority,
+            compositor_task_queue()->GetTaskQueue()->GetQueuePriority());
   EXPECT_EQ(1000u, run_order.size());
 }
 
@@ -2926,9 +2944,8 @@ TEST_F(MainThreadSchedulerImplTest, MAIN_THREAD_CUSTOM_INPUT_HANDLING) {
 
   // Throttleable tasks should not have been starved by the expensive compositor
   // tasks.
-  EXPECT_EQ(
-      TaskQueue::kNormalPriority,
-      scheduler_->CompositorTaskQueue()->GetTaskQueue()->GetQueuePriority());
+  EXPECT_EQ(TaskQueue::kNormalPriority,
+            compositor_task_queue()->GetTaskQueue()->GetQueuePriority());
   EXPECT_EQ(1000u, run_order.size());
 }
 
@@ -2967,9 +2984,8 @@ TEST_F(MainThreadSchedulerImplTest, MAIN_THREAD_GESTURE) {
     EXPECT_EQ(UseCase::kMainThreadGesture, CurrentUseCase()) << "i = " << i;
   }
 
-  EXPECT_EQ(
-      TaskQueue::kHighestPriority,
-      scheduler_->CompositorTaskQueue()->GetTaskQueue()->GetQueuePriority());
+  EXPECT_EQ(TaskQueue::kHighestPriority,
+            compositor_task_queue()->GetTaskQueue()->GetQueuePriority());
   EXPECT_EQ(279u, run_order.size());
 }
 
@@ -3140,7 +3156,7 @@ TEST_F(MainThreadSchedulerImplTest, EnableVirtualTime) {
 
   EXPECT_EQ(scheduler_->DefaultTaskQueue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(scheduler_->CompositorTaskQueue()->GetTaskQueue()->GetTimeDomain(),
+  EXPECT_EQ(compositor_task_queue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->GetVirtualTimeDomain());
   EXPECT_EQ(loading_task_queue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->GetVirtualTimeDomain());
@@ -3214,7 +3230,7 @@ TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
   scheduler_->DisableVirtualTimeForTesting();
   EXPECT_EQ(scheduler_->DefaultTaskQueue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->real_time_domain());
-  EXPECT_EQ(scheduler_->CompositorTaskQueue()->GetTaskQueue()->GetTimeDomain(),
+  EXPECT_EQ(compositor_task_queue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->real_time_domain());
   EXPECT_EQ(loading_task_queue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->real_time_domain());

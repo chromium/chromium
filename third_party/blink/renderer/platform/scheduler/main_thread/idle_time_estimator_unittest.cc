@@ -19,19 +19,6 @@
 namespace blink {
 namespace scheduler {
 
-class IdleTimeEstimatorForTest : public IdleTimeEstimator {
- public:
-  IdleTimeEstimatorForTest(
-      const scoped_refptr<MainThreadTaskQueue>& compositor_task_runner,
-      const base::TickClock* clock,
-      int sample_count,
-      double estimation_percentile)
-      : IdleTimeEstimator(compositor_task_runner,
-                          clock,
-                          sample_count,
-                          estimation_percentile) {}
-};
-
 class IdleTimeEstimatorTest : public testing::Test {
  public:
   IdleTimeEstimatorTest()
@@ -46,24 +33,30 @@ class IdleTimeEstimatorTest : public testing::Test {
     manager_ = base::sequence_manager::SequenceManagerForTest::Create(
         nullptr, task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMockTickClock());
-    compositor_task_queue_ =
-        manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
-            base::sequence_manager::TaskQueue::Spec("test_tq"),
-            MainThreadTaskQueue::QueueCreationParams(
-                MainThreadTaskQueue::QueueType::kCompositor),
-            nullptr);
-    estimator_.reset(new IdleTimeEstimatorForTest(
-        compositor_task_queue_, task_environment_.GetMockTickClock(), 10, 50));
+    estimator_ = std::make_unique<IdleTimeEstimator>(
+        task_environment_.GetMockTickClock(), 10, 50);
+    compositor_task_queue_1_ = NewTaskQueue();
+    compositor_task_queue_2_ = NewTaskQueue();
+    compositor_task_runner_1_ = compositor_task_queue_1_->CreateTaskRunner(
+        TaskType::kMainThreadTaskQueueCompositor);
+    compositor_task_runner_2_ = compositor_task_queue_2_->CreateTaskRunner(
+        TaskType::kMainThreadTaskQueueCompositor);
+    estimator_->AddCompositorTaskQueue(compositor_task_queue_1_);
+    estimator_->AddCompositorTaskQueue(compositor_task_queue_2_);
+  }
+
+  scoped_refptr<MainThreadTaskQueue> NewTaskQueue() {
+    return manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
+        base::sequence_manager::TaskQueue::Spec("test_tq"),
+        MainThreadTaskQueue::QueueCreationParams(
+            MainThreadTaskQueue::QueueType::kCompositor),
+        nullptr);
   }
 
   void SimulateFrameWithOneCompositorTask(int compositor_time) {
     base::TimeDelta non_idle_time =
         base::TimeDelta::FromMilliseconds(compositor_time);
-    base::PendingTask task(FROM_HERE, base::OnceClosure());
-    estimator_->WillProcessTask(task, /*was_blocked_or_low_priority=*/false);
-    task_environment_.FastForwardBy(non_idle_time);
-    estimator_->DidCommitFrameToCompositor();
-    estimator_->DidProcessTask(task);
+    PostTask(compositor_task_runner_1_, compositor_time, /*commit=*/true);
     if (non_idle_time < frame_length_)
       task_environment_.FastForwardBy(frame_length_ - non_idle_time);
   }
@@ -74,24 +67,37 @@ class IdleTimeEstimatorTest : public testing::Test {
         base::TimeDelta::FromMilliseconds(compositor_time1);
     base::TimeDelta non_idle_time2 =
         base::TimeDelta::FromMilliseconds(compositor_time2);
-    base::PendingTask task(FROM_HERE, base::OnceClosure());
-    estimator_->WillProcessTask(task, /*was_blocked_or_low_priority=*/false);
-    task_environment_.FastForwardBy(non_idle_time1);
-    estimator_->DidProcessTask(task);
-
-    estimator_->WillProcessTask(task, /*was_blocked_or_low_priority=*/false);
-    task_environment_.FastForwardBy(non_idle_time2);
-    estimator_->DidCommitFrameToCompositor();
-    estimator_->DidProcessTask(task);
-
+    PostTask(compositor_task_runner_1_, compositor_time1, /*commit=*/false);
+    PostTask(compositor_task_runner_2_, compositor_time2, /*commit=*/true);
     base::TimeDelta idle_time = frame_length_ - non_idle_time1 - non_idle_time2;
     task_environment_.FastForwardBy(idle_time);
   }
 
+  void PostTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                int compositor_time,
+                bool commit) {
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::test::TaskEnvironment* task_environment,
+               IdleTimeEstimator* estimator, int compositor_time, bool commit) {
+              base::TimeDelta non_idle_time =
+                  base::TimeDelta::FromMilliseconds(compositor_time);
+              task_environment->FastForwardBy(non_idle_time);
+              if (commit)
+                estimator->DidCommitFrameToCompositor();
+            },
+            &task_environment_, estimator_.get(), compositor_time, commit));
+    task_environment_.RunUntilIdle();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::sequence_manager::SequenceManager> manager_;
-  scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
-  std::unique_ptr<IdleTimeEstimatorForTest> estimator_;
+  std::unique_ptr<IdleTimeEstimator> estimator_;
+  scoped_refptr<MainThreadTaskQueue> compositor_task_queue_1_;
+  scoped_refptr<MainThreadTaskQueue> compositor_task_queue_2_;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_1_;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_2_;
   const base::TimeDelta frame_length_;
   base::sequence_manager::TestTaskTimeObserver test_task_time_observer_;
 };
@@ -145,6 +151,16 @@ TEST_F(IdleTimeEstimatorTest, Estimation_MultipleTasks) {
   SimulateFrameWithTwoCompositorTasks(1, 4);
 
   EXPECT_EQ(base::TimeDelta::FromMilliseconds(11),
+            estimator_->GetExpectedIdleDuration(frame_length_));
+}
+
+TEST_F(IdleTimeEstimatorTest, Estimation_MultipleTasks_WithSingleObserver) {
+  // Observe only |compositor_task_queue_2_|
+  estimator_->RemoveCompositorTaskQueue(compositor_task_queue_1_);
+  SimulateFrameWithTwoCompositorTasks(1, 4);
+  SimulateFrameWithTwoCompositorTasks(1, 4);
+
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(12),
             estimator_->GetExpectedIdleDuration(frame_length_));
 }
 

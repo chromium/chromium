@@ -297,6 +297,17 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
+    QueueCreationParams SetAgentGroupScheduler(
+        AgentGroupSchedulerImpl* scheduler) {
+      agent_group_scheduler = scheduler;
+      return *this;
+    }
+
+    QueueCreationParams SetFrameScheduler(FrameSchedulerImpl* scheduler) {
+      frame_scheduler = scheduler;
+      return *this;
+    }
+
     // Forwarded calls to |queue_traits|
 
     QueueCreationParams SetCanBeDeferred(bool value) {
@@ -349,17 +360,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     }
 
     // Forwarded calls to |spec|.
-
-    QueueCreationParams SetAgentGroupScheduler(
-        AgentGroupSchedulerImpl* scheduler) {
-      agent_group_scheduler = scheduler;
-      return *this;
-    }
-
-    QueueCreationParams SetFrameScheduler(FrameSchedulerImpl* scheduler) {
-      frame_scheduler = scheduler;
-      return *this;
-    }
 
     QueueCreationParams SetShouldMonitorQuiescence(bool should_monitor) {
       spec = spec.SetShouldMonitorQuiescence(should_monitor);

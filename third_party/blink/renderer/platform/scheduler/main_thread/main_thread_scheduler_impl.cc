@@ -238,8 +238,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages)
               .SetShouldNotifyObservers(false))),
-      compositor_task_queue_enabled_voter_(
-          compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter()),
       memory_purge_task_queue_(helper_.NewTaskQueue(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kIdle)
@@ -254,7 +252,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
           helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
               TaskType::kMainThreadTaskQueueControl)),
       main_thread_only_(this,
-                        compositor_task_queue_,
                         helper_.GetClock(),
                         helper_.NowTicks()),
       any_thread_(this),
@@ -266,6 +263,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   task_runners_.emplace(
       compositor_task_queue_,
       compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter());
+  main_thread_only().idle_time_estimator.AddCompositorTaskQueue(
+      compositor_task_queue_);
 
   back_forward_cache_ipc_tracking_task_runner_ =
       back_forward_cache_ipc_tracking_task_queue_->CreateTaskRunner(
@@ -349,7 +348,7 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "MainThreadScheduler",
       this);
 
-  for (auto& pair : task_runners_) {
+  for (const auto& pair : task_runners_) {
     pair.first->ShutdownTaskQueue();
   }
 
@@ -379,11 +378,9 @@ WebThreadScheduler* WebThreadScheduler::MainThreadScheduler() {
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
     MainThreadSchedulerImpl* main_thread_scheduler_impl,
-    const scoped_refptr<MainThreadTaskQueue>& compositor_task_queue,
     const base::TickClock* time_source,
     base::TimeTicks now)
-    : idle_time_estimator(compositor_task_queue,
-                          time_source,
+    : idle_time_estimator(time_source,
                           kShortIdlePeriodDurationSampleCount,
                           kShortIdlePeriodDurationPercentile),
       current_use_case(UseCase::kNone,
@@ -613,6 +610,10 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
 
   mbi_override_task_runner_handle =
       base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
+
+  mbi_compositor_task_runner_per_agent_scheduling_group =
+      base::FeatureList::IsEnabled(
+          kMbiCompositorTaskRunnerPerAgentSchedulingGroup);
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -748,6 +749,13 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   if (params.queue_traits.can_be_deferred ||
       params.queue_traits.can_be_paused || params.queue_traits.can_be_frozen) {
     voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+  }
+
+  if (task_queue->GetPrioritisationType() ==
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
+    DCHECK(!voter);
+    voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+    main_thread_only().idle_time_estimator.AddCompositorTaskQueue(task_queue);
   }
 
   auto insert_result = task_runners_.emplace(task_queue, std::move(voter));
@@ -1462,9 +1470,14 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
     case UseCase::kMainThreadGesture:
     case UseCase::kMainThreadCustomInputHandling:
     case UseCase::kSynchronizedGesture:
-      return compositor_task_queue_->GetTaskQueue()
-                 ->HasTaskToRunImmediately() ||
-             main_thread_only().blocking_input_expected_soon;
+      for (const auto& pair : task_runners_) {
+        if (pair.first->GetPrioritisationType() ==
+                MainThreadTaskQueue::QueueTraits::PrioritisationType::
+                    kCompositor &&
+            pair.first->GetTaskQueue()->HasTaskToRunImmediately())
+          return true;
+      }
+      return main_thread_only().blocking_input_expected_soon;
 
     case UseCase::kTouchstart:
       return true;
@@ -1714,8 +1727,6 @@ void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
     UpdateTaskQueueState(pair.first.get(), pair.second.get(), old_policy,
                          current_policy, should_update_priorities);
   }
-  compositor_task_queue_enabled_voter_->SetVoteToEnable(
-      !current_policy.should_freeze_compositor_task_queue());
 }
 
 void MainThreadSchedulerImpl::UpdateTaskQueueState(
@@ -1748,6 +1759,12 @@ void MainThreadSchedulerImpl::UpdateTaskQueueState(
     } else {
       task_queue->GetTaskQueue()->SetTimeDomain(real_time_domain());
     }
+  }
+
+  if (task_queue->GetPrioritisationType() ==
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
+    task_queue_enabled_voter->SetVoteToEnable(
+        !new_policy.should_freeze_compositor_task_queue());
   }
 }
 
@@ -2415,6 +2432,14 @@ MainThreadSchedulerImpl::V8TaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::CompositorTaskRunner() {
+  if (scheduling_settings()
+          .mbi_compositor_task_runner_per_agent_scheduling_group) {
+    NOTREACHED() << "When MbiPerAGSCompositorTaskRunner is enabled, "
+                    "MainThreadSchedulerImpl::CompositorTaskRunner() shouldn't "
+                    "be used. We are planning to remove "
+                    "MainThreadSchedulerImpl::CompositorTaskRunner() in the "
+                    "near future.";
+  }
   return compositor_task_runner_;
 }
 
@@ -2942,8 +2967,13 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
 
 void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
   main_thread_only().compositor_priority = ComputeCompositorPriority();
-  CompositorTaskQueue()->GetTaskQueue()->SetQueuePriority(
-      ComputePriority(CompositorTaskQueue().get()));
+  for (const auto& pair : task_runners_) {
+    if (pair.first->GetPrioritisationType() !=
+        MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor)
+      continue;
+    pair.first->GetTaskQueue()->SetQueuePriority(
+        ComputePriority(pair.first.get()));
+  }
 }
 
 base::Optional<TaskQueue::QueuePriority>

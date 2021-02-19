@@ -307,6 +307,12 @@ constexpr base::FeatureParam<PerAgentSignal> kPerAgentSignal{
 const base::Feature kMbiOverrideTaskRunnerHandle{
     "MbiOverrideTaskRunnerHandle", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used instead
+// of per-MainThreadScheduler CompositorTaskRunner.
+const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
+    "MbiCompositorTaskRunnerPerAgentSchedulingGroup",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kThrottleVisibleNotFocusedTimers{
     "ThrottleVisibleNotFocusedTimers", base::FEATURE_DISABLED_BY_DEFAULT};
 

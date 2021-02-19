@@ -36,6 +36,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
       PageScheduler::Delegate*) override;
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
+  scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   WebThreadScheduler& GetMainThreadScheduler() override;
   AgentGroupScheduler& AsAgentGroupScheduler() override;
 
@@ -47,6 +48,8 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
+  scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
 
   BrowserInterfaceBrokerProxy broker_;

@@ -145,6 +145,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // base::SequencedTaskRunnerHandle::Get() returns the current active
     // per-ASG task runner instead of the per-thread task runner.
     bool mbi_override_task_runner_handle;
+
+    // If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used
+    // instead of per-MainThreadScheduler CompositorTaskRunner.
+    bool mbi_compositor_task_runner_per_agent_scheduling_group;
   };
 
   static const char* UseCaseToString(UseCase use_case);
@@ -829,8 +833,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> virtual_time_control_task_queue_;
   scoped_refptr<MainThreadTaskQueue>
       back_forward_cache_ipc_tracking_task_queue_;
-  std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
-      compositor_task_queue_enabled_voter_;
 
   using TaskQueueVoterMap = std::map<
       scoped_refptr<MainThreadTaskQueue>,
@@ -870,7 +872,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct MainThreadOnly {
     MainThreadOnly(
         MainThreadSchedulerImpl* main_thread_scheduler_impl,
-        const scoped_refptr<MainThreadTaskQueue>& compositor_task_queue,
         const base::TickClock* time_source,
         base::TimeTicks now);
     ~MainThreadOnly();
