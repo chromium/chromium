@@ -979,7 +979,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
     // For scroll events, report total latency up to gpu-swap-begin. This is
     // useful in comparing new EventLatency metrics with LatencyInfo-based
     // scroll event latency metrics.
-    if (event_metrics->scroll_type() &&
+    if (event_metrics->ShouldReportScrollingTotalLatency() &&
         !viz_breakdown_.swap_timings.is_null()) {
       const base::TimeDelta swap_begin_latency =
           viz_breakdown_.swap_timings.swap_start - generated_timestamp;

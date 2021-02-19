@@ -1984,14 +1984,11 @@ class SitePerProcessEmulatedTouchBrowserTest
 
     // Create mouse events to emulate touch scroll. Since the page has no touch
     // handlers, these events will be converted into a gesture scroll sequence.
-    base::TimeTicks simulated_event_time = ui::EventTimeForNow();
-    base::TimeDelta simulated_event_time_delta =
-        base::TimeDelta::FromMilliseconds(100);
     blink::WebMouseEvent mouse_move_event =
         blink::SyntheticWebMouseEventBuilder::Build(
             blink::WebInputEvent::Type::kMouseMove, position_in_root.x(),
             position_in_root.y(), 0);
-    mouse_move_event.SetTimeStamp(simulated_event_time);
+    mouse_move_event.SetTimeStamp(ui::EventTimeForNow());
 
     int mouse_modifier = (test_type == PinchGoesToMainFrame)
                              ? blink::WebInputEvent::kShiftKey
@@ -2002,15 +1999,13 @@ class SitePerProcessEmulatedTouchBrowserTest
             blink::WebInputEvent::Type::kMouseDown, position_in_root.x(),
             position_in_root.y(), mouse_modifier);
     mouse_down_event.button = blink::WebMouseEvent::Button::kLeft;
-    simulated_event_time += simulated_event_time_delta;
-    mouse_down_event.SetTimeStamp(simulated_event_time);
+    mouse_down_event.SetTimeStamp(ui::EventTimeForNow());
 
     blink::WebMouseEvent mouse_drag_event =
         blink::SyntheticWebMouseEventBuilder::Build(
             blink::WebInputEvent::Type::kMouseMove, position_in_root.x(),
             position_in_root.y() + 20, mouse_modifier);
-    simulated_event_time += simulated_event_time_delta;
-    mouse_drag_event.SetTimeStamp(simulated_event_time);
+    mouse_drag_event.SetTimeStamp(ui::EventTimeForNow());
     mouse_drag_event.button = blink::WebMouseEvent::Button::kLeft;
 
     blink::WebMouseEvent mouse_up_event =
@@ -2018,8 +2013,7 @@ class SitePerProcessEmulatedTouchBrowserTest
             blink::WebInputEvent::Type::kMouseUp, position_in_root.x(),
             position_in_root.y() + 20, mouse_modifier);
     mouse_up_event.button = blink::WebMouseEvent::Button::kLeft;
-    simulated_event_time += simulated_event_time_delta;
-    mouse_up_event.SetTimeStamp(simulated_event_time);
+    mouse_up_event.SetTimeStamp(ui::EventTimeForNow());
 
     // Send mouse events and wait for GesturePinchBegin.
     router->RouteMouseEvent(root_rwhv, &mouse_move_event, ui::LatencyInfo());

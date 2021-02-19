@@ -24065,6 +24065,9 @@ Called by update_document_policy_enum.py.-->
   <int value="19" label="GestureTwoFingerTap"/>
   <int value="20" label="FirstGestureScrollUpdate"/>
   <int value="21" label="MouseDragged"/>
+  <int value="22" label="GesturePinchBegin"/>
+  <int value="23" label="GesturePinchEnd"/>
+  <int value="24" label="GesturePinchUpdate"/>
 </enum>
 
 <enum name="EventLatencyScrollInputType">

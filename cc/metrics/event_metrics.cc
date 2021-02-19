@@ -51,6 +51,9 @@ constexpr struct {
                ui::ET_GESTURE_SCROLL_UPDATE,
                EventMetrics::ScrollUpdateType::kStarted),
     EVENT_TYPE(MouseDragged, ui::ET_MOUSE_DRAGGED),
+    EVENT_TYPE(GesturePinchBegin, ui::ET_GESTURE_PINCH_BEGIN),
+    EVENT_TYPE(GesturePinchEnd, ui::ET_GESTURE_PINCH_END),
+    EVENT_TYPE(GesturePinchUpdate, ui::ET_GESTURE_PINCH_UPDATE),
 #undef EVENT_TYPE
 };
 static_assert(base::size(kInterestingEvents) ==
@@ -240,6 +243,13 @@ void EventMetrics::ResetToDispatchStage(DispatchStage stage) {
        stage_index++) {
     dispatch_stage_timestamps_[stage_index] = base::TimeTicks();
   }
+}
+
+bool EventMetrics::ShouldReportScrollingTotalLatency() const {
+  return type_ == EventType::kGestureScrollBegin ||
+         type_ == EventType::kGestureScrollEnd ||
+         type_ == EventType::kFirstGestureScrollUpdate ||
+         type_ == EventType::kGestureScrollUpdate;
 }
 
 std::unique_ptr<EventMetrics> EventMetrics::Clone() const {

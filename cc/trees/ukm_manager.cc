@@ -316,7 +316,8 @@ void UkmManager::RecordEventLatencyUKM(
       builder.SetScrollInputType(
           static_cast<int64_t>(*event_metrics->scroll_type()));
 
-      if (!processed_viz_breakdown.swap_start().is_null()) {
+      if (event_metrics->ShouldReportScrollingTotalLatency() &&
+          !processed_viz_breakdown.swap_start().is_null()) {
         builder.SetTotalLatencyToSwapBegin(
             (processed_viz_breakdown.swap_start() - generated_timestamp)
                 .InMicroseconds());
