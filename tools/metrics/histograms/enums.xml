@@ -51885,6 +51885,34 @@ Called by update_use_counter_css.py.-->
   <int value="17" label="externalfile"/>
 </enum>
 
+<enum name="NavigationSuggestionDigitalAssetLinkValidationEvent">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kStarted">
+    A digital asset link validation started. Recorded once for a lookalike and
+    target site pair.
+  </int>
+  <int value="2" label="kLookalikeManifestFailed">
+    Failed to fetch the lookalike site's manifest. This could be because the
+    lookalike site doesn't serve a manifest, serves an invalid manifest or a
+    manifest that doesn't match the target site.
+  </int>
+  <int value="3" label="kLookalikeManifestTimedOut">
+    Timed out while fetching the lookalike site's manifest.
+  </int>
+  <int value="4" label="kTargetManifestFailed">
+    Failed to fetch the target site's manifest. This could be because the target
+    site doesn't serve a manifest, serves an invalid manifest or a manifest that
+    doesn't match the lookalike site.
+  </int>
+  <int value="5" label="kTargetManifestTimedOut">
+    Timed out while fetching the lookalike site's manifest.
+  </int>
+  <int value="6" label="kValidationSucceeded">
+    Validation of lookalike and target manifests succeeded, no need to show a
+    lookalike warning.
+  </int>
+</enum>
+
 <enum name="NavigationSuggestionEvent">
   <int value="0" label="None"/>
   <int value="1" label="Infobar shown"/>

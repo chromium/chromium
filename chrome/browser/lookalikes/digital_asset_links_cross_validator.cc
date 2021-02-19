@@ -4,12 +4,22 @@
 
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
 const char* kDigitalAssetLinkRecordType = "lookalikes/allowlist";
+
+void RecordUMA(DigitalAssetLinkCrossValidator::Event event) {
+  base::UmaHistogramEnumeration(
+      DigitalAssetLinkCrossValidator::kEventHistogramName, event);
 }
+}
+
+// static
+const char DigitalAssetLinkCrossValidator::kEventHistogramName[] =
+    "NavigationSuggestion.DigitalAssetLinks.Event";
 
 DigitalAssetLinkCrossValidator::DigitalAssetLinkCrossValidator(
     Profile* profile,
@@ -30,6 +40,7 @@ DigitalAssetLinkCrossValidator::DigitalAssetLinkCrossValidator(
 DigitalAssetLinkCrossValidator::~DigitalAssetLinkCrossValidator() = default;
 
 void DigitalAssetLinkCrossValidator::Start() {
+  RecordUMA(Event::kStarted);
   // Fetch and validate the manifest from the lookalike site.
   start_time_ = clock_->Now();
   asset_link_handler_->SetTimeoutDuration(timeout_);
@@ -44,15 +55,29 @@ void DigitalAssetLinkCrossValidator::Start() {
 void DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete(
     digital_asset_links::RelationshipCheckResult result) {
   // Fail if the first manifest failed or we reached the timeout.
-  base::TimeDelta elapsed = clock_->Now() - start_time_;
+  const base::Time now = clock_->Now();
+  const base::TimeDelta elapsed = now - start_time_;
+  // Do the timeout check regardless of the result. This is to make testing
+  // timeouts possible:
+  // - DigitalAssetLinksHandler uses a SimpleURLLoader to load the URLs.
+  // - SimpleURLLoader supports timeouts via a OneShotTimer and can take
+  // an external clock source.
+  // - However, once the URL load starts, we can't control its OneShotTimer, so
+  // we can't force SimpleURLLoader to timeout in tests.
+  // As a result, we check the elapsed time in addition to the URL load result
+  // and record a timeout metric in that case.
   if (result != digital_asset_links::RelationshipCheckResult::kSuccess ||
       elapsed >= timeout_) {
+    RecordUMA(elapsed >= timeout_ ? Event::kLookalikeManifestTimedOut
+                                  : Event::kLookalikeManifestFailed);
     std::move(callback_).Run(false);
     return;
   }
-  timeout_ = timeout_ - elapsed;
+
   // Swap current and target domains and validate the new manifest.
-  asset_link_handler_->SetTimeoutDuration(timeout_);
+  start_time_ = now;
+  target_manifest_timeout_ = timeout_ - elapsed;
+  asset_link_handler_->SetTimeoutDuration(target_manifest_timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
       target_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
       {{"namespace", "web"}, {"site", lookalike_domain_.Serialize()}},
@@ -63,6 +88,24 @@ void DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete(
 
 void DigitalAssetLinkCrossValidator::OnFetchTargetManifestComplete(
     digital_asset_links::RelationshipCheckResult result) {
-  std::move(callback_).Run(
-      result == digital_asset_links::RelationshipCheckResult::kSuccess);
+  const base::TimeDelta elapsed = clock_->Now() - start_time_;
+  bool success =
+      result == digital_asset_links::RelationshipCheckResult::kSuccess;
+  if (elapsed > target_manifest_timeout_) {
+    RecordUMA(Event::kTargetManifestTimedOut);
+    std::move(callback_).Run(false);
+    return;
+  }
+  if (success) {
+    UmaHistogramTimes("NavigationSuggestion.DigitalAssetLinks.ValidationTime",
+                      elapsed);
+    RecordUMA(Event::kValidationSucceeded);
+    std::move(callback_).Run(true);
+    return;
+  }
+  // We can differentiate between failures and timeouts by checking if the
+  // elapsed time is close to the total timeout, but bucket these events
+  // together for simplicity.
+  RecordUMA(Event::kTargetManifestFailed);
+  std::move(callback_).Run(false);
 }

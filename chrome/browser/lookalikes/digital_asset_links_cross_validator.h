@@ -24,11 +24,37 @@ class Clock;
 // Runs |callback| with true if |lookalike_domain|'s manifest contains a
 // valid entry for |target_domain| AND |target_domain|'s manifest
 // contains a valid entry for |lookalike_domain|. Runs |callback| with false in
-// all other cases.
+// all other cases. |timeout| is the total timeout to fetch both manifests. If
+// either of the manifest fetches fails during this timeout, the validation is
+// assumed to fail.
 class DigitalAssetLinkCrossValidator {
  public:
   using ResultCallback = base::OnceCallback<void(bool)>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Event {
+    kNone = 0,
+    // A digital asset link validation started. Recorded once for a lookalike
+    // and target pair.
+    kStarted = 1,
+    // Failed to fetch the lookalike manifest. This could be because the
+    // lookalike site doesn't serve a manifest, serves an invalid manifest or a
+    // manifest that doesn't match the target site.
+    kLookalikeManifestFailed = 2,
+    // Timed out while fetching the lookalike site's manifest.
+    kLookalikeManifestTimedOut = 3,
+    // Failed to fetch the target manifest. This could be because the
+    // target site doesn't serve a manifest, serves an invalid manifest or a
+    // manifest that doesn't match the lookalike site.
+    kTargetManifestFailed = 4,
+    // Timed out while fetching the target site's manifest.
+    kTargetManifestTimedOut = 5,
+    // Validation of lookalike and target manifests succeeded, no need to show
+    // a lookalike warning.
+    kValidationSucceeded = 6,
+    kMaxValue = kValidationSucceeded
+  };
   DigitalAssetLinkCrossValidator(Profile* profile,
                                  const url::Origin& lookalike_domain,
                                  const url::Origin& target_domain,
@@ -40,6 +66,8 @@ class DigitalAssetLinkCrossValidator {
 
   void Start();
 
+  static const char kEventHistogramName[];
+
  private:
   void OnFetchLookalikeManifestComplete(
       digital_asset_links::RelationshipCheckResult result);
@@ -48,7 +76,8 @@ class DigitalAssetLinkCrossValidator {
 
   const url::Origin lookalike_domain_;
   const url::Origin target_domain_;
-  base::TimeDelta timeout_;
+  const base::TimeDelta timeout_;
+  base::TimeDelta target_manifest_timeout_;
   base::Time start_time_;
   const base::Clock* clock_;
   ResultCallback callback_;
