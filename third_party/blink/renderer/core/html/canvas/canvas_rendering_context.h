@@ -179,7 +179,7 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   virtual bool Is3d() const { return false; }
   virtual bool UsingSwapChain() const { return false; }
   virtual void SetFilterQuality(SkFilterQuality) { NOTREACHED(); }
-  virtual void Reshape(int width, int height) { NOTREACHED(); }
+  virtual void Reshape(int width, int height) {}
   virtual void MarkLayerComposited() { NOTREACHED(); }
   virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
     NOTREACHED();
