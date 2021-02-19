@@ -11,6 +11,7 @@
 <translation id="1037492556044956303">已添加<ph name="DEVICE_NAME" /></translation>
 <translation id="1047017786576569492">局部</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
+<translation id="1052916631016577720">内容扫描</translation>
 <translation id="1056775291175587022">没有网络</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">移动网络设备：<ph name="ADDRESS" /></translation>
@@ -396,6 +397,7 @@
 <translation id="4351433414020964307">智能助理正在加载中…</translation>
 <translation id="4356930093361201197">高对比度模式</translation>
 <translation id="4371348193907997655">投射设置</translation>
+<translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4379531060876907730">这些是您的触控笔工具</translation>
 <translation id="4389184120735010762">您按下了停靠放大镜的键盘快捷键。要开启这项功能吗？</translation>
@@ -586,6 +588,7 @@
 <translation id="6043212731627905357">该显示器与您的<ph name="DEVICE_TYPE" />不兼容（系统不支持该显示器）。</translation>
 <translation id="6043994281159824495">立即退出</translation>
 <translation id="6047696787498798094">切换到其他用户后将停止屏幕共享。要继续吗？</translation>
+<translation id="6050368268239407309">演示工具</translation>
 <translation id="6054305421211936131">使用智能卡登录</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
 <translation id="6062360702481658777">您将在<ph name="LOGOUT_TIME_LEFT" />后自动退出。</translation>

@@ -241,6 +241,7 @@
 <translation id="641081527798843608">Përputhja e subjektit</translation>
 <translation id="6456394469623773452">I mirë</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
@@ -277,7 +278,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
-<translation id="7449585358422953039">Menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7487067081878637334">Teknologjia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>

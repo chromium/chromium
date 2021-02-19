@@ -2327,7 +2327,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3602870520245633055">Drukowanie i skanowanie</translation>
 <translation id="3603622770190368340">Pobierz certyfikat sieci</translation>
-<translation id="3604193429970465812">Konta dodatkowe</translation>
 <translation id="3604713164406837697">Zmień tapetę</translation>
 <translation id="3605780360466892872">Garnitur</translation>
 <translation id="3608576286259426129">Podgląd obrazu użytkownika</translation>
@@ -2396,7 +2395,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3677911431265050325">Otwórz stronę mobilną</translation>
 <translation id="3677959414150797585">Obejmuje między innymi aplikacje i strony internetowe. Wysyła statystyki, by ulepszać podpowiedzi, tylko wtedy, gdy zostało wybrane udostępnianie danych o korzystaniu.</translation>
 <translation id="3678156199662914018">Rozszerzenie: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Twoje aplikacje i ustawienia systemu operacyjnego będą synchronizować się na Chromebookach, na których zalogujesz się na to konto. <ph name="LINK_BEGIN" />Ustawienia synchronizacji<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Głos zamiany tekstu na mowę</translation>
 <translation id="3681311097828166361">Dziękujemy za opinię. Jesteś teraz offline, więc Twoje zgłoszenie zostanie wysłane później.</translation>
 <translation id="3682824389861648626">Próg ruchu</translation>
@@ -2951,7 +2949,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (aktywne <ph name="NUM_KILOBYTES_LIVE" /> KB)</translation>
 <translation id="4310139701823742692">Plik ma niewłaściwy format. Sprawdź plik PPD i spróbuj ponownie.</translation>
 <translation id="431076611119798497">&amp;Szczegóły</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 konto Google}few{<ph name="EXTRA_ACCOUNTS" /> konta Google}many{<ph name="EXTRA_ACCOUNTS" /> kont Google}other{<ph name="EXTRA_ACCOUNTS" /> konta Google}}</translation>
 <translation id="4312866146174492540">Blokuj (domyślnie)</translation>
 <translation id="4314815835985389558">Zarządzanie synchronizacją</translation>
 <translation id="4316850752623536204">Witryna dewelopera</translation>
@@ -3704,7 +3701,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5206787458656075734">{COUNT,plural, =1{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasło. Chrome zaleca, by jak najszybciej je sprawdzić.}few{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}many{Zmieniono przejęte hasło. Masz jeszcze # przejętych haseł. Chrome zaleca, by jak najszybciej je sprawdzić.}other{Zmieniono przejęte hasło. Masz jeszcze # przejętego hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}}</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="5209320130288484488">Nie znaleziono urządzeń</translation>
-<translation id="5209572028385096813">Ten użytkownik jest zarządzany przez Family Link</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
 <translation id="5213481667492808996">Usługa transmisji danych „<ph name="NAME" />” jest gotowa do użycia</translation>
 <translation id="5213891612754844763">Pokaż ustawienia serwera proxy</translation>
@@ -5367,7 +5363,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7121362699166175603">Usuwa historię i pamięć autouzupełniania na pasku adresu. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Tryb programisty</translation>
 <translation id="7121728544325372695">Inteligentne myślniki</translation>
-<translation id="7122353087820324370">Aplikacje i ustawienia systemu operacyjnego nie są synchronizowane z kontami dodatkowymi.</translation>
 <translation id="7123030151043029868">Zezwolono na automatyczne pobieranie wielu plików</translation>
 <translation id="7123360114020465152">Drukarka nie jest już obsługiwana</translation>
 <translation id="7125148293026877011">Usuń Crostini</translation>
@@ -6080,7 +6075,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7928175190925744466">Hasło zostało już zmienione?</translation>
 <translation id="7930294771522048157">Tutaj pojawią się zapisane formy płatności</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> udostępnia ekran i dźwięk.</translation>
-<translation id="7931318309563332511">Nieznany</translation>
 <translation id="793293630927785390">Okno nowej sieci Wi-Fi</translation>
 <translation id="7932969338829957666">Foldery udostępnione są dostępne w Linuxie w folderze <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Wyłącz wyciszenie strony}few{Wyłącz wyciszenie stron}many{Wyłącz wyciszenie stron}other{Wyłącz wyciszenie stron}}</translation>

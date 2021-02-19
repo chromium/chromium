@@ -2330,7 +2330,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3602870520245633055">Ispis i skeniranje</translation>
 <translation id="3603622770190368340">Dobivanje certifikata mreže</translation>
-<translation id="3604193429970465812">Sekundarni računi</translation>
 <translation id="3604713164406837697">Promjena pozadinske slike</translation>
 <translation id="3605780360466892872">Poslovnjak</translation>
 <translation id="3608576286259426129">Pregled korisnikove slike</translation>
@@ -2399,7 +2398,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3677911431265050325">Zatraži web-lokaciju za mobilne uređaje</translation>
 <translation id="3677959414150797585">Uključuje aplikacije, web-stranice i još mnogo toga. Šalje statistiku za poboljšanje prijedloga samo ako ste odabrali dijeljenje podataka o upotrebi.</translation>
 <translation id="3678156199662914018">Proširenje: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Vaše aplikacije i postavke OS-a sinkronizirat će se na svim Chromebookovima na koje ste prijavljeni ovim računom. <ph name="LINK_BEGIN" />Postavke sinkronizacije<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Glas za pretvaranje teksta u govor</translation>
 <translation id="3681311097828166361">Zahvaljujemo vam na povratnim informacijama. Trenutačno ste offline, pa će se izvješće poslati kasnije.</translation>
 <translation id="3682824389861648626">Prag pokreta</translation>
@@ -2954,7 +2952,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K izravno)</translation>
 <translation id="4310139701823742692">Datoteka ima pogrešan format. Pregledajte PPD datoteku i pokušajte ponovo.</translation>
 <translation id="431076611119798497">&amp;Detalji</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{Jedan Google račun}one{<ph name="EXTRA_ACCOUNTS" /> Google račun}few{<ph name="EXTRA_ACCOUNTS" /> Google računa}other{<ph name="EXTRA_ACCOUNTS" /> Google računa}}</translation>
 <translation id="4312866146174492540">Blokiraj (zadano)</translation>
 <translation id="4314815835985389558">Upravljanje sinkronizacijom</translation>
 <translation id="4316850752623536204">Web-lokacija razvojnog programera</translation>
@@ -3707,7 +3704,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5206787458656075734">{COUNT,plural, =1{Uspješno ste promijenili ugroženu zaporku. Imate još # ugroženu zaporku. Chrome preporučuje da odmah provjerite tu zaporku.}one{Uspješno ste promijenili ugroženu zaporku. Imate još # ugroženu zaporku. Chrome preporučuje da odmah provjerite te zaporke.}few{Uspješno ste promijenili ugroženu zaporku. Imate još # ugrožene zaporke. Chrome preporučuje da odmah provjerite te zaporke.}other{Uspješno ste promijenili ugroženu zaporku. Imate još # ugroženih zaporki. Chrome preporučuje da odmah provjerite te zaporke.}}</translation>
 <translation id="5207949376430453814">Istakni znak za umetanje teksta</translation>
 <translation id="5209320130288484488">Nije pronađen nijedan uređaj</translation>
-<translation id="5209572028385096813">Tim korisnikom upravlja Family Link</translation>
 <translation id="5210365745912300556">Zatvori karticu</translation>
 <translation id="5213481667492808996">Vaša podatkovna usluga "<ph name="NAME" />" spremna je za upotrebu</translation>
 <translation id="5213891612754844763">Prikaži postavke proxyja</translation>
@@ -5370,7 +5366,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7121362699166175603">Briše povijest i automatska dovršavanja u adresnoj traci. Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Način razvojnog programera</translation>
 <translation id="7121728544325372695">Pametne crtice</translation>
-<translation id="7122353087820324370">Aplikacije i postavke OS-a ne sinkroniziraju se sa sekundarnim računima.</translation>
 <translation id="7123030151043029868">Dopušteno je automatsko preuzimanje više datoteka</translation>
 <translation id="7123360114020465152">Više nije podržan</translation>
 <translation id="7125148293026877011">Brisanje Crostinija</translation>
@@ -6083,7 +6078,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7928175190925744466">Već ste promijenili ovu zaporku?</translation>
 <translation id="7930294771522048157">Ovdje će se prikazivati spremljeni načini plaćanja</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> dijeli zaslon i zvuk.</translation>
-<translation id="7931318309563332511">Nepoznato</translation>
 <translation id="793293630927785390">Dijaloški okvir za novu Wi-Fi mrežu</translation>
 <translation id="7932969338829957666">Dijeljene mape dostupne su na Linuxu na <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Uključi zvuk na web-lokaciji}one{Uključi zvuk na web-lokacijama}few{Uključi zvuk na web-lokacijama}other{Uključi zvuk na web-lokacijama}}</translation>

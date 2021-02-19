@@ -242,6 +242,7 @@
 <translation id="641081527798843608">Emnematch</translation>
 <translation id="6456394469623773452">God</translation>
 <translation id="6472207088655375767">Engangskode</translation>
+<translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
 <translation id="6517239166834772319">Udforsk</translation>
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
-<translation id="7449585358422953039">Administreres af <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>

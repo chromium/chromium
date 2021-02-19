@@ -273,7 +273,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9047197236183657400">Vil du flytte kontoen til en ny Chromium-profil?</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>
-<translation id="9107750757953039239">Hvis du har flere Google-kontoer, kan du legge dem til på <ph name="DEVICE_TYPE" />. Kontoene dine blir tilgjengelige i Chromium-nettleseren, Play-butikken og tjenester som Gmail, Disk og YouTube. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Åpne linken i en ny &amp;fane i Chromium</translation>
 <translation id="911206726377975832">Vil du slette all nettleserdata også?</translation>
 <translation id="9158494823179993217">Systemadministratoren din har konfigurert Chromium til å åpne en annen nettleser når du går til <ph name="TARGET_URL_HOSTNAME" />.</translation>

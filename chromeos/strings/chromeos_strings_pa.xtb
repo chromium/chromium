@@ -242,6 +242,7 @@
 <translation id="641081527798843608">ਵਿਸ਼ਾ ਮਿਲਾਨ</translation>
 <translation id="6456394469623773452">ਠੀਕ</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="649050271426829538">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
 <translation id="6517239166834772319">ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="6527081081771465939">ਅਗਿਆਤ ਵਾਈ-ਫਾਈ ਦੀ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਪ੍ਰੋਟੋਕੋਲ</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। 1 ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}one{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}other{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="7469648432129124067">ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="7487067081878637334">ਤਕਨਾਲੋਜੀ</translation>
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>

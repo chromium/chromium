@@ -243,6 +243,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>
 <translation id="6456394469623773452">Dober</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
+<translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
 <translation id="6517239166834772319">Raziskovanje</translation>
 <translation id="6527081081771465939">Neznani varnostni protokol za Wi-Fi</translation>
@@ -279,7 +280,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
-<translation id="7449585358422953039">Upravitelj: <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>

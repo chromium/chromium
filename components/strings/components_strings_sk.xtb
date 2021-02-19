@@ -1246,7 +1246,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5813119285467412249">&amp;Znova pridať</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Na túto kartu sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}few{Na kartu, ktorú vyberiete, sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}many{Na kartu, ktorú vyberiete, sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}other{Na kartu, ktorú vyberiete, sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}}</translation>
 <translation id="5826507051599432481">Bežný názov (CN)</translation>
-<translation id="583281660410589416">Neznáme</translation>
 <translation id="5838278095973806738">Na tomto webe by ste nemali zadávať citlivé údaje, napríklad heslá alebo kreditné karty, pretože by ich mohli ukradnúť útočníci.</translation>
 <translation id="5851548754964597211">Zoznam kariet</translation>
 <translation id="5855253129151731373">Zdá sa, že názov hostiteľa tohto webu sa podobá doméne <ph name="LOOKALIKE_DOMAIN" />. Útočníci niekedy weby napodobňujú tak, že v názve domény vykonajú drobné, ťažko odhaliteľné zmeny.
@@ -1757,6 +1756,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7888575728750733395">Vykresľovacia intencia tlače</translation>
 <translation id="7894280532028510793">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (obálka)</translation>
+<translation id="7931318309563332511">Neznámy</translation>
 <translation id="7932579305932748336">Naniesť povrchovú vrstvu</translation>
 <translation id="79338296614623784">Zadajte platné telefónne číslo</translation>
 <translation id="7934052535022478634">Platba sa uskutočnila</translation>

@@ -275,7 +275,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="9047197236183657400">Есептік жазба жаңа Chromium профиліне ауыстырылсын ба?</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium браузері бір сағаттан кейін қайта іске қосылады}other{Chromium браузері # сағаттан кейін қайта іске қосылады}}</translation>
-<translation id="9107750757953039239">Бірнеше Google есептік жазбаңыз болса, оларды <ph name="DEVICE_TYPE" /> құрылғыңызға қоса аласыз. Есептік жазбаларыңыз Chromium браузері мен Play Store қолданбасында, сондай-ақ Gmail, Drive және YouTube сияқты қызметтерде қолжетімді болады. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Сілтемені жаңа Chromium қойындысында ашу</translation>
 <translation id="911206726377975832">Сонымен қатар шолу деректеріңізді жоясыз ба?</translation>
 <translation id="9158494823179993217">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> сілтемесіне қосымша браузер арқылы кіре алатындай етіп конфигурациялады.</translation>

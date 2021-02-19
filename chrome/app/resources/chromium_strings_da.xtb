@@ -274,7 +274,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9047197236183657400">Vil du flytte kontoen til en ny Chromium-profil?</translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium genstarter om en time}one{Chromium genstarter om # time}other{Chromium genstarter om # timer}}</translation>
-<translation id="9107750757953039239">Hvis du har flere Google-konti, kan du tilføje dem på din <ph name="DEVICE_TYPE" />. Dine konti vil være tilgængelige i Chromium-browseren og Play Butik samt tjenester som f.eks. Gmail, Drev og YouTube. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Åbn linket på en ny Chromium-&amp;fane</translation>
 <translation id="911206726377975832">Slet også dine browserdata?</translation>
 <translation id="9158494823179993217">Din systemadministrator har konfigureret Chromium til at åbne en anden browser for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>

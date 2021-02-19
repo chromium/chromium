@@ -276,7 +276,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="9047197236183657400">Želite da premestite nalog na nov Chromium profil?</translation>
 <translation id="9089354809943900324">Chromium je zastareo</translation>
 <translation id="9093206154853821181">{0,plural, =1{Ponovo ćemo pokrenuti Chromium za jedan sat}one{Ponovo ćemo pokrenuti Chromium za # sat}few{Ponovo ćemo pokrenuti Chromium za # sata}other{Ponovo ćemo pokrenuti Chromium za # sati}}</translation>
-<translation id="9107750757953039239">Ako imate više Google naloga, možete da ih dodate na <ph name="DEVICE_TYPE" />. Nalozi će biti dostupni u Chromium pregledaču i Play prodavnici i u uslugama, kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Otvori link u novoj Chromium &amp;kartici</translation>
 <translation id="911206726377975832">Želite li da izbrišete i podatke pregledanja?</translation>
 <translation id="9158494823179993217">Administrator sistema je konfigurisao Chromium da otvara alternativni pregledač za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>

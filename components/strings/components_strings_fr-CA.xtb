@@ -1250,7 +1250,6 @@
 <translation id="5813119285467412249">&amp;Rétablir l'ajout</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cette carte sera débitée lorsque vous payerez, mais son véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}one{La carte que vous avez sélectionnée sera débitée lorsque vous payerez, mais son véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}other{Les cartes que vous avez sélectionnées seront débitées lorsque vous payerez, mais leur véritable numéro ne sera pas partagé avec ce site. Pour accroître la sécurité, un code CVC sera généré.}}</translation>
 <translation id="5826507051599432481">Nom commun (CN)</translation>
-<translation id="583281660410589416">Inconnu</translation>
 <translation id="5838278095973806738">Nous vous déconseillons d'entrer des données sensibles sur ce site (par exemple, des mots de passe ou des cartes de crédit), car elles pourraient être volées par des pirates.</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5855253129151731373">Le nom d'hôte de ce site est similaire à celui de <ph name="LOOKALIKE_DOMAIN" />. Les pirates tentent parfois d'imiter des sites Web en modifiant légèrement le nom de domaine utilisé.
@@ -1762,6 +1761,7 @@ Détails supplémentaires :
 <translation id="7888575728750733395">Intention de rendu d'impression</translation>
 <translation id="7894280532028510793">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter les diagnostics de réseau<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">Enveloppe C3</translation>
+<translation id="7931318309563332511">Inconnue</translation>
 <translation id="7932579305932748336">Revêtement</translation>
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
 <translation id="7934052535022478634">Paiement effectué</translation>

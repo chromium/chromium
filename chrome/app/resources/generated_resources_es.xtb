@@ -2329,7 +2329,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3602870520245633055">Imprimir y escanear</translation>
 <translation id="3603622770190368340">Obtener certificado de red</translation>
-<translation id="3604193429970465812">Cuentas secundarias</translation>
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="3605780360466892872">Amancio</translation>
 <translation id="3608576286259426129">Vista previa de imagen de usuario</translation>
@@ -2398,7 +2397,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3677911431265050325">Solicitar sitio web móvil</translation>
 <translation id="3677959414150797585">Incluye aplicaciones, páginas web y más. Envía estadísticas para mejorar las sugerencias solo si has elegido compartir datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Tus aplicaciones y tus ajustes del SO se sincronizarán en Chromebooks en los que hayas iniciado sesión con esta cuenta. <ph name="LINK_BEGIN" />Ajustes de sincronización<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voz de síntesis de voz</translation>
 <translation id="3681311097828166361">Gracias por tus comentarios. Ahora no tienes conexión, por lo que el informe se enviará más tarde.</translation>
 <translation id="3682824389861648626">Umbral de movimiento</translation>
@@ -2952,7 +2950,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K activos)</translation>
 <translation id="4310139701823742692">El formato del archivo no es correcto. Comprueba el archivo PPD e inténtalo de nuevo.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> cuentas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Gestionar sincronización</translation>
 <translation id="4316850752623536204">Sitio web del desarrollador</translation>
@@ -3705,7 +3702,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5206787458656075734">{COUNT,plural, =1{Contraseña vulnerada cambiada correctamente. Tienes # contraseña vulnerada más. Chrome te recomienda que compruebes esta contraseña ahora.}other{Contraseña vulnerada cambiada correctamente. Tienes # contraseñas vulneradas más. Chrome te recomienda que compruebes estas contraseñas ahora.}}</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
 <translation id="5209320130288484488">No se ha encontrado ningún dispositivo.</translation>
-<translation id="5209572028385096813">Este usuario se gestiona con Family Link</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
@@ -5368,7 +5364,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7121362699166175603">Borra el historial y los autocompletados de la barra de direcciones. Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo desarrollador</translation>
 <translation id="7121728544325372695">Guiones inteligentes</translation>
-<translation id="7122353087820324370">Las aplicaciones y los ajustes de Chrome OS no se sincronizarán con las cuentas secundarias.</translation>
 <translation id="7123030151043029868">Puede descargar varios archivos automáticamente</translation>
 <translation id="7123360114020465152">Ya no es compatible</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
@@ -6081,7 +6076,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7928175190925744466">¿Has cambiado esta contraseña?</translation>
 <translation id="7930294771522048157">Los métodos de pago guardados aparecerán aquí</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> está compartiendo la pantalla y el audio.</translation>
-<translation id="7931318309563332511">Desconocido</translation>
 <translation id="793293630927785390">Cuadro de diálogo para añadir una red Wi‑Fi</translation>
 <translation id="7932969338829957666">En Linux, las carpetas compartidas están disponibles en <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activar sonido del sitio web}other{Activar sonido de los sitios}}</translation>

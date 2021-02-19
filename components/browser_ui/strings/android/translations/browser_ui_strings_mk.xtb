@@ -279,6 +279,7 @@
 <translation id="8447861592752582886">Отповикај ја дозволата за пристап до уредот</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Се користи 1 колаче}one{Се користи # колаче}other{Се користат # колачиња}}</translation>
 <translation id="8463851957836045671">Сајтот е брз</translation>
+<translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>

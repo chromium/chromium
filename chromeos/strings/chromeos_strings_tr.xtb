@@ -243,6 +243,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>
 <translation id="6456394469623773452">İyi</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="649050271426829538">Durduruldu - Kağıt sıkışması</translation>
 <translation id="6517239166834772319">Keşfet</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
@@ -279,7 +280,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7487067081878637334">Teknoloji</translation>
 <translation id="7490813197707563893">MAC adresi</translation>

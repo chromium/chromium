@@ -9,6 +9,7 @@
 <translation id="1021110881106174305">接受的信用卡</translation>
 <translation id="1021753677514347426">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chromium 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chromium 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
 <translation id="1024111578869940408">攻击者有时会对网址做些令人难以察觉的更改来仿冒网站。</translation>
+<translation id="1028781062521375153">查看详情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
 <translation id="1032854598605920125">顺时针旋转</translation>
 <translation id="1036348656032585052">关闭</translation>
@@ -146,6 +147,7 @@
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
+<translation id="1468653229182955856">您的验证码是 <ph name="ONE_TIME_CODE" />；若要让 <ph name="EMBEDDED_ORIGIN" /> 继续在 <ph name="TOP_ORIGIN" /> 上运行，您必须输入此验证码。</translation>
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -196,6 +198,7 @@
 <translation id="1640180200866533862">用户政策</translation>
 <translation id="1640244768702815859">请尝试<ph name="BEGIN_LINK" />访问该网站的首页<ph name="END_LINK" />。</translation>
 <translation id="1641976391427233992">将输出时间延迟至</translation>
+<translation id="164212631332220697">结帐时使用 <ph name="CARD_DETAIL" /> 付款。</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1645368109819982629">协议不受支持</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -995,6 +998,7 @@
 <translation id="4879725228911483934">在您的屏幕上打开和放置窗口</translation>
 <translation id="4880827082731008257">搜索历史记录</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="4885256590493466218">结帐时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4889420713887366944">“打开无痕式窗口”按钮，按 Enter 键即可打开一个新的无痕式窗口以私密浏览网页</translation>
 <translation id="4892518386797173871">后方</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
@@ -1242,7 +1246,6 @@
 <translation id="5813119285467412249">恢复添加(&amp;R)</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{当您付款时，系统会从这张卡中扣款，但不会将其真实卡号分享给此网站。为进一步增强安全保障，系统会生成一个临时的银行卡验证码 (CVC)。}other{当您付款时，系统会从您所选的卡中扣款，但不会将其真实卡号分享给此网站。为进一步增强安全保障，系统会生成一个临时的银行卡验证码 (CVC)。}}</translation>
 <translation id="5826507051599432481">公用名 (CN)</translation>
-<translation id="583281660410589416">未知</translation>
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5855253129151731373">此网站的主机名看起来和 <ph name="LOOKALIKE_DOMAIN" /> 很相似。攻击者有时会对域名做些令人难以发现的细微更改来仿冒网站。
@@ -1753,6 +1756,7 @@
 <translation id="7888575728750733395">打印操作渲染方式</translation>
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">未知</translation>
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
 <translation id="7934052535022478634">付款已完成</translation>
@@ -1964,6 +1968,7 @@
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">为此标签页添加书签</translation>
 <translation id="8751426954251315517">请稍后重试</translation>
+<translation id="8757526089434340176">有可用的 Google Pay 优惠</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
 <translation id="8761567432415473239">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />发现了有害程序<ph name="END_LINK" />。</translation>

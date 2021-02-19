@@ -1246,7 +1246,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5813119285467412249">&amp;Opakovat přidání</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Při placení budou z této karty strženy peníze, ale její skutečné číslo nebude s tímto webem sdíleno. Kvůli většímu zabezpečení bude vygenerován dočasný kód CVC.}few{Při placení budou z vybrané karty strženy peníze, ale její skutečné číslo nebude s tímto webem sdíleno. Kvůli většímu zabezpečení bude vygenerován dočasný kód CVC.}many{Při placení budou z vybrané karty strženy peníze, ale její skutečné číslo nebude s tímto webem sdíleno. Kvůli většímu zabezpečení bude vygenerován dočasný kód CVC.}other{Při placení budou z vybrané karty strženy peníze, ale její skutečné číslo nebude s tímto webem sdíleno. Kvůli většímu zabezpečení bude vygenerován dočasný kód CVC.}}</translation>
 <translation id="5826507051599432481">Běžný název (CN)</translation>
-<translation id="583281660410589416">Neznámé</translation>
 <translation id="5838278095973806738">Na tento web byste neměli zadávat citlivé údaje (například hesla nebo čísla platebních karet), protože by je mohli odcizit útočníci.</translation>
 <translation id="5851548754964597211">Seznam karet</translation>
 <translation id="5855253129151731373">Název hostitele tohoto webu se podobá webu <ph name="LOOKALIKE_DOMAIN" />. Útočníci někdy weby napodobují provedením drobných, snadno přehlédnutelných změn v názvu domény.
@@ -1756,6 +1755,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7888575728750733395">Vykreslovací vzor tisku</translation>
 <translation id="7894280532028510793">Pokud je adresa zadána správně, <ph name="BEGIN_LINK" />zkuste spustit Diagnostiku sítě<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (obálka)</translation>
+<translation id="7931318309563332511">Neznámé</translation>
 <translation id="7932579305932748336">Potah</translation>
 <translation id="79338296614623784">Zadejte platné telefonní číslo</translation>
 <translation id="7934052535022478634">Platba dokončena</translation>

@@ -2330,7 +2330,6 @@
 <translation id="3602290021589620013">झलक देखें</translation>
 <translation id="3602870520245633055">प्रिंट और स्कैन करें</translation>
 <translation id="3603622770190368340">नेटवर्क प्रमाणपत्र पाएं</translation>
-<translation id="3604193429970465812">दूसरे खाते</translation>
 <translation id="3604713164406837697">वॉलपेपर बदलें</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
 <translation id="3608576286259426129">उपयोगकर्ता के इमेज की झलक</translation>
@@ -2399,7 +2398,6 @@
 <translation id="3677911431265050325">मोबाइल साइट के लिए अनुरोध करें</translation>
 <translation id="3677959414150797585">इसमें ऐप्लिकेशन, वेबपेज वगैरह शामिल हैं. यह सुझावों को बेहतर बनाने के लिए आंकड़े सिर्फ़ तब भेजता है जब आपने इस्तेमाल के बारे में जानकारी देने वाला डेटा शेयर करने का विकल्प चुना हो.</translation>
 <translation id="3678156199662914018">एक्‍सटेंशन: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">आपके ऐप्लिकेशन और ओएस सेटिंग उन सभी Chromebook में सिंक हो जाएंगी जिनमें आपने Google खाते से साइन इन किया है. <ph name="LINK_BEGIN" />सिंक की सुविधा की सेटिंग<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">लिखाई को बोली में बदलने के लिए आवाज़ की सेटिंग</translation>
 <translation id="3681311097828166361">आपके फ़ीडबैक के लिए धन्यवाद. आप अब ऑफ़लाइन हैं और आपकी रिपोर्ट बाद में भेज दी जाएगी.</translation>
 <translation id="3682824389861648626">माउस की गति की सीमा</translation>
@@ -2953,7 +2951,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K लाइव)</translation>
 <translation id="4310139701823742692">फ़ाइल का फ़ॉर्मैट गलत है. PPD फ़ाइल देखें और फिर से कोशिश करें.</translation>
 <translation id="431076611119798497">&amp;विवरण</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google खाता}one{<ph name="EXTRA_ACCOUNTS" /> Google खाता}other{<ph name="EXTRA_ACCOUNTS" /> Google खाते}}</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
 <translation id="4316850752623536204">डेवलपर वेबसाइट</translation>
@@ -3706,7 +3703,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{हैक किए गए या चोरी हुए पासवर्ड को बदल दिया गया है. आपका # और पासवर्ड या तो हैक हुआ है या चोरी हुआ है. Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है.}one{हैक किए गए या चोरी हुए पासवर्ड को बदल दिया गया है. आपका # और पासवर्ड या तो हैक हुआ है या चोरी हुआ है. Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है.}other{हैक किए गए या चोरी हुए पासवर्ड बदल दिए गए हैं. आपके # और पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं. Chrome अभी इन पासवर्ड की जांच करने का सुझाव देता है.}}</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="5209320130288484488">कोई डिवाइस नहीं मि‍ला</translation>
-<translation id="5209572028385096813">इस उपयोगकर्ता खाते को Family Link प्रबंधित करता है</translation>
 <translation id="5210365745912300556">टैब बंद करें</translation>
 <translation id="5213481667492808996">आपकी '<ph name="NAME" />' डेटा सेवा इस्तेमाल किए जाने के लिए तैयार है</translation>
 <translation id="5213891612754844763">प्रॉक्सी सेटिंग दिखाएं</translation>
@@ -5369,7 +5365,6 @@
 <translation id="7121362699166175603">पता बार मेंअपने-आपपूर्णता और इतिहास को हटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="7121438501124788993">डेवलपर मोड</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
-<translation id="7122353087820324370">दूसरे खातों में ऐप्लिकेशन और ओएस सेटिंग को सिंक नहीं किया जाता.</translation>
 <translation id="7123030151043029868">एक से ज़्यादा फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति नहीं है</translation>
 <translation id="7123360114020465152">अब काम नहीं करता है</translation>
 <translation id="7125148293026877011">Crostini मिटाएं</translation>
@@ -6081,7 +6076,6 @@
 <translation id="7928175190925744466">क्या आपने पहले ही यह पासवर्ड बदल दिया है?</translation>
 <translation id="7930294771522048157">सेव किए गए भुगतान के तरीके यहां दिखाई देंगे</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> आपकी स्क्रीन और ऑडियो को शेयर कर रहा है.</translation>
-<translation id="7931318309563332511">अज्ञात</translation>
 <translation id="793293630927785390">नया वाई-फ़ाई नेटवर्क संवाद</translation>
 <translation id="7932969338829957666">शेयर किए गए फ़ोल्डर Linux में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>

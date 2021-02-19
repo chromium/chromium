@@ -1258,7 +1258,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5813119285467412249">&amp;Pievienošanas atsaukuma atcelšana</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kad veiksiet maksājumus, no šīs kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}zero{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}one{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}other{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}}</translation>
 <translation id="5826507051599432481">Kopējais nosaukums (CN)</translation>
-<translation id="583281660410589416">Nezināms</translation>
 <translation id="5838278095973806738">Neievadiet šajā vietnē sensitīvu informāciju (piemēram, paroles vai kredītkartes), jo to var nozagt uzbrucēji.</translation>
 <translation id="5851548754964597211">Ciļņu saraksts</translation>
 <translation id="5855253129151731373">Šīs vietnes saimniekdatora nosaukums izskatās līdzīgs vietnei <ph name="LOOKALIKE_DOMAIN" />. Uzbrucēji dažkārt atdarina vietnes, veicot nelielas un grūti pamanāmas izmaiņas domēna nosaukumā.
@@ -1770,6 +1769,7 @@ Papildu informācija:
 <translation id="7888575728750733395">Drukāšanas krāsu atveide</translation>
 <translation id="7894280532028510793">Ja nav pareizrakstības kļūdu, <ph name="BEGIN_LINK" />mēģiniet palaist tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (aploksne)</translation>
+<translation id="7931318309563332511">Nezināma</translation>
 <translation id="7932579305932748336">Pārklājums</translation>
 <translation id="79338296614623784">Ievadiet derīgu tālruņa numuru</translation>
 <translation id="7934052535022478634">Maksājums pabeigts</translation>

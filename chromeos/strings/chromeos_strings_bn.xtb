@@ -242,6 +242,7 @@
 <translation id="641081527798843608">বিষয়ের মিল</translation>
 <translation id="6456394469623773452">ভাল</translation>
 <translation id="6472207088655375767">ওটিপি</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="649050271426829538">বন্ধ হয়ে গেছে - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
 <translation id="6527081081771465939">অজানা ওয়াই-ফাই সিকিউরিটি প্রোটোকল</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা সম্পূর্ণ হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> ম্যানেজ করেন।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7487067081878637334">প্রযুক্তি</translation>
 <translation id="7490813197707563893">MAC ঠিকানা</translation>

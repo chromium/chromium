@@ -279,6 +279,7 @@
 <translation id="8447861592752582886">Опозови дозволу за уређај</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Користи се 1 колачић}one{Користи се # колачић}few{Користе се # колачића}other{Користи се # колачића}}</translation>
 <translation id="8463851957836045671">Сајт је брз</translation>
+<translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="851751545965956758">Онемогући сајтовима да се повезују са уређајима</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>

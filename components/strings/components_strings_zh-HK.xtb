@@ -1249,7 +1249,6 @@
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{付帳時，系統會從此付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}other{付帳時，系統會從所選的付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}}</translation>
 <translation id="5826507051599432481">真實姓名 (CN)</translation>
-<translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">您不應在此網站上輸入任何敏感資料 (例如密碼或信用卡資料)，因為攻擊者可能會竊取這些資料。</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5855253129151731373">此網站的主機名稱與 <ph name="LOOKALIKE_DOMAIN" /> 相似。攻擊者有時會在網域名稱中加入難以辨識的細微變更來仿冒網站。
@@ -1761,6 +1760,7 @@
 <translation id="7888575728750733395">列印輸出意圖</translation>
 <translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3 (信封)</translation>
+<translation id="7931318309563332511">不明</translation>
 <translation id="7932579305932748336">塗布</translation>
 <translation id="79338296614623784">請輸入有效的電話號碼</translation>
 <translation id="7934052535022478634">付款完成</translation>

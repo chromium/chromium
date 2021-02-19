@@ -2327,7 +2327,6 @@
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3602870520245633055">چاپ و اسکن کردن</translation>
 <translation id="3603622770190368340">دریافت گواهی‌نامه شبکه</translation>
-<translation id="3604193429970465812">حساب‌های ثانویه</translation>
 <translation id="3604713164406837697">تغییر کاغذدیواری</translation>
 <translation id="3605780360466892872">تاجر</translation>
 <translation id="3608576286259426129">پیش‌نمایش تصویر کاربر</translation>
@@ -2396,7 +2395,6 @@
 <translation id="3677911431265050325">درخواست سایت ویژه دستگاه همراه</translation>
 <translation id="3677959414150797585">شامل برنامه‌ها، صفحه‌های وب و موارد دیگر می‌شود. تنها درصورتی‌که هم‌رسانی داده‌های استفاده را انتخاب کرده باشید، آمار را برای بهبود پیشنهادها ارسال می‌کند.</translation>
 <translation id="3678156199662914018">برنامهٔ افزودنی: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">‏تنظیمات برنامه‌ها و سیستم‌عامل در دستگاه‌های Chromebook که در آن‌ها با این حساب به سیستم وارد شده‌اید همگام‌سازی می‌شود. <ph name="LINK_BEGIN" />تنظیمات همگامسازی<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">صدای نوشتار به گفتار</translation>
 <translation id="3681311097828166361">از بازخوردتان سپاس‌گزاریم. درحال‌حاضر آفلاین هستید و گزارشتان بعداً ارسال می‌شود.</translation>
 <translation id="3682824389861648626">آستانه حرکت</translation>
@@ -2951,7 +2949,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> کیلوبایت (<ph name="NUM_KILOBYTES_LIVE" />کیلوبایت زنده)</translation>
 <translation id="4310139701823742692">‏قالب فایل صحیح نیست. فایل PPD را بررسی کرده و دوباره امتحان کنید.</translation>
 <translation id="431076611119798497">&amp;جزئیات</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{‏۱ «حساب Google»}one{‏<ph name="EXTRA_ACCOUNTS" /> «حساب Google»}other{‏<ph name="EXTRA_ACCOUNTS" /> «حساب Google»}}</translation>
 <translation id="4312866146174492540">مسدود کردن (پیش‌فرض)</translation>
 <translation id="4314815835985389558">مدیریت همگام‌سازی</translation>
 <translation id="4316850752623536204">وب‌سایت برنامه‌نویس</translation>
@@ -3704,7 +3701,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{‏گذرواژه لورفته باموفقیت تغییر کرد. # گذرواژه لورفته دیگر دارید. Chrome توصیه می‌کند این گذرواژه را اکنون بررسی کنید.}one{‏گذرواژه لورفته باموفقیت تغییر کرد. # گذرواژه لورفته دیگر دارید. Chrome توصیه می‌کند این گذرواژه را اکنون بررسی کنید.}other{‏گذرواژه لورفته باموفقیت تغییر کرد. # گذرواژه لورفته دیگر دارید. Chrome توصیه می‌کند این گذرواژه‌ها را اکنون بررسی کنید.}}</translation>
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5209320130288484488">دستگاهی یافت نشد</translation>
-<translation id="5209572028385096813">‏این کاربر با Family Link مدیریت می‌شود</translation>
 <translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5213481667492808996">سرویس داده «<ph name="NAME" />» شما آماده استفاده است</translation>
 <translation id="5213891612754844763">نمایش تنظیمات پروکسی</translation>
@@ -5367,7 +5363,6 @@
 <translation id="7121362699166175603">‏سابقه و تکمیل‌های خودکار را در نوار نشانی پاک می‌کند. ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="7121438501124788993">حالت تولیدکننده</translation>
 <translation id="7121728544325372695">خط تیره‌های هوشمند</translation>
-<translation id="7122353087820324370">تنظیمات برنامه‌ها و سیستم‌عامل با حساب‌های ثانویه همگام‌سازی نشده‌اند.</translation>
 <translation id="7123030151043029868">اجازه دارد چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="7123360114020465152">دیگر پشتیبانی نمی‌شود</translation>
 <translation id="7125148293026877011">‏حذف Crostini</translation>
@@ -6080,7 +6075,6 @@
 <translation id="7928175190925744466">قبلاً این گذرواژه را تغییر داده‌اید؟</translation>
 <translation id="7930294771522048157">روش‌های پرداخت ذخیره‌شده در اینجا نشان داده می‌شود</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> درحال اشتراک‌گذاری صفحه و صوت شماست.</translation>
-<translation id="7931318309563332511">ناشناس</translation>
 <translation id="793293630927785390">‏کادر گفتگوی شبکه Wi-Fi جدید</translation>
 <translation id="7932969338829957666">‏پوشه‌های اشتراک‌گذاری‌شده در Linux در <ph name="BASE_DIR" /> دردسترس است.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{باصدا کردن سایت}one{باصدا کردن سایت‌ها}other{باصدا کردن سایت‌ها}}</translation>

@@ -1261,7 +1261,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5813119285467412249">&amp;Annuller fortryd tilføjelse</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Dette kort debiteres, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}one{Det kort, du vælger, debiteres, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}other{De kort, du vælger, debiteres, når du betaler, men kortenes faktiske numre deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}}</translation>
 <translation id="5826507051599432481">Kaldenavn (CN)</translation>
-<translation id="583281660410589416">Ukendt</translation>
 <translation id="5838278095973806738">Du bør ikke indtaste følsomme oplysninger på dette website (f.eks. adgangskoder eller kreditkortoplysninger), da de kan blive stjålet af hackere.</translation>
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5855253129151731373">Hostname for dette website minder om <ph name="LOOKALIKE_DOMAIN" />. Svindlere efterligner nogle gange websites ved at lave små ændringer af domænenavnet, som er svære at se.
@@ -1773,6 +1772,7 @@ Yderligere oplysninger:
 <translation id="7888575728750733395">Formål for udskriftsgengivelse</translation>
 <translation id="7894280532028510793">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">ukendt</translation>
 <translation id="7932579305932748336">Bestrygning</translation>
 <translation id="79338296614623784">Angiv et gyldigt telefonnummer</translation>
 <translation id="7934052535022478634">Betalingen er gennemført</translation>

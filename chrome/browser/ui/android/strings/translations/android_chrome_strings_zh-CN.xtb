@@ -96,6 +96,7 @@
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1697284962337958118">添加到</translation>
 <translation id="1718835860248848330">过去一小时</translation>
+<translation id="173522743738009831">隐私沙盒简介</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
@@ -136,6 +137,7 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />按钮</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> 希望与以下所选设备配对：</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
+<translation id="2001360696084428949">不妨尝试使用 USB 线连接手机</translation>
 <translation id="2002537628803770967">Google Pay 中存储的信用卡和地址信息</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 个文件}other{# 个文件}}</translation>
 <translation id="2017836877785168846">清除历史记录和地址栏中的自动补全项。</translation>
@@ -143,6 +145,7 @@
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
 <translation id="2039379262107991683">将网页添加到阅读清单中即可接收提醒</translation>
 <translation id="204321170514947529">Chrome 中也有<ph name="APP_NAME" />的数据</translation>
+<translation id="2046634576464120978">注册失败</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">在网上搜索</translation>
 <translation id="2056878612599315956">网站已被暂停</translation>
@@ -186,6 +189,11 @@
 <translation id="2321958826496381788">拖动该滑块，将文字调整到适合您阅读的大小。点按两次某段落后，显示的文字至少应是这么大。</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
 <translation id="2328985652426384049">无法登录</translation>
+<translation id="2336549603503100420">启用后，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。
+
+<ph name="BEGIN_LIST_ITEM1" />广告主可得知有数千名用户具有相似的兴趣（就像音乐会的听众一样），并选择要向该群体（而非个人）投放哪些广告。<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />广告主可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="234265804618409743">无法打开您的摄像头。出了点问题。</translation>
 <translation id="2345671828921229300">若要执行搜索，请轻触并按住某个字词</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括帐号、书签和已保存的设置</translation>
@@ -257,6 +265,7 @@
 <translation id="2833452327385637152">若要搜索某个字词或短语，请轻触并按住（而非点按）该字词或短语</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
 <translation id="2842985007712546952">父文件夹</translation>
+<translation id="2856503607207334158">登录失败</translation>
 <translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
@@ -272,6 +281,7 @@
 <translation id="2923908459366352541">名称无效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 存储数据</translation>
 <translation id="2942036813789421260">预览标签页已关闭</translation>
+<translation id="2946377063371973287">这种连接方式似乎要花费很长时间…</translation>
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
 <translation id="2962095958535813455">已切换到无痕模式标签页</translation>
@@ -342,6 +352,7 @@
 <translation id="3389286852084373014">文本过长</translation>
 <translation id="3398320232533725830">打开书签管理器</translation>
 <translation id="3414952576877147120">大小：</translation>
+<translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
 <translation id="3492207499832628349">打开新的无痕式标签页</translation>
@@ -481,8 +492,10 @@
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4538018662093857852">开启精简模式</translation>
 <translation id="4550003330909367850">要想在此处查看或复制您的密码，请在此设备上设置屏幕锁定。</translation>
+<translation id="4554077758708533499">已使用 USB 线连接到手机</translation>
 <translation id="4557685098773234337">若要更快速地访问该网页，请将它添加到主屏幕</translation>
 <translation id="4558311620361989323">网页快捷键</translation>
+<translation id="4561730552726921821">注册成功</translation>
 <translation id="4561979708150884304">无网络连接</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4572422548854449519">请登录受管理的帐号</translation>
@@ -724,6 +737,7 @@
 <translation id="6138832295072039549">如需更改您的网站设置，请点击此处</translation>
 <translation id="6140709049082532940">增强型保护：</translation>
 <translation id="6140912465461743537">国家/地区</translation>
+<translation id="6142002709876620371">启用隐私沙盒</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6154478581116148741">需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码</translation>
 <translation id="6159335304067198720">节省 <ph name="PERCENT" /> 的数据流量</translation>
@@ -849,6 +863,7 @@
 
 仅当您<ph name="BEGIN_BOLD2" />关闭所有无痕式标签页<ph name="END_BOLD2" />后，系统才会从 Chrome 中清除在您的无痕式会话期间生成的数据。</translation>
 <translation id="6942665639005891494">使用“设置”菜单选项随时更改默认的下载内容保存位置</translation>
+<translation id="694267552845942083">您正在自定义您的同步设置。如需完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>
 <translation id="6963766334940102469">删除书签</translation>
@@ -896,6 +911,7 @@
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7328017930301109123">在精简模式下，Chrome 可更快速地加载网页，并可节省多达百分之 60 的流量。</translation>
+<translation id="7332075081379534664">登录成功</translation>
 <translation id="7333031090786104871">仍在添加先前的网站</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
 <translation id="7352651011704765696">出了点问题</translation>
@@ -927,6 +943,7 @@
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="751961395872307827">无法连接到该网站</translation>
+<translation id="752220631458524187">完成当前操作后断开连接</translation>
 <translation id="753225086557513863">已安排为延后下载</translation>
 <translation id="7559975015014302720">精简模式已关闭</translation>
 <translation id="7562080006725997899">正在清除浏览数据</translation>
@@ -983,6 +1000,7 @@
 <translation id="7882131421121961860">未找到任何记录</translation>
 <translation id="7886917304091689118">正在 Chrome 中运行</translation>
 <translation id="789763218334337857">如何使用 Chrome</translation>
+<translation id="7903184275147100332">请稍等片刻</translation>
 <translation id="7919123827536834358">自动翻译这些语言</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{正在下载 1 个文件。}other{正在下载 # 个文件。}}</translation>
 <translation id="7926975587469166629">卡的昵称</translation>
@@ -1017,6 +1035,7 @@
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8078096376109663956">只能分享文本</translation>
 <translation id="8084114998886531721">保存的密码</translation>
+<translation id="808747664143081553">已连接到设备</translation>
 <translation id="8103578431304235997">无痕模式标签页</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">要将您的书签同步到您的所有设备上，请开启同步功能</translation>
@@ -1048,6 +1067,7 @@
 <translation id="8274165955039650276">查看下载内容</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8284326494547611709">字幕</translation>
+<translation id="829672787777123339">正在连接您的设备…</translation>
 <translation id="8310344678080805313">标准标签页</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> 及更多网站</translation>
 <translation id="8327155640814342956">要获得最好的浏览体验，请打开 Chrome 以进行更新</translation>
@@ -1067,8 +1087,8 @@
 <translation id="8445448999790540984">无法导出密码</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466613982764129868">请确保<ph name="TARGET_DEVICE_NAME" />已连接到互联网</translation>
+<translation id="8481980314595922412">试用版功能已开启</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="8487700953926739672">可离线使用</translation>
 <translation id="8489271220582375723">打开历史记录页</translation>
 <translation id="8493948351860045254">释放空间</translation>
 <translation id="8497726226069778601">目前还未列出任何网页…</translation>
@@ -1108,6 +1128,7 @@
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
+<translation id="8773160212632396039">正在处理请求</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8788968922598763114">重新打开上次关闭的标签页</translation>
 <translation id="8798449543960971550">已读</translation>

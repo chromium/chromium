@@ -2328,7 +2328,6 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3602870520245633055">प्रिंट आणि स्कॅन करा</translation>
 <translation id="3603622770190368340">नेटवर्क सर्टिफिकेट प्राप्त करा</translation>
-<translation id="3604193429970465812">दुय्यम खाती</translation>
 <translation id="3604713164406837697">वॉलपेपर बदला</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
 <translation id="3608576286259426129">वापरकर्ता इमेज पूर्वावलोकन</translation>
@@ -2397,7 +2396,6 @@
 <translation id="3677911431265050325">मोबाइल साइटची विनंती करा</translation>
 <translation id="3677959414150797585">अ‍ॅप्स, वेबपेज आणि बऱ्याच गोष्टींचा समावेश आहे. तुम्ही जर वापर डेटा शेअर करण्याचे निवडले असेल तरच सूचनांमध्ये सुधारणा करण्यासाठी आकडेवारी पाठवते.</translation>
 <translation id="3678156199662914018">एक्स्टेंशनः <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">तुम्ही हे खाते वापरून साइन इन केले आहे त्या सर्व Chromebook वर तुमची अ‍ॅप्स आणि OS सेटिंग्ज सिंक होतील. <ph name="LINK_BEGIN" />सेटिंग्ज सिंक करा<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">टेक्‍स्‍ट टू स्‍पीच व्हॉइस</translation>
 <translation id="3681311097828166361">तुमच्या फीडबॅकाबद्दल धन्यवाद. तुम्ही आता ऑफलाइन आहात आणि तुमचा अहवाल नंतर पाठविला जाईल.</translation>
 <translation id="3682824389861648626">हालचालाची मर्यादा</translation>
@@ -2950,7 +2948,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K लाइव्ह)</translation>
 <translation id="4310139701823742692">फाइलचा फॉरमॅट चुकीचा आहे. PPD फाइल तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="431076611119798497">&amp;तपशील</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{एक Google खाते}other{<ph name="EXTRA_ACCOUNTS" /> Google खाती}}</translation>
 <translation id="4312866146174492540">अवरोधित करा (डीफॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापित करा</translation>
 <translation id="4316850752623536204">डेव्हलपर वेबसाइट</translation>
@@ -3703,7 +3700,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{धोक्यात असलेला पासवर्ड यशस्वीरीत्या बदलला. तुमच्याकडे आणखी # धोक्यात असलेला पासवर्ड आहे. Chrome हा पासवर्ड आता तपासण्याची शिफारस करते.}other{धोक्यात असलेले पासवर्ड यशस्वीरीत्या बदलले. तुमच्याकडे आणखी # धोक्यात असलेले पासवर्ड आहेत. Chrome हे पासवर्ड आता तपासण्याची शिफारस करते.}}</translation>
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
 <translation id="5209320130288484488">कोणतीही डिव्हाइसेस आढळली नाहीत</translation>
-<translation id="5209572028385096813">हा वापरकर्ता Family Link ने व्यवस्थापित केला आहे</translation>
 <translation id="5210365745912300556">टॅब बंद करा</translation>
 <translation id="5213481667492808996">तुमची '<ph name="NAME" />' डेटा सेवा वापरण्यासाठी तयार आहे</translation>
 <translation id="5213891612754844763">प्रॉक्सी सेटिग्ज दर्शवा</translation>
@@ -5100,7 +5096,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">सर्व वापरकर्त्यांसाठी ऑटोमॅटिक अपडेट सेट करणे अयशस्वी झाले (पूर्वफ्लाइट अंमलबजावणी एरर: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google गोपनीयता धोरण</translation>
-<translation id="6831043979455480757">भाषांतर करा</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
 <translation id="683373380308365518">स्मार्ट आणि सुरक्षित ब्राउझरवर बदला</translation>
 <translation id="6835762382653651563">कृपया तुमचे <ph name="DEVICE_TYPE" /> अपडेट करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
@@ -5367,7 +5363,6 @@
 <translation id="7121362699166175603">अ‍ॅड्रेस बारवरील इतिहास आणि आपोआप पूर्ण करण्याचे दाखले साफ करते. तुमच्या Google खात्यामध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर कदाचित ब्राउझिंगचे इतर फॉर्म असतील.</translation>
 <translation id="7121438501124788993">डेव्हलपर मोड</translation>
 <translation id="7121728544325372695">स्मार्ट डॅश</translation>
-<translation id="7122353087820324370">अ‍ॅप्स आणि Chromium OS सेटिंग्ज दुय्यम खात्यांशी सिंक केली जात नाहीत.</translation>
 <translation id="7123030151043029868">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती आहे</translation>
 <translation id="7123360114020465152">आता सपोर्ट करत नाही.</translation>
 <translation id="7125148293026877011">Crostini हटवा</translation>
@@ -6078,7 +6073,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7928175190925744466">हा पासवर्ड आधीच बदलला आहे का?</translation>
 <translation id="7930294771522048157">सेव्ह केलेल्या पेमेंट पद्धती येथे दिसतील</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> तुमची स्क्रीन आणि ऑडिओ शेअर करीत आहे</translation>
-<translation id="7931318309563332511">अनोळखी</translation>
 <translation id="793293630927785390">नवीन वाय-फाय नेटवर्क डायलॉग</translation>
 <translation id="7932969338829957666">शेअर केलेली फोल्डर Linux मध्ये <ph name="BASE_DIR" /> येथे उपलब्ध आहेत.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{साइट अनम्यूट करा}other{साइट अनम्यूट करा}}</translation>

@@ -243,6 +243,7 @@
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6456394469623773452">좋음</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7487067081878637334">테크놀로지</translation>
 <translation id="7490813197707563893">MAC 주소</translation>

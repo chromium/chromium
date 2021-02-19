@@ -243,6 +243,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="641081527798843608">Ukufana kwesihloko</translation>
 <translation id="6456394469623773452">Kulungile</translation>
 <translation id="6472207088655375767">I-OTP</translation>
+<translation id="6480327114083866287">Iphethwe yi-<ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Imile - Ukujema kwephepha</translation>
 <translation id="6517239166834772319">Hlola</translation>
 <translation id="6527081081771465939">Iphrothokholi yokuvikeleka kwe-WiFi engaziwa</translation>
@@ -279,7 +280,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7375053625150546623">I-EAP</translation>
 <translation id="7427315641433634153">I-MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Ukuskena kuqedile. Ikhasi eli-1 liskeniwe}one{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}other{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}}</translation>
-<translation id="7449585358422953039">Iphethwe i-<ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Iphothali itholakele</translation>
 <translation id="7487067081878637334">Ubuchwepheshe</translation>
 <translation id="7490813197707563893">Ikheli le-MAC</translation>

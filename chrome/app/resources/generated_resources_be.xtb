@@ -2332,7 +2332,6 @@
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3602870520245633055">Друк і сканіраванне</translation>
 <translation id="3603622770190368340">Атрыманне сертыфіката сеткі</translation>
-<translation id="3604193429970465812">Дадатковыя ўліковыя запісы</translation>
 <translation id="3604713164406837697">Змяніць шпалеры</translation>
 <translation id="3605780360466892872">Бізнесмен</translation>
 <translation id="3608576286259426129">Папярэдні прагляд відарыса карыстальніка</translation>
@@ -2401,7 +2400,6 @@
 <translation id="3677911431265050325">Запытаць мабільную версію сайта</translation>
 <translation id="3677959414150797585">Яно ўключае ў сябе праграмы, вэб-старонкі і іншае. Статыстыка для паляпшэнне прапаноў будзе адпраўляцца, толькі калі вы згадзіліся на абагульванне даных пра выкарыстанне.</translation>
 <translation id="3678156199662914018">Пашырэнне: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Вашы праграмы і налады АС будуць сінхранізавацца паміж прыладамі Chromebook, на якіх вы ўвайшлі ў гэты ўліковы запіс. <ph name="LINK_BEGIN" />Налады сінхранізацыі<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Голас для сінтэзу маўлення</translation>
 <translation id="3681311097828166361">Дзякуй за водгук. Вы па-за сеткай, таму справаздача будзе адпраўлена пазней.</translation>
 <translation id="3682824389861648626">Парог перамяшчэння</translation>
@@ -2955,7 +2953,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ актыўна)</translation>
 <translation id="4310139701823742692">Файл мае няправільны фармат. Праверце файл PPD і паўтарыце спробу.</translation>
 <translation id="431076611119798497">&amp;Звесткі</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Уліковы запіс Google}one{<ph name="EXTRA_ACCOUNTS" /> Уліковы запіс Google}few{<ph name="EXTRA_ACCOUNTS" /> Уліковыя запісы Google}many{<ph name="EXTRA_ACCOUNTS" /> Уліковых запісаў Google}other{<ph name="EXTRA_ACCOUNTS" /> Уліковага запісу Google}}</translation>
 <translation id="4312866146174492540">Блакіраваць (стандартна)</translation>
 <translation id="4314815835985389558">Кіраванне сінхранізацыяй</translation>
 <translation id="4316850752623536204">Вэб-сайт распрацоўшчыка</translation>
@@ -3708,7 +3705,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{Раскрыты пароль зменены. Застаўся яшчэ # раскрыты пароль. Chrome рэкамендуе праверыць гэты пароль зараз.}one{Раскрыты пароль зменены. Застаўся яшчэ # раскрыты пароль. Chrome рэкамендуе праверыць гэтыя паролі зараз.}few{Раскрыты пароль зменены. Засталіся яшчэ # раскрытыя паролі. Chrome рэкамендуе праверыць гэтыя паролі зараз.}many{Раскрыты пароль зменены. Засталіся яшчэ # раскрытых пароляў. Chrome рэкамендуе праверыць гэтыя паролі зараз.}other{Раскрыты пароль зменены. Засталіся яшчэ # раскрытага пароля. Chrome рэкамендуе праверыць гэтыя паролі зараз.}}</translation>
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
 <translation id="5209320130288484488">Прылады не знойдзены</translation>
-<translation id="5209572028385096813">Кіраванне гэтым карыстальнікам ажыццяўляецца праз Family Link</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5213481667492808996">Сэрвіс перадачы даных "<ph name="NAME" />" гатовы да выкарыстання</translation>
 <translation id="5213891612754844763">Паказаць налады проксі-сервера</translation>
@@ -5371,7 +5367,6 @@
 <translation id="7121362699166175603">Ачышчае гісторыю і гісторыю аўтазапаўнення ў адрасным радку. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="7121438501124788993">Рэжым распрацоўшчыка</translation>
 <translation id="7121728544325372695">Пераўтварэнне працяжнікаў</translation>
-<translation id="7122353087820324370">Праграмы і налады АС Chrome не сінхранізуюцца з дадатковымі ўліковымі запісамі.</translation>
 <translation id="7123030151043029868">Дазволена аўтаматычна спампоўваць некалькі файлаў</translation>
 <translation id="7123360114020465152">Больш не падтрымліваецца</translation>
 <translation id="7125148293026877011">Выдаліць Crostini</translation>
@@ -6084,7 +6079,6 @@
 <translation id="7928175190925744466">Вы ўжо змянілі гэты пароль?</translation>
 <translation id="7930294771522048157">Захаваныя спосабы аплаты з'явяцца тут</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> абагульвае ваш экран і аўдыя.</translation>
-<translation id="7931318309563332511">Невядома</translation>
 <translation id="793293630927785390">Дыялогавае акно "Дадаць новую сетку Wi-Fi"</translation>
 <translation id="7932969338829957666">Абагуленыя папкі даступныя ў сістэме Linux у каталогу "<ph name="BASE_DIR" />".</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Уключыць гук на сайце}one{Уключыць гук на сайтах}few{Уключыць гук на сайтах}many{Уключыць гук на сайтах}other{Уключыць гук на сайтах}}</translation>

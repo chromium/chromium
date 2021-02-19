@@ -1261,7 +1261,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5813119285467412249">&amp;Ponovi dodavanje</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Sa ove kartice će vam biti naplaćeno kada platite, ali njen pravi broj se neće deliti sa ovim sajtom. Generisaće se privremeni CVC kao dodatna mera bezbednosti.}one{Sa kartice koju izaberete biće vam naplaćeno kada platite, ali njen pravi broj se neće deliti sa ovim sajtom. Generisaće se privremeni CVC kao dodatna mera bezbednosti.}few{Sa kartice koju izaberete biće vam naplaćeno kada platite, ali njen pravi broj se neće deliti sa ovim sajtom. Generisaće se privremeni CVC kao dodatna mera bezbednosti.}other{Sa kartice koju izaberete biće vam naplaćeno kada platite, ali njen pravi broj se neće deliti sa ovim sajtom. Generisaće se privremeni CVC kao dodatna mera bezbednosti.}}</translation>
 <translation id="5826507051599432481">Opšte ime (CN)</translation>
-<translation id="583281660410589416">Nepoznato</translation>
 <translation id="5838278095973806738">Nemojte da unosite osetljive informacije na ovom sajtu (na primer, lozinke ili kreditne kartice) jer napadači mogu da ih ukradu.</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5855253129151731373">Ime hosta ovog sajta deluje slično kao <ph name="LOOKALIKE_DOMAIN" />. Napadači ponekad imitiraju sajtove tako što neznatno i skoro neprimetno izmene ime domena.
@@ -1772,6 +1771,7 @@ Dodatni detalji:
 <translation id="7888575728750733395">Namera renderovanja štampanja</translation>
 <translation id="7894280532028510793">Ako nema grešaka, <ph name="BEGIN_LINK" />pokrenite dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (koverat)</translation>
+<translation id="7931318309563332511">Nepoznato</translation>
 <translation id="7932579305932748336">Omot</translation>
 <translation id="79338296614623784">Unesite važeći broj telefona</translation>
 <translation id="7934052535022478634">Plaćanje je dovršeno</translation>

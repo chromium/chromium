@@ -2329,7 +2329,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3602870520245633055">Cetak dan imbas</translation>
 <translation id="3603622770190368340">Dapatkan sijil rangkaian</translation>
-<translation id="3604193429970465812">Akaun sekunder</translation>
 <translation id="3604713164406837697">Tukar kertas dinding</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3608576286259426129">Pratonton imej pengguna</translation>
@@ -2398,7 +2397,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3677911431265050325">Minta tapak mudah alih</translation>
 <translation id="3677959414150797585">Termasuk apl, halaman web dan pelbagai lagi. Menghantar statistik untuk meningkatkan cadangan hanya sekiranya anda telah memilih untuk berkongsi data penggunaan.</translation>
 <translation id="3678156199662914018">Sambungan: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Tetapan apl dan OS anda akan disegerakkan pada semua Chromebook yang anda gunakan untuk log masuk dengan akaun ini. <ph name="LINK_BEGIN" />Tetapan Penyegerakan<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Suara teks ke pertuturan</translation>
 <translation id="3681311097828166361">Terima kasih atas maklum balas anda. Anda berada di luar talian sekarang dan laporan anda akan dihantar sebentar lagi.</translation>
 <translation id="3682824389861648626">Ambang pergerakan</translation>
@@ -2953,7 +2951,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K langsung)</translation>
 <translation id="4310139701823742692">Format fail salah. Semak fail PPD dan cuba lagi.</translation>
 <translation id="431076611119798497">&amp;Butiran</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Akaun Google}other{<ph name="EXTRA_ACCOUNTS" /> Akaun Google}}</translation>
 <translation id="4312866146174492540">Sekat (lalai)</translation>
 <translation id="4314815835985389558">Urus penyegerakan</translation>
 <translation id="4316850752623536204">Tapak Web Pembangun</translation>
@@ -3706,7 +3703,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5206787458656075734">{COUNT,plural, =1{Berjaya menukar kata laluan yang terjejas. Anda mempunyai # lagi kata laluan yang terjejas. Chrome mengesyorkan agar anda menyemak kata laluan ini sekarang.}other{Berjaya menukar kata laluan yang terjejas. Anda mempunyai # lagi kata laluan yang terjejas. Chrome mengesyorkan agar anda menyemak kata laluan ini sekarang.}}</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
 <translation id="5209320130288484488">Tiada peranti ditemui</translation>
-<translation id="5209572028385096813">Pengguna ini diurus oleh Family Link</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5213481667492808996">Perkhidmatan data '<ph name="NAME" />' anda sedia untuk digunakan</translation>
 <translation id="5213891612754844763">Tunjukkan tetapan proksi</translation>
@@ -5369,7 +5365,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7121362699166175603">Mengosongkan sejarah dan autoselesai dalam bar alamat. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Mod Pembangun</translation>
 <translation id="7121728544325372695">Sengkang Pintar</translation>
-<translation id="7122353087820324370">Tetapan apl dan OS tidak disegerakkan ke akaun sekunder.</translation>
 <translation id="7123030151043029868">Dibenarkan untuk memuat turun berbilang fail secara automatik</translation>
 <translation id="7123360114020465152">Tidak disokong lagi</translation>
 <translation id="7125148293026877011">Padamkan Crostini</translation>
@@ -6082,7 +6077,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7928175190925744466">Sudah menukar kata laluan ini?</translation>
 <translation id="7930294771522048157">Kaedah pembayaran yang disimpan akan dipaparkan di sini</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> berkongsi skrin dan audio anda.</translation>
-<translation id="7931318309563332511">Tidak diketahui</translation>
 <translation id="793293630927785390">Dialog Rangkaian Wi-Fi Baharu</translation>
 <translation id="7932969338829957666">Folder kongsi tersedia dalam Linux di <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Nyahredam Tapak}other{Nyahredam Tapak}}</translation>

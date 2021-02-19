@@ -276,7 +276,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9047197236183657400">Flytja reikning á nýjan Chromium prófíl?</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verður endurræst eftir klukkustund}one{Chromium verður endurræst eftir # klukkustund}other{Chromium verður endurræst eftir # klukkustundir}}</translation>
-<translation id="9107750757953039239">Ef þú ert með marga Google reikninga geturðu bætt þeim við <ph name="DEVICE_TYPE" />. Reikningarnir þínir verða tiltækir í Chromium vafranum og Play Store sem og í þjónustum á borð við Gmail, Drive og YouTube. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Opna tengil í nýjum Chromium &amp;flipa</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>
 <translation id="9158494823179993217">Kerfisstjórinn þinn hefur stillt Chromium á að opna annan vafra fyrir <ph name="TARGET_URL_HOSTNAME" />.</translation>

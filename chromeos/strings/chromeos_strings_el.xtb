@@ -243,6 +243,7 @@
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
 <translation id="6456394469623773452">Καλό</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
 <translation id="6527081081771465939">Άγνωστο πρωτόκολλο ασφαλείας Wi-Fi</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
-<translation id="7449585358422953039">Η διαχείριση γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7487067081878637334">Τεχνολογία</translation>
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>

@@ -243,6 +243,7 @@
 <translation id="641081527798843608">Թեմաների համընկնում</translation>
 <translation id="6456394469623773452">Լավ</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Ադմինիստրատոր՝ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
 <translation id="6527081081771465939">Wi-Fi-ի անվտանգության անհայտ հաղորդակարգ</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
-<translation id="7449585358422953039">Կառավարիչ՝ <ph name="MANAGER" />։</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
 <translation id="7487067081878637334">Տեխնոլոգիա</translation>
 <translation id="7490813197707563893">MAC հասցե</translation>

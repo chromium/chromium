@@ -243,6 +243,7 @@
 <translation id="641081527798843608">ବିଷୟ ମେଳ</translation>
 <translation id="6456394469623773452">ଉତ୍କୃଷ୍ଟ</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="649050271426829538">ବନ୍ଦ ହୋଇଯାଇଛି - ପେପର୍ ଜାମ୍</translation>
 <translation id="6517239166834772319">ଏକ୍ସପ୍ଲୋର୍</translation>
 <translation id="6527081081771465939">ଅଜଣା ୱାଇଫାଇ ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ୍</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}other{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7487067081878637334">ଟେକ୍ନୋଲୋଜି</translation>
 <translation id="7490813197707563893">MAC ଠିକଣା</translation>

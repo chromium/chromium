@@ -2326,7 +2326,6 @@
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3602870520245633055">પ્રિન્ટ અને સ્કૅન કરો</translation>
 <translation id="3603622770190368340">નેટવર્ક પ્રમાણપત્ર મેળવો</translation>
-<translation id="3604193429970465812">ગૌણ એકાઉન્ટ</translation>
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="3605780360466892872">બટનડાઉન</translation>
 <translation id="3608576286259426129">વપરાશકર્તા ફોટો પ્રીવ્યૂ</translation>
@@ -2395,7 +2394,6 @@
 <translation id="3677911431265050325">મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="3677959414150797585">આમાં ઍપ, વેબપેજ અને બીજું ઘણું શામેલ છે. જો તમે વપરાશનો ડેટા શેર કરવાનું પસંદ કર્યું હોય, તો જ તે સૂચનોને બહેતર બનાવવા માટે આંકડા મોકલે છે.</translation>
 <translation id="3678156199662914018">એક્સ્ટેંશન: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">તમે આ એકાઉન્ટ વડે જેમાં સાઇન ઇન કર્યું છે, તે તમામ Chromebooks પર તમારી ઍપ અને OS સેટિંગ સિંક કરવામાં આવશે. <ph name="LINK_BEGIN" />સિંક સેટિંગ<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">ટેક્સ્ટ ટૂ સ્પીચ વૉઇસ</translation>
 <translation id="3681311097828166361">તમારા પ્રતિસાદ બદલ આભાર. તમે હમણાં ઑફલાઇન છો અને તમારી રિપોર્ટ પછીથી મોકલવામાં આવશે.</translation>
 <translation id="3682824389861648626">ગતિવિધિનો થ્રેશોલ્ડ</translation>
@@ -2950,7 +2948,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K લાઇવ)</translation>
 <translation id="4310139701823742692">ખોટા ફોર્મેટની ફાઇલ છે. PPD ફાઇલ તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="431076611119798497">&amp;વિગતો</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google એકાઉન્ટ}one{<ph name="EXTRA_ACCOUNTS" /> Google એકાઉન્ટ}other{<ph name="EXTRA_ACCOUNTS" /> Google એકાઉન્ટ}}</translation>
 <translation id="4312866146174492540">અવરોધિત કરો (ડિફૉલ્ટ)</translation>
 <translation id="4314815835985389558">સિંક મેનેજ કરો</translation>
 <translation id="4316850752623536204">વિકાસકર્તા વેબસાઇટ</translation>
@@ -3703,7 +3700,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{ચેડાં કરાયેલો પાસવર્ડ સફળતાપૂર્વક બદલ્યો. તમે ચેડાં કરાયેલો વધુ # પાસવર્ડ ધરાવો છો. Chrome આ પાસવર્ડને અત્યારે ચેક કરવાની ભલામણ કરે છે.}one{ચેડાં કરાયેલો પાસવર્ડ સફળતાપૂર્વક બદલ્યો. તમે ચેડાં કરાયેલા વધુ # પાસવર્ડ ધરાવો છો. Chrome આ પાસવર્ડને અત્યારે ચેક કરવાની ભલામણ કરે છે.}other{ચેડાં કરાયેલો પાસવર્ડ સફળતાપૂર્વક બદલ્યો. તમે ચેડાં કરાયેલા વધુ # પાસવર્ડ ધરાવો છો. Chrome આ પાસવર્ડને અત્યારે ચેક કરવાની ભલામણ કરે છે.}}</translation>
 <translation id="5207949376430453814">ટેક્સ્ટ કૅરેટને હાઇલાઇટ કરો</translation>
 <translation id="5209320130288484488">કોઈ ઉપકરણો મળ્યાં નથી</translation>
-<translation id="5209572028385096813">આ વપરાશકર્તાને Family Link દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
 <translation id="5213481667492808996">તમારી '<ph name="NAME" />' ડેટા સેવા ઉપયોગમાં લેવા માટે તૈયાર છે</translation>
 <translation id="5213891612754844763">પ્રૉક્સી સેટિંગ બતાવો</translation>
@@ -5101,7 +5097,7 @@ USB ડિવાઇસ</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">તમામ વપરાશકર્તાઓ માટે સ્વચલિત અપડેટ્સને સેટ કરવામાં નિષ્ફળ થયાં (પ્રીફ્લાઇટ અમલીકરણની ભૂલ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google ગોપનીયતા નીતિ</translation>
-<translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" />માંથી ટૅબને કાઢી નાખવામાં આવી</translation>
 <translation id="683373380308365518">એક સ્માર્ટ અને સુરક્ષિત બ્રાઉઝર પર સ્વિચ કરો</translation>
 <translation id="6835762382653651563">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> ને અપડેટ કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
@@ -5368,7 +5364,6 @@ USB ડિવાઇસ</translation>
 <translation id="7121362699166175603">ઍડ્રેસ બારમાં ઇતિહાસ અને ઑટોમૅટિક રીતે પૂર્ણતા સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="7121438501124788993">ડેવલપર મોડ</translation>
 <translation id="7121728544325372695">સ્માર્ટ ડૅશ</translation>
-<translation id="7122353087820324370">ગૌણ એકાઉન્ટ સાથે ઍપ અને OS સેટિંગ સિંક કરવામાં આવતા નથી.</translation>
 <translation id="7123030151043029868">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી છે</translation>
 <translation id="7123360114020465152">હવે સમર્થિત રહ્યું નથી</translation>
 <translation id="7125148293026877011">Crostini ડિલીટ કરો</translation>
@@ -6080,7 +6075,6 @@ USB ડિવાઇસ</translation>
 <translation id="7928175190925744466">આ પાસવર્ડ પહેલેથી બદલી નાખ્યો છે?</translation>
 <translation id="7930294771522048157">સાચવેલ ચુકવણી પદ્ધતિઓ અહીં દેખાશે</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" />, તમારી સ્ક્રીન અને ઑડિઓને શેર કરી રહી છે.</translation>
-<translation id="7931318309563332511">અજાણ</translation>
 <translation id="793293630927785390">નવા વાઇ-ફાઇ નેટવર્ક માટે સંવાદ</translation>
 <translation id="7932969338829957666">શેર કરેલા ફોલ્ડરો Linuxમાં <ph name="BASE_DIR" />પર ઉપલબ્ધ હોય છે.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{સાઇટને અનમ્યૂટ કરો}one{સાઇટને અનમ્યૂટ કરો}other{સાઇટને અનમ્યૂટ કરો}}</translation>

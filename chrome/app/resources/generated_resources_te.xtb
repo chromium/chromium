@@ -473,7 +473,7 @@
 <translation id="151501797353681931">Safari నుండి దిగుమతి చేయబడింది</translation>
 <translation id="1515163294334130951">ప్రారంభించండి</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - హోస్ట్</translation>
-<translation id="1521442365706402292">సర్టిఫికెట్‌లను నిర్వహించు</translation>
+<translation id="1521442365706402292">సర్టిఫికెట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
 <translation id="152234381334907219">ఎప్పటికి సేవ్ చెయ్యబడవు</translation>
 <translation id="1523978563989812243">టెక్ట్స్-టు-స్పీచ్ ఇంజిన్‌లు</translation>
@@ -729,7 +729,7 @@
 <translation id="1784707308176068866">సహకారం అందించే నేటివ్ అప్లికేషన్ అభ్యర్థించినప్పుడు నేపథ్యంలో అమలు అవుతుంది</translation>
 <translation id="1784849162047402014">పరికరంలో ఖాళీ నిల్వ స్థలం తక్కువగా ఉంది</translation>
 <translation id="1787350673646245458">యూజర్ చిత్రం</translation>
-<translation id="1790194216133135334">లింక్‌ను <ph name="DEVICE_NAME" />కు పంపండి</translation>
+<translation id="1790194216133135334">లింక్‌ను <ph name="DEVICE_NAME" />‌కు పంపండి</translation>
 <translation id="1790976235243700817">యాక్సెస్‌ను తీసివేయి</translation>
 <translation id="1792619191750875668">విస్తారిత డిస్‌ప్లే</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" />ను ఎప్పుడూ చూపవద్దు</translation>
@@ -1189,7 +1189,7 @@
 <translation id="2314165183524574721">ప్రస్తుత విజిబిలిటీ సెట్టింగ్, 'దాచబడింది'గా సెట్ చేయబడింది</translation>
 <translation id="2314774579020744484">పేజీలను అనువదిస్తున్నప్పుడు ఉపయోగించే భాష</translation>
 <translation id="2315414688463285945">Linux ఫైల్‌లను కాన్ఫిగర్ చేయడంలో ఎర్రర్‌ ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
-<translation id="2315587498123194634">లింక్‌ను <ph name="DEVICE_NAME" />కు పంపండి</translation>
+<translation id="2315587498123194634">లింక్‌ను <ph name="DEVICE_NAME" />‌కు పంపండి</translation>
 <translation id="2316129865977710310">వద్దు, ధన్యవాదాలు</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% పూర్తయింది</translation>
 <translation id="2318143611928805047">కాగితపు పరిమాణం</translation>
@@ -2329,7 +2329,6 @@
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3602870520245633055">ప్రింట్ చేయండి, స్కాన్ చేయండి</translation>
 <translation id="3603622770190368340">నెట్‌వర్క్ ప్రమాణపత్రాన్ని పొందండి</translation>
-<translation id="3604193429970465812">ప్రత్యామ్నాయ ఖాతాలు</translation>
 <translation id="3604713164406837697">వాల్‌పేపర్‌ను మార్చండి</translation>
 <translation id="3605780360466892872">బటన్‌డౌన్</translation>
 <translation id="3608576286259426129">వినియోగదారు చిత్ర ప్రివ్యూ</translation>
@@ -2398,7 +2397,6 @@
 <translation id="3677911431265050325">మొబైల్ సైట్‌ను అభ్యర్థించండి</translation>
 <translation id="3677959414150797585">యాప్‌లు, వెబ్‌పేజీలు, మరిన్ని ఇందులో ఉంటాయి. మీరు డేటా వినియోగాన్ని షేర్ చేయడాన్ని ఎంచుకుంటే మాత్రమే సూచనలు మెరుగుపరచడానికి గణాంకాలను పంపుతుంది.</translation>
 <translation id="3678156199662914018">పొడిగింపు: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">మీరు ఈ ఖాతాతో సైన్ ఇన్ చేసిన Chromebookలన్నింటిలో మీ యాప్‌లు, OS సెట్టింగ్‌లు సింక్ చేయబడతాయి. <ph name="LINK_BEGIN" />సింక్ సెట్టింగ్‌లు<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">టెక్ట్స్-టు-స్పీచ్ వాయిస్</translation>
 <translation id="3681311097828166361">మీ అభిప్రాయం తెలియజేసినందుకు ధన్యవాదాలు. మీరు ప్రస్తుతం ఆఫ్‌లైన్‌లో ఉన్నారు, మీ నివేదిక తర్వాత పంపబడుతుంది.</translation>
 <translation id="3682824389861648626">కదలిక థ్రెషోల్డ్</translation>
@@ -2953,7 +2951,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ప్రత్యక్షంగా)</translation>
 <translation id="4310139701823742692">ఫైల్ తప్పు ఫార్మాట్‌లో ఉంది. PPD ఫైల్‌ని తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="431076611119798497">&amp;వివరాలు</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google ఖాతా}other{<ph name="EXTRA_ACCOUNTS" /> Google ఖాతాలు}}</translation>
 <translation id="4312866146174492540">బ్లాక్ చేయి (డిఫాల్ట్)</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4316850752623536204">డెవలపర్ వెబ్‌సైట్</translation>
@@ -3007,7 +3004,7 @@
 <translation id="4380648069038809855">పూర్తి స్క్రీన్‌లోకి ప్రవేశించారు</translation>
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +మరో 1 ఖాతా ఉంది}other{<ph name="EMAIL" />, +మరో <ph name="EXTRA_ACCOUNTS" /> ఖాతాలు ఉన్నాయి}}</translation>
 <translation id="4384312707950789900">ప్రాధాన్య నెట్‌వర్క్‌లకు జోడించు</translation>
-<translation id="4384652540891215547">పొడిగింపును సక్రియం చేయండి</translation>
+<translation id="4384652540891215547">ఎక్స్‌టెన్షన్‌ను యాక్టివేట్ చేయండి</translation>
 <translation id="438503109373656455">సారటోగా</translation>
 <translation id="4387004326333427325">ప్రామాణీకరణ ప్రమాణపత్రం రిమోట్‌లో తిరస్కరించబడింది</translation>
 <translation id="4387890294700445764">చోరీకి గురైన పాస్‌వర్డ్‌లు</translation>
@@ -3706,7 +3703,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{చోరీకి గురైన పాస్‌వర్డ్ విజయవంతంగా మార్చబడింది. మీ వద్ద మరో # చోరీకి గురైన పాస్‌వర్డ్ ఉంది. ఇప్పుడే, ఈ పాస్‌వర్డ్‌ను తనిఖీ చేయమని Chrome సిఫార్సు చేస్తోంది.}other{చోరీకి గురైన పాస్‌వర్డ్ విజయవంతంగా మార్చబడింది. మీ వద్ద మరో # చోరీకి గురైన పాస్‌వర్డ్‌లు ఉన్నాయి. ఇప్పుడే, ఈ పాస్‌వర్డ్‌లను తనిఖీ చేయమని Chrome సిఫార్సు చేస్తోంది.}}</translation>
 <translation id="5207949376430453814">వచన కర్సర్ గుర్తును హైలైట్ చేయి</translation>
 <translation id="5209320130288484488">పరికరాలు కనుగొనబడలేదు</translation>
-<translation id="5209572028385096813">ఈ ఖాతాను Family Link మేనేజ్ చేస్తోంది</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="5213481667492808996">మీ '<ph name="NAME" />' డేటా సేవ ఉపయోగించడానికి సిద్ధంగా ఉంది</translation>
 <translation id="5213891612754844763">ప్రాక్సీ సెట్టింగ్‌లను చూపు</translation>
@@ -5369,7 +5365,6 @@
 <translation id="7121362699166175603">చిరునామా బార్‌లో చరిత్ర, స్వీయపూరింపులను తొలగిస్తుంది. మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />లో ఇతర రూపాల్లో ఉన్న బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
 <translation id="7121438501124788993">డెవలపర్ మోడ్</translation>
 <translation id="7121728544325372695">స్మార్ట్ డాష్‌లు</translation>
-<translation id="7122353087820324370">ప్రత్యామ్నాయ ఖాతాలలో యాప్‌లు, OS సెట్టింగ్‌లు సింక్ చేయబడవు.</translation>
 <translation id="7123030151043029868">ఆటోమేటిక్‌గా అనేక ఫైల్‌లను డౌన్‌లోడ్ చేయడానికి అనుమతించబడింది</translation>
 <translation id="7123360114020465152">ఇకపై మద్దతు లేదు</translation>
 <translation id="7125148293026877011">Crostiniని తొలగించండి</translation>
@@ -6081,7 +6076,6 @@
 <translation id="7928175190925744466">ఇప్పటికే ఈ పాస్‌వర్డ్‌ను మార్చారా?</translation>
 <translation id="7930294771522048157">సేవ్ చేసిన పేమెంట్ ఆప్షన్‌లు ఇక్కడ చూపబడతాయి</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> మీ స్క్రీన్ మరియు ఆడియోను భాగస్వామ్యం చేస్తోంది.</translation>
-<translation id="7931318309563332511">తెలియదు</translation>
 <translation id="793293630927785390">కొత్త Wi-Fi నెట్‌వర్క్ డైలాగ్</translation>
 <translation id="7932969338829957666">Linuxలో <ph name="BASE_DIR" />లో షేర్ చేసిన ఫోల్డర్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{సైట్‌ను అన్‌మ్యూట్ చేయి}other{సైట్‌లను అన్‌మ్యూట్ చేయి}}</translation>

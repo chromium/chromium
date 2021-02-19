@@ -242,6 +242,7 @@
 <translation id="641081527798843608">Mada inalingana</translation>
 <translation id="6456394469623773452">Bora</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Imesimama - Karatasi imekwama</translation>
 <translation id="6517239166834772319">Gundua</translation>
 <translation id="6527081081771465939">Itifaki isiyojulikana ya ulinzi wa WiFi</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Imemaliza kuchanganua. Ukurasa mmoja umechanganuliwa}other{Imemaliza kuchanganua. Kurasa {NUMBER_OF_PAGES} zimechanganuliwa}}</translation>
-<translation id="7449585358422953039">Inadhibitiwa na <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7487067081878637334">Teknolojia</translation>
 <translation id="7490813197707563893">Anwani ya MAC</translation>

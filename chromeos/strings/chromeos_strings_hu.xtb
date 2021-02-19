@@ -243,6 +243,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
 <translation id="6456394469623773452">Jó</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
+<translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
@@ -279,7 +280,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Szkennelés kész. 1 oldal beolvasva}other{Szkennelés kész. {NUMBER_OF_PAGES} oldal beolvasva}}</translation>
-<translation id="7449585358422953039">Kezelő: <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">MAC-cím</translation>

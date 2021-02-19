@@ -279,6 +279,7 @@
 <translation id="8447861592752582886">撤消设备权限</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{正在使用 1 个 Cookie}other{正在使用 # 个 Cookie}}</translation>
 <translation id="8463851957836045671">网站加载速度很快</translation>
+<translation id="8487700953926739672">可离线使用</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="857943718398505171">允许（推荐）</translation>

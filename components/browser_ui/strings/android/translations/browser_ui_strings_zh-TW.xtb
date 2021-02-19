@@ -279,6 +279,7 @@
 <translation id="8447861592752582886">撤銷裝置權限</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{目前使用 1 個 Cookie}other{目前使用 # 個 Cookie}}</translation>
 <translation id="8463851957836045671">這個網站的載入速度很快</translation>
+<translation id="8487700953926739672">可離線使用</translation>
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="857943718398505171">已允許 (建議)</translation>

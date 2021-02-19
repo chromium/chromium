@@ -2328,7 +2328,6 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3602870520245633055">Штампање и скенирање</translation>
 <translation id="3603622770190368340">Добијање сертификата мреже</translation>
-<translation id="3604193429970465812">Секундарни налози</translation>
 <translation id="3604713164406837697">Промените позадину</translation>
 <translation id="3605780360466892872">Јапи</translation>
 <translation id="3608576286259426129">Преглед слике корисника</translation>
@@ -2397,7 +2396,6 @@
 <translation id="3677911431265050325">Захтевај мобилни сајт</translation>
 <translation id="3677959414150797585">Укључује апликације, веб-странице и друго. Шаље статистику да би се побољшали предлози само ако сте одабрали да делите податке о коришћењу.</translation>
 <translation id="3678156199662914018">Додатак: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Апликације и подешавања ОС-а ће се синхронизовати на свим Chromebook-овима на којима сте пријављени помоћу овог налога. <ph name="LINK_BEGIN" />Подешавања синхронизације<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Глас за претварање текста у говор</translation>
 <translation id="3681311097828166361">Хвала вам на повратним информацијама. Тренутно сте офлајн и касније ћемо вам послати извештај.</translation>
 <translation id="3682824389861648626">Ограничење кретања</translation>
@@ -2952,7 +2950,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB уживо)</translation>
 <translation id="4310139701823742692">Формат датотеке је погрешан. Проверите PPD датотеку и пробајте поново.</translation>
 <translation id="431076611119798497">&amp;Детаљи</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google налог}one{<ph name="EXTRA_ACCOUNTS" /> Google налог}few{<ph name="EXTRA_ACCOUNTS" /> Google налога}other{<ph name="EXTRA_ACCOUNTS" /> Google налога}}</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
 <translation id="4316850752623536204">Веб-сајт програмера</translation>
@@ -3705,7 +3702,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{Променили сте угрожену лозинку. Имате још # угрожену лозинку. Chrome вам препоручује да одмах проверите ову лозинку.}one{Променили сте угрожену лозинку. Имате још # угрожену лозинку. Chrome вам препоручује да одмах проверите ове лозинке.}few{Променили сте угрожену лозинку. Имате још # угрожене лозинке. Chrome вам препоручује да одмах проверите ове лозинке.}other{Променили сте угрожену лозинку. Имате још # угрожених лозинки. Chrome вам препоручује да одмах проверите ове лозинке.}}</translation>
 <translation id="5207949376430453814">Истакни курсор за текст</translation>
 <translation id="5209320130288484488">Није пронађен ниједан уређај</translation>
-<translation id="5209572028385096813">Овим корисником управља Family Link</translation>
 <translation id="5210365745912300556">Затвори картицу</translation>
 <translation id="5213481667492808996">Услуга преноса података „<ph name="NAME" />“ је спремна за коришћење</translation>
 <translation id="5213891612754844763">Прикажи подешавања проксија</translation>
@@ -5369,7 +5365,6 @@
 <translation id="7121362699166175603">Брише историју и аутоматска довршавања у траци за адресу. Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Режим програмера</translation>
 <translation id="7121728544325372695">Паметне црте</translation>
-<translation id="7122353087820324370">Апликације и подешавања ОС-а се не синхронизују са секундарним налозима.</translation>
 <translation id="7123030151043029868">Дозвољено им је да аутоматски преузимају више фајлова</translation>
 <translation id="7123360114020465152">Није више подржан</translation>
 <translation id="7125148293026877011">Избришите Crostini</translation>
@@ -6082,7 +6077,6 @@
 <translation id="7928175190925744466">Већ сте променили ову лозинку?</translation>
 <translation id="7930294771522048157">Сачувани начини плаћања ће се приказивати овде</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> дели екран и звук.</translation>
-<translation id="7931318309563332511">Непознато</translation>
 <translation id="793293630927785390">Дијалог Нова WiFi мрежа</translation>
 <translation id="7932969338829957666">Дељени директоријуми су доступни у Linux-у на <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>

@@ -2328,7 +2328,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3602870520245633055">Imprimir e escanear</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
-<translation id="3604193429970465812">Contas secundarias</translation>
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="3605780360466892872">Home de negocios</translation>
 <translation id="3608576286259426129">Vista previa da imaxe do usuario</translation>
@@ -2397,7 +2396,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3677911431265050325">Solicitar sitio para móbiles</translation>
 <translation id="3677959414150797585">Inclúe aplicacións, páxinas web e moito máis. Envía estatísticas para mellorar as suxestións só se escolliches compartir datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">As aplicacións e a configuración do sistema operativo sincronizaranse cos Chromebook nos que teñas a sesión iniciada con esta conta. <ph name="LINK_BEGIN" />Configuración de sincronización<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voz da síntese de voz</translation>
 <translation id="3681311097828166361">Grazas polo teu comentario. Agora estás sen conexión, polo que o informe se enviará máis tarde.</translation>
 <translation id="3682824389861648626">Límite de movemento</translation>
@@ -2952,7 +2950,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K activos)</translation>
 <translation id="4310139701823742692">O ficheiro ten un formato que non é válido. Comproba o ficheiro PPD e téntao de novo.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Conta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
 <translation id="4316850752623536204">Sitio web para programadores</translation>
@@ -3705,7 +3702,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5206787458656075734">{COUNT,plural, =1{Cambiouse correctamente o contrasinal vulnerado. Quédache # máis. Chrome recomenda comprobar este contrasinal agora.}other{Cambiouse correctamente o contrasinal vulnerado. Quédanche # máis. Chrome recomenda comprobar estes contrasinais agora.}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="5209320130288484488">Non se atopou ningún dispositivo</translation>
-<translation id="5209572028385096813">Family Link xestiona este usuario</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5213481667492808996">Xa podes usar o servizo de datos <ph name="NAME" /></translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
@@ -5368,7 +5364,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7121362699166175603">Borra o historial e os completados automáticos na barra de enderezos. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo de programador</translation>
 <translation id="7121728544325372695">Trazos intelixentes</translation>
-<translation id="7122353087820324370">As aplicacións e a configuración do sistema operativo non se sincronizan coas contas secundarias.</translation>
 <translation id="7123030151043029868">Sitios que poden descargar automaticamente varios ficheiros</translation>
 <translation id="7123360114020465152">A impresora xa non é compatible</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
@@ -6081,7 +6076,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7928175190925744466">Xa cambiaches este contrasinal?</translation>
 <translation id="7930294771522048157">Os métodos de pago gardados aparecerán aquí</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> está compartindo a túa pantalla e o teu audio.</translation>
-<translation id="7931318309563332511">Descoñecido</translation>
 <translation id="793293630927785390">Cadro de diálogo Nova rede wifi</translation>
 <translation id="7932969338829957666">En Linux, os cartafoles compartidos están en <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activar o son do sitio}other{Activar o son dos sitios}}</translation>

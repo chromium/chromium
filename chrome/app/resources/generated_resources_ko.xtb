@@ -2329,7 +2329,6 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3602870520245633055">인쇄 및 스캔</translation>
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
-<translation id="3604193429970465812">보조 계정</translation>
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
 <translation id="3608576286259426129">사용자 이미지 미리보기</translation>
@@ -2398,7 +2397,6 @@
 <translation id="3677911431265050325">모바일 버전으로 보기</translation>
 <translation id="3677959414150797585">앱, 웹페이지 등이 포함됩니다. 사용 데이터를 공유하기로 선택한 경우에만 추천 기능 개선을 위해 통계를 전송합니다.</translation>
 <translation id="3678156199662914018">확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">앱 및 OS 설정은 이 계정으로 로그인한 Chromebook과 동기화됩니다. <ph name="LINK_BEGIN" />동기화 설정<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">텍스트 음성 변환 음성</translation>
 <translation id="3681311097828166361">의견을 보내주셔서 감사합니다. 현재 오프라인 상태이므로 보고서는 나중에 전송됩니다.</translation>
 <translation id="3682824389861648626">움직임 기준</translation>
@@ -2951,7 +2949,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K(<ph name="NUM_KILOBYTES_LIVE" />K 활성)</translation>
 <translation id="4310139701823742692">파일 형식이 잘못되었습니다. PPD 파일을 확인하고 다시 시도하세요.</translation>
 <translation id="431076611119798497">세부정보(&amp;D)</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{Google 계정 1개}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
 <translation id="4314815835985389558">동기화 관리</translation>
 <translation id="4316850752623536204">개발자 웹사이트</translation>
@@ -3704,7 +3701,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}other{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="5209320130288484488">기기를 찾을 수 없음</translation>
-<translation id="5209572028385096813">Family Link에서 관리되는 사용자입니다.</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5213481667492808996">'<ph name="NAME" />' 데이터 서비스를 사용할 수 있습니다.</translation>
 <translation id="5213891612754844763">프록시 설정 표시</translation>
@@ -5367,7 +5363,6 @@
 <translation id="7121362699166175603">검색주소창에 저장된 방문 기록과 자동 완성 내역을 지웁니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 사용 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="7121438501124788993">개발자 모드</translation>
 <translation id="7121728544325372695">스마트 대시</translation>
-<translation id="7122353087820324370">앱과 OS 설정은 보조 계정에 동기화되지 않습니다.</translation>
 <translation id="7123030151043029868">여러 파일 자동 다운로드가 허용됨</translation>
 <translation id="7123360114020465152">프린터가 더 이상 지원되지 않습니다.</translation>
 <translation id="7125148293026877011">Crostini 삭제</translation>
@@ -6080,7 +6075,6 @@
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="7930294771522048157">저장한 결제 수단이 여기에 표시됩니다.</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" />에서 내 화면과 오디오를 공유하는 중입니다.</translation>
-<translation id="7931318309563332511">알 수 없음</translation>
 <translation id="793293630927785390">새 Wi-Fi 네트워크 대화상자</translation>
 <translation id="7932969338829957666"><ph name="BASE_DIR" />에서 Linux의 공유 폴더를 사용할 수 있습니다.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{사이트 숨기기 취소}other{사이트 숨기기 취소}}</translation>

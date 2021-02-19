@@ -30,6 +30,7 @@
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="3639997914391704523">您需要先登录 Google 帐号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
+<translation id="3946918322491238254">您仍可在此设备上查看自己的所有书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
 <translation id="4166206055865952171">将 Chromium 设为默认浏览器</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -41,6 +42,7 @@
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录帐号并开启同步功能</translation>
+<translation id="5544795779875591523">请选择是要从此设备中清除您的 Chromium 数据，还是要保留这些数据。</translation>
 <translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
@@ -77,8 +79,10 @@
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>
+<translation id="894437814105052438">当您退出登录后，Chromium 不会将任何新数据同步到您的 Google 帐号。先前已同步的数据将会保留在帐号中。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="921174536258924340">Chromium 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="994708389219151914">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除。</translation>
 </translationbundle>

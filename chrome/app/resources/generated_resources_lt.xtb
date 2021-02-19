@@ -2332,7 +2332,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3602870520245633055">Spausdinimas ir nuskaitymas</translation>
 <translation id="3603622770190368340">Gauti tinklo sertifikatą</translation>
-<translation id="3604193429970465812">Antrinės paskyros</translation>
 <translation id="3604713164406837697">Pakeisti ekrano foną</translation>
 <translation id="3605780360466892872">Konservatyvusis</translation>
 <translation id="3608576286259426129">Naudotojo vaizdo peržiūra</translation>
@@ -2401,7 +2400,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3677911431265050325">Pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="3677959414150797585">Įtraukiami tinklalapiai, programos ir daugiau. Siunčiama statistika siekiant patobulinti pasiūlymus, tik jei pasirinkote bendrinti naudojimo duomenis.</translation>
 <translation id="3678156199662914018">Plėtinys: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Programos ir OS nustatymai bus sinchronizuojami su „Chromebook“ įrenginiais, kuriuose būsite prisijungę naudodami šią paskyrą. <ph name="LINK_BEGIN" />Sinchronizavimo nustatymai<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Teksto į kalbą balsas</translation>
 <translation id="3681311097828166361">Dėkojame už atsiliepimus. Dabar esate neprisijungę, todėl jūsų pranešimas bus išsiųstas vėliau.</translation>
 <translation id="3682824389861648626">Judesių slenkstis</translation>
@@ -2956,7 +2954,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB tiesiogiai)</translation>
 <translation id="4310139701823742692">Failas netinkamo formato. Patikrinkite PPD failą ir bandykite dar kartą.</translation>
 <translation id="431076611119798497">Išsami informacija</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{Viena „Google“ paskyra}one{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyra}few{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyros}many{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyros}other{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyrų}}</translation>
 <translation id="4312866146174492540">Užblokuoti (numatytoji parinktis)</translation>
 <translation id="4314815835985389558">Sinchronizavimo tvarkymas</translation>
 <translation id="4316850752623536204">Kūrėjo svetainė</translation>
@@ -3709,7 +3706,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistą slaptažodį. „Chrome“ rekomenduoja patikrinti šį slaptažodį dabar.}one{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistą slaptažodį. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}few{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistus slaptažodžius. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}many{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeisto slaptažodžio. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}other{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistų slaptažodžių. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}}</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="5209320130288484488">Įrenginių nerasta</translation>
-<translation id="5209572028385096813">Šio naudotojo paskyra tvarkoma naudojant „Family Link“</translation>
 <translation id="5210365745912300556">Uždaryti skirtuką</translation>
 <translation id="5213481667492808996">„<ph name="NAME" />“ duomenų paslauga paruošta naudoti</translation>
 <translation id="5213891612754844763">Rodyti tarpinio serverio nustatymus</translation>
@@ -5373,7 +5369,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7121362699166175603">Išvaloma istorija ir automatiniai užbaigimai adreso juostoje. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Kūrėjo režimas</translation>
 <translation id="7121728544325372695">Išmanieji brūkšniai</translation>
-<translation id="7122353087820324370">Programos ir „OS“ nustatymai nėra sinchronizuojami su antrinėmis paskyromis.</translation>
 <translation id="7123030151043029868">Leidžiama automatiškai atsisiųsti kelis failus</translation>
 <translation id="7123360114020465152">Nebepalaikoma</translation>
 <translation id="7125148293026877011">Ištrinti „Crostini“</translation>
@@ -6086,7 +6081,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7928175190925744466">Jau pakeitėte šį slaptažodį?</translation>
 <translation id="7930294771522048157">Čia bus rodomi išsaugoti mokėjimo metodai</translation>
 <translation id="79312157130859720">„<ph name="APP_NAME" />“ bendrina jūsų ekraną ir garsą.</translation>
-<translation id="7931318309563332511">Nežinoma</translation>
 <translation id="793293630927785390">Naujo „Wi-Fi“ tinklo dialogas</translation>
 <translation id="7932969338829957666">Bendrinami aplankai pasiekiami sistemoje „Linux“ adresu <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Įjungti svetainės garsą}one{Įjungti svetainių garsą}few{Įjungti svetainių garsą}many{Įjungti svetainių garsą}other{Įjungti svetainių garsą}}</translation>

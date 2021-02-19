@@ -275,7 +275,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="9047197236183657400">Přesunout účet do nového profilu Chromium?</translation>
 <translation id="9089354809943900324">Prohlížeč Chromium je zastaralý</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se za hodinu restartuje}few{Chromium se za # hodiny restartuje}many{Chromium se za # hodiny restartuje}other{Chromium se za # hodin restartuje}}</translation>
-<translation id="9107750757953039239">Pokud máte několik účtů Google, můžete si je přidat do zařízení <ph name="DEVICE_TYPE" />. Vaše účty budou k dispozici v prohlížeči Chromium a Obchodě Play a také ve službách, jako jsou Gmail, Disk a YouTube. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Otevřít odkaz na nové kar&amp;tě prohlížeče Chromium</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>
 <translation id="9158494823179993217">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>

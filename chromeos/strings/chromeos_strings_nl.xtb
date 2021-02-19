@@ -243,6 +243,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
 <translation id="6456394469623773452">Goed</translation>
 <translation id="6472207088655375767">Eenmalig wachtwoord (OTP)</translation>
+<translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Gestopt: papierstoring</translation>
 <translation id="6517239166834772319">Ontdekken</translation>
 <translation id="6527081081771465939">Onbekend wifi-beveiligingsprotocol</translation>
@@ -279,7 +280,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scannen voltooid. 1 pagina gescand.}other{Scannen voltooid. {NUMBER_OF_PAGES} pagina's gescand.}}</translation>
-<translation id="7449585358422953039">Beheerd door <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>

@@ -2326,7 +2326,6 @@
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3602870520245633055">പ്രിന്റ് ചെയ്ത് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="3603622770190368340">നെറ്റ്‌വർക്ക് സർട്ടിഫിക്കറ്റ് ലഭ്യമാക്കുക</translation>
-<translation id="3604193429970465812">ദ്വിതീയ അക്കൗണ്ടുകൾ</translation>
 <translation id="3604713164406837697">വാൾപേപ്പർ മാറ്റുക</translation>
 <translation id="3605780360466892872">ബട്ടൺഡൗൺ</translation>
 <translation id="3608576286259426129">ഉപയോക്തൃ ചിത്ര പ്രിവ്യൂ</translation>
@@ -2395,7 +2394,6 @@
 <translation id="3677911431265050325">മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="3677959414150797585">ആപ്പുകൾ, വെബ്പേജുകൾ തുടങ്ങിയവ ഉൾപ്പെടുന്നു. ഉപയോഗ ഡാറ്റ പങ്കിടാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തിട്ടുണ്ടെങ്കിൽ മാത്രം, നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്താനായി സ്ഥിതിവിവരക്കണക്കുകൾ അയയ്ക്കുന്നു.</translation>
 <translation id="3678156199662914018">വിപുലീകരണം: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">ഈ അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്‌തിട്ടുള്ള എല്ലാ Chromebook-കളിലും ഉടനീളം നിങ്ങളുടെ ആപ്പുകളും OS ക്രമീകരണവും സമന്വയിപ്പിക്കും. <ph name="LINK_BEGIN" />സമന്വയ ക്രമീകരണം<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് ശബ്‌ദം</translation>
 <translation id="3681311097828166361">നിങ്ങളുടെ ഫീഡ്‌ബാക്കിന് നന്ദി. നിങ്ങളിപ്പോൾ ഓഫ്‌ലൈനായതിനാൽ, റിപ്പോർട്ട് പിന്നീട് അയയ്‌ക്കുന്നതാണ്.</translation>
 <translation id="3682824389861648626">ചലന പരിധി</translation>
@@ -2949,7 +2947,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ലൈവ്)</translation>
 <translation id="4310139701823742692">ഫയൽ, തെറ്റായ ഫോർമാറ്റിലാണ്. PPD ഫയൽ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="431076611119798497">&amp;വിശദാംശങ്ങള്‍‌</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{ഒരു Google അക്കൗണ്ട്}other{<ph name="EXTRA_ACCOUNTS" /> Google അക്കൗണ്ടുകൾ}}</translation>
 <translation id="4312866146174492540">ബ്ലോക്ക് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="4316850752623536204">ഡെവലപ്പർ വെബ്‌സൈറ്റ്</translation>
@@ -3702,7 +3699,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡ് മാറ്റി. അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡ് കൂടി നിങ്ങൾക്കുണ്ട്. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.}other{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡ് മാറ്റി. അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ കൂടി നിങ്ങൾക്കുണ്ട്. ഈ പാസ്‌വേഡുകൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.}}</translation>
 <translation id="5207949376430453814">ടെക്‌സ്‌റ്റ് കാരറ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="5209320130288484488">ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
-<translation id="5209572028385096813">ഈ ഉപയോക്താവിനെ Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="5210365745912300556">ടാബ് അടയ്ക്കൂക</translation>
 <translation id="5213481667492808996">നിങ്ങളുടെ '<ph name="NAME" />' ഡാറ്റാ സേവനം ഉപയോഗിക്കാൻ തയ്യാറാണ്</translation>
 <translation id="5213891612754844763">പ്രോക്‌സി ക്രമീകരണങ്ങൾ കാണിക്കുക</translation>
@@ -5100,7 +5096,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">എല്ലാ ഉപയോക്താക്കൾക്കുമായി സ്വയമേയുള്ള അപ്‌ഡേറ്റുകൾ സജ്ജമാക്കാനായില്ല (പ്രീഫ്ലൈറ്റ് എക്‌സിക്യൂഷൻ പിശക്: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google സ്വകാര്യതാ നയം</translation>
-<translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്തു - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">സ്‌മാർട്ടും സുരക്ഷിതവുമായൊരു ബ്രൗസറിലേക്ക് മാറുക</translation>
 <translation id="6835762382653651563">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുക.</translation>
@@ -5367,7 +5363,6 @@
 <translation id="7121362699166175603">ചരിത്രവും വിലാസ ബാറിലെ സ്വയം പൂർത്തീകരണങ്ങളും മായ്ക്കുന്നു. നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="7121438501124788993">ഡെവലപ്പർ മോഡ്</translation>
 <translation id="7121728544325372695">സ്‌മാർട്ട് ഡാഷുകൾ</translation>
-<translation id="7122353087820324370">ആപ്പുകളും OS ക്രമീകരണവും ദ്വിതീയ അക്കൗണ്ടുകളുമായി സമന്വയിപ്പിച്ചിട്ടില്ല.</translation>
 <translation id="7123030151043029868">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="7123360114020465152">ഇനിയങ്ങോട്ട് പിന്തുണയില്ല</translation>
 <translation id="7125148293026877011">Crostini ഇല്ലാതാക്കുക</translation>
@@ -6080,7 +6075,6 @@
 <translation id="7928175190925744466">മുമ്പേ തന്നെ ഈ പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടോ?</translation>
 <translation id="7930294771522048157">സംരക്ഷിച്ച പേയ്മെന്റ് രീതികൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> നിങ്ങളുടെ സ്‌ക്രീനും ഓഡിയോയും പങ്കിടുന്നു.</translation>
-<translation id="7931318309563332511">അറിഞ്ഞുകൂടാത്തത്</translation>
 <translation id="793293630927785390">പുതിയ വൈഫൈ നെറ്റ്‌വർക്ക് ഡയലോഗ്</translation>
 <translation id="7932969338829957666">പങ്കിട്ട ഫോൾഡറുകൾ <ph name="BASE_DIR" /> എന്ന ലൊക്കേഷനിലെ Linux-ൽ ലഭ്യമാണ്.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ അൺമ്യൂട്ട് ചെയ്യുക}}</translation>

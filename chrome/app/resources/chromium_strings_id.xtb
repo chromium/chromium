@@ -274,7 +274,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="9047197236183657400">Pindahkan akun ke profil Chromium baru?</translation>
 <translation id="9089354809943900324">Chromium terlalu lawas</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium akan diluncurkan ulang dalam 1 jam}other{Chromium akan diluncurkan ulang dalam # jam}}</translation>
-<translation id="9107750757953039239">Jika memiliki beberapa Akun Google, Anda dapat menambahkannya ke <ph name="DEVICE_TYPE" />. Akun Anda akan tersedia di browser Chromium dan Play Store, serta berbagai layanan seperti Gmail, Drive, dan YouTube. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Buka Link di &amp;tab Chromium Baru</translation>
 <translation id="911206726377975832">Hapus juga data browsing Anda?</translation>
 <translation id="9158494823179993217">Administrator sistem Anda telah mengonfigurasi Chromium untuk membuka browser alternatif guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>

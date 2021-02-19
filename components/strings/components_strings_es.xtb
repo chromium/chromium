@@ -1261,7 +1261,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5813119285467412249">&amp;Rehacer acción de añadir</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cuando pagues, se aplicarán cargos en esta tarjeta, pero el número real no se compartirá con este sitio web. Para una mayor seguridad, se generará un CVC temporal.}other{Cuando pagues, se aplicarán cargos en la tarjeta que selecciones, pero el número real no se compartirá con este sitio web. Para una mayor seguridad, se generará un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
-<translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No deberías introducir información confidencial en este sitio web (por ejemplo, contraseñas o tarjetas de crédito) porque los atacantes podrían robarla.</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5855253129151731373">El nombre de host de este sitio web se parece al de <ph name="LOOKALIKE_DOMAIN" />. Los atacantes a veces imitan a otros sitios haciendo pequeños cambios difíciles de ver en el nombre del dominio.
@@ -1773,6 +1772,7 @@ Más información:
 <translation id="7888575728750733395">Imprimir intent de renderizado</translation>
 <translation id="7894280532028510793">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (sobre)</translation>
+<translation id="7931318309563332511">Desconocido</translation>
 <translation id="7932579305932748336">Capa</translation>
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
 <translation id="7934052535022478634">Pago completado</translation>

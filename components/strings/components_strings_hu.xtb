@@ -1257,7 +1257,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5813119285467412249">&amp;Hozzáadás újra</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{A rendszer fizetéskor ezt a kártyát terheli meg, de a kártya valódi számát nem osztja meg ezzel a webhellyel. A további védelem érdekében ideiglenes CVC-t is generál.}other{A rendszer fizetéskor az Ön által kiválasztott kártyát terheli meg, de a kártya valódi számát nem osztja meg ezzel a webhellyel. A további védelem érdekében ideiglenes CVC-t is generál.}}</translation>
 <translation id="5826507051599432481">Név (CN)</translation>
-<translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5838278095973806738">Ne írjon be semmilyen bizalmas adatot (például jelszót vagy hitelkártyaadatot) a webhelyen, mivel a támadók ellophatják.</translation>
 <translation id="5851548754964597211">Laplista</translation>
 <translation id="5855253129151731373">Ennek a webhelynek a gazdagépneve hasonló a következőhöz: <ph name="LOOKALIKE_DOMAIN" />. A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy apró, alig észrevehető változtatásokat végeznek a webhely domainnevében.
@@ -1769,6 +1768,7 @@ További részletek:
 <translation id="7888575728750733395">Nyomatmegjelenítési szándék</translation>
 <translation id="7894280532028510793">Ha helyesen írta, <ph name="BEGIN_LINK" />próbálkozzon a hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (boríték)</translation>
+<translation id="7931318309563332511">Ismeretlen</translation>
 <translation id="7932579305932748336">Bevonat</translation>
 <translation id="79338296614623784">Érvényes telefonszámot adjon meg</translation>
 <translation id="7934052535022478634">A fizetés befejeződött</translation>

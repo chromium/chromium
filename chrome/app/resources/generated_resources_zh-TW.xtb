@@ -2328,7 +2328,6 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3602870520245633055">列印及掃描</translation>
 <translation id="3603622770190368340">取得網路憑證</translation>
-<translation id="3604193429970465812">次要帳戶</translation>
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3608576286259426129">使用者圖片預覽</translation>
@@ -2397,7 +2396,6 @@
 <translation id="3677911431265050325">切換為行動版網站</translation>
 <translation id="3677959414150797585">包括應用程式、網頁等。只有當你選擇提供使用資料時，系統才會傳送統計資料用來改善建議項目。</translation>
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">當你使用這個帳戶登入後，所有 Chromebook 上的應用程式和作業系統設定都會保持同步。<ph name="LINK_BEGIN" />同步處理設定<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">文字轉語音的聲音</translation>
 <translation id="3681311097828166361">感謝你提供意見！你目前處於離線狀態，重新上線後系統就會傳送你的意見回饋報告。</translation>
 <translation id="3682824389861648626">滑鼠移動限額</translation>
@@ -2951,7 +2949,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K 作用中)</translation>
 <translation id="4310139701823742692">檔案格式錯誤。請檢查 PPD 檔案，然後再試一次。</translation>
 <translation id="431076611119798497">詳細資訊(&amp;D)</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 個 Google 帳戶}other{<ph name="EXTRA_ACCOUNTS" /> 個 Google 帳戶}}</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步功能資料</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
@@ -3704,7 +3701,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功變更遭外洩的密碼。你還有 # 組遭外洩的密碼。Chrome 建議你立即檢查這組密碼。}other{已成功變更遭外洩的密碼。你還有 # 組遭外洩的密碼。Chrome 建議你立即檢查這些密碼。}}</translation>
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="5209320130288484488">找不到裝置</translation>
-<translation id="5209572028385096813">這個使用者是由 Family Link 管理</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213481667492808996">現在可以使用「<ph name="NAME" />」的數據服務了</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
@@ -5367,7 +5363,6 @@
 <translation id="7121362699166175603">將歷史記錄和自動即時查詢從網址列中清除。你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
 <translation id="7121728544325372695">智慧型破折號</translation>
-<translation id="7122353087820324370">應用程式和作業系統設定未同步到次要帳戶。</translation>
 <translation id="7123030151043029868">可以自動下載多個檔案</translation>
 <translation id="7123360114020465152">已停止支援</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
@@ -6080,7 +6075,6 @@
 <translation id="7928175190925744466">你變更了這個密碼嗎？</translation>
 <translation id="7930294771522048157">已儲存的付款方式會顯示在這裡</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> 正在共用您的畫面和音訊。</translation>
-<translation id="7931318309563332511">不明</translation>
 <translation id="793293630927785390">新的 Wi-Fi 網路對話方塊</translation>
 <translation id="7932969338829957666">在 Linux 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{開啟網站音訊}other{開啟多個網站的音訊}}</translation>

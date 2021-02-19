@@ -243,6 +243,7 @@
 <translation id="641081527798843608">主題比對</translation>
 <translation id="6456394469623773452">良好</translation>
 <translation id="6472207088655375767">動態密碼</translation>
+<translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">Wi-Fi 安全通訊協定不明</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
-<translation id="7449585358422953039">由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 位址</translation>

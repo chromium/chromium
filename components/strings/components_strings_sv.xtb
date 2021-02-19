@@ -1261,7 +1261,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5813119285467412249">&amp;Gör om Lägg till</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Det här kortet debiteras när du betalar, men kortnumret delas inte med webbplatsen. En tillfällig CVC-kod skapas som en extra säkerhetsåtgärd.}other{Det valda kortet debiteras när du betalar, men kortnumret delas inte med webbplatsen. En tillfällig CVC-kod skapas som en extra säkerhetsåtgärd.}}</translation>
 <translation id="5826507051599432481">Vanligt namn (CN)</translation>
-<translation id="583281660410589416">Okänd</translation>
 <translation id="5838278095973806738">Du bör inte ange några känsliga uppgifter på den här webbplatsen (till exempel lösenord eller kreditkortsuppgifter) eftersom hackare kan stjäla dem.</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5855253129151731373">Webbplatsens värdnamn liknar <ph name="LOOKALIKE_DOMAIN" />. Ibland försöker hackare efterlikna webbplatser genom att göra små, svårupptäckta ändringar i domännamnet.
@@ -1773,6 +1772,7 @@ Mer information.
 <translation id="7888575728750733395">Renderingsmetod för utskrifter</translation>
 <translation id="7894280532028510793">Om stavningen är rätt <ph name="BEGIN_LINK" />testar du att köra nätverksdiagnostik<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (kuvert)</translation>
+<translation id="7931318309563332511">okänt</translation>
 <translation id="7932579305932748336">Beläggning</translation>
 <translation id="79338296614623784">Ange ett giltigt telefonnummer</translation>
 <translation id="7934052535022478634">Betalningen är slutförd</translation>

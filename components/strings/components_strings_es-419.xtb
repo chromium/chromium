@@ -1251,7 +1251,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5813119285467412249">&amp;Rehacer Agregar</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cuando realices un pago, el importe se debitará de esta tarjeta, pero el sitio no tendrá acceso a su número real. Para reforzar la seguridad, se generará un CVC temporal.}other{Cuando realices un pago, el importe se debitará de la tarjeta que selecciones, pero el sitio no tendrá acceso a su número real. Para reforzar la seguridad, se generará un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
-<translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No debes ingresar información confidencial en este sitio (p. ej., contraseñas o tarjetas de crédito), ya que los atacantes podrían robarla.</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5855253129151731373">El nombre de host de este sitio es similar al de <ph name="LOOKALIKE_DOMAIN" />. A veces, los atacantes hacen cambios sutiles y difíciles de detectar en el nombre del dominio para imitar sitios.
@@ -1763,6 +1762,7 @@ Detalles adicionales:
 <translation id="7888575728750733395">Propósito de conversión para impresión</translation>
 <translation id="7894280532028510793">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">Desconocido</translation>
 <translation id="7932579305932748336">Recubrimiento</translation>
 <translation id="79338296614623784">Ingresa un número de teléfono válido</translation>
 <translation id="7934052535022478634">Se completó el pago</translation>

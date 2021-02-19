@@ -2331,7 +2331,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3602290021589620013">Priekšskatīt</translation>
 <translation id="3602870520245633055">Drukāšana un skenēšana</translation>
 <translation id="3603622770190368340">Tīkla sertifikāta iegūšana</translation>
-<translation id="3604193429970465812">Sekundārie konti</translation>
 <translation id="3604713164406837697">Fona tapetes mainīšana</translation>
 <translation id="3605780360466892872">Biznesmenis</translation>
 <translation id="3608576286259426129">Lietotāja attēla priekšskatījums</translation>
@@ -2400,7 +2399,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3677911431265050325">Pieprasīt mobilo vietni</translation>
 <translation id="3677959414150797585">Ir ietvertas lietotnes, tīmekļa lapas un cits saturs. Statistikas dati tiek sūtīti ieteikumu uzlabošanai tikai tad, ja esat piekritis kopīgot lietojuma datus.</translation>
 <translation id="3678156199662914018">Paplašinājums: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Lietotnes un OS iestatījumi tiks sinhronizēti Chromebook datoros, kuros esat pierakstījies ar šo kontu. <ph name="LINK_BEGIN" />Sinhronizācijas iestatījumi<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Teksta pārvēršanas runā balss</translation>
 <translation id="3681311097828166361">Paldies par atsauksmēm! Pašlaik esat bezsaistē, un jūsu ziņojums tiks nosūtīts vēlāk.</translation>
 <translation id="3682824389861648626">Kustības slieksnis</translation>
@@ -2955,7 +2953,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB tiešsaistē)</translation>
 <translation id="4310139701823742692">Nepareizs faila formāts. Pārbaudiet PPD failu un mēģiniet vēlreiz.</translation>
 <translation id="431076611119798497">&amp;Informācija</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google konts}zero{<ph name="EXTRA_ACCOUNTS" /> Google kontu}one{<ph name="EXTRA_ACCOUNTS" /> Google konts}other{<ph name="EXTRA_ACCOUNTS" /> Google konti}}</translation>
 <translation id="4312866146174492540">Bloķēt (pēc noklusējuma)</translation>
 <translation id="4314815835985389558">Sinhronizācijas pārvaldība</translation>
 <translation id="4316850752623536204">Izstrādātāja vietne</translation>
@@ -3708,7 +3705,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5206787458656075734">{COUNT,plural, =1{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauzta parole. Chrome ieteikums: nekavējoties pārbaudiet šo paroli.}zero{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauztu paroļu. Chrome ieteikums: nekavējoties pārbaudiet šīs paroles.}one{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauzta parole. Chrome ieteikums: nekavējoties pārbaudiet šīs paroles.}other{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauztas paroles. Chrome ieteikums: nekavējoties pārbaudiet šīs paroles.}}</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="5209320130288484488">Ierīces nav atrastas</translation>
-<translation id="5209572028385096813">Šī lietotāja konts tiek pārvaldīts, izmantojot lietotni Family Link</translation>
 <translation id="5210365745912300556">Aizvērt cilni</translation>
 <translation id="5213481667492808996">Jūsu <ph name="NAME" /> datu pakalpojums ir gatavs lietošanai</translation>
 <translation id="5213891612754844763">Rādīt starpniekservera iestatījumus</translation>
@@ -5371,7 +5367,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7121362699166175603">Notīra vēsturi un automātiskās pabeigšanas datus adreses joslā. Jūsu Google kontam var būt cita veida pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Izstrādātāja režīms</translation>
 <translation id="7121728544325372695">Viedās defises</translation>
-<translation id="7122353087820324370">Lietotnes un OS iestatījumi netiek sinhronizēti ar sekundārajiem kontiem.</translation>
 <translation id="7123030151043029868">Drīkst automātiski lejupielādēt vairākus failus</translation>
 <translation id="7123360114020465152">Vairs netiek atbalstīts</translation>
 <translation id="7125148293026877011">Crostini dzēšana</translation>
@@ -6083,7 +6078,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7928175190925744466">Vai jūs jau nomainījāt šo paroli?</translation>
 <translation id="7930294771522048157">Šeit tiks parādīti saglabātie maksājumu veidi.</translation>
 <translation id="79312157130859720">Lietotne <ph name="APP_NAME" /> koplieto jūsu ekrānu un audio.</translation>
-<translation id="7931318309563332511">Nezināma</translation>
 <translation id="793293630927785390">Wi-Fi tīkla pievienošanas dialoglodziņš</translation>
 <translation id="7932969338829957666">Kopīgotās mapes operētājsistēmā Linux ir pieejamas sadaļā <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Rādīt vietni}zero{Rādīt vietnes}one{Rādīt vietnes}other{Rādīt vietnes}}</translation>

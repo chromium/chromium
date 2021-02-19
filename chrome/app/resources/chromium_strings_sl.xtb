@@ -276,7 +276,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="9047197236183657400">Želite račun premakniti v nov profil v Chromiumu?</translation>
 <translation id="9089354809943900324">Chromium je zastarel</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se bo znova zagnal čez eno uro}one{Chromium se bo znova zagnal čez # uro}two{Chromium se bo znova zagnal čez # uri}few{Chromium se bo znova zagnal čez # ure}other{Chromium se bo znova zagnal čez # ur}}</translation>
-<translation id="9107750757953039239">Če imate več računov Google, jih lahko dodate v napravo <ph name="DEVICE_TYPE" />. Vaši računi bodo na voljo v brskalniku Chromium in Trgovini Play ter v storitvah, kot so Gmail, Drive in YouTube. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Odpiranje povezave na novem &amp;zavihku v Chromiumu</translation>
 <translation id="911206726377975832">Ali želite izbrisati tudi podatke brskanja?</translation>
 <translation id="9158494823179993217">Skrbnik sistema je Chromium nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre drug brskalnik.</translation>

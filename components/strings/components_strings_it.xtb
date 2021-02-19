@@ -1258,7 +1258,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5813119285467412249">&amp;Ripeti aggiunta</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gli importi dei pagamenti che effettuerai verranno addebitati su questa carta, ma il numero effettivo della carta non verrà condiviso con questo sito. Per maggiore sicurezza verrà generato un codice CVC temporaneo.}other{Gli importi dei pagamenti che effettuerai verranno addebitati sulla carta selezionata, ma il numero effettivo della carta non verrà condiviso con questo sito. Per maggiore sicurezza verrà generato un codice CVC temporaneo.}}</translation>
 <translation id="5826507051599432481">Nome comune (CN)</translation>
-<translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5838278095973806738">Non dovresti inserire dati sensibili in questo sito (ad esempio password o carte di credito) perché potrebbero essere intercettati da utenti malintenzionati.</translation>
 <translation id="5851548754964597211">Elenco schede</translation>
 <translation id="5855253129151731373">Il nome host di questo sito è simile a <ph name="LOOKALIKE_DOMAIN" />. A volte i malintenzionati imitano i siti modificando leggermente e in modo poco evidente il nome di dominio.
@@ -1769,6 +1768,7 @@ Ulteriori dettagli:
 <translation id="7888575728750733395">Stampa intent di rendering</translation>
 <translation id="7894280532028510793">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica di rete<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">Sconosciuta</translation>
 <translation id="7932579305932748336">Rivestimento</translation>
 <translation id="79338296614623784">Inserisci un numero di telefono valido</translation>
 <translation id="7934052535022478634">Pagamento completato</translation>

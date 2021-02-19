@@ -243,6 +243,7 @@
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
 <translation id="6456394469623773452">ດີ</translation>
 <translation id="6472207088655375767">OTP​:</translation>
+<translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">ຢຸດພິມ - ເຈ້ຍຕິດ</translation>
 <translation id="6517239166834772319">ສຳຫຼວດ</translation>
 <translation id="6527081081771465939">ໂປຣໂຕຄໍຮັກສາຄວາມປອດໄພ WiFi ທີ່ບໍ່ຮູ້ຈັກ</translation>
@@ -280,7 +281,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
-<translation id="7449585358422953039">ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>

@@ -1259,7 +1259,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5813119285467412249">&amp;Rétablir l'ajout</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cette carte sera débitée lorsque vous effectuerez un paiement, mais son vrai numéro ne sera pas communiqué à ce site. Pour plus de sécurité, un code CVC provisoire sera généré.}one{La carte que vous aurez sélectionnée sera débitée lorsque vous effectuerez un paiement, mais son vrai numéro ne sera pas communiqué à ce site. Pour plus de sécurité, un code CVC provisoire sera généré.}other{Les cartes que vous aurez sélectionnées seront débitées lorsque vous effectuerez des paiements, mais leur vrai numéro ne sera pas communiqué à ce site. Pour plus de sécurité, un code CVC provisoire sera généré.}}</translation>
 <translation id="5826507051599432481">Nom commun (CN)</translation>
-<translation id="583281660410589416">Inconnu</translation>
 <translation id="5838278095973806738">Vous ne devriez pas saisir d'informations sensibles sur ce site (par exemple, vos mots de passe ou les informations de votre carte de paiement), car elles risquent d'être dérobées par des pirates informatiques.</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5855253129151731373">Le nom d'hôte de ce site ressemble à <ph name="LOOKALIKE_DOMAIN" />. Les pirates informatiques tentent parfois d'imiter des sites Web en modifiant le nom de domaine de façon subtile pour que le changement passe inaperçu.
@@ -1771,6 +1770,7 @@ Informations supplémentaires :
 <translation id="7888575728750733395">Intent de rendu d'impression</translation>
 <translation id="7894280532028510793">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic réseau<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (enveloppe)</translation>
+<translation id="7931318309563332511">Langue source inconnue</translation>
 <translation id="7932579305932748336">Revêtement</translation>
 <translation id="79338296614623784">Saisissez un numéro de téléphone valide</translation>
 <translation id="7934052535022478634">Paiement effectué</translation>

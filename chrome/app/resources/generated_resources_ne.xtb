@@ -2319,7 +2319,6 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3602870520245633055">प्रिन्ट गर्नुहोस् र स्क्यान गर्नुहोस्</translation>
 <translation id="3603622770190368340">नेटवर्क प्रमाणपत्र हासिल गर्नुहोस्</translation>
-<translation id="3604193429970465812">सहायक खाताहरू</translation>
 <translation id="3604713164406837697">वालपेपर परिवर्तन गर्नुहोस्</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
 <translation id="3608576286259426129">प्रयोगकर्ता छवि पूर्वावलोकन</translation>
@@ -2388,7 +2387,6 @@
 <translation id="3677911431265050325">मोबाइल साइट अनुरोध गर्नुहोस्</translation>
 <translation id="3677959414150797585">एप, वेबपृष्ठ र अन्य कुराहरू समावेश हुन्छन्। तपाईंले प्रयोगसम्बन्धी डेटा सेयर गर्ने निर्णय गर्नुभएको छ भने मात्र सामग्री सिफारिस गर्ने सुविधा सुधार्ने प्रयोजनका लागि तथ्याङ्क पठाउँछ।</translation>
 <translation id="3678156199662914018">विस्तार: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">तपाईंका एप तथा OS का सेटिङ तपाईंले यो खाता प्रयोग गरी साइन इन गर्नुभएका Chromebook हरूमा सिंक हुने छन्। <ph name="LINK_BEGIN" />सिंकसम्बन्धी सेटिङ<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">टेक्स्ट-टू-स्पिच सुविधाको आवाजसम्बन्धी सेटिङ</translation>
 <translation id="3681311097828166361">प्रतिक्रिया दिनुभएकोमा धन्यवाद। तपाईं अहिले अफलाइन हुनुहुन्छ र तपाईंको रिपोर्ट पछि पठाइने छ।</translation>
 <translation id="3682824389861648626">चालको थ्रेसहोल्ड</translation>
@@ -2942,7 +2940,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K प्रत्यक्ष)</translation>
 <translation id="4310139701823742692">फाइलको ढाँचा गलत छ। PPD फाइल जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="431076611119798497">&amp;विवरणहरू</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{एउटा Google खाता}other{<ph name="EXTRA_ACCOUNTS" /> वटा Google खाता}}</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (पूर्वनिर्धारित मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4316850752623536204">विकासकर्ता वेबसाइट</translation>
@@ -3693,7 +3690,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{अरूले देखेको पासवर्ड सफलतापूर्वक परिवर्तन गरियो। तपाईंको थप # वटा पासवर्ड अरूले देखेका छन्। Chrome ले अहिले नै यो पासवर्ड जाँच्न सिफारिस गर्छ।}other{अरूले देखेको पासवर्ड सफलतापूर्वक परिवर्तन गरियो। तपाईंका थप # वटा पासवर्ड अरूले देखेका छन्। Chrome ले अहिले नै यी पासवर्डहरू जाँच्न सिफारिस गर्छ।}}</translation>
 <translation id="5207949376430453814">पाठको क्योरटलाई हाइलाइट</translation>
 <translation id="5209320130288484488">कुनैपनि यन्त्रहरू फेला परेनन्</translation>
-<translation id="5209572028385096813">यी प्रयोगकर्ताको खाता Family Link मार्फत व्यवस्थापन गरिन्छ</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5213481667492808996">तपाईंको '<ph name="NAME" />' नामक मोबाइल डेटा सेवा प्रयोग गर्नका लागि तयार छ</translation>
 <translation id="5213891612754844763">प्रोक्सी सम्बन्धी सेटिङहरू देखाउनुहोस्‌</translation>
@@ -5353,7 +5349,6 @@
 <translation id="7121362699166175603">ठेगाना पट्टीका इतिहास र स्वतः पूर्णताहरूलाई खाली गर्छ। तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य किसिमका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
 <translation id="7121438501124788993">विकासकर्ताको मोड</translation>
 <translation id="7121728544325372695">स्मार्ट योजक चिन्ह</translation>
-<translation id="7122353087820324370">एप तथा OS का सेटिङ सहायक खाताहरूमा सिंक भएका छैनन्।</translation>
 <translation id="7123030151043029868">धेरै फाइलहरू स्वतः डाउनलोड गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="7123360114020465152">अब उप्रान्त समर्थित छैन</translation>
 <translation id="7125148293026877011">Crostini मेटाउनुहोस्</translation>
@@ -6065,7 +6060,6 @@
 <translation id="7928175190925744466">यो पासवर्ड परिवर्तन गरिसक्नुभयो?</translation>
 <translation id="7930294771522048157">सुरक्षित गरिएका भुक्तानी विधिहरू यहाँ देखिने छन्</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> तपाईँको स्क्रिन र अडियोलाई साझेदारी गर्दैछ।</translation>
-<translation id="7931318309563332511">अज्ञात</translation>
 <translation id="793293630927785390">नयाँ Wi-Fi नेटवर्कसम्बन्धी संवाद</translation>
 <translation id="7932969338829957666">आदान प्रदान गरिएका फोल्डरहरू Linux को <ph name="BASE_DIR" /> मा उपलब्ध छन्।</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>

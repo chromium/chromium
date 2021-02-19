@@ -2330,7 +2330,6 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3602870520245633055">Печатење и скенирање</translation>
 <translation id="3603622770190368340">Набави сертификат на мрежа</translation>
-<translation id="3604193429970465812">Секундарни сметки</translation>
 <translation id="3604713164406837697">Менување тапет</translation>
 <translation id="3605780360466892872">Закопчан</translation>
 <translation id="3608576286259426129">Преглед на слика на корисник</translation>
@@ -2399,7 +2398,6 @@
 <translation id="3677911431265050325">Побарај мобилна верзија на сајтот</translation>
 <translation id="3677959414150797585">Вклучува апликации, веб-страници и друго. Статистикa за подобрување на предлозите се испраќа само ако сте одбрале споделување на податоците за користење.</translation>
 <translation id="3678156199662914018">Наставка: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Вашите апликации и поставки за OS ќе се синхронизираат на сите уреди Chromebook каде што сте најавени со сметкава. <ph name="LINK_BEGIN" />Поставки за синхронизација<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Глас за „Од текст во говор“</translation>
 <translation id="3681311097828166361">Благодариме за повратните информации. Во моментов сте офлајн, па вашиот извештај ќе се испрати подоцна.</translation>
 <translation id="3682824389861648626">Праг на движења</translation>
@@ -2954,7 +2952,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />К (<ph name="NUM_KILOBYTES_LIVE" />К во живо)</translation>
 <translation id="4310139701823742692">Погрешен формат на датотека. Проверете ја PPD-датотеката и обидете се повторно.</translation>
 <translation id="431076611119798497">&amp;Детали</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 сметка на Google}one{<ph name="EXTRA_ACCOUNTS" /> сметка на Google}other{<ph name="EXTRA_ACCOUNTS" /> сметки на Google}}</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
 <translation id="4316850752623536204">Вебсајт на програмерот</translation>
@@ -3707,7 +3704,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{Успешно ја променивте компромитираната лозинка. Имате уште # компромитирана лозинка. Chrome препорачува веднаш да ја проверите лозинкава.}one{Успешно ја променивте компромитираната лозинка. Имате уште # компромитирана лозинка. Chrome препорачува веднаш да ги проверите лозинкиве.}other{Успешно ја променивте компромитираната лозинка. Имате уште # компромитирани лозинки. Chrome препорачува веднаш да ги проверите лозинкиве.}}</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5209320130288484488">Не се пронајдени уреди</translation>
-<translation id="5209572028385096813">Family Link управува со овој корисник</translation>
 <translation id="5210365745912300556">Затвори ја картичката</translation>
 <translation id="5213481667492808996">Услугата за мобилен интернет од <ph name="NAME" /> е спремна за употреба</translation>
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>
@@ -5370,7 +5366,6 @@
 <translation id="7121362699166175603">Ја чисти историјата и автоматските довршувања во лентата за адреси. Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Режим на програмер</translation>
 <translation id="7121728544325372695">Паметни цртички</translation>
-<translation id="7122353087820324370">Поставките за апликации и OS не се синхронизираат со секундарните сметки.</translation>
 <translation id="7123030151043029868">Дозволено им е автоматски да преземаат повеќе датотеки</translation>
 <translation id="7123360114020465152">Веќе не е поддржано</translation>
 <translation id="7125148293026877011">Бришење на Crostini</translation>
@@ -6083,7 +6078,6 @@
 <translation id="7928175190925744466">Веќе ја променивте лозинкава?</translation>
 <translation id="7930294771522048157">Зачуваните начини за плаќање ќе се појават тука</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> ги споделува вашиот екран и аудио.</translation>
-<translation id="7931318309563332511">Непознат</translation>
 <translation id="793293630927785390">Нов дијалог за Wi-Fi мрежа</translation>
 <translation id="7932969338829957666">Споделените папки се достапни во Linux на <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>

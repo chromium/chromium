@@ -1261,7 +1261,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5813119285467412249">Herdoen byvoeging</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Betaling sal van hierdie kaart gehef word wanneer jy betaal, maar sy regte nommer sal nie met hierdie werf gedeel word nie. 'n Tydelike CVC sal gegenereer word vir bykomende sekuriteit.}other{Betaling sal van die kaart wat jy kies gehef word wanneer jy betaal, maar sy regte nommer sal nie met hierdie werf gedeel word nie. 'n Tydelike CVC sal gegenereer word vir bykomende sekuriteit.}}</translation>
 <translation id="5826507051599432481">Algemene naam (AN)</translation>
-<translation id="583281660410589416">Onbekend</translation>
 <translation id="5838278095973806738">Jy moenie enige sensitiewe inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) op hierdie werf invoer nie, want aanvallers kan dit steel.</translation>
 <translation id="5851548754964597211">Oortjielys</translation>
 <translation id="5855253129151731373">Hierdie werf se gasheernaam lyk soortgelyk aan <ph name="LOOKALIKE_DOMAIN" />. Aanvallers boots soms werwe na deur klein veranderinge aan die domeinnaam te maak wat moeilik is om te sien.
@@ -1773,6 +1772,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7888575728750733395">Drukleweringvoorneme</translation>
 <translation id="7894280532028510793">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Netwerkdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">Onbekend</translation>
 <translation id="7932579305932748336">Bestryk</translation>
 <translation id="79338296614623784">Voer 'n geldige foonnommer in</translation>
 <translation id="7934052535022478634">Betaling voltooi</translation>

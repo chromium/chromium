@@ -2328,7 +2328,6 @@
 <translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3602870520245633055">ბეჭდვა და სკანირება</translation>
 <translation id="3603622770190368340">მიიღეთ ქსელის სერთიფიკატი</translation>
-<translation id="3604193429970465812">მეორეული ანგარიშები</translation>
 <translation id="3604713164406837697">ფონის შეცვლა</translation>
 <translation id="3605780360466892872">ღილაკის დაჭერა</translation>
 <translation id="3608576286259426129">მომხმარებლის გამოსახულების გადახედვა</translation>
@@ -2397,7 +2396,6 @@
 <translation id="3677911431265050325">მობილური საიტის მოთხოვნა</translation>
 <translation id="3677959414150797585">მოიცავს აპებს, ვებგვერდებსა და სხვა. შემოთავაზებების გაუმჯობესების მიზნით, გაგზავნის სტატისტიკას (მხოლოდ იმ შემთხვევაში, თუ არჩეული გაქვთ გამოყენების მონაცემების გაზიარება).</translation>
 <translation id="3678156199662914018">გაფართოება: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">თქვენი აპები და ოპერაციული სისტემის პარამეტრები სინქრონიზებული იქნება თქვენს ყველა Chromebook-თან, რომელზეც შესული ხართ ამ ანგარიშით. <ph name="LINK_BEGIN" />სინქრონიზაციის პარამეტრები<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">ტექსტის გახმოვანების ხმა</translation>
 <translation id="3681311097828166361">გმადლობთ გამოხმაურებისთვის. ახლა ხაზგარეშე რეჟიმში ხართ და თქვენი ანგარიში მოგვიანებით გაიგზავნება.</translation>
 <translation id="3682824389861648626">გადაადგილების ზღვარი</translation>
@@ -2952,7 +2950,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K live)</translation>
 <translation id="4310139701823742692">ფაილის ფორმატი არასწორია. შეამოწმეთ PPD ფაილი და ცადეთ ხელახლა.</translation>
 <translation id="431076611119798497">&amp;დეტალები</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google ანგარიში}other{<ph name="EXTRA_ACCOUNTS" /> Google ანგარიში}}</translation>
 <translation id="4312866146174492540">დაბლოკვა (ნაგულისხმევი)</translation>
 <translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
 <translation id="4316850752623536204">დეველოპერის საიტი</translation>
@@ -3705,7 +3702,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{გატეხილი პაროლები წარმატებით შეიცვალა. დაგრჩათ # გატეხილი პაროლი. Chrome გირჩევთ, ახლავე შეამოწმოთ ეს პაროლი.}other{გატეხილი პაროლები წარმატებით შეიცვალა. დაგრჩათ # გატეხილი პაროლი. Chrome გირჩევთ, ახლავე შეამოწმოთ ეს პაროლები.}}</translation>
 <translation id="5207949376430453814">ტექსტის კურსორის გამოყოფა</translation>
 <translation id="5209320130288484488">მოწყობილობა ნაპოვნი არ არის</translation>
-<translation id="5209572028385096813">ეს მომხმარებელი იმართება Family Link-ის მეშვეობით</translation>
 <translation id="5210365745912300556">ჩანართის დახურვა</translation>
 <translation id="5213481667492808996">„<ph name="NAME" />“-ის მონაცემთა გადაცემის სერვისი გამოსაყენებლად მზად არის</translation>
 <translation id="5213891612754844763">პროქსი-სერვერის პარამეტრების ჩვენება</translation>
@@ -5368,7 +5364,6 @@
 <translation id="7121362699166175603">მისამართთა ზოლში გაასუფთავებს ისტორიასა და ავტომატურ დასრულებებს. თქვენს Google ანგარიშში შეიძლება ინახებოდეს სხვა ტიპის დათვალიერების ისტორიაც, რომელიც ხელმისაწვდომია მისამართზე: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">შემმუშავებლის რეჟიმი</translation>
 <translation id="7121728544325372695">გონიერი ტირეები</translation>
-<translation id="7122353087820324370">აპები და ოპერაციული სისტემის პარამეტრები არ სინქრონიზდება მეორეულ ანგარიშებთან.</translation>
 <translation id="7123030151043029868">რამდენიმე ფაილის ავტომატურად ჩამოტვირთვა დაშვებულია</translation>
 <translation id="7123360114020465152">აღარ არის მხარდაჭერილი</translation>
 <translation id="7125148293026877011">Crostini-ს წაშლა</translation>
@@ -6081,7 +6076,6 @@
 <translation id="7928175190925744466">ეს პაროლი უკვე შეცვალეთ?</translation>
 <translation id="7930294771522048157">აქ გამოჩნდება გადახდის შენახული მეთოდები</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> თქვენს ეკრანსა და აუდიოს აზიარებს.</translation>
-<translation id="7931318309563332511">უცნობი</translation>
 <translation id="793293630927785390">ახალი Wi-Fi ქსელის დიალოგი</translation>
 <translation id="7932969338829957666">გაზიარებული საქაღალდეები Linux-ში ხელმისაწვდომია აქ: <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{საიტის დადუმების მოხსნა}other{საიტების დადუმების მოხსნა}}</translation>

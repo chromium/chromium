@@ -243,6 +243,7 @@
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6456394469623773452">Добар</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Заустављено – папир је заглављен</translation>
 <translation id="6517239166834772319">Истражите</translation>
 <translation id="6527081081771465939">Непознат безбедносни протокол за WiFi</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
-<translation id="7449585358422953039">Овим управља <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Откривен је портал</translation>
 <translation id="7487067081878637334">Технологија</translation>
 <translation id="7490813197707563893">MAC адреса</translation>

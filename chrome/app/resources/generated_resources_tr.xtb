@@ -2329,7 +2329,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3602870520245633055">Yazdırma ve tarama</translation>
 <translation id="3603622770190368340">Ağ sertifikası edinme</translation>
-<translation id="3604193429970465812">İkincil hesaplar</translation>
 <translation id="3604713164406837697">Duvar kağıdını değiştir</translation>
 <translation id="3605780360466892872">İş adamı</translation>
 <translation id="3608576286259426129">Kullanıcı resmi önizlemesi</translation>
@@ -2398,7 +2397,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3677911431265050325">Mobil site iste</translation>
 <translation id="3677959414150797585">Uygulamalar, web sayfaları ve daha fazlasını içerir. Yalnızca kullanım verilerini paylaşmayı seçtiyseniz önerileri iyileştirmek için istatistikleri gönderir.</translation>
 <translation id="3678156199662914018">Uzantı: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Uygulamalarınız ve OS ayarlarınız bu hesapla oturum açtığınız tüm Chromebook'larda senkronize edilir. <ph name="LINK_BEGIN" />Senkronizasyon Ayarları<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Metin okuma sesi</translation>
 <translation id="3681311097828166361">Geri bildiriminiz için teşekkürler. Şu anda çevrimdışısınız ve raporunuz daha sonra gönderilecek.</translation>
 <translation id="3682824389861648626">Hareket eşiği</translation>
@@ -2953,7 +2951,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K aktif)</translation>
 <translation id="4310139701823742692">Dosya yanlış biçimde. PPD dosyasını kontrol edip tekrar deneyin.</translation>
 <translation id="431076611119798497">&amp;Ayrıntılar</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google Hesabı}other{<ph name="EXTRA_ACCOUNTS" /> Google Hesabı}}</translation>
 <translation id="4312866146174492540">Engelle (varsayılan)</translation>
 <translation id="4314815835985389558">Senkronizasyonu yönetin</translation>
 <translation id="4316850752623536204">Geliştirici Web Sitesi</translation>
@@ -3706,7 +3703,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Güvenliği ihlal edilmiş şifre değiştirildi. Güvenliği ihlal edilmiş # şifreniz daha var. Chrome, bu şifreyi hemen kontrol etmenizi öneriyor.}other{Güvenliği ihlal edilmiş şifre değiştirildi. Güvenliği ihlal edilmiş # şifreniz daha var. Chrome, bu şifreleri hemen kontrol etmenizi öneriyor.}}</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5209320130288484488">Cihaz bulunamadı</translation>
-<translation id="5209572028385096813">Bu kullanıcı Family Link tarafından yönetiliyor</translation>
 <translation id="5210365745912300556">Sekmeyi kapat</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" veri hizmetiniz kullanıma hazır</translation>
 <translation id="5213891612754844763">Proxy ayarlarını göster</translation>
@@ -5370,7 +5366,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7121362699166175603">Geçmişi ve adres çubuğundaki otomatik tamamlamaları temizler. Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
 <translation id="7121438501124788993">Geliştirici Modu</translation>
 <translation id="7121728544325372695">Akıllı Kısa Çizgiler</translation>
-<translation id="7122353087820324370">Uygulamalar ve OS ayarları ikincil hesaplarla senkronize edilmez.</translation>
 <translation id="7123030151043029868">Birden fazla dosyayı otomatik olarak indirmesine izin verilen siteler</translation>
 <translation id="7123360114020465152">Artık desteklenmiyor</translation>
 <translation id="7125148293026877011">Crostini'yi sil</translation>
@@ -6082,7 +6077,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7928175190925744466">Bu şifreyi zaten değiştirdiniz mi?</translation>
 <translation id="7930294771522048157">Kaydedilen ödeme yöntemleri burada görünecek</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" />, ekranınızı ve sesinizi paylaşıyor.</translation>
-<translation id="7931318309563332511">Bilinmiyor</translation>
 <translation id="793293630927785390">Yeni Kablosuz Ağ İletişim Kutusu</translation>
 <translation id="7932969338829957666">Paylaşılan klasörleri Linux'ta <ph name="BASE_DIR" /> adresinde bulabilirsiniz.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Sitenin Sesini Aç}other{Sitelerin Sesini Aç}}</translation>

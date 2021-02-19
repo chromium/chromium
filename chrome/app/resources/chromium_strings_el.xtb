@@ -274,7 +274,6 @@
 <translation id="9047197236183657400">Μετακίνηση λογαριασμού σε νέο προφίλ Chromium;</translation>
 <translation id="9089354809943900324">Το Chromium δεν είναι ενημερωμένο</translation>
 <translation id="9093206154853821181">{0,plural, =1{Η επανεκκίνηση του Chromium θα γίνει σε μία ώρα}other{Η επανεκκίνηση του Chromium θα γίνει σε # ώρες}}</translation>
-<translation id="9107750757953039239">Εάν έχετε πολλούς Λογαριασμούς Google, μπορείτε να τους προσθέσετε στη συσκευή <ph name="DEVICE_TYPE" />. Οι λογαριασμοί σας θα είναι διαθέσιμοι στο πρόγραμμα περιήγησης Chromium και το Play Store καθώς και σε υπηρεσίες όπως το Gmail, το Drive και το YouTube. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Άνοιγμα Συνδέσμου σε Νέα καρτέ&amp;λα Chromium</translation>
 <translation id="911206726377975832">Να γίνει διαγραφή και των δεδομένων περιήγησης;</translation>
 <translation id="9158494823179993217">Ο διαχειριστής συστήματος έχει διαμορφώσει το Chromium έτσι ώστε να ανοίγει άλλο πρόγραμμα περιήγησης για την πρόσβαση στη διεύθυνση <ph name="TARGET_URL_HOSTNAME" />.</translation>

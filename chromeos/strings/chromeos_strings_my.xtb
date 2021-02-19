@@ -242,6 +242,7 @@
 <translation id="641081527798843608">တိုက်ဆိုင်သည့် အကြောင်းအရာ</translation>
 <translation id="6456394469623773452">ကောင်းပါသည်</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6527081081771465939">အမည်မသိ WiFi လုံခြုံရေးပရိုတိုကော</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည်။</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="7487067081878637334">နည်းပညာ</translation>
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>

@@ -1250,7 +1250,6 @@
 <translation id="5813119285467412249">追加のやり直し（&amp;R）</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{お支払いの際はこのカードに請求が行われますが、カード番号はこのサイトと共有されません。追加のセキュリティとして、一時 CVC コードが生成されます。}other{お支払いの際は選択したカードに請求が行われますが、カード番号はこのサイトと共有されません。追加のセキュリティとして、一時 CVC コードが生成されます。}}</translation>
 <translation id="5826507051599432481">一般名（CN）</translation>
-<translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">このサイトでは機密情報（パスワード、クレジット カードなど）を入力しないでください。悪意のあるユーザーに情報が盗まれる恐れがあります。</translation>
 <translation id="5851548754964597211">タブ リスト</translation>
 <translation id="5855253129151731373">このサイトのホスト名は <ph name="LOOKALIKE_DOMAIN" /> と似ているようです。不正なユーザーがドメイン名のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。
@@ -1762,6 +1761,7 @@
 <translation id="7888575728750733395">印刷時のレンダリング インテント</translation>
 <translation id="7894280532028510793">タイプミスでない場合は、<ph name="BEGIN_LINK" />ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3（封筒）</translation>
+<translation id="7931318309563332511">不明</translation>
 <translation id="7932579305932748336">コーティング</translation>
 <translation id="79338296614623784">有効な電話番号を入力してください</translation>
 <translation id="7934052535022478634">お支払いの完了</translation>

@@ -2330,7 +2330,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3602870520245633055">Tisk a skenování</translation>
 <translation id="3603622770190368340">Získání certifikátu sítě</translation>
-<translation id="3604193429970465812">Sekundární účty</translation>
 <translation id="3604713164406837697">Změnit tapetu</translation>
 <translation id="3605780360466892872">Manažer</translation>
 <translation id="3608576286259426129">Náhled obrázku uživatele</translation>
@@ -2399,7 +2398,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3677911431265050325">Požadovat mobilní web</translation>
 <translation id="3677959414150797585">Zahrnuje aplikace, weby apod. Statistiky za účelem vylepšení návrhů budou odesílány, pouze pokud jste se rozhodli sdílet údaje o využití.</translation>
 <translation id="3678156199662914018">Rozšíření: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Vaše nastavení aplikací a operačního systému se budou synchronizovat mezi Chromebooky, ve kterých jste přihlášeni pomocí tohoto účtu. <ph name="LINK_BEGIN" />Nastavení synchronizace<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Hlas převodu textu na řeč</translation>
 <translation id="3681311097828166361">Děkujeme vám za zpětnou vazbu. Nyní jste offline, zpráva bude odeslána později.</translation>
 <translation id="3682824389861648626">Limit pohybu</translation>
@@ -2953,7 +2951,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB aktivních)</translation>
 <translation id="4310139701823742692">Soubor má nesprávný formát. Zkontrolujte soubor PPD a zkuste to znovu.</translation>
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 účet Google}few{<ph name="EXTRA_ACCOUNTS" /> účty Google}many{<ph name="EXTRA_ACCOUNTS" /> účtu Google}other{<ph name="EXTRA_ACCOUNTS" /> účtů Google}}</translation>
 <translation id="4312866146174492540">Blokovat (výchozí)</translation>
 <translation id="4314815835985389558">Správa synchronizace</translation>
 <translation id="4316850752623536204">Webové stránky vývojáře</translation>
@@ -3706,7 +3703,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Úspěšně jste změnili prolomené heslo. Máte # další prolomené heslo. Chrome doporučuje toto heslo okamžitě zkontrolovat.}few{Úspěšně jste změnili prolomené heslo. Máte # další prolomená hesla. Chrome doporučuje tato hesla okamžitě zkontrolovat.}many{Úspěšně jste změnili prolomené heslo. Máte # dalšího prolomeného hesla. Chrome doporučuje tato hesla okamžitě zkontrolovat.}other{Úspěšně jste změnili prolomené heslo. Máte # dalších prolomených hesel. Chrome doporučuje tato hesla okamžitě zkontrolovat.}}</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5209320130288484488">Nebyla nalezena žádná zařízení</translation>
-<translation id="5209572028385096813">Tento účet spravuje služba Family Link</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
 <translation id="5213481667492808996">Datová služba <ph name="NAME" /> je připravena k použití</translation>
 <translation id="5213891612754844763">Zobrazit nastavení proxy serveru</translation>
@@ -5369,7 +5365,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7121362699166175603">Vymaže historii a automatická dokončení v adresním řádku. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="7121438501124788993">Vývojářský režim</translation>
 <translation id="7121728544325372695">Chytré pomlčky</translation>
-<translation id="7122353087820324370">Nastavení aplikací a systému Chrome OS se nesynchronizuje do sekundárních účtů.</translation>
 <translation id="7123030151043029868">Povolení stahovat automaticky několik souborů</translation>
 <translation id="7123360114020465152">Již není podporováno</translation>
 <translation id="7125148293026877011">Smazat Crostini</translation>
@@ -6082,7 +6077,6 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7928175190925744466">Už jste toto heslo změnili?</translation>
 <translation id="7930294771522048157">Zde se budou zobrazovat uložené platební metody</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> sdílí vaši obrazovku a zvuk.</translation>
-<translation id="7931318309563332511">Neznámé</translation>
 <translation id="793293630927785390">Dialogové okno nové sítě Wi-Fi</translation>
 <translation id="7932969338829957666">Sdílené složky jsou v Linuxu k dispozici v adresáři <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Zapnout zvuk webu}few{Zapnout zvuk webů}many{Zapnout zvuk webů}other{Zapnout zvuk webů}}</translation>

@@ -243,6 +243,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="641081527798843608">Ämnesmatchning</translation>
 <translation id="6456394469623773452">Okej</translation>
 <translation id="6472207088655375767">Engångslösenord</translation>
+<translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Har stoppats – papperstrassel</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för Wi-Fi</translation>
@@ -279,7 +280,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
-<translation id="7449585358422953039">Hanteras av <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">En portal hittades</translation>
 <translation id="7487067081878637334">Teknik</translation>
 <translation id="7490813197707563893">MAC-adress</translation>

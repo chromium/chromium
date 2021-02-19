@@ -1252,7 +1252,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5813119285467412249">&amp;Ponów dodanie</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gdy zapłacisz, karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}few{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}many{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}other{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}}</translation>
 <translation id="5826507051599432481">Nazwa pospolita (CN)</translation>
-<translation id="583281660410589416">Nieznany</translation>
 <translation id="5838278095973806738">Nie podawaj żadnych informacji poufnych (takich jak hasła czy dane kart kredytowych) w tej witrynie, bo osoby atakujące będą mogły je wykraść.</translation>
 <translation id="5851548754964597211">Lista kart</translation>
 <translation id="5855253129151731373">Nazwa hosta tej witryny jest podobna do <ph name="LOOKALIKE_DOMAIN" />. Złośliwe strony czasami podszywają się pod inne, wprowadzając niewielkie i trudne do zauważenia zmiany w nazwie domeny.
@@ -1764,6 +1763,7 @@ Dodatkowe informacje:
 <translation id="7888575728750733395">Intencja renderowania wydruku</translation>
 <translation id="7894280532028510793">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę sieci<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (koperta)</translation>
+<translation id="7931318309563332511">Nieznany</translation>
 <translation id="7932579305932748336">Powłoka</translation>
 <translation id="79338296614623784">Wpisz prawidłowy numer telefonu</translation>
 <translation id="7934052535022478634">Płatność została zrealizowana</translation>

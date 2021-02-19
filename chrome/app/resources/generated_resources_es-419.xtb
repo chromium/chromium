@@ -2326,7 +2326,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3602870520245633055">Impresión y escaneo</translation>
 <translation id="3603622770190368340">Obtener certificado de red</translation>
-<translation id="3604193429970465812">Cuentas secundarias</translation>
 <translation id="3604713164406837697">Cambiar el fondo de pantalla</translation>
 <translation id="3605780360466892872">Amancio</translation>
 <translation id="3608576286259426129">Vista previa de la imagen del usuario</translation>
@@ -2395,7 +2394,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3677911431265050325">Solicitar sitio móvil</translation>
 <translation id="3677959414150797585">Incluye apps, páginas web y mucho más. Envía estadísticas para mejorar las sugerencias solo si elegiste compartir los datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Se sincronizarán las apps y la configuración del SO en las Chromebooks a las que hayas accedido con esta cuenta. <ph name="LINK_BEGIN" />Configuración de sincronización<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voz para texto a voz</translation>
 <translation id="3681311097828166361">Gracias por tus comentarios. Tu informe se enviará cuando tengas conexión.</translation>
 <translation id="3682824389861648626">Umbral de movimiento</translation>
@@ -2950,7 +2948,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>
 <translation id="4310139701823742692">El archivo no tiene el formato correcto. Verifica el archivo PPD y vuelve a intentarlo.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Cuentas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar la sincronización</translation>
 <translation id="4316850752623536204">Sitio web del programador</translation>
@@ -3703,7 +3700,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5206787458656075734">{COUNT,plural, =1{Cambiaste correctamente la contraseña hackeada. Tienes # contraseña hackeada más. Chrome te recomienda revisar esta contraseña ahora.}other{Cambiaste correctamente la contraseña hackeada. Tienes # contraseñas hackeadas más. Chrome te recomienda revisar estas contraseñas ahora.}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="5209320130288484488">No se encontraron dispositivos.</translation>
-<translation id="5209572028385096813">Family Link administra este usuario</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
 <translation id="5213891612754844763">Mostrar la configuración de proxy</translation>
@@ -5366,7 +5362,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7121362699166175603">Borra el historial y las sugerencias de autocompletado en la barra de direcciones. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo de desarrollador</translation>
 <translation id="7121728544325372695">Guiones inteligentes</translation>
-<translation id="7122353087820324370">No se sincronizaron las apps y la configuración del SO con las cuentas secundarias.</translation>
 <translation id="7123030151043029868">Puede descargar múltiples archivos de forma automática</translation>
 <translation id="7123360114020465152">Ya no es compatible</translation>
 <translation id="7125148293026877011">Borrar Crostini</translation>
@@ -6079,7 +6074,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7928175190925744466">¿Ya cambiaste esta contraseña?</translation>
 <translation id="7930294771522048157">Las formas de pago guardadas se mostrarán aquí</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> comparte tu pantalla y audio.</translation>
-<translation id="7931318309563332511">Desconocido</translation>
 <translation id="793293630927785390">Cuadro de diálogo de nueva red Wi-Fi</translation>
 <translation id="7932969338829957666">Las carpetas compartidas están disponibles en Linux, en <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activar el sonido del sitio}other{Activar el sonido de los sitios}}</translation>

@@ -243,6 +243,7 @@
 <translation id="641081527798843608">विषय मिलान</translation>
 <translation id="6456394469623773452">अच्छा</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> प्रबंधित करता है</translation>
 <translation id="649050271426829538">बंद हो गया - काग़ज़ फंसा है</translation>
 <translation id="6517239166834772319">एक्सप्लोर करें</translation>
 <translation id="6527081081771465939">इस वाई-फ़ाई सुरक्षा प्रोटोकॉल की जानकारी नहीं है</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7487067081878637334">तकनीक</translation>
 <translation id="7490813197707563893">MAC पता</translation>

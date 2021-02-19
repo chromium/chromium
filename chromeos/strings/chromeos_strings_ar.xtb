@@ -243,6 +243,7 @@
 <translation id="641081527798843608">مطابقة الموضوع</translation>
 <translation id="6456394469623773452">جيدة</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
+<translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
 <translation id="6517239166834772319">استكشاف</translation>
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
-<translation id="7449585358422953039">تتم إدارة الجهاز من خلال <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>

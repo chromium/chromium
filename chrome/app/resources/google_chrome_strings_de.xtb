@@ -216,7 +216,7 @@
 <translation id="7054640471403081847">Für diesen Computer werden in Kürze keine weiteren Google Chrome-Updates mehr bereitgestellt, da die Hardware des Geräts nicht mehr unterstützt wird.</translation>
 <translation id="7062128746136194023">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="7098166902387133879">Google Chrome verwendet Ihr Mikrofon.</translation>
-<translation id="7106741999175697885">Taskmanager - Google Chrome</translation>
+<translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten.}=1{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="7155997830309522122">Falls ja, ändern Sie Ihr gespeichertes Passwort in Chrome, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="7242029209006116544">Sie melden sich mit einem verwalteten Konto an und ermöglichen dessen Administrator Zugriff auf Ihr Google Chrome-Profil. Ihre Chrome-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Sie können diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn Sie Ihre bestehenden Chrome-Daten getrennt halten möchten, können Sie stattdessen ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
@@ -291,6 +291,5 @@
 <translation id="9138603949443464873">Starten Sie Chrome neu, um die Änderungen zu übernehmen</translation>
 <translation id="919706545465235479">Aktualisieren Sie Chrome, um die Synchronisierung zu starten</translation>
 <translation id="940313311831216333">Wenn Sie auf allen Ihren Geräten auf Ihre Chrome-Inhalte zugreifen möchten, melden Sie sich an und aktivieren Sie die Synchronisierung.</translation>
-<translation id="94743460404517794">Wenn Sie mehrere Google-Konten haben, können Sie sie Ihrem <ph name="DEVICE_TYPE" /> hinzufügen. Ihre Konten sind im Chrome-Browser, im Play Store und für Dienste wie Gmail, Drive und YouTube verfügbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome ist Ihr Standardbrowser</translation>
 </translationbundle>

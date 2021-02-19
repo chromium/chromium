@@ -2322,7 +2322,6 @@
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3602870520245633055">ପ୍ରିଣ୍ଟ କରନ୍ତୁ ଏବଂ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="3603622770190368340">ନେଟ୍‍ୱାର୍କ ସାର୍ଟିଫିକେଟ୍ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
-<translation id="3604193429970465812">ଦ୍ୱିତୀୟ ଆକାଉଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="3604713164406837697">ୱାଲପେପର୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3605780360466892872">ବଟନ୍‍ଡାଉନ୍</translation>
 <translation id="3608576286259426129">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ଛବିର ପୂର୍ବାବଲୋକନ</translation>
@@ -2391,7 +2390,6 @@
 <translation id="3677911431265050325">ମୋବାଇଲ୍ ସାଇଟ୍ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="3677959414150797585">ଆପ୍, ୱେବପୃଷ୍ଠା ଏବଂ ଆହୁରି ଅନେକ କିଛି ଅନ୍ତର୍ଭୁକ୍ତ କରେ। ଯଦି ଆପଣ ବ୍ୟବହାର ଡାଟା ସେୟାର୍ କରିବାକୁ ବାଛିଥାଆନ୍ତି ତେବେ କେବଳ ପରାମର୍ଶକୁ ଉନ୍ନତ କରିବା ପାଇଁ ପରିସଂଖ୍ୟାନ ପଠାଏ।</translation>
 <translation id="3678156199662914018">ପରିବର୍ଦ୍ଧନ: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">ଆପଣ ଏହି ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କରିଥିବା ସମସ୍ତ Chromebookରେ ଆପଣଙ୍କ ଆପ୍ସ ଏବଂ OS ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବ। <ph name="LINK_BEGIN" />ସେଟିଂସ୍ ସିଙ୍କ୍ କରନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍ ଭଏସ୍</translation>
 <translation id="3681311097828166361">ଆପଣଙ୍କର ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ। ଆପଣ ବର୍ତ୍ତମାନ ଅଫ୍‌ଲାଇନ୍ ଅଛନ୍ତି, ଏବଂ ଆପଣଙ୍କ ରିପୋର୍ଟ ପରେ ପଠାଯିବ।</translation>
 <translation id="3682824389861648626">ଗତିଶୀଳ ଥ୍ରେସ୍‌ହୋଲ୍ଡ</translation>
@@ -2944,7 +2942,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ଲାଇଭ୍)</translation>
 <translation id="4310139701823742692">ଫାଇଲ୍‌ର ଫର୍ମାଟ୍ ଭୁଲ୍ ଅଛି। PPD ଫାଇଲ୍ ଯାଞ୍ଚ କରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="431076611119798497">&amp;ବିବରଣୀ</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1ଟି Google ଆକାଉଣ୍ଟ}other{<ph name="EXTRA_ACCOUNTS" />ଟି Google ଆକାଉଣ୍ଟ}}</translation>
 <translation id="4312866146174492540">ବ୍ଲକ୍ କରନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="4314815835985389558">ସିଙ୍କ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4316850752623536204">ଡେଭେଲପର୍‌ ୱେବ୍‍ସାଇଟ୍</translation>
@@ -3697,7 +3694,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ସଫଳତାର ସହ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ଆପଣଙ୍କର #ଟି ଅଧିକ ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ଅଛି। Chrome ଏହି ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ଯାଞ୍ଚ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।}other{ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ସଫଳତାର ସହ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ଆପଣଙ୍କର #ଟି ଅଧିକ ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ଅଛି। Chrome ଏହି ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନ ଯାଞ୍ଚ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।}}</translation>
 <translation id="5207949376430453814">ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="5209320130288484488">କୌଣସି ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ</translation>
-<translation id="5209572028385096813">Family Link ଦ୍ୱାରା ଏହି ଉପଯୋଗକର୍ତ୍ତା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="5210365745912300556">ଟ୍ୟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5213481667492808996">ଆପଣଙ୍କର '<ph name="NAME" />' ଡାଟା ସେବା ବ୍ୟବହାର କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="5213891612754844763">ପ୍ରୋକ୍ସି ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
@@ -5362,7 +5358,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7121362699166175603">ଠିକଣା ବାର୍‍‍ରେ ଥିବା ଇତିବୃତ୍ତି ଓ ସ୍ୱତଃପୂରଣଗୁଡ଼ିକୁ ଖାଲି କରେ। ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟର ବାଉଜିଂ ଇତିବୃତ୍ତି <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଅନ୍ୟ ଫର୍ମରେ ଥାଇପାରେ।</translation>
 <translation id="7121438501124788993">ଡେଭଲପର୍ ମୋଡ୍</translation>
 <translation id="7121728544325372695">ସ୍ମାର୍ଟ ଡ୍ୟାଶ୍</translation>
-<translation id="7122353087820324370">ଆପ୍ ଏବଂ OS ସେଟିଂସ୍ ଦ୍ଵିତୀୟ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ସହ ସିଙ୍କ୍ କରାଯାଇନାହିଁ।</translation>
 <translation id="7123030151043029868">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="7123360114020465152">ଆଉ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="7125148293026877011">Crostini ଡିଲିଟ୍ କରନ୍ତୁ</translation>
@@ -6075,7 +6070,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7928175190925744466">ଏହି ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିସାରିଛନ୍ତି?</translation>
 <translation id="7930294771522048157">ଏଠାରେ ସେଭ୍‍ କରାଯାଇଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତି ଦେଖାଯିବ</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ଏବଂ ଅଡିଓ ସେୟାର୍ କରୁଛି।</translation>
-<translation id="7931318309563332511">ଅଜଣା</translation>
 <translation id="793293630927785390">ନୂଆ ୱାଇ-ଫାଇ ନେଟ୍‍ୱାର୍କ ଡାୟଲଗ୍</translation>
 <translation id="7932969338829957666">Linuxର <ph name="BASE_DIR" />ରେ ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଟେ।</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{ସାଇଟ୍ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}other{ସାଇଟ୍ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}}</translation>

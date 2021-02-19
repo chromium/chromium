@@ -275,7 +275,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9047197236183657400">Queres pasar esta conta a un perfil de Chromium novo?</translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium reiniciarase en 1 hora}other{Chromium reiniciarase en # horas}}</translation>
-<translation id="9107750757953039239">Se tes varias Contas de Google, podes engadilas ao teu dispositivo (<ph name="DEVICE_TYPE" />). Ao facelo, estarán dispoñibles no navegador Chromium e en Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9158494823179993217">O teu administrador do sistema configurou Chromium para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>

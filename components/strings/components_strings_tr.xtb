@@ -1252,7 +1252,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5813119285467412249">Eklemeyi &amp;Yeniden Yap</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ödeme yaptığınızda ücret bu karttan alınır ancak kartın gerçek numarası bu site ile paylaşılmaz. Ek güvenlik için geçici bir CVC oluşturulur.}other{Ödeme yaptığınızda ücret, seçtiğiniz karttan alınır ancak kartın gerçek numarası bu site ile paylaşılmaz. Ek güvenlik için geçici bir CVC oluşturulur.}}</translation>
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
-<translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>
 <translation id="5851548754964597211">Sekme listesi</translation>
 <translation id="5855253129151731373">Bu sitenin ana makine adı <ph name="LOOKALIKE_DOMAIN" /> sitesinin adına benziyor. Saldırganlar bazen alan adında görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.
@@ -1764,6 +1763,7 @@ Ek ayrıntılar:
 <translation id="7888575728750733395">Baskı oluşturma amacı</translation>
 <translation id="7894280532028510793">Yazım doğruysa <ph name="BEGIN_LINK" />Ağ Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Zarf)</translation>
+<translation id="7931318309563332511">Bilinmiyor</translation>
 <translation id="7932579305932748336">Kaplama</translation>
 <translation id="79338296614623784">Geçerli bir telefon numarası girin</translation>
 <translation id="7934052535022478634">Ödeme tamamlandı</translation>

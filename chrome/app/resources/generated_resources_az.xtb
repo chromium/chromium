@@ -2324,7 +2324,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3602290021589620013">Önizləmə</translation>
 <translation id="3602870520245633055">Çap edin və skanlayın</translation>
 <translation id="3603622770190368340">Şəbəkə sertifikatını əldə edin</translation>
-<translation id="3604193429970465812">İkinci hesablar</translation>
 <translation id="3604713164406837697">Divar kağızını dəyişin</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3608576286259426129">İstifadəçi şəkil önizləməsi</translation>
@@ -2393,7 +2392,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3677911431265050325">Mobil saytı tələb edin</translation>
 <translation id="3677959414150797585">Tətbiqlər, veb səhifələr və daha çoxu daxildir. Yalnız istifadə datasını paylaşmağı seçdiyiniz zaman təklifləri yaxşılaşdırmaq üçün statistika göndərir.</translation>
 <translation id="3678156199662914018">Artırma: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Tətbiqləriniz və OS ayarlarınız bu hesabla daxil olduğunuz Chromebook'larda sinxronizasiya ediləcəkdir. <ph name="LINK_BEGIN" />Sinxronizasiya Ayarları<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Mətndən-nitqə səsi</translation>
 <translation id="3681311097828166361">Əks əlaqə üçün təşəkkür edirik. Hazırda oflaynsınız, hesabınız sonra göndəriləcək.</translation>
 <translation id="3682824389861648626">Hərəkət limiti</translation>
@@ -2946,7 +2944,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K canlı)</translation>
 <translation id="4310139701823742692">Fayl yanlış formatdadır. PPD faylını yenidən yoxlayın və təkrar sınayın.</translation>
 <translation id="431076611119798497">Detallar</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google Hesabı}other{<ph name="EXTRA_ACCOUNTS" /> Google Hesabı}}</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
 <translation id="4316850752623536204">Developer Saytı</translation>
@@ -3699,7 +3696,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5206787458656075734">{COUNT,plural, =1{Oğurlanmış parol uğurla dəyişdirildi. Daha # oğurlanmış parolunuz var. Chrome bu parolu indi yoxlamağı tövsiyə edir.}other{Oğurlanmış parol uğurla dəyişdirildi. Daha # oğurlanmış parolunuz var. Chrome bu parolları indi yoxlamağı tövsiyə edir.}}</translation>
 <translation id="5207949376430453814">Mətn karetini vurğulayın</translation>
 <translation id="5209320130288484488">Heç bir cihaz tapılmadı</translation>
-<translation id="5209572028385096813">Bu istifadəçi Family Link tərəfindən idarə olunur</translation>
 <translation id="5210365745912300556">Paneli qapadın</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" data xidmətiniz istifadəyə hazırdır</translation>
 <translation id="5213891612754844763">Proksi ayarlarını göstərin</translation>
@@ -5361,7 +5357,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7121362699166175603">Ünvan penelindəki tarixçə və avtomatik tamamlamanı silir. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər.</translation>
 <translation id="7121438501124788993">Tərtibatçı Rejimi</translation>
 <translation id="7121728544325372695">Ağıllı Tirelər</translation>
-<translation id="7122353087820324370">Tətbiqlər və OS ayarları ikinci hesablarla sinxronizasiya edilmir.</translation>
 <translation id="7123030151043029868">Çoxsaylı faylların avtomatik endirilməsinə icazə verilib</translation>
 <translation id="7123360114020465152">Daha dəstəklənmir</translation>
 <translation id="7125148293026877011">Crostini'ni silin</translation>
@@ -6074,7 +6069,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7928175190925744466">Artıq bu parolu dəyişmisiniz?</translation>
 <translation id="7930294771522048157">Yadda saxlanmış ödəniş üsulları burada görünəcək</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> ekran və audionuzu paylaşır.</translation>
-<translation id="7931318309563332511">Naməlum</translation>
 <translation id="793293630927785390">Yeni Wi-Fi Şəbəkəsi Dialoqu</translation>
 <translation id="7932969338829957666">Paylaşılmış qovluqlar <ph name="BASE_DIR" /> ünvanındakı Linux'da əlçatandır.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Saytı Səssiz Rejimdən Çıxarın}other{Saytları Səssiz Rejimdən Çıxarın}}</translation>

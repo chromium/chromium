@@ -243,6 +243,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="641081527798843608">Zhoda predmetu</translation>
 <translation id="6456394469623773452">Dobré</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
+<translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
@@ -279,7 +280,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenovanie je dokončené. Bola naskenovaná 1 strana.}few{Skenovanie je dokončené. Boli naskenované {NUMBER_OF_PAGES} strany.}many{Skenovanie je dokončené. {NUMBER_OF_PAGES} pages scanned}other{Skenovanie je dokončené. Bolo naskenovaných {NUMBER_OF_PAGES} strán.}}</translation>
-<translation id="7449585358422953039">Spravuje <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Bol rozpoznaný portál</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>

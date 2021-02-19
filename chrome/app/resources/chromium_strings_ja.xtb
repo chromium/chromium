@@ -273,7 +273,6 @@
 <translation id="9047197236183657400">新しい Chromium プロフィールにアカウントを移動しますか？</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium は 1 時間後に再起動されます}other{Chromium は # 時間後に再起動されます}}</translation>
-<translation id="9107750757953039239">Google アカウントを複数お持ちの場合、<ph name="DEVICE_TYPE" /> に追加できます。アカウントは Chromium ブラウザや Play ストアのほか、Gmail、ドライブ、YouTube などのサービスで使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">新しい Chromium タブでリンクを開く(&amp;T)</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>
 <translation id="9158494823179993217">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに代替ブラウザを開くよう Chromium を設定しています。</translation>

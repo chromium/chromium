@@ -270,7 +270,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9047197236183657400">Przenieść konto do nowego profilu Chromium?</translation>
 <translation id="9089354809943900324">Chromium jest nieaktualny</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium uruchomi się ponownie za godzinę}few{Chromium uruchomi się ponownie za # godziny}many{Chromium uruchomi się ponownie za # godzin}other{Chromium uruchomi się ponownie za # godziny}}</translation>
-<translation id="9107750757953039239">Jeśli masz wiele kont Google, możesz je dodać na swoim urządzeniu (<ph name="DEVICE_TYPE" />). Będą one dostępne w przeglądarce Chromium i Sklepie Play, a także w usługach Google takich jak Gmail, Dysk czy YouTube. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">O&amp;twórz link w nowej karcie Chromium</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>
 <translation id="9158494823179993217">Administrator systemu skonfigurował Chromium w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>

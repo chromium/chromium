@@ -243,6 +243,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="641081527798843608">Aiheen vastaavuus</translation>
 <translation id="6456394469623773452">Hyväksyttävä</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Ylläpitäjä: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Tuntematon Wi-Fi-suojausprotokolla</translation>
@@ -279,7 +280,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
-<translation id="7449585358422953039">Ylläpitäjä on <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7487067081878637334">Tekniikka</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>

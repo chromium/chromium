@@ -2327,7 +2327,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3602870520245633055">Chop etish va skanerlash</translation>
 <translation id="3603622770190368340">Tarmoq sertifikatini qabul qilish</translation>
-<translation id="3604193429970465812">Qoʻshimcha hisoblar</translation>
 <translation id="3604713164406837697">Fon rasmini almashtirish</translation>
 <translation id="3605780360466892872">Ishbilarmon</translation>
 <translation id="3608576286259426129">Foydalanuvchi rasmini oldingdan ko‘rish</translation>
@@ -2396,7 +2395,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3677911431265050325">Mobil versiya</translation>
 <translation id="3677959414150797585">Ilova, veb sahifa va boshqalardan iborat. Takliflarni yaxshilash maqsadida faqat siz tanlagan statistik axborotlar yuboriladi.</translation>
 <translation id="3678156199662914018">Kengaytma: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Ilova va OT sozlamalaringiz hisobingiz bilan kirilgan barcha Chromebook qurilmalaringizda sinxronlanadi. <ph name="LINK_BEGIN" />Sinxronlash sozlamalari<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Matnni nutqqa aylantirish ovozi</translation>
 <translation id="3681311097828166361">Fikr-mulohaza uchun rahmat! Hozir internet bilan aloqa yo‘qligi sababli xabaringiz keyinroq yuboriladi.</translation>
 <translation id="3682824389861648626">Harakat chegarasi</translation>
@@ -2951,7 +2949,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB faol)</translation>
 <translation id="4310139701823742692">Fayl formati nosoz. PPD faylni tekshiring va yana urinib ko‘ring.</translation>
 <translation id="431076611119798497">&amp;Tafsilotlar</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 ta Google hisobi}other{<ph name="EXTRA_ACCOUNTS" /> ta Google hisobi}}</translation>
 <translation id="4312866146174492540">Bloklansin (standart parametr)</translation>
 <translation id="4314815835985389558">Sinxronizatsiyani boshqarish</translation>
 <translation id="4316850752623536204">Dasturchi sayti</translation>
@@ -3704,7 +3701,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5206787458656075734">{COUNT,plural, =1{Oshkor qilingan parol almashtirildi. Yana # ta oshkor qilingan parolingiz bor. Chrome hoziroq bu parolni tekshirishni tavsiya qiladi.}other{Oshkor qilingan parol almashtirildi. Yana # ta oshkor qilingan parollaringiz bor. Chrome hoziroq bu parollarni tekshirishni tavsiya qiladi}}</translation>
 <translation id="5207949376430453814">Matn kiritish joyi ajratib ko‘rsatilsin</translation>
 <translation id="5209320130288484488">Qurilmalar topilmadi</translation>
-<translation id="5209572028385096813">Bu foydalanuvchi Family Link orqali boshqariladi</translation>
 <translation id="5210365745912300556">Tabni yopish</translation>
 <translation id="5213481667492808996">“<ph name="NAME" />” internet paketingiz faollashtirildi</translation>
 <translation id="5213891612754844763">Proksi-server sozlamalari</translation>
@@ -5367,7 +5363,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7121362699166175603">Manzil qatoridagi tarix va avto‘ldirishlarni tozalaydi. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="7121438501124788993">Dasturchi rejimi</translation>
 <translation id="7121728544325372695">Smart tirelar</translation>
-<translation id="7122353087820324370">Ilovalar va OT sozlamalari qoʻshimcha hisoblaringizga sinxronlanmaydi.</translation>
 <translation id="7123030151043029868">Bir nechta faylni avtomatik yuklashga ruxsat berilgan</translation>
 <translation id="7123360114020465152">Printer ta’minoti to‘xtatilgan</translation>
 <translation id="7125148293026877011">Crostini tizimini oʻchirish</translation>
@@ -6079,7 +6074,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7928175190925744466">Bu parol allaqachon oʻzgartirilganmi?</translation>
 <translation id="7930294771522048157">Saqlangan to‘lov usullari shu yerda turadi</translation>
 <translation id="79312157130859720">“<ph name="APP_NAME" />” ilovasi ekran va audioga kirish uchun ruxsat berdi.</translation>
-<translation id="7931318309563332511">Noma’lum</translation>
 <translation id="793293630927785390">Yangi Wi-Fi tarmoq kiritish oynasi</translation>
 <translation id="7932969338829957666">Ulashilgan jildlar Linuxda <ph name="BASE_DIR" /> manziliga ulangan.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Sayt ovozini yoqish}other{Saytlar ovozini yoqish}}</translation>

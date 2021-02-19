@@ -2330,7 +2330,6 @@
 <translation id="3602290021589620013">ကြိုကြည့်ရန်</translation>
 <translation id="3602870520245633055">ပုံနှိပ်ခြင်းနှင့် စကင်ဖတ်ခြင်း</translation>
 <translation id="3603622770190368340">ကွန်ရက် အသိမှတ်ပြုလက်မှတ် ရယူမည်</translation>
-<translation id="3604193429970465812">အရန်အကောင့်များ</translation>
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="3605780360466892872">အမည်သစ်</translation>
 <translation id="3608576286259426129">အသုံးပြုသူ ပုံအစမ်းကြည့်</translation>
@@ -2399,7 +2398,6 @@
 <translation id="3677911431265050325">မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုရန်</translation>
 <translation id="3677959414150797585">အက်ပ်၊ ဝဘ်စာမျက်နှာနှင့် အခြားအရာများ ပါဝင်သည်။ သုံးစွဲမှုဒေတာများကို မျှဝေရန် သင်ရွေးချယ်ထားမှသာ အကြံပြုချက်များ ပိုမိုကောင်းမွန်လာစေရန် ကိန်းဂဏန်းစာရင်းများ ပို့ပါမည်။</translation>
 <translation id="3678156199662914018">တိုးချဲ့မှု: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">ဤအကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ထားသော Chromebook များတွင် သင့်အက်ပ်နှင့် OS ဆက်တင်များကို စင့်ခ်လုပ်ပါမည်။ <ph name="LINK_BEGIN" />ဆက်တင်များ စင့်ခ်လုပ်ရန်<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">စာသားမှ စကားပြော အသံ</translation>
 <translation id="3681311097828166361">အကြံပြုပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။ သင်ယခုအော့ဖ်လိုင်းဖြစ်နေလျှင် သင့်အစီရင်ခံစာကို နောက်မှ ပို့ပါမည်။</translation>
 <translation id="3682824389861648626">လှုပ်ရှားမှု ခံနိုင်စွမ်း</translation>
@@ -2953,7 +2951,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K လိုက်ဖ်)</translation>
 <translation id="4310139701823742692">ဖိုင်၏ စနစ်သည် မမှန်ကန်ပါ။ PPD ဖိုင်ကို စစ်ဆေးပြီး ထပ်လုပ်ကြည့်ပါ။</translation>
 <translation id="431076611119798497">&amp;အသေးစိတ်များ</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{Google Account 1 ခု}other{Google Account <ph name="EXTRA_ACCOUNTS" /> ခု}}</translation>
 <translation id="4312866146174492540">ပိတ်ဆို့ရန် (မူရင်း)</translation>
 <translation id="4314815835985389558">စင့်ခ်ကို စီမံရန်</translation>
 <translation id="4316850752623536204">Developer Website</translation>
@@ -3706,7 +3703,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{ကျိုးပေါက်ထားသည့် စကားဝှက်ကို ပြောင်းပြီးပါပြီ။ သင့်တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် နောက် # ခု ရှိပါသည်။ ဤစကားဝှက်ကို ယခု စစ်ဆေးရန် Chrome က အကြံပြုပါသည်။}other{ကျိုးပေါက်ထားသည့် စကားဝှက်ကို ပြောင်းပြီးပါပြီ။ သင့်တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် နောက် # ခု ရှိပါသည်။ ဤစကားဝှက်များကို ယခု စစ်ဆေးရန် Chrome က အကြံပြုပါသည်။}}</translation>
 <translation id="5207949376430453814">စာရိုက်ထည့်ရန်အကွက်ကို မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="5209320130288484488">ကိရိယာများ မတွေ့ရ</translation>
-<translation id="5209572028385096813">ဤအသုံးပြုသူကို Family Link က စီမံသည်</translation>
 <translation id="5210365745912300556">တဘ် ပိတ်ရန်</translation>
 <translation id="5213481667492808996">သင်၏ '<ph name="NAME" />' ဒေတာ ဝန်ဆောင်မှုက အသုံးပြုရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="5213891612754844763">ပရောက်စီ ဆက်တင်များကို ပြရန်</translation>
@@ -5367,7 +5363,6 @@
 <translation id="7121362699166175603">လိပ်စာဘားရှိ မှတ်တမ်းနှင့် အလိုအလျောက်ဖြည့်ပေးခြင်းများကို ဖျက်လိုက်ပါလိမ့်မည်။ သင့်  Google အကောင့်က ဖွင့်ကြည့်ထားသောမှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်။</translation>
 <translation id="7121438501124788993">တီထွင်သူမုဒ်</translation>
 <translation id="7121728544325372695">အဆင့်မြင့် တုံးတိုများ</translation>
-<translation id="7122353087820324370">အက်ပ်နှင့် OS ဆက်တင်များကို အရန်အကောင့်များသို့ စင့်ခ်မလုပ်ပါ။</translation>
 <translation id="7123030151043029868">ဖိုင်အများအပြားကို အလိုအလျောက်ဒေါင်းလုဒ်လုပ်ရန် ခွင့်ပြုထားသည်</translation>
 <translation id="7123360114020465152">ပံ့ပိုးထားခြင်း မရှိတော့ပါ</translation>
 <translation id="7125148293026877011">Crostini ကို ဖျက်ရန်</translation>
@@ -6080,7 +6075,6 @@
 <translation id="7928175190925744466">ဤစကားဝှက်ကို ပြောင်းပြီးပြီလား။</translation>
 <translation id="7930294771522048157">သိမ်းထားသော ငွေပေးချေနည်းလမ်းများ ဤနေရာတွင် ပေါ်လာပါမည်</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> သည်သင့်ဖန်သားပြင်နှင့် အသံကို မျှဝေနေသည်။</translation>
-<translation id="7931318309563332511">အမျိုးအမည်မသိ</translation>
 <translation id="793293630927785390">Wi-Fi ကွန်ရက်အသစ် အကွက်</translation>
 <translation id="7932969338829957666">မျှဝေထားသော ဖိုင်တွဲများကို Linux ရှိ <ph name="BASE_DIR" /> တွင် ရရှိနိုင်ပါသည်။</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{ဝဘ်ဆိုက် ပြန်ဖွင့်ပါ}other{ဝဘ်ဆိုက်များ ပြန်ဖွင့်ပါ}}</translation>

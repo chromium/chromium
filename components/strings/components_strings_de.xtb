@@ -1248,7 +1248,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5813119285467412249">&amp;Hinzufügen wiederholen</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Diese Karte wird beim Bezahlen zwar belastet, doch die echte Kreditkartennummer wird nicht an diese Website weitergegeben. Für zusätzliche Sicherheit wird ein temporärer CVC generiert.}other{Die ausgewählte Karte wird beim Bezahlen zwar belastet, doch die echte Kreditkartennummer wird nicht an diese Website weitergegeben. Für zusätzliche Sicherheit wird ein temporärer CVC generiert.}}</translation>
 <translation id="5826507051599432481">Allgemeiner Name (CN)</translation>
-<translation id="583281660410589416">Unbekannt</translation>
 <translation id="5838278095973806738">Sie sollten keine vertraulichen Informationen wie Passwörter oder Kreditkartennummern auf dieser Website eingeben, da sie von Angreifern gestohlen werden könnten.</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5855253129151731373">Der Hostname dieser Website ähnelt dem von <ph name="LOOKALIKE_DOMAIN" />. Angreifer kopieren manchmal Websites und nehmen kleine, unauffällige Änderungen an der URL vor.
@@ -1760,6 +1759,7 @@ Weitere Details:
 <translation id="7888575728750733395">Rendering Intent für Druck</translation>
 <translation id="7894280532028510793">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />können Sie die Netzwerkdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Umschlag)</translation>
+<translation id="7931318309563332511">Unbekannt</translation>
 <translation id="7932579305932748336">Im­prä­g­nie­ren</translation>
 <translation id="79338296614623784">Geben Sie eine gültige Telefonnummer ein</translation>
 <translation id="7934052535022478634">Zahlung abgeschlossen</translation>

@@ -123,6 +123,7 @@
 <translation id="1137673463384776352">在<ph name="APP" />中打开链接</translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
 <translation id="1139343347646843679">配置 Linux 时出错。请与您的管理员联系。</translation>
+<translation id="1139923033416533844">内存使用情况</translation>
 <translation id="1140351953533677694">访问您的蓝牙和串行设备</translation>
 <translation id="114036956334641753">音频和字幕</translation>
 <translation id="1140746652461896221">屏蔽您访问的任意网页上的内容</translation>
@@ -674,6 +675,7 @@
 <translation id="1734212868489994726">浅蓝色</translation>
 <translation id="1734230530703461088">未能在时限内加载扩展程序。请与您的管理员联系。</translation>
 <translation id="1734824808160898225">“<ph name="PRODUCT_NAME" />”可能无法自动更新</translation>
+<translation id="173522743738009831">隐私沙盒简介</translation>
 <translation id="173628468822554835">知道了。默认情况下，您访问的新网站不会向您发送通知。</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1737968601308870607">提交错误</translation>
@@ -996,6 +998,7 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
 <translation id="211144231511833662">清除类型</translation>
 <translation id="2111670510994270194">在右侧新增标签页</translation>
+<translation id="2111810003053064883">广告主可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。</translation>
 <translation id="21133533946938348">固定标签页</translation>
 <translation id="2113479184312716848">打开文件(&amp;F)...</translation>
 <translation id="2113921862428609753">授权中心信息访问权限</translation>
@@ -1025,6 +1028,7 @@
 <translation id="2138398485845393913">仍在连接“<ph name="DEVICE_NAME" />”</translation>
 <translation id="2139545522194199494">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，连接</translation>
 <translation id="2139919072249842737">设置按钮</translation>
+<translation id="2140788884185208305">电池状况</translation>
 <translation id="214169863967063661">打开外观设置</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
 <translation id="2142582065325732898">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能查看最近打开的 Chrome 标签页。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
@@ -1537,6 +1541,7 @@
 <translation id="2712173769900027643">请求批准</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
+<translation id="2715640894224696481">安全密钥请求</translation>
 <translation id="2715751256863167692">此项升级操作会重置您 Chromebook 的硬件并移除当前的用户数据。</translation>
 <translation id="2716986496990888774">此设置由家长管理。</translation>
 <translation id="2718395828230677721">护眼模式</translation>
@@ -1996,6 +2001,7 @@
 <translation id="3238192140106069382">正在连接并验证</translation>
 <translation id="3239373508713281971">“<ph name="APP_NAME" />”的使用时限已被移除</translation>
 <translation id="3241680850019875542">选择要打包的扩展程序的根目录。要更新某个扩展程序，还需选择要再次使用的私有密钥文件。</translation>
+<translation id="3242905690080165035">隐私沙盒尚处于积极开发阶段，目前只能在部分区域使用。现阶段，网站可在继续使用第三方 Cookie 等当前网络技术的同时试用隐私沙盒。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">继续保持静音</translation>
 <translation id="3246107497225150582">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 网络错误</translation>
@@ -2156,6 +2162,7 @@
 <translation id="3428419049384081277">您已登录！</translation>
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3428800329481094896">正在提取 Linux 容器 SSH 密钥</translation>
+<translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3429271624041785769">网页内容语言</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
@@ -2318,7 +2325,6 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3602870520245633055">打印和扫描</translation>
 <translation id="3603622770190368340">获取网络证书</translation>
-<translation id="3604193429970465812">辅助帐号</translation>
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
 <translation id="3608576286259426129">用户图片预览</translation>
@@ -2387,7 +2393,6 @@
 <translation id="3677911431265050325">请求切换到移动版网站</translation>
 <translation id="3677959414150797585">包括应用、网页等。仅当您已选择分享使用情况数据时，才会发送统计信息以完善建议。</translation>
 <translation id="3678156199662914018">扩展程序：<ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">您的应用和操作系统设置会在您使用此帐号登录的所有 Chromebook 上保持同步。<ph name="LINK_BEGIN" />同步设置<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">文字转语音的语音偏好</translation>
 <translation id="3681311097828166361">感谢您提交反馈。您目前处于离线状态，系统将在您上线后提交您的反馈报告。</translation>
 <translation id="3682824389861648626">鼠标移动阈值</translation>
@@ -2941,7 +2946,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K（实际大小为 <ph name="NUM_KILOBYTES_LIVE" /> K）</translation>
 <translation id="4310139701823742692">文件格式有误。请检查 PPD 文件，然后重试。</translation>
 <translation id="431076611119798497">详细信息(&amp;D)</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 个 Google 帐号}other{<ph name="EXTRA_ACCOUNTS" /> 个 Google 帐号}}</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4316850752623536204">开发者网站</translation>
@@ -3139,6 +3143,7 @@
 <translation id="4541662893742891060">无法关联到此个人资料。如需技术支持，请与您的运营商联系。</translation>
 <translation id="4541810033354695636">增强现实</translation>
 <translation id="4542520061254486227">读取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的数据</translation>
+<translation id="454331522350252598">广告主可得知有数千名用户具有相似的兴趣（就像音乐会的听众一样），并选择要向该群体（而非个人）投放哪些广告。</translation>
 <translation id="4543778593405494224">证书管理器</translation>
 <translation id="4544174279960331769">默认的蓝色头像</translation>
 <translation id="4545028762441890696">要重新启用它，请接受新权限：</translation>
@@ -3187,6 +3192,7 @@
 <translation id="4582563038311694664">重置所有设置</translation>
 <translation id="4585793705637313973">修改启动页</translation>
 <translation id="4586275095964870617">无法在替代浏览器中打开 <ph name="URL" />。请与您的系统管理员联系。</translation>
+<translation id="4587645918878093912">目前，网站需依赖第三方 Cookie 等很多技术才能提供重要服务（例如展示相关广告和衡量网站性能）。</translation>
 <translation id="4589713469967853491">已成功将日志写入“下载内容”目录中。</translation>
 <translation id="4590324241397107707">数据库存储</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
@@ -3692,7 +3698,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这个密码。}other{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这些密码。}}</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="5209320130288484488">未找到任何设备</translation>
-<translation id="5209572028385096813">此用户由 Family Link 管理</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5213481667492808996">您可以使用“<ph name="NAME" />”的数据流量服务了</translation>
 <translation id="5213891612754844763">显示代理设置</translation>
@@ -4613,6 +4618,7 @@
 <translation id="6271348838875430303">已撤消更正</translation>
 <translation id="6272643420381259437">下载该插件时出现错误 (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">打印质量</translation>
+<translation id="6275846828483490454">隐私沙盒是一项正在持续推进的计划，旨在保护开放网络，使您免受跟踪机制的跟踪。</translation>
 <translation id="6276210637549544171">代理 <ph name="PROXY_SERVER" /> 要求提供用户名和密码。</translation>
 <translation id="6277105963844135994">网络超时</translation>
 <translation id="6277518330158259200">屏幕截图(&amp;A)</translation>
@@ -5267,6 +5273,7 @@
 <translation id="7018275672629230621">读取和更改您的浏览记录</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">您的主页已设置。</translation>
+<translation id="7023206482239788111">隐私沙盒既能在不干扰网站运作的前提下开辟更好的方式来执行这些服务，又能防止您的网上活动被暗中跟踪，因而可以很好地保护开放网络的活力。</translation>
 <translation id="7025082428878635038">欢迎了解全新的手势导航</translation>
 <translation id="7025190659207909717">移动数据服务管理</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
@@ -5353,7 +5360,6 @@
 <translation id="7121362699166175603">清除历史记录和地址栏中的自动补全项。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="7121438501124788993">开发者模式</translation>
 <translation id="7121728544325372695">智能破折号</translation>
-<translation id="7122353087820324370">应用和 Chrome 操作系统设置不会同步到辅助帐号。</translation>
 <translation id="7123030151043029868">允许自动下载多个文件</translation>
 <translation id="7123360114020465152">已不再受支持</translation>
 <translation id="7125148293026877011">删除 Crostini</translation>
@@ -5445,6 +5451,7 @@
 <translation id="7234010996000898150">正在取消 Linux 恢复</translation>
 <translation id="7235716375204803342">正在获取活动…</translation>
 <translation id="7235737137505019098">您的安全密钥没有足够的空间来存储任何其他帐号。</translation>
+<translation id="7238640585329759787">启用后，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，详细信息</translation>
 <translation id="7240339475467890413">要连接到新的热点吗？</translation>
 <translation id="7241389281993241388">请登录“<ph name="TOKEN_NAME" />”，导入客户端证书。</translation>
@@ -6065,7 +6072,6 @@
 <translation id="7928175190925744466">已经更改了此密码？</translation>
 <translation id="7930294771522048157">已保存的付款方式会显示在这里</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> 正在共享您的屏幕和音频。</translation>
-<translation id="7931318309563332511">未知</translation>
 <translation id="793293630927785390">“添加新 Wi-Fi 网络”对话框</translation>
 <translation id="7932969338829957666">共享的文件夹位于 Linux 中的 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
@@ -6103,6 +6109,7 @@
 <translation id="7968833647796919681">启用性能数据收集</translation>
 <translation id="7968982339740310781">查看详情</translation>
 <translation id="7969046989155602842">Cmd 键</translation>
+<translation id="7970618607181090249">检测到触摸屏</translation>
 <translation id="7970673414865679092">以太网详细信息</translation>
 <translation id="7970882136539140748">此刻无法保存信用卡信息</translation>
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
@@ -6539,6 +6546,7 @@
 <translation id="8480082892550707549">即使您之前从该网站下载过文件，该网站也可能暂时存在安全隐患（遭到黑客入侵）。请稍后再尝试下载此文件。</translation>
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
+<translation id="8481980314595922412">试用版功能已开启</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8489156414266187072">个性化建议仅会显示在您的帐号中</translation>
 <translation id="8490896350101740396">下列自助服务终端应用“<ph name="UPDATED_APPS" />”已更新完毕。请重启设备，以便完成更新流程。</translation>
@@ -7049,6 +7057,7 @@
 <translation id="9031549947500880805">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
+<translation id="903386633044383289">连接到设备</translation>
 <translation id="9037818663270399707">您的连接在部分网络流量中不是私密连接</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{您还剩 1 次尝试机会。}other{您还剩 # 次尝试机会。}}</translation>

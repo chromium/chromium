@@ -243,6 +243,7 @@
 <translation id="641081527798843608">Совпадение тем</translation>
 <translation id="6456394469623773452">Хороший</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
+<translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
-<translation id="7449585358422953039">Устройством управляет <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>

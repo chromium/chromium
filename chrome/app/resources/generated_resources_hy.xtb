@@ -2331,7 +2331,6 @@
 <translation id="3602290021589620013">Նախադիտում</translation>
 <translation id="3602870520245633055">Տպում և սկանավորում</translation>
 <translation id="3603622770190368340">Ցանցային վկայագրի ստացում</translation>
-<translation id="3604193429970465812">Երկրորդական հաշիվներ</translation>
 <translation id="3604713164406837697">Փոխել պաստառը</translation>
 <translation id="3605780360466892872">Գործարար</translation>
 <translation id="3608576286259426129">Օգտատիրոջ պատկերի նախադիտում</translation>
@@ -2400,7 +2399,6 @@
 <translation id="3677911431265050325">Բջջային տարբերակ</translation>
 <translation id="3677959414150797585">Ներառում է հավելվածներ, կայքեր և այլն։ Ուղարկում է վիճակագրություն՝ առաջարկները բարելավելու համար, միայն եթե դուք որոշել եք կիսվել օգտագործման տվյալներով։</translation>
 <translation id="3678156199662914018">Ընդլայնում` <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Ձեր հավելվածները և OS-ի կարգավորումները կհամաժամացվեն բոլոր Chromebook սարքերում, որոնցում մտել եք այս հաշիվ։ <ph name="LINK_BEGIN" />Համաժամացման կարգավորումներ<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Տեքստի հնչեցման ձայնը</translation>
 <translation id="3681311097828166361">Շնորհակալություն կարծիք հայտնելու համար: Դուք ներկայումս միացած չեք ցանցին, և ձեր հաղորդումը կուղարկվի ավելի ուշ:</translation>
 <translation id="3682824389861648626">Տեղաշարժի սահմանափակում</translation>
@@ -2955,7 +2953,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> ԿԲ (ակտիվ է <ph name="NUM_KILOBYTES_LIVE" /> ԿԲ)</translation>
 <translation id="4310139701823742692">Ֆայլի ձևաչափը սխալ է: Ստուգեք PPD ֆայլը և նորից փորձեք:</translation>
 <translation id="431076611119798497">&amp;Մանրամասներ</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google հաշիվ}one{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}other{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}}</translation>
 <translation id="4312866146174492540">Արգելափակել (կանխադրված)</translation>
 <translation id="4314815835985389558">Համաժամացման կառավարում</translation>
 <translation id="4316850752623536204">Մշակողի վեբկայք</translation>
@@ -3709,7 +3706,6 @@
 <translation id="5206787458656075734">{COUNT,plural, =1{Կոտրված գաղտնաբառը փոխվեց։ Դուք ունեք ևս # կոտրված գաղտնաբառ։ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել այս գաղտնաբառը։}one{Կոտրված գաղտնաբառը փոխվեց։ Դուք ունեք ևս # կոտրված գաղտնաբառ։ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել այս գաղտնաբառերը։}other{Կոտրված գաղտնաբառը փոխվեց։ Դուք ունեք ևս # կոտրված գաղտնաբառ։ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել այս գաղտնաբառերը։}}</translation>
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5209320130288484488">Սարքեր չեն գտնվել</translation>
-<translation id="5209572028385096813">Այս օգտատերը կառավարվում է Family Link-ի կողմից</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5213481667492808996">Տվյալների փոխանցման «<ph name="NAME" />» ծառայությունը պատրաստ է օգտագործման</translation>
 <translation id="5213891612754844763">Ցուցադրել միջնորդ սերվերի կարգավորումները</translation>
@@ -5374,7 +5370,6 @@
 <translation id="7121362699166175603">Մաքրում է պատմությունն ու ինքնալրացումները հասցեագոտում: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="7121438501124788993">Մշակողի ռեժիմ</translation>
 <translation id="7121728544325372695">Խելացի գծիկներ</translation>
-<translation id="7122353087820324370">Հավելվածներն ու OS-ի կարգավորումները չեն համաժամացվում երկրորդական հաշիվների հետ։</translation>
 <translation id="7123030151043029868">Թույլատրվում է ավտոմատ ներբեռնել մի քանի ֆայլ</translation>
 <translation id="7123360114020465152">Այլևս չի աջակցվում</translation>
 <translation id="7125148293026877011">Ջնջել Crostini-ն</translation>
@@ -6086,7 +6081,6 @@
 <translation id="7928175190925744466">Արդեն փոխե՞լ եք այս գաղտնաբառը</translation>
 <translation id="7930294771522048157">Վճարման պահված եղանակները կհայտնվեն այստեղ</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> հավելվածը կիսվում է ձեր էկրանով և ձայնով:</translation>
-<translation id="7931318309563332511">Անհայտ</translation>
 <translation id="793293630927785390">Նոր Wi-Fi ցանց ավելացնելու պատուհան</translation>
 <translation id="7932969338829957666">Ընդհանուր պանակները Լինուքսում հասանելի են այստեղ՝ <ph name="BASE_DIR" />:</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Միացնել կայքի ձայնը}one{Միացնել կայքի ձայնը}other{Միացնել կայքերի ձայնը}}</translation>

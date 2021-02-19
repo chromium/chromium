@@ -1256,7 +1256,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5813119285467412249">&amp;Qo‘shish amaliga qaytish</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Toʻlov vaqtida bu kartadan haq olinadi, lekin uning haqiqiy raqamlari bu saytga ulashilmaydi. Qoʻshimcha himoya maqsadida vaqtinchalik CVC kod yaratiladi.}other{Toʻlov vaqtida tanlangan kartadan haq olinadi, lekin uning haqiqiy raqamlari bu saytga ulashilmaydi. Qoʻshimcha himoya maqsadida vaqtinchalik CVC kod yaratiladi.}}</translation>
 <translation id="5826507051599432481">Umumiy Ism (CN)</translation>
-<translation id="583281660410589416">Noma’lum</translation>
 <translation id="5838278095973806738">Bu saytda muhim ma’lumotlaringizni (parollar va bank kartalar kabi) kiritmasligingiz kerak, chunki firibgarlar tomonidan o‘g‘irlanishi mumkin.</translation>
 <translation id="5851548754964597211">Ichki oynalar ro‘yxati</translation>
 <translation id="5855253129151731373">Sayt nomi mana bunga oʻxshash ekan: <ph name="LOOKALIKE_DOMAIN" />. Odatda shubhali kimsalar domen nomida kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.
@@ -1767,6 +1766,7 @@ Batafsil axborot:
 <translation id="7888575728750733395">Bosma uchun rangli renderlash usuli</translation>
 <translation id="7894280532028510793">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Tarmoq diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">Noma’lum</translation>
 <translation id="7932579305932748336">Muqovalash</translation>
 <translation id="79338296614623784">Telefon raqamini xatosiz kiriting</translation>
 <translation id="7934052535022478634">Toʻlov bajarildi</translation>

@@ -2330,7 +2330,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3602870520245633055">Printează și scanează</translation>
 <translation id="3603622770190368340">Obțineți certificatul de rețea</translation>
-<translation id="3604193429970465812">Conturi secundare</translation>
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="3605780360466892872">Om de afaceri</translation>
 <translation id="3608576286259426129">Previzualizare a imaginii utilizatorului</translation>
@@ -2399,7 +2398,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3677911431265050325">Solicită site mobil</translation>
 <translation id="3677959414150797585">Include aplicații, pagini web și altele. Trimite statistici pentru a îmbunătăți sugestiile numai dacă ai ales să permiți accesul la datele de utilizare.</translation>
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Aplicațiile și setările sistemului de operare se vor sincroniza pe toate Chromebookurile pe care te-ai conectat cu acest cont. <ph name="LINK_BEGIN" />Setări pentru sincronizare<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Vocea pentru redarea vocală a textului</translation>
 <translation id="3681311097828166361">Îți mulțumim pentru feedback. Acum ești offline, iar raportul va fi trimis mai târziu.</translation>
 <translation id="3682824389861648626">Limită de mișcare</translation>
@@ -2954,7 +2952,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
 <translation id="4310139701823742692">Fișierul are un format incorect. Verifică fișierul PPD și încearcă din nou.</translation>
 <translation id="431076611119798497">&amp;Detalii</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{Un cont Google}few{<ph name="EXTRA_ACCOUNTS" /> conturi Google}other{<ph name="EXTRA_ACCOUNTS" /> de conturi Google}}</translation>
 <translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
 <translation id="4314815835985389558">Gestionează sincronizarea</translation>
 <translation id="4316850752623536204">Site-ul dezvoltatorului</translation>
@@ -3707,7 +3704,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Parola compromisă a fost schimbată. Mai ai # parolă compromisă. Chrome recomandă să verifici acum parola.}few{Parola compromisă a fost schimbată. Mai ai # parole compromise. Chrome recomandă să verifici acum parolele.}other{Parola compromisă a fost schimbată. Mai ai # de parole compromise. Chrome recomandă să verifici acum parolele.}}</translation>
 <translation id="5207949376430453814">Evidențiază cursorul pentru text</translation>
 <translation id="5209320130288484488">Nu s-a găsit niciun dispozitiv</translation>
-<translation id="5209572028385096813">Acest utilizator este gestionat de Family Link</translation>
 <translation id="5210365745912300556">Închide fila</translation>
 <translation id="5213481667492808996">Serviciul de date „<ph name="NAME" />” este gata de utilizare.</translation>
 <translation id="5213891612754844763">Afișează setările de proxy</translation>
@@ -5370,7 +5366,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7121362699166175603">Șterge istoricul și completările automate din bara de adrese. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modul pentru dezvoltatori</translation>
 <translation id="7121728544325372695">Cratime inteligente</translation>
-<translation id="7122353087820324370">Aplicațiile și setările sistemului de operare nu sunt sincronizate cu conturile secundare.</translation>
 <translation id="7123030151043029868">Au permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="7123360114020465152">Nu mai este acceptată</translation>
 <translation id="7125148293026877011">Șterge Crostini</translation>
@@ -6083,7 +6078,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7928175190925744466">Ai schimbat deja parola?</translation>
 <translation id="7930294771522048157">Metodele de plată salvate vor fi afișate aici</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> trimite conținutul de pe ecran și conținutul audio.</translation>
-<translation id="7931318309563332511">Necunoscută</translation>
 <translation id="793293630927785390">Caseta de dialog Rețea Wi-Fi nouă</translation>
 <translation id="7932969338829957666">Dosarele comune sunt disponibile în Linux la <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activează sunetul pentru site}few{Activează sunetul pentru site-uri}other{Activează sunetul pentru site-uri}}</translation>

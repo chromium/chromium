@@ -243,6 +243,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
 <translation id="6456394469623773452">Í lagi</translation>
 <translation id="6472207088655375767">Einnota aðgangsorð</translation>
+<translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
@@ -279,7 +280,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skönnun lokið. 1 síða skönnuð}one{Skönnun lokið. {NUMBER_OF_PAGES} síða skönnuð}other{Skönnun lokið. {NUMBER_OF_PAGES} síður skannaðar}}</translation>
-<translation id="7449585358422953039">Stjórnað af <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7487067081878637334">Tækni</translation>
 <translation id="7490813197707563893">MAC-vistfang</translation>

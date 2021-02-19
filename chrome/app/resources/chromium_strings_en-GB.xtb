@@ -275,7 +275,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9047197236183657400">Move account to a new Chromium profile?</translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium will relaunch in an hour}other{Chromium will relaunch in # hours}}</translation>
-<translation id="9107750757953039239">If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE" />. Your accounts will be available in Chromium browser and Play Store, as well as services like Gmail, Drive and YouTube. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Open Link in New Chromium &amp;tab</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9158494823179993217">Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>

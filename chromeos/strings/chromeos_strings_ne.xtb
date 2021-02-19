@@ -239,6 +239,7 @@
 <translation id="641081527798843608">विषयको मिलान</translation>
 <translation id="6456394469623773452">ठिक छ</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>
 <translation id="649050271426829538">रोकियो - प्रिन्टरमा कागज अड्कियो</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6527081081771465939">अज्ञात WiFi सेक्युरिटी प्रोटोकोल</translation>
@@ -275,7 +276,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">MAC ठेगाना</translation>

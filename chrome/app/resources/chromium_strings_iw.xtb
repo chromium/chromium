@@ -272,7 +272,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="9047197236183657400">‏להעביר את החשבון לפרופיל Chromium חדש?</translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏Chromium יופעל מחדש בעוד שעה}two{‏Chromium יופעל מחדש בעוד # שעות}many{‏Chromium יופעל מחדש בעוד # שעות}other{‏Chromium יופעל מחדש בעוד # שעות}}</translation>
-<translation id="9107750757953039239">‏אם יש לך מספר חשבונות Google, ניתן להוסיף אותם למכשיר ה-<ph name="DEVICE_TYPE" />. החשבונות יהיו זמינים בדפדפן Chromium ובחנות Play, בנוסף לשירותים כמו Gmail, ‏Drive ו-YouTube‏. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">‏פתיחת הקישור &amp;בכרטיסיית Chromium חדשה</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>
 <translation id="9158494823179993217">‏לפי הגדרת מנהל המערכת, Chromium יפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>

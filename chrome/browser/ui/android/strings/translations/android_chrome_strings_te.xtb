@@ -105,7 +105,7 @@
 <translation id="1782483593938241562">ముగింపు తేదీ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
 <translation id="1792959175193046959">డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని ఎప్పుడైనా మార్చుకోండి</translation>
-<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సేవా నిబంధనలు</translation>
+<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సర్వీస్ నియమాలు</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1821253160463689938">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
@@ -458,7 +458,7 @@
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="4263656433980196874">Assistant వాయిస్ సెర్చ్ సమ్మతి UI పూర్తి ఎత్తులో తెరవబడింది</translation>
-<translation id="4269820728363426813">లింక్ చిరునామాను కాపీ చేయి</translation>
+<translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
@@ -1089,7 +1089,6 @@
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ఇంటర్నెట్‌కు కనెక్ట్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="8481980314595922412">ట్రయల్ ఫీచర్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="8489271220582375723">చరిత్ర పేజీని తెరవండి</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8497726226069778601">ఇక్కడ చూడటానికి ఏమీ లేదు… ఇప్పటికీ</translation>

@@ -2328,7 +2328,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3602870520245633055">Stampa e scansione</translation>
 <translation id="3603622770190368340">Ottieni certificato di rete</translation>
-<translation id="3604193429970465812">Account secondari</translation>
 <translation id="3604713164406837697">Cambiare sfondo</translation>
 <translation id="3605780360466892872">Ventiquattrore</translation>
 <translation id="3608576286259426129">Anteprima immagine utente</translation>
@@ -2397,7 +2396,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3677911431265050325">Richiedi sito per dispositivi mobili</translation>
 <translation id="3677959414150797585">Sono incluse app, pagine web e altro. Invia statistiche per migliorare i suggerimenti solo se hai scelto di condividere i dati sull'utilizzo.</translation>
 <translation id="3678156199662914018">Estensione: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Le app e le impostazioni del sistema operativo verranno sincronizzate sui Chromebook su cui hai eseguito l'accesso con questo account. <ph name="LINK_BEGIN" />Impostazioni di sincronizzazione<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voce per sintesi vocale</translation>
 <translation id="3681311097828166361">Grazie per il tuo feedback. Adesso sei offline; il tuo rapporto verrà inviato in un secondo momento.</translation>
 <translation id="3682824389861648626">Soglia del movimento</translation>
@@ -2952,7 +2950,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB effettivi)</translation>
 <translation id="4310139701823742692">Il formato del file è sbagliato. Controlla il file PPD e riprova.</translation>
 <translation id="431076611119798497">&amp;Dettagli</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Account Google}other{<ph name="EXTRA_ACCOUNTS" /> Account Google}}</translation>
 <translation id="4312866146174492540">Blocca (predefinita)</translation>
 <translation id="4314815835985389558">Gestisci sincronizzazione</translation>
 <translation id="4316850752623536204">Sito web dello sviluppatore</translation>
@@ -3705,7 +3702,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5206787458656075734">{COUNT,plural, =1{Password compromessa cambiata. Hai # altra password compromessa. Chrome consiglia di controllarla subito.}other{Password compromessa cambiata. Hai altre # password compromesse. Chrome consiglia di controllarle subito.}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5209320130288484488">Nessun dispositivo trovato</translation>
-<translation id="5209572028385096813">Questo utente è gestito da Family Link</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
 <translation id="5213481667492808996">Il tuo servizio dati "<ph name="NAME" />" è pronto all'uso</translation>
 <translation id="5213891612754844763">Mostra impostazioni proxy</translation>
@@ -5368,7 +5364,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7121362699166175603">Consente di cancellare la cronologia e i completamenti automatici nella barra degli indirizzi. Il tuo Account Google potrebbe avere altri tipi di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modalità sviluppatore</translation>
 <translation id="7121728544325372695">Trattini smart</translation>
-<translation id="7122353087820324370">Le app e le impostazioni del sistema operativo non sono sincronizzate con gli account secondari.</translation>
 <translation id="7123030151043029868">Possono scaricare automaticamente più file</translation>
 <translation id="7123360114020465152">La stampante non è più supportata</translation>
 <translation id="7125148293026877011">Eliminare Crostini</translation>
@@ -6081,7 +6076,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7928175190925744466">Hai già modificato questa password?</translation>
 <translation id="7930294771522048157">I metodi di pagamento salvati verranno visualizzati qui</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> condivide l'audio e il tuo schermo.</translation>
-<translation id="7931318309563332511">Sconosciuta</translation>
 <translation id="793293630927785390">Finestra di dialogo delle nuova rete Wi-Fi</translation>
 <translation id="7932969338829957666">Le cartelle condivise sono disponibili su Linux al percorso <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>

@@ -2329,7 +2329,6 @@ Pretende pará-lo?</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
 <translation id="3602870520245633055">Impressão e digitalização</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
-<translation id="3604193429970465812">Contas secundárias</translation>
 <translation id="3604713164406837697">Alterar imagem de fundo</translation>
 <translation id="3605780360466892872">Empresário</translation>
 <translation id="3608576286259426129">Pré-visualização da imagem do utilizador</translation>
@@ -2398,7 +2397,6 @@ Pretende pará-lo?</translation>
 <translation id="3677911431265050325">Pedir site para dispositivos móveis</translation>
 <translation id="3677959414150797585">Inclui apps, páginas Web e muito mais. Apenas envia estatísticas para melhorar as sugestões se tiver optado por partilhar os dados de utilização.</translation>
 <translation id="3678156199662914018">Extensão: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">As suas definições de apps e SO serão sincronizadas em todos os Chromebooks nos quais tem sessão iniciada com esta conta. <ph name="LINK_BEGIN" />Definições de sincronização<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Voz da síntese de voz</translation>
 <translation id="3681311097828166361">Obrigado pelo seu feedback. Neste modo, está offline, pelo que o seu relatório será enviado mais tarde.</translation>
 <translation id="3682824389861648626">Limite de movimentos</translation>
@@ -2953,7 +2951,6 @@ Pretende pará-lo?</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K em directo)</translation>
 <translation id="4310139701823742692">O ficheiro tem o formato errado. Verifique o ficheiro PPD e tente novamente.</translation>
 <translation id="431076611119798497">&amp;Detalhes</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Conta Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>
 <translation id="4314815835985389558">Gerir sincronização</translation>
 <translation id="4316850752623536204">Website para programadores</translation>
@@ -3706,7 +3703,6 @@ Pretende pará-lo?</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Alterou com êxito a palavra-passe comprometida. Tem mais # palavra-passe comprometida. O Chrome recomenda que verifique agora esta palavra-passe.}other{Alterou com êxito a palavra-passe comprometida. Tem mais # palavras-passe comprometidas. O Chrome recomenda que verifique agora estas palavras-passe.}}</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="5209320130288484488">Não foram encontrados aparelhos</translation>
-<translation id="5209572028385096813">Este utilizador é gerido pelo Family Link.</translation>
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5213481667492808996">O serviço de dados de "<ph name="NAME" />" está pronto a ser utilizado.</translation>
 <translation id="5213891612754844763">Mostrar definições de proxy</translation>
@@ -5370,7 +5366,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7121362699166175603">Limpa o histórico e os preenchimentos automáticos na barra de endereço. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo de programador</translation>
 <translation id="7121728544325372695">Traços inteligentes</translation>
-<translation id="7122353087820324370">As definições de apps e SO não estão sincronizadas com contas secundárias.</translation>
 <translation id="7123030151043029868">Com autorização para transferir vários ficheiros automaticamente</translation>
 <translation id="7123360114020465152">Já não é suportada.</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
@@ -6083,7 +6078,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7928175190925744466">Já alterou esta palavra-passe?</translation>
 <translation id="7930294771522048157">Os métodos de pagamento guardados são apresentados aqui.</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> está a partilhar o ecrã e o áudio.</translation>
-<translation id="7931318309563332511">Desconhecido</translation>
 <translation id="793293630927785390">Caixa de diálogo Nova rede Wi-Fi</translation>
 <translation id="7932969338829957666">As pastas partilhadas estão disponíveis no Linux em <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Reativar o som do site}other{Reativar o som dos sites}}</translation>

@@ -1259,7 +1259,6 @@
 <translation id="5813119285467412249">&amp;Repetați adăugarea</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cardul va fi debitat când plătești, dar numărul său real nu va fi trimis acestui site. Pentru un plus de securitate, va fi generat un cod CVC temporar.}few{Cardul pe care îl selectezi va fi debitat când plătești, dar numărul său real nu va fi trimis acestui site. Pentru un plus de securitate, va fi generat un cod CVC temporar.}other{Cardul pe care îl selectezi va fi debitat când plătești, dar numărul său real nu va fi trimis acestui site. Pentru un plus de securitate, va fi generat un cod CVC temporar.}}</translation>
 <translation id="5826507051599432481">Nume comun (CN)</translation>
-<translation id="583281660410589416">Necunoscut</translation>
 <translation id="5838278095973806738">Nu ar trebui să introduci informații sensibile pe acest site (de exemplu, parole sau carduri de credit), deoarece ar putea fi furate de atacatori.</translation>
 <translation id="5851548754964597211">Listă de file</translation>
 <translation id="5855253129151731373">Numele de gazdă al acestui site este similar cu cel al site-ului <ph name="LOOKALIKE_DOMAIN" />. Uneori, atacatorii imită site-uri aducând modificări mici, greu de observat, numelui de domeniu.
@@ -1771,6 +1770,7 @@ Detalii suplimentare:
 <translation id="7888575728750733395">Intenția de redare a printării</translation>
 <translation id="7894280532028510793">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Plic)</translation>
+<translation id="7931318309563332511">Necunoscută</translation>
 <translation id="7932579305932748336">Acoperire</translation>
 <translation id="79338296614623784">Introdu un număr de telefon valid</translation>
 <translation id="7934052535022478634">Plată efectuată</translation>

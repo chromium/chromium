@@ -242,6 +242,7 @@
 <translation id="641081527798843608">વિષય મેળ</translation>
 <translation id="6456394469623773452">સરસ</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="649050271426829538">બંધ - કાગળ ફસાયો</translation>
 <translation id="6517239166834772319">શોધખોળ કરો</translation>
 <translation id="6527081081771465939">વાઇ-ફાઇ સુરક્ષાનો અજાણ્યો પ્રોટોકૉલ</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{સ્કૅન કરવાનું પૂર્ણ થયું. 1 પેજ સ્કૅન કર્યું}one{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યું}other{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યા}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="7469648432129124067">પોર્ટલની જાણકારી મળી</translation>
 <translation id="7487067081878637334">તકનીક</translation>
 <translation id="7490813197707563893">MAC ઍડ્રેસ</translation>

@@ -2329,7 +2329,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3602870520245633055">Skriva ut och skanna</translation>
 <translation id="3603622770190368340">Skaffa nätverkscertifikat</translation>
-<translation id="3604193429970465812">Sekundära konton</translation>
 <translation id="3604713164406837697">Ändra bakgrund</translation>
 <translation id="3605780360466892872">Proper</translation>
 <translation id="3608576286259426129">Förhandsgranskning av användarens bild</translation>
@@ -2398,7 +2397,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3677911431265050325">Begär mobilversion</translation>
 <translation id="3677959414150797585">Bland annat appar och webbsidor. Skickar bara statistik för att förbättra förslagen om du har valt att dela data om användning.</translation>
 <translation id="3678156199662914018">Tillägg: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Appar och systeminställningar synkroniseras på alla Chromebook-enheter där du är inloggad på detta konto. <ph name="LINK_BEGIN" />Synkroniseringsinställningar<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Röst för text till tal</translation>
 <translation id="3681311097828166361">Tack för din feedback. Just nu är du offline, så rapporten skickas senare.</translation>
 <translation id="3682824389861648626">Gräns för rörelse</translation>
@@ -2953,7 +2951,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K aktiva)</translation>
 <translation id="4310139701823742692">Filen har fel format. Kontrollera PPD-filen och försök igen.</translation>
 <translation id="431076611119798497">&amp;Info</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google-konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-konton}}</translation>
 <translation id="4312866146174492540">Blockera (standard)</translation>
 <translation id="4314815835985389558">Hantera synkronisering</translation>
 <translation id="4316850752623536204">Webbplats för utvecklare</translation>
@@ -3706,7 +3703,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5206787458656075734">{COUNT,plural, =1{Det utsatta lösenordet har ändrats. Det finns # utsatt lösenord till. Du rekommenderas att kontrollera detta lösenord nu.}other{Det utsatta lösenordet har ändrats. Det finns # utsatta lösenord till. Du rekommenderas att kontrollera dessa lösenord nu.}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="5209320130288484488">Det gick inte att hitta några enheter</translation>
-<translation id="5209572028385096813">Den här användaren hanteras av Family Link</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5213481667492808996">Datatjänsten <ph name="NAME" /> är klar att använda</translation>
 <translation id="5213891612754844763">Visa proxyinställningar</translation>
@@ -5369,7 +5365,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7121362699166175603">Historik och autoslutföranden i adressfältet rensas. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Utvecklarläge</translation>
 <translation id="7121728544325372695">Smarta bindestreck</translation>
-<translation id="7122353087820324370">Appar och systeminställningar synkroniseras inte med sekundära konton.</translation>
 <translation id="7123030151043029868">Får ladda ned flera filer automatiskt</translation>
 <translation id="7123360114020465152">Stöds inte längre</translation>
 <translation id="7125148293026877011">Radera Crostini</translation>
@@ -6082,7 +6077,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7928175190925744466">Har du redan ändrat det här lösenordet?</translation>
 <translation id="7930294771522048157">Sparade betalningsmetoder visas här</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> delar skärmen och ljudet.</translation>
-<translation id="7931318309563332511">okänt</translation>
 <translation id="793293630927785390">Dialogruta för nytt Wi-Fi-nätverk</translation>
 <translation id="7932969338829957666">Delade mappar finns i <ph name="BASE_DIR" /> i Linux.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>

@@ -1262,7 +1262,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5813119285467412249">&amp;Pridėti dar kartą</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ši kortelė bus apmokestinama mokant, bet jos tikrasis numeris nebus bendrinamas su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}one{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}few{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}many{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}other{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}}</translation>
 <translation id="5826507051599432481">Bendrasis vardas (angl. „Common Name“) (CN)</translation>
-<translation id="583281660410589416">Nežinoma</translation>
 <translation id="5838278095973806738">Šioje svetainėje neturėtumėte pateikti neskelbtinos informacijos (pvz., slaptažodžių ar kredito kortelių numerių), nes ją gali pavogti užpuolikai.</translation>
 <translation id="5851548754964597211">Skirtukų sąrašas</translation>
 <translation id="5855253129151731373">Šios svetainės prieglobos serverio pavadinimas panašus į <ph name="LOOKALIKE_DOMAIN" />. Kartais užpuolėjai kurdami svetainių kopijas atlieka nedidelių, sunkiai pastebimų domeno pavadinimio pakeitimų.
@@ -1774,6 +1773,7 @@ Papildoma išsami informacija:
 <translation id="7888575728750733395">Spausdinimo pateikimo tikslas</translation>
 <translation id="7894280532028510793">Jei parašyta tinkamai, <ph name="BEGIN_LINK" />pabandykite paleisti tinklo diagnostiką<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (vokas)</translation>
+<translation id="7931318309563332511">Nežinoma</translation>
 <translation id="7932579305932748336">Danga</translation>
 <translation id="79338296614623784">Įveskite tinkamą telefono numerį</translation>
 <translation id="7934052535022478634">Mokėjimas atliktas</translation>

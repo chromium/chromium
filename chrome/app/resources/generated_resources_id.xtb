@@ -2329,7 +2329,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3602870520245633055">Mencetak dan memindai</translation>
 <translation id="3603622770190368340">Mendapatkan sertifikat jaringan</translation>
-<translation id="3604193429970465812">Akun sekunder</translation>
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="3605780360466892872">Pria Berdasi</translation>
 <translation id="3608576286259426129">Pratinjau gambar pengguna</translation>
@@ -2398,7 +2397,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3677911431265050325">Minta situs seluler</translation>
 <translation id="3677959414150797585">Termasuk aplikasi, halaman web, dan lainnya. Mengirimkan statistik untuk menyempurnakan saran hanya jika Anda memilih untuk membagikan data penggunaan.</translation>
 <translation id="3678156199662914018">Ekstensi: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Aplikasi dan setelan OS Anda akan disinkronkan di seluruh Chromebook tempat Anda login dengan akun ini. <ph name="LINK_BEGIN" />Setelan Sinkronisasi<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Suara text-to-speech</translation>
 <translation id="3681311097828166361">Terima kasih atas masukannya. Anda sedang offline, laporan akan dikirim nanti.</translation>
 <translation id="3682824389861648626">Ambang batas gerakan</translation>
@@ -2953,7 +2951,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K langsung)</translation>
 <translation id="4310139701823742692">Format file salah. Periksa file PPD dan coba lagi.</translation>
 <translation id="431076611119798497">&amp;Detail</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Akun Google}other{<ph name="EXTRA_ACCOUNTS" /> Akun Google}}</translation>
 <translation id="4312866146174492540">Blokir (default)</translation>
 <translation id="4314815835985389558">Kelola sinkronisasi</translation>
 <translation id="4316850752623536204">Situs Web Pengembang</translation>
@@ -3706,7 +3703,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5206787458656075734">{COUNT,plural, =1{Berhasil mengubah sandi yang telah dibobol. Anda memiliki # sandi lainnya yang telah dibobol. Chrome merekomendasikan untuk memeriksa sandi ini sekarang.}other{Berhasil mengubah sandi yang telah dibobol. Anda memiliki # sandi lainnya yang telah dibobol. Chrome merekomendasikan untuk memeriksa sandi ini sekarang.}}</translation>
 <translation id="5207949376430453814">Sorot tempat penyisipan teks</translation>
 <translation id="5209320130288484488">Perangkat tidak ditemukan</translation>
-<translation id="5209572028385096813">Pengguna ini dikelola oleh Family Link</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5213481667492808996">Layanan data '<ph name="NAME" />' Anda sudah siap digunakan</translation>
 <translation id="5213891612754844763">Tampilkan setelan proxy</translation>
@@ -5369,7 +5365,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7121362699166175603">Menghapus histori dan pelengkapan otomatis di kolom URL. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Mode Developer</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
-<translation id="7122353087820324370">Aplikasi dan setelan OS tidak disinkronkan ke akun sekunder.</translation>
 <translation id="7123030151043029868">Diizinkan mendownload otomatis beberapa file</translation>
 <translation id="7123360114020465152">Tidak didukung lagi</translation>
 <translation id="7125148293026877011">Hapus Crostini</translation>
@@ -6082,7 +6077,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7928175190925744466">Telah mengubah sandi ini?</translation>
 <translation id="7930294771522048157">Metode pembayaran yang tersimpan akan muncul di sini</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> membagikan layar dan audio Anda.</translation>
-<translation id="7931318309563332511">Tidak dikenal</translation>
 <translation id="793293630927785390">Dialog Jaringan Wi-Fi Baru</translation>
 <translation id="7932969338829957666">Folder bersama tersedia pada Linux di <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Aktifkan Notifikasi Situs}other{Aktifkan Notifikasi Beberapa Situs}}</translation>

@@ -243,6 +243,7 @@
 <translation id="641081527798843608">Супадзенне суб'екта</translation>
 <translation id="6456394469623773452">Добры</translation>
 <translation id="6472207088655375767">Аднаразовы пароль</translation>
+<translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
 <translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканіраванне завершана. Адсканіравана 1 старонка}one{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонка}few{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}many{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонак}other{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}}</translation>
-<translation id="7449585358422953039">Прыладай кіруе <ph name="MANAGER" /></translation>
 <translation id="7469648432129124067">Выяўлены партал</translation>
 <translation id="7487067081878637334">Тэхналогія</translation>
 <translation id="7490813197707563893">MAC-адрас</translation>

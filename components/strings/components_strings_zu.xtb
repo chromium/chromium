@@ -1258,7 +1258,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5813119285467412249">&amp;Yenza futhi ukungeza</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Leli khadi lizokhokhiswa uma ukhokha, kodwa inombolo yalo yangempela ngeke yabiwe naleli sayithi. Ngokuphepha okungeziwe, i-CVC yesikhashana izokwenziwa.}one{Ikhadi olikhethayo lizokhokhiswa uma ukhokha, kodwa inombolo yalo yangempela ngeke yabiwe naleli sayithi. Ngokuphepha okungeziwe, i-CVC yesikhashana izokwenziwa.}other{Ikhadi olikhethayo lizokhokhiswa uma ukhokha, kodwa inombolo yalo yangempela ngeke yabiwe naleli sayithi. Ngokuphepha okungeziwe, i-CVC yesikhashana izokwenziwa.}}</translation>
 <translation id="5826507051599432481">Igama eljwayelekile (CN)</translation>
-<translation id="583281660410589416">Akwaziwa</translation>
 <translation id="5838278095973806738">Akumele ufake noma iluphi ulwazi olubucayi kuleli sayithi (isibonelo, amaphasiwedi noma amakhadi esikweletu), ngoba lungantshontshwa abahlaseli.</translation>
 <translation id="5851548754964597211">Uhlu lwethebhu</translation>
 <translation id="5855253129151731373">Igama lomethuleli laleli sayithi libonakala lifana ne-<ph name="LOOKALIKE_DOMAIN" />. Abahlaseli kwesinye isikhathi balingisa amasayithi ngokwenza ushintsho oluncane, oluboneka kanzima kugama lesizinda.
@@ -1770,6 +1769,7 @@ Imininingwane engeziwe:
 <translation id="7888575728750733395">Phrinta inhloso yokunikezela</translation>
 <translation id="7894280532028510793">Uma isipelingi singalungile, <ph name="BEGIN_LINK" />zama ukuqalisa Ukuxilongwa Kwenethiwekhi<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7931318309563332511">Akwaziwa</translation>
 <translation id="7932579305932748336">Ibhantshi</translation>
 <translation id="79338296614623784">Faka inombolo yefoni evumelekile</translation>
 <translation id="7934052535022478634">Inkokhelo iqediwe</translation>

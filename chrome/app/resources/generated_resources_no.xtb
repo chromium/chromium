@@ -2326,7 +2326,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3602870520245633055">Skriv ut og skann</translation>
 <translation id="3603622770190368340">Hent nettverkssertifikat</translation>
-<translation id="3604193429970465812">Sekundærkontoer</translation>
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="3605780360466892872">Businessmann</translation>
 <translation id="3608576286259426129">Forhåndsvisning av brukerbilde</translation>
@@ -2395,7 +2394,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3677911431265050325">Be om mobilversjonen av nettstedet</translation>
 <translation id="3677959414150797585">Inkluderer apper, nettsider med mer. Sender statistikk for å gjøre forslagene bedre kun hvis du har valgt å dele bruksdata.</translation>
 <translation id="3678156199662914018">Utvidelse: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Appene og OS-innstillingene dine synkroniseres på Chromebook-enheter der du er pålogget med denne kontoen. <ph name="LINK_BEGIN" />Synkroniseringsinnstillinger<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Stemme for tekst til tale</translation>
 <translation id="3681311097828166361">Takk for tilbakemeldingen. Siden du er uten nett akkurat nå, sendes rapporten senere.</translation>
 <translation id="3682824389861648626">Bevegelsesterskel</translation>
@@ -2948,7 +2946,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB ubrukt)</translation>
 <translation id="4310139701823742692">Filen har feil format. Sjekk PPD-filen og prøv på nytt.</translation>
 <translation id="431076611119798497">&amp;Detaljer</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google-konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-kontoer}}</translation>
 <translation id="4312866146174492540">Blokkér (standard)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
 <translation id="4316850752623536204">Utviklernettsted</translation>
@@ -3701,7 +3698,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5206787458656075734">{COUNT,plural, =1{Passordet som var utsatt for sikkerhetsbrudd, ble endret. Du har # passord til som er utsatt for sikkerhetsbrudd. Chrome anbefaler at du sjekker dette passordet nå.}other{Passordet som var utsatt for sikkerhetsbrudd, ble endret. Du har # passord til som er utsatt for sikkerhetsbrudd. Chrome anbefaler at du sjekker disse passordene nå.}}</translation>
 <translation id="5207949376430453814">Fremhev tekstinnsettingspunktet</translation>
 <translation id="5209320130288484488">Finner ingen enheter</translation>
-<translation id="5209572028385096813">Denne brukeren administreres av Family Link</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5213481667492808996">Datatjenesten «<ph name="NAME" />» er klar for bruk</translation>
 <translation id="5213891612754844763">Vis innstillingene for proxy-tjener</translation>
@@ -5364,7 +5360,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7121362699166175603">Tømmer loggen og fjerner autofullføringer i adressefeltet. Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Utviklermodus</translation>
 <translation id="7121728544325372695">Smarte tankestreker</translation>
-<translation id="7122353087820324370">Apper og OS-innstillinger synkroniseres ikke med sekundærkontoer.</translation>
 <translation id="7123030151043029868">Nettsteder som har lov til å laste ned flere filer automatisk</translation>
 <translation id="7123360114020465152">Støttes ikke lenger</translation>
 <translation id="7125148293026877011">Slett Crostini</translation>
@@ -6077,7 +6072,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7928175190925744466">Har du allerede endret dette passordet?</translation>
 <translation id="7930294771522048157">Lagrede betalingsmåter vises her</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> deler lyden og skjermen din.</translation>
-<translation id="7931318309563332511">Ukjent</translation>
 <translation id="793293630927785390">Dialogboks for å legge til nytt Wi-Fi-nettverk</translation>
 <translation id="7932969338829957666">Delte mapper er tilgjengelige i Linux i <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Slå på lyden for nettstedet}other{Slå på lyden for nettstedene}}</translation>

@@ -1246,7 +1246,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5813119285467412249">&amp;Berregin gehitzea</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ordaintzen duzunean, txartel honetan kobratuko dizugu zenbatekoa, baina txartelaren benetako zenbakia ez dugu partekatu webgunearekin. Segurtasun gehiago izateko, aldi baterako CVC kode bat sortuko dugu.}other{Ordaintzen duzunean, txartel honetan kobratuko dizugu zenbatekoa, baina txartelaren benetako zenbakia ez dugu partekatu webgunearekin. Segurtasun gehiago izateko, aldi baterako CVC kode bat sortuko dugu.}}</translation>
 <translation id="5826507051599432481">Izen arrunta (CN)</translation>
-<translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5838278095973806738">Ez zenuke kontuzko informaziorik (adibidez, pasahitzak edo kreditu-txartelak) eman behar webgune honetan, erasotzaileek lapur lezaketelako.</translation>
 <translation id="5851548754964597211">Fitxen zerrenda</translation>
 <translation id="5855253129151731373">Webgune honen eta <ph name="LOOKALIKE_DOMAIN" /> webgunearen ostalari-izenak antzekoak dira. Batzuetan, erasotzaileek webgune ofizialen plantak egiten dituzte domeinu-izenari aldaketa oso txikiak eginda.
@@ -1757,6 +1756,7 @@ Xehetasun gehiago:
 <translation id="7888575728750733395">Inprimatzeko errendatzearen helburua</translation>
 <translation id="7894280532028510793">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (gutun-azala)</translation>
+<translation id="7931318309563332511">Ezezaguna</translation>
 <translation id="7932579305932748336">Forratu</translation>
 <translation id="79338296614623784">Idatzi balio duen telefono-zenbaki bat</translation>
 <translation id="7934052535022478634">Egin da ordainketa</translation>

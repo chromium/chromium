@@ -2332,7 +2332,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3602870520245633055">Tiskanje in optično branje</translation>
 <translation id="3603622770190368340">Prejemanje omrežnega potrdila</translation>
-<translation id="3604193429970465812">Sekundarni računi</translation>
 <translation id="3604713164406837697">Sprememba ozadja</translation>
 <translation id="3605780360466892872">Srajca</translation>
 <translation id="3608576286259426129">Predogled slike uporabnika</translation>
@@ -2401,7 +2400,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3677911431265050325">Zahtevaj spletno mesto za mobilno napravo</translation>
 <translation id="3677959414150797585">Vključuje aplikacije, spletne strani in drugo. Pošilja statistične podatke zaradi izboljšanja predlogov, samo če ste izbrali deljenje podatkov o uporabi.</translation>
 <translation id="3678156199662914018">Razširitev: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Vaše aplikacije in nastavitve operacijskega sistema se bodo sinhronizirale v Chromebookih, v katerih ste prijavljeni s tem računom. <ph name="LINK_BEGIN" />Nastavitve sinhronizacije<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Glas pretvorbe besedila v govor</translation>
 <translation id="3681311097828166361">Hvala za povratne informacije. Trenutno nimate povezave, zato bo poročilo poslano pozneje.</translation>
 <translation id="3682824389861648626">Prag gibanja</translation>
@@ -2956,7 +2954,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB dejavno)</translation>
 <translation id="4310139701823742692">Datoteka je v napačni obliki zapisa. Preverite datoteko PPD in poskusite znova.</translation>
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 račun Google}one{<ph name="EXTRA_ACCOUNTS" /> račun Google}two{<ph name="EXTRA_ACCOUNTS" /> računa Google}few{<ph name="EXTRA_ACCOUNTS" /> računi Google}other{<ph name="EXTRA_ACCOUNTS" /> računov Google}}</translation>
 <translation id="4312866146174492540">Blokira (privzeto)</translation>
 <translation id="4314815835985389558">Upravljanje sinhronizacije</translation>
 <translation id="4316850752623536204">Spletno mesto razvijalca</translation>
@@ -3709,7 +3706,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5206787458656075734">{COUNT,plural, =1{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženo geslo. Chrome priporoča, da preverite to geslo.}one{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženo geslo. Chrome priporoča, da preverite ta gesla.}two{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženi gesli. Chrome priporoča, da preverite ta gesla.}few{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogrožena gesla. Chrome priporoča, da preverite ta gesla.}other{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženih gesel. Chrome priporoča, da preverite ta gesla.}}</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="5209320130288484488">Najti ni mogoče nobene naprave</translation>
-<translation id="5209572028385096813">Tega uporabnika upravlja Family Link</translation>
 <translation id="5210365745912300556">Zapri zavihek</translation>
 <translation id="5213481667492808996">Podatkovno storitev omrežja »<ph name="NAME" />« lahko začnete uporabljati</translation>
 <translation id="5213891612754844763">Prikaži nastavitve strežnika proxy</translation>
@@ -5374,7 +5370,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7121362699166175603">Izbriše zgodovino in samodokončanja v naslovni vrstici. V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Način za razvijalce</translation>
 <translation id="7121728544325372695">Pametni pomišljaji</translation>
-<translation id="7122353087820324370">Aplikacije in nastavitve operacijskega sistema se ne sinhronizirajo s sekundarnimi računi.</translation>
 <translation id="7123030151043029868">Dovoljen je samodejni prenos več datotek</translation>
 <translation id="7123360114020465152">Ni več podprto</translation>
 <translation id="7125148293026877011">Izbris Crostinija</translation>
@@ -6087,7 +6082,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7928175190925744466">Ali ste že spremenili to geslo?</translation>
 <translation id="7930294771522048157">Shranjena plačilna sredstva bodo prikazana tu</translation>
 <translation id="79312157130859720">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala vaš zaslon in zvok.</translation>
-<translation id="7931318309563332511">Neznano</translation>
 <translation id="793293630927785390">Pogovorno okno za novo omrežje Wi-Fi</translation>
 <translation id="7932969338829957666">Mape v skupni rabi so v Linuxu na voljo v <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Vklop zvoka spletnega mesta}one{Vklop zvoka spletnih mest}two{Vklop zvoka spletnih mest}few{Vklop zvoka spletnih mest}other{Vklop zvoka spletnih mest}}</translation>

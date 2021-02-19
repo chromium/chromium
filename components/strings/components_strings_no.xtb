@@ -1261,7 +1261,6 @@ brukere av denne nettleseren.</translation>
 <translation id="5813119285467412249">&amp;Legg til likevel</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Dette kortet blir belastet når du betaler, men det egentlige kortnummeret deles ikke med dette nettstedet. En midlertidig CVC-kode blir generert for ekstra sikkerhet.}other{Kortet du velger, blir belastet når du betaler, men det egentlige kortnummeret deles ikke med dette nettstedet. En midlertidig CVC-kode blir generert for ekstra sikkerhet.}}</translation>
 <translation id="5826507051599432481">Vanlig navn (CN)</translation>
-<translation id="583281660410589416">Ukjent</translation>
 <translation id="5838278095973806738">Du bør ikke oppgi sensitiv informasjon på dette nettstedet (for eksempel passord eller kredittkort) fordi den kan bli stjålet av angripere.</translation>
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5855253129151731373">Vertsnavnet til dette nettstedet ligner på <ph name="LOOKALIKE_DOMAIN" />. Noen ganger etterligner angripere nettsteder ved å gjøre små endringer i domenenavnet som er vanskelige å se.
@@ -1772,6 +1771,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7888575728750733395">Gjengivelsesintensjon for utskrift</translation>
 <translation id="7894280532028510793">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (konvolutt)</translation>
+<translation id="7931318309563332511">Ukjent</translation>
 <translation id="7932579305932748336">Belegg</translation>
 <translation id="79338296614623784">Angi et gyldig telefonnummer</translation>
 <translation id="7934052535022478634">Betalingen er fullført</translation>

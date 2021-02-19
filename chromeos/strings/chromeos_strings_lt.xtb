@@ -243,6 +243,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
 <translation id="6456394469623773452">Geras</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
+<translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
@@ -279,7 +280,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
-<translation id="7449585358422953039">Valdo „<ph name="MANAGER" />“.</translation>
 <translation id="7469648432129124067">Aptiktas portalas</translation>
 <translation id="7487067081878637334">Technologija</translation>
 <translation id="7490813197707563893">MAC adresas</translation>

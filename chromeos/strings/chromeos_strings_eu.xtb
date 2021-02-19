@@ -243,6 +243,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="641081527798843608">Gaiaren bat-etortzea</translation>
 <translation id="6456394469623773452">Normala</translation>
 <translation id="6472207088655375767">EBP</translation>
+<translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Geldituta: papera trabatuta dago</translation>
 <translation id="6517239166834772319">Arakatu</translation>
 <translation id="6527081081771465939">Wifiaren segurtasun-protokoloa ezezaguna da</translation>
@@ -279,7 +280,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> da kudeatzailea.</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
 <translation id="7487067081878637334">Teknologia</translation>
 <translation id="7490813197707563893">MAC helbidea</translation>

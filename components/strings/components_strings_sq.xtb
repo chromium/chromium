@@ -1256,7 +1256,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5813119285467412249">&amp;Ribëje shtimin</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kjo kartë do të tarifohet kur të paguash, por numri i saj i vërtetë nuk do të ndahet me këtë sajt. Për më shumë siguri, do të krijohet një kod CVC i përkohshëm.}other{Karta që zgjedh do të tarifohet kur të paguash, por numri i saj i vërtetë nuk do të ndahet me këtë sajt. Për më shumë siguri, do të krijohet një kod CVC i përkohshëm.}}</translation>
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
-<translation id="583281660410589416">E panjohur</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
 <translation id="5851548754964597211">Lista e skedave</translation>
 <translation id="5855253129151731373">Emri i këtij domeni duket i ngjashëm me <ph name="LOOKALIKE_DOMAIN" />. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek emri i domenit ndryshime të vogla që janë të vështira për t'u dalluar.
@@ -1767,6 +1766,7 @@ Detaje shtesë:
 <translation id="7888575728750733395">Synimi i paraqitjes për printimin</translation>
 <translation id="7894280532028510793">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit"<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Zarf)</translation>
+<translation id="7931318309563332511">E panjohur</translation>
 <translation id="7932579305932748336">Veshje</translation>
 <translation id="79338296614623784">Fut një numër të vlefshëm telefoni</translation>
 <translation id="7934052535022478634">Pagesa përfundoi</translation>

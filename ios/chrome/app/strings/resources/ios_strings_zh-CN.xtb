@@ -103,6 +103,7 @@
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1952728750904661634">登录受管理的帐号</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
+<translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
@@ -299,6 +300,7 @@
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页上查找</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
+<translation id="4079195788735381731">贵组织已强制您退出登录</translation>
 <translation id="4082688844002261427">控制 Google 如何利用您的浏览记录为您提供个性化的搜索、广告和其他服务</translation>
 <translation id="408404951701638773">现在可以更方便地使用搜索栏</translation>
 <translation id="411254640334432676">下载失败。</translation>
@@ -411,6 +413,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
+<translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="5388358297987318779">打开图片</translation>
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5416022985862681400">过去 7 天</translation>
@@ -496,6 +499,7 @@
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
+<translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
 <translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
 <translation id="6308436439357671616">这样，您就可以拍摄并上传照片。</translation>
 <translation id="6324528485781869530">切换同步帐号</translation>

@@ -2328,7 +2328,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3602870520245633055">Imprimeix i escaneja</translation>
 <translation id="3603622770190368340">Obtenció del certificat de xarxa</translation>
-<translation id="3604193429970465812">Comptes secundaris</translation>
 <translation id="3604713164406837697">Canvia el fons de pantalla</translation>
 <translation id="3605780360466892872">Executiu</translation>
 <translation id="3608576286259426129">Previsualització de la imatge d'usuari</translation>
@@ -2397,7 +2396,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3677911431265050325">Sol·licita el lloc web per a mòbils</translation>
 <translation id="3677959414150797585">Inclou aplicacions, pàgines web i molt més. Només envia les estadístiques per millorar els suggeriments si has triat compartir les dades d'ús.</translation>
 <translation id="3678156199662914018">Extensió: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Les teves aplicacions i opcions de configuració del sistema operatiu se sincronitzaran en tots els Chromebook en què tinguis la sessió iniciada amb aquest compte. <ph name="LINK_BEGIN" />Configuració de sincronització<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Veu de text a parla</translation>
 <translation id="3681311097828166361">Gràcies pels teus suggeriments. Ara mateix no tens connexió, de manera que el teu informe s'enviarà més tard.</translation>
 <translation id="3682824389861648626">Llindar de moviment</translation>
@@ -2951,7 +2949,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K actius)</translation>
 <translation id="4310139701823742692">El format del fitxer PPD és incorrecte. Revisa'l i torna-ho a provar.</translation>
 <translation id="431076611119798497">&amp;Detalls</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Compte de Google}other{<ph name="EXTRA_ACCOUNTS" /> Comptes de Google}}</translation>
 <translation id="4312866146174492540">Bloqueja (opció predeterminada)</translation>
 <translation id="4314815835985389558">Gestiona la sincronització</translation>
 <translation id="4316850752623536204">Lloc web per a desenvolupadors</translation>
@@ -3704,7 +3701,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5206787458656075734">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament. Tens # contrasenya més en perill. Chrome et recomana que comprovis aquesta contrasenya ara.}other{La contrasenya en perill s'ha canviat correctament. Tens # contrasenyes més en perill. Chrome et recomana que comprovis aquestes contrasenyes ara.}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5209320130288484488">No s'ha trobat cap dispositiu</translation>
-<translation id="5209572028385096813">Aquest usuari està gestionat per Family Link</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5213481667492808996">Ja pots utilitzar el servei de dades <ph name="NAME" /></translation>
 <translation id="5213891612754844763">Mostra la configuració del servidor intermediari</translation>
@@ -5369,7 +5365,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7121362699166175603">Esborra l'historial i les complecions automàtiques a la barra d'adreces. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del Compte de Google.</translation>
 <translation id="7121438501124788993">Mode de desenvolupador</translation>
 <translation id="7121728544325372695">Guions intel·ligents</translation>
-<translation id="7122353087820324370">Les aplicacions i la configuració del sistema operatiu no se sincronitzen amb els comptes secundaris.</translation>
 <translation id="7123030151043029868">Amb permís per baixar automàticament diversos fitxers</translation>
 <translation id="7123360114020465152">Ja no s'admet</translation>
 <translation id="7125148293026877011">Suprimeix Crostini</translation>
@@ -6082,7 +6077,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7928175190925744466">Ja has canviat aquesta contrasenya?</translation>
 <translation id="7930294771522048157">Les formes de pagament desades es mostraran aquí</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> està compartint la pantalla i l'àudio.</translation>
-<translation id="7931318309563332511">Desconegut</translation>
 <translation id="793293630927785390">Diàleg per afegir una xarxa Wi-Fi</translation>
 <translation id="7932969338829957666">Les carpetes compartides estan disponibles a Linux a <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Activa el so del lloc web}other{Activa el so dels llocs web}}</translation>

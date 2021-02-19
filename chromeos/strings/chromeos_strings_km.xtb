@@ -242,6 +242,7 @@
 <translation id="641081527798843608">ប្រធានបទ​ត្រូវគ្នា</translation>
 <translation id="6456394469623773452">ល្អ</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">បានឈប់ - ជាប់​ក្រដាស</translation>
 <translation id="6517239166834772319">រុករក</translation>
 <translation id="6527081081771465939">មិនស្គាល់​ប្រូតូកូល​សុវត្ថិភាព WiFi</translation>
@@ -278,7 +279,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ការស្កេន​បានបញ្ចប់។ បានស្កេន 1 ទំព័រ}other{ការស្កេន​បានបញ្ចប់។ បានស្កេន {NUMBER_OF_PAGES} ទំព័រ}}</translation>
-<translation id="7449585358422953039">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។</translation>
 <translation id="7469648432129124067">បានរកឃើញ​ច្រក</translation>
 <translation id="7487067081878637334">បច្ចេកវិទ្យា</translation>
 <translation id="7490813197707563893">អាសយដ្ឋាន MAC</translation>

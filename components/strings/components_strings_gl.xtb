@@ -786,7 +786,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4067263367174615723">C1 (sobre)</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
-<translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o conxunto de cifrado comúns.</translation>
+<translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o paquete de cifraxe comúns.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuración do proxy está establecida para utilizar un URL de script .pac, non servidores proxy fixos.</translation>
 <translation id="4082393374666368382">Configuración - Xestión</translation>
@@ -935,7 +935,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4582204425268416675">Quitar tarxeta</translation>
 <translation id="4587425331216688090">Queres eliminar o enderezo de Chrome?</translation>
 <translation id="459089498662672729">A política do administrador non recomenda pegar contido de <ph name="ORIGIN_NAME" /> nesta localización</translation>
-<translation id="4592951414987517459">A túa conexión a <ph name="DOMAIN" /> está encriptada cun conxunto de cifrado moderno.</translation>
+<translation id="4592951414987517459">A túa conexión a <ph name="DOMAIN" /> está encriptada cun paquete de cifraxe moderno.</translation>
 <translation id="4594403342090139922">&amp;Desfacer eliminación</translation>
 <translation id="4597348597567598915">Tamaño 8</translation>
 <translation id="4600854749408232102">C6/C5 (sobre)</translation>
@@ -1254,11 +1254,10 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804427196348435412">Utilizar dispositivos con NFC</translation>
-<translation id="5810442152076338065">A túa conexión a <ph name="DOMAIN" /> está encriptada cun conxunto de cifrado obsoleto.</translation>
+<translation id="5810442152076338065">A túa conexión a <ph name="DOMAIN" /> está encriptada cun paquete de cifraxe obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Refacer adición</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cando pagues, cobrarase o importe correspondente utilizando esta tarxeta, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}other{Cando pagues, cobrarase o importe correspondente utilizando a tarxeta que selecciones, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nome común (NC)</translation>
-<translation id="583281660410589416">Descoñecido</translation>
 <translation id="5838278095973806738">Non debes introducir información confidencial neste sitio (por exemplo, contrasinais ou tarxetas de crédito), xa que os atacantes poden roubala.</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
 <translation id="5855253129151731373">O nome do host deste sitio é similar ao de <ph name="LOOKALIKE_DOMAIN" />. Ás veces, os atacantes crean copias de sitios introducindo nos nomes de dominio cambios pequenos e difíciles de ver.
@@ -1770,6 +1769,7 @@ Detalles adicionais:
 <translation id="7888575728750733395">Intent de renderización da impresión</translation>
 <translation id="7894280532028510793">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (sobre)</translation>
+<translation id="7931318309563332511">Descoñecido</translation>
 <translation id="7932579305932748336">Recubrimento</translation>
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
 <translation id="7934052535022478634">Completouse o pago</translation>

@@ -243,6 +243,7 @@
 <translation id="641081527798843608">විෂය ගැළපුම</translation>
 <translation id="6456394469623773452">කදිමයි</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="649050271426829538">නැවතිණි - කඩදාසි හිරවීම</translation>
 <translation id="6517239166834772319">ගවේෂණය</translation>
 <translation id="6527081081771465939">නොදන්නා Wi-Fi ආරක්ෂක ප්‍රොටොකෝලය</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු 1ක් ස්කෑන් කරන ලදි}one{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන ලදි}other{ස්කෑන් කිරීම සම්පූර්ණ කරන ලදි. පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන ලදි}}</translation>
-<translation id="7449585358422953039"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ.</translation>
 <translation id="7469648432129124067">ද්වාරය අනාවරණය කර ගන්නා ලදි</translation>
 <translation id="7487067081878637334">තාක්ෂණය</translation>
 <translation id="7490813197707563893">MAC ලිපිනය</translation>

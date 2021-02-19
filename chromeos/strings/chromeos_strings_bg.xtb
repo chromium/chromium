@@ -243,6 +243,7 @@
 <translation id="641081527798843608">Съвпадение на субекта</translation>
 <translation id="6456394469623773452">Добър</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
+<translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
@@ -279,7 +280,6 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирането завърши. Сканирана бе 1 страница}other{Сканирането завърши. Сканирани бяха {NUMBER_OF_PAGES} страници}}</translation>
-<translation id="7449585358422953039">Управлява се от <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Открит е портал</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC адрес</translation>

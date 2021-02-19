@@ -204,7 +204,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Geben Sie bitte e
 <translation id="7196312274710523067">Chromium konnte nicht gestartet werden. Versuchen Sie es noch einmal.</translation>
 <translation id="7197677400338048821">Chromium kann Ihre Passwörter nicht prüfen. Bitte versuchen Sie es in 24 Stunden noch einmal.</translation>
 <translation id="7205698830395646142">Im Chromium-Menü ausblenden</translation>
-<translation id="7223968959479464213">Taskmanager - Chromium</translation>
+<translation id="7223968959479464213">Task-Manager - Chromium</translation>
 <translation id="731644333568559921">&amp;Chromium OS aktualisieren</translation>
 <translation id="731795002583552498">Chromium wird aktualisiert</translation>
 <translation id="7318036098707714271">Ihre Einstellungsdatei ist beschädigt oder ungültig.
@@ -272,7 +272,6 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="9047197236183657400">Konto in ein neues Chromium-Profil verschieben?</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium wird in einer Stunde neu gestartet}other{Chromium wird in # Stunden neu gestartet}}</translation>
-<translation id="9107750757953039239">Wenn Sie mehrere Google-Konten haben, können Sie sie Ihrem <ph name="DEVICE_TYPE" /> hinzufügen. Ihre Konten sind im Chromium-Browser, im Play Store und für Dienste wie Gmail, Drive und YouTube verfügbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="91086099826398415">Link in neuem Chromium-Tab öffnen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
 <translation id="9158494823179993217">Ihr Systemadministrator hat Chromium so konfiguriert, dass ein alternativer Browser für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>

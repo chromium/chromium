@@ -243,6 +243,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="641081527798843608">Pagtugma ng paksa</translation>
 <translation id="6456394469623773452">Maayos</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
@@ -279,7 +280,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
-<translation id="7449585358422953039">Pinapamahalaan ng <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7487067081878637334">Teknolohiya</translation>
 <translation id="7490813197707563893">MAC address</translation>

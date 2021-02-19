@@ -2328,7 +2328,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3602870520245633055">Štampanje i skeniranje</translation>
 <translation id="3603622770190368340">Dobijanje sertifikata mreže</translation>
-<translation id="3604193429970465812">Sekundarni nalozi</translation>
 <translation id="3604713164406837697">Promenite pozadinu</translation>
 <translation id="3605780360466892872">Japi</translation>
 <translation id="3608576286259426129">Pregled slike korisnika</translation>
@@ -2397,7 +2396,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3677911431265050325">Zahtevaj mobilni sajt</translation>
 <translation id="3677959414150797585">Uključuje aplikacije, veb-stranice i drugo. Šalje statistiku da bi se poboljšali predlozi samo ako ste odabrali da delite podatke o korišćenju.</translation>
 <translation id="3678156199662914018">Dodatak: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3679608942832457508">Aplikacije i podešavanja OS-a će se sinhronizovati na svim Chromebook-ovima na kojima ste prijavljeni pomoću ovog naloga. <ph name="LINK_BEGIN" />Podešavanja sinhronizacije<ph name="LINK_END" /></translation>
 <translation id="3680683624079082902">Glas za pretvaranje teksta u govor</translation>
 <translation id="3681311097828166361">Hvala vam na povratnim informacijama. Trenutno ste oflajn i kasnije ćemo vam poslati izveštaj.</translation>
 <translation id="3682824389861648626">Ograničenje kretanja</translation>
@@ -2952,7 +2950,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB uživo)</translation>
 <translation id="4310139701823742692">Format datoteke je pogrešan. Proverite PPD datoteku i probajte ponovo.</translation>
 <translation id="431076611119798497">&amp;Detalji</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Google nalog}one{<ph name="EXTRA_ACCOUNTS" /> Google nalog}few{<ph name="EXTRA_ACCOUNTS" /> Google naloga}other{<ph name="EXTRA_ACCOUNTS" /> Google naloga}}</translation>
 <translation id="4312866146174492540">Blokiraj (podrazumevano)</translation>
 <translation id="4314815835985389558">Upravljajte sinhronizacijom</translation>
 <translation id="4316850752623536204">Veb-sajt programera</translation>
@@ -3705,7 +3702,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5206787458656075734">{COUNT,plural, =1{Promenili ste ugroženu lozinku. Imate još # ugroženu lozinku. Chrome vam preporučuje da odmah proverite ovu lozinku.}one{Promenili ste ugroženu lozinku. Imate još # ugroženu lozinku. Chrome vam preporučuje da odmah proverite ove lozinke.}few{Promenili ste ugroženu lozinku. Imate još # ugrožene lozinke. Chrome vam preporučuje da odmah proverite ove lozinke.}other{Promenili ste ugroženu lozinku. Imate još # ugroženih lozinki. Chrome vam preporučuje da odmah proverite ove lozinke.}}</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="5209320130288484488">Nije pronađen nijedan uređaj</translation>
-<translation id="5209572028385096813">Ovim korisnikom upravlja Family Link</translation>
 <translation id="5210365745912300556">Zatvori karticu</translation>
 <translation id="5213481667492808996">Usluga prenosa podataka „<ph name="NAME" />“ je spremna za korišćenje</translation>
 <translation id="5213891612754844763">Prikaži podešavanja proksija</translation>
@@ -5369,7 +5365,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7121362699166175603">Briše istoriju i automatska dovršavanja u traci za adresu. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Režim programera</translation>
 <translation id="7121728544325372695">Pametne crte</translation>
-<translation id="7122353087820324370">Aplikacije i podešavanja OS-a se ne sinhronizuju sa sekundarnim nalozima.</translation>
 <translation id="7123030151043029868">Dozvoljeno im je da automatski preuzimaju više fajlova</translation>
 <translation id="7123360114020465152">Nije više podržan</translation>
 <translation id="7125148293026877011">Izbrišite Crostini</translation>
@@ -6082,7 +6077,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7928175190925744466">Već ste promenili ovu lozinku?</translation>
 <translation id="7930294771522048157">Sačuvani načini plaćanja će se prikazivati ovde</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> deli ekran i zvuk.</translation>
-<translation id="7931318309563332511">Nepoznato</translation>
 <translation id="793293630927785390">Dijalog Nova WiFi mreža</translation>
 <translation id="7932969338829957666">Deljeni direktorijumi su dostupni u Linux-u na <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Uključi zvuk sajta}one{Uključi zvuk sajtova}few{Uključi zvuk sajtova}other{Uključi zvuk sajtova}}</translation>
