@@ -14,14 +14,14 @@ import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /**
  * This is the controller that prevents incognito tabs from being visible in Android Recents.
  */
-public class IncognitoTabSnapshotController extends EmptyTabModelSelectorObserver {
+public class IncognitoTabSnapshotController implements TabModelSelectorObserver {
     private final Window mWindow;
     private final TabModelSelector mTabModelSelector;
     private boolean mInOverviewMode;

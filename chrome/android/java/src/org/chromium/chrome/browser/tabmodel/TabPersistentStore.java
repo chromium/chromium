@@ -96,7 +96,7 @@ public class TabPersistentStore {
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         setTabContentManager(tabContentManager);
 
-        mTabModelSelector.addObserver(new EmptyTabModelSelectorObserver() {
+        mTabModelSelector.addObserver(new TabModelSelectorObserver() {
             @Override
             public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                 if (creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {

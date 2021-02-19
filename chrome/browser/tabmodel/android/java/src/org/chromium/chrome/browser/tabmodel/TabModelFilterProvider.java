@@ -13,7 +13,7 @@ import java.util.List;
  * {@link TabModel}s. It always owns two {@link TabModelFilter}s, one for normal {@link TabModel}
  * and one for incognito {@link TabModel}.
  */
-public class TabModelFilterProvider extends EmptyTabModelSelectorObserver {
+public class TabModelFilterProvider implements TabModelSelectorObserver {
     private List<TabModelFilter> mTabModelFilterList = Collections.emptyList();
     private final List<TabModelObserver> mPendingTabModelObserver = new ArrayList<>();
 
@@ -114,7 +114,7 @@ public class TabModelFilterProvider extends EmptyTabModelSelectorObserver {
         }
     }
 
-    // Override EmptyTabModelSelectorObserver.
+    // Override TabModelSelectorObserver.
     @Override
     public void onTabStateInitialized() {
         markTabStateInitialized();

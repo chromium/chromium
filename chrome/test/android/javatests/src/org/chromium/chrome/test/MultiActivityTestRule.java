@@ -18,7 +18,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
@@ -50,7 +50,7 @@ public class MultiActivityTestRule implements TestRule {
 
     private void waitForTabCreation(ChromeActivity activity) throws TimeoutException {
         final CallbackHelper newTabCreatorHelper = new CallbackHelper();
-        activity.getTabModelSelector().addObserver(new EmptyTabModelSelectorObserver() {
+        activity.getTabModelSelector().addObserver(new TabModelSelectorObserver() {
             @Override
             public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                 newTabCreatorHelper.notifyCalled();

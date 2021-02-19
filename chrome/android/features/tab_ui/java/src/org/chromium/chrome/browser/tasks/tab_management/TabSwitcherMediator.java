@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -242,7 +241,7 @@ class TabSwitcherMediator
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMode = mode;
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 mShouldIgnoreNextSelect = true;
@@ -374,7 +373,7 @@ class TabSwitcherMediator
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
 
         if (mTabModelSelector.getModels().isEmpty()) {
-            TabModelSelectorObserver selectorObserver = new EmptyTabModelSelectorObserver() {
+            TabModelSelectorObserver selectorObserver = new TabModelSelectorObserver() {
                 @Override
                 public void onChange() {
                     assert !mTabModelSelector.getModels().isEmpty();

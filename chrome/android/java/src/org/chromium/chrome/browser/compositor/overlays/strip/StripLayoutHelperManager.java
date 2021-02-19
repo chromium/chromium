@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -87,7 +86,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver =
-            new EmptyTabModelSelectorObserver() {
+            new TabModelSelectorObserver() {
                 @Override
                 public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                     tabModelSwitched(newModel.isIncognito());
@@ -353,7 +352,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
         if (mTabModelSelector.isTabStateInitialized()) {
             updateModelSwitcherButton();
         } else {
-            mTabModelSelector.addObserver(new EmptyTabModelSelectorObserver() {
+            mTabModelSelector.addObserver(new TabModelSelectorObserver() {
                 @Override
                 public void onTabStateInitialized() {
                     updateModelSwitcherButton();

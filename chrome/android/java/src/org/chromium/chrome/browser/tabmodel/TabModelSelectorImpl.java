@@ -151,7 +151,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
 
-        addObserver(new EmptyTabModelSelectorObserver() {
+        addObserver(new TabModelSelectorObserver() {
             @Override
             public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                 // Only invalidate if the tab exists in the currently selected model.

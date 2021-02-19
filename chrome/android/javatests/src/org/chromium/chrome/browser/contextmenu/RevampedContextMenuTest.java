@@ -46,8 +46,8 @@ import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -354,11 +354,9 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
         final CallbackHelper newTabCallback = new CallbackHelper();
         final AtomicReference<Tab> newTab = new AtomicReference<>();
         mDownloadTestRule.getActivity().getTabModelSelector().addObserver(
-                new EmptyTabModelSelectorObserver() {
+                new TabModelSelectorObserver() {
                     @Override
                     public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                        super.onNewTabCreated(tab, creationState);
-
                         if (CriticalPersistedTabData.from(tab).getParentId()
                                 != activityTab.getId()) {
                             return;

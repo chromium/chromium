@@ -35,7 +35,7 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
 
         List<TabModel> tabModels = selector.getModels();
         if (tabModels.isEmpty()) {
-            mSelectorObserver = new EmptyTabModelSelectorObserver() {
+            mSelectorObserver = new TabModelSelectorObserver() {
                 @Override
                 public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                     throw new IllegalStateException(

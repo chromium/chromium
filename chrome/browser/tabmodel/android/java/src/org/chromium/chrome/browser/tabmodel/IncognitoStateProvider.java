@@ -26,7 +26,7 @@ public class IncognitoStateProvider {
     public IncognitoStateProvider() {
         mIncognitoStateObservers = new ObserverList<IncognitoStateObserver>();
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 // TODO(jinsukkim): Emit this only if the state is different.

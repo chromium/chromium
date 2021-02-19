@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -78,8 +78,9 @@ public class CustomTabDeferredStartupTest {
         }
     }
 
-    static class NewTabObserver extends EmptyTabModelSelectorObserver
-            implements ApplicationStatus.ActivityStateListener, InflationObserver {
+    static class NewTabObserver implements TabModelSelectorObserver,
+                                           ApplicationStatus.ActivityStateListener,
+                                           InflationObserver {
         private BaseCustomTabActivity mActivity;
         private TabObserver mObserver;
 
