@@ -350,6 +350,9 @@ DragOperation HoldingSpaceTray::OnPerformDrop(
   if (unpinned_file_paths.empty())
     return DragOperation::kNone;
 
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kDragAndDropToPin);
+
   HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
   return DragOperation::kCopy;
 }

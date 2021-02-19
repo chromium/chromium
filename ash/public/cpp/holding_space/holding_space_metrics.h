@@ -31,7 +31,8 @@ enum class PodAction {
   kHidePreviews = 5,
   kShowPod = 6,
   kHidePod = 7,
-  kMaxValue = kHidePod,
+  kDragAndDropToPin = 8,
+  kMaxValue = kDragAndDropToPin,
 };
 
 // Records the specified `action` taken on the holding space pod in the shelf.

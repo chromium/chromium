@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -604,6 +605,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
   file_paths.push_back(CreateFile());
   sender()->SetData(file_paths);
 
+  // Expect no events have been recorded to histograms.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Pod.Action.All",
+      holding_space_metrics::PodAction::kDragAndDropToPin, 0);
+
   {
     base::RunLoop run_loop;
     EXPECT_CALL(mock, OnHoldingSpaceItemsAdded)
@@ -627,6 +634,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
             &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
             base::Unretained(this), false));
     run_loop.Run();
+
+    // Expect the event has been recorded to histograms.
+    histogram_tester.ExpectBucketCount(
+        "HoldingSpace.Pod.Action.All",
+        holding_space_metrics::PodAction::kDragAndDropToPin, 1);
   }
 
   // Create a few more files to be dragged into the holding space.
@@ -660,6 +672,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
             &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
             base::Unretained(this), false));
     run_loop.Run();
+
+    // Expect the event has been recorded to histograms.
+    histogram_tester.ExpectBucketCount(
+        "HoldingSpace.Pod.Action.All",
+        holding_space_metrics::PodAction::kDragAndDropToPin, 2);
   }
 
   // Swap out the registered holding space client with a mock.
@@ -685,6 +702,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
             &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
             base::Unretained(this), false));
     testing::Mock::VerifyAndClearExpectations(&client);
+
+    // Expect no event has been recorded to histograms.
+    histogram_tester.ExpectBucketCount(
+        "HoldingSpace.Pod.Action.All",
+        holding_space_metrics::PodAction::kDragAndDropToPin, 2);
   }
 }
 
