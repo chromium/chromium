@@ -1521,6 +1521,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.incognitoTabsDelegate addNewItem];
     // TODO(crbug.com/1135329): Record when a new incognito tab is opened.
   }
+  [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
+                                       focusOmnibox:NO
+                                       closeTabGrid:YES];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
