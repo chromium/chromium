@@ -957,15 +957,14 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   DISALLOW_COPY_AND_ASSIGN(CacheStorageImpl);
 };
 
-CacheStorageDispatcherHost::CacheStorageDispatcherHost() = default;
-
-CacheStorageDispatcherHost::~CacheStorageDispatcherHost() {
+CacheStorageDispatcherHost::CacheStorageDispatcherHost(
+    CacheStorageContextImpl* context)
+    : context_(context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void CacheStorageDispatcherHost::Init(CacheStorageContextImpl* context) {
+CacheStorageDispatcherHost::~CacheStorageDispatcherHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context_ = context;
 }
 
 void CacheStorageDispatcherHost::AddReceiver(
@@ -981,11 +980,6 @@ void CacheStorageDispatcherHost::AddReceiver(
       this, origin, incognito, cross_origin_embedder_policy,
       std::move(coep_reporter), owner);
   receivers_.Add(std::move(impl), std::move(receiver));
-}
-
-void CacheStorageDispatcherHost::Shutdown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context_ = nullptr;
 }
 
 void CacheStorageDispatcherHost::AddCacheReceiver(

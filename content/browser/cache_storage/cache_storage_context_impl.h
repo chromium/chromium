@@ -16,7 +16,6 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/cache_storage_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -42,23 +41,25 @@ namespace content {
 class CacheStorageDispatcherHost;
 class CacheStorageManager;
 
-// One instance of this exists per StoragePartition, and services multiple
-// child processes/origins. Most logic is delegated to the owned
-// CacheStorageManager instance, which is only accessed on the target
-// sequence.
-class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
+// This class is an implementation of the CacheStorageControl mojom that is
+// called from the browser.  One instance of this exists per StoragePartition,
+// and services multiple child processes/origins.  (Compare this with
+// CacheStorageDispatcherHost which handles renderer <-> storage service mojo
+// messages.)  All functions must be called on the same sequence that the
+// object is constructed on.
+class CONTENT_EXPORT CacheStorageContextImpl
+    : public storage::mojom::CacheStorageControl {
  public:
   CacheStorageContextImpl();
+  ~CacheStorageContextImpl() override;
 
-  // Init and Shutdown are for use on the UI thread when the profile,
-  // storagepartition is being setup and torn down.
-  void Init(const base::FilePath& user_data_directory,
+  static scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner();
+
+  void Init(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
+            const base::FilePath& user_data_directory,
             scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
             mojo::PendingRemote<storage::mojom::BlobStorageContext>
                 blob_storage_context);
-  void Shutdown();
-
-  void Bind(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control);
 
   // storage::mojom::CacheStorageControl implementation.
   void AddReceiver(
@@ -78,27 +79,14 @@ class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
                               policy_updates) override;
 
   scoped_refptr<CacheStorageManager> cache_manager() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return cache_manager_;
   }
 
   bool is_incognito() const { return is_incognito_; }
 
- protected:
-  ~CacheStorageContextImpl() override;
-
  private:
-  void CreateCacheStorageManagerOnTaskRunner(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      mojo::PendingRemote<storage::mojom::BlobStorageContext>
-          blob_storage_context);
-
-  void ShutdownOnTaskRunner(std::set<url::Origin> origins_to_purge_on_shutdown);
-
-  // Initialized at construction.
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The set of origins whose storage should be cleared on shutdown.
   std::set<url::Origin> origins_to_purge_on_shutdown_;
@@ -106,15 +94,12 @@ class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
 
-  // Created and accessed on the target sequence.  Released on the target
-  // sequence in ShutdownOnTaskRunner() or the destructor via
-  // SequencedTaskRunner::ReleaseSoon().
+  // Released during Shutdown() or the destructor.
   scoped_refptr<CacheStorageManager> cache_manager_;
 
   mojo::ReceiverSet<storage::mojom::CacheStorageControl> receivers_;
 
-  // Initialized from the UI thread and bound to |task_runner_|.
-  base::SequenceBound<CacheStorageDispatcherHost> dispatcher_host_;
+  std::unique_ptr<CacheStorageDispatcherHost> dispatcher_host_;
 };
 
 }  // namespace content

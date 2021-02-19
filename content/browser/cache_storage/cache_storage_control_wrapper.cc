@@ -15,12 +15,12 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
         blob_storage_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cache_storage_context_ = base::MakeRefCounted<CacheStorageContextImpl>();
-  cache_storage_context_->Init(user_data_directory,
-                               std::move(quota_manager_proxy),
-                               std::move(blob_storage_context));
-  cache_storage_context_->Bind(
-      cache_storage_control_.BindNewPipeAndPassReceiver());
+  cache_storage_context_ = base::SequenceBound<CacheStorageContextImpl>(
+      CacheStorageContextImpl::CreateSchedulerTaskRunner());
+  cache_storage_context_.AsyncCall(&CacheStorageContextImpl::Init)
+      .WithArgs(cache_storage_control_.BindNewPipeAndPassReceiver(),
+                user_data_directory, std::move(quota_manager_proxy),
+                std::move(blob_storage_context));
 
   if (special_storage_policy) {
     // `storage_policy_observer_` is owned by `this` and so it is safe
@@ -34,8 +34,6 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
 
 CacheStorageControlWrapper::~CacheStorageControlWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  cache_storage_context_->Shutdown();
 }
 
 void CacheStorageControlWrapper::AddReceiver(

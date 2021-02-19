@@ -34,11 +34,8 @@ class CacheStorageContextImpl;
 // from other sequences.
 class CacheStorageDispatcherHost {
  public:
-  CacheStorageDispatcherHost();
+  explicit CacheStorageDispatcherHost(CacheStorageContextImpl* context);
   ~CacheStorageDispatcherHost();
-
-  // Must be called before AddReceiver().
-  void Init(CacheStorageContextImpl* context);
 
   // Binds the CacheStorage Mojo receiver to this instance.
   // NOTE: The same CacheStorageDispatcherHost instance may be bound to
@@ -54,8 +51,6 @@ class CacheStorageDispatcherHost {
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
-  void Shutdown();
-
  private:
   class CacheStorageImpl;
   class CacheImpl;
@@ -68,7 +63,8 @@ class CacheStorageDispatcherHost {
   CacheStorageHandle OpenCacheStorage(const url::Origin& origin,
                                       storage::mojom::CacheStorageOwner owner);
 
-  scoped_refptr<CacheStorageContextImpl> context_;
+  // `this` is owned by `context_`.
+  CacheStorageContextImpl* const context_;
 
   mojo::UniqueReceiverSet<blink::mojom::CacheStorage> receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::CacheStorageCache>

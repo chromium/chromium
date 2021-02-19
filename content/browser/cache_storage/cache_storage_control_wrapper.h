@@ -17,7 +17,10 @@
 
 namespace content {
 
-// All functions should be called on the UI thread.
+// This class is a browser-side implementation of the browser <-> storage
+// service mojo for cache storage.  It wraps mojo calls to track origin usage
+// and forwards them to the storage service remote.  All functions should be
+// called on the UI thread.
 class CONTENT_EXPORT CacheStorageControlWrapper
     : public storage::mojom::CacheStorageControl {
  public:
@@ -60,7 +63,7 @@ class CONTENT_EXPORT CacheStorageControlWrapper
 
   base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
-  scoped_refptr<CacheStorageContextImpl> cache_storage_context_;
+  base::SequenceBound<CacheStorageContextImpl> cache_storage_context_;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
 };
 
