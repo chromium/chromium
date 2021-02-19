@@ -1466,14 +1466,17 @@ NavigationRequest::~NavigationRequest() {
           TRACE_ID_WITH_SCOPE("StartToCommit", TRACE_ID_LOCAL(this)), "URL",
           common_params_->url.spec(), "Net Error Code", net_error_);
     }
-  }
 
-  if (blink::features::IsPrerender2Enabled() && IsPrerenderedPageActivation()) {
-    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-        frame_tree_node_->current_frame_host()->GetStoragePartition());
-    PrerenderHostRegistry* prerender_host_registry =
-        storage_partition_impl->GetPrerenderHostRegistry();
-    prerender_host_registry->AbandonReservedHost(prerender_frame_tree_node_id_);
+    // Abandon the prerender host reserved for activation if it exists.
+    if (blink::features::IsPrerender2Enabled() &&
+        IsPrerenderedPageActivation()) {
+      auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+          frame_tree_node_->current_frame_host()->GetStoragePartition());
+      PrerenderHostRegistry* prerender_host_registry =
+          storage_partition_impl->GetPrerenderHostRegistry();
+      prerender_host_registry->AbandonReservedHost(
+          prerender_frame_tree_node_id_);
+    }
   }
 }
 
