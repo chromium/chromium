@@ -136,8 +136,9 @@ scoped_refptr<VideoFrame> FrameRendererDummy::CreateVideoFrame(
   base::Optional<VideoFrameLayout> layout =
       CreateVideoFrameLayout(pixel_format, size);
   DCHECK(layout);
-  return VideoFrame::WrapExternalDataWithLayout(*layout, gfx::Rect(size), size,
-                                                nullptr, 0, base::TimeDelta());
+  return VideoFrame::CreateFrameWithLayout(*layout, gfx::Rect(size), size,
+                                           base::TimeDelta(),
+                                           /*zero_initialize_memory=*/true);
 }
 
 uint64_t FrameRendererDummy::FramesDropped() const {
