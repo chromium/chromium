@@ -32,6 +32,7 @@ dependencies {
     compile "androidx.appcompat:appcompat:{{androidx_dependency_version}}"
     compile "androidx.appcompat:appcompat-resources:{{androidx_dependency_version}}"
     compile "androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}"
+    compile "androidx.browser:browser:{{androidx_dependency_version}}"
     compile "androidx.cardview:cardview:{{androidx_dependency_version}}"
     compile "androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}"
     compile "androidx.collection:collection:{{androidx_dependency_version}}"
