@@ -1016,6 +1016,14 @@ static std::vector<VideoCodec> GetVp8IfAvailable() {
              : std::vector<VideoCodec>();
 }
 
+// TODO(https://crbug.com/1179801): Uncomment once MediaCodecVideoDecoderVp9Test
+// is fixed.
+// static std::vector<VideoCodec> GetVp9IfAvailable() {
+//   return MediaCodecUtil::IsVp9DecoderAvailable()
+//              ? std::vector<VideoCodec>(1, kCodecVP9)
+//              : std::vector<VideoCodec>();
+// }
+
 static std::vector<VideoCodec> GetAv1IfAvailable() {
   return MediaCodecUtil::IsAv1DecoderAvailable()
              ? std::vector<VideoCodec>(1, kCodecAV1)
@@ -1036,8 +1044,20 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp8Test,
                          MediaCodecVideoDecoderVp8Test,
                          testing::ValuesIn(GetVp8IfAvailable()));
 
+// TODO(https://crbug.com/1179801): Uncomment once MediaCodecVideoDecoderVp9Test
+// is fixed.
+// INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp9Test,
+//                          MediaCodecVideoDecoderVp9Test,
+//                          testing::ValuesIn(GetVp9IfAvailable()));
+
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderAV1Test,
                          MediaCodecVideoDecoderAV1Test,
                          testing::ValuesIn(GetAv1IfAvailable()));
+
+// TODO(https://crbug.com/1179801): Remove this annotation once
+// MediaCodecVideoDecoderVp9Test is fixed.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderVp9Test);
+// This test suite is empty on some OSes.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderAV1Test);
 
 }  // namespace media
