@@ -8,6 +8,7 @@ assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
 import("//build/util/process_version.gni")
+import("//fuchsia/options.gni")
 
 # gn binary location.
 if (host_os == "mac") {
@@ -303,16 +304,18 @@ cipd_archive("debug_symbols") {
   sources = [ _symbol_manifest ] + _symbol_tarballs
 }
 
-cipd_archive("clear_key_cdm") {
-  package_basename = "libclearkeycdm"
-  package_definition_basename = "clear_key_cdm"
-  description = "Prebuilt libclearkeycdm.so binary for Fuchsia."
+if (enable_lib_clear_key_cdm_on_fuchsia) {
+  cipd_archive("clear_key_cdm") {
+    package_basename = "libclearkeycdm"
+    package_definition_basename = "clear_key_cdm"
+    description = "Prebuilt libclearkeycdm.so binary for Fuchsia."
 
-  testonly = true
+    testonly = true
 
-  deps = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
+    deps = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
 
-  sources = [ "${root_out_dir}/lib/libclearkeycdm.so" ]
+    sources = [ "${root_out_dir}/lib/libclearkeycdm.so" ]
+  }
 }
 
 group("cipd") {
@@ -322,8 +325,6 @@ group("cipd") {
     ":castrunner_google",
     ":chromedriver",
     ":chromedriver_google",
-    ":clear_key_cdm",
-    ":clear_key_cdm_google",
     ":debug_symbols",
     ":debug_symbols_google",
     ":http",
@@ -335,4 +336,11 @@ group("cipd") {
     ":webrunner",
     ":webrunner_google",
   ]
+
+  if (enable_lib_clear_key_cdm_on_fuchsia) {
+    deps += [
+      ":clear_key_cdm",
+      ":clear_key_cdm_google",
+    ]
+  }
 }

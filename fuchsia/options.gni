@@ -1,0 +1,4 @@
+declare_args() {
+  # Enables libclearkeycdm package.
+  enable_lib_clear_key_cdm_on_fuchsia = true
+}
